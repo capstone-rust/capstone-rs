@@ -54,10 +54,15 @@ enum CsErr {
     CS_ERR_X86_INTEL, // X86 Intel syntax is unsupported (opt-out at compile time)
 }
 
+type csh = libc::size_t;
 #[link(name = "capstone")]
 extern "C" {
-    fn cs_open(arch: CsArch, mode: CsMode, handle: *mut libc::size_t) -> CsErr;
-    fn cs_close(handle: *mut libc::size_t) -> CsErr;
+    fn cs_open(arch: CsArch, mode: CsMode, handle: *mut csh) -> CsErr;
+    fn cs_close(handle: *mut csh) -> CsErr;
+    fn cs_disasm(handle: csh, code: *const u8, code_size: isize,
+                 address: u64, count: isize, insn: *mut *mut Insn) -> isize;
+    fn cs_disasm_ex(handle: csh, code: *const u8, code_size: isize,
+                    address: u64, count: isize, insn: *mut *mut Insn) -> isize;
 }
 
 pub struct Capstone {
@@ -81,4 +86,16 @@ impl Drop for Capstone {
     fn drop(&mut self) {
         unsafe { cs_close(&mut self.csh) };
     }
+}
+
+#[repr(C)]
+#[derive(Copy)]
+pub struct Insn {
+    pub id: ::libc::c_uint,
+    pub address: u64,
+    pub size: u16,
+    pub bytes: [u8; 16usize],
+    pub mnemonic: [::libc::c_char; 32usize],
+    pub op_str: [::libc::c_char; 160usize],
+    pub detail: *mut libc::c_void, // Opaque cs_detail
 }
