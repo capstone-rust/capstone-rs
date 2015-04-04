@@ -54,6 +54,7 @@ enum CsErr {
     CS_ERR_X86_INTEL, // X86 Intel syntax is unsupported (opt-out at compile time)
 }
 
+#[link(name = "capstone")]
 extern "C" {
     fn cs_open(arch: CsArch, mode: CsMode, handle: *mut libc::size_t) -> CsErr;
 }
