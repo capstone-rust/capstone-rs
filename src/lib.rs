@@ -57,6 +57,7 @@ enum CsErr {
 #[link(name = "capstone")]
 extern "C" {
     fn cs_open(arch: CsArch, mode: CsMode, handle: *mut libc::size_t) -> CsErr;
+    fn cs_close(handle: *mut libc::size_t) -> CsErr;
 }
 
 pub struct Capstone {
@@ -73,5 +74,11 @@ impl Capstone {
         } else {
             None
         }
+    }
+}
+
+impl Drop for Capstone {
+    fn drop(&mut self) {
+        unsafe { cs_close(&mut self.csh) };
     }
 }
