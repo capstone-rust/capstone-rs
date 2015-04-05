@@ -4,6 +4,7 @@ use std::ptr;
 use std::str;
 use std::ffi::CStr;
 use std::fmt::{Debug, Formatter, Error};
+use ffi::cs_free;
 
 // Using an actual slice is causing issues with auto deref, instead implement a custom iterator and
 // drop trait
@@ -88,9 +89,4 @@ impl Debug for Insn {
             .field("op_str", &self.op_str())
             .finish()
     }
-}
-
-#[link(name = "capstone")]
-extern "C" {
-    fn cs_free(insn: *const Insn, count: libc::size_t);
 }
