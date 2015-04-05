@@ -1,5 +1,6 @@
 extern crate libc;
 use std::intrinsics;
+use std::ptr;
 use std::str;
 use std::ffi::CStr;
 use std::fmt::{Debug, Formatter, Error};
@@ -44,13 +45,12 @@ impl<'a> Iterator for InstructionIterator<'a> {
         } else {
             let obj = unsafe { intrinsics::offset(self.insns.ptr, self.cur) };
             self.cur += 1;
-            Some(unsafe { *obj })
+            Some(unsafe { ptr::read(obj) })
         }
     }
 }
 
 #[repr(C)]
-#[derive(Copy)]
 pub struct Insn {
     id: ::libc::c_uint,
     pub address: u64,
