@@ -31,6 +31,12 @@ impl Instructions {
     }
 }
 
+impl Drop for Instructions {
+    fn drop(&mut self) {
+        unsafe { cs_free(self.ptr, self.len as libc::size_t); }
+    }
+}
+
 pub struct InstructionIterator<'a> {
     insns: &'a Instructions,
     cur: isize,
@@ -82,4 +88,9 @@ impl Debug for Insn {
             .field("op_str", &self.op_str())
             .finish()
     }
+}
+
+#[link(name = "capstone")]
+extern "C" {
+    fn cs_free(insn: *const Insn, count: libc::size_t);
 }
