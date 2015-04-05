@@ -15,6 +15,12 @@ pub use capstone::Capstone;
 
 use std::ptr;
 
-// bindgen by default used this type name everywhere, it is easier to leave it alone.
+/// An opaque reference to a capstone engine.
+///
+/// bindgen by default used this type name everywhere, so it is easier to leave it with a confusing
+/// name.
+///
+/// It should not be exported, rust's new visibility rules make tackling this not immediately
+/// obvious
 #[allow(non_camel_case_types)]
 pub type csh = libc::size_t;
