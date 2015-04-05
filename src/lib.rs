@@ -1,6 +1,18 @@
 #![feature(libc)]
+#![feature(core)]
+#![feature(debug_builders)]
 extern crate libc;
-// mod bindgen;
+
+use std::ptr;
+use std::mem;
+use std::slice;
+use std::ffi::CStr;
+use std::fmt::{Debug, Formatter, Error};
+
+use std::io;
+use std::str;
+use std::intrinsics;
+use std::io::Write;
 
 #[repr(C)]
 pub enum CsArch {
@@ -60,13 +72,56 @@ extern "C" {
     fn cs_open(arch: CsArch, mode: CsMode, handle: *mut csh) -> CsErr;
     fn cs_close(handle: *mut csh) -> CsErr;
     fn cs_disasm(handle: csh, code: *const u8, code_size: isize,
-                 address: u64, count: isize, insn: *mut *mut Insn) -> isize;
+                 address: u64, count: isize, insn: &mut *const Insn) -> isize;
     fn cs_disasm_ex(handle: csh, code: *const u8, code_size: isize,
-                    address: u64, count: isize, insn: *mut *mut Insn) -> isize;
+                    address: u64, count: isize, insn: &mut *const Insn) -> isize;
 }
 
 pub struct Capstone {
     csh: libc::size_t, // Opaque handle to cs_engine
+}
+
+// Using an actual slice is causing issues with auto deref, instead implement a custom iterator and
+// drop trait
+pub struct Instructions {
+    ptr: *const Insn,
+    len: isize,
+}
+
+impl Instructions {
+    fn from_raw_parts(ptr: *const Insn, len: isize) -> Instructions {
+        Instructions {
+            ptr: ptr,
+            len: len,
+        }
+    }
+
+    pub fn len(&self) -> isize {
+        self.len
+    }
+
+    pub fn iter(&self) -> InstructionIterator {
+        InstructionIterator { insns: &self, cur: 0 }
+    }
+}
+
+pub struct InstructionIterator<'a> {
+    insns: &'a Instructions,
+    cur: isize,
+}
+
+impl<'a> Iterator for InstructionIterator<'a> {
+    type Item = Insn;
+
+    fn next(&mut self) -> Option<Insn> {
+        if self.cur == self.insns.len {
+            None
+        } else {
+            let obj = unsafe { intrinsics::offset(self.insns.ptr, self.cur) };
+            self.cur += 1;
+            Some(unsafe { *obj })
+        }
+    }
 }
 
 impl Capstone {
@@ -80,6 +135,17 @@ impl Capstone {
             None
         }
     }
+
+    pub fn disasm(&self, code: &[u8], addr: u64, count: isize) -> Option<Instructions> {
+        let mut ptr: *const Insn = ptr::null();
+        let insn_count = unsafe { cs_disasm(self.csh, code.as_ptr(), code.len() as isize, addr, count, &mut ptr) };
+        if insn_count == 0 {
+            // TODO  On failure, call cs_errno() for error code.
+            return None
+        }
+
+        Some(Instructions::from_raw_parts(ptr, insn_count))
+    }
 }
 
 impl Drop for Capstone {
@@ -91,11 +157,34 @@ impl Drop for Capstone {
 #[repr(C)]
 #[derive(Copy)]
 pub struct Insn {
-    pub id: ::libc::c_uint,
+    id: ::libc::c_uint,
     pub address: u64,
     pub size: u16,
     pub bytes: [u8; 16usize],
     pub mnemonic: [::libc::c_char; 32usize],
     pub op_str: [::libc::c_char; 160usize],
-    pub detail: *mut libc::c_void, // Opaque cs_detail
+    detail: *mut libc::c_void, // Opaque cs_detail
+}
+
+impl Insn {
+    pub fn mnemonic(&self) -> Option<&str> {
+        let cstr = unsafe { CStr::from_ptr(self.mnemonic.as_ptr()) };
+        str::from_utf8(cstr.to_bytes()).ok()
+    }
+
+    pub fn op_str(&self) -> Option<&str> {
+        let cstr = unsafe { CStr::from_ptr(self.op_str.as_ptr()) };
+        str::from_utf8(cstr.to_bytes()).ok()
+    }
+}
+
+impl Debug for Insn {
+    fn fmt(&self, fmt: &mut Formatter) -> Result<(), Error> {
+        fmt.debug_struct("Insn")
+            .field("address", &self.address)
+            .field("size", &self.size)
+            .field("mnemonic", &self.mnemonic())
+            .field("op_str", &self.op_str())
+            .finish()
+    }
 }
