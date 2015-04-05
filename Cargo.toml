@@ -1,8 +1,9 @@
 [package]
 name = "capstone"
-version = "0.0.2"
+version = "0.0.3"
 authors = ["Richo Healey <richo@psych0tik.net>"]
 
 description = "Bindings to capstone engine (http://capstone-engine.org/)"
+documentation = "http://richo.psych0tik.net/capstone-rs/capstone/index.html"
 license = "MIT"
 repository = "https://github.com/richo/capstone-rs"
