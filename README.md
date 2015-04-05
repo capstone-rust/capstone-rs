@@ -40,4 +40,17 @@ Insn { address: 4096, mnemonic: Some("push"), op_str: Some("rbp") }
 Insn { address: 4097, mnemonic: Some("mov"), op_str: Some("rax, qword ptr [rip + 0x13b8]") }
 ```
 
+# Reporting Issues
+
+Please open a Github issue, or email me directly if you prefer
+
+# Author
+
+Library Author: Nguyen Anh Quynh
+Binding Author: Richo Healey <richo@psych0tik.net>
+
+# License
+
+Mit.
+
 [upstream]: http://capstone-engine.org/
