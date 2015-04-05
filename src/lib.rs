@@ -8,9 +8,10 @@ pub mod constants;
 pub mod ffi;
 pub mod capstone;
 
-use constants::{CsErr};
-
 pub use instruction::*;
+pub use constants::*;
+
+pub use capstone::Capstone;
 
 use std::ptr;
 
