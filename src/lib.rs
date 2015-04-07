@@ -13,8 +13,6 @@ pub use constants::*;
 
 pub use capstone::Capstone;
 
-use std::ptr;
-
 /// An opaque reference to a capstone engine.
 ///
 /// bindgen by default used this type name everywhere, so it is easier to leave it with a confusing
