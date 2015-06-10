@@ -44,6 +44,14 @@ Insn { address: 4097, mnemonic: Some("mov"), op_str: Some("rax, qword ptr [rip +
 
 Please open a Github issue, or email me directly if you prefer
 
+# Demo
+
+You can run:
+
+    cargo run --example=demo
+
+To produce a short demonstration. More complex demos welcome!
+
 # Author
 
 Library Author: Nguyen Anh Quynh
