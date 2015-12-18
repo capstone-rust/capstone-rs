@@ -7,3 +7,7 @@ description = "Bindings to capstone engine (http://capstone-engine.org/)"
 documentation = "http://richo.psych0tik.net/capstone-rs/capstone/index.html"
 license = "MIT"
 repository = "https://github.com/richo/capstone-rs"
+
+[dependencies]
+
+libc = "*"

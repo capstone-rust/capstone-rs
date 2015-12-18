@@ -1,5 +1,4 @@
 extern crate libc;
-use std::intrinsics;
 use std::ptr;
 use std::str;
 use std::ffi::CStr;
@@ -50,7 +49,7 @@ impl<'a> Iterator for InstructionIterator<'a> {
         if self.cur == self.insns.len {
             None
         } else {
-            let obj = unsafe { intrinsics::offset(self.insns.ptr, self.cur) };
+            let obj = unsafe { self.insns.ptr.offset(self.cur) };
             self.cur += 1;
             Some(unsafe { ptr::read(obj) })
         }

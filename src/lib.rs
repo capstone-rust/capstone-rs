@@ -1,6 +1,3 @@
-#![feature(libc)]
-#![feature(core)]
-#![feature(debug_builders)]
 extern crate libc;
 
 pub mod instruction;
