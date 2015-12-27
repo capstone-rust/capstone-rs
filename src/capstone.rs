@@ -1,8 +1,8 @@
 use libc;
 use std::ptr;
+use std::ffi::CStr;
 use constants::*;
-use ffi::{cs_close, cs_open, cs_disasm};
-
+use ffi::{cs_close, cs_open, cs_disasm, cs_reg_name, cs_insn_name};
 use instruction::{Insn, Instructions};
 
 pub struct Capstone {
@@ -35,6 +35,32 @@ impl Capstone {
         }
 
         Some(Instructions::from_raw_parts(ptr, insn_count as isize))
+    }
+
+    pub fn reg_name(&self, reg_id: u64) -> Option<String> {
+        let reg_name = unsafe {
+            let _reg_name = cs_reg_name(self.csh, reg_id as libc::size_t);
+            if _reg_name == ptr::null() {
+                return None;
+            }
+
+            CStr::from_ptr(_reg_name).to_string_lossy().into_owned()
+        };
+
+        Some(reg_name)
+    }
+
+    pub fn insn_name(&self, reg_id: u64) -> Option<String> {
+        let reg_name = unsafe {
+            let _reg_name = cs_insn_name(self.csh, reg_id as libc::size_t);
+            if _reg_name == ptr::null() {
+                return None;
+            }
+
+            CStr::from_ptr(_reg_name).to_string_lossy().into_owned()
+        };
+
+        Some(reg_name)
     }
 }
 

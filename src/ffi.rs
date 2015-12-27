@@ -23,4 +23,6 @@ extern "C" {
                         insn: &mut *const Insn)
                         -> libc::size_t;
     pub fn cs_free(insn: *const Insn, count: libc::size_t);
+    pub fn cs_reg_name(handle: csh, reg_id: libc::size_t) -> *const libc::c_char;
+    pub fn cs_insn_name(handle: csh, insn_id: libc::size_t) -> *const libc::c_char;
 }
