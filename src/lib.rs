@@ -27,24 +27,23 @@ mod test {
 
     #[test]
     fn test_x86_simple() {
-    match capstone::Capstone::new(constants::CsArch::ARCH_X86,
-                                  constants::CsMode::MODE_64) {
-        Some(cs) => {
-            if let Some(insns) = cs.disasm(CODE, 0x1000, 0) {
-                assert_eq!(insns.len(), 2);
-                let is: Vec<_> = insns.iter().collect();
-                assert_eq!(is[0].mnemonic().unwrap(), "push");
-                assert_eq!(is[1].mnemonic().unwrap(), "mov");
+        match capstone::Capstone::new(constants::CsArch::ARCH_X86, constants::CsMode::MODE_64) {
+            Some(cs) => {
+                if let Some(insns) = cs.disasm(CODE, 0x1000, 0) {
+                    assert_eq!(insns.len(), 2);
+                    let is: Vec<_> = insns.iter().collect();
+                    assert_eq!(is[0].mnemonic().unwrap(), "push");
+                    assert_eq!(is[1].mnemonic().unwrap(), "mov");
 
-                assert_eq!(is[0].address, 0x1000);
-                assert_eq!(is[1].address, 0x1001);
-            } else {
-                assert!(false, "Couldn't disasm instructions")
+                    assert_eq!(is[0].address, 0x1000);
+                    assert_eq!(is[1].address, 0x1001);
+                } else {
+                    assert!(false, "Couldn't disasm instructions")
+                }
             }
-        },
-        None => {
-            assert!(false, "Couldn't create a cs engine");
+            None => {
+                assert!(false, "Couldn't create a cs engine");
+            }
         }
     }
-}
 }
