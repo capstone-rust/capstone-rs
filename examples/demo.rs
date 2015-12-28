@@ -12,19 +12,6 @@ fn main() {
                 for i in insns.iter() {
                     println!("{:?}", i);
                 }
-
-                let reg_id = 1;
-                match cs.reg_name(reg_id) {
-                    Some(reg_name) => println!("reg name: {}", reg_name),
-                    None => println!("invalid reg_id : {}", reg_id),
-                }
-
-                let insn_id = 1;
-                match cs.insn_name(insn_id) {
-                    Some(insn_name) => println!("insn name: {}", insn_name),
-                    None => println!("invalid insn_id : {}", reg_id),
-                }
-
             }
         },
         None => {

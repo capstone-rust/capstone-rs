@@ -40,6 +40,18 @@ mod test {
                 } else {
                     assert!(false, "Couldn't disasm instructions")
                 }
+
+                let reg_id = 1;
+                match cs.reg_name(reg_id) {
+                    Some(reg_name) => assert_eq!(reg_name, "ah"),
+                    None => assert!(false, "Couldn't get register name"),
+                }
+
+                let insn_id = 1;
+                match cs.insn_name(insn_id) {
+                    Some(insn_name) => assert_eq!(insn_name, "aaa"),
+                    None => assert!(false, "Couldn't get instruction name"),
+                }
             }
             None => {
                 assert!(false, "Couldn't create a cs engine");
