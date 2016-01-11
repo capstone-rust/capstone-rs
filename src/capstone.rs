@@ -2,16 +2,17 @@ use libc;
 use std::ptr;
 use constants::*;
 use ffi::{cs_close,cs_open,cs_disasm};
+use csh;
 
 use instruction::{Insn,Instructions};
 
 pub struct Capstone {
-    csh: libc::size_t, // Opaque handle to cs_engine
+    csh: csh, // Opaque handle to cs_engine
 }
 
 impl Capstone {
     pub fn new(arch: CsArch, mode: CsMode) -> Option<Capstone> {
-        let mut handle: libc::size_t = 0;
+        let mut handle = 0;
         if let CsErr::CS_ERR_OK = unsafe { cs_open(arch, mode, &mut handle) } {
             Some(Capstone {
                 csh: handle

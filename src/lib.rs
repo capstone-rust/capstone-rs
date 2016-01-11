@@ -2,7 +2,7 @@ extern crate libc;
 
 pub mod instruction;
 pub mod constants;
-pub mod ffi;
+mod ffi;
 pub mod capstone;
 
 pub use instruction::*;
@@ -18,7 +18,7 @@ pub use capstone::Capstone;
 /// It should not be exported, rust's new visibility rules make tackling this not immediately
 /// obvious
 #[allow(non_camel_case_types)]
-pub type csh = libc::size_t;
+type csh = libc::c_ulong;
 
 #[cfg(test)]
 mod test {
