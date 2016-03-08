@@ -10,9 +10,6 @@ extern crate capstone;
 
 static CODE: &'static [u8] = b"\x55\x48\x8b\x05\xb8\x13\x00\x00";
 
-fn expose(a: &str) {
-}
-
 fn main() {
     match capstone::Capstone::new(capstone::CsArch::ARCH_X86,
                                   capstone::CsMode::MODE_64) {
@@ -56,6 +53,10 @@ To produce a short demonstration. More complex demos welcome!
 
 Library Author: Nguyen Anh Quynh
 Binding Author: Richo Healey <richo@psych0tik.net>
+
+# Contributors
+
+- @ekse
 
 # License
 
