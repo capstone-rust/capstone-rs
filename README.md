@@ -16,7 +16,7 @@ fn expose(a: &str) {
 fn main() {
     match capstone::Capstone::new(capstone::CsArch::ARCH_X86,
                                   capstone::CsMode::MODE_64) {
-        Some(cs) => {
+        Ok(cs) => {
             if let Some(insns) = cs.disasm(CODE, 0x1000, 0) {
                 println!("Got {} instructions", insns.len());
 
@@ -25,8 +25,8 @@ fn main() {
                 }
             }
         },
-        None => {
-            println!("Ohnoes");
+        Err(err) => {
+            println!("Error: {}", err.to_string());
         }
     }
 }
