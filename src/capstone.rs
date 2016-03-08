@@ -6,6 +6,7 @@ use csh;
 use ffi::{cs_close, cs_open, cs_disasm, cs_reg_name, cs_insn_name, cs_errno};
 use instruction::{Insn, Instructions};
 
+/// An instance of the capstone disassembler
 pub struct Capstone {
     csh: csh, // Opaque handle to cs_engine
 }
@@ -13,6 +14,17 @@ pub struct Capstone {
 pub type CsResult<T> = Result<T, CsErr>;
 
 impl Capstone {
+    /// Create a new instance of the decompiler
+    ///
+    /// ```
+    /// use capstone::Capstone;
+    /// use capstone::constants::*;
+    /// let cs = Capstone::new(CsArch::ARCH_X86, CsMode::MODE_64);
+    /// assert!(cs.is_ok());
+    ///
+    /// let cs = Capstone::new(CsArch::ARCH_ALL, CsMode::MODE_64);
+    /// assert!(!cs.is_ok());
+    /// ```
     pub fn new(arch: CsArch, mode: CsMode) -> CsResult<Capstone> {
         let mut handle = 0;
         let err = unsafe { cs_open(arch, mode, &mut handle) };
@@ -24,6 +36,9 @@ impl Capstone {
         }
     }
 
+    /// Disassemble a &[u8] full of instructions
+    ///
+    /// Pass count = 0 to disassemble all instructions in the buffer
     pub fn disasm(&self, code: &[u8], addr: u64, count: isize) -> CsResult<Instructions> {
         let mut ptr: *const Insn = ptr::null();
         let insn_count = unsafe {
