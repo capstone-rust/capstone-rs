@@ -2,6 +2,7 @@ use libc;
 use std::ptr;
 use std::ffi::CStr;
 use constants::*;
+use csh;
 use ffi::{cs_close, cs_open, cs_disasm, cs_reg_name, cs_insn_name};
 use instruction::{Insn, Instructions};
 
