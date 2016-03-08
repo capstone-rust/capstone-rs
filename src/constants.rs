@@ -1,4 +1,5 @@
 use std::ffi::CStr;
+use std::fmt;
 use ffi::cs_strerror;
 
 #[repr(C)]
@@ -54,11 +55,12 @@ pub enum CsErr {
     CS_ERR_X86_INTEL, // X86 Intel syntax is unsupported (opt-out at compile time)
 }
 
-impl ToString for CsErr {
-    fn to_string(&self) -> String {
-        unsafe {
+impl fmt::Display for CsErr {
+    fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result {
+        let s = unsafe {
             let err = cs_strerror(*self);
             CStr::from_ptr(err).to_string_lossy().into_owned()
-        }
+        };
+        write!(fmt, "{}", s)
     }
 }

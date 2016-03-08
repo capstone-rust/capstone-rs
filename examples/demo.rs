@@ -16,13 +16,13 @@ fn main() {
                     }
                 },
                 Err(err) => {
-                    println!("Error: {}", err.to_string());
+                    println!("Error: {}", err);
                     process::exit(1);
                 }
             }
         },
         Err(err) => {
-            println!("Error: {}", err.to_string());
+            println!("Error: {}", err);
             process::exit(1);
         }
     }

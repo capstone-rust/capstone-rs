@@ -40,12 +40,12 @@ mod test {
                         assert_eq!(is[1].address, 0x1001);
                     },
                     Err(err) => {
-                        assert!(false, format!("Couldn't disasm instructions: {}", err.to_string()))
+                        assert!(false, "Couldn't disasm instructions: {}", err)
                     }
                 }
             },
             Err(e) => {
-                assert!(false, format!("Couldn't create a cs engine: {}", e.to_string()));
+                assert!(false, "Couldn't create a cs engine: {}", e);
             }
         }
     }
@@ -79,7 +79,7 @@ mod test {
                 }
             },
             Err(e) => {
-                assert!(false, format!("Couldn't create a cs engine: {}", e.to_string()));
+                assert!(false, "Couldn't create a cs engine: {}", e);
             }
         }
     }
