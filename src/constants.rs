@@ -36,7 +36,7 @@ pub enum CsMode {
 }
 
 #[repr(C)]
-#[derive(Clone,Copy)]
+#[derive(Clone,Copy,PartialEq,Eq)]
 pub enum CsErr {
     CS_ERR_OK = 0, // No error: everything was fine
     CS_ERR_MEM, // Out-Of-Memory error: cs_open(), cs_disasm(), cs_disasm_iter()

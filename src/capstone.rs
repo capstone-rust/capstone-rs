@@ -15,10 +15,12 @@ pub type CsResult<T> = Result<T, CsErr>;
 impl Capstone {
     pub fn new(arch: CsArch, mode: CsMode) -> CsResult<Capstone> {
         let mut handle = 0;
-        if let CsErr::CS_ERR_OK = unsafe { cs_open(arch, mode, &mut handle) } {
+        let err = unsafe { cs_open(arch, mode, &mut handle) };
+
+        if CsErr::CS_ERR_OK == err {
             Ok(Capstone { csh: handle })
         } else {
-            Err(unsafe { cs_errno(handle) })
+            Err(err)
         }
     }
 
