@@ -43,18 +43,41 @@ mod test {
                         assert!(false, format!("Couldn't disasm instructions: {}", err.to_string()))
                     }
                 }
+            },
+            Err(e) => {
+                assert!(false, format!("Couldn't create a cs engine: {}", e.to_string()));
+            }
+        }
+    }
+
+    #[test]
+    fn test_x86_names() {
+        match capstone::Capstone::new(constants::CsArch::ARCH_X86, constants::CsMode::MODE_64) {
+            Ok(cs) => {
                 let reg_id = 1;
                 match cs.reg_name(reg_id) {
-                    Ok(reg_name) => assert_eq!(reg_name, "ah"),
-                    Err(err) => assert!(false, format!("Couldn't get register name: {}", err.to_string())),
+                    Some(reg_name) => assert_eq!(reg_name, "ah"),
+                    None => assert!(false, "Couldn't get register name"),
                 }
 
                 let insn_id = 1;
                 match cs.insn_name(insn_id) {
-                    Ok(insn_name) => assert_eq!(insn_name, "aaa"),
-                    Err(err) => assert!(false, format!("Couldn't get instruction name: {}", err.to_string())),
+                    Some(insn_name) => assert_eq!(insn_name, "aaa"),
+                    None => assert!(false, "Couldn't get instruction name"),
                 }
-            }
+
+                let reg_id = 6000;
+                match cs.reg_name(reg_id) {
+                    Some(_) => assert!(false, "invalid register worked"),
+                    None => {},
+                }
+
+                let insn_id = 6000;
+                match cs.insn_name(insn_id) {
+                    Some(_) => assert!(false, "invalid instruction worked"),
+                    None => {},
+                }
+            },
             Err(e) => {
                 assert!(false, format!("Couldn't create a cs engine: {}", e.to_string()));
             }
