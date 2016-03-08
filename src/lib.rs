@@ -60,4 +60,12 @@ mod test {
             }
         }
     }
+
+    #[test]
+    fn test_invalid_mode() {
+        match capstone::Capstone::new(constants::CsArch::ARCH_ALL, constants::CsMode::MODE_64) {
+            Ok(_) => { assert!(false, "Invalid open worked") },
+            Err(err) => { assert!(err == constants::CsErr::CS_ERR_ARCH) },
+        }
+    }
 }
