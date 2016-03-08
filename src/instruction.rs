@@ -5,17 +5,14 @@ use std::ffi::CStr;
 use std::fmt::{Debug, Formatter, Error};
 use ffi::cs_free;
 
-// Using an actual slice is causing issues with auto deref, instead implement a custom iterator and
-// drop trait
+/// Representation of the array of instructions returned by disasm
 pub struct Instructions {
     ptr: *const Insn,
     len: isize,
 }
 
 impl Instructions {
-    // This method really shouldn't be public, but it was unclear how to make it visible in lib.rs
-    // but not globally visible.
-    pub fn from_raw_parts(ptr: *const Insn, len: isize) -> Instructions {
+    pub unsafe fn from_raw_parts(ptr: *const Insn, len: isize) -> Instructions {
         Instructions {
             ptr: ptr,
             len: len,

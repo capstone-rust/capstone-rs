@@ -50,7 +50,7 @@ impl Capstone {
             return Err(unsafe { cs_errno(self.csh) })
         }
 
-        Ok(Instructions::from_raw_parts(ptr, insn_count as isize))
+        Ok(unsafe { Instructions::from_raw_parts(ptr, insn_count as isize) })
     }
 
     /// Convert a reg_id to a String naming the register
