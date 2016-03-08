@@ -27,13 +27,18 @@ impl Instructions {
     }
 
     pub fn iter(&self) -> InstructionIterator {
-        InstructionIterator { insns: &self, cur: 0 }
+        InstructionIterator {
+            insns: &self,
+            cur: 0,
+        }
     }
 }
 
 impl Drop for Instructions {
     fn drop(&mut self) {
-        unsafe { cs_free(self.ptr, self.len as libc::size_t); }
+        unsafe {
+            cs_free(self.ptr, self.len as libc::size_t);
+        }
     }
 }
 
@@ -82,10 +87,10 @@ impl Insn {
 impl Debug for Insn {
     fn fmt(&self, fmt: &mut Formatter) -> Result<(), Error> {
         fmt.debug_struct("Insn")
-            .field("address", &self.address)
-            .field("size", &self.size)
-            .field("mnemonic", &self.mnemonic())
-            .field("op_str", &self.op_str())
-            .finish()
+           .field("address", &self.address)
+           .field("size", &self.size)
+           .field("mnemonic", &self.mnemonic())
+           .field("op_str", &self.op_str())
+           .finish()
     }
 }

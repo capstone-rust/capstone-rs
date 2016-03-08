@@ -27,24 +27,35 @@ mod test {
 
     #[test]
     fn test_x86_simple() {
-    match capstone::Capstone::new(constants::CsArch::ARCH_X86,
-                                  constants::CsMode::MODE_64) {
-        Some(cs) => {
-            if let Some(insns) = cs.disasm(CODE, 0x1000, 0) {
-                assert_eq!(insns.len(), 2);
-                let is: Vec<_> = insns.iter().collect();
-                assert_eq!(is[0].mnemonic().unwrap(), "push");
-                assert_eq!(is[1].mnemonic().unwrap(), "mov");
+        match capstone::Capstone::new(constants::CsArch::ARCH_X86, constants::CsMode::MODE_64) {
+            Some(cs) => {
+                if let Some(insns) = cs.disasm(CODE, 0x1000, 0) {
+                    assert_eq!(insns.len(), 2);
+                    let is: Vec<_> = insns.iter().collect();
+                    assert_eq!(is[0].mnemonic().unwrap(), "push");
+                    assert_eq!(is[1].mnemonic().unwrap(), "mov");
 
-                assert_eq!(is[0].address, 0x1000);
-                assert_eq!(is[1].address, 0x1001);
-            } else {
-                assert!(false, "Couldn't disasm instructions")
+                    assert_eq!(is[0].address, 0x1000);
+                    assert_eq!(is[1].address, 0x1001);
+                } else {
+                    assert!(false, "Couldn't disasm instructions")
+                }
+
+                let reg_id = 1;
+                match cs.reg_name(reg_id) {
+                    Some(reg_name) => assert_eq!(reg_name, "ah"),
+                    None => assert!(false, "Couldn't get register name"),
+                }
+
+                let insn_id = 1;
+                match cs.insn_name(insn_id) {
+                    Some(insn_name) => assert_eq!(insn_name, "aaa"),
+                    None => assert!(false, "Couldn't get instruction name"),
+                }
             }
-        },
-        None => {
-            assert!(false, "Couldn't create a cs engine");
+            None => {
+                assert!(false, "Couldn't create a cs engine");
+            }
         }
     }
-}
 }
