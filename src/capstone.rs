@@ -5,6 +5,7 @@ use constants::*;
 use csh;
 use ffi::{cs_close, cs_open, cs_disasm, cs_reg_name, cs_insn_name, cs_errno};
 use instruction::{Insn, Instructions};
+use cs_iterator::CsIterator;
 
 pub struct Capstone {
     csh: csh, // Opaque handle to cs_engine
@@ -39,6 +40,14 @@ impl Capstone {
         }
 
         Ok(Instructions::from_raw_parts(ptr, insn_count as isize))
+    }
+
+    /// Returns a CsIterator which lazily fetches the next instruction
+    ///
+    /// Note that because it's lazy, it doesn't guarantee that all the instructions are valid, and
+    /// as a result the Iterator itself yields CsResult<Instruction>
+    pub fn disasm_iter<'a>(&'a self, code: &'a [u8], addr: u64) -> CsIterator<'a> {
+        CsIterator::new(&self.csh, code, addr)
     }
 
     pub fn reg_name(&self, reg_id: u64) -> Option<String> {

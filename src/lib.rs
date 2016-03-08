@@ -4,6 +4,7 @@ pub mod instruction;
 pub mod constants;
 mod ffi;
 pub mod capstone;
+pub mod cs_iterator;
 
 pub use instruction::*;
 pub use constants::*;
