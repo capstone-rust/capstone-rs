@@ -41,30 +41,30 @@ impl Capstone {
         Ok(Instructions::from_raw_parts(ptr, insn_count as isize))
     }
 
-    pub fn reg_name(&self, reg_id: u64) -> CsResult<String> {
+    pub fn reg_name(&self, reg_id: u64) -> Option<String> {
         let reg_name = unsafe {
             let _reg_name = cs_reg_name(self.csh, reg_id as libc::size_t);
             if _reg_name == ptr::null() {
-                return Err(cs_errno(self.csh))
+                return None
             }
 
             CStr::from_ptr(_reg_name).to_string_lossy().into_owned()
         };
 
-        Ok(reg_name)
+        Some(reg_name)
     }
 
-    pub fn insn_name(&self, reg_id: u64) -> CsResult<String> {
+    pub fn insn_name(&self, reg_id: u64) -> Option<String> {
         let reg_name = unsafe {
             let _reg_name = cs_insn_name(self.csh, reg_id as libc::size_t);
             if _reg_name == ptr::null() {
-                return Err(cs_errno(self.csh))
+                return None
             }
 
             CStr::from_ptr(_reg_name).to_string_lossy().into_owned()
         };
 
-        Ok(reg_name)
+        Some(reg_name)
     }
 }
 
