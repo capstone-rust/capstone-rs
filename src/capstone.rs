@@ -21,9 +21,6 @@ impl Capstone {
     /// use capstone::constants::*;
     /// let cs = Capstone::new(CsArch::ARCH_X86, CsMode::MODE_64);
     /// assert!(cs.is_ok());
-    ///
-    /// let cs = Capstone::new(CsArch::ARCH_ALL, CsMode::MODE_64);
-    /// assert!(!cs.is_ok());
     /// ```
     pub fn new(arch: CsArch, mode: CsMode) -> CsResult<Capstone> {
         let mut handle = 0;
@@ -56,6 +53,7 @@ impl Capstone {
         Ok(Instructions::from_raw_parts(ptr, insn_count as isize))
     }
 
+    /// Convert a reg_id to a String naming the register
     pub fn reg_name(&self, reg_id: u64) -> Option<String> {
         let reg_name = unsafe {
             let _reg_name = cs_reg_name(self.csh, reg_id as libc::size_t);
@@ -69,17 +67,18 @@ impl Capstone {
         Some(reg_name)
     }
 
-    pub fn insn_name(&self, reg_id: u64) -> Option<String> {
-        let reg_name = unsafe {
-            let _reg_name = cs_insn_name(self.csh, reg_id as libc::size_t);
-            if _reg_name == ptr::null() {
+    /// Convert an instruction_id to a String naming the instruction
+    pub fn insn_name(&self, insn_id: u64) -> Option<String> {
+        let insn_name = unsafe {
+            let _insn_name = cs_insn_name(self.csh, insn_id as libc::size_t);
+            if _insn_name == ptr::null() {
                 return None
             }
 
-            CStr::from_ptr(_reg_name).to_string_lossy().into_owned()
+            CStr::from_ptr(_insn_name).to_string_lossy().into_owned()
         };
 
-        Some(reg_name)
+        Some(insn_name)
     }
 }
 
