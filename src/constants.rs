@@ -1,3 +1,6 @@
+use std::ffi::CStr;
+use ffi::cs_strerror;
+
 #[repr(C)]
 pub enum CsArch {
     ARCH_ARM = 0, // ARM architecture (including Thumb, Thumb-2)
@@ -33,6 +36,7 @@ pub enum CsMode {
 }
 
 #[repr(C)]
+#[derive(Clone,Copy)]
 pub enum CsErr {
     CS_ERR_OK = 0, // No error: everything was fine
     CS_ERR_MEM, // Out-Of-Memory error: cs_open(), cs_disasm(), cs_disasm_iter()
@@ -48,4 +52,13 @@ pub enum CsErr {
     CS_ERR_SKIPDATA, // Access irrelevant data for "data" instruction in SKIPDATA mode
     CS_ERR_X86_ATT, // X86 AT&T syntax is unsupported (opt-out at compile time)
     CS_ERR_X86_INTEL, // X86 Intel syntax is unsupported (opt-out at compile time)
+}
+
+impl ToString for CsErr {
+    fn to_string(&self) -> String {
+        unsafe {
+            let err = cs_strerror(*self);
+            CStr::from_ptr(err).to_string_lossy().into_owned()
+        }
+    }
 }
