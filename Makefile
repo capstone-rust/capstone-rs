@@ -7,7 +7,6 @@ clean:
 doc: clean
 	cargo doc
 
-
 upload_docs: doc
 	git init target/doc
 	cd target/doc && git add -A .
