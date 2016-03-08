@@ -39,6 +39,9 @@ impl Drop for Instructions {
     }
 }
 
+/// An iterator over the instructions returned by disasm
+///
+/// This is currently the only supported interface for reading them.
 pub struct InstructionIterator<'a> {
     insns: &'a Instructions,
     cur: isize,
@@ -59,6 +62,7 @@ impl<'a> Iterator for InstructionIterator<'a> {
 }
 
 #[repr(C)]
+/// A logical instruction disassembled by capstone
 pub struct Insn {
     id: ::libc::c_uint,
     pub address: u64,
@@ -70,11 +74,13 @@ pub struct Insn {
 }
 
 impl Insn {
+    /// The mnemonic for the instruction
     pub fn mnemonic(&self) -> Option<&str> {
         let cstr = unsafe { CStr::from_ptr(self.mnemonic.as_ptr()) };
         str::from_utf8(cstr.to_bytes()).ok()
     }
 
+    /// The operand string associated with the instruction
     pub fn op_str(&self) -> Option<&str> {
         let cstr = unsafe { CStr::from_ptr(self.op_str.as_ptr()) };
         str::from_utf8(cstr.to_bytes()).ok()

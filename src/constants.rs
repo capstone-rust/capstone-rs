@@ -3,6 +3,7 @@ use std::fmt;
 use ffi::cs_strerror;
 
 #[repr(C)]
+/// Architectures for the disassembler
 pub enum CsArch {
     ARCH_ARM = 0, // ARM architecture (including Thumb, Thumb-2)
     ARCH_ARM64, // ARM-64, also called AArch64
@@ -17,6 +18,7 @@ pub enum CsArch {
 }
 
 #[repr(C)]
+/// Disassembler modes
 pub enum CsMode {
     MODE_LITTLE_ENDIAN = 0, // little-endian mode (default mode)
     // MODE_ARM = 0,    // 32-bit ARM
@@ -38,6 +40,7 @@ pub enum CsMode {
 
 #[repr(C)]
 #[derive(Clone,Copy,PartialEq,Eq)]
+/// Error states returned by various disassembler features
 pub enum CsErr {
     CS_ERR_OK = 0, // No error: everything was fine
     CS_ERR_MEM, // Out-Of-Memory error: cs_open(), cs_disasm(), cs_disasm_iter()
