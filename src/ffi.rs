@@ -25,4 +25,6 @@ extern "C" {
     pub fn cs_free(insn: *const Insn, count: libc::size_t);
     pub fn cs_reg_name(handle: csh, reg_id: libc::size_t) -> *const libc::c_char;
     pub fn cs_insn_name(handle: csh, insn_id: libc::size_t) -> *const libc::c_char;
+    pub fn cs_errno(handle: csh) -> CsErr;
+    pub fn cs_strerror(err: CsErr) -> *const libc::c_char;
 }
