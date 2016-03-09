@@ -14,16 +14,29 @@ fn main() {
     match capstone::Capstone::new(capstone::CsArch::ARCH_X86,
                                   capstone::CsMode::MODE_64) {
         Ok(cs) => {
-            if let Some(insns) = cs.disasm(CODE, 0x1000, 0) {
-                println!("Got {} instructions", insns.len());
+            match cs.disasm(CODE, 0x1000, 0) {
+                Ok(insns) => {
+                    println!("Got {} instructions", insns.len());
 
-                for i in insns.iter() {
-                    println!("{:?}", i);
+                    for i in insns.iter() {
+                            print!("{:#x}: ", i.address);
+                            if let Some(mnemonic) = i.mnemonic() {
+                                print!("{} ", mnemonic);
+                                if let Some(op_str) = i.op_str() {
+                                    print!("{}", op_str);
+                                }
+                            }
+                            println!("");
+                    }
+                },
+                Err(err) => {
+                    println!("Error: {}", err);
+                    process::exit(1);
                 }
             }
         },
         Err(err) => {
-            println!("Error: {}", err.to_string());
+            println!("Error: {}", err);
         }
     }
 }
@@ -33,8 +46,8 @@ Produces:
 
 ```
 Got 2 instructions
-Insn { address: 4096, mnemonic: Some("push"), op_str: Some("rbp") }
-Insn { address: 4097, mnemonic: Some("mov"), op_str: Some("rax, qword ptr [rip + 0x13b8]") }
+0x1000: push rbp
+0x1001: mov rax, qword ptr [rip + 0x13b8]
 ```
 
 # Reporting Issues

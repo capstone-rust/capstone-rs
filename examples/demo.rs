@@ -12,7 +12,14 @@ fn main() {
                     println!("Got {} instructions", insns.len());
 
                     for i in insns.iter() {
-                        println!("{:?}", i);
+                            print!("{:#x}: ", i.address);
+                            if let Some(mnemonic) = i.mnemonic() {
+                                print!("{} ", mnemonic);
+                                if let Some(op_str) = i.op_str() {
+                                    print!("{}", op_str);
+                                }
+                            }
+                            println!("");
                     }
                 },
                 Err(err) => {
