@@ -2,7 +2,7 @@ extern crate libc;
 use std::ptr;
 use std::str;
 use std::ffi::CStr;
-use std::fmt::{Debug, Formatter, Error};
+use std::fmt::{Display, Debug, Formatter, Error};
 use ffi::cs_free;
 
 /// Representation of the array of instructions returned by disasm
@@ -95,5 +95,19 @@ impl Debug for Insn {
            .field("mnemonic", &self.mnemonic())
            .field("op_str", &self.op_str())
            .finish()
+    }
+}
+
+impl Display for Insn {
+    #[allow(unused_must_use)]
+    fn fmt(&self, fmt: &mut Formatter) -> Result<(), Error> {
+        write!(fmt, "{:#x}: ", self.address);
+        if let Some(mnemonic) = self.mnemonic() {
+            write!(fmt, "{} ", mnemonic);
+            if let Some(op_str) = self.op_str() {
+                write!(fmt, "{}", op_str);
+            }
+        }
+        Ok(())
     }
 }
