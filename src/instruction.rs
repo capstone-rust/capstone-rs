@@ -67,9 +67,9 @@ pub struct Insn {
     id: ::libc::c_uint,
     pub address: u64,
     pub size: u16,
-    pub bytes: [u8; 16usize],
-    pub mnemonic: [::libc::c_char; 32usize],
-    pub op_str: [::libc::c_char; 160usize],
+    bytes: [u8; 16usize],
+    mnemonic: [::libc::c_char; 32usize],
+    op_str: [::libc::c_char; 160usize],
     detail: *mut libc::c_void, // Opaque cs_detail
 }
 
