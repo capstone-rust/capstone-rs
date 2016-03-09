@@ -19,9 +19,9 @@ extern "C" {
                      code: *mut *const u8,
                      code_size: *mut libc::size_t,
                      address: *mut u64,
-                     insn: &mut Insn)
-                     -> libc::size_t;
-    pub fn cs_malloc(handle: csh) -> *const Insn;
+                     insn: *mut Insn)
+                     -> bool;
+    pub fn cs_malloc(handle: csh) -> *mut Insn;
     pub fn cs_free(insn: *const Insn, count: libc::size_t);
     pub fn cs_reg_name(handle: csh, reg_id: libc::size_t) -> *const libc::c_char;
     pub fn cs_insn_name(handle: csh, insn_id: libc::size_t) -> *const libc::c_char;
