@@ -31,7 +31,7 @@ fn main() {
                                 println!("Got {} instructions", insns.len());
 
                                 for i in insns.iter() {
-                                    println!("{:?}", i);
+                                    println!("{}", i);
                                 }
                             },
                             Err(err) => {
