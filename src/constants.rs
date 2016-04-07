@@ -39,7 +39,7 @@ pub enum CsMode {
 }
 
 #[repr(C)]
-#[derive(Clone,Copy,PartialEq,Eq)]
+#[derive(Clone,Copy,PartialEq,Eq,Debug)]
 /// Error states returned by various disassembler features
 pub enum CsErr {
     CS_ERR_OK = 0, // No error: everything was fine
