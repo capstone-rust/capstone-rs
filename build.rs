@@ -17,7 +17,7 @@ fn main() {
     if !cfg!(feature = "build_src") && pkg_config::find_library("capstone").is_ok() {
     } else {
         if !Path::new("capstone/.git").exists() {
-            let _ = Command::new("git").args(&["submodule", "update", "--init"])
+            let _ = Command::new("git").args(&["submodule", "update", "--init", "--depth", "5"])
                 .status();
         }
         if cfg!(feature = "use_cmake") {
