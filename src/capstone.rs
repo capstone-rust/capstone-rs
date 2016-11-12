@@ -180,9 +180,12 @@ impl Capstone {
                       &mut ptr)
         };
         if insn_count == 0 {
-            println!("count: {}", insn_count);
+            // TODO: this is a pretty major bug; if it disassembles 0 instructions, it can return
+            // CS_ERR_OK (i.e., the buffer you passed has no instructions, that's fine),
+            // so we should return an empty instructions list. but the current API
+            // does not permit such a thing... need to refactor instructions, ideally it pre-parses
+            // and generates a vector of instructions, but this will require careful memory management iiuc
             let err = unsafe { cs_errno(self.csh) };
-            println!("err: {}", err);
             return Err(Err::from(err))
         }
 
