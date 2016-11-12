@@ -17,4 +17,4 @@ cmake = {optional = true, version = "0.1.2"}
 [features]
 default = []
 build_src = []
-use_cmake = ["cmake"]
+build_src_cmake = ["cmake", "build_src"]

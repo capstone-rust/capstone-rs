@@ -1,10 +1,12 @@
 //! # libcapstone.so.3 bindings
 //!
 //! If you want to compile this for another target,  `wasm32-unknown-emscripten`, for example,
-//! it is currently recommended that pass the two feature flags `build_src` and `use_cmake`.
+//! it is currently recommended to pass the feature flag `build_src_cmake` to
+//! build capstone using the cmake build system (which requires cmake to be installed).
+//!
 //! This has seen some (limited) testing and has been seen to work on the `wasm32-unknown-emscripten` target at least.
 //!
-//! Compiling on windows has not been tested.
+//! Compiling on windows has not been tested, although this should be easy to setup.
 
 #![allow(non_camel_case_types)]
 extern crate libc;
