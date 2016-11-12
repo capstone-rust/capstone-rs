@@ -180,15 +180,15 @@ impl Capstone {
                       &mut ptr)
         };
         if insn_count == 0 {
-            // TODO: this is a pretty major bug; if it disassembles 0 instructions, it can return
-            // CS_ERR_OK (i.e., the buffer you passed has no instructions, that's fine),
-            // so we should return an empty instructions list. but the current API
-            // does not permit such a thing... need to refactor instructions, ideally it pre-parses
-            // and generates a vector of instructions, but this will require careful memory management iiuc
+            // we can just simply not have found instructions in the buffer; this isn't an error
+            // so we just return an empty instructions
+            // I worry this will explode when freeing, we need a better api to just convert to a
+            // straight vector
             let err = unsafe { cs_errno(self.csh) };
-            return Err(Err::from(err))
+            if err != CS_ERR_OK {
+                return Err(Err::from(err))
+            }
         }
-
         Ok(unsafe { Instructions::from_raw_parts(ptr, insn_count as isize) })
     }
 

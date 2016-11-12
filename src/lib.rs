@@ -105,6 +105,27 @@ mod test {
     }
 
     #[test]
+    fn test_arm64_none() {
+        match capstone::Capstone::new(capstone::Arch::ARM64) {
+            Ok(cs) => {
+                match cs.disasm(ARM_CODE, 0x1000) {
+                    Ok(insns) => {
+                        assert_eq!(insns.len(), 0);
+                        let is: Vec<_> = insns.iter().collect();
+                        assert!(is.is_empty(), "Instruction vector isn't empty")
+                    },
+                    Err(err) => {
+                        assert!(false, "Couldn't disasm instructions: {}", err)
+                    }
+                }
+            },
+            Err(e) => {
+                assert!(false, "Couldn't create a cs engine: {}", e);
+            }
+        }
+    }
+
+    #[test]
      fn test_x86_names() {
          match capstone::Capstone::new(capstone::Arch::X86) {
              Ok(cs) => {
