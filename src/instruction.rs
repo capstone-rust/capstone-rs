@@ -6,6 +6,7 @@ use std::fmt::{self, Display, Debug, Formatter, Error};
 use capstone_sys::{cs_free, cs_insn, cs_detail};
 
 /// Representation of the array of instructions returned by disasm
+#[derive(Debug)]
 pub struct Instructions {
     ptr: *mut cs_insn,
     len: isize,
@@ -29,6 +30,10 @@ impl Instructions {
              cur: 0,
          }
      }
+
+    pub fn is_empty(&self) -> bool {
+        self.len == 0
+    }
 }
 
 impl Drop for Instructions {
@@ -95,12 +100,16 @@ impl Insn {
         str::from_utf8(cstr.to_bytes()).ok()
     }
 
-    pub fn size (&self) -> usize {
+    fn size (&self) -> usize {
         self.0.size as usize
     }
 
     pub fn address (&self) -> u64 {
         self.0.address as u64
+    }
+
+    pub fn bytes (&self) -> &[u8] {
+        &self.0.bytes[..self.size()]
     }
 
     /// Returns the detail object, if there is one.
@@ -178,5 +187,28 @@ impl Debug for Detail {
             .field("groups", &self.groups())
             .field("groups_count", &self.groups_count())
             .finish()
+    }
+}
+
+impl Display for Instructions {
+    fn fmt(&self, fmt: &mut Formatter) -> fmt::Result {
+        for sym in self.iter() {
+            write!(fmt, "{:x}:\t", sym.address())?;
+            for byte in sym.bytes() {
+                write!(fmt, " {:02x}", byte)?;
+            }
+            let remainder = 16*3 - (sym.bytes().len())*3;
+            for _ in 0..remainder {
+                write!(fmt, " ")?;
+            }
+            if let Some(mnemonic) = sym.mnemonic() {
+                write!(fmt, " {}", mnemonic)?;
+                if let Some(op_str) = sym.op_str() {
+                    write!(fmt, " {}", op_str)?;
+                }
+            }
+            write!(fmt, "\n")?;
+        }
+        Ok(())
     }
 }
