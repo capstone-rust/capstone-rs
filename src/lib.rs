@@ -6,7 +6,7 @@
 //! fn main() {
 //!     match capstone::Capstone::new(capstone::Arch::X86) {
 //!         Ok(cs) => {
-//!             match cs.disasm(CODE, 0x1000) {
+//!             match cs.disassemble(CODE, 0x1000) {
 //!                 Ok(insns) => {
 //!                     println!("Got {} instructions", insns.len());
 //!
@@ -58,7 +58,7 @@ mod test {
      fn test_x86_simple() {
          match capstone::Capstone::new(capstone::Arch::X86) {
              Ok(cs) => {
-                 match cs.disasm(X86_CODE, 0x1000) {
+                 match cs.disassemble(X86_CODE, 0x1000) {
                      Ok(insns) => {
                          assert_eq!(insns.len(), 2);
                          let is: Vec<_> = insns.iter().collect();
@@ -83,7 +83,7 @@ mod test {
     fn test_arm_simple() {
         match capstone::Capstone::new(capstone::Arch::ARM) {
             Ok(cs) => {
-                match cs.disasm(ARM_CODE, 0x1000) {
+                match cs.disassemble(ARM_CODE, 0x1000) {
                     Ok(insns) => {
                         assert_eq!(insns.len(), 2);
                         let is: Vec<_> = insns.iter().collect();
@@ -108,7 +108,7 @@ mod test {
     fn test_arm64_none() {
         match capstone::Capstone::new(capstone::Arch::ARM64) {
             Ok(cs) => {
-                match cs.disasm(ARM_CODE, 0x1000) {
+                match cs.disassemble(ARM_CODE, 0x1000) {
                     Ok(insns) => {
                         assert_eq!(insns.len(), 0);
                         let is: Vec<_> = insns.iter().collect();
