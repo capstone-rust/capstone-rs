@@ -115,7 +115,7 @@ impl Capstone {
     /// let cs = Capstone::new(capstone::Arch::X86);
     /// assert!(cs.is_ok());
     /// ```
-    pub fn new(arch: Arch) -> CsResult<Capstone> {
+    pub fn new(arch: Arch) -> Result<Capstone> {
         let mut handle: capstone_sys::csh = 0;
         let csarch = arch.to_cs_arch();
         let csmode = CS_MODE_LITTLE_ENDIAN;
@@ -124,31 +124,31 @@ impl Capstone {
         if CS_ERR_OK == err {
             Ok(Capstone { csh: handle, _arch: arch })
         } else {
-            Err(Err::from(err))
+            Err(Error::from(err))
         }
     }
 
     #[inline]
-    fn set_option(&self, opt_type: cs_opt_type, value: libc::size_t) -> CsResult<()> {
+    fn set_option(&self, opt_type: cs_opt_type, value: libc::size_t) -> Result<()> {
         let err = unsafe {
             cs_option(self.csh, opt_type, value)
         };
         if CS_ERR_OK == err {
             Ok(())
         } else {
-            Err(Err::from(err))
+            Err(Error::from(err))
         }
     }
 
     /// Set the disassembly engine to use detail mode
-    pub fn detail(&self) -> CsResult<()> {
+    pub fn detail(&self) -> Result<()> {
         self.set_option(capstone_sys::CS_OPT_DETAIL, capstone_sys::CS_OPT_ON)
     }
 
     /// Sets the engine's disassembly mode.
     /// Be careful, various combinations of modes aren't supported
     /// See the capstone-sys documentation for more information.
-    pub fn mode(&mut self, modes: &[Mode]) -> CsResult<()> {
+    pub fn mode(&mut self, modes: &[Mode]) -> Result<()> {
         let mut value = 0;
         for mode in modes {
             value |= mode.to_cs_mode();
@@ -169,7 +169,7 @@ impl Capstone {
     /// Disassemble a &[u8] `buffer` full of instructions
     ///
     /// Disassembles all instructions in `code`. If you want to disassemble less, then pass a smaller slice :]
-    pub fn disasm(&self, buffer: &[u8], addr: u64) -> CsResult<Instructions> {
+    pub fn disasm(&self, buffer: &[u8], addr: u64) -> Result<Instructions> {
         let mut ptr: *mut capstone_sys::cs_insn = ptr::null_mut();
         let insn_count = unsafe {
             cs_disasm(self.csh,
@@ -186,7 +186,7 @@ impl Capstone {
             // straight vector
             let err = unsafe { cs_errno(self.csh) };
             if err != CS_ERR_OK {
-                return Err(Err::from(err))
+                return Err(Error::from(err))
             }
         }
         Ok(unsafe { Instructions::from_raw_parts(ptr, insn_count as isize) })

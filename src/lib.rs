@@ -165,7 +165,7 @@ mod test {
             Ok(_) => assert!(false, "Invalid open worked"),
             Err(err) => {
                 match err {
-                    error::Err::Cs(err) => assert!(err == error::CsErr::Arch),
+                    error::Error::Capstone(err) => assert!(err == error::CapstoneError::UnsupportedArch),
                     _ => assert!(false),
                 }
             }
