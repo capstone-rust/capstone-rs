@@ -8,8 +8,9 @@ repository = "https://github.com/richo/capstone-rs"
 
 [dependencies]
 libc = "0.2"
-capstone-sys = "0.1"
+capstone-sys = "0.2"
 
 [features]
 default = []
-build_capstone = ["capstone-sys/build_src_cmake"]
+build_capstone_src_cmake = ["capstone-sys/build_src_cmake"]
+build_capstone_src = ["capstone-sys/build_src"]
