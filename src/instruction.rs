@@ -100,7 +100,8 @@ impl Insn {
         str::from_utf8(cstr.to_bytes()).ok()
     }
 
-    fn size (&self) -> usize {
+    /// Size of instruction (in bytes)
+    pub fn len (&self) -> usize {
         self.0.size as usize
     }
 
@@ -108,8 +109,9 @@ impl Insn {
         self.0.address as u64
     }
 
+    /// Byte-level representation of the instruction
     pub fn bytes (&self) -> &[u8] {
-        &self.0.bytes[..self.size()]
+        &self.0.bytes[..self.len()]
     }
 
     /// Returns the detail object, if there is one.
@@ -129,7 +131,8 @@ impl Debug for Insn {
     fn fmt(&self, fmt: &mut Formatter) -> Result<(), Error> {
         fmt.debug_struct("Insn")
             .field("address", &self.address())
-            .field("size", &self.size())
+            .field("len", &self.len())
+            .field("bytes", &self.bytes())
             .field("mnemonic", &self.mnemonic())
             .field("op_str", &self.op_str())
             .finish()
