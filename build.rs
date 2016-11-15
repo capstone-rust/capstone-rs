@@ -5,6 +5,7 @@ extern crate cmake;
 
 use std::path::{Path};
 use std::process::Command;
+use std::env;
 
 #[cfg(feature = "build_src_cmake")]
 fn cmake() {
@@ -28,8 +29,11 @@ fn main() {
             //let windows = target.contains("windows");
             // TODO: need to add this argument for windows 64-bit, msvc, dunno, read the COMPILE_MSVC.txt
             // file cygwin-mingw64
+            let out_dir = env::var("OUT_DIR").unwrap();
             let _ = Command::new("./make.sh").current_dir("capstone").status();
-            println!("cargo:rustc-link-search=native=capstone");
+            let capstone = "libcapstone.a";
+            let _ = Command::new("cp").current_dir("capstone").arg(&capstone).arg(&out_dir).status();
+            println!("cargo:rustc-link-search=native={}", out_dir);
         }
     }
     println!("cargo:rustc-link-lib=static=capstone");
