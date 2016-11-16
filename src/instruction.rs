@@ -195,18 +195,18 @@ impl Debug for Detail {
 
 impl Display for Instructions {
     fn fmt(&self, fmt: &mut Formatter) -> fmt::Result {
-        for sym in self.iter() {
-            write!(fmt, "{:x}:\t", sym.address())?;
-            for byte in sym.bytes() {
+        for instruction in self.iter() {
+            write!(fmt, "{:x}:\t", instruction.address())?;
+            for byte in instruction.bytes() {
                 write!(fmt, " {:02x}", byte)?;
             }
-            let remainder = 16*3 - (sym.bytes().len())*3;
+            let remainder = 16*3 - (instruction.bytes().len())*3;
             for _ in 0..remainder {
                 write!(fmt, " ")?;
             }
-            if let Some(mnemonic) = sym.mnemonic() {
+            if let Some(mnemonic) = instruction.mnemonic() {
                 write!(fmt, " {}", mnemonic)?;
-                if let Some(op_str) = sym.op_str() {
+                if let Some(op_str) = instruction.op_str() {
                     write!(fmt, " {}", op_str)?;
                 }
             }
