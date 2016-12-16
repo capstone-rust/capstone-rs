@@ -1,10 +1,10 @@
 [package]
-name = "capstone"
+name = "capstone3"
 version = "0.1.0"
-authors = ["Richo Healey <richo@psych0tik.net>", "m4b <m4b.github.io@gmail.com>"]
+authors = ["m4b <m4b.github.io@gmail.com>", "Richo Healey <richo@psych0tik.net>"]
 description = "High level bindings to capstone disassembly engine (http://capstone-engine.org/)"
 license = "MIT"
-repository = "https://github.com/richo/capstone-rs"
+repository = "https://github.com/m4b/capstone-rs"
 
 [dependencies]
 libc = "0.2"
