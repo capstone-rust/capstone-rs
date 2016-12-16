@@ -1,4 +1,4 @@
-capstone-rs
+capstone3
 ===========
 
 Bindings to the [capstone library][upstream] disassembly framework.
@@ -45,7 +45,7 @@ Got 2 instructions
 
 # Reporting Issues
 
-Please open a Github issue, or email me directly if you prefer
+Please open a Github issue
 
 # Demo
 
@@ -58,7 +58,7 @@ To produce a short demonstration. More complex demos welcome!
 # Author
 
 Library Author: Nguyen Anh Quynh
-Binding Author(s): Richo Healey <richo@psych0tik.net> m4b <m4b.github.io@gmail.com>
+Binding Author(s): m4b <m4b.github.io@gmail.com> Richo Healey <richo@psych0tik.net>
 
 # Contributors
 
