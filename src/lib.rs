@@ -1,43 +1,97 @@
+//! Bindings to the [capstone library][upstream] disassembly framework.
+//!
+//! ```rust
+//! extern crate capstone;
+//! const CODE: &'static [u8] = b"\x55\x48\x8b\x05\xb8\x13\x00\x00";
+//! fn main() {
+//!     match capstone::Capstone::new(capstone::Arch::X86) {
+//!         Ok(cs) => {
+//!             match cs.disassemble(CODE, 0x1000) {
+//!                 Ok(insns) => {
+//!                     println!("Got {} instructions", insns.len());
+//!
+//!                     for i in insns.iter() {
+//!                         println!("{}", i);
+//!                     }
+//!                 },
+//!                 Err(err) => {
+//!                     println!("Error: {}", err)
+//!                 }
+//!             }
+//!         },
+//!         Err(err) => {
+//!             println!("Error: {}", err)
+//!         }
+//!     }
+//! }
+//! ```
+//!
+//! Produces:
+//!
+//! ```no_test
+//! Got 2 instructions
+//! 0x1000: push rbp
+//! 0x1001: mov rax, qword ptr [rip + 0x13b8]
+//! ```
+//!
+//! **NOTE** if you want to compile for a different target, you should use the `build_capstone` feature.
+//!
+//! [upstream]: http://capstone-engine.org/
+//!
+
 extern crate libc;
+extern crate capstone_sys;
 
+mod capstone;
 pub mod instruction;
-pub mod constants;
-mod ffi;
-pub mod capstone;
+pub mod error;
 
-pub use instruction::*;
-pub use constants::*;
-
-pub use capstone::Capstone;
-
-/// An opaque reference to a capstone engine.
-///
-/// bindgen by default used this type name everywhere, so it is easier to leave it with a confusing
-/// name.
-///
-/// It should not be exported, rust's new visibility rules make tackling this not immediately
-/// obvious
-#[allow(non_camel_case_types)]
-type csh = libc::c_ulong;
+pub use capstone::*;
 
 #[cfg(test)]
 mod test {
-    use super::*;
-    static CODE: &'static [u8] = b"\x55\x48\x8b\x05\xb8\x13\x00\x00";
+    use super::{capstone, error};
+    const X86_CODE: &'static [u8] = b"\x55\x48\x8b\x05\xb8\x13\x00\x00";
+    const ARM_CODE: &'static [u8] = b"\x55\x48\x8b\x05\xb8\x13\x00\x00";
+
+     #[test]
+     fn test_x86_simple() {
+         match capstone::Capstone::new(capstone::Arch::X86) {
+             Ok(cs) => {
+                 match cs.disassemble(X86_CODE, 0x1000) {
+                     Ok(insns) => {
+                         assert_eq!(insns.len(), 2);
+                         let is: Vec<_> = insns.iter().collect();
+                         assert_eq!(is[0].mnemonic().unwrap(), "push");
+                         assert_eq!(is[1].mnemonic().unwrap(), "mov");
+
+                         assert_eq!(is[0].address(), 0x1000);
+                         assert_eq!(is[1].address(), 0x1001);
+                     },
+                     Err(err) => {
+                         assert!(false, "Couldn't disasm instructions: {}", err)
+                     }
+                 }
+             },
+             Err(e) => {
+                 assert!(false, "Couldn't create a cs engine: {}", e);
+             }
+         }
+     }
 
     #[test]
-    fn test_x86_simple() {
-        match capstone::Capstone::new(constants::CsArch::ARCH_X86, constants::CsMode::MODE_64) {
+    fn test_arm_simple() {
+        match capstone::Capstone::new(capstone::Arch::ARM) {
             Ok(cs) => {
-                match cs.disasm(CODE, 0x1000, 0) {
+                match cs.disassemble(ARM_CODE, 0x1000) {
                     Ok(insns) => {
                         assert_eq!(insns.len(), 2);
                         let is: Vec<_> = insns.iter().collect();
-                        assert_eq!(is[0].mnemonic().unwrap(), "push");
-                        assert_eq!(is[1].mnemonic().unwrap(), "mov");
+                        assert_eq!(is[0].mnemonic().unwrap(), "streq");
+                        assert_eq!(is[1].mnemonic().unwrap(), "strheq");
 
-                        assert_eq!(is[0].address, 0x1000);
-                        assert_eq!(is[1].address, 0x1001);
+                        assert_eq!(is[0].address(), 0x1000);
+                        assert_eq!(is[1].address(), 0x1004);
                     },
                     Err(err) => {
                         assert!(false, "Couldn't disasm instructions: {}", err)
@@ -51,31 +105,18 @@ mod test {
     }
 
     #[test]
-    fn test_x86_names() {
-        match capstone::Capstone::new(constants::CsArch::ARCH_X86, constants::CsMode::MODE_64) {
+    fn test_arm64_none() {
+        match capstone::Capstone::new(capstone::Arch::ARM64) {
             Ok(cs) => {
-                let reg_id = 1;
-                match cs.reg_name(reg_id) {
-                    Some(reg_name) => assert_eq!(reg_name, "ah"),
-                    None => assert!(false, "Couldn't get register name"),
-                }
-
-                let insn_id = 1;
-                match cs.insn_name(insn_id) {
-                    Some(insn_name) => assert_eq!(insn_name, "aaa"),
-                    None => assert!(false, "Couldn't get instruction name"),
-                }
-
-                let reg_id = 6000;
-                match cs.reg_name(reg_id) {
-                    Some(_) => assert!(false, "invalid register worked"),
-                    None => {},
-                }
-
-                let insn_id = 6000;
-                match cs.insn_name(insn_id) {
-                    Some(_) => assert!(false, "invalid instruction worked"),
-                    None => {},
+                match cs.disassemble(ARM_CODE, 0x1000) {
+                    Ok(insns) => {
+                        assert_eq!(insns.len(), 0);
+                        let is: Vec<_> = insns.iter().collect();
+                        assert!(is.is_empty(), "Instruction vector isn't empty")
+                    },
+                    Err(err) => {
+                        assert!(false, "Couldn't disasm instructions: {}", err)
+                    }
                 }
             },
             Err(e) => {
@@ -85,10 +126,49 @@ mod test {
     }
 
     #[test]
+     fn test_x86_names() {
+         match capstone::Capstone::new(capstone::Arch::X86) {
+             Ok(cs) => {
+                 let reg_id = 1;
+                 match cs.reg_name(reg_id) {
+                     Some(reg_name) => assert_eq!(reg_name, "ah"),
+                     None => assert!(false, "Couldn't get register name"),
+                 }
+
+                 let insn_id = 1;
+                 match cs.insn_name(insn_id) {
+                     Some(insn_name) => assert_eq!(insn_name, "aaa"),
+                     None => assert!(false, "Couldn't get instruction name"),
+                 }
+
+                 let reg_id = 6000;
+                 match cs.reg_name(reg_id) {
+                     Some(_) => assert!(false, "invalid register worked"),
+                     None => {},
+                 }
+
+                 let insn_id = 6000;
+                 match cs.insn_name(insn_id) {
+                     Some(_) => assert!(false, "invalid instruction worked"),
+                     None => {},
+                 }
+             },
+             Err(e) => {
+                 assert!(false, "Couldn't create a cs engine: {}", e);
+             }
+         }
+     }
+
+    #[test]
     fn test_invalid_mode() {
-        match capstone::Capstone::new(constants::CsArch::ARCH_ALL, constants::CsMode::MODE_64) {
-            Ok(_) => { assert!(false, "Invalid open worked") },
-            Err(err) => { assert!(err == constants::CsErr::CS_ERR_ARCH) },
+        match capstone::Capstone::new(capstone::Arch::ALL) {
+            Ok(_) => assert!(false, "Invalid open worked"),
+            Err(err) => {
+                match err {
+                    error::Error::Capstone(err) => assert!(err == error::CapstoneError::UnsupportedArch),
+                    _ => assert!(false),
+                }
+            }
         }
     }
 }

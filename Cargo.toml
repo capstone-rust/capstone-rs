@@ -1,18 +1,16 @@
 [package]
-name = "capstone"
-version = "0.0.4"
-authors = ["Richo Healey <richo@psych0tik.net>"]
-
-description = "Bindings to capstone engine (http://capstone-engine.org/)"
-documentation = "http://richo.psych0tik.net/capstone-rs/capstone/index.html"
+name = "capstone3"
+version = "0.1.0"
+authors = ["m4b <m4b.github.io@gmail.com>", "Richo Healey <richo@psych0tik.net>"]
+description = "High level bindings to capstone disassembly engine (http://capstone-engine.org/)"
 license = "MIT"
-repository = "https://github.com/richo/capstone-rs"
+repository = "https://github.com/m4b/capstone-rs"
 
 [dependencies]
+libc = "0.2"
+capstone-sys = "0.2"
 
-libc = "*"
-
-# Not actually a dependency, but this makes the more complicated examples work
-[dev-dependencies]
-
-macho = "0.*"
+[features]
+default = []
+build_capstone_src_cmake = ["capstone-sys/build_src_cmake"]
+build_capstone_src = ["capstone-sys/build_src"]
