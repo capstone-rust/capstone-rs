@@ -57,8 +57,8 @@ To produce a short demonstration. More complex demos welcome!
 
 # Author
 
-Library Author: Nguyen Anh Quynh
-Binding Author: Richo Healey <richo@psych0tik.net>
+- Library Author: Nguyen Anh Quynh
+- Binding Author: Richo Healey <richo@psych0tik.net>
 
 # Contributors
 
