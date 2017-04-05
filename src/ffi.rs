@@ -6,6 +6,7 @@ use csh;
 #[allow(dead_code)]
 #[link(name = "capstone")]
 extern "C" {
+    pub fn cs_version(major: *mut libc::c_int, minor: *mut libc::c_int) -> libc::c_uint;
     pub fn cs_open(arch: CsArch, mode: CsMode, handle: *mut csh) -> CsErr;
     pub fn cs_close(handle: *mut csh) -> CsErr;
     pub fn cs_disasm(handle: csh,

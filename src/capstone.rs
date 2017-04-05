@@ -3,7 +3,7 @@ use std::ptr;
 use std::ffi::CStr;
 use constants::*;
 use csh;
-use ffi::{cs_close, cs_open, cs_disasm, cs_reg_name, cs_insn_name, cs_errno};
+use ffi;
 use instruction::{Insn, Instructions};
 
 /// An instance of the capstone disassembler
@@ -24,7 +24,7 @@ impl Capstone {
     /// ```
     pub fn new(arch: CsArch, mode: CsMode) -> CsResult<Capstone> {
         let mut handle = 0;
-        let err = unsafe { cs_open(arch, mode, &mut handle) };
+        let err = unsafe { ffi::cs_open(arch, mode, &mut handle) };
 
         if CsErr::CS_ERR_OK == err {
             Ok(Capstone { csh: handle })
@@ -39,7 +39,7 @@ impl Capstone {
     pub fn disasm(&self, code: &[u8], addr: u64, count: isize) -> CsResult<Instructions> {
         let mut ptr: *const Insn = ptr::null();
         let insn_count = unsafe {
-            cs_disasm(self.csh,
+            ffi::cs_disasm(self.csh,
                       code.as_ptr(),
                       code.len() as libc::size_t,
                       addr,
@@ -47,16 +47,21 @@ impl Capstone {
                       &mut ptr)
         };
         if insn_count == 0 {
-            return Err(unsafe { cs_errno(self.csh) })
+            return self.get_error_result();
         }
 
         Ok(unsafe { Instructions::from_raw_parts(ptr, insn_count as isize) })
     }
 
+    /// Get error CsResult based on current errno
+    fn get_error_result(&self) ->CsResult<Instructions> {
+        Err(unsafe { ffi::cs_errno(self.csh) })
+    }
+
     /// Convert a reg_id to a String naming the register
     pub fn reg_name(&self, reg_id: u64) -> Option<String> {
         let reg_name = unsafe {
-            let _reg_name = cs_reg_name(self.csh, reg_id as libc::c_uint);
+            let _reg_name = ffi::cs_reg_name(self.csh, reg_id as libc::c_uint);
             if _reg_name == ptr::null() {
                 return None
             }
@@ -70,7 +75,7 @@ impl Capstone {
     /// Convert an instruction_id to a String naming the instruction
     pub fn insn_name(&self, insn_id: u64) -> Option<String> {
         let insn_name = unsafe {
-            let _insn_name = cs_insn_name(self.csh, insn_id as libc::c_uint);
+            let _insn_name = ffi::cs_insn_name(self.csh, insn_id as libc::c_uint);
             if _insn_name == ptr::null() {
                 return None
             }
@@ -84,6 +89,18 @@ impl Capstone {
 
 impl Drop for Capstone {
     fn drop(&mut self) {
-        unsafe { cs_close(&mut self.csh) };
+        unsafe { ffi::cs_close(&mut self.csh) };
     }
+}
+
+/// Return tuple (major, minor) indicating the version of the capstone C library
+pub fn capstone_lib_version() -> (u32, u32) {
+    let mut major: libc::c_int = 0;
+    let mut minor: libc::c_int = 0;
+    let major_ptr: *mut libc::c_int = &mut major;
+    let minor_ptr: *mut libc::c_int = &mut minor;
+
+    let _ = unsafe { ffi::cs_version(major_ptr, minor_ptr) };
+
+    (major as u32, minor as u32)
 }

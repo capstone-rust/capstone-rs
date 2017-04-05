@@ -18,7 +18,7 @@ pub use capstone::Capstone;
 /// It should not be exported, rust's new visibility rules make tackling this not immediately
 /// obvious
 #[allow(non_camel_case_types)]
-type csh = libc::c_ulong;
+type csh = libc::size_t;
 
 #[cfg(test)]
 mod test {
@@ -90,5 +90,12 @@ mod test {
             Ok(_) => { assert!(false, "Invalid open worked") },
             Err(err) => { assert!(err == constants::CsErr::CS_ERR_ARCH) },
         }
+    }
+
+    #[test]
+    fn test_capstone_version() {
+        let (major, minor) = capstone::capstone_lib_version();
+        assert!(major > 0 && major < 100, "Invalid major version {}", major);
+        assert!(minor < 500, "Invalid minor version {}", minor);
     }
 }
