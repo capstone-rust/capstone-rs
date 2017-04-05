@@ -56,7 +56,7 @@ impl Capstone {
     /// Convert a reg_id to a String naming the register
     pub fn reg_name(&self, reg_id: u64) -> Option<String> {
         let reg_name = unsafe {
-            let _reg_name = cs_reg_name(self.csh, reg_id as libc::size_t);
+            let _reg_name = cs_reg_name(self.csh, reg_id as libc::c_uint);
             if _reg_name == ptr::null() {
                 return None
             }
@@ -70,7 +70,7 @@ impl Capstone {
     /// Convert an instruction_id to a String naming the instruction
     pub fn insn_name(&self, insn_id: u64) -> Option<String> {
         let insn_name = unsafe {
-            let _insn_name = cs_insn_name(self.csh, insn_id as libc::size_t);
+            let _insn_name = cs_insn_name(self.csh, insn_id as libc::c_uint);
             if _insn_name == ptr::null() {
                 return None
             }
