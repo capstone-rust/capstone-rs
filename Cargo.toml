@@ -1,15 +1,13 @@
 [package]
-name = "capstone"
-version = "0.0.4"
 authors = ["Richo Healey <richo@psych0tik.net>"]
-
 description = "Bindings to capstone engine (http://capstone-engine.org/)"
 documentation = "http://richo.psych0tik.net/capstone-rs/capstone/index.html"
 license = "MIT"
+name = "capstone"
 repository = "https://github.com/richo/capstone-rs"
+version = "0.0.5"
 
 [dependencies]
-
 libc = "*"
 
 # Not actually a dependency, but this makes the more complicated examples work
