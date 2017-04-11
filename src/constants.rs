@@ -3,6 +3,7 @@ use std::fmt;
 use ffi::cs_strerror;
 
 #[repr(C)]
+#[allow(non_camel_case_types)]
 /// Architectures for the disassembler
 pub enum CsArch {
     ARCH_ARM = 0, // ARM architecture (including Thumb, Thumb-2)
@@ -18,6 +19,7 @@ pub enum CsArch {
 }
 
 #[repr(C)]
+#[allow(non_camel_case_types)]
 /// Disassembler modes
 pub enum CsMode {
     MODE_LITTLE_ENDIAN = 0, // little-endian mode (default mode)
@@ -39,6 +41,7 @@ pub enum CsMode {
 }
 
 #[repr(C)]
+#[allow(non_camel_case_types)]
 #[derive(Clone,Copy,PartialEq,Eq,Debug)]
 /// Error states returned by various disassembler features
 pub enum CsErr {
