@@ -70,7 +70,7 @@ pub struct Insn {
     bytes: [u8; 16usize],
     mnemonic: [::libc::c_char; 32usize],
     op_str: [::libc::c_char; 160usize],
-    detail: *mut libc::c_void, // Opaque cs_detail
+    pub detail: *mut CsDetail, // Opaque cs_detail
 }
 
 impl Insn {
@@ -84,6 +84,16 @@ impl Insn {
     pub fn op_str(&self) -> Option<&str> {
         let cstr = unsafe { CStr::from_ptr(self.op_str.as_ptr()) };
         str::from_utf8(cstr.to_bytes()).ok()
+    }
+
+    /// Access instruction id
+    pub fn get_id(&self) -> libc::c_uint {
+        self.id
+    }
+
+    /// Access instruction bytes
+    pub fn get_bytes(&self) -> &[u8] {
+        &self.bytes[0..(self.size as usize)]
     }
 }
 
@@ -109,5 +119,22 @@ impl Display for Insn {
             }
         }
         Ok(())
+    }
+}
+
+#[repr(C)]
+/// Represents details for instruction, available if disassembled with details
+pub struct CsDetail {
+    regs_read: [u8; 12usize], // list of implicit registers read by this insn
+    regs_read_count: u8, // number of implicit registers read by this insn
+    regs_write: [u8; 20usize], // list of implicit registers modified by this insn
+    regs_write_count: u8, // number of implicit registers modified by this insn
+    groups: [u8; 8usize], // list of group this instruction belong to
+    groups_count: u8, // number of groups this insn belongs to
+}
+
+impl CsDetail {
+    pub fn get_groups(&self) -> &[u8] {
+        &self.groups[..self.groups_count as usize]
     }
 }

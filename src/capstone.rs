@@ -1,4 +1,5 @@
 use libc;
+use std::collections::HashMap;
 use std::ptr;
 use std::ffi::CStr;
 use constants::*;
@@ -6,9 +7,11 @@ use csh;
 use ffi;
 use instruction::{Insn, Instructions};
 
+
 /// An instance of the capstone disassembler
 pub struct Capstone {
     csh: csh, // Opaque handle to cs_engine
+    cs_option_state: HashMap<CsOptType, libc::size_t>, // maintains state set with cs_option
 }
 
 pub type CsResult<T> = Result<T, CsErr>;
@@ -27,7 +30,17 @@ impl Capstone {
         let err = unsafe { ffi::cs_open(arch, mode, &mut handle) };
 
         if CsErr::CS_ERR_OK == err {
-            Ok(Capstone { csh: handle })
+            let mut opt_state: HashMap<CsOptType, libc::size_t> = HashMap::new();
+            opt_state.insert(CsOptType::CS_OPT_SYNTAX, CsOptValueSyntax::CS_OPT_SYNTAX_DEFAULT as libc::size_t);
+            opt_state.insert(CsOptType::CS_OPT_DETAIL, CsOptValueBool::CS_OPT_OFF as libc::size_t);
+            opt_state.insert(CsOptType::CS_OPT_MODE, mode as libc::size_t);
+            opt_state.insert(CsOptType::CS_OPT_MEM, 0);
+            opt_state.insert(CsOptType::CS_OPT_SKIPDATA, CsOptValueBool::CS_OPT_OFF as libc::size_t);
+
+            Ok(Capstone {
+                csh: handle,
+                cs_option_state: opt_state,
+            })
         } else {
             Err(err)
         }
@@ -54,8 +67,29 @@ impl Capstone {
     }
 
     /// Get error CsResult based on current errno
-    fn get_error_result(&self) ->CsResult<Instructions> {
+    fn get_error_result<T>(&self) ->CsResult<T> {
         Err(unsafe { ffi::cs_errno(self.csh) })
+    }
+
+    /// Set disassembling option at runtime
+    /// Acts as a safe wrapper around capstone's cs_option
+    fn set_cs_option(&mut self, option_type: CsOptType, option_value: libc::size_t) -> CsResult<()> {
+        let err = unsafe {
+            ffi::cs_option(self.csh, option_type, option_value)
+        };
+
+        if CsErr::CS_ERR_OK == err {
+            self.cs_option_state.insert(option_type, option_value);
+            Ok(())
+        } else {
+            Err(err)
+        }
+    }
+
+    /// Enable generate details about disassembled instructions
+    pub fn set_detail(&mut self, enable_detail: bool) -> CsResult<()> {
+        let option_value: libc::size_t = CsOptValueBool::from(enable_detail) as libc::size_t;
+        self.set_cs_option(CsOptType::CS_OPT_DETAIL, option_value)
     }
 
     /// Convert a reg_id to a String naming the register
@@ -85,6 +119,57 @@ impl Capstone {
 
         Some(insn_name)
     }
+
+    /// Convert an instruction id to a String indicating the group
+    pub fn group_name(&self, group_id: u64) -> Option<String> {
+        let group_name = unsafe {
+            let _group_name = ffi::cs_group_name(self.csh, group_id as libc::c_uint);
+            if _group_name == ptr::null() {
+                return None
+            }
+
+            CStr::from_ptr(_group_name).to_string_lossy().into_owned()
+        };
+
+        Some(group_name)
+    }
+
+    /// Returns whether instruction groups may be queried
+    fn is_insn_group_valid(&self, insn: &Insn) -> CsResult<()> {
+        /* CS_OPT_DETAIL is initialized in constructor */
+        if *self.cs_option_state.get(&CsOptType::CS_OPT_DETAIL).unwrap() ==
+            CsOptValueBool::CS_OPT_OFF as libc::size_t {
+            Err(CsErr::CS_ERR_DETAIL)
+        } else if insn.get_id() == 0 {
+            Err(CsErr::CS_ERR_SKIPDATA)
+        } else if is_diet() {
+            Err(CsErr::CS_ERR_DIET)
+        } else {
+            Ok(())
+        }
+    }
+
+    /// Returns whether the instruction belongs to the group wth id
+    pub fn insn_belongs_to_group(&self, insn: &Insn, group_id: u64) -> CsResult<bool> {
+        if let Err(e) = self.is_insn_group_valid(insn) {
+            return Err(e);
+        }
+
+        Ok(unsafe {
+            ffi::cs_insn_group(self.csh, insn as *const Insn, group_id as libc::c_uint)
+        })
+    }
+
+
+    /// Returns groups to which an instruction belongs
+    pub fn get_insn_group_ids(&self, insn: &Insn) -> CsResult<&[u8]> {
+        if let Err(e) = self.is_insn_group_valid(insn) {
+            return Err(e);
+        }
+
+        let groups = unsafe { (*insn.detail).get_groups() };
+        Ok(groups)
+    }
 }
 
 impl Drop for Capstone {
@@ -103,4 +188,15 @@ pub fn lib_version() -> (u32, u32) {
     let _ = unsafe { ffi::cs_version(major_ptr, minor_ptr) };
 
     (major as u32, minor as u32)
+}
+
+/// Determine if capstone library supports given architecture
+pub fn supports_arch(arch: CsArch) -> bool {
+    unsafe { ffi::cs_support(arch as libc::c_int) }
+}
+
+/// Determine if capstone library was compiled in diet mode
+pub fn is_diet() -> bool {
+    const CS_SUPPORT_DIET: libc::c_int = ((CsArch::ARCH_ALL as libc::c_int) + 1);
+    unsafe { ffi::cs_support(CS_SUPPORT_DIET as libc::c_int) }
 }

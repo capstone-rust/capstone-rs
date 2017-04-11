@@ -1,8 +1,11 @@
+use std::convert::From;
 use std::ffi::CStr;
 use std::fmt;
 use ffi::cs_strerror;
+use libc;
 
 #[repr(C)]
+#[derive(Clone,Copy,PartialEq,Eq,Debug)]
 /// Architectures for the disassembler
 pub enum CsArch {
     ARCH_ARM = 0, // ARM architecture (including Thumb, Thumb-2)
@@ -13,11 +16,13 @@ pub enum CsArch {
     ARCH_SPARC, // Sparc architecture
     ARCH_SYSZ, // SystemZ architecture
     ARCH_XCORE, // XCore architecture
+    CS_ARCH_M68K, // 68K architecture
     ARCH_MAX,
     ARCH_ALL = 0xFFFF, // All architectures - for cs_support()
 }
 
 #[repr(C)]
+#[derive(Clone,Copy,PartialEq,Eq,Debug)]
 /// Disassembler modes
 pub enum CsMode {
     MODE_LITTLE_ENDIAN = 0, // little-endian mode (default mode)
@@ -66,4 +71,88 @@ impl fmt::Display for CsErr {
         };
         write!(fmt, "{}", s)
     }
+}
+
+#[repr(C)]
+#[derive(Clone,Copy,PartialEq,Eq,Debug,Hash)]
+/// Runtime option for the disassembled engine
+pub enum CsOptType {
+    CS_OPT_INVALID = 0, // No option specified
+    CS_OPT_SYNTAX, // Assembly output syntax
+    CS_OPT_DETAIL, // Break down instruction structure into details
+    CS_OPT_MODE, // Change engine's mode at run-time
+    CS_OPT_MEM, // User-defined dynamic memory related functions
+    CS_OPT_SKIPDATA, // Skip data when disassembling. Then engine is in SKIPDATA mode.
+}
+
+/// The cs_opt_value C enum is partitioned into CsOptValueBool and CsOptValueSyntax Rust enums
+/// because Rust enum variants must have unique discriminant values
+
+#[repr(C)]
+#[derive(Clone,Copy,PartialEq,Eq,Debug,Hash)]
+/// Boolean runtime option values corresponding to CsOptType
+pub enum CsOptValueBool {
+	CS_OPT_OFF = 0, // Turn OFF an option - default option of CS_OPT_DETAIL, CS_OPT_SKIPDATA.
+	CS_OPT_ON = 3, // Turn ON an option (CS_OPT_DETAIL, CS_OPT_SKIPDATA).
+}
+
+impl From<bool> for CsOptValueBool {
+    fn from(value: bool) -> Self {
+        if value {
+            CsOptValueBool::CS_OPT_ON
+        } else {
+            CsOptValueBool::CS_OPT_OFF
+        }
+    }
+}
+
+#[repr(C)]
+#[derive(Clone,Copy,PartialEq,Eq,Debug,Hash)]
+/// Runtime option values corresponding to CsOptType syntax options
+pub enum CsOptValueSyntax {
+	CS_OPT_SYNTAX_DEFAULT = 0, // Default asm syntax (CS_OPT_SYNTAX).
+	CS_OPT_SYNTAX_INTEL, // X86 Intel asm syntax - default on X86 (CS_OPT_SYNTAX).
+	CS_OPT_SYNTAX_ATT, // X86 ATT asm syntax (CS_OPT_SYNTAX).
+	CS_OPT_SYNTAX_NOREGNAME, // Prints register name with only number (CS_OPT_SYNTAX)
+}
+
+#[derive(Clone,Copy,PartialEq,Eq,Debug,Hash)]
+/// Runtime option values corresponding to all possible cs_opt_value CsOptType
+pub enum CsOptValue {
+    Bool(CsOptValueBool),
+    Syntax(CsOptValueSyntax),
+}
+
+impl Into<libc::size_t> for CsOptValue {
+    fn into(self) -> libc::size_t {
+        match self {
+            CsOptValue::Bool(b) => b as libc::size_t,
+            CsOptValue::Syntax(s) => s as libc::size_t,
+        }
+    }
+}
+
+
+#[repr(C)]
+#[derive(Clone,Copy,PartialEq,Eq,Debug)]
+/// Common instruction operand access types
+enum CsAcType {
+    CS_GRP_INVALID = 0, // uninitialized/invalid group.
+    CS_GRP_JUMP, // all jump instructions (conditional+direct+indirect jumps)
+    CS_GRP_CALL, // all call instructions
+    CS_GRP_RET, // all return instructions
+    CS_GRP_INT, // all interrupt instructions (int+syscall)
+    CS_GRP_IRET, // all interrupt return instructions
+}
+
+#[repr(C)]
+#[derive(Clone,Copy,PartialEq,Eq,Debug)]
+/// Common instruction groups (corresponds to cs_group_type)
+pub enum CsGroupType {
+    CS_GRP_INVALID = 0, // uninitialized/invalid group.
+    CS_GRP_JUMP, // all jump instructions (conditional+direct+indirect jumps)
+    CS_GRP_CALL, // all call instructions
+    CS_GRP_RET, // all return instructions
+    CS_GRP_INT, // all interrupt instructions (int+syscall)
+    CS_GRP_IRET, // all interrupt return instructions
 }
