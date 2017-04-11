@@ -94,7 +94,7 @@ impl Drop for Capstone {
 }
 
 /// Return tuple (major, minor) indicating the version of the capstone C library
-pub fn capstone_lib_version() -> (u32, u32) {
+pub fn lib_version() -> (u32, u32) {
     let mut major: libc::c_int = 0;
     let mut minor: libc::c_int = 0;
     let major_ptr: *mut libc::c_int = &mut major;

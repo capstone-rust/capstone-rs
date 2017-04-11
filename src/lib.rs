@@ -94,7 +94,8 @@ mod test {
 
     #[test]
     fn test_capstone_version() {
-        let (major, minor) = capstone::capstone_lib_version();
+        let (major, minor) = capstone::lib_version();
+        println!("Capstone lib version: ({}, {})", major, minor);
         assert!(major > 0 && major < 100, "Invalid major version {}", major);
         assert!(minor < 500, "Invalid minor version {}", minor);
     }
