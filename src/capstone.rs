@@ -14,7 +14,7 @@ pub struct Capstone {
 pub type CsResult<T> = Result<T, CsErr>;
 
 impl Capstone {
-    /// Create a new instance of the decompiler
+    /// Create a new instance of the disassembler
     ///
     /// ```
     /// use capstone::Capstone;
