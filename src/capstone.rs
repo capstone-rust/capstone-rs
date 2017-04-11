@@ -31,16 +31,19 @@ impl Capstone {
 
         if CsErr::CS_ERR_OK == err {
             let mut opt_state: HashMap<CsOptType, libc::size_t> = HashMap::new();
-            opt_state.insert(CsOptType::CS_OPT_SYNTAX, CsOptValueSyntax::CS_OPT_SYNTAX_DEFAULT as libc::size_t);
-            opt_state.insert(CsOptType::CS_OPT_DETAIL, CsOptValueBool::CS_OPT_OFF as libc::size_t);
+            opt_state.insert(CsOptType::CS_OPT_SYNTAX,
+                             CsOptValueSyntax::CS_OPT_SYNTAX_DEFAULT as libc::size_t);
+            opt_state.insert(CsOptType::CS_OPT_DETAIL,
+                             CsOptValueBool::CS_OPT_OFF as libc::size_t);
             opt_state.insert(CsOptType::CS_OPT_MODE, mode as libc::size_t);
             opt_state.insert(CsOptType::CS_OPT_MEM, 0);
-            opt_state.insert(CsOptType::CS_OPT_SKIPDATA, CsOptValueBool::CS_OPT_OFF as libc::size_t);
+            opt_state.insert(CsOptType::CS_OPT_SKIPDATA,
+                             CsOptValueBool::CS_OPT_OFF as libc::size_t);
 
             Ok(Capstone {
-                csh: handle,
-                cs_option_state: opt_state,
-            })
+                   csh: handle,
+                   cs_option_state: opt_state,
+               })
         } else {
             Err(err)
         }
@@ -53,11 +56,11 @@ impl Capstone {
         let mut ptr: *const Insn = ptr::null();
         let insn_count = unsafe {
             ffi::cs_disasm(self.csh,
-                      code.as_ptr(),
-                      code.len() as libc::size_t,
-                      addr,
-                      count as libc::size_t,
-                      &mut ptr)
+                           code.as_ptr(),
+                           code.len() as libc::size_t,
+                           addr,
+                           count as libc::size_t,
+                           &mut ptr)
         };
         if insn_count == 0 {
             return self.get_error_result();
@@ -67,16 +70,17 @@ impl Capstone {
     }
 
     /// Get error CsResult based on current errno
-    fn get_error_result<T>(&self) ->CsResult<T> {
+    fn get_error_result<T>(&self) -> CsResult<T> {
         Err(unsafe { ffi::cs_errno(self.csh) })
     }
 
     /// Set disassembling option at runtime
     /// Acts as a safe wrapper around capstone's cs_option
-    fn set_cs_option(&mut self, option_type: CsOptType, option_value: libc::size_t) -> CsResult<()> {
-        let err = unsafe {
-            ffi::cs_option(self.csh, option_type, option_value)
-        };
+    fn set_cs_option(&mut self,
+                     option_type: CsOptType,
+                     option_value: libc::size_t)
+                     -> CsResult<()> {
+        let err = unsafe { ffi::cs_option(self.csh, option_type, option_value) };
 
         if CsErr::CS_ERR_OK == err {
             self.cs_option_state.insert(option_type, option_value);
@@ -97,7 +101,7 @@ impl Capstone {
         let reg_name = unsafe {
             let _reg_name = ffi::cs_reg_name(self.csh, reg_id as libc::c_uint);
             if _reg_name == ptr::null() {
-                return None
+                return None;
             }
 
             CStr::from_ptr(_reg_name).to_string_lossy().into_owned()
@@ -111,7 +115,7 @@ impl Capstone {
         let insn_name = unsafe {
             let _insn_name = ffi::cs_insn_name(self.csh, insn_id as libc::c_uint);
             if _insn_name == ptr::null() {
-                return None
+                return None;
             }
 
             CStr::from_ptr(_insn_name).to_string_lossy().into_owned()
@@ -125,10 +129,12 @@ impl Capstone {
         let group_name = unsafe {
             let _group_name = ffi::cs_group_name(self.csh, group_id as libc::c_uint);
             if _group_name == ptr::null() {
-                return None
+                return None;
             }
 
-            CStr::from_ptr(_group_name).to_string_lossy().into_owned()
+            CStr::from_ptr(_group_name)
+                .to_string_lossy()
+                .into_owned()
         };
 
         Some(group_name)
@@ -137,8 +143,9 @@ impl Capstone {
     /// Returns whether instruction groups may be queried
     fn is_insn_group_valid(&self, insn: &Insn) -> CsResult<()> {
         /* CS_OPT_DETAIL is initialized in constructor */
-        if *self.cs_option_state.get(&CsOptType::CS_OPT_DETAIL).unwrap() ==
-            CsOptValueBool::CS_OPT_OFF as libc::size_t {
+        if *self.cs_option_state
+                .get(&CsOptType::CS_OPT_DETAIL)
+                .unwrap() == CsOptValueBool::CS_OPT_OFF as libc::size_t {
             Err(CsErr::CS_ERR_DETAIL)
         } else if insn.get_id() == 0 {
             Err(CsErr::CS_ERR_SKIPDATA)
@@ -155,9 +162,7 @@ impl Capstone {
             return Err(e);
         }
 
-        Ok(unsafe {
-            ffi::cs_insn_group(self.csh, insn as *const Insn, group_id as libc::c_uint)
-        })
+        Ok(unsafe { ffi::cs_insn_group(self.csh, insn as *const Insn, group_id as libc::c_uint) })
     }
 
 

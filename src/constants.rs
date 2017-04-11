@@ -85,15 +85,15 @@ pub enum CsOptType {
     CS_OPT_SKIPDATA, // Skip data when disassembling. Then engine is in SKIPDATA mode.
 }
 
-/// The cs_opt_value C enum is partitioned into CsOptValueBool and CsOptValueSyntax Rust enums
-/// because Rust enum variants must have unique discriminant values
+// The cs_opt_value C enum is partitioned into CsOptValueBool and CsOptValueSyntax Rust enums
+// because Rust enum variants must have unique discriminant values
 
 #[repr(C)]
 #[derive(Clone,Copy,PartialEq,Eq,Debug,Hash)]
 /// Boolean runtime option values corresponding to CsOptType
 pub enum CsOptValueBool {
-	CS_OPT_OFF = 0, // Turn OFF an option - default option of CS_OPT_DETAIL, CS_OPT_SKIPDATA.
-	CS_OPT_ON = 3, // Turn ON an option (CS_OPT_DETAIL, CS_OPT_SKIPDATA).
+    CS_OPT_OFF = 0, // Turn OFF an option - default option of CS_OPT_DETAIL, CS_OPT_SKIPDATA.
+    CS_OPT_ON = 3, // Turn ON an option (CS_OPT_DETAIL, CS_OPT_SKIPDATA).
 }
 
 impl From<bool> for CsOptValueBool {
@@ -110,10 +110,10 @@ impl From<bool> for CsOptValueBool {
 #[derive(Clone,Copy,PartialEq,Eq,Debug,Hash)]
 /// Runtime option values corresponding to CsOptType syntax options
 pub enum CsOptValueSyntax {
-	CS_OPT_SYNTAX_DEFAULT = 0, // Default asm syntax (CS_OPT_SYNTAX).
-	CS_OPT_SYNTAX_INTEL, // X86 Intel asm syntax - default on X86 (CS_OPT_SYNTAX).
-	CS_OPT_SYNTAX_ATT, // X86 ATT asm syntax (CS_OPT_SYNTAX).
-	CS_OPT_SYNTAX_NOREGNAME, // Prints register name with only number (CS_OPT_SYNTAX)
+    CS_OPT_SYNTAX_DEFAULT = 0, // Default asm syntax (CS_OPT_SYNTAX).
+    CS_OPT_SYNTAX_INTEL, // X86 Intel asm syntax - default on X86 (CS_OPT_SYNTAX).
+    CS_OPT_SYNTAX_ATT, // X86 ATT asm syntax (CS_OPT_SYNTAX).
+    CS_OPT_SYNTAX_NOREGNAME, // Prints register name with only number (CS_OPT_SYNTAX)
 }
 
 #[derive(Clone,Copy,PartialEq,Eq,Debug,Hash)]

@@ -13,10 +13,7 @@ pub struct Instructions {
 
 impl Instructions {
     pub unsafe fn from_raw_parts(ptr: *const Insn, len: isize) -> Instructions {
-        Instructions {
-            ptr: ptr,
-            len: len,
-        }
+        Instructions { ptr: ptr, len: len }
     }
 
     pub fn len(&self) -> isize {
@@ -100,11 +97,11 @@ impl Insn {
 impl Debug for Insn {
     fn fmt(&self, fmt: &mut Formatter) -> Result<(), Error> {
         fmt.debug_struct("Insn")
-           .field("address", &self.address)
-           .field("size", &self.size)
-           .field("mnemonic", &self.mnemonic())
-           .field("op_str", &self.op_str())
-           .finish()
+            .field("address", &self.address)
+            .field("size", &self.size)
+            .field("mnemonic", &self.mnemonic())
+            .field("op_str", &self.op_str())
+            .finish()
     }
 }
 
