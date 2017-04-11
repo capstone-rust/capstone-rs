@@ -8,7 +8,7 @@ repository = "https://github.com/richo/capstone-rs"
 version = "0.0.5"
 
 [dependencies]
-libc = "*"
+libc = "0.2.*"
 
 # Not actually a dependency, but this makes the more complicated examples work
 [dev-dependencies]
