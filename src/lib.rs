@@ -124,84 +124,8 @@ mod test {
         }
     }
 
-    /// Assert instruction belongs or does not belong to groups
-    fn test_x86_instruction_groups_helper(mnemonic_name: &str,
-                                          bytes: &[u8],
-                                          belong_groups: &[CsGroupType],
-                                          not_belong_groups: &[CsGroupType]) {
-        let mut cs = capstone::Capstone::new(constants::CsArch::ARCH_X86,
-                                             constants::CsMode::MODE_64)
-                .expect("Failed to create capstone handle");
-
-        // Details required to get groups information
-        cs.set_detail(true).unwrap();
-
-        // Disassemble instructions
-        let insns: Vec<_> = cs.disasm(bytes, 0x1000, 0)
-            .expect("Failed to disassemble")
-            .iter()
-            .collect();
-
-        // Check number of instructions
-        assert_eq!(insns.len(), 1, "Expected exactly 1 instruction");
-
-        let insn = &insns[0];
-
-        // Check mnemonic
-        assert_eq!(mnemonic_name,
-                   cs.insn_name(insn.get_id() as u64)
-                       .expect("Failed to get instruction name"));
-
-        // Assert instruction belongs to belong_groups
-        for belong_group in belong_groups {
-            assert_eq!(Ok(true),
-                       cs.insn_belongs_to_group(&insn, *belong_group as u64),
-                       "{:?} does NOT BELONG to group {:?}",
-                       insn,
-                       *belong_group);
-        }
-
-        // Assert instruction does not belong to not_belong_groups
-        for not_belong_group in not_belong_groups {
-            assert_eq!(Ok(false),
-                       cs.insn_belongs_to_group(&insn, *not_belong_group as u64),
-                       "{:?} BELONGS to group {:?}",
-                       insn,
-                       *not_belong_group);
-        }
-    }
-
-    #[test]
-    fn test_instruction_groups() {
-        let jump = CsGroupType::CS_GRP_JUMP;
-        let call = CsGroupType::CS_GRP_CALL;
-        let ret = CsGroupType::CS_GRP_RET;
-        let int = CsGroupType::CS_GRP_INT;
-        let iret = CsGroupType::CS_GRP_IRET;
-
-        test_x86_instruction_groups_helper("nop", b"\x90", &[], &[jump, call, ret, int, iret]);
-        test_x86_instruction_groups_helper("je", b"\x74\x05", &[jump], &[call, ret, int, iret]);
-        test_x86_instruction_groups_helper("call",
-                                           b"\xe8\x28\x07\x00\x00",
-                                           &[call],
-                                           &[jump, ret, int, iret]);
-        test_x86_instruction_groups_helper("ret", b"\xc3", &[ret], &[jump, call, int, iret]);
-        test_x86_instruction_groups_helper("syscall",
-                                           b"\x0f\x05",
-                                           &[int],
-                                           &[jump, call, ret, iret]);
-        test_x86_instruction_groups_helper("iretd", b"\xcf", &[iret], &[jump, call, ret, int]);
-        test_x86_instruction_groups_helper("sub",
-                                           b"\x48\x83\xec\x08",
-                                           &[],
-                                           &[jump, call, ret, int, iret]);
-        test_x86_instruction_groups_helper("test",
-                                           b"\x48\x85\xc0",
-                                           &[],
-                                           &[jump, call, ret, int, iret]);
-    }
-
-    /// Assert instruction belongs or does not belong to groups
+    /// Assert instruction belongs or does not belong to groups, testing both insn_belongs_to_group
+    /// and get_insn_group_ids
     fn test_x86_instruction_group_ids_helper(mnemonic_name: &str,
                                              bytes: &[u8],
                                              expected_groups: &[CsGroupType]) {
@@ -234,11 +158,43 @@ mod test {
             .iter()
             .map(|&x| x)
             .collect();
-        let expected_groups: HashSet<u8> = expected_groups.iter().map(|&x| x as u8).collect();
-        assert!(expected_groups.is_subset(&instruction_groups),
+        let expected_groups_u8: HashSet<u8> = expected_groups.iter().map(|&x| x as u8).collect();
+        assert!(expected_groups_u8.is_subset(&instruction_groups),
                 "Expected groups {:?} does NOT match computed insn groups {:?}",
-                expected_groups,
+                expected_groups_u8,
                 instruction_groups);
+
+
+        // Create sets of expected groups and unexpected groups
+        let instruction_types: HashSet<CsGroupType> = [CsGroupType::CS_GRP_JUMP,
+                                                       CsGroupType::CS_GRP_CALL,
+                                                       CsGroupType::CS_GRP_RET,
+                                                       CsGroupType::CS_GRP_INT,
+                                                       CsGroupType::CS_GRP_IRET]
+                .iter()
+                .cloned()
+                .collect();
+        let expected_groups_set: HashSet<CsGroupType> =
+            expected_groups.iter().map(|&x| x).collect();
+        let not_belong_groups = instruction_types.difference(&expected_groups_set);
+
+        // Assert instruction belongs to belong_groups
+        for belong_group in expected_groups {
+            assert_eq!(Ok(true),
+                       cs.insn_belongs_to_group(&insn, *belong_group as u64),
+                       "{:?} does NOT BELONG to group {:?}, but the instruction SHOULD",
+                       insn,
+                       *belong_group);
+        }
+
+        // Assert instruction does not belong to not_belong_groups
+        for not_belong_group in not_belong_groups {
+            assert_eq!(Ok(false),
+                       cs.insn_belongs_to_group(&insn, *not_belong_group as u64),
+                       "{:?} BELONGS to group {:?}, but the instruction SHOULD NOT",
+                       insn,
+                       *not_belong_group);
+        }
     }
 
     #[test]
