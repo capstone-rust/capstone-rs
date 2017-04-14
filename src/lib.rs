@@ -126,9 +126,9 @@ mod test {
 
     /// Assert instruction belongs or does not belong to groups, testing both insn_belongs_to_group
     /// and get_insn_group_ids
-    fn test_x86_instruction_group_ids_helper(mnemonic_name: &str,
-                                             bytes: &[u8],
-                                             expected_groups: &[CsGroupType]) {
+    fn test_x86_instruction_detail_helper(mnemonic_name: &str,
+                                          bytes: &[u8],
+                                          expected_groups: &[CsGroupType]) {
         let mut cs = capstone::Capstone::new(constants::CsArch::ARCH_X86,
                                              constants::CsMode::MODE_64)
                 .expect("Failed to create capstone handle");
@@ -179,22 +179,26 @@ mod test {
         let not_belong_groups = instruction_types.difference(&expected_groups_set);
 
         // Assert instruction belongs to belong_groups
-        for belong_group in expected_groups {
+        for &belong_group in expected_groups {
             assert_eq!(Ok(true),
-                       cs.insn_belongs_to_group(&insn, *belong_group as u64),
+                       cs.insn_belongs_to_group(&insn, belong_group as u64),
                        "{:?} does NOT BELONG to group {:?}, but the instruction SHOULD",
                        insn,
-                       *belong_group);
+                       belong_group);
         }
 
         // Assert instruction does not belong to not_belong_groups
-        for not_belong_group in not_belong_groups {
+        for &not_belong_group in not_belong_groups {
             assert_eq!(Ok(false),
-                       cs.insn_belongs_to_group(&insn, *not_belong_group as u64),
+                       cs.insn_belongs_to_group(&insn, not_belong_group as u64),
                        "{:?} BELONGS to group {:?}, but the instruction SHOULD NOT",
                        insn,
-                       *not_belong_group);
+                       not_belong_group);
         }
+
+        // @todo: check read_registers
+
+        // @todo: check write_registers
     }
 
     #[test]
@@ -205,14 +209,16 @@ mod test {
         let int = CsGroupType::CS_GRP_INT;
         let iret = CsGroupType::CS_GRP_IRET;
 
-        test_x86_instruction_group_ids_helper("nop", b"\x90", &[]);
-        test_x86_instruction_group_ids_helper("je", b"\x74\x05", &[jump]);
-        test_x86_instruction_group_ids_helper("call", b"\xe8\x28\x07\x00\x00", &[call]);
-        test_x86_instruction_group_ids_helper("ret", b"\xc3", &[ret]);
-        test_x86_instruction_group_ids_helper("syscall", b"\x0f\x05", &[int]);
-        test_x86_instruction_group_ids_helper("iretd", b"\xcf", &[iret]);
-        test_x86_instruction_group_ids_helper("sub", b"\x48\x83\xec\x08", &[]);
-        test_x86_instruction_group_ids_helper("test", b"\x48\x85\xc0", &[]);
+        test_x86_instruction_detail_helper("nop", b"\x90", &[]);
+        test_x86_instruction_detail_helper("je", b"\x74\x05", &[jump]);
+        test_x86_instruction_detail_helper("call", b"\xe8\x28\x07\x00\x00", &[call]);
+        test_x86_instruction_detail_helper("ret", b"\xc3", &[ret]);
+        test_x86_instruction_detail_helper("syscall", b"\x0f\x05", &[int]);
+        test_x86_instruction_detail_helper("iretd", b"\xcf", &[iret]);
+        test_x86_instruction_detail_helper("sub", b"\x48\x83\xec\x08", &[]);
+        test_x86_instruction_detail_helper("test", b"\x48\x85\xc0", &[]);
+        test_x86_instruction_detail_helper("mov", b"\x48\x8b\x05\x95\x4a\x4d\x00", &[]);
+        test_x86_instruction_detail_helper("mov", b"\xb9\x04\x02\x00\x00", &[]);
     }
 
     #[test]

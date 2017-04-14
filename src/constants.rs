@@ -5,7 +5,7 @@ use ffi::cs_strerror;
 use libc;
 
 #[repr(C)]
-#[derive(Clone,Copy,PartialEq,Eq,Debug)]
+#[derive(Clone,Copy,PartialEq,Eq,Debug,Hash)]
 /// Architectures for the disassembler
 pub enum CsArch {
     ARCH_ARM = 0, // ARM architecture (including Thumb, Thumb-2)
@@ -22,7 +22,7 @@ pub enum CsArch {
 }
 
 #[repr(C)]
-#[derive(Clone,Copy,PartialEq,Eq,Debug)]
+#[derive(Clone,Copy,PartialEq,Eq,Debug,Hash)]
 /// Disassembler modes
 pub enum CsMode {
     MODE_LITTLE_ENDIAN = 0, // little-endian mode (default mode)
@@ -44,7 +44,7 @@ pub enum CsMode {
 }
 
 #[repr(C)]
-#[derive(Clone,Copy,PartialEq,Eq,Debug)]
+#[derive(Clone,Copy,PartialEq,Eq,Debug,Hash)]
 /// Error states returned by various disassembler features
 pub enum CsErr {
     CS_ERR_OK = 0, // No error: everything was fine
@@ -134,19 +134,7 @@ impl Into<libc::size_t> for CsOptValue {
 
 
 #[repr(C)]
-#[derive(Clone,Copy,PartialEq,Eq,Debug)]
-/// Common instruction operand access types
-enum CsAcType {
-    CS_GRP_INVALID = 0, // uninitialized/invalid group.
-    CS_GRP_JUMP, // all jump instructions (conditional+direct+indirect jumps)
-    CS_GRP_CALL, // all call instructions
-    CS_GRP_RET, // all return instructions
-    CS_GRP_INT, // all interrupt instructions (int+syscall)
-    CS_GRP_IRET, // all interrupt return instructions
-}
-
-#[repr(C)]
-#[derive(Clone,Copy,PartialEq,Eq,Debug)]
+#[derive(Clone,Copy,PartialEq,Eq,Debug,Hash)]
 /// Common instruction groups (corresponds to cs_group_type)
 pub enum CsGroupType {
     CS_GRP_INVALID = 0, // uninitialized/invalid group.

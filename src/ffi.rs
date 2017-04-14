@@ -22,6 +22,8 @@ extern "C" {
     pub fn cs_insn_name(handle: csh, insn_id: libc::c_uint) -> *const libc::c_char;
     pub fn cs_group_name(handle: csh, group_id: libc::c_uint) -> *const libc::c_char;
     pub fn cs_insn_group(handle: csh, cs_insn: *const Insn, group_id: libc::c_uint) -> bool;
+    pub fn cs_reg_read(handle: csh, cs_insn: *const Insn, reg_id: libc::c_uint) -> bool;
+    pub fn cs_reg_write(handle: csh, cs_insn: *const Insn, reg_id: libc::c_uint) -> bool;
     pub fn cs_option(handle: csh, option_type: CsOptType, value: libc::size_t) -> CsErr;
     pub fn cs_errno(handle: csh) -> CsErr;
     pub fn cs_strerror(err: CsErr) -> *const libc::c_char;

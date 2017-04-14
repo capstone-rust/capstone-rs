@@ -140,17 +140,43 @@ impl Capstone {
         Some(group_name)
     }
 
-    /// Returns whether instruction groups may be queried
-    fn is_insn_group_valid(&self, insn: &Insn) -> CsResult<()> {
-        /* CS_OPT_DETAIL is initialized in constructor */
+    /// Returns error that could arise from not enabling CS_OPT_DETAIL
+    fn get_detail_required_error(&self) -> Option<CsErr> {
         if *self.cs_option_state
                 .get(&CsOptType::CS_OPT_DETAIL)
                 .unwrap() == CsOptValueBool::CS_OPT_OFF as libc::size_t {
-            Err(CsErr::CS_ERR_DETAIL)
-        } else if insn.get_id() == 0 {
-            Err(CsErr::CS_ERR_SKIPDATA)
-        } else if is_diet() {
-            Err(CsErr::CS_ERR_DIET)
+            Some(CsErr::CS_ERR_DETAIL)
+        } else {
+            None
+        }
+    }
+
+    /// Returns error that could arise from enabling skipdata
+    fn get_skipdata_error(insn: &Insn) -> Option<CsErr> {
+        if insn.get_id() == 0 {
+            Some(CsErr::CS_ERR_SKIPDATA)
+        } else {
+            None
+        }
+    }
+
+    /// Return error that could arise from capstone being compiled in diet mode
+    fn get_is_diet_error() -> Option<CsErr> {
+        if is_diet() {
+            Some(CsErr::CS_ERR_DIET)
+        } else {
+            None
+        }
+    }
+
+    /// Returns whether instruction groups may be queried
+    fn is_insn_group_valid(&self, insn: &Insn) -> CsResult<()> {
+        if let Some(err) = self.get_detail_required_error() {
+            Err(err)
+        } else if let Some(err) = Self::get_skipdata_error(insn) {
+            Err(err)
+        } else if let Some(err) = Self::get_is_diet_error() {
+            Err(err)
         } else {
             Ok(())
         }
@@ -172,8 +198,67 @@ impl Capstone {
             return Err(e);
         }
 
-        let groups = unsafe { (*insn.detail).get_groups() };
-        Ok(groups)
+        let group_ids = unsafe { (*insn.detail).get_group_ids() };
+        Ok(group_ids)
+    }
+
+    /// Returns whether read or write registers may be queried
+    fn is_reg_read_write_valid(&self, insn: &Insn) -> CsResult<()> {
+        if let Some(err) = Self::get_skipdata_error(insn) {
+            Err(err)
+        } else if let Some(err) = Self::get_is_diet_error() {
+            Err(err)
+        } else {
+            Ok(())
+        }
+    }
+
+    // @todo: make public
+    #[allow(dead_code)]
+    /// Check if an instruction implicitly reads a register
+    #[allow(dead_code)]
+    fn register_is_read(&self, insn: &Insn, reg_id: u64) -> CsResult<bool> {
+        if let Err(e) = self.is_reg_read_write_valid(insn) {
+            return Err(e);
+        }
+
+        Ok(unsafe { ffi::cs_reg_read(self.csh, insn as *const Insn, reg_id as libc::c_uint) })
+    }
+
+    // @todo: make public
+    #[allow(dead_code)]
+    /// Returns list of registers that are implicitly read by an instruction
+    fn read_registers(&self, insn: &Insn) -> CsResult<&[u8]> {
+        if let Err(e) = self.is_reg_read_write_valid(insn) {
+            return Err(e);
+        }
+
+        let reg_read_ids = unsafe { (*insn.detail).get_regs_read_ids() };
+        Ok(reg_read_ids)
+    }
+
+    // @todo: make public
+    #[allow(dead_code)]
+    /// Check if an instruction implicitly writes to a register
+    #[allow(dead_code)]
+    fn register_is_written(&self, insn: &Insn, reg_id: u64) -> CsResult<bool> {
+        if let Err(e) = self.is_reg_read_write_valid(insn) {
+            return Err(e);
+        }
+
+        Ok(unsafe { ffi::cs_reg_write(self.csh, insn as *const Insn, reg_id as libc::c_uint) })
+    }
+
+    // @todo: make public
+    #[allow(dead_code)]
+    /// Returns list of registers that are implicitly written to by an instruction
+    fn write_registers(&self, insn: &Insn) -> CsResult<&[u8]> {
+        if let Err(e) = self.is_reg_read_write_valid(insn) {
+            return Err(e);
+        }
+
+        let reg_write_ids = unsafe { (*insn.detail).get_regs_write_ids() };
+        Ok(reg_write_ids)
     }
 }
 

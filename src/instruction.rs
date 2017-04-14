@@ -131,7 +131,18 @@ pub struct CsDetail {
 }
 
 impl CsDetail {
-    pub fn get_groups(&self) -> &[u8] {
+    /// Return ids of implicit read registers
+    pub fn get_regs_read_ids(&self) -> &[u8] {
+        &self.regs_read[..self.regs_read_count as usize]
+    }
+
+    /// Return ids of implicit write registers
+    pub fn get_regs_write_ids(&self) -> &[u8] {
+        &self.regs_write[..self.regs_write_count as usize]
+    }
+
+    /// Return ids of instruction groups to which instructions belong
+    pub fn get_group_ids(&self) -> &[u8] {
         &self.groups[..self.groups_count as usize]
     }
 }
