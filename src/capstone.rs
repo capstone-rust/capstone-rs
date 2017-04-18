@@ -158,7 +158,7 @@ impl Capstone {
 
     /// Returns the current error that could arise from enabling `CS_ERR_SKIPDATA`.
     fn get_skipdata_error(insn: &Insn) -> Option<CsErr> {
-        if insn.get_id() == 0 {
+        if insn.id() == 0 {
             Some(CsErr::CS_ERR_SKIPDATA)
         } else {
             None
@@ -205,8 +205,18 @@ impl Capstone {
             return Err(e);
         }
 
-        let group_ids = unsafe { (*insn.detail).get_group_ids() };
+        let group_ids = unsafe { (*insn.detail()).groups_ids() };
         Ok(group_ids)
+    }
+
+    /// Returns groups to which an instruction belongs.
+    pub fn get_insn_groups(&self, insn: &Insn) -> CsResult<Vec<CsGroupType>> {
+        if let Err(e) = self.is_insn_group_valid(insn) {
+            return Err(e);
+        }
+
+        let groups = unsafe { (*insn.detail()).groups() };
+        Ok(groups)
     }
 
     /// Returns whether read or write registers may be queried.
@@ -241,7 +251,7 @@ impl Capstone {
             return Err(e);
         }
 
-        let reg_read_ids = unsafe { (*insn.detail).get_regs_read_ids() };
+        let reg_read_ids = unsafe { (*insn.detail()).regs_read_ids() };
         Ok(reg_read_ids)
     }
 
@@ -264,7 +274,7 @@ impl Capstone {
             return Err(e);
         }
 
-        let reg_write_ids = unsafe { (*insn.detail).get_regs_write_ids() };
+        let reg_write_ids = unsafe { (*insn.detail()).regs_write_ids() };
         Ok(reg_write_ids)
     }
 }

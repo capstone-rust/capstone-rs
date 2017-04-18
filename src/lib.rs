@@ -16,7 +16,7 @@
 //! for insn in insns.iter() {
 //!     println!("{addr:x} {bytes:?} {mnemonic} {ops}",
 //!              addr = insn.address,
-//!              bytes = insn.get_bytes(),
+//!              bytes = insn.bytes(),
 //!              mnemonic = insn.mnemonic().unwrap(),
 //!              ops = insn.op_str().unwrap());
 //! }
@@ -24,6 +24,10 @@
 //!
 
 extern crate libc;
+extern crate num;
+
+#[macro_use]
+extern crate enum_primitive;
 
 pub mod instruction;
 pub mod constants;
@@ -66,8 +70,8 @@ mod test {
                         assert_eq!(is[0].address, 0x1000);
                         assert_eq!(is[1].address, 0x1001);
 
-                        assert_eq!(is[0].get_bytes(), b"\x55");
-                        assert_eq!(is[1].get_bytes(), b"\x48\x8b\x05\xb8\x13\x00\x00");
+                        assert_eq!(is[0].bytes(), b"\x55");
+                        assert_eq!(is[1].bytes(), b"\x48\x8b\x05\xb8\x13\x00\x00");
                     }
                     Err(err) => assert!(false, "Couldn't disasm instructions: {}", err),
                 }
@@ -174,20 +178,33 @@ mod test {
 
         // Check mnemonic
         assert_eq!(mnemonic_name,
-                   cs.insn_name(insn.get_id() as u64)
+                   cs.insn_name(insn.id() as u64)
                        .expect("Failed to get instruction name"));
 
-        // Assert expected instruction groups is a subset of computed groups
-        let instruction_groups: HashSet<u8> = cs.get_insn_group_ids(&insn)
+        // Assert expected instruction groups is a subset of computed groups through ids
+        let instruction_group_ids: HashSet<u8> = cs.get_insn_group_ids(&insn)
             .expect("failed to get instruction groups")
             .iter()
             .map(|&x| x)
             .collect();
-        let expected_groups_u8: HashSet<u8> = expected_groups.iter().map(|&x| x as u8).collect();
-        assert!(expected_groups_u8.is_subset(&instruction_groups),
+        let expected_groups_ids: HashSet<u8> = expected_groups.iter().map(|&x| x as u8).collect();
+        assert!(expected_groups_ids.is_subset(&instruction_group_ids),
+                "Expected groups {:?} does NOT match computed insn groups {:?} with ",
+                expected_groups_ids,
+                instruction_group_ids);
+
+        // Assert expected instruction groups is a subset of computed groups through enum
+        let instruction_groups_set: HashSet<CsGroupType> = cs.get_insn_groups(&insn)
+            .expect("failed to get instruction groups")
+            .iter()
+            .map(|&x| x)
+            .collect();
+        let expected_groups_set: HashSet<CsGroupType> =
+            expected_groups.iter().map(|&x| x).collect();
+        assert!(expected_groups_set.is_subset(&instruction_groups_set),
                 "Expected groups {:?} does NOT match computed insn groups {:?}",
-                expected_groups_u8,
-                instruction_groups);
+                expected_groups_set,
+                instruction_groups_set);
 
 
         // Create sets of expected groups and unexpected groups

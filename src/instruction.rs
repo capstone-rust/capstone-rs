@@ -1,9 +1,12 @@
 extern crate libc;
+extern crate num;
 use std::ptr;
 use std::str;
 use std::ffi::CStr;
 use std::fmt::{Display, Debug, Formatter, Error};
 use ffi::cs_free;
+use num::FromPrimitive;
+use constants::*;
 
 /// Representation of the array of instructions returned by disasm
 pub struct Instructions {
@@ -67,7 +70,7 @@ pub struct Insn {
     bytes: [u8; 16usize],
     mnemonic: [::libc::c_char; 32usize],
     op_str: [::libc::c_char; 160usize],
-    pub detail: *mut CsDetail, // Opaque cs_detail
+    detail: *mut CsDetail,
 }
 
 impl Insn {
@@ -84,13 +87,20 @@ impl Insn {
     }
 
     /// Access instruction id
-    pub fn get_id(&self) -> libc::c_uint {
+    pub fn id(&self) -> libc::c_uint {
         self.id
     }
 
     /// Access instruction bytes
-    pub fn get_bytes(&self) -> &[u8] {
+    pub fn bytes(&self) -> &[u8] {
         &self.bytes[0..(self.size as usize)]
+    }
+
+    // Should be private, but then we could not access it from other modules
+    #[doc(hidden)]
+    /// Returns instruction details
+    pub fn detail(&self) -> *mut CsDetail {
+        self.detail
     }
 }
 
@@ -134,17 +144,27 @@ pub struct CsDetail {
 
 impl CsDetail {
     /// Return ids of implicit read registers
-    pub fn get_regs_read_ids(&self) -> &[u8] {
+    pub fn regs_read_ids(&self) -> &[u8] {
         &self.regs_read[..self.regs_read_count as usize]
     }
 
     /// Return ids of implicit write registers
-    pub fn get_regs_write_ids(&self) -> &[u8] {
+    pub fn regs_write_ids(&self) -> &[u8] {
         &self.regs_write[..self.regs_write_count as usize]
     }
 
     /// Return ids of instruction groups to which instructions belong
-    pub fn get_group_ids(&self) -> &[u8] {
+    pub fn groups_ids(&self) -> &[u8] {
         &self.groups[..self.groups_count as usize]
+    }
+
+    /// Return architecture-independent instruction groups
+    pub fn groups(&self) -> Vec<CsGroupType> {
+        // Ignore integer values for which there is no CsGroupType because they are
+        // architecture-specific
+        self.groups_ids()
+            .iter()
+            .filter_map(|&x| CsGroupType::from_u8(x))
+            .collect()
     }
 }

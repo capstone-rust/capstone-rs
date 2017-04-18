@@ -147,6 +147,7 @@ impl Into<libc::size_t> for CsOptValue {
 }
 
 
+enum_from_primitive! {
 #[repr(C)]
 #[derive(Clone,Copy,PartialEq,Eq,Debug,Hash)]
 /// Common instruction groups
@@ -159,4 +160,5 @@ pub enum CsGroupType {
     CS_GRP_RET, // all return instructions
     CS_GRP_INT, // all interrupt instructions (int+syscall)
     CS_GRP_IRET, // all interrupt return instructions
+}
 }
