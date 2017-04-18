@@ -120,7 +120,9 @@ impl Display for Insn {
 }
 
 #[repr(C)]
-/// Represents details for instruction, available if disassembled with details
+/// Represents details for instruction
+///
+/// Only available if disassembled with details.
 pub struct CsDetail {
     regs_read: [u8; 12usize], // list of implicit registers read by this insn
     regs_read_count: u8, // number of implicit registers read by this insn

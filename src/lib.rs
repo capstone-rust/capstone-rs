@@ -1,3 +1,28 @@
+//! This crate is a wrapper around the
+//! [Capstone disassembly library](http://www.capstone-engine.org/),
+//! a "lightweight multi-platform, multi-architecture disassembly framework."
+//!
+//! The `Capstone` struct is the main interface to the library.
+//!
+//! ```
+//! use capstone;
+//!
+//! let cs = capstone::Capstone::new(capstone::CsArch::ARCH_X86,
+//!                                  capstone::CsMode::MODE_64)
+//!     .unwrap();
+//! let insns = cs.disasm(b"\x55\x48\x8b\x05\xb8\x13\x00\x00", 0x1000, 0)
+//!     .unwrap();
+//!
+//! for insn in insns.iter() {
+//!     println!("{addr:x} {bytes:?} {mnemonic} {ops}",
+//!              addr = insn.address,
+//!              bytes = insn.get_bytes(),
+//!              mnemonic = insn.mnemonic().unwrap(),
+//!              ops = insn.op_str().unwrap());
+//! }
+//! ```
+//!
+
 extern crate libc;
 
 pub mod instruction;

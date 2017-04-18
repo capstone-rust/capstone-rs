@@ -17,7 +17,7 @@ pub struct Capstone {
 pub type CsResult<T> = Result<T, CsErr>;
 
 impl Capstone {
-    /// Create a new instance of the disassembler
+    /// Creates a new instance of the disassembler.
     ///
     /// ```
     /// use capstone::Capstone;
@@ -49,9 +49,10 @@ impl Capstone {
         }
     }
 
-    /// Disassemble a &[u8] full of instructions
+    // @todo: change `count` to a `Option<usize>` and use a safe cast
+    /// Disassembles a `&[u8]` full of instructions.
     ///
-    /// Pass count = 0 to disassemble all instructions in the buffer
+    /// Pass `count = 0` to disassemble all instructions in the buffer.
     pub fn disasm(&self, code: &[u8], addr: u64, count: isize) -> CsResult<Instructions> {
         let mut ptr: *const Insn = ptr::null();
         let insn_count = unsafe {
@@ -69,13 +70,14 @@ impl Capstone {
         Ok(unsafe { Instructions::from_raw_parts(ptr, insn_count as isize) })
     }
 
-    /// Get error CsResult based on current errno
+    /// Returns an `CsResult::Err` based on current errno.
     fn get_error_result<T>(&self) -> CsResult<T> {
         Err(unsafe { ffi::cs_errno(self.csh) })
     }
 
-    /// Set disassembling option at runtime
-    /// Acts as a safe wrapper around capstone's cs_option
+    /// Sets disassembling options at runtime.
+    ///
+    /// Acts as a safe wrapper around capstone's `cs_option`.
     fn set_cs_option(&mut self,
                      option_type: CsOptType,
                      option_value: libc::size_t)
@@ -90,13 +92,16 @@ impl Capstone {
         }
     }
 
-    /// Enable generate details about disassembled instructions
+    /// Controls whether to capstone will generate extra details about disassembled instructions.
+    ///
+    /// Pass `true` to enable detail or `false` to disable detail.
     pub fn set_detail(&mut self, enable_detail: bool) -> CsResult<()> {
         let option_value: libc::size_t = CsOptValueBool::from(enable_detail) as libc::size_t;
         self.set_cs_option(CsOptType::CS_OPT_DETAIL, option_value)
     }
 
-    /// Convert a reg_id to a String naming the register
+    // @todo: use a type alias for reg_ids
+    /// Converts a register id `reg_id` to a `String` containing the register name.
     pub fn reg_name(&self, reg_id: u64) -> Option<String> {
         let reg_name = unsafe {
             let _reg_name = ffi::cs_reg_name(self.csh, reg_id as libc::c_uint);
@@ -110,7 +115,7 @@ impl Capstone {
         Some(reg_name)
     }
 
-    /// Convert an instruction_id to a String naming the instruction
+    /// Converts an instruction id `insn_id` to a `String` containing the instruction name.
     pub fn insn_name(&self, insn_id: u64) -> Option<String> {
         let insn_name = unsafe {
             let _insn_name = ffi::cs_insn_name(self.csh, insn_id as libc::c_uint);
@@ -124,7 +129,7 @@ impl Capstone {
         Some(insn_name)
     }
 
-    /// Convert an instruction id to a String indicating the group
+    /// Converts a group id `group_id` to a `String` containing the group name.
     pub fn group_name(&self, group_id: u64) -> Option<String> {
         let group_name = unsafe {
             let _group_name = ffi::cs_group_name(self.csh, group_id as libc::c_uint);
@@ -140,7 +145,7 @@ impl Capstone {
         Some(group_name)
     }
 
-    /// Returns error that could arise from not enabling CS_OPT_DETAIL
+    /// Returns the current error from not enabling `CS_OPT_DETAIL`.
     fn get_detail_required_error(&self) -> Option<CsErr> {
         if *self.cs_option_state
                 .get(&CsOptType::CS_OPT_DETAIL)
@@ -151,7 +156,7 @@ impl Capstone {
         }
     }
 
-    /// Returns error that could arise from enabling skipdata
+    /// Returns the current error that could arise from enabling `CS_ERR_SKIPDATA`.
     fn get_skipdata_error(insn: &Insn) -> Option<CsErr> {
         if insn.get_id() == 0 {
             Some(CsErr::CS_ERR_SKIPDATA)
@@ -160,7 +165,7 @@ impl Capstone {
         }
     }
 
-    /// Return error that could arise from capstone being compiled in diet mode
+    /// Returns the error that could arise from capstone being compiled in diet mode.
     fn get_is_diet_error() -> Option<CsErr> {
         if is_diet() {
             Some(CsErr::CS_ERR_DIET)
@@ -169,7 +174,9 @@ impl Capstone {
         }
     }
 
-    /// Returns whether instruction groups may be queried
+    /// Returns an error that could arise from querying instruction groups.
+    ///
+    /// Returns `Ok` if there is no error, or `Err` otherwise.
     fn is_insn_group_valid(&self, insn: &Insn) -> CsResult<()> {
         if let Some(err) = self.get_detail_required_error() {
             Err(err)
@@ -182,7 +189,7 @@ impl Capstone {
         }
     }
 
-    /// Returns whether the instruction belongs to the group wth id
+    /// Returns whether the instruction `insn` belongs to the group with id `group_id`.
     pub fn insn_belongs_to_group(&self, insn: &Insn, group_id: u64) -> CsResult<bool> {
         if let Err(e) = self.is_insn_group_valid(insn) {
             return Err(e);
@@ -192,7 +199,7 @@ impl Capstone {
     }
 
 
-    /// Returns groups to which an instruction belongs
+    /// Returns groups ids to which an instruction belongs.
     pub fn get_insn_group_ids(&self, insn: &Insn) -> CsResult<&[u8]> {
         if let Err(e) = self.is_insn_group_valid(insn) {
             return Err(e);
@@ -202,7 +209,9 @@ impl Capstone {
         Ok(group_ids)
     }
 
-    /// Returns whether read or write registers may be queried
+    /// Returns whether read or write registers may be queried.
+    ///
+    /// Returns `Ok` if there is no error, or `Err` otherwise.
     fn is_reg_read_write_valid(&self, insn: &Insn) -> CsResult<()> {
         if let Some(err) = Self::get_skipdata_error(insn) {
             Err(err)
@@ -214,10 +223,9 @@ impl Capstone {
     }
 
     // @todo: make public
+    /// Checks if an instruction implicitly reads a register with id `reg_id`.
     #[allow(dead_code)]
-    /// Check if an instruction implicitly reads a register
-    #[allow(dead_code)]
-    fn register_is_read(&self, insn: &Insn, reg_id: u64) -> CsResult<bool> {
+    fn register_id_is_read(&self, insn: &Insn, reg_id: u64) -> CsResult<bool> {
         if let Err(e) = self.is_reg_read_write_valid(insn) {
             return Err(e);
         }
@@ -227,7 +235,7 @@ impl Capstone {
 
     // @todo: make public
     #[allow(dead_code)]
-    /// Returns list of registers that are implicitly read by an instruction
+    /// Returns list of ids of registers that are implicitly read by instruction `insn`.
     fn read_registers(&self, insn: &Insn) -> CsResult<&[u8]> {
         if let Err(e) = self.is_reg_read_write_valid(insn) {
             return Err(e);
@@ -238,8 +246,7 @@ impl Capstone {
     }
 
     // @todo: make public
-    #[allow(dead_code)]
-    /// Check if an instruction implicitly writes to a register
+    /// Checks if an instruction implicitly writes to a register with id `reg_id`.
     #[allow(dead_code)]
     fn register_is_written(&self, insn: &Insn, reg_id: u64) -> CsResult<bool> {
         if let Err(e) = self.is_reg_read_write_valid(insn) {
@@ -251,7 +258,7 @@ impl Capstone {
 
     // @todo: make public
     #[allow(dead_code)]
-    /// Returns list of registers that are implicitly written to by an instruction
+    /// Returns a list of ids of registers that are implicitly written to by the instruction `insn`.
     fn write_registers(&self, insn: &Insn) -> CsResult<&[u8]> {
         if let Err(e) = self.is_reg_read_write_valid(insn) {
             return Err(e);
@@ -268,24 +275,26 @@ impl Drop for Capstone {
     }
 }
 
-/// Return tuple (major, minor) indicating the version of the capstone C library
+/// Returns a tuple (major, minor) indicating the version of the capstone C library.
 pub fn lib_version() -> (u32, u32) {
     let mut major: libc::c_int = 0;
     let mut minor: libc::c_int = 0;
     let major_ptr: *mut libc::c_int = &mut major;
     let minor_ptr: *mut libc::c_int = &mut minor;
 
+    // We can ignore the "hexical" version returned by capstone because we already have the major
+    // and minor versions
     let _ = unsafe { ffi::cs_version(major_ptr, minor_ptr) };
 
     (major as u32, minor as u32)
 }
 
-/// Determine if capstone library supports given architecture
+/// Returns whether the capstone library supports a given architecture.
 pub fn supports_arch(arch: CsArch) -> bool {
     unsafe { ffi::cs_support(arch as libc::c_int) }
 }
 
-/// Determine if capstone library was compiled in diet mode
+/// Returns whether the capstone library was compiled in diet mode.
 pub fn is_diet() -> bool {
     const CS_SUPPORT_DIET: libc::c_int = ((CsArch::ARCH_ALL as libc::c_int) + 1);
     unsafe { ffi::cs_support(CS_SUPPORT_DIET as libc::c_int) }

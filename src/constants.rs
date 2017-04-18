@@ -7,6 +7,8 @@ use libc;
 #[repr(C)]
 #[derive(Clone,Copy,PartialEq,Eq,Debug,Hash)]
 /// Architectures for the disassembler
+///
+/// Corresponds to the Capstone type `cs_arch`.
 pub enum CsArch {
     ARCH_ARM = 0, // ARM architecture (including Thumb, Thumb-2)
     ARCH_ARM64, // ARM-64, also called AArch64
@@ -24,6 +26,8 @@ pub enum CsArch {
 #[repr(C)]
 #[derive(Clone,Copy,PartialEq,Eq,Debug,Hash)]
 /// Disassembler modes
+///
+/// Corresponds to the Capstone type `cs_mode`.
 pub enum CsMode {
     MODE_LITTLE_ENDIAN = 0, // little-endian mode (default mode)
     // MODE_ARM = 0,    // 32-bit ARM
@@ -46,6 +50,8 @@ pub enum CsMode {
 #[repr(C)]
 #[derive(Clone,Copy,PartialEq,Eq,Debug,Hash)]
 /// Error states returned by various disassembler features
+///
+/// Corresponds to the Capstone type `cs_err`.
 pub enum CsErr {
     CS_ERR_OK = 0, // No error: everything was fine
     CS_ERR_MEM, // Out-Of-Memory error: cs_open(), cs_disasm(), cs_disasm_iter()
@@ -76,6 +82,8 @@ impl fmt::Display for CsErr {
 #[repr(C)]
 #[derive(Clone,Copy,PartialEq,Eq,Debug,Hash)]
 /// Runtime option for the disassembled engine
+///
+/// Corresponds to the Capstone type `cs_opt_type`.
 pub enum CsOptType {
     CS_OPT_INVALID = 0, // No option specified
     CS_OPT_SYNTAX, // Assembly output syntax
@@ -91,6 +99,8 @@ pub enum CsOptType {
 #[repr(C)]
 #[derive(Clone,Copy,PartialEq,Eq,Debug,Hash)]
 /// Boolean runtime option values corresponding to CsOptType
+///
+/// Corresponds to a subset of the Capstone type `cs_opt_value`.
 pub enum CsOptValueBool {
     CS_OPT_OFF = 0, // Turn OFF an option - default option of CS_OPT_DETAIL, CS_OPT_SKIPDATA.
     CS_OPT_ON = 3, // Turn ON an option (CS_OPT_DETAIL, CS_OPT_SKIPDATA).
@@ -108,7 +118,9 @@ impl From<bool> for CsOptValueBool {
 
 #[repr(C)]
 #[derive(Clone,Copy,PartialEq,Eq,Debug,Hash)]
-/// Runtime option values corresponding to CsOptType syntax options
+/// Runtime option values corresponding to `CsOptType::CS_OPT_SYNTAX`
+///
+/// Corresponds to a subset of the Capstone type `cs_opt_value`.
 pub enum CsOptValueSyntax {
     CS_OPT_SYNTAX_DEFAULT = 0, // Default asm syntax (CS_OPT_SYNTAX).
     CS_OPT_SYNTAX_INTEL, // X86 Intel asm syntax - default on X86 (CS_OPT_SYNTAX).
@@ -117,7 +129,9 @@ pub enum CsOptValueSyntax {
 }
 
 #[derive(Clone,Copy,PartialEq,Eq,Debug,Hash)]
-/// Runtime option values corresponding to all possible cs_opt_value CsOptType
+/// Runtime option values corresponding to all possible `CsOptType`
+///
+/// Corresponds to the Capstone type `cs_opt_value`.
 pub enum CsOptValue {
     Bool(CsOptValueBool),
     Syntax(CsOptValueSyntax),
@@ -135,7 +149,9 @@ impl Into<libc::size_t> for CsOptValue {
 
 #[repr(C)]
 #[derive(Clone,Copy,PartialEq,Eq,Debug,Hash)]
-/// Common instruction groups (corresponds to cs_group_type)
+/// Common instruction groups
+///
+/// Corresponds to Capstone's `cs_group_type`.
 pub enum CsGroupType {
     CS_GRP_INVALID = 0, // uninitialized/invalid group.
     CS_GRP_JUMP, // all jump instructions (conditional+direct+indirect jumps)
