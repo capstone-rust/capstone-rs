@@ -273,7 +273,7 @@ mod test {
 
     #[test]
     fn test_capstone_version() {
-        let (major, minor) = capstone::lib_version();
+        let (major, minor) = Capstone::lib_version();
         println!("Capstone lib version: ({}, {})", major, minor);
         assert!(major > 0 && major < 100, "Invalid major version {}", major);
         assert!(minor < 500, "Invalid minor version {}", minor);
@@ -293,13 +293,13 @@ mod test {
 
         println!("Supported architectures");
         for arch in architectures {
-            let supports_arch = capstone::supports_arch(arch);
+            let supports_arch = Capstone::supports_arch(arch);
             println!("  {:?}: {}", arch, if supports_arch { "yes" } else { "no" });
         }
     }
 
     #[test]
     fn test_capstone_is_diet() {
-        println!("Capstone is diet: {}", capstone::is_diet());
+        println!("Capstone is diet: {}", Capstone::is_diet());
     }
 }

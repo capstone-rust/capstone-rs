@@ -167,7 +167,7 @@ impl Capstone {
 
     /// Returns the error that could arise from capstone being compiled in diet mode.
     fn is_diet_error() -> Option<CsErr> {
-        if is_diet() {
+        if Self::is_diet() {
             Some(CsErr::CS_ERR_DIET)
         } else {
             None
@@ -277,35 +277,35 @@ impl Capstone {
         let reg_write_ids = unsafe { (*insn.detail()).regs_write_ids() };
         Ok(reg_write_ids)
     }
+
+    /// Returns a tuple (major, minor) indicating the version of the capstone C library.
+    pub fn lib_version() -> (u32, u32) {
+        let mut major: libc::c_int = 0;
+        let mut minor: libc::c_int = 0;
+        let major_ptr: *mut libc::c_int = &mut major;
+        let minor_ptr: *mut libc::c_int = &mut minor;
+
+        // We can ignore the "hexical" version returned by capstone because we already have the
+        // major and minor versions
+        let _ = unsafe { ffi::cs_version(major_ptr, minor_ptr) };
+
+        (major as u32, minor as u32)
+    }
+
+    /// Returns whether the capstone library supports a given architecture.
+    pub fn supports_arch(arch: CsArch) -> bool {
+        unsafe { ffi::cs_support(arch as libc::c_int) }
+    }
+
+    /// Returns whether the capstone library was compiled in diet mode.
+    pub fn is_diet() -> bool {
+        const CS_SUPPORT_DIET: libc::c_int = ((CsArch::ARCH_ALL as libc::c_int) + 1);
+        unsafe { ffi::cs_support(CS_SUPPORT_DIET as libc::c_int) }
+    }
 }
 
 impl Drop for Capstone {
     fn drop(&mut self) {
         unsafe { ffi::cs_close(&mut self.csh) };
     }
-}
-
-/// Returns a tuple (major, minor) indicating the version of the capstone C library.
-pub fn lib_version() -> (u32, u32) {
-    let mut major: libc::c_int = 0;
-    let mut minor: libc::c_int = 0;
-    let major_ptr: *mut libc::c_int = &mut major;
-    let minor_ptr: *mut libc::c_int = &mut minor;
-
-    // We can ignore the "hexical" version returned by capstone because we already have the major
-    // and minor versions
-    let _ = unsafe { ffi::cs_version(major_ptr, minor_ptr) };
-
-    (major as u32, minor as u32)
-}
-
-/// Returns whether the capstone library supports a given architecture.
-pub fn supports_arch(arch: CsArch) -> bool {
-    unsafe { ffi::cs_support(arch as libc::c_int) }
-}
-
-/// Returns whether the capstone library was compiled in diet mode.
-pub fn is_diet() -> bool {
-    const CS_SUPPORT_DIET: libc::c_int = ((CsArch::ARCH_ALL as libc::c_int) + 1);
-    unsafe { ffi::cs_support(CS_SUPPORT_DIET as libc::c_int) }
 }
