@@ -64,14 +64,14 @@ impl Capstone {
                            &mut ptr)
         };
         if insn_count == 0 {
-            return self.get_error_result();
+            return self.error_result();
         }
 
         Ok(unsafe { Instructions::from_raw_parts(ptr, insn_count as isize) })
     }
 
     /// Returns an `CsResult::Err` based on current errno.
-    fn get_error_result<T>(&self) -> CsResult<T> {
+    fn error_result<T>(&self) -> CsResult<T> {
         Err(unsafe { ffi::cs_errno(self.csh) })
     }
 
@@ -146,7 +146,7 @@ impl Capstone {
     }
 
     /// Returns the current error from not enabling `CS_OPT_DETAIL`.
-    fn get_detail_required_error(&self) -> Option<CsErr> {
+    fn detail_required_error(&self) -> Option<CsErr> {
         if *self.cs_option_state
                 .get(&CsOptType::CS_OPT_DETAIL)
                 .unwrap() == CsOptValueBool::CS_OPT_OFF as libc::size_t {
@@ -157,7 +157,7 @@ impl Capstone {
     }
 
     /// Returns the current error that could arise from enabling `CS_ERR_SKIPDATA`.
-    fn get_skipdata_error(insn: &Insn) -> Option<CsErr> {
+    fn skipdata_error(insn: &Insn) -> Option<CsErr> {
         if insn.id() == 0 {
             Some(CsErr::CS_ERR_SKIPDATA)
         } else {
@@ -166,7 +166,7 @@ impl Capstone {
     }
 
     /// Returns the error that could arise from capstone being compiled in diet mode.
-    fn get_is_diet_error() -> Option<CsErr> {
+    fn is_diet_error() -> Option<CsErr> {
         if is_diet() {
             Some(CsErr::CS_ERR_DIET)
         } else {
@@ -178,11 +178,11 @@ impl Capstone {
     ///
     /// Returns `Ok` if there is no error, or `Err` otherwise.
     fn is_insn_group_valid(&self, insn: &Insn) -> CsResult<()> {
-        if let Some(err) = self.get_detail_required_error() {
+        if let Some(err) = self.detail_required_error() {
             Err(err)
-        } else if let Some(err) = Self::get_skipdata_error(insn) {
+        } else if let Some(err) = Self::skipdata_error(insn) {
             Err(err)
-        } else if let Some(err) = Self::get_is_diet_error() {
+        } else if let Some(err) = Self::is_diet_error() {
             Err(err)
         } else {
             Ok(())
@@ -200,7 +200,7 @@ impl Capstone {
 
 
     /// Returns groups ids to which an instruction belongs.
-    pub fn get_insn_group_ids(&self, insn: &Insn) -> CsResult<&[u8]> {
+    pub fn insn_group_ids(&self, insn: &Insn) -> CsResult<&[u8]> {
         if let Err(e) = self.is_insn_group_valid(insn) {
             return Err(e);
         }
@@ -210,7 +210,7 @@ impl Capstone {
     }
 
     /// Returns groups to which an instruction belongs.
-    pub fn get_insn_groups(&self, insn: &Insn) -> CsResult<Vec<CsGroupType>> {
+    pub fn insn_groups(&self, insn: &Insn) -> CsResult<Vec<CsGroupType>> {
         if let Err(e) = self.is_insn_group_valid(insn) {
             return Err(e);
         }
@@ -223,9 +223,9 @@ impl Capstone {
     ///
     /// Returns `Ok` if there is no error, or `Err` otherwise.
     fn is_reg_read_write_valid(&self, insn: &Insn) -> CsResult<()> {
-        if let Some(err) = Self::get_skipdata_error(insn) {
+        if let Some(err) = Self::skipdata_error(insn) {
             Err(err)
-        } else if let Some(err) = Self::get_is_diet_error() {
+        } else if let Some(err) = Self::is_diet_error() {
             Err(err)
         } else {
             Ok(())

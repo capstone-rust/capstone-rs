@@ -154,7 +154,7 @@ mod test {
     }
 
     /// Assert instruction belongs or does not belong to groups, testing both insn_belongs_to_group
-    /// and get_insn_group_ids
+    /// and insn_group_ids
     fn test_x86_instruction_detail_helper(mnemonic_name: &str,
                                           bytes: &[u8],
                                           expected_groups: &[CsGroupType]) {
@@ -182,7 +182,7 @@ mod test {
                        .expect("Failed to get instruction name"));
 
         // Assert expected instruction groups is a subset of computed groups through ids
-        let instruction_group_ids: HashSet<u8> = cs.get_insn_group_ids(&insn)
+        let instruction_group_ids: HashSet<u8> = cs.insn_group_ids(&insn)
             .expect("failed to get instruction groups")
             .iter()
             .map(|&x| x)
@@ -194,7 +194,7 @@ mod test {
                 instruction_group_ids);
 
         // Assert expected instruction groups is a subset of computed groups through enum
-        let instruction_groups_set: HashSet<CsGroupType> = cs.get_insn_groups(&insn)
+        let instruction_groups_set: HashSet<CsGroupType> = cs.insn_groups(&insn)
             .expect("failed to get instruction groups")
             .iter()
             .map(|&x| x)
