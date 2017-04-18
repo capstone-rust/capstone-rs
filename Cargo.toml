@@ -1,17 +1,16 @@
 [package]
-name = "capstone"
-version = "0.0.4"
 authors = ["Richo Healey <richo@psych0tik.net>"]
-
 description = "Bindings to capstone engine (http://capstone-engine.org/)"
 documentation = "http://richo.psych0tik.net/capstone-rs/capstone/index.html"
 license = "MIT"
+name = "capstone"
 repository = "https://github.com/richo/capstone-rs"
+version = "0.0.5"
 
 [dependencies]
 
 enum_primitive = "0.1.1"
-libc = "*"
+libc = "0.2.*"
 num = "0.1.37"
 
 # Not actually a dependency, but this makes the more complicated examples work

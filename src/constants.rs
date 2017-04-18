@@ -5,6 +5,7 @@ use ffi::cs_strerror;
 use libc;
 
 #[repr(C)]
+#[allow(non_camel_case_types)]
 #[derive(Clone,Copy,PartialEq,Eq,Debug,Hash)]
 /// Architectures for the disassembler
 ///
@@ -26,6 +27,7 @@ pub enum CsArch {
 pub const CS_SUPPORT_DIET: libc::c_int = (CsArch::ARCH_ALL as libc::c_int) + 1;
 
 #[repr(C)]
+#[allow(non_camel_case_types)]
 #[derive(Clone,Copy,PartialEq,Eq,Debug,Hash)]
 /// Disassembler modes
 ///
@@ -50,6 +52,7 @@ pub enum CsMode {
 }
 
 #[repr(C)]
+#[allow(non_camel_case_types)]
 #[derive(Clone,Copy,PartialEq,Eq,Debug,Hash)]
 /// Error states returned by various disassembler features
 ///
@@ -82,6 +85,7 @@ impl fmt::Display for CsErr {
 }
 
 #[repr(C)]
+#[allow(non_camel_case_types)]
 #[derive(Clone,Copy,PartialEq,Eq,Debug,Hash)]
 /// Runtime option for the disassembled engine
 ///
@@ -99,6 +103,7 @@ pub enum CsOptType {
 // because Rust enum variants must have unique discriminant values
 
 #[repr(C)]
+#[allow(non_camel_case_types)]
 #[derive(Clone,Copy,PartialEq,Eq,Debug,Hash)]
 /// Boolean runtime option values corresponding to CsOptType
 ///
@@ -119,6 +124,7 @@ impl From<bool> for CsOptValueBool {
 }
 
 #[repr(C)]
+#[allow(non_camel_case_types)]
 #[derive(Clone,Copy,PartialEq,Eq,Debug,Hash)]
 /// Runtime option values corresponding to `CsOptType::CS_OPT_SYNTAX`
 ///
@@ -151,6 +157,7 @@ impl Into<libc::size_t> for CsOptValue {
 
 enum_from_primitive! {
 #[repr(C)]
+#[allow(non_camel_case_types)]
 #[derive(Clone,Copy,PartialEq,Eq,Debug,Hash)]
 /// Common instruction groups
 ///
