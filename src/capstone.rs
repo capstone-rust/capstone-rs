@@ -299,8 +299,7 @@ impl Capstone {
 
     /// Returns whether the capstone library was compiled in diet mode.
     pub fn is_diet() -> bool {
-        const CS_SUPPORT_DIET: libc::c_int = ((CsArch::ARCH_ALL as libc::c_int) + 1);
-        unsafe { ffi::cs_support(CS_SUPPORT_DIET as libc::c_int) }
+        unsafe { ffi::cs_support(::constants::CS_SUPPORT_DIET as libc::c_int) }
     }
 }
 

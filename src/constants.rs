@@ -23,6 +23,8 @@ pub enum CsArch {
     ARCH_ALL = 0xFFFF, // All architectures - for cs_support()
 }
 
+pub const CS_SUPPORT_DIET: libc::c_int = (CsArch::ARCH_ALL as libc::c_int) + 1;
+
 #[repr(C)]
 #[derive(Clone,Copy,PartialEq,Eq,Debug,Hash)]
 /// Disassembler modes
