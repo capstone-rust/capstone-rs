@@ -64,12 +64,45 @@ impl<'a> Iterator for InstructionIterator<'a> {
 #[repr(C)]
 /// A logical instruction disassembled by capstone
 pub struct Insn {
+    /// Instruction ID (numeric ID for the instruction mnemonic)
+    ///
+    /// This information is available when Detail is disabled.
+    /// NOTE: in Skipdata mode, "data" instruction has 0 for this id field.
     id: ::libc::c_uint,
+
+    /// Address of this instruction
+    ///
+    /// This information is available when Detail is disabled.
     pub address: u64,
+
+    /// Size of this instruction
+    ///
+    /// This information is available when Detail is disabled.
     pub size: u16,
+
+    /// Machine bytes of this instruction, with number of bytes indicated by @size above.
+    ///
+    /// This information is available when Detail is disabled.
     bytes: [u8; 16usize],
+
+    /// Ascii text of instruction mnemonic
+    ///
+    /// This information is available when Detail is disabled.
     mnemonic: [::libc::c_char; 32usize],
+
+    /// Ascii text of instruction operands
+    ///
+    /// This information is available when Detail is disabled.
     op_str: [::libc::c_char; 160usize],
+
+    /// Pointer to `CsDetail`
+    ///
+    /// NOTE 1: detail pointer is only valid when both requirements below are met:
+    ///     1. Detail is enabled
+    ///     2. Engine is not in Skipdata mode
+    ///
+    /// NOTE 2: when in Skipdata mode, or when detail mode is OFF, even if this pointer is not
+    /// NULL, its content is still irrelevant.
     detail: *mut CsDetail,
 }
 
@@ -134,12 +167,23 @@ impl Display for Insn {
 ///
 /// Only available if disassembled with details.
 pub struct CsDetail {
-    regs_read: [u8; 12usize], // list of implicit registers read by this insn
-    regs_read_count: u8, // number of implicit registers read by this insn
-    regs_write: [u8; 20usize], // list of implicit registers modified by this insn
-    regs_write_count: u8, // number of implicit registers modified by this insn
-    groups: [u8; 8usize], // list of group this instruction belong to
-    groups_count: u8, // number of groups this insn belongs to
+    /// Ids of implicit registers read by this instruction
+    regs_read: [u8; 12usize],
+
+    /// Number of implicit registers read by this instruction
+    regs_read_count: u8,
+
+    /// Ids of implicit registers modified by this instruction
+    regs_write: [u8; 20usize],
+
+    /// Number of implicit registers modified by this instruction
+    regs_write_count: u8,
+
+    /// Ids of groups this instruction belongs to
+    groups: [u8; 8usize],
+
+    /// Number of groups this instruction belongs to
+    groups_count: u8,
 }
 
 impl CsDetail {
