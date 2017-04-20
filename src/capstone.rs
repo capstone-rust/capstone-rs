@@ -14,6 +14,7 @@ pub struct Capstone {
     cs_option_state: HashMap<CsOptType, libc::size_t>, // maintains state set with cs_option
 }
 
+#[must_use]
 pub type CsResult<T> = Result<T, CsErr>;
 
 impl Capstone {
