@@ -12,11 +12,16 @@ repository = "https://github.com/m4b/capstone-sys"
 libc = "0.2"
 
 [build-dependencies]
+bindgen = "0.26.3"
 pkg-config = "0.3"
 gcc = "0.3"
 cmake = {optional = true, version = "0.1.2"}
+lazy_static = "0.2"
 
 [features]
+# use bundled capstone by default
 default = []
-build_src = []
-build_src_cmake = ["cmake", "build_src"]
+
+use_system_capstone = []
+build_capstone_cmake = ["cmake"]
+use_bundled_capstone_bindings = []
