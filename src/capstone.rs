@@ -106,7 +106,7 @@ impl Capstone {
     pub fn reg_name(&self, reg_id: u64) -> Option<String> {
         let reg_name = unsafe {
             let _reg_name = ffi::cs_reg_name(self.csh, reg_id as libc::c_uint);
-            if _reg_name == ptr::null() {
+            if _reg_name.is_null() {
                 return None;
             }
 
@@ -120,7 +120,7 @@ impl Capstone {
     pub fn insn_name(&self, insn_id: u64) -> Option<String> {
         let insn_name = unsafe {
             let _insn_name = ffi::cs_insn_name(self.csh, insn_id as libc::c_uint);
-            if _insn_name == ptr::null() {
+            if _insn_name.is_null() {
                 return None;
             }
 
@@ -134,7 +134,7 @@ impl Capstone {
     pub fn group_name(&self, group_id: u64) -> Option<String> {
         let group_name = unsafe {
             let _group_name = ffi::cs_group_name(self.csh, group_id as libc::c_uint);
-            if _group_name == ptr::null() {
+            if _group_name.is_null() {
                 return None;
             }
 
@@ -148,9 +148,7 @@ impl Capstone {
 
     /// Returns the current error from not enabling `CS_OPT_DETAIL`.
     fn detail_required_error(&self) -> Option<CsErr> {
-        if *self.cs_option_state
-                .get(&CsOptType::CS_OPT_DETAIL)
-                .unwrap() == CsOptValueBool::CS_OPT_OFF as libc::size_t {
+        if self.cs_option_state[&CsOptType::CS_OPT_DETAIL] == CsOptValueBool::CS_OPT_OFF as libc::size_t {
             Some(CsErr::CS_ERR_DETAIL)
         } else {
             None

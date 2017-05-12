@@ -105,7 +105,7 @@ pub enum CsOptType {
 #[repr(C)]
 #[allow(non_camel_case_types)]
 #[derive(Clone,Copy,PartialEq,Eq,Debug,Hash)]
-/// Boolean runtime option values corresponding to CsOptType
+/// Boolean runtime option values corresponding to `CsOptType`
 ///
 /// Corresponds to a subset of the Capstone type `cs_opt_value`.
 pub enum CsOptValueBool {
