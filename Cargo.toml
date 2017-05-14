@@ -17,3 +17,6 @@ num = "0.1.37"
 [dev-dependencies]
 
 macho = "0.*"
+
+[build-dependencies]
+cmake = "0.1.2"
