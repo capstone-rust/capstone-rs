@@ -3,6 +3,8 @@ use std::ptr;
 use std::ffi::CStr;
 use error::*;
 use capstone_sys::*;
+use capstone_sys::cs_arch::*;
+use capstone_sys::cs_mode::*;
 use capstone_sys;
 use instruction::Instructions;
 
@@ -111,8 +113,8 @@ impl Capstone {
     /// Create a new instance of the decompiler. Defaults to 64-bit little-endian mode.
     ///
     /// ```
-    /// use capstone::{self, Capstone};
-    /// let cs = Capstone::new(capstone::Arch::X86);
+    /// use capstone3::{Arch, Capstone};
+    /// let cs = Capstone::new(Arch::X86);
     /// assert!(cs.is_ok());
     /// ```
     pub fn new(arch: Arch) -> Result<Capstone> {
@@ -121,7 +123,7 @@ impl Capstone {
         let csmode = CS_MODE_LITTLE_ENDIAN;
         let err = unsafe { cs_open(csarch, csmode, &mut handle) };
         // this can be put into a macro, cs_try, but i guess who cares
-        if CS_ERR_OK == err {
+        if cs_err::CS_ERR_OK == err {
             Ok(Capstone { csh: handle, _arch: arch })
         } else {
             Err(Error::from(err))
@@ -129,11 +131,11 @@ impl Capstone {
     }
 
     #[inline]
-    fn set_option(&self, opt_type: cs_opt_type, value: libc::size_t) -> Result<()> {
+    fn set_option(&self, opt_type: cs_opt_type, value: usize) -> Result<()> {
         let err = unsafe {
             cs_option(self.csh, opt_type, value)
         };
-        if CS_ERR_OK == err {
+        if cs_err::CS_ERR_OK == err {
             Ok(())
         } else {
             Err(Error::from(err))
@@ -142,28 +144,28 @@ impl Capstone {
 
     /// Set the disassembly engine to use detail mode
     pub fn detail(&self) -> Result<()> {
-        self.set_option(capstone_sys::CS_OPT_DETAIL, capstone_sys::CS_OPT_ON)
+        self.set_option(cs_opt_type::CS_OPT_DETAIL, cs_opt_value::CS_OPT_ON as libc::size_t)
     }
 
     /// Sets the engine's disassembly mode.
     /// Be careful, various combinations of modes aren't supported
     /// See the capstone-sys documentation for more information.
     pub fn mode(&mut self, modes: &[Mode]) -> Result<()> {
-        let mut value = 0;
+        let mut value: usize = 0;
         for mode in modes {
-            value |= mode.to_cs_mode();
+            value |= mode.to_cs_mode() as usize;
         }
-        self.set_option(CS_OPT_MODE, value as capstone_sys::cs_opt_value)
+        self.set_option(cs_opt_type::CS_OPT_MODE, value)
     }
 
     /// Set the X86 assembly to AT&T style (has no effect on other platforms)
     pub fn att(&self) {
-        self.set_option(capstone_sys::CS_OPT_SYNTAX, capstone_sys::CS_OPT_SYNTAX_ATT).unwrap()
+        self.set_option(cs_opt_type::CS_OPT_SYNTAX, cs_opt_value::CS_OPT_SYNTAX_ATT as usize).unwrap()
     }
 
     /// Set the X86 assembly to Intel style (default)
     pub fn intel(&self) {
-        self.set_option(capstone_sys::CS_OPT_SYNTAX, capstone_sys::CS_OPT_SYNTAX_INTEL).unwrap()
+        self.set_option(cs_opt_type::CS_OPT_SYNTAX, cs_opt_value::CS_OPT_SYNTAX_INTEL as usize).unwrap()
     }
 
     /// Disassemble a &[u8] `buffer` full of instructions
@@ -185,7 +187,7 @@ impl Capstone {
             // I worry this will explode when freeing, we need a better api to just convert to a
             // straight vector
             let err = unsafe { cs_errno(self.csh) };
-            if err != CS_ERR_OK {
+            if err != cs_err::CS_ERR_OK {
                 return Err(Error::from(err))
             }
         }

@@ -1,4 +1,6 @@
-extern crate capstone;
+extern crate capstone3;
+
+use capstone3 as capstone;
 
 const CODE: &'static [u8; 8] = b"\x55\x48\x8b\x05\xb8\x13\x00\x00";
 
