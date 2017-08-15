@@ -11,41 +11,41 @@ use std::result;
 /// Create RustFeatures struct definition, new(), and a getter for each field
 macro_rules! capstone_error_def {
     ( $( $( #[$attr:meta] )* => $rust_variant:ident = $cs_variant:ident; )* ) => {
-		#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
-		pub enum CapstoneError {
+        #[derive(Copy, Clone, Debug, Eq, Hash, PartialEq)]
+        pub enum CapstoneError {
             $(
                 $(
                     #[$attr]
                 )*
                 $rust_variant,
             )*
-		}
+        }
 
-		#[derive(Debug, Copy, Clone, PartialEq, Hash)]
-		/// An error enum for this library
-		pub enum Error {
-			/// An error emanating from the capstone framework library calls
-			Capstone(CapstoneError),
-			/// An unknown error not equal to a `CapstoneError`
-			UnknownCapstoneError,
-		}
+        #[derive(Copy, Clone, Debug, Eq, Hash, PartialEq)]
+        /// An error enum for this library
+        pub enum Error {
+            /// An error emanating from the capstone framework library calls
+            Capstone(CapstoneError),
+            /// An unknown error not equal to a `CapstoneError`
+            UnknownCapstoneError,
+        }
 
         impl From<capstone_sys::cs_err> for Error {
             fn from(err: capstone_sys::cs_err) -> Self {
-				use self::Error::*;
-				use self::CapstoneError::*;
-				match err {
+                use self::Error::*;
+                use self::CapstoneError::*;
+                match err {
                     $(
                         $cs_variant => Capstone($rust_variant),
                     )*
-					_ => UnknownCapstoneError,
+                    _ => UnknownCapstoneError,
                 }
             }
         }
 
         impl From<CapstoneError> for capstone_sys::cs_err {
             fn from(err: CapstoneError) -> Self {
-				match err {
+                match err {
                     $(
                         CapstoneError::$rust_variant => $cs_variant,
                     )*
