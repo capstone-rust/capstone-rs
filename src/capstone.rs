@@ -15,7 +15,7 @@ pub struct Capstone {
 }
 
 /// Architectures for the disassembler
-#[derive(Clone, Debug, PartialEq, Copy)]
+#[derive(Copy, Clone, Debug, Eq, Hash, PartialEq)]
 pub enum Arch {
     ARM,
     ARM64,
@@ -49,7 +49,7 @@ impl Arch {
 }
 
 /// Disassembler modes
-#[derive(Debug, Clone, PartialEq, Copy)]
+#[derive(Copy, Clone, Debug, Eq, Hash, PartialEq)]
 pub enum Mode {
     /// little-endian mode (default mode)
     LittleEndian,
