@@ -8,11 +8,10 @@ repository = "https://github.com/m4b/capstone-rs"
 
 [dependencies]
 libc = "0.2"
-capstone-sys = { git = "https://github.com/m4b/capstone-sys.git", rev = "6615851bc4387dccd19289a5276b8b3a052a9255" }
+capstone-sys = { git = "https://github.com/m4b/capstone-sys.git", rev = "06440b8c62ca61a3b7c3690ea4af9a1406df6ab3" }
 
 [features]
-default = ["use_bundled_capstone"]
-use_bundled_capstone = ["capstone-sys/use_bundled_capstone"]
+default = []
 use_bundled_capstone_bindings = ["capstone-sys/use_bundled_capstone_bindings"]
 use_system_capstone = ["capstone-sys/use_system_capstone"]
-use_bundled_capstone_cmake = ["capstone-sys/use_bundled_capstone_cmake"]
+build_capstone_cmake = ["capstone-sys/build_capstone_cmake"]
