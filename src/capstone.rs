@@ -144,7 +144,10 @@ impl Capstone {
         let err = unsafe { cs_open(csarch, csmode, &mut handle) };
         // this can be put into a macro, cs_try, but i guess who cares
         if cs_err::CS_ERR_OK == err {
-            Ok(Capstone { csh: handle, _arch: arch })
+            Ok(Capstone {
+                csh: handle,
+                _arch: arch,
+            })
         } else {
             Err(Error::from(err))
         }
@@ -152,9 +155,7 @@ impl Capstone {
 
     #[inline]
     fn set_option(&self, opt_type: cs_opt_type, value: usize) -> Result<()> {
-        let err = unsafe {
-            cs_option(self.csh, opt_type, value)
-        };
+        let err = unsafe { cs_option(self.csh, opt_type, value) };
         if cs_err::CS_ERR_OK == err {
             Ok(())
         } else {
@@ -164,7 +165,10 @@ impl Capstone {
 
     /// Set the disassembly engine to use detail mode
     pub fn detail(&self) -> Result<()> {
-        self.set_option(cs_opt_type::CS_OPT_DETAIL, cs_opt_value::CS_OPT_ON as libc::size_t)
+        self.set_option(
+            cs_opt_type::CS_OPT_DETAIL,
+            cs_opt_value::CS_OPT_ON as libc::size_t,
+        )
     }
 
     /// Sets the engine's disassembly mode.
@@ -181,12 +185,18 @@ impl Capstone {
 
     /// Set the X86 assembly to AT&T style (has no effect on other platforms)
     pub fn att(&self) {
-        self.set_option(cs_opt_type::CS_OPT_SYNTAX, cs_opt_value::CS_OPT_SYNTAX_ATT as usize).unwrap()
+        self.set_option(
+            cs_opt_type::CS_OPT_SYNTAX,
+            cs_opt_value::CS_OPT_SYNTAX_ATT as usize,
+        ).unwrap()
     }
 
     /// Set the X86 assembly to Intel style (default)
     pub fn intel(&self) {
-        self.set_option(cs_opt_type::CS_OPT_SYNTAX, cs_opt_value::CS_OPT_SYNTAX_INTEL as usize).unwrap()
+        self.set_option(
+            cs_opt_type::CS_OPT_SYNTAX,
+            cs_opt_value::CS_OPT_SYNTAX_INTEL as usize,
+        ).unwrap()
     }
 
     /// Disassemble a &[u8] `buffer` full of instructions
@@ -195,12 +205,14 @@ impl Capstone {
     pub fn disassemble(&self, buffer: &[u8], addr: u64) -> Result<Instructions> {
         let mut ptr: *mut capstone_sys::cs_insn = ptr::null_mut();
         let insn_count = unsafe {
-            cs_disasm(self.csh,
-                      buffer.as_ptr(),
-                      buffer.len() as libc::size_t,
-                      addr,
-                      0 as libc::size_t,
-                      &mut ptr)
+            cs_disasm(
+                self.csh,
+                buffer.as_ptr(),
+                buffer.len() as libc::size_t,
+                addr,
+                0 as libc::size_t,
+                &mut ptr,
+            )
         };
         if insn_count == 0 {
             // we can just simply not have found instructions in the buffer; this isn't an error
@@ -209,10 +221,12 @@ impl Capstone {
             // straight vector
             let err = unsafe { cs_errno(self.csh) };
             if err != cs_err::CS_ERR_OK {
-                return Err(Error::from(err))
+                return Err(Error::from(err));
             }
         }
-        Ok(unsafe { Instructions::from_raw_parts(ptr, insn_count as isize) })
+        Ok(unsafe {
+            Instructions::from_raw_parts(ptr, insn_count as isize)
+        })
     }
 
     /// Convert a reg_id to a String naming the register
@@ -220,7 +234,7 @@ impl Capstone {
         let reg_name = unsafe {
             let _reg_name = cs_reg_name(self.csh, reg_id as libc::c_uint);
             if _reg_name == ptr::null() {
-                return None
+                return None;
             }
 
             CStr::from_ptr(_reg_name).to_string_lossy().into_owned()
@@ -234,7 +248,7 @@ impl Capstone {
         let insn_name = unsafe {
             let _insn_name = cs_insn_name(self.csh, insn_id as libc::c_uint);
             if _insn_name == ptr::null() {
-                return None
+                return None;
             }
             CStr::from_ptr(_insn_name).to_string_lossy().into_owned()
         };

@@ -112,12 +112,20 @@ impl error::Error for Error {
             Capstone(InvalidMode) => "Invalid/unsupported mode",
             Capstone(InvalidOption) => "Invalid/unsupported option",
             Capstone(DetailOff) => "Information is unavailable because detail option is OFF",
-            Capstone(UninitializedMemSetup) => "Dynamic memory management uninitialized (see CS_OPT_MEM)",
+            Capstone(UninitializedMemSetup) => {
+                "Dynamic memory management uninitialized (see CS_OPT_MEM)"
+            }
             Capstone(UnsupportedVersion) => "Unsupported version (bindings)",
             Capstone(IrrelevantDataInDiet) => "Access irrelevant data in \"diet\" engine",
-            Capstone(IrrelevantDataInSkipData) => "Access irrelevant data for \"data\" instruction in SKIPDATA mode",
-            Capstone(UnsupportedX86Att) => "X86 AT&T syntax is unsupported (opt-out at compile time)",
-            Capstone(UnsupportedX86Intel) => "X86 Intel syntax is unsupported (opt-out at compile time)",
+            Capstone(IrrelevantDataInSkipData) => {
+                "Access irrelevant data for \"data\" instruction in SKIPDATA mode"
+            }
+            Capstone(UnsupportedX86Att) => {
+                "X86 AT&T syntax is unsupported (opt-out at compile time)"
+            }
+            Capstone(UnsupportedX86Intel) => {
+                "X86 Intel syntax is unsupported (opt-out at compile time)"
+            }
             UnknownCapstoneError => "Encountered Unknown Capstone Return Error",
         }
     }

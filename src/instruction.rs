@@ -14,22 +14,19 @@ pub struct Instructions {
 
 impl Instructions {
     pub unsafe fn from_raw_parts(ptr: *mut cs_insn, len: isize) -> Instructions {
-        Instructions {
-            ptr: ptr,
-            len: len,
-        }
+        Instructions { ptr: ptr, len: len }
     }
 
     pub fn len(&self) -> isize {
         self.len
     }
 
-     pub fn iter(&self) -> InstructionIterator {
-         InstructionIterator {
-             insns: &self,
-             cur: 0,
-         }
-     }
+    pub fn iter(&self) -> InstructionIterator {
+        InstructionIterator {
+            insns: &self,
+            cur: 0,
+        }
+    }
 
     pub fn is_empty(&self) -> bool {
         self.len == 0
@@ -37,11 +34,11 @@ impl Instructions {
 }
 
 impl Drop for Instructions {
-     fn drop(&mut self) {
-         unsafe {
-             cs_free(self.ptr, self.len as libc::size_t);
-         }
-     }
+    fn drop(&mut self) {
+        unsafe {
+            cs_free(self.ptr, self.len as libc::size_t);
+        }
+    }
 }
 
 /// An iterator over the instructions returned by disasm
@@ -77,13 +74,13 @@ use std::convert::From;
 
 impl From<cs_insn> for Insn {
     fn from(insn: cs_insn) -> Self {
-        Insn (insn)
+        Insn(insn)
     }
 }
 
-impl From<cs_detail> for Detail{
+impl From<cs_detail> for Detail {
     fn from(detail: cs_detail) -> Self {
-        Detail (detail)
+        Detail(detail)
     }
 }
 
@@ -101,16 +98,16 @@ impl Insn {
     }
 
     /// Size of instruction (in bytes)
-    pub fn len (&self) -> usize {
+    pub fn len(&self) -> usize {
         self.0.size as usize
     }
 
-    pub fn address (&self) -> u64 {
+    pub fn address(&self) -> u64 {
         self.0.address as u64
     }
 
     /// Byte-level representation of the instruction
-    pub fn bytes (&self) -> &[u8] {
+    pub fn bytes(&self) -> &[u8] {
         &self.0.bytes[..self.len()]
     }
 
@@ -118,7 +115,7 @@ impl Insn {
     ///
     /// Be careful this is still in early stages and largely untested with various `cs_option` and
     /// architecture matrices
-    pub fn detail (&self) -> Option<Detail> {
+    pub fn detail(&self) -> Option<Detail> {
         if self.0.detail.is_null() {
             None
         } else {
@@ -177,7 +174,6 @@ impl Detail {
     pub fn groups_count(&self) -> libc::uint8_t {
         self.0.groups_count
     }
-
 }
 
 impl Debug for Detail {
@@ -200,7 +196,7 @@ impl Display for Instructions {
             for byte in instruction.bytes() {
                 write!(fmt, " {:02x}", byte)?;
             }
-            let remainder = 16*3 - (instruction.bytes().len())*3;
+            let remainder = 16 * 3 - (instruction.bytes().len()) * 3;
             for _ in 0..remainder {
                 write!(fmt, " ")?;
             }

@@ -57,30 +57,28 @@ mod test {
     const X86_CODE: &'static [u8] = b"\x55\x48\x8b\x05\xb8\x13\x00\x00";
     const ARM_CODE: &'static [u8] = b"\x55\x48\x8b\x05\xb8\x13\x00\x00";
 
-     #[test]
-     fn test_x86_simple() {
-         match capstone::Capstone::new(capstone::Arch::X86) {
-             Ok(cs) => {
-                 match cs.disassemble(X86_CODE, 0x1000) {
-                     Ok(insns) => {
-                         assert_eq!(insns.len(), 2);
-                         let is: Vec<_> = insns.iter().collect();
-                         assert_eq!(is[0].mnemonic().unwrap(), "push");
-                         assert_eq!(is[1].mnemonic().unwrap(), "mov");
+    #[test]
+    fn test_x86_simple() {
+        match capstone::Capstone::new(capstone::Arch::X86) {
+            Ok(cs) => {
+                match cs.disassemble(X86_CODE, 0x1000) {
+                    Ok(insns) => {
+                        assert_eq!(insns.len(), 2);
+                        let is: Vec<_> = insns.iter().collect();
+                        assert_eq!(is[0].mnemonic().unwrap(), "push");
+                        assert_eq!(is[1].mnemonic().unwrap(), "mov");
 
-                         assert_eq!(is[0].address(), 0x1000);
-                         assert_eq!(is[1].address(), 0x1001);
-                     },
-                     Err(err) => {
-                         assert!(false, "Couldn't disasm instructions: {}", err)
-                     }
-                 }
-             },
-             Err(e) => {
-                 assert!(false, "Couldn't create a cs engine: {}", e);
-             }
-         }
-     }
+                        assert_eq!(is[0].address(), 0x1000);
+                        assert_eq!(is[1].address(), 0x1001);
+                    }
+                    Err(err) => assert!(false, "Couldn't disasm instructions: {}", err),
+                }
+            }
+            Err(e) => {
+                assert!(false, "Couldn't create a cs engine: {}", e);
+            }
+        }
+    }
 
     #[test]
     fn test_arm_simple() {
@@ -95,12 +93,10 @@ mod test {
 
                         assert_eq!(is[0].address(), 0x1000);
                         assert_eq!(is[1].address(), 0x1004);
-                    },
-                    Err(err) => {
-                        assert!(false, "Couldn't disasm instructions: {}", err)
                     }
+                    Err(err) => assert!(false, "Couldn't disasm instructions: {}", err),
                 }
-            },
+            }
             Err(e) => {
                 assert!(false, "Couldn't create a cs engine: {}", e);
             }
@@ -116,12 +112,10 @@ mod test {
                         assert_eq!(insns.len(), 0);
                         let is: Vec<_> = insns.iter().collect();
                         assert!(is.is_empty(), "Instruction vector isn't empty")
-                    },
-                    Err(err) => {
-                        assert!(false, "Couldn't disasm instructions: {}", err)
                     }
+                    Err(err) => assert!(false, "Couldn't disasm instructions: {}", err),
                 }
-            },
+            }
             Err(e) => {
                 assert!(false, "Couldn't create a cs engine: {}", e);
             }
@@ -129,38 +123,38 @@ mod test {
     }
 
     #[test]
-     fn test_x86_names() {
-         match capstone::Capstone::new(capstone::Arch::X86) {
-             Ok(cs) => {
-                 let reg_id = 1;
-                 match cs.reg_name(reg_id) {
-                     Some(reg_name) => assert_eq!(reg_name, "ah"),
-                     None => assert!(false, "Couldn't get register name"),
-                 }
+    fn test_x86_names() {
+        match capstone::Capstone::new(capstone::Arch::X86) {
+            Ok(cs) => {
+                let reg_id = 1;
+                match cs.reg_name(reg_id) {
+                    Some(reg_name) => assert_eq!(reg_name, "ah"),
+                    None => assert!(false, "Couldn't get register name"),
+                }
 
-                 let insn_id = 1;
-                 match cs.insn_name(insn_id) {
-                     Some(insn_name) => assert_eq!(insn_name, "aaa"),
-                     None => assert!(false, "Couldn't get instruction name"),
-                 }
+                let insn_id = 1;
+                match cs.insn_name(insn_id) {
+                    Some(insn_name) => assert_eq!(insn_name, "aaa"),
+                    None => assert!(false, "Couldn't get instruction name"),
+                }
 
-                 let reg_id = 6000;
-                 match cs.reg_name(reg_id) {
-                     Some(_) => assert!(false, "invalid register worked"),
-                     None => {},
-                 }
+                let reg_id = 6000;
+                match cs.reg_name(reg_id) {
+                    Some(_) => assert!(false, "invalid register worked"),
+                    None => {}
+                }
 
-                 let insn_id = 6000;
-                 match cs.insn_name(insn_id) {
-                     Some(_) => assert!(false, "invalid instruction worked"),
-                     None => {},
-                 }
-             },
-             Err(e) => {
-                 assert!(false, "Couldn't create a cs engine: {}", e);
-             }
-         }
-     }
+                let insn_id = 6000;
+                match cs.insn_name(insn_id) {
+                    Some(_) => assert!(false, "invalid instruction worked"),
+                    None => {}
+                }
+            }
+            Err(e) => {
+                assert!(false, "Couldn't create a cs engine: {}", e);
+            }
+        }
+    }
 
     #[test]
     fn test_invalid_mode() {
@@ -168,7 +162,9 @@ mod test {
             Ok(_) => assert!(false, "Invalid open worked"),
             Err(err) => {
                 match err {
-                    error::Error::Capstone(err) => assert!(err == error::CapstoneError::UnsupportedArch),
+                    error::Error::Capstone(err) => {
+                        assert!(err == error::CapstoneError::UnsupportedArch)
+                    }
                     _ => assert!(false),
                 }
             }
