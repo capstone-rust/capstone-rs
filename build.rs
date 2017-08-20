@@ -15,7 +15,7 @@ extern crate cmake;
 extern crate lazy_static;
 
 use std::fs::{File, copy};
-use std::path::{Path, PathBuf};
+use std::path::PathBuf;
 use std::process::Command;
 use std::env;
 use std::io::Write;
@@ -142,11 +142,6 @@ fn main() {
     } else {
         debug_println!("Using bundled capstone library");
 
-        if !Path::new("capstone/.git").exists() {
-            let _ = Command::new("git")
-                .args(&["submodule", "update", "--init", "--depth", "5"])
-                .status();
-        }
         if cfg!(feature = "build_capstone_cmake") {
             #[cfg(feature = "build_src_cmake")]
             cmake();
