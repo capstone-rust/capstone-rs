@@ -1249,7 +1249,7 @@ pub enum arm64_cc {
 }
 #[repr(u32)]
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
-pub enum arm64_mrs_reg {
+pub enum arm64_sysreg {
     ARM64_SYSREG_INVALID = 0,
     ARM64_SYSREG_MDCCSR_EL0 = 38920,
     ARM64_SYSREG_DBGDTRRX_EL0 = 38952,
@@ -1344,7 +1344,6 @@ pub enum arm64_mrs_reg {
     ARM64_SYSREG_ICH_EISR_EL2 = 58971,
     ARM64_SYSREG_ICH_ELSR_EL2 = 58973,
 }
-pub use self::arm64_mrs_reg as arm64_sysreg;
 #[repr(u32)]
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
 pub enum arm64_msr_reg {

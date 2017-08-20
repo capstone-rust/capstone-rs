@@ -43,7 +43,10 @@ use std::os::raw::c_int;
 
 // Include pre-generated bindgen bindings
 #[cfg(feature = "use_bundled_capstone_bindings")]
-include!(concat!(env!("CARGO_MANIFEST_DIR"), "/pre_generated/capstone.rs"));
+include!(concat!(
+    env!("CARGO_MANIFEST_DIR"),
+    "/pre_generated/capstone.rs"
+));
 
 // Include dynamically generated bindings
 #[cfg(not(feature = "use_bundled_capstone_bindings"))]
@@ -228,7 +231,11 @@ mod test {
         // Union structs
         let op = cs_ppc_op {
             type_: ppc_op_type::PPC_OP_REG,
-            __bindgen_anon_1: new_bindgen_union!(cs_ppc_op__bindgen_ty_1, reg, ppc_reg::PPC_REG_CARRY),
+            __bindgen_anon_1: new_bindgen_union!(
+                cs_ppc_op__bindgen_ty_1,
+                reg,
+                ppc_reg::PPC_REG_CARRY
+            ),
         };
         cs_ppc {
             bc: ppc_bc::PPC_BC_LT,
@@ -450,9 +457,11 @@ mod test {
         println!("Capstone version (major, minor) = {:?}", (major, minor));
 
         assert!(major == 3, "Invalid major version {:?}", major);
-        assert!(minor >= 0 && minor < 1000,
-                "Invalid minor version {:?}",
-                minor);
+        assert!(
+            minor >= 0 && minor < 1000,
+            "Invalid minor version {:?}",
+            minor
+        );
     }
 
     #[test]
@@ -485,12 +494,14 @@ mod test {
         let mut insn_ptr: *mut cs_insn = 0 as *mut cs_insn;
         let mut address = 0x1000;
         let count = unsafe {
-            cs_disasm(handle,
-                      code_bytes.as_ptr(),
-                      code_bytes.len(),
-                      address,
-                      0,
-                      &mut insn_ptr as *mut *mut cs_insn)
+            cs_disasm(
+                handle,
+                code_bytes.as_ptr(),
+                code_bytes.len(),
+                address,
+                0,
+                &mut insn_ptr as *mut *mut cs_insn,
+            )
         };
 
         assert!(count == code.len());
@@ -515,11 +526,16 @@ mod test {
 
     #[test]
     fn test_x86_disassembly() {
-        let code: &[(&[u8], &str, _)] =
-            &[(&[0x48, 0x83, 0xec, 0x08], "sub", x86_insn::X86_INS_SUB as u32),
-              (&[0x31, 0xdb], "xor", x86_insn::X86_INS_XOR as u32),
-              (&[0xc3], "ret", x86_insn::X86_INS_RET as u32),
-              (&[0x90], "nop", x86_insn::X86_INS_NOP as u32)];
+        let code: &[(&[u8], &str, _)] = &[
+            (
+                &[0x48, 0x83, 0xec, 0x08],
+                "sub",
+                x86_insn::X86_INS_SUB as u32,
+            ),
+            (&[0x31, 0xdb], "xor", x86_insn::X86_INS_XOR as u32),
+            (&[0xc3], "ret", x86_insn::X86_INS_RET as u32),
+            (&[0x90], "nop", x86_insn::X86_INS_NOP as u32),
+        ];
         test_disassembly_helper(cs_arch::CS_ARCH_X86, cs_mode::CS_MODE_LITTLE_ENDIAN, code);
     }
 }

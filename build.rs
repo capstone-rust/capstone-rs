@@ -76,16 +76,20 @@ fn find_capstone_header(header_search_paths: &Vec<PathBuf>, name: &str) -> Optio
 
 /// Create bindings using bindgen
 fn write_bindgen_bindings(header_search_paths: &Vec<PathBuf>, update_pregenerated_bindings: bool) {
-    debug_println!("Writing bindgen bindings with search paths {:?}",
-                   header_search_paths);
+    debug_println!(
+        "Writing bindgen bindings with search paths {:?}",
+        header_search_paths
+    );
 
 
     let mut builder = bindgen::Builder::default()
         .unstable_rust(false)
-        .header(find_capstone_header(header_search_paths, "capstone.h")
-                    .expect("Could not find header")
-                    .to_str()
-                    .unwrap())
+        .header(
+            find_capstone_header(header_search_paths, "capstone.h")
+                .expect("Could not find header")
+                .to_str()
+                .unwrap(),
+        )
         .disable_name_namespacing()
         .prepend_enum_name(false)
         .generate_comments(true)
@@ -108,17 +112,23 @@ fn write_bindgen_bindings(header_search_paths: &Vec<PathBuf>, update_pregenerate
 
     // Write bindings to $OUT_DIR/bindings.rs
     let out_path = PathBuf::from(env::var("OUT_DIR").unwrap()).join(BINDINGS_FILE);
-    bindings
-        .write_to_file(out_path.clone())
-        .expect("Unable to write bindings");
+    bindings.write_to_file(out_path.clone()).expect(
+        "Unable to write bindings",
+    );
 
-    if update_pregenerated_bindings  {
-        let stored_bindgen_header: PathBuf = [
-            env::var("CARGO_MANIFEST_DIR").expect("Could not find cargo environment variable"),
-            "pre_generated".into(),
-            BINDINGS_FILE.into()
-        ].iter().collect();
-        debug_println!("Updating capstone bindings at \"{}\"", stored_bindgen_header.to_str().unwrap());
+    if update_pregenerated_bindings {
+        debug_println!("Updating pre-generated capstone bindings");
+        let stored_bindgen_header: PathBuf =
+            [
+                env::var("CARGO_MANIFEST_DIR").expect("Could not find cargo environment variable"),
+                "pre_generated".into(),
+                BINDINGS_FILE.into(),
+            ].iter()
+                .collect();
+        debug_println!(
+            "Updating capstone bindings at \"{}\"",
+            stored_bindgen_header.to_str().unwrap()
+        );
         copy(out_path, stored_bindgen_header).expect("Unable to update capstone bindings");
     }
 }
@@ -132,8 +142,10 @@ fn main() {
     if cfg!(feature = "use_system_capstone") {
         debug_println!("Using system capstone library");
 
-        assert!(!cfg!(feature = "build_capstone_cmake"),
-                "build_capstone_cmake feature is only valid when using bundled cmake");
+        assert!(
+            !cfg!(feature = "build_capstone_cmake"),
+            "build_capstone_cmake feature is only valid when using bundled cmake"
+        );
 
         let capstone_lib =
             pkg_config::find_library("capstone").expect("Could not find system capstone");
@@ -178,11 +190,15 @@ fn main() {
     // If UPDATE_CAPSTONE_BINDINGS is set, then updated the pre-generated capstone bindings
     let update_pregenerated_bindings = env::var("UPDATE_CAPSTONE_BINDINGS").is_ok();
     if update_pregenerated_bindings {
-        assert!(cfg!(feature = "use_bundled_capstone_bindings"),
-                concat!("Setting UPDATE_CAPSTONE_BINDINGS only makes ",
-                        "sense when NOT enabling feature use_bundled_capstone_bindings"));
-    } else {
-        debug_println!("Creating capstone bindings with bindgen");
-        write_bindgen_bindings(&header_search_paths, update_pregenerated_bindings);
+        assert!(
+            !cfg!(feature = "use_bundled_capstone_bindings"),
+            concat!(
+                "Setting UPDATE_CAPSTONE_BINDINGS only makes ",
+                "sense when NOT enabling feature use_bundled_capstone_bindings"
+            )
+        );
     }
+
+    debug_println!("Creating capstone bindings with bindgen");
+    write_bindgen_bindings(&header_search_paths, update_pregenerated_bindings);
 }
