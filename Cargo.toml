@@ -8,7 +8,7 @@ repository = "https://github.com/m4b/capstone-rs"
 
 [dependencies]
 libc = "0.2"
-capstone-sys = { git = "https://github.com/m4b/capstone-sys.git", rev = "06440b8c62ca61a3b7c3690ea4af9a1406df6ab3" }
+capstone-sys = { git = "https://github.com/m4b/capstone-sys.git", rev = "da056fcb93add71aef071780ecee30c92ebabab7" }
 
 [features]
 default = []
