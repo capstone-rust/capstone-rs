@@ -1,77 +1,89 @@
+//! Bindings to the [capstone library][upstream] disassembly framework.
+//! 
 //! This crate is a wrapper around the
 //! [Capstone disassembly library](http://www.capstone-engine.org/),
 //! a "lightweight multi-platform, multi-architecture disassembly framework."
 //!
 //! The `Capstone` struct is the main interface to the library.
 //!
-//! ```
-//! use capstone;
+//! ```rust
+//! extern crate capstone;
 //!
-//! let cs = capstone::Capstone::new(capstone::CsArch::ARCH_X86,
-//!                                  capstone::CsMode::MODE_64)
-//!     .unwrap();
-//! let insns = cs.disasm(b"\x55\x48\x8b\x05\xb8\x13\x00\x00", 0x1000, 0)
-//!     .unwrap();
+//! const CODE: &'static [u8] = b"\x55\x48\x8b\x05\xb8\x13\x00\x00";
+//! fn main() {
+//!     match capstone::Capstone::new(capstone::Arch::X86, capstone::Mode::LittleEndian) {
+//!         Ok(cs) => {
+//!             match cs.disasm_all(CODE, 0x1000) {
+//!                 Ok(insns) => {
+//!                     println!("Got {} instructions", insns.len());
 //!
-//! for insn in insns.iter() {
-//!     println!("{addr:x} {bytes:?} {mnemonic} {ops}",
-//!              addr = insn.address,
-//!              bytes = insn.bytes(),
-//!              mnemonic = insn.mnemonic().unwrap(),
-//!              ops = insn.op_str().unwrap());
+//!                     for i in insns.iter() {
+//!                         println!("{}", i);
+//!                     }
+//!                 },
+//!                 Err(err) => {
+//!                     println!("Error: {}", err)
+//!                 }
+//!             }
+//!         },
+//!         Err(err) => {
+//!             println!("Error: {}", err)
+//!         }
+//!     }
 //! }
 //! ```
 //!
+//! Produces:
+//!
+//! ```no_test
+//! Got 2 instructions
+//! 0x1000: push rbp
+//! 0x1001: mov rax, qword ptr [rip + 0x13b8]
+//! ```
+//!
+//! [upstream]: http://capstone-engine.org/
+//!
 
+extern crate capstone_sys;
 extern crate libc;
-extern crate num;
 
-#[macro_use]
-extern crate enum_primitive;
+mod capstone;
+mod constants;
+mod instruction;
+mod error;
 
-pub mod instruction;
-pub mod constants;
-mod ffi;
-pub mod capstone;
-
-pub use instruction::*;
+pub use capstone::*;
 pub use constants::*;
-
-pub use capstone::Capstone;
-
-/// An opaque reference to a capstone engine.
-///
-/// bindgen by default used this type name everywhere, so it is easier to leave it with a confusing
-/// name.
-///
-/// It should not be exported, rust's new visibility rules make tackling this not immediately
-/// obvious
-#[allow(non_camel_case_types)]
-type csh = libc::size_t;
+pub use instruction::*;
+pub use error::*;
 
 #[cfg(test)]
 mod test {
     use std::collections::HashSet;
+    use capstone_sys::cs_group_type;
     use super::*;
 
-    static CODE: &'static [u8] = b"\x55\x48\x8b\x05\xb8\x13\x00\x00";
+    const X86_CODE: &'static [u8] = b"\x55\x48\x8b\x05\xb8\x13\x00\x00";
+    const ARM_CODE: &'static [u8] = b"\x55\x48\x8b\x05\xb8\x13\x00\x00";
 
     #[test]
     fn test_x86_simple() {
-        match capstone::Capstone::new(constants::CsArch::ARCH_X86, constants::CsMode::MODE_64) {
+        match Capstone::new(Arch::X86, Mode::LittleEndian) {
             Ok(cs) => {
-                match cs.disasm(CODE, 0x1000, 0) {
+                match cs.disasm_all(X86_CODE, 0x1000) {
                     Ok(insns) => {
                         assert_eq!(insns.len(), 2);
                         let is: Vec<_> = insns.iter().collect();
                         assert_eq!(is[0].mnemonic().unwrap(), "push");
                         assert_eq!(is[1].mnemonic().unwrap(), "mov");
 
-                        assert_eq!(is[0].address, 0x1000);
-                        assert_eq!(is[1].address, 0x1001);
+                        assert_eq!(is[0].address(), 0x1000);
+                        assert_eq!(is[1].address(), 0x1001);
 
                         assert_eq!(is[0].bytes(), b"\x55");
                         assert_eq!(is[1].bytes(), b"\x48\x8b\x05\xb8\x13\x00\x00");
+                        assert_eq!(is[0].address(), 0x1000);
+                        assert_eq!(is[1].address(), 0x1001);
                     }
                     Err(err) => assert!(false, "Couldn't disasm instructions: {}", err),
                 }
@@ -83,8 +95,37 @@ mod test {
     }
 
     #[test]
+    fn test_arm_simple() {
+        match Capstone::new(Arch::ARM, Mode::LittleEndian) {
+            Ok(cs) => {
+                match cs.disasm_all(ARM_CODE, 0x1000) {
+                    Ok(insns) => {
+                        assert_eq!(insns.len(), 2);
+                        let is: Vec<_> = insns.iter().collect();
+                        assert_eq!(is[0].mnemonic().unwrap(), "streq");
+                        assert_eq!(is[1].mnemonic().unwrap(), "strheq");
+
+                        assert_eq!(is[0].address(), 0x1000);
+                        assert_eq!(is[1].address(), 0x1004);
+                    }
+                    Err(err) => assert!(false, "Couldn't disasm instructions: {}", err),
+                }
+            }
+            Err(e) => {
+                assert!(false, "Couldn't create a cs engine: {}", e);
+            }
+        }
+    }
+
+    #[test]
+    fn test_arm64_none() {
+        let cs = Capstone::new(Arch::ARM64, Mode::LittleEndian).unwrap();
+        assert!(cs.disasm_all(ARM_CODE, 0x1000).is_err());
+    }
+
+    #[test]
     fn test_x86_names() {
-        match capstone::Capstone::new(constants::CsArch::ARCH_X86, constants::CsMode::MODE_64) {
+        match Capstone::new(Arch::X86, Mode::LittleEndian) {
             Ok(cs) => {
                 let reg_id = 1;
                 match cs.reg_name(reg_id) {
@@ -122,29 +163,28 @@ mod test {
 
     #[test]
     fn test_detail_false_fail() {
-        let mut cs = capstone::Capstone::new(constants::CsArch::ARCH_X86,
-                                             constants::CsMode::MODE_64)
+        let mut cs = Capstone::new(Arch::X86, Mode::Mode64)
                 .unwrap();
         cs.set_detail(false).unwrap();
-        let insns: Vec<_> = cs.disasm(CODE, 0x1000, 0).unwrap().iter().collect();
+        let insns: Vec<_> = cs.disasm_all(X86_CODE, 0x1000).unwrap().iter().collect();
         assert_eq!(cs.insn_belongs_to_group(&insns[0], 0),
-                   Err(CsErr::CS_ERR_DETAIL));
+                   Err(Error::Capstone(CapstoneError::DetailOff)));
         assert_eq!(cs.insn_belongs_to_group(&insns[1], 0),
-                   Err(CsErr::CS_ERR_DETAIL));
+                   Err(Error::Capstone(CapstoneError::DetailOff)));
     }
 
     #[test]
     fn test_detail_true() {
-        let mut cs = capstone::Capstone::new(constants::CsArch::ARCH_X86,
-                                             constants::CsMode::MODE_64)
+        let mut cs = Capstone::new(Arch::X86,
+                                             Mode::Mode64)
                 .unwrap();
         cs.set_detail(true).unwrap();
-        let insns: Vec<_> = cs.disasm(CODE, 0x1000, 0).unwrap().iter().collect();
-        let insn_group_ids = [CsGroupType::CS_GRP_JUMP,
-                              CsGroupType::CS_GRP_CALL,
-                              CsGroupType::CS_GRP_RET,
-                              CsGroupType::CS_GRP_INT,
-                              CsGroupType::CS_GRP_IRET];
+        let insns: Vec<_> = cs.disasm_all(X86_CODE, 0x1000).unwrap().iter().collect();
+        let insn_group_ids = [cs_group_type::CS_GRP_JUMP,
+                              cs_group_type::CS_GRP_CALL,
+                              cs_group_type::CS_GRP_RET,
+                              cs_group_type::CS_GRP_INT,
+                              cs_group_type::CS_GRP_IRET];
         for insn_idx in 0..1 + 1 {
             for insn_group_id in &insn_group_ids {
                 assert_eq!(cs.insn_belongs_to_group(&insns[insn_idx], *insn_group_id as u64),
@@ -157,16 +197,16 @@ mod test {
     /// and insn_group_ids
     fn test_x86_instruction_detail_helper(mnemonic_name: &str,
                                           bytes: &[u8],
-                                          expected_groups: &[CsGroupType]) {
-        let mut cs = capstone::Capstone::new(constants::CsArch::ARCH_X86,
-                                             constants::CsMode::MODE_64)
+                                          expected_groups: &[cs_group_type]) {
+        let mut cs = Capstone::new(Arch::X86,
+                                             Mode::Mode64)
                 .expect("Failed to create capstone handle");
 
         // Details required to get groups information
         cs.set_detail(true).unwrap();
 
         // Disassemble instructions
-        let insns: Vec<_> = cs.disasm(bytes, 0x1000, 0)
+        let insns: Vec<_> = cs.disasm_all(bytes, 0x1000)
             .expect("Failed to disassemble")
             .iter()
             .collect();
@@ -182,7 +222,7 @@ mod test {
                        .expect("Failed to get instruction name"));
 
         // Assert expected instruction groups is a subset of computed groups through ids
-        let instruction_group_ids: HashSet<u8> = cs.insn_group_ids(&insn)
+        let instruction_group_ids: HashSet<u8> = cs.insn_groups(&insn)
             .expect("failed to get instruction groups")
             .iter()
             .map(|&x| x)
@@ -194,13 +234,13 @@ mod test {
                 instruction_group_ids);
 
         // Assert expected instruction groups is a subset of computed groups through enum
-        let instruction_groups_set: HashSet<CsGroupType> = cs.insn_groups(&insn)
+        let instruction_groups_set: HashSet<u8> = cs.insn_groups(&insn)
             .expect("failed to get instruction groups")
             .iter()
             .map(|&x| x)
             .collect();
-        let expected_groups_set: HashSet<CsGroupType> =
-            expected_groups.iter().map(|&x| x).collect();
+        let expected_groups_set: HashSet<u8> =
+            expected_groups.iter().map(|&x| x as u8).collect();
         assert!(expected_groups_set.is_subset(&instruction_groups_set),
                 "Expected groups {:?} does NOT match computed insn groups {:?}",
                 expected_groups_set,
@@ -208,15 +248,15 @@ mod test {
 
 
         // Create sets of expected groups and unexpected groups
-        let instruction_types: HashSet<CsGroupType> = [CsGroupType::CS_GRP_JUMP,
-                                                       CsGroupType::CS_GRP_CALL,
-                                                       CsGroupType::CS_GRP_RET,
-                                                       CsGroupType::CS_GRP_INT,
-                                                       CsGroupType::CS_GRP_IRET]
+        let instruction_types: HashSet<cs_group_type> = [cs_group_type::CS_GRP_JUMP,
+                                                         cs_group_type::CS_GRP_CALL,
+                                                         cs_group_type::CS_GRP_RET,
+                                                         cs_group_type::CS_GRP_INT,
+                                                         cs_group_type::CS_GRP_IRET]
                 .iter()
                 .cloned()
                 .collect();
-        let expected_groups_set: HashSet<CsGroupType> =
+        let expected_groups_set: HashSet<cs_group_type> =
             expected_groups.iter().map(|&x| x).collect();
         let not_belong_groups = instruction_types.difference(&expected_groups_set);
 
@@ -245,11 +285,11 @@ mod test {
 
     #[test]
     fn test_instruction_group_ids() {
-        let jump = CsGroupType::CS_GRP_JUMP;
-        let call = CsGroupType::CS_GRP_CALL;
-        let ret = CsGroupType::CS_GRP_RET;
-        let int = CsGroupType::CS_GRP_INT;
-        let iret = CsGroupType::CS_GRP_IRET;
+        let jump = cs_group_type::CS_GRP_JUMP;
+        let call = cs_group_type::CS_GRP_CALL;
+        let ret = cs_group_type::CS_GRP_RET;
+        let int = cs_group_type::CS_GRP_INT;
+        let iret = cs_group_type::CS_GRP_IRET;
 
         test_x86_instruction_detail_helper("nop", b"\x90", &[]);
         test_x86_instruction_detail_helper("je", b"\x74\x05", &[jump]);
@@ -265,9 +305,9 @@ mod test {
 
     #[test]
     fn test_invalid_mode() {
-        match capstone::Capstone::new(constants::CsArch::ARCH_ALL, constants::CsMode::MODE_64) {
+        match Capstone::new(Arch::ALL, Mode::Mode64) {
             Ok(_) => assert!(false, "Invalid open worked"),
-            Err(err) => assert!(err == constants::CsErr::CS_ERR_ARCH),
+            Err(err) => assert!(err == Error::Capstone(CapstoneError::UnsupportedArch)),
         }
     }
 
@@ -281,15 +321,16 @@ mod test {
 
     #[test]
     fn test_capstone_supports_arch() {
-        let architectures = vec![CsArch::ARCH_ARM,
-                                 CsArch::ARCH_ARM64,
-                                 CsArch::ARCH_MIPS,
-                                 CsArch::ARCH_X86,
-                                 CsArch::ARCH_PPC,
-                                 CsArch::ARCH_SPARC,
-                                 CsArch::ARCH_SYSZ,
-                                 CsArch::ARCH_XCORE,
-                                 CsArch::CS_ARCH_M68K];
+        let architectures = vec![Arch::ARM,
+                                 Arch::ARM64,
+                                 Arch::MIPS,
+                                 Arch::X86,
+                                 Arch::PPC,
+                                 Arch::SPARC,
+                                 Arch::SYSZ,
+                                 Arch::XCORE,
+                                 // Arch::M68K,
+                                 ];
 
         println!("Supported architectures");
         for arch in architectures {

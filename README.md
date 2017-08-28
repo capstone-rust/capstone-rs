@@ -1,35 +1,35 @@
 capstone-rs
 ===========
 
-Bindings to [capstone-engine][upstream]
+Bindings to the [capstone library][upstream] disassembly framework.
 
-There's an example in demo.rs, but as a sample:
+There's an example in `demo.rs`, but as a sample:
 
 ```rust
 extern crate capstone;
 
-static CODE: &'static [u8] = b"\x55\x48\x8b\x05\xb8\x13\x00\x00";
+const CODE: &'static [u8; 8] = b"\x55\x48\x8b\x05\xb8\x13\x00\x00";
 
 fn main() {
-    match capstone::Capstone::new(capstone::CsArch::ARCH_X86,
-                                  capstone::CsMode::MODE_64) {
+    match capstone::Capstone::new(capstone::Arch::X86) {
         Ok(cs) => {
-            match cs.disasm(CODE, 0x1000, 0) {
+            cs.detail().unwrap();
+            cs.att();
+            match cs.disasm(CODE, 0x1000) {
                 Ok(insns) => {
                     println!("Got {} instructions", insns.len());
-
                     for i in insns.iter() {
                         println!("{}", i);
+                        println!("detail: {:?}", i.detail());
                     }
                 },
                 Err(err) => {
-                    println!("Error: {}", err);
-                    process::exit(1);
+                    println!("Error disassembling: {}", err);
                 }
             }
         },
         Err(err) => {
-            println!("Error: {}", err);
+            println!("Error creating disassembler: {}", err);
         }
     }
 }
@@ -45,7 +45,7 @@ Got 2 instructions
 
 # Reporting Issues
 
-Please open a Github issue, or email me directly if you prefer
+Please open a Github issue
 
 # Demo
 
@@ -58,7 +58,9 @@ To produce a short demonstration. More complex demos welcome!
 # Author
 
 - Library Author: Nguyen Anh Quynh
-- Binding Author: Richo Healey <richo@psych0tik.net>
+- Binding Author(s):
+    - m4b <m4b.github.io@gmail.com>
+    - Richo Healey <richo@psych0tik.net>
 
 # Contributors
 
