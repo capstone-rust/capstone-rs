@@ -2,24 +2,17 @@
 //!
 //! * `UPDATE_CAPSTONE_BINDINGS`: setting indicates that the pre-generated `capstone.rs` should be
 //!   updated with the output bindgen
-//! * `CAPSTONE_BUILD_DEBUG`: write debug output to file
 
 extern crate bindgen;
-extern crate gcc;
 extern crate pkg_config;
 
 #[cfg(feature = "build_src_cmake")]
 extern crate cmake;
 
-#[macro_use]
-extern crate lazy_static;
-
-use std::fs::{File, copy};
+use std::fs::copy;
 use std::path::PathBuf;
 use std::process::Command;
 use std::env;
-use std::io::Write;
-use std::sync::Mutex;
 
 include!("common.rs");
 
@@ -29,35 +22,8 @@ enum LinkType {
     Static,
 }
 
-static DEBUG_FILE_ENV_VAR: &'static str = "CAPSTONE_BUILD_DEBUG";
-
-// Open/truncate debug file once at the beginning of execution
-lazy_static! {
-	static ref BUILD_DEBUG_LOG_FILE: Mutex<Option<File>> = Mutex::new(
-        match env::var(DEBUG_FILE_ENV_VAR) {
-            Err(_) => None,
-            Ok(filename) => {
-                let file = File::create(&filename)
-                    .expect(&format!("Could not open debug log \"{}\"", filename));
-                Some(file)
-            }
-        }
-	);
-}
-
-/// Log to debug file
-macro_rules! debug_println(
-    ($($arg:tt)*) => { {
-        if let Some(ref mut file) = *BUILD_DEBUG_LOG_FILE.lock().unwrap() {
-            writeln!(file, $($arg)*)
-                .expect("failed printing to stderr");
-        }
-    } }
-);
-
 #[cfg(feature = "build_src_cmake")]
 fn cmake() {
-    debug_println!("Building capstone with cmake");
     let mut cfg = cmake::Config::new("capstone");
     let dst = cfg.build();
     println!("cargo:rustc-link-search=native={}/lib", dst.display());
@@ -76,12 +42,6 @@ fn find_capstone_header(header_search_paths: &Vec<PathBuf>, name: &str) -> Optio
 
 /// Create bindings using bindgen
 fn write_bindgen_bindings(header_search_paths: &Vec<PathBuf>, update_pregenerated_bindings: bool) {
-    debug_println!(
-        "Writing bindgen bindings with search paths {:?}",
-        header_search_paths
-    );
-
-
     let mut builder = bindgen::Builder::default()
         .unstable_rust(false)
         .header(
@@ -117,7 +77,6 @@ fn write_bindgen_bindings(header_search_paths: &Vec<PathBuf>, update_pregenerate
     );
 
     if update_pregenerated_bindings {
-        debug_println!("Updating pre-generated capstone bindings");
         let stored_bindgen_header: PathBuf =
             [
                 env::var("CARGO_MANIFEST_DIR").expect("Could not find cargo environment variable"),
@@ -125,10 +84,6 @@ fn write_bindgen_bindings(header_search_paths: &Vec<PathBuf>, update_pregenerate
                 BINDINGS_FILE.into(),
             ].iter()
                 .collect();
-        debug_println!(
-            "Updating capstone bindings at \"{}\"",
-            stored_bindgen_header.to_str().unwrap()
-        );
         copy(out_path, stored_bindgen_header).expect("Unable to update capstone bindings");
     }
 }
@@ -140,8 +95,6 @@ fn main() {
     let mut header_search_paths: Vec<PathBuf> = Vec::new();
 
     if cfg!(feature = "use_system_capstone") {
-        debug_println!("Using system capstone library");
-
         assert!(
             !cfg!(feature = "build_capstone_cmake"),
             "build_capstone_cmake feature is only valid when using bundled cmake"
@@ -152,8 +105,6 @@ fn main() {
         header_search_paths.append(&mut capstone_lib.include_paths.clone());
         link_type = Some(LinkType::Dynamic);
     } else {
-        debug_println!("Using bundled capstone library");
-
         if cfg!(feature = "build_capstone_cmake") {
             #[cfg(feature = "build_src_cmake")]
             cmake();
@@ -199,6 +150,5 @@ fn main() {
         );
     }
 
-    debug_println!("Creating capstone bindings with bindgen");
     write_bindgen_bindings(&header_search_paths, update_pregenerated_bindings);
 }

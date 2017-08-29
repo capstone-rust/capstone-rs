@@ -10,14 +10,11 @@ readme = "README.md"
 repository = "https://github.com/capstone-rust/capstone-sys"
 
 [dependencies]
-libc = "0.2"
 
 [build-dependencies]
 bindgen = "0.26.3"
 pkg-config = "0.3"
-gcc = "0.3"
 cmake = {optional = true, version = "0.1.2"}
-lazy_static = "0.2"
 
 [features]
 # use bundled capstone by default
