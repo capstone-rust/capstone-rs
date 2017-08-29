@@ -4,7 +4,7 @@ description = "High level bindings to capstone disassembly engine (http://capsto
 documentation = "http://richo.psych0tik.net/capstone-rs/capstone/index.html"
 license = "MIT"
 name = "capstone"
-repository = "https://github.com/richo/capstone-rs"
+repository = "https://github.com/capstone-rust/capstone-rs"
 version = "0.0.6"
 
 [dependencies]
