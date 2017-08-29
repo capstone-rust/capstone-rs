@@ -6,8 +6,8 @@ use std::io::Read;
 use std::process;
 
 fn main() {
-    let cs = capstone::Capstone::new(capstone::CsArch::ARCH_X86,
-                                     capstone::CsMode::MODE_64).ok().unwrap();
+    let cs = capstone::Capstone::new(capstone::Arch::X86,
+                                     capstone::Mode::Mode64).ok().unwrap();
 
     let args: Vec<_> = env::args().collect();
     if args.len() != 2 {
@@ -26,7 +26,7 @@ fn main() {
             for section in segment.sections {
                 if section.sectname == "__text" {
                     let text = &buf[section.offset as usize .. (section.offset as u64 + section.size) as usize];
-                    match cs.disasm(text, section.addr, 0) {
+                    match cs.disasm_all(text, section.addr) {
                         Ok(insns) => {
                             println!("Got {} instructions", insns.len());
 
