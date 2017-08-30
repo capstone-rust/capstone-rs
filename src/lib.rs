@@ -55,19 +55,6 @@ include!(concat!(env!("OUT_DIR"), "/capstone.rs"));
 pub const CS_SUPPORT_DIET: c_int = (cs_arch::CS_ARCH_ALL as c_int) + 1;
 pub const CS_SUPPORT_X86_REDUCE: c_int = (cs_arch::CS_ARCH_ALL as c_int) + 2;
 
-/// Returns an instance of a bindgen union structure `union_type` with variant `variant`
-/// initialized with `value`.
-///
-/// The type should contain `__BindgenUnionField` fields.
-#[macro_export]
-macro_rules! new_bindgen_union {
-    ($union_type:ty, $variant:ident, $value:expr) => {{
-        let mut temp: $union_type = unsafe { ::std::mem::uninitialized() };
-        *unsafe { temp.$variant.as_mut() } = $value;
-        temp
-    }};
-}
-
 #[cfg(test)]
 /// Many of the tests contain statements without effect; these "tests" are just to ensure that
 /// types have been defined by bindgen.
@@ -105,7 +92,7 @@ mod test {
             vector_index: 0,
             shift: shift,
             type_: arm_op_type::ARM_OP_REG,
-            __bindgen_anon_1: new_bindgen_union!(cs_arm_op__bindgen_ty_2, reg, 0),
+            __bindgen_anon_1: cs_arm_op__bindgen_ty_2 { reg: 0 },
             subtracted: false,
         };
         cs_arm {
@@ -160,7 +147,7 @@ mod test {
             shift: shift,
             ext: arm64_extender::ARM64_EXT_UXTB,
             type_: arm64_op_type::ARM64_OP_REG,
-            __bindgen_anon_1: new_bindgen_union!(cs_arm64_op__bindgen_ty_2, reg, 0),
+            __bindgen_anon_1: cs_arm64_op__bindgen_ty_2 { reg: 0 },
         };
         cs_arm64 {
             cc: arm64_cc::ARM64_CC_EQ,
@@ -204,7 +191,7 @@ mod test {
         // Union structs
         let op = cs_mips_op {
             type_: mips_op_type::MIPS_OP_REG,
-            __bindgen_anon_1: new_bindgen_union!(cs_mips_op__bindgen_ty_1, reg, 0),
+            __bindgen_anon_1: cs_mips_op__bindgen_ty_1 { reg: 0 },
         };
         cs_mips {
             op_count: 0,
@@ -231,11 +218,9 @@ mod test {
         // Union structs
         let op = cs_ppc_op {
             type_: ppc_op_type::PPC_OP_REG,
-            __bindgen_anon_1: new_bindgen_union!(
-                cs_ppc_op__bindgen_ty_1,
-                reg,
-                ppc_reg::PPC_REG_CARRY
-            ),
+            __bindgen_anon_1: cs_ppc_op__bindgen_ty_1 {
+                reg: ppc_reg::PPC_REG_CARRY,
+            },
         };
         cs_ppc {
             bc: ppc_bc::PPC_BC_LT,
@@ -275,7 +260,7 @@ mod test {
         // Union structs
         let op = cs_sparc_op {
             type_: sparc_op_type::SPARC_OP_REG,
-            __bindgen_anon_1: new_bindgen_union!(cs_sparc_op__bindgen_ty_1, reg, 0),
+            __bindgen_anon_1: cs_sparc_op__bindgen_ty_1 { reg: 0 },
         };
         cs_sparc {
             cc: sparc_cc::SPARC_CC_ICC_A,
@@ -306,7 +291,7 @@ mod test {
         };
         let op = cs_sysz_op {
             type_: sysz_op_type::SYSZ_OP_REG,
-            __bindgen_anon_1: new_bindgen_union!(cs_sysz_op__bindgen_ty_1, reg, 0),
+            __bindgen_anon_1: cs_sysz_op__bindgen_ty_1 { reg: 0 },
         };
         cs_sysz {
             cc: sysz_cc::SYSZ_CC_O,
@@ -338,7 +323,9 @@ mod test {
         // Union types
         let op = cs_x86_op {
             type_: x86_op_type::X86_OP_REG,
-            __bindgen_anon_1: new_bindgen_union!(cs_x86_op__bindgen_ty_1, reg, x86_reg::X86_REG_AH),
+            __bindgen_anon_1: cs_x86_op__bindgen_ty_1 {
+                reg: x86_reg::X86_REG_AH,
+            },
             size: 0,
             avx_bcast: x86_avx_bcast::X86_AVX_BCAST_2,
             avx_zero_opmask: false,
@@ -389,7 +376,7 @@ mod test {
         // Union types
         let op = cs_xcore_op {
             type_: xcore_op_type::XCORE_OP_REG,
-            __bindgen_anon_1: new_bindgen_union!(cs_xcore_op__bindgen_ty_1, reg, 0),
+            __bindgen_anon_1: cs_xcore_op__bindgen_ty_1 { reg: 0 },
         };
         cs_xcore {
             op_count: 0,

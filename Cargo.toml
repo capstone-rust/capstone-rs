@@ -12,7 +12,7 @@ repository = "https://github.com/capstone-rust/capstone-sys"
 [dependencies]
 
 [build-dependencies]
-bindgen = { optional = true, version = "0.26.3" }
+bindgen = { optional = true, version = "0.30.0" }
 pkg-config = "0.3"
 cmake = {optional = true, version = "0.1.2"}
 

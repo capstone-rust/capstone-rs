@@ -48,7 +48,7 @@ fn find_capstone_header(header_search_paths: &Vec<PathBuf>, name: &str) -> Optio
 #[cfg(feature = "use_bindgen")]
 fn write_bindgen_bindings(header_search_paths: &Vec<PathBuf>, update_pregenerated_bindings: bool) {
     let mut builder = bindgen::Builder::default()
-        .unstable_rust(false)
+        .rust_target(bindgen::RustTarget::Stable_1_19)
         .header(
             find_capstone_header(header_search_paths, "capstone.h")
                 .expect("Could not find header")
@@ -77,18 +77,17 @@ fn write_bindgen_bindings(header_search_paths: &Vec<PathBuf>, update_pregenerate
 
     // Write bindings to $OUT_DIR/bindings.rs
     let out_path = PathBuf::from(env::var("OUT_DIR").unwrap()).join(BINDINGS_FILE);
-    bindings.write_to_file(out_path.clone()).expect(
-        "Unable to write bindings",
-    );
+    bindings
+        .write_to_file(out_path.clone())
+        .expect("Unable to write bindings");
 
     if update_pregenerated_bindings {
-        let stored_bindgen_header: PathBuf =
-            [
-                env::var("CARGO_MANIFEST_DIR").expect("Could not find cargo environment variable"),
-                "pre_generated".into(),
-                BINDINGS_FILE.into(),
-            ].iter()
-                .collect();
+        let stored_bindgen_header: PathBuf = [
+            env::var("CARGO_MANIFEST_DIR").expect("Could not find cargo environment variable"),
+            "pre_generated".into(),
+            BINDINGS_FILE.into(),
+        ].iter()
+            .collect();
         copy(out_path, stored_bindgen_header).expect("Unable to update capstone bindings");
     }
 }
@@ -119,9 +118,7 @@ fn main() {
             // TODO: need to add this argument for windows 64-bit, msvc, dunno, read
             // COMPILE_MSVC.txt file cygwin-mingw64
             let out_dir = env::var("OUT_DIR").unwrap();
-            let _ = Command::new("./make.sh")
-                .current_dir("capstone")
-                .status();
+            let _ = Command::new("./make.sh").current_dir("capstone").status();
             let capstone = "libcapstone.a";
             let _ = Command::new("cp")
                 .current_dir("capstone")
