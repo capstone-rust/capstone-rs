@@ -42,14 +42,14 @@
 use std::os::raw::c_int;
 
 // Include pre-generated bindgen bindings
-#[cfg(feature = "use_bundled_capstone_bindings")]
+#[cfg(not(feature = "use_bindgen"))]
 include!(concat!(
     env!("CARGO_MANIFEST_DIR"),
     "/pre_generated/capstone.rs"
 ));
 
 // Include dynamically generated bindings
-#[cfg(not(feature = "use_bundled_capstone_bindings"))]
+#[cfg(feature = "use_bindgen")]
 include!(concat!(env!("OUT_DIR"), "/capstone.rs"));
 
 pub const CS_SUPPORT_DIET: c_int = (cs_arch::CS_ARCH_ALL as c_int) + 1;

@@ -3,17 +3,20 @@
 //! * `UPDATE_CAPSTONE_BINDINGS`: setting indicates that the pre-generated `capstone.rs` should be
 //!   updated with the output bindgen
 
+#[cfg(feature = "use_bindgen")]
 extern crate bindgen;
 extern crate pkg_config;
 
 #[cfg(feature = "build_src_cmake")]
 extern crate cmake;
 
+#[cfg(feature = "use_bindgen")]
 use std::fs::copy;
 use std::path::PathBuf;
 use std::process::Command;
 use std::env;
 
+#[cfg(feature = "use_bindgen")]
 include!("common.rs");
 
 /// Indicates how capstone library should be linked
@@ -29,6 +32,7 @@ fn cmake() {
     println!("cargo:rustc-link-search=native={}/lib", dst.display());
 }
 
+#[cfg(feature = "use_bindgen")]
 /// Search for header in search paths
 fn find_capstone_header(header_search_paths: &Vec<PathBuf>, name: &str) -> Option<PathBuf> {
     for search_path in header_search_paths.iter() {
@@ -41,6 +45,7 @@ fn find_capstone_header(header_search_paths: &Vec<PathBuf>, name: &str) -> Optio
 }
 
 /// Create bindings using bindgen
+#[cfg(feature = "use_bindgen")]
 fn write_bindgen_bindings(header_search_paths: &Vec<PathBuf>, update_pregenerated_bindings: bool) {
     let mut builder = bindgen::Builder::default()
         .unstable_rust(false)
@@ -142,13 +147,15 @@ fn main() {
     let update_pregenerated_bindings = env::var("UPDATE_CAPSTONE_BINDINGS").is_ok();
     if update_pregenerated_bindings {
         assert!(
-            !cfg!(feature = "use_bundled_capstone_bindings"),
+            cfg!(feature = "use_bindgen"),
             concat!(
                 "Setting UPDATE_CAPSTONE_BINDINGS only makes ",
-                "sense when NOT enabling feature use_bundled_capstone_bindings"
+                "sense when enabling feature \"use_bindgen\""
             )
         );
     }
 
+    // Only run bindgen if we are *not* using the bundled capstone bindings
+    #[cfg(feature = "use_bindgen")]
     write_bindgen_bindings(&header_search_paths, update_pregenerated_bindings);
 }

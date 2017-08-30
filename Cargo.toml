@@ -12,14 +12,15 @@ repository = "https://github.com/capstone-rust/capstone-sys"
 [dependencies]
 
 [build-dependencies]
-bindgen = "0.26.3"
+bindgen = { optional = true, version = "0.26.3" }
 pkg-config = "0.3"
 cmake = {optional = true, version = "0.1.2"}
 
 [features]
-# use bundled capstone by default
+# use bundled capstone by default instead of the system capstone
+# use pre-generated bindings instead of dynamically with bindgen
 default = []
 
 use_system_capstone = []
 build_capstone_cmake = ["cmake"]
-use_bundled_capstone_bindings = []
+use_bindgen = ["bindgen"]  # Dynamically generate bindings with bindgen

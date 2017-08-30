@@ -11,4 +11,6 @@ Low-level, unsafe Rust bindings for the `capstone` disassembly library.
 
 * `use_system_capstone`: use the system capstone instead of the bundled copy of the `capstone` library.
 * `build_capstone_cmake`: if using the bundled `capstone` library, then build `capstone` using `cmake`.
-* `use_bundled_capstone_bindings`: instead of using [`bindgen`](https://github.com/rust-lang-nursery/rust-bindgen), use the pre-generated capstone bindings (if available for the current platform).
+* `use_bindgen`: instead of using the pre-generated capstone bindings, dynamically generate bindings with [`bindgen`][bindgen].
+
+[bindgen]: https://github.com/rust-lang-nursery/rust-bindgen
