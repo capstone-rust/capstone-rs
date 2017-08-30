@@ -7,7 +7,7 @@
 extern crate bindgen;
 extern crate pkg_config;
 
-#[cfg(feature = "build_src_cmake")]
+#[cfg(feature = "build_capstone_cmake")]
 extern crate cmake;
 
 #[cfg(feature = "use_bindgen")]
@@ -25,7 +25,7 @@ enum LinkType {
     Static,
 }
 
-#[cfg(feature = "build_src_cmake")]
+#[cfg(feature = "build_capstone_cmake")]
 fn cmake() {
     let mut cfg = cmake::Config::new("capstone");
     let dst = cfg.build();
@@ -111,7 +111,7 @@ fn main() {
         link_type = Some(LinkType::Dynamic);
     } else {
         if cfg!(feature = "build_capstone_cmake") {
-            #[cfg(feature = "build_src_cmake")]
+            #[cfg(feature = "build_capstone_cmake")]
             cmake();
         } else {
             //let target = env::var("TARGET").unwrap();
