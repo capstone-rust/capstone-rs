@@ -31,7 +31,11 @@
 //! * `struct cs_ARCH_op`: instruction operand
 //! * `struct cs_ARCH`: instruction
 //!
-//! <sup>1</sup>: "constified" enum because discriminant values are not unique
+//! **Note**: documentation for functions/types was taken directly from [Capstone C headers][capstone headers].
+//!
+//! [capstone headers]: https://github.com/capstone-rust/capstone-sys/blob/master/capstone/include/capstone.h
+//! <sup>1</sup>: Defined as a ["constified" enum modules](https://docs.rs/bindgen/0.30.0/bindgen/struct.Builder.html#method.constified_enum_module)
+//!               because discriminant values are not unique. Rust requires discriminant values to be unique.
 
 // Suppress errors from Capstone names
 #![allow(non_upper_case_globals)]
