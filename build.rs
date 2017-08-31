@@ -5,6 +5,8 @@
 
 #[cfg(feature = "use_bindgen")]
 extern crate bindgen;
+
+#[cfg(feature = "use_system_capstone")]
 extern crate pkg_config;
 
 #[cfg(feature = "build_capstone_cmake")]
@@ -20,11 +22,13 @@ use std::env;
 include!("common.rs");
 
 /// Indicates how capstone library should be linked
+#[allow(dead_code)]
 enum LinkType {
     Dynamic,
     Static,
 }
 
+/// Build capstone with cmake
 #[cfg(feature = "build_capstone_cmake")]
 fn cmake() {
     let mut cfg = cmake::Config::new("capstone");
@@ -32,8 +36,8 @@ fn cmake() {
     println!("cargo:rustc-link-search=native={}/lib", dst.display());
 }
 
-#[cfg(feature = "use_bindgen")]
 /// Search for header in search paths
+#[cfg(feature = "use_bindgen")]
 fn find_capstone_header(header_search_paths: &Vec<PathBuf>, name: &str) -> Option<PathBuf> {
     for search_path in header_search_paths.iter() {
         let potential_file = search_path.join(name);
@@ -92,22 +96,32 @@ fn write_bindgen_bindings(header_search_paths: &Vec<PathBuf>, update_pregenerate
     }
 }
 
+/// Find system capstone library and return link type
+#[cfg(feature = "use_system_capstone")]
+fn find_system_capstone(header_search_paths: &mut Vec<PathBuf>) -> Option<LinkType> {
+    assert!(
+        !cfg!(feature = "build_capstone_cmake"),
+        "build_capstone_cmake feature is only valid when using bundled cmake"
+    );
+
+    let capstone_lib =
+        pkg_config::find_library("capstone").expect("Could not find system capstone");
+    header_search_paths.append(&mut capstone_lib.include_paths.clone());
+    Some(LinkType::Dynamic)
+}
+
 fn main() {
-    let link_type: Option<LinkType>;
+    #[allow(unused_assignments)]
+    let mut link_type: Option<LinkType> = None;
 
     // C header search paths
     let mut header_search_paths: Vec<PathBuf> = Vec::new();
 
     if cfg!(feature = "use_system_capstone") {
-        assert!(
-            !cfg!(feature = "build_capstone_cmake"),
-            "build_capstone_cmake feature is only valid when using bundled cmake"
-        );
-
-        let capstone_lib =
-            pkg_config::find_library("capstone").expect("Could not find system capstone");
-        header_search_paths.append(&mut capstone_lib.include_paths.clone());
-        link_type = Some(LinkType::Dynamic);
+        #[cfg(feature = "use_system_capstone")]
+        {
+            link_type = find_system_capstone(&mut header_search_paths);
+        }
     } else {
         if cfg!(feature = "build_capstone_cmake") {
             #[cfg(feature = "build_capstone_cmake")]
