@@ -65,6 +65,7 @@ To produce a short demonstration. More complex demos welcome!
 - Binding Author(s):
     - m4b <m4b.github.io@gmail.com>
     - Richo Healey <richo@psych0tik.net>
+    - Travis Finkenauer <tmfinken@gmail.com>
 
 You may find a [full list of contributors on Github](https://github.com/capstone-rust/capstone-rs/graphs/contributors).
 
