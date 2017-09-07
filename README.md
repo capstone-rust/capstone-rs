@@ -4,6 +4,8 @@ Low-level, unsafe Rust bindings for the [`capstone`][capstone] disassembly libra
 
 [capstone]: https://github.com/aquynh/capstone
 
+**[API Documentation](https://docs.rs/capstone-sys/)**
+
 
 ## Requirements
 
@@ -12,6 +14,7 @@ Low-level, unsafe Rust bindings for the [`capstone`][capstone] disassembly libra
 * One of the following:
     1. A toolchain capable of compiling `capstone` (see the [`make.sh`](capstone/make.sh) script)
     2. A pre-built version 3.0 `capstone` dynamic library (specify the `use_system_capstone` feature)
+
 
 ## Features
 
