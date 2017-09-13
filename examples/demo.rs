@@ -1,11 +1,17 @@
 extern crate capstone;
 
+use capstone::prelude::*;
+
 const CODE: &'static [u8] = b"\x55\x48\x8b\x05\xb8\x13\x00\x00";
 
-fn example() -> capstone::CsResult<()> {
-    let mut cs = capstone::Capstone::new(capstone::Arch::X86, capstone::Mode::Mode64)?;
-    cs.set_detail(true).unwrap();
-    cs.att();
+fn example() -> CsResult<()> {
+    let cs = Capstone::new()
+        .x86()
+        .mode(arch::x86::ArchMode::Mode64)
+        .syntax(arch::x86::ArchSyntax::Att)
+        .detail(true)
+        .build()?;
+
     let insns = cs.disasm_all(CODE, 0x1000)?;
     println!("Got {} instructions", insns.len());
     for i in insns.iter() {

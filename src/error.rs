@@ -11,6 +11,7 @@ use std::result;
 /// Create `RustFeatures` struct definition, `new()`, and a getter for each field
 macro_rules! capstone_error_def {
     ( $( $( #[$attr:meta] )* => $rust_variant:ident = $cs_variant:ident; )* ) => {
+        /// Error for Capstone
         #[derive(Copy, Clone, Debug, Eq, Hash, PartialEq)]
         pub enum CapstoneError {
             $(

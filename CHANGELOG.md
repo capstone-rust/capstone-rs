@@ -5,6 +5,13 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+### Added
+- `Capstone::new_raw()` has the same interface as the old `Capstone::new_raw()`
+- Add setters to modify mode, syntax, etc.
+
+### Changed
+- `Capstone::new()` uses the builder pattern
+- Partition `Mode` enum into: `Mode`, `ExtraMode`, and `Endian`
 
 ## [0.1.0] - 2017-09-29
 ### Added
