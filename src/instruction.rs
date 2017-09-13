@@ -3,7 +3,7 @@ extern crate libc;
 use std::ffi::CStr;
 use std::ptr;
 use std::str;
-use std::fmt::{self, Display, Debug, Formatter, Error};
+use std::fmt::{self, Debug, Display, Error, Formatter};
 use capstone_sys::*;
 
 /// Representation of the array of instructions returned by disasm
@@ -67,8 +67,8 @@ impl<'a> Iterator for InstructionIterator<'a> {
 /// A wrapper for the raw capstone-sys instruction
 pub struct Insn(pub(crate) cs_insn);
 
-/// A wrapper for the raw capstone-sys detail struct, which contains register information in addition
-/// to architecture specific information
+/// Contains extra information about an instruction such as register reads in
+/// addition to architecture-specific information
 pub struct Detail<'a>(pub(crate) &'a cs_detail);
 
 impl Insn {
