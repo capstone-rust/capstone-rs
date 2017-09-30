@@ -4,6 +4,9 @@ Low-level, unsafe Rust bindings for the [`capstone`][capstone] disassembly libra
 
 [capstone]: https://github.com/aquynh/capstone
 
+[![Crates.io Badge](https://img.shields.io/crates/v/capstone-sys.svg)](https://crates.io/crates/capstone-sys)
+[![Travis CI Badge](https://travis-ci.org/capstone-rust/capstone-sys.svg?branch=master)](https://travis-ci.org/capstone-rust/capstone-sys)
+
 **[API Documentation](https://docs.rs/capstone-sys/)**
 
 
@@ -23,7 +26,8 @@ Low-level, unsafe Rust bindings for the [`capstone`][capstone] disassembly libra
 `capstone-sys` supports the following features:
 
 * `use_system_capstone`: use the system capstone instead of the bundled copy of the `capstone` library.
-    - Requires that `capstone` is already installed on the system
+    - Requires that `capstone` is already installed on the system. We highly recommend that you supply the exact version bundled with `capstone-sys`.
+        - See the `CAPSTONE_REVISION` variable in [`scripts/update_capstone.sh`](scripts/update_capstone.sh) to determine the exact Capstone version.
     - Eliminates the default step of compiling `capstone`
 * `build_capstone_cmake`: if using the bundled `capstone` library, then build `capstone` using `cmake`.
 * `use_bindgen`: instead of using the pre-generated capstone bindings, dynamically generate bindings with [`bindgen`][bindgen].

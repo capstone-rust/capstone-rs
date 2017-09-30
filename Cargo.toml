@@ -4,10 +4,16 @@ version = "0.5.0"
 authors = ["m4b <m4b.github.io@gmail.com>", "tmfink <tmfinken@gmail.com>"]
 description = "System bindings to the capstone disassembly library"
 build = "build.rs"
+keywords = ["disassemble"]
+categories = ["external-ffi-bindings"]
 links = "capstone"
 license = "MIT"
 readme = "README.md"
 repository = "https://github.com/capstone-rust/capstone-sys"
+
+[badges]
+travis-ci = { repository = "capstone-rust/capstone-sys" }
+
 
 [dependencies]
 
