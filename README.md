@@ -55,6 +55,10 @@ You can run:
 
 To produce a short demonstration. More complex demos welcome!
 
+# Minimum Rust Version
+
+`capstone-rs` requires Rust `1.20.0` or later.
+
 # Author
 
 - Library Author: Nguyen Anh Quynh
