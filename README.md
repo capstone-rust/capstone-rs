@@ -66,9 +66,7 @@ To produce a short demonstration. More complex demos welcome!
     - m4b <m4b.github.io@gmail.com>
     - Richo Healey <richo@psych0tik.net>
 
-# Contributors
-
-- @ekse
+You may find a [full list of contributors on Github](https://github.com/capstone-rust/capstone-rs/graphs/contributors).
 
 # License
 
