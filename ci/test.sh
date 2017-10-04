@@ -27,7 +27,7 @@ fi
 
 echo "Test should $EXPECTED_RESULT"
 
-if [ "${TRAVIS_OS_NAME}" == "linux" ]; then
+if [ "${TRAVIS_OS_NAME}" = "linux" ]; then
     export PLATFORM="linux-gnu-ubuntu-14.04"
 else
     export PLATFORM="apple-darwin"
@@ -104,12 +104,10 @@ expect_exit_status() {
     fi
 }
 
-RUST_PROFILE="$(
-    case "$RUST_PROFILE" in
-    debug) ;; # nothing
-    release) echo "--release" ;;
-    esac
-)"
+case "$RUST_PROFILE" in
+debug) RUST_PROFILE= ;;
+release) RUST_PROFILE="--release" ;;
+esac
 
 # Note that `$RUST_PROFILE` is never in quotes so that it expands to nothing
 # (not even an empty string argument) when the variable is empty. This is

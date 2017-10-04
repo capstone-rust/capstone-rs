@@ -21,6 +21,8 @@ use std::env;
 #[cfg(feature = "use_bindgen")]
 include!("common.rs");
 
+const CAPSTONE_DIR: &'static str = "capstone";
+
 /// Indicates how capstone library should be linked
 #[allow(dead_code)]
 enum LinkType {
@@ -46,6 +48,12 @@ fn find_capstone_header(header_search_paths: &Vec<PathBuf>, name: &str) -> Optio
         }
     }
     None
+}
+
+/// Gets environment variable value. Panics if variable is not set.
+fn env_var(var: &str) -> String {
+    env::var(var)
+        .expect(&format!("Environment variable {} is not set", var))
 }
 
 /// Create bindings using bindgen
@@ -80,14 +88,14 @@ fn write_bindgen_bindings(header_search_paths: &Vec<PathBuf>, update_pregenerate
     let bindings = builder.generate().expect("Unable to generate bindings");
 
     // Write bindings to $OUT_DIR/bindings.rs
-    let out_path = PathBuf::from(env::var("OUT_DIR").unwrap()).join(BINDINGS_FILE);
+    let out_path = PathBuf::from(env_var("OUT_DIR")).join(BINDINGS_FILE);
     bindings
         .write_to_file(out_path.clone())
         .expect("Unable to write bindings");
 
     if update_pregenerated_bindings {
         let stored_bindgen_header: PathBuf = [
-            env::var("CARGO_MANIFEST_DIR").expect("Could not find cargo environment variable"),
+            env_var("CARGO_MANIFEST_DIR"),
             "pre_generated".into(),
             BINDINGS_FILE.into(),
         ].iter()
@@ -116,6 +124,7 @@ fn main() {
 
     // C header search paths
     let mut header_search_paths: Vec<PathBuf> = Vec::new();
+    let target_os = env_var("CARGO_CFG_TARGET_OS");
 
     if cfg!(feature = "use_system_capstone") {
         #[cfg(feature = "use_system_capstone")]
@@ -127,18 +136,29 @@ fn main() {
             #[cfg(feature = "build_capstone_cmake")]
             cmake();
         } else {
-            //let target = env::var("TARGET").unwrap();
-            //let windows = target.contains("windows");
             // TODO: need to add this argument for windows 64-bit, msvc, dunno, read
             // COMPILE_MSVC.txt file cygwin-mingw64
-            let out_dir = env::var("OUT_DIR").unwrap();
-            let _ = Command::new("./make.sh").current_dir("capstone").status();
+
+            // In BSDs, `make` does not refer to GNU make
+            let make_cmd = if target_os.contains("bsd") || target_os == "dragonfly" {
+                "gmake"
+            } else {
+                "make"
+            };
+
+            let out_dir = env_var("OUT_DIR");
+            Command::new(make_cmd)
+                .current_dir(CAPSTONE_DIR)
+                .status()
+                .expect("Failed to build Capstone library");
             let capstone = "libcapstone.a";
-            let _ = Command::new("cp")
-                .current_dir("capstone")
+            Command::new("cp")
+                .current_dir(CAPSTONE_DIR)
                 .arg(&capstone)
                 .arg(&out_dir)
-                .status();
+                .status()
+                .expect("Failed to copy capstone library to OUT_DIR");
+
             println!("cargo:rustc-link-search=native={}", out_dir);
         }
         header_search_paths.push(PathBuf::from("capstone/include"));
