@@ -8,29 +8,32 @@ There's an example in `demo.rs`, but as a sample:
 ```rust
 extern crate capstone;
 
-const CODE: &'static [u8; 8] = b"\x55\x48\x8b\x05\xb8\x13\x00\x00";
+use capstone::prelude::*;
+
+const CODE: &'static [u8] = b"\x55\x48\x8b\x05\xb8\x13\x00\x00";
+
+fn example() -> CsResult<()> {
+    let cs = Capstone::new()
+        .x86()
+        .mode(arch::x86::ArchMode::Mode64)
+        .syntax(arch::x86::ArchSyntax::Att)
+        .detail(true)
+        .build()?;
+
+    let insns = cs.disasm_all(CODE, 0x1000)?;
+    println!("Got {} instructions", insns.len());
+    for i in insns.iter() {
+        println!("{}", i);
+        println!("    read regs: {:?}", cs.read_registers(&i).unwrap());
+        println!("    write regs: {:?}", cs.write_registers(&i).unwrap());
+        println!("    insn groups: {:?}", cs.insn_groups(&i).unwrap());
+    }
+    Ok(())
+}
 
 fn main() {
-    match capstone::Capstone::new(capstone::Arch::X86) {
-        Ok(cs) => {
-            cs.detail().unwrap();
-            cs.att();
-            match cs.disasm(CODE, 0x1000) {
-                Ok(insns) => {
-                    println!("Got {} instructions", insns.len());
-                    for i in insns.iter() {
-                        println!("{}", i);
-                        println!("detail: {:?}", i.detail());
-                    }
-                },
-                Err(err) => {
-                    println!("Error disassembling: {}", err);
-                }
-            }
-        },
-        Err(err) => {
-            println!("Error creating disassembler: {}", err);
-        }
+    if let Err(err) = example() {
+        println!("Error: {}", err);
     }
 }
 ```
@@ -39,8 +42,14 @@ Produces:
 
 ```
 Got 2 instructions
-0x1000: push rbp
-0x1001: mov rax, qword ptr [rip + 0x13b8]
+0x1000: pushq %rbp
+    read regs: [44]
+    write regs: [44]
+    insn groups: [145]
+0x1001: movq 0x13b8(%rip), %rax
+    read regs: []
+    write regs: []
+    insn groups: []
 ```
 
 # Reporting Issues
