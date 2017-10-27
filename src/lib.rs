@@ -31,7 +31,8 @@
 //! * `struct cs_ARCH_op`: instruction operand
 //! * `struct cs_ARCH`: instruction
 //!
-//! **Note**: documentation for functions/types was taken directly from [Capstone C headers][capstone headers].
+//! **Note**: documentation for functions/types was taken directly from
+//! [Capstone C headers][capstone headers].
 //!
 //! [capstone headers]: https://github.com/capstone-rust/capstone-sys/blob/master/capstone/include/capstone.h
 //! <sup>1</sup>: Defined as a ["constified" enum modules](https://docs.rs/bindgen/0.30.0/bindgen/struct.Builder.html#method.constified_enum_module)
@@ -45,15 +46,7 @@
 
 use std::os::raw::c_int;
 
-// Include pre-generated bindgen bindings
-#[cfg(not(feature = "use_bindgen"))]
-include!(concat!(
-    env!("CARGO_MANIFEST_DIR"),
-    "/pre_generated/capstone.rs"
-));
-
-// Include dynamically generated bindings
-#[cfg(feature = "use_bindgen")]
+// Bindings should be copied here
 include!(concat!(env!("OUT_DIR"), "/capstone.rs"));
 
 pub const CS_SUPPORT_DIET: c_int = (cs_arch::CS_ARCH_ALL as c_int) + 1;
@@ -222,9 +215,7 @@ mod test {
         // Union structs
         let op = cs_ppc_op {
             type_: ppc_op_type::PPC_OP_REG,
-            __bindgen_anon_1: cs_ppc_op__bindgen_ty_1 {
-                reg: ppc_reg::PPC_REG_CARRY,
-            },
+            __bindgen_anon_1: cs_ppc_op__bindgen_ty_1 { reg: ppc_reg::PPC_REG_CARRY },
         };
         cs_ppc {
             bc: ppc_bc::PPC_BC_LT,
@@ -327,9 +318,7 @@ mod test {
         // Union types
         let op = cs_x86_op {
             type_: x86_op_type::X86_OP_REG,
-            __bindgen_anon_1: cs_x86_op__bindgen_ty_1 {
-                reg: x86_reg::X86_REG_AH,
-            },
+            __bindgen_anon_1: cs_x86_op__bindgen_ty_1 { reg: x86_reg::X86_REG_AH },
             size: 0,
             avx_bcast: x86_avx_bcast::X86_AVX_BCAST_2,
             avx_zero_opmask: false,

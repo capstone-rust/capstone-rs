@@ -12,13 +12,11 @@ extern crate pkg_config;
 #[cfg(feature = "build_capstone_cmake")]
 extern crate cmake;
 
-#[cfg(feature = "use_bindgen")]
 use std::fs::copy;
 use std::path::PathBuf;
 use std::process::Command;
 use std::env;
 
-#[cfg(feature = "use_bindgen")]
 include!("common.rs");
 
 const CAPSTONE_DIR: &'static str = "capstone";
@@ -52,13 +50,17 @@ fn find_capstone_header(header_search_paths: &Vec<PathBuf>, name: &str) -> Optio
 
 /// Gets environment variable value. Panics if variable is not set.
 fn env_var(var: &str) -> String {
-    env::var(var)
-        .expect(&format!("Environment variable {} is not set", var))
+    env::var(var).expect(&format!("Environment variable {} is not set", var))
 }
 
 /// Create bindings using bindgen
 #[cfg(feature = "use_bindgen")]
-fn write_bindgen_bindings(header_search_paths: &Vec<PathBuf>, update_pregenerated_bindings: bool) {
+fn write_bindgen_bindings(
+    header_search_paths: &Vec<PathBuf>,
+    update_pregenerated_bindings: bool,
+    pregenerated_bindgen_header: PathBuf,
+    out_path: PathBuf,
+) {
     let mut builder = bindgen::Builder::default()
         .rust_target(bindgen::RustTarget::Stable_1_19)
         .header(
@@ -88,19 +90,12 @@ fn write_bindgen_bindings(header_search_paths: &Vec<PathBuf>, update_pregenerate
     let bindings = builder.generate().expect("Unable to generate bindings");
 
     // Write bindings to $OUT_DIR/bindings.rs
-    let out_path = PathBuf::from(env_var("OUT_DIR")).join(BINDINGS_FILE);
-    bindings
-        .write_to_file(out_path.clone())
-        .expect("Unable to write bindings");
+    bindings.write_to_file(out_path.clone()).expect(
+        "Unable to write bindings",
+    );
 
     if update_pregenerated_bindings {
-        let stored_bindgen_header: PathBuf = [
-            env_var("CARGO_MANIFEST_DIR"),
-            "pre_generated".into(),
-            BINDINGS_FILE.into(),
-        ].iter()
-            .collect();
-        copy(out_path, stored_bindgen_header).expect("Unable to update capstone bindings");
+        copy(out_path, pregenerated_bindgen_header).expect("Unable to update capstone bindings");
     }
 }
 
@@ -133,8 +128,7 @@ fn main() {
         }
     } else {
         if cfg!(feature = "build_capstone_cmake") {
-            #[cfg(feature = "build_capstone_cmake")]
-            cmake();
+            #[cfg(feature = "build_capstone_cmake")] cmake();
         } else {
             // TODO: need to add this argument for windows 64-bit, msvc, dunno, read
             // COMPILE_MSVC.txt file cygwin-mingw64
@@ -186,7 +180,24 @@ fn main() {
         );
     }
 
+    let pregenerated_bindgen_header: PathBuf = [
+        env_var("CARGO_MANIFEST_DIR"),
+        "pre_generated".into(),
+        BINDINGS_FILE.into(),
+    ].iter()
+        .collect();
+    let out_path = PathBuf::from(env_var("OUT_DIR")).join(BINDINGS_FILE);
+
     // Only run bindgen if we are *not* using the bundled capstone bindings
     #[cfg(feature = "use_bindgen")]
-    write_bindgen_bindings(&header_search_paths, update_pregenerated_bindings);
+    write_bindgen_bindings(
+        &header_search_paths,
+        update_pregenerated_bindings,
+        pregenerated_bindgen_header,
+        out_path,
+    );
+
+    // Otherwise, copy the pregenerated bindings
+    #[cfg(not(feature = "use_bindgen"))]
+    copy(&pregenerated_bindgen_header, &out_path).expect("Unable to update capstone bindings");
 }

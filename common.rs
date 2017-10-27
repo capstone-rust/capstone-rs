@@ -4,7 +4,7 @@
 
 #[derive(Clone, Copy, PartialEq, Eq, Debug, Hash)]
 /// Information specific to architecture
-struct CapstoneArchInfo<'a> {
+pub struct CapstoneArchInfo<'a> {
     /// name of C header
     header_name: &'a str,
 
@@ -12,7 +12,7 @@ struct CapstoneArchInfo<'a> {
     cs_name: &'a str,
 }
 
-static ARCH_INCLUDES: &'static [CapstoneArchInfo<'static>] = &[
+pub static ARCH_INCLUDES: &'static [CapstoneArchInfo<'static>] = &[
     CapstoneArchInfo {
         header_name: "arm.h",
         cs_name: "arm",
@@ -47,4 +47,4 @@ static ARCH_INCLUDES: &'static [CapstoneArchInfo<'static>] = &[
     },
 ];
 
-static BINDINGS_FILE: &'static str = "capstone.rs";
+pub static BINDINGS_FILE: &'static str = "capstone.rs";
