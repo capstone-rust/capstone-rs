@@ -46,7 +46,6 @@
 //!
 
 extern crate capstone_sys;
-extern crate libc;
 
 pub mod arch;
 mod capstone;

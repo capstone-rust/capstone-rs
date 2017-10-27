@@ -1,6 +1,5 @@
-extern crate libc;
-
 use std::ffi::CStr;
+use std::os::raw::c_uint;
 use std::ptr;
 use std::str;
 use std::fmt::{self, Debug, Display, Error, Formatter};
@@ -37,7 +36,7 @@ impl Instructions {
 impl Drop for Instructions {
     fn drop(&mut self) {
         unsafe {
-            cs_free(self.ptr, self.len as libc::size_t);
+            cs_free(self.ptr, self.len as usize);
         }
     }
 }
@@ -85,7 +84,7 @@ impl Insn {
     }
 
     /// Access instruction id
-    pub fn id(&self) -> libc::c_uint {
+    pub fn id(&self) -> c_uint {
         self.0.id
     }
 
@@ -141,32 +140,32 @@ impl Display for Insn {
 
 impl<'a> Detail<'a> {
     /// Returns the implicit read registers
-    pub fn regs_read(&self) -> &[libc::uint8_t] {
+    pub fn regs_read(&self) -> &[u8] {
         &(*self.0).regs_read[..self.regs_read_count() as usize]
     }
 
     /// Returns the number of implicit read registers
-    pub fn regs_read_count(&self) -> libc::uint8_t {
+    pub fn regs_read_count(&self) -> u8 {
         (*self.0).regs_read_count
     }
 
     /// Returns the implicit write registers
-    pub fn regs_write(&self) -> &[libc::uint8_t] {
+    pub fn regs_write(&self) -> &[u8] {
         &(*self.0).regs_write[..self.regs_write_count() as usize]
     }
 
     /// Returns the number of implicit write registers
-    pub fn regs_write_count(&self) -> libc::uint8_t {
+    pub fn regs_write_count(&self) -> u8 {
         (*self.0).regs_write_count
     }
 
     /// Returns the groups to which this instruction belongs
-    pub fn groups(&'a self) -> &'a [libc::uint8_t] {
+    pub fn groups(&'a self) -> &'a [u8] {
         &(*self.0).groups[..self.groups_count() as usize]
     }
 
     /// Returns the number groups to which this instruction belongs
-    pub fn groups_count(&self) -> libc::uint8_t {
+    pub fn groups_count(&self) -> u8 {
         (*self.0).groups_count
     }
 }
