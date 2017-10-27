@@ -12,7 +12,7 @@ version = "0.1.0"
 
 [dependencies]
 libc = "0.2"
-capstone-sys = "0.5.0"
+capstone-sys = "0.6.0"
 
 # Not actually a dependency, but this makes the more complicated examples work
 [dev-dependencies]
