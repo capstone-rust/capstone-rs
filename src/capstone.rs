@@ -1,8 +1,8 @@
-use libc;
 use std::convert::From;
 use std::ffi::CStr;
 use std::marker::PhantomData;
 use std::mem;
+use std::os::raw::{c_int, c_uint};
 use error::*;
 use arch::CapstoneBuilder;
 use capstone_sys::*;
@@ -288,7 +288,7 @@ impl Capstone {
     /// Converts a register id `reg_id` to a `String` containing the register name.
     pub fn reg_name(&self, reg_id: u64) -> Option<String> {
         let reg_name = unsafe {
-            let _reg_name = cs_reg_name(self.csh, reg_id as libc::c_uint);
+            let _reg_name = cs_reg_name(self.csh, reg_id as c_uint);
             if _reg_name.is_null() {
                 return None;
             }
@@ -304,7 +304,7 @@ impl Capstone {
     /// Note: This function ignores the current syntax and uses the default syntax.
     pub fn insn_name(&self, insn_id: u64) -> Option<String> {
         let insn_name = unsafe {
-            let _insn_name = cs_insn_name(self.csh, insn_id as libc::c_uint);
+            let _insn_name = cs_insn_name(self.csh, insn_id as c_uint);
             if _insn_name.is_null() {
                 return None;
             }
@@ -317,7 +317,7 @@ impl Capstone {
     /// Converts a group id `group_id` to a `String` containing the group name.
     pub fn group_name(&self, group_id: u64) -> Option<String> {
         let group_name = unsafe {
-            let _group_name = cs_group_name(self.csh, group_id as libc::c_uint);
+            let _group_name = cs_group_name(self.csh, group_id as c_uint);
             if _group_name.is_null() {
                 return None;
             }
@@ -353,7 +353,7 @@ impl Capstone {
             cs_insn_group(
                 self.csh,
                 &insn.0 as *const cs_insn,
-                group_id as libc::c_uint,
+                group_id as c_uint,
             )
         })
     }
@@ -362,7 +362,7 @@ impl Capstone {
     /// Returns groups ids to which an instruction belongs.
     pub fn insn_groups<'i>(&self, insn: &'i Insn) -> CsResult<&'i [u8]> {
         let detail = self.insn_detail(insn)?;
-        let group_ids: &'i [libc::uint8_t] = unsafe { mem::transmute(detail.groups()) };
+        let group_ids: &'i [u8] = unsafe { mem::transmute(detail.groups()) };
         Ok(group_ids)
     }
 
@@ -370,14 +370,14 @@ impl Capstone {
     pub fn register_id_is_read(&self, insn: &Insn, reg_id: u64) -> CsResult<bool> {
         self.insn_detail(insn)?;
         Ok(unsafe {
-            cs_reg_read(self.csh, &insn.0 as *const cs_insn, reg_id as libc::c_uint)
+            cs_reg_read(self.csh, &insn.0 as *const cs_insn, reg_id as c_uint)
         })
     }
 
     /// Returns list of ids of registers that are implicitly read by instruction `insn`.
     pub fn read_registers<'i>(&self, insn: &'i Insn) -> CsResult<&'i [u8]> {
         let detail = self.insn_detail(insn)?;
-        let reg_read_ids: &'i [libc::uint8_t] = unsafe { mem::transmute(detail.regs_read()) };
+        let reg_read_ids: &'i [u8] = unsafe { mem::transmute(detail.regs_read()) };
         Ok(reg_read_ids)
     }
 
@@ -385,23 +385,23 @@ impl Capstone {
     pub fn register_is_written(&self, insn: &Insn, reg_id: u64) -> CsResult<bool> {
         self.insn_detail(insn)?;
         Ok(unsafe {
-            cs_reg_write(self.csh, &insn.0 as *const cs_insn, reg_id as libc::c_uint)
+            cs_reg_write(self.csh, &insn.0 as *const cs_insn, reg_id as c_uint)
         })
     }
 
     /// Returns a list of ids of registers that are implicitly written to by the instruction `insn`.
     pub fn write_registers<'i>(&self, insn: &'i Insn) -> CsResult<&'i [u8]> {
         let detail = self.insn_detail(insn)?;
-        let reg_write_ids: &'i [libc::uint8_t] = unsafe { mem::transmute(detail.regs_write()) };
+        let reg_write_ids: &'i [u8] = unsafe { mem::transmute(detail.regs_write()) };
         Ok(reg_write_ids)
     }
 
     /// Returns a tuple (major, minor) indicating the version of the capstone C library.
     pub fn lib_version() -> (u32, u32) {
-        let mut major: libc::c_int = 0;
-        let mut minor: libc::c_int = 0;
-        let major_ptr: *mut libc::c_int = &mut major;
-        let minor_ptr: *mut libc::c_int = &mut minor;
+        let mut major: c_int = 0;
+        let mut minor: c_int = 0;
+        let major_ptr: *mut c_int = &mut major;
+        let minor_ptr: *mut c_int = &mut minor;
 
         // We can ignore the "hexical" version returned by capstone because we already have the
         // major and minor versions
@@ -412,12 +412,12 @@ impl Capstone {
 
     /// Returns whether the capstone library supports a given architecture.
     pub fn supports_arch(arch: Arch) -> bool {
-        unsafe { cs_support(arch as libc::c_int) }
+        unsafe { cs_support(arch as c_int) }
     }
 
     /// Returns whether the capstone library was compiled in diet mode.
     pub fn is_diet() -> bool {
-        unsafe { cs_support(CS_SUPPORT_DIET as libc::c_int) }
+        unsafe { cs_support(CS_SUPPORT_DIET as c_int) }
     }
 }
 
