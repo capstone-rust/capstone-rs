@@ -350,17 +350,13 @@ impl Capstone {
     pub fn insn_belongs_to_group(&self, insn: &Insn, group_id: u64) -> CsResult<bool> {
         self.insn_detail(insn)?;
         Ok(unsafe {
-            cs_insn_group(
-                self.csh,
-                &insn.0 as *const cs_insn,
-                group_id as c_uint,
-            )
+            cs_insn_group(self.csh, &insn.0 as *const cs_insn, group_id as c_uint)
         })
     }
 
 
     /// Returns groups ids to which an instruction belongs.
-    pub fn insn_groups<'i>(&self, insn: &'i Insn) -> CsResult<&'i [u8]> {
+    pub fn insn_group_ids<'i>(&self, insn: &'i Insn) -> CsResult<&'i [u8]> {
         let detail = self.insn_detail(insn)?;
         let group_ids: &'i [u8] = unsafe { mem::transmute(detail.groups()) };
         Ok(group_ids)
@@ -375,14 +371,14 @@ impl Capstone {
     }
 
     /// Returns list of ids of registers that are implicitly read by instruction `insn`.
-    pub fn read_registers<'i>(&self, insn: &'i Insn) -> CsResult<&'i [u8]> {
+    pub fn read_register_ids<'i>(&self, insn: &'i Insn) -> CsResult<&'i [u8]> {
         let detail = self.insn_detail(insn)?;
         let reg_read_ids: &'i [u8] = unsafe { mem::transmute(detail.regs_read()) };
         Ok(reg_read_ids)
     }
 
     /// Checks if an instruction implicitly writes to a register with id `reg_id`.
-    pub fn register_is_written(&self, insn: &Insn, reg_id: u64) -> CsResult<bool> {
+    pub fn register_id_is_written(&self, insn: &Insn, reg_id: u64) -> CsResult<bool> {
         self.insn_detail(insn)?;
         Ok(unsafe {
             cs_reg_write(self.csh, &insn.0 as *const cs_insn, reg_id as c_uint)
@@ -390,7 +386,7 @@ impl Capstone {
     }
 
     /// Returns a list of ids of registers that are implicitly written to by the instruction `insn`.
-    pub fn write_registers<'i>(&self, insn: &'i Insn) -> CsResult<&'i [u8]> {
+    pub fn write_register_ids<'i>(&self, insn: &'i Insn) -> CsResult<&'i [u8]> {
         let detail = self.insn_detail(insn)?;
         let reg_write_ids: &'i [u8] = unsafe { mem::transmute(detail.regs_write()) };
         Ok(reg_write_ids)

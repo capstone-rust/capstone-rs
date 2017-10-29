@@ -278,7 +278,7 @@ mod test {
         test_instruction_helper(&cs, insn, mnemonic_name, bytes, has_default_syntax);
 
         // Assert expected instruction groups is a subset of computed groups through ids
-        let instruction_group_ids: HashSet<u8> = cs.insn_groups(&insn)
+        let instruction_group_ids: HashSet<u8> = cs.insn_group_ids(&insn)
             .expect("failed to get instruction groups")
             .iter()
             .map(|&x| x)
@@ -292,7 +292,7 @@ mod test {
         );
 
         // Assert expected instruction groups is a subset of computed groups through enum
-        let instruction_groups_set: HashSet<u8> = cs.insn_groups(&insn)
+        let instruction_groups_set: HashSet<u8> = cs.insn_group_ids(&insn)
             .expect("failed to get instruction groups")
             .iter()
             .map(|&x| x)
@@ -341,9 +341,9 @@ mod test {
             );
         }
 
-        // @todo: check read_registers
+        // @todo: check read_register_ids
 
-        // @todo: check write_registers
+        // @todo: check write_register_ids
     }
 
     fn instructions_match_group(

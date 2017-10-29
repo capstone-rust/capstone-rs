@@ -12,6 +12,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Changed
 - `Capstone::new()` uses the builder pattern
 - Partition `Mode` enum into: `Mode`, `ExtraMode`, and `Endian`
+- Rename `Capstone` methods that return IDs to include `_ids` in name
+    - Example: `read_registers()` renamed to `read_register_ids()`
 
 ## [0.1.0] - 2017-09-29
 ### Added
