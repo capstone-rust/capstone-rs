@@ -144,7 +144,7 @@ mod test {
             .mode(arm64::ArchMode::Arm)
             .build()
             .unwrap();
-        assert!(cs.disasm_all(ARM_CODE, 0x1000).is_err());
+        assert!(cs.disasm_all(ARM_CODE, 0x1000).unwrap().is_empty());
     }
 
     #[test]

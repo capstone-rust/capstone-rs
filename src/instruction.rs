@@ -13,14 +13,23 @@ pub struct Instructions {
 }
 
 impl Instructions {
-    pub unsafe fn from_raw_parts(ptr: *mut cs_insn, len: isize) -> Instructions {
+    pub(crate) unsafe fn from_raw_parts(ptr: *mut cs_insn, len: isize) -> Instructions {
         Instructions { ptr: ptr, len: len }
     }
 
+    pub(crate) fn new_empty() -> Instructions {
+        Instructions {
+            ptr: ptr::null_mut(),
+            len: 0,
+        }
+    }
+
+    /// Get number of instructions
     pub fn len(&self) -> isize {
         self.len
     }
 
+    /// Iterator over instructions
     pub fn iter(&self) -> InstructionIterator {
         InstructionIterator {
             insns: self,
