@@ -173,11 +173,15 @@ impl Capstone {
             )
         };
         if insn_count == 0 {
-            return self.error_result();
+            match self.error_result() {
+                Ok(_) => Ok(Instructions::new_empty()),
+                Err(err) => Err(err),
+            }
+        } else {
+            Ok(unsafe {
+                Instructions::from_raw_parts(ptr, insn_count as isize)
+            })
         }
-        Ok(unsafe {
-            Instructions::from_raw_parts(ptr, insn_count as isize)
-        })
     }
 
     /// Returns the raw mode value, which is useful for debugging
@@ -251,9 +255,15 @@ impl Capstone {
     /// See the capstone-sys documentation for more information.
     => pub, set_mode, CS_OPT_MODE, mode : Mode; cs_mode);
 
-    /// Returns an `CsResult::Err` based on current errno.
-    fn error_result<T>(&self) -> CsResult<T> {
-        Err(unsafe { cs_errno(self.csh) }.into())
+    /// Returns a `CsResult` based on current errno.
+    /// If the errno is CS_ERR_OK, then Ok(()) is returned. Otherwise, the error is returned.
+    fn error_result(&self) -> CsResult<()> {
+        let errno = unsafe { cs_errno(self.csh) };
+        if errno == cs_err::CS_ERR_OK {
+            Ok(())
+        } else {
+            Err(errno.into())
+        }
     }
 
     /// Sets disassembling options at runtime.
