@@ -3,6 +3,7 @@ use std::os::raw::c_uint;
 use std::ptr;
 use std::str;
 use std::fmt::{self, Debug, Display, Error, Formatter};
+use std::marker::Sync;
 use capstone_sys::*;
 
 /// Representation of the array of instructions returned by disasm
@@ -48,6 +49,10 @@ impl Drop for Instructions {
             cs_free(self.ptr, self.len as usize);
         }
     }
+}
+
+unsafe impl Sync for Instructions {
+
 }
 
 /// An iterator over the instructions returned by disasm
