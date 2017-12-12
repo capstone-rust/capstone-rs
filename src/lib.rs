@@ -66,9 +66,9 @@ pub use error::*;
 /// use capstone::prelude::*;
 /// ```
 pub mod prelude {
-    pub use {Capstone, CsResult};
+    pub use {Capstone, CsResult, RegId, InsnGroupId, InsnId, RegIdInt, InsnGroupIdInt, InsnIdInt};
     pub use arch::{self, BuildsCapstone, BuildsCapstoneEndian, BuildsCapstoneExtraMode,
-                   BuildsCapstoneSyntax};
+                   BuildsCapstoneSyntax, DetailsArch, ArchDetail};
 }
 
 #[cfg(test)]
@@ -151,33 +151,33 @@ mod test {
     fn test_x86_names() {
         match Capstone::new().x86().mode(x86::ArchMode::Mode32).build() {
             Ok(cs) => {
-                let reg_id = 1;
+                let reg_id = RegId(1);
                 match cs.reg_name(reg_id) {
                     Some(reg_name) => assert_eq!(reg_name, "ah"),
                     None => assert!(false, "Couldn't get register name"),
                 }
 
-                let insn_id = 1;
+                let insn_id = InsnId(1);
                 match cs.insn_name(insn_id) {
                     Some(insn_name) => assert_eq!(insn_name, "aaa"),
                     None => assert!(false, "Couldn't get instruction name"),
                 }
 
-                assert_eq!(cs.group_name(1), Some(String::from("jump")));
+                assert_eq!(cs.group_name(InsnGroupId(1)), Some(String::from("jump")));
 
-                let reg_id = 6000;
+                let reg_id = RegId(250);
                 match cs.reg_name(reg_id) {
                     Some(_) => assert!(false, "invalid register worked"),
                     None => {}
                 }
 
-                let insn_id = 6000;
+                let insn_id = InsnId(6000);
                 match cs.insn_name(insn_id) {
                     Some(_) => assert!(false, "invalid instruction worked"),
                     None => {}
                 }
 
-                assert_eq!(cs.group_name(6000), None);
+                assert_eq!(cs.group_name(InsnGroupId(250)), None);
             }
             Err(e) => {
                 assert!(false, "Couldn't create a cs engine: {}", e);
@@ -195,11 +195,11 @@ mod test {
         cs.set_detail(false).unwrap();
         let insns: Vec<_> = cs.disasm_all(X86_CODE, 0x1000).unwrap().iter().collect();
         assert_eq!(
-            cs.insn_belongs_to_group(&insns[0], 0),
+            cs.insn_belongs_to_group(&insns[0], InsnGroupId(0)),
             Err(Error::Capstone(CapstoneError::DetailOff))
         );
         assert_eq!(
-            cs.insn_belongs_to_group(&insns[1], 0),
+            cs.insn_belongs_to_group(&insns[1], InsnGroupId(0)),
             Err(Error::Capstone(CapstoneError::DetailOff))
         );
     }
@@ -232,7 +232,10 @@ mod test {
             for insn_idx in 0..1 + 1 {
                 for insn_group_id in &insn_group_ids {
                     assert_eq!(
-                        cs.insn_belongs_to_group(&insns[insn_idx], *insn_group_id as u64),
+                        cs.insn_belongs_to_group(
+                            &insns[insn_idx],
+                            InsnGroupId(*insn_group_id as InsnGroupIdInt),
+                        ),
                         Ok(false)
                     );
                 }
@@ -251,7 +254,7 @@ mod test {
         if has_default_syntax {
             // insn_name() does not respect current syntax
             // does not always match the internal mnemonic
-            cs.insn_name(insn.id() as u64).expect(
+            cs.insn_name(insn.id()).expect(
                 "Failed to get instruction name",
             );
         }
@@ -278,12 +281,13 @@ mod test {
         test_instruction_helper(&cs, insn, mnemonic_name, bytes, has_default_syntax);
 
         // Assert expected instruction groups is a subset of computed groups through ids
-        let instruction_group_ids: HashSet<u8> = cs.insn_group_ids(&insn)
+        let instruction_group_ids: HashSet<InsnGroupId> = cs.insn_group_ids(&insn)
             .expect("failed to get instruction groups")
-            .iter()
-            .map(|&x| x)
             .collect();
-        let expected_groups_ids: HashSet<u8> = expected_groups.iter().map(|&x| x as u8).collect();
+        let expected_groups_ids: HashSet<InsnGroupId> = expected_groups
+            .iter()
+            .map(|&x| InsnGroupId(x as u8))
+            .collect();
         assert!(
             expected_groups_ids.is_subset(&instruction_group_ids),
             "Expected groups {:?} does NOT match computed insn groups {:?} with ",
@@ -292,12 +296,13 @@ mod test {
         );
 
         // Assert expected instruction groups is a subset of computed groups through enum
-        let instruction_groups_set: HashSet<u8> = cs.insn_group_ids(&insn)
+        let instruction_groups_set: HashSet<InsnGroupId> = cs.insn_group_ids(&insn)
             .expect("failed to get instruction groups")
-            .iter()
-            .map(|&x| x)
             .collect();
-        let expected_groups_set: HashSet<u8> = expected_groups.iter().map(|&x| x as u8).collect();
+        let expected_groups_set: HashSet<InsnGroupId> = expected_groups
+            .iter()
+            .map(|&x| InsnGroupId(x as u8))
+            .collect();
         assert!(
             expected_groups_set.is_subset(&instruction_groups_set),
             "Expected groups {:?} does NOT match computed insn groups {:?}",
@@ -323,7 +328,7 @@ mod test {
         for &belong_group in expected_groups {
             assert_eq!(
                 Ok(true),
-                cs.insn_belongs_to_group(&insn, belong_group as u64),
+                cs.insn_belongs_to_group(&insn, InsnGroupId(belong_group as InsnGroupIdInt)),
                 "{:?} does NOT BELONG to group {:?}, but the instruction SHOULD",
                 insn,
                 belong_group
@@ -334,7 +339,7 @@ mod test {
         for &not_belong_group in not_belong_groups {
             assert_eq!(
                 Ok(false),
-                cs.insn_belongs_to_group(&insn, not_belong_group as u64),
+                cs.insn_belongs_to_group(&insn, InsnGroupId(not_belong_group as InsnGroupIdInt)),
                 "{:?} BELONGS to group {:?}, but the instruction SHOULD NOT",
                 insn,
                 not_belong_group

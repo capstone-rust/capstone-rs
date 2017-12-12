@@ -1,9 +1,12 @@
+use arch::ArchDetail;
+use arch::mips::MipsInsnDetail;
 use std::ffi::CStr;
-use std::os::raw::c_uint;
 use std::ptr;
+use std::slice;
 use std::str;
 use std::fmt::{self, Debug, Display, Error, Formatter};
 use capstone_sys::*;
+use constants::Arch;
 
 /// Representation of the array of instructions returned by disasm
 #[derive(Debug)]
@@ -11,6 +14,27 @@ pub struct Instructions {
     ptr: *mut cs_insn,
     len: isize,
 }
+
+/// Integer type used in `InsnId`
+pub type InsnIdInt = u32;
+
+/// Represents an instruction id, which may architecture-specific.
+#[derive(Copy, Clone, Debug, Hash, PartialEq, Eq)]
+pub struct InsnId(pub InsnIdInt);
+
+/// Integer type used in `InsnGroupId`
+pub type InsnGroupIdInt = u8;
+
+/// Represents the group an instruction belongs to, which may be architecture-specific.
+#[derive(Copy, Clone, Debug, Hash, PartialEq, Eq)]
+pub struct InsnGroupId(pub InsnGroupIdInt);
+
+/// Integer type used in `RegId`
+pub type RegIdInt = u8;
+
+/// Represents an register id, which is architecture-specific.
+#[derive(Copy, Clone, Debug, Hash, PartialEq, Eq)]
+pub struct RegId(pub RegIdInt);
 
 impl Instructions {
     pub unsafe fn from_raw_parts(ptr: *mut cs_insn, len: isize) -> Instructions {
@@ -68,7 +92,7 @@ pub struct Insn(pub(crate) cs_insn);
 
 /// Contains extra information about an instruction such as register reads in
 /// addition to architecture-specific information
-pub struct Detail<'a>(pub(crate) &'a cs_detail);
+pub struct Detail<'a>(pub(crate) &'a cs_detail, pub(crate) Arch);
 
 impl Insn {
     /// The mnemonic for the instruction
@@ -84,8 +108,8 @@ impl Insn {
     }
 
     /// Access instruction id
-    pub fn id(&self) -> c_uint {
-        self.0.id
+    pub fn id(&self) -> InsnId {
+        InsnId(self.0.id)
     }
 
     /// Size of instruction (in bytes)
@@ -108,8 +132,8 @@ impl Insn {
     ///
     /// Be careful this is still in early stages and largely untested with various `cs_option` and
     /// architecture matrices
-    pub(crate) unsafe fn detail(&self) -> Detail {
-        Detail(&*self.0.detail)
+    pub(crate) unsafe fn detail(&self, arch: Arch) -> Detail {
+        Detail(&*self.0.detail, arch)
     }
 }
 
@@ -138,10 +162,41 @@ impl Display for Insn {
     }
 }
 
+
+/// Iterator over registers ids
+#[derive(Debug, Clone)]
+pub struct RegsIter<'a>(slice::Iter<'a, RegIdInt>);
+
+impl<'a> Iterator for RegsIter<'a> {
+    type Item = RegId;
+    fn next(&mut self) -> Option<Self::Item> {
+        match self.0.next() {
+            Some(x) => Some(RegId(*x as RegIdInt)),
+            None => None,
+        }
+    }
+}
+
+/// Iterator over instruction group ids
+#[derive(Debug, Clone)]
+pub struct InsnGroupIter<'a>(slice::Iter<'a, InsnGroupIdInt>);
+
+impl<'a> Iterator for InsnGroupIter<'a> {
+    type Item = InsnGroupId;
+    fn next(&mut self) -> Option<Self::Item> {
+        match self.0.next() {
+            Some(x) => Some(InsnGroupId(*x as InsnGroupIdInt)),
+            None => None,
+        }
+    }
+}
+
 impl<'a> Detail<'a> {
     /// Returns the implicit read registers
-    pub fn regs_read(&self) -> &[u8] {
-        &(*self.0).regs_read[..self.regs_read_count() as usize]
+    pub fn regs_read(&self) -> RegsIter {
+        RegsIter(
+            (*self.0).regs_read[..self.regs_read_count() as usize].iter(),
+        )
     }
 
     /// Returns the number of implicit read registers
@@ -150,8 +205,10 @@ impl<'a> Detail<'a> {
     }
 
     /// Returns the implicit write registers
-    pub fn regs_write(&self) -> &[u8] {
-        &(*self.0).regs_write[..self.regs_write_count() as usize]
+    pub fn regs_write(&self) -> RegsIter {
+        RegsIter(
+            (*self.0).regs_write[..self.regs_write_count() as usize].iter(),
+        )
     }
 
     /// Returns the number of implicit write registers
@@ -160,13 +217,23 @@ impl<'a> Detail<'a> {
     }
 
     /// Returns the groups to which this instruction belongs
-    pub fn groups(&'a self) -> &'a [u8] {
-        &(*self.0).groups[..self.groups_count() as usize]
+    pub fn groups(&self) -> InsnGroupIter {
+        InsnGroupIter((*self.0).groups[..self.groups_count() as usize].iter())
     }
 
     /// Returns the number groups to which this instruction belongs
     pub fn groups_count(&self) -> u8 {
         (*self.0).groups_count
+    }
+
+    /// Architecture-specific detail
+    pub fn arch_detail(&self) -> ArchDetail {
+        match self.1 {
+            Arch::MIPS => ArchDetail::MipsDetail(
+                MipsInsnDetail(unsafe { &self.0.__bindgen_anon_1.mips }),
+            ),
+            _ => panic!("Unsupported detail arch"),
+        }
     }
 }
 

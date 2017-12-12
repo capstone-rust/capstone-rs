@@ -7,7 +7,7 @@ use error::*;
 use arch::CapstoneBuilder;
 use capstone_sys::*;
 use constants::{Arch, CsModeRepr, Endian, ExtraMode, Mode, OptValue, Syntax};
-use instruction::{Detail, Insn, Instructions};
+use instruction::{Detail, Insn, Instructions, InsnGroupId, InsnGroupIter, InsnId, RegId, RegsIter};
 
 /// An instance of the capstone disassembler
 #[derive(Debug)]
@@ -286,9 +286,9 @@ impl Capstone {
 
     // @todo: use a type alias for reg_ids
     /// Converts a register id `reg_id` to a `String` containing the register name.
-    pub fn reg_name(&self, reg_id: u64) -> Option<String> {
+    pub fn reg_name(&self, reg_id: RegId) -> Option<String> {
         let reg_name = unsafe {
-            let _reg_name = cs_reg_name(self.csh, reg_id as c_uint);
+            let _reg_name = cs_reg_name(self.csh, reg_id.0 as c_uint);
             if _reg_name.is_null() {
                 return None;
             }
@@ -302,9 +302,9 @@ impl Capstone {
     /// Converts an instruction id `insn_id` to a `String` containing the instruction name.
     ///
     /// Note: This function ignores the current syntax and uses the default syntax.
-    pub fn insn_name(&self, insn_id: u64) -> Option<String> {
+    pub fn insn_name(&self, insn_id: InsnId) -> Option<String> {
         let insn_name = unsafe {
-            let _insn_name = cs_insn_name(self.csh, insn_id as c_uint);
+            let _insn_name = cs_insn_name(self.csh, insn_id.0 as c_uint);
             if _insn_name.is_null() {
                 return None;
             }
@@ -315,9 +315,9 @@ impl Capstone {
     }
 
     /// Converts a group id `group_id` to a `String` containing the group name.
-    pub fn group_name(&self, group_id: u64) -> Option<String> {
+    pub fn group_name(&self, group_id: InsnGroupId) -> Option<String> {
         let group_name = unsafe {
-            let _group_name = cs_group_name(self.csh, group_id as c_uint);
+            let _group_name = cs_group_name(self.csh, group_id.0 as c_uint);
             if _group_name.is_null() {
                 return None;
             }
@@ -334,61 +334,61 @@ impl Capstone {
     /// 1. Instruction was created with detail enabled
     /// 2. Skipdata is disabled
     /// 3. Capstone was not compiled in diet mode
-    fn insn_detail<'s, 'i: 's>(&'s self, insn: &'i Insn) -> CsResult<Detail<'i>> {
+    pub fn insn_detail<'s, 'i: 's>(&'s self, insn: &'i Insn) -> CsResult<Detail<'i>> {
         if !self.detail_enabled {
             Err(Error::Capstone(CapstoneError::DetailOff))
-        } else if insn.id() == 0 {
+        } else if insn.id().0 == 0 {
             Err(Error::Capstone(CapstoneError::IrrelevantDataInSkipData))
         } else if Self::is_diet() {
             Err(Error::Capstone(CapstoneError::IrrelevantDataInDiet))
         } else {
-            Ok(unsafe { insn.detail() })
+            Ok(unsafe { insn.detail(self.arch) })
         }
     }
 
     /// Returns whether the instruction `insn` belongs to the group with id `group_id`.
-    pub fn insn_belongs_to_group(&self, insn: &Insn, group_id: u64) -> CsResult<bool> {
+    pub fn insn_belongs_to_group(&self, insn: &Insn, group_id: InsnGroupId) -> CsResult<bool> {
         self.insn_detail(insn)?;
         Ok(unsafe {
-            cs_insn_group(self.csh, &insn.0 as *const cs_insn, group_id as c_uint)
+            cs_insn_group(self.csh, &insn.0 as *const cs_insn, group_id.0 as c_uint)
         })
     }
 
 
     /// Returns groups ids to which an instruction belongs.
-    pub fn insn_group_ids<'i>(&self, insn: &'i Insn) -> CsResult<&'i [u8]> {
+    pub fn insn_group_ids<'i>(&self, insn: &'i Insn) -> CsResult<InsnGroupIter<'i>> {
         let detail = self.insn_detail(insn)?;
-        let group_ids: &'i [u8] = unsafe { mem::transmute(detail.groups()) };
+        let group_ids: InsnGroupIter<'i> = unsafe { mem::transmute(detail.groups()) };
         Ok(group_ids)
     }
 
     /// Checks if an instruction implicitly reads a register with id `reg_id`.
-    pub fn register_id_is_read(&self, insn: &Insn, reg_id: u64) -> CsResult<bool> {
+    pub fn register_id_is_read(&self, insn: &Insn, reg_id: RegId) -> CsResult<bool> {
         self.insn_detail(insn)?;
         Ok(unsafe {
-            cs_reg_read(self.csh, &insn.0 as *const cs_insn, reg_id as c_uint)
+            cs_reg_read(self.csh, &insn.0 as *const cs_insn, reg_id.0 as c_uint)
         })
     }
 
     /// Returns list of ids of registers that are implicitly read by instruction `insn`.
-    pub fn read_register_ids<'i>(&self, insn: &'i Insn) -> CsResult<&'i [u8]> {
+    pub fn read_register_ids<'i>(&self, insn: &'i Insn) -> CsResult<RegsIter<'i>> {
         let detail = self.insn_detail(insn)?;
-        let reg_read_ids: &'i [u8] = unsafe { mem::transmute(detail.regs_read()) };
+        let reg_read_ids: RegsIter<'i> = unsafe { mem::transmute(detail.regs_read()) };
         Ok(reg_read_ids)
     }
 
     /// Checks if an instruction implicitly writes to a register with id `reg_id`.
-    pub fn register_id_is_written(&self, insn: &Insn, reg_id: u64) -> CsResult<bool> {
+    pub fn register_id_is_written(&self, insn: &Insn, reg_id: RegId) -> CsResult<bool> {
         self.insn_detail(insn)?;
         Ok(unsafe {
-            cs_reg_write(self.csh, &insn.0 as *const cs_insn, reg_id as c_uint)
+            cs_reg_write(self.csh, &insn.0 as *const cs_insn, reg_id.0 as c_uint)
         })
     }
 
     /// Returns a list of ids of registers that are implicitly written to by the instruction `insn`.
-    pub fn write_register_ids<'i>(&self, insn: &'i Insn) -> CsResult<&'i [u8]> {
+    pub fn write_register_ids<'i>(&self, insn: &'i Insn) -> CsResult<RegsIter<'i>> {
         let detail = self.insn_detail(insn)?;
-        let reg_write_ids: &'i [u8] = unsafe { mem::transmute(detail.regs_write()) };
+        let reg_write_ids: RegsIter<'i> = unsafe { mem::transmute(detail.regs_write()) };
         Ok(reg_write_ids)
     }
 

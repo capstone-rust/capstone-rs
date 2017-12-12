@@ -30,6 +30,7 @@ macro_rules! define_subset_enum {
     };
 }
 
+/// Define arch builders
 macro_rules! define_arch_builder {
     // ExtraMode rules
     ( @extra_modes () ) => {};
@@ -77,7 +78,11 @@ macro_rules! define_arch_builder {
             ( both_endian: $( $endian:ident )* )
         ] )+
     ) => {
+        // We put builders in `arch::arch_builder::$ARCH` so we can put manual arch-specific code
+        // in `arch::$ARCH`. The contents of each module is imported from `arch::$ARCH`.
+
         $(
+            /// Architecture-specific build code
             pub mod $arch {
                 use capstone::Capstone;
                 use constants::{Arch, Endian, ExtraMode, Mode, Syntax};
@@ -164,12 +169,7 @@ macro_rules! define_arch_builder {
             }
         )+
 
-
         impl CapstoneBuilder {
-            pub(crate) fn new() -> Self {
-                CapstoneBuilder(PhantomData)
-            }
-
             $(
                 pub fn $arch(self) -> $arch::ArchCapstoneBuilder {
                     Default::default()
@@ -177,6 +177,104 @@ macro_rules! define_arch_builder {
             )*
         }
     }
+}
+
+/// Base X macro with arch info
+macro_rules! arch_info_base {
+    ( $x_macro:ident ) => { $x_macro!(
+        [
+            ( arm, ARM )
+            ( mode:
+                Arm,
+                Thumb,
+                )
+            ( extra_modes:
+                MClass,
+                V8,
+                )
+            ( syntax:
+                NoRegName,
+                )
+            ( both_endian: true )
+        ]
+        [
+            ( arm64, ARM64 )
+            ( mode:
+                Arm,
+                )
+            ( extra_modes: )
+            ( syntax: )
+            ( both_endian: true )
+        ]
+        [
+            ( mips, MIPS )
+            ( mode:
+                Mode32,
+                Mode64,
+                Mips32R6,
+                MipsGP64,
+                )
+            ( extra_modes:
+                Micro,
+                )
+            ( syntax: )
+            ( both_endian: true )
+        ]
+        [
+            ( ppc, PPC )
+            ( mode:
+                Mode32,
+                Mode64,
+                )
+            ( extra_modes: )
+            ( syntax:
+                NoRegName,
+                )
+            ( both_endian: true )
+        ]
+        [
+            ( sparc, SPARC )
+            ( mode:
+                Default,
+                V9,
+                )
+            ( extra_modes: )
+            ( syntax: )
+            ( both_endian: false )
+        ]
+        [
+            ( sysz, SYSZ )
+            ( mode:
+                Default,
+                )
+            ( extra_modes: )
+            ( syntax: )
+            ( both_endian: false )
+        ]
+        [
+            ( x86, X86 )
+            ( mode:
+                Mode16,
+                Mode32,
+                Mode64,
+                )
+            ( extra_modes: )
+            ( syntax:
+                Intel,
+                Att,
+                )
+            ( both_endian: false )
+        ]
+        [
+            ( xcore, XCORE )
+            ( mode:
+                Default,
+                )
+            ( extra_modes: )
+            ( syntax: )
+            ( both_endian: false  )
+        ]
+    ); }
 }
 
 /// Builds a `Capstone` struct
@@ -210,103 +308,56 @@ pub trait BuildsCapstoneEndian<ArchMode>: BuildsCapstone<ArchMode> {
     fn endian(&mut self, endian: Endian) -> &mut Self;
 }
 
-define_arch_builder!(
-    [
-        ( arm, ARM )
-        ( mode:
-            Arm,
-            Thumb,
-            )
-        ( extra_modes:
-            MClass,
-            V8,
-            )
-        ( syntax:
-            NoRegName,
-            )
-        ( both_endian: true )
-    ]
-    [
-        ( arm64, ARM64 )
-        ( mode:
-            Arm,
-            )
-        ( extra_modes: )
-        ( syntax: )
-        ( both_endian: true )
-    ]
-    [
-        ( mips, MIPS )
-        ( mode:
-            Mode32,
-            Mode64,
-            Mips32R6,
-            MipsGP64,
-            )
-        ( extra_modes:
-            Micro,
-            )
-        ( syntax: )
-        ( both_endian: true )
-    ]
-    [
-        ( ppc, PPC )
-        ( mode:
-            Mode32,
-            Mode64,
-            )
-        ( extra_modes: )
-        ( syntax:
-            NoRegName,
-            )
-        ( both_endian: true )
-    ]
-    [
-        ( sparc, SPARC )
-        ( mode:
-            Default,
-            V9,
-            )
-        ( extra_modes: )
-        ( syntax: )
-        ( both_endian: false )
-    ]
-    [
-        ( sysz, SYSZ )
-        ( mode:
-            Default,
-            )
-        ( extra_modes: )
-        ( syntax: )
-        ( both_endian: false )
-    ]
-    [
-        ( x86, X86 )
-        ( mode:
-            Mode16,
-            Mode32,
-            Mode64,
-            )
-        ( extra_modes: )
-        ( syntax:
-            Intel,
-            Att,
-            )
-        ( both_endian: false )
-    ]
-    [
-        ( xcore, XCORE )
-        ( mode:
-            Default,
-            )
-        ( extra_modes: )
-        ( syntax: )
-        ( both_endian: false  )
-    ]
-);
+
+/// Contains builder-pattern implementations
+pub(crate) mod arch_builder {
+    use super::*;
+
+    arch_info_base!(define_arch_builder);
+}
+
+/// Define "pub mod" uses
+macro_rules! define_arch_mods {
+    (
+        $( [
+            ( $arch:ident, $arch_variant:ident )
+            ( mode: $( $mode:ident, )+ )
+            ( extra_modes: $( $extra_mode:ident, )* )
+            ( syntax: $( $syntax:ident, )* )
+            ( both_endian: $( $endian:ident )* )
+        ] )+
+    ) => {
+        $( pub mod $arch; )+
+    }
+}
+
+arch_info_base!(define_arch_mods);
 
 /// Builds `Capstone` object
+#[derive(Debug)]
 pub struct CapstoneBuilder(
     /// Hidden field to prevent users from instantiating `CapstoneBuilder`
     PhantomData<()>
 );
+
+impl CapstoneBuilder {
+    /// Create a `CapstoneBuilder`
+    pub(crate) fn new() -> Self {
+        CapstoneBuilder(PhantomData)
+    }
+}
+
+pub trait DetailsArch {
+    type OperandIterator;
+    //type Operand;
+
+    //fn operands(&self) -> OperandIterator<Item=Self::Operand>;
+    fn operands(&self) -> Self::OperandIterator;
+}
+
+use self::mips::MipsInsnDetail;
+
+#[derive(Debug)]
+pub enum ArchDetail<'a> {
+    MipsDetail(MipsInsnDetail<'a>),
+}
