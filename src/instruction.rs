@@ -92,7 +92,7 @@ pub struct Insn(pub(crate) cs_insn);
 
 /// Contains extra information about an instruction such as register reads in
 /// addition to architecture-specific information
-pub struct Detail<'a>(pub(crate) &'a cs_detail, pub(crate) Arch);
+pub struct InsnDetail<'a>(pub(crate) &'a cs_detail, pub(crate) Arch);
 
 impl Insn {
     /// The mnemonic for the instruction
@@ -132,8 +132,8 @@ impl Insn {
     ///
     /// Be careful this is still in early stages and largely untested with various `cs_option` and
     /// architecture matrices
-    pub(crate) unsafe fn detail(&self, arch: Arch) -> Detail {
-        Detail(&*self.0.detail, arch)
+    pub(crate) unsafe fn detail(&self, arch: Arch) -> InsnDetail {
+        InsnDetail(&*self.0.detail, arch)
     }
 }
 
@@ -191,7 +191,7 @@ impl<'a> Iterator for InsnGroupIter<'a> {
     }
 }
 
-impl<'a> Detail<'a> {
+impl<'a> InsnDetail<'a> {
     /// Returns the implicit read registers
     pub fn regs_read(&self) -> RegsIter {
         RegsIter(
@@ -237,7 +237,7 @@ impl<'a> Detail<'a> {
     }
 }
 
-impl<'a> Debug for Detail<'a> {
+impl<'a> Debug for InsnDetail<'a> {
     fn fmt(&self, fmt: &mut Formatter) -> fmt::Result {
         fmt.debug_struct("Detail")
             .field("regs_read", &self.regs_read())

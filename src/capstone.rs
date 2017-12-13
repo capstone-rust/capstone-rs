@@ -7,7 +7,7 @@ use error::*;
 use arch::CapstoneBuilder;
 use capstone_sys::*;
 use constants::{Arch, CsModeRepr, Endian, ExtraMode, Mode, OptValue, Syntax};
-use instruction::{Detail, Insn, Instructions, InsnGroupId, InsnGroupIter, InsnId, RegId, RegsIter};
+use instruction::{InsnDetail, Insn, Instructions, InsnGroupId, InsnGroupIter, InsnId, RegId, RegsIter};
 
 /// An instance of the capstone disassembler
 #[derive(Debug)]
@@ -334,7 +334,7 @@ impl Capstone {
     /// 1. Instruction was created with detail enabled
     /// 2. Skipdata is disabled
     /// 3. Capstone was not compiled in diet mode
-    pub fn insn_detail<'s, 'i: 's>(&'s self, insn: &'i Insn) -> CsResult<Detail<'i>> {
+    pub fn insn_detail<'s, 'i: 's>(&'s self, insn: &'i Insn) -> CsResult<InsnDetail<'i>> {
         if !self.detail_enabled {
             Err(Error::Capstone(CapstoneError::DetailOff))
         } else if insn.id().0 == 0 {
