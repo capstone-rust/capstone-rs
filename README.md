@@ -1,5 +1,10 @@
-capstone-rs
-===========
+# capstone-rs
+
+[![Crates.io Badge](https://img.shields.io/crates/v/capstone.svg)](https://crates.io/crates/capstone)
+[![Travis CI Badge](https://travis-ci.org/capstone-rust/capstone-rs.svg?branch=master)](https://travis-ci.org/capstone-rust/capstone-rs)
+
+ **[API Documentation](https://docs.rs/capstone/)**
+
 
 Bindings to the [capstone library][upstream] disassembly framework.
 
@@ -108,7 +113,7 @@ Found 5 instructions
 
 # Reporting Issues
 
-Please open a Github issue
+Please open a [Github issue](https://github.com/capstone-rust/capstone-rs/issues)
 
 # Demo
 
