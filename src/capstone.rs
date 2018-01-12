@@ -10,6 +10,8 @@ use capstone_sys::cs_opt_value::*;
 use constants::{Arch, Endian, ExtraMode, Mode, OptValue, Syntax};
 use instruction::{Insn, InsnDetail, InsnGroupId, InsnGroupIter, InsnId, Instructions, RegId,
                   RegsIter};
+use std::sync::{Once, ONCE_INIT};
+
 
 /// An instance of the capstone disassembler
 #[derive(Debug)]
@@ -91,6 +93,17 @@ impl Iterator for EmptyExtraModeIter {
     }
 }
 
+static INIT: Once = ONCE_INIT;
+fn init_global_state() {
+    INIT.call_once(|| {
+        // We need to call archs_enable (a C Capstone function) in a thread-safe manner.
+        // Capstone::lib_version calls cs_version which calls archs_enable.
+        let mut a = 0;
+        let mut b = 0;
+        unsafe { cs_version(&mut a, &mut b)};
+    });
+}
+
 impl Capstone {
     /// Create a new instance of the decompiler using the builder pattern interface.
     /// This is the recommended interface to `Capstone`.
@@ -117,7 +130,8 @@ impl Capstone {
         extra_mode: T,
         endian: Option<Endian>,
     ) -> CsResult<Capstone> {
-        let mut handle = 0;
+        init_global_state();
+        let mut handle: csh = 0;
         let csarch: cs_arch = arch.into();
         let csmode: cs_mode = mode.into();
 
@@ -403,6 +417,7 @@ impl Capstone {
 
     /// Returns a tuple (major, minor) indicating the version of the capstone C library.
     pub fn lib_version() -> (u32, u32) {
+        init_global_state();
         let mut major: c_int = 0;
         let mut minor: c_int = 0;
         let major_ptr: *mut c_int = &mut major;
@@ -417,11 +432,13 @@ impl Capstone {
 
     /// Returns whether the capstone library supports a given architecture.
     pub fn supports_arch(arch: Arch) -> bool {
+        init_global_state();
         unsafe { cs_support(arch as c_int) }
     }
 
     /// Returns whether the capstone library was compiled in diet mode.
     pub fn is_diet() -> bool {
+        init_global_state();
         unsafe { cs_support(CS_SUPPORT_DIET as c_int) }
     }
 }
