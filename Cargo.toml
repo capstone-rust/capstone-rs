@@ -22,6 +22,7 @@ bindgen = { optional = true, version = "0.30.0" }
 pkg-config = { optional = true, version = "0.3" }
 cmake = {optional = true, version = "0.1.2"}
 cc = {optional = true, version = "1.0"}
+
 [target.'cfg(windows)'.build-dependencies]
 cc = "1.0"
 
