@@ -52,6 +52,8 @@ include!(concat!(env!("OUT_DIR"), "/capstone.rs"));
 pub const CS_SUPPORT_DIET: c_int = (cs_arch::CS_ARCH_ALL as c_int) + 1;
 pub const CS_SUPPORT_X86_REDUCE: c_int = (cs_arch::CS_ARCH_ALL as c_int) + 2;
 
+include!(concat!(env!("CARGO_MANIFEST_DIR"), "/common.rs"));
+
 #[cfg(test)]
 /// Many of the tests contain statements without effect; these "tests" are just to ensure that
 /// types have been defined by bindgen.
@@ -458,7 +460,7 @@ mod test {
     }
 
     /// Verify capstone disassembles instructions correctly
-    fn test_disassembly_helper(arch: cs_arch, mode: cs_mode, code: &[(&[u8], &str, u32)]) {
+    fn test_disassembly_helper(arch: cs_arch, mode: cs_mode::Type, code: &[(&[u8], &str, u32)]) {
         // Create handle
         let mut handle: csh = 0;
         let result = unsafe { cs_open(arch, mode, &mut handle as *mut csh) };

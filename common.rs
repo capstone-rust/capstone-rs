@@ -12,6 +12,18 @@ pub struct CapstoneArchInfo<'a> {
     cs_name: &'a str,
 }
 
+impl<'a> CapstoneArchInfo<'a> {
+    /// Get the name of the C header
+    pub fn header_name(&self) -> &str {
+        self.header_name
+    }
+
+    /// Get the arch name used in Capstone types
+    pub fn cs_name(&self) -> &str {
+        self.cs_name
+    }
+}
+
 pub static ARCH_INCLUDES: &'static [CapstoneArchInfo<'static>] = &[
     CapstoneArchInfo {
         header_name: "arm.h",
