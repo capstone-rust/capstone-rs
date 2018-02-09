@@ -21,6 +21,10 @@ travis-ci = { repository = "capstone-rust/capstone-sys" }
 bindgen = { optional = true, version = "0.31" }
 pkg-config = { optional = true, version = "0.3" }
 cmake = {optional = true, version = "0.1.28"}
+cc = {optional = true, version = "1.0"}
+
+[target.'cfg(windows)'.build-dependencies]
+cc = "1.0"
 
 [features]
 # use bundled capstone by default instead of the system capstone
@@ -29,4 +33,5 @@ default = []
 
 use_system_capstone = ["pkg-config"]
 build_capstone_cmake = ["cmake"]
+build_capstone_cc = ["cc"]
 use_bindgen = ["bindgen"]  # Dynamically generate bindings with bindgen

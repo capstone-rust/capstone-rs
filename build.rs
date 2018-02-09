@@ -40,9 +40,11 @@ extern crate pkg_config;
 #[cfg(feature = "build_capstone_cmake")]
 extern crate cmake;
 
+#[cfg(any(windows, feature = "build_capstone_cc"))]
+extern crate cc;
+
 use std::fs::copy;
 use std::path::PathBuf;
-use std::process::Command;
 use std::env;
 
 include!("common.rs");
@@ -57,11 +59,106 @@ enum LinkType {
 }
 
 /// Build capstone with cmake
-#[cfg(feature = "build_capstone_cmake")]
-fn cmake() {
+#[cfg(all(not(windows), feature = "build_capstone_cmake"))]
+fn build_capstone_cmake() {
     let mut cfg = cmake::Config::new("capstone");
     let dst = cfg.build();
     println!("cargo:rustc-link-search=native={}/lib", dst.display());
+}
+
+/// Build capstone with gmake
+#[cfg(not(windows))]
+fn build_capstone_gmake() {
+    use std::process::Command;
+
+    // In BSDs, `make` does not refer to GNU make
+    let target_os = env_var("CARGO_CFG_TARGET_OS");
+    let make_cmd = if target_os.contains("bsd") || target_os == "dragonfly" {
+        "gmake"
+    } else {
+        "make"
+    };
+
+    let out_dir = env_var("OUT_DIR");
+    Command::new(make_cmd)
+        .current_dir(CAPSTONE_DIR)
+        .status()
+        .expect("Failed to build Capstone library");
+    let capstone = "libcapstone.a";
+    Command::new("cp")
+        .current_dir(CAPSTONE_DIR)
+        .arg(&capstone)
+        .arg(&out_dir)
+        .status()
+        .expect("Failed to copy capstone library to OUT_DIR");
+
+    println!("cargo:rustc-link-search=native={}", out_dir);
+}
+
+/// Build capstone using the cc crate
+#[cfg(any(windows, feature = "build_capstone_cc"))]
+fn build_capstone_cc() {
+    use std::fs::DirEntry;
+
+    fn read_dir_and_filter<F: Fn(&DirEntry) -> bool>(dir: &str, filter: F) -> Vec<String> {
+        use std::fs::read_dir;
+
+        read_dir(dir)
+            .expect("Failed to read capstone source directory")
+            .into_iter()
+            .map(|e| e.expect("Failed to read capstone source directory"))
+            .filter(|e| filter(e))
+            .map(|e| format!("{}/{}", dir, e.file_name().to_str().expect("Invalid filename")))
+            .collect()
+    }
+
+    fn find_c_source_files(dir: &str) -> Vec<String> {
+        read_dir_and_filter(dir, |e| {
+            let file_type = e.file_type().expect("Failed to read capstone source directory");
+            let file_name = e.file_name().into_string().expect("Invalid filename");
+            file_type.is_file() && (file_name.ends_with(".c") || file_name.ends_with(".C"))
+        })
+    }
+
+    fn find_arch_dirs() -> Vec<String> {
+        read_dir_and_filter(&format!("{}/{}", CAPSTONE_DIR, "arch"), |e| {
+            let file_type = e.file_type().expect("Failed to read capstone source directory");
+            file_type.is_dir()
+        })
+    }
+
+    let mut files = find_c_source_files(CAPSTONE_DIR);
+    for arch_dir in find_arch_dirs().into_iter() {
+        files.append(&mut find_c_source_files(&arch_dir));
+    }
+
+    let use_static_crt = {
+        let target_features = env::var("CARGO_CFG_TARGET_FEATURE").unwrap_or(String::new());
+        target_features.split(",").any(|f| f == "crt-static")
+    };
+
+    cc::Build::new()
+        .files(files)
+        .include(format!("{}/{}", CAPSTONE_DIR, "include"))
+        .define("CAPSTONE_X86_ATT_DISABLE_NO", None)
+        .define("CAPSTONE_DIET_NO", None)
+        .define("CAPSTONE_X86_REDUCE_NO", None)
+        .define("CAPSTONE_USE_SYS_DYN_MEM", None)
+        .define("CAPSTONE_HAS_ARM", None)
+        .define("CAPSTONE_HAS_ARM64", None)
+        .define("CAPSTONE_HAS_MIPS", None)
+        .define("CAPSTONE_HAS_POWERPC", None)
+        .define("CAPSTONE_HAS_SPARC", None)
+        .define("CAPSTONE_HAS_SYSZ", None)
+        .define("CAPSTONE_HAS_X86", None)
+        .define("CAPSTONE_HAS_XCORE", None)
+        .flag_if_supported("-Wno-unused-function")
+        .flag_if_supported("-Wno-unused-parameter")
+        .flag_if_supported("-Wno-unknown-pragmas")
+        .flag_if_supported("-Wno-sign-compare")
+        .flag_if_supported("-Wno-return-type")
+        .static_crt(use_static_crt)
+        .compile("capstone");
 }
 
 /// Search for header in search paths
@@ -133,7 +230,7 @@ fn write_bindgen_bindings(
 }
 
 /// Find system capstone library and return link type
-#[cfg(feature = "use_system_capstone")]
+#[cfg(all(not(windows), feature = "use_system_capstone"))]
 fn find_system_capstone(header_search_paths: &mut Vec<PathBuf>) -> Option<LinkType> {
     assert!(
         !cfg!(feature = "build_capstone_cmake"),
@@ -152,43 +249,24 @@ fn main() {
 
     // C header search paths
     let mut header_search_paths: Vec<PathBuf> = Vec::new();
-    let target_os = env_var("CARGO_CFG_TARGET_OS");
 
     if cfg!(feature = "use_system_capstone") {
-        #[cfg(feature = "use_system_capstone")]
+        #[cfg(windows)] panic!("Feature 'use_system_capstone' is not supported on Windows");
+        #[cfg(all(not(windows), feature = "use_system_capstone"))]
         {
             link_type = find_system_capstone(&mut header_search_paths);
         }
     } else {
         if cfg!(feature = "build_capstone_cmake") {
-            #[cfg(feature = "build_capstone_cmake")] cmake();
+            #[cfg(windows)] panic!("Feature 'build_capstone_cmake' is not supported on Windows");
+            #[cfg(all(not(windows), feature = "build_capstone_cmake"))] build_capstone_cmake();
+        } else if cfg!(any(windows, feature = "build_capstone_cc")) {
+            #[cfg(any(windows, feature = "build_capstone_cc"))] build_capstone_cc();
         } else {
-            // TODO: need to add this argument for windows 64-bit, msvc, dunno, read
-            // COMPILE_MSVC.txt file cygwin-mingw64
-
-            // In BSDs, `make` does not refer to GNU make
-            let make_cmd = if target_os.contains("bsd") || target_os == "dragonfly" {
-                "gmake"
-            } else {
-                "make"
-            };
-
-            let out_dir = env_var("OUT_DIR");
-            Command::new(make_cmd)
-                .current_dir(CAPSTONE_DIR)
-                .status()
-                .expect("Failed to build Capstone library");
-            let capstone = "libcapstone.a";
-            Command::new("cp")
-                .current_dir(CAPSTONE_DIR)
-                .arg(&capstone)
-                .arg(&out_dir)
-                .status()
-                .expect("Failed to copy capstone library to OUT_DIR");
-
-            println!("cargo:rustc-link-search=native={}", out_dir);
+            #[cfg(not(windows))] build_capstone_gmake();
         }
-        header_search_paths.push(PathBuf::from("capstone/include"));
+
+        header_search_paths.push([CAPSTONE_DIR, "include"].iter().collect());
         link_type = Some(LinkType::Static);
     }
 
