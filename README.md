@@ -20,7 +20,7 @@ Low-level, unsafe Rust bindings for the [`Capstone`][capstone] disassembly libra
 
 [Rust unions]: https://doc.rust-lang.org/stable/reference/items/unions.html
 
-### Supported platforms
+### Supported Platforms
 
 | Platform                        | system capstone  | gmake | cmake | cc    |
 | ------------------------------- | ----- | --------------- | ----- | ----- |
@@ -63,3 +63,10 @@ These features affect how `capstone-sys` will use/build the [bundled Capstone](c
 * `use_bindgen`: instead of using the pre-generated Capstone bindings, dynamically generate bindings with [`bindgen`][bindgen].
 
 [bindgen]: https://github.com/rust-lang-nursery/rust-bindgen
+
+
+## Tested Platforms
+
+The following platforms have automated testing:
+
+* `x86_64-unknown-linux-gnu`: Travis CI
