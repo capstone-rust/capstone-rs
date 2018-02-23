@@ -7,7 +7,8 @@ use error::*;
 use arch::CapstoneBuilder;
 use capstone_sys::*;
 use constants::{Arch, CsModeRepr, Endian, ExtraMode, Mode, OptValue, Syntax};
-use instruction::{InsnDetail, Insn, Instructions, InsnGroupId, InsnGroupIter, InsnId, RegId, RegsIter};
+use instruction::{Insn, InsnDetail, InsnGroupId, InsnGroupIter, InsnId, Instructions, RegId,
+                  RegsIter};
 
 /// An instance of the capstone disassembler
 #[derive(Debug)]
@@ -284,7 +285,6 @@ impl Capstone {
         result
     }
 
-    // @todo: use a type alias for reg_ids
     /// Converts a register id `reg_id` to a `String` containing the register name.
     pub fn reg_name(&self, reg_id: RegId) -> Option<String> {
         let reg_name = unsafe {
@@ -331,6 +331,7 @@ impl Capstone {
     /// Returns `Detail` structure for a given instruction
     ///
     /// Requires:
+    ///
     /// 1. Instruction was created with detail enabled
     /// 2. Skipdata is disabled
     /// 3. Capstone was not compiled in diet mode

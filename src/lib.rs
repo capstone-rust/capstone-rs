@@ -66,9 +66,9 @@ pub use error::*;
 /// use capstone::prelude::*;
 /// ```
 pub mod prelude {
-    pub use {Capstone, CsResult, RegId, InsnGroupId, InsnId, RegIdInt, InsnGroupIdInt, InsnIdInt};
-    pub use arch::{self, BuildsCapstone, BuildsCapstoneEndian, BuildsCapstoneExtraMode,
-                   BuildsCapstoneSyntax, DetailsArch, ArchDetail};
+    pub use {Capstone, CsResult, InsnGroupId, InsnGroupIdInt, InsnId, InsnIdInt, RegId, RegIdInt};
+    pub use arch::{self, ArchDetail, BuildsCapstone, BuildsCapstoneEndian,
+                   BuildsCapstoneExtraMode, BuildsCapstoneSyntax, DetailsArch};
 }
 
 #[cfg(test)]
@@ -268,6 +268,40 @@ mod test {
         assert_eq!(bytes, insn.bytes());
     }
 
+    fn test_instruction_detail_helper<T>(
+        cs: &Capstone,
+        insn: &Insn,
+        info: &DetailedInsnInfo<T>,
+        has_default_syntax: bool,
+    ) where
+        T: Into<ArchOperand> + Clone,
+    {
+        // Check mnemonic
+        if has_default_syntax {
+            // insn_name() does not respect current syntax
+            // does not always match the internal mnemonic
+            cs.insn_name(insn.id())
+                .expect("Failed to get instruction name");
+        }
+        assert_eq!(
+            info.mnemonic,
+            insn.mnemonic().expect("Failed to get mnemonic"),
+            "Did not match contained insn.mnemonic"
+        );
+
+        // Assert instruction bytes match
+        assert_eq!(info.bytes, insn.bytes());
+
+        let detail = cs.insn_detail(insn).expect("Could not get detail");
+        let arch_detail = detail.arch_detail();
+        let arch_ops = arch_detail.operands();
+
+        assert!(info.operands.iter().zip(arch_ops).all(|(expected_op, op)| {
+            let expected_op: ArchOperand = (*expected_op).clone().into();
+            expected_op.eq(&op)
+        }));
+    }
+
     /// Assert instruction belongs or does not belong to groups, testing both insn_belongs_to_group
     /// and insn_group_ids
     fn test_instruction_group_helper(
@@ -365,7 +399,6 @@ mod test {
         // Details required to get groups information
         cs.set_detail(true).unwrap();
 
-
         if expected_insns.len() == 0 {
             // Input was empty, which will cause disasm_all() to fail
             return;
@@ -407,12 +440,6 @@ mod test {
         // Details required to get groups information
         cs.set_detail(true).unwrap();
 
-
-        if expected_insns.len() == 0 {
-            // Input was empty, which will cause disasm_all() to fail
-            return;
-        }
-
         let insns: Vec<_> = cs.disasm_all(&insns_buf, 0x1000)
             .expect("Failed to disassemble")
             .iter()
@@ -427,6 +454,45 @@ mod test {
                 insn,
                 expected_mnemonic,
                 expected_bytes,
+                has_default_syntax,
+            )
+        }
+    }
+
+    fn instructions_match_detail<T>(
+        cs: &mut Capstone,
+        info: &[DetailedInsnInfo<T>],
+        has_default_syntax: bool,
+    ) where
+        T: Into<ArchOperand> + Clone,
+    {
+        let insns_buf: Vec<u8> = info.iter()
+            .flat_map(|ref info| info.bytes)
+            .map(|x| *x)
+            .collect();
+
+        // Details required to get groups information
+        cs.set_detail(true).unwrap();
+
+        // todo(tmfink) eliminate check
+        if info.len() == 0 {
+            // Input was empty, which will cause disasm_all() to fail
+            return;
+        }
+
+        let insns: Vec<_> = cs.disasm_all(&insns_buf, 0x1000)
+            .expect("Failed to disassemble")
+            .iter()
+            .collect();
+
+        // Check number of instructions
+        assert_eq!(insns.len(), info.len());
+
+        for (insn, info) in insns.iter().zip(info) {
+            test_instruction_detail_helper(
+                &cs,
+                insn,
+                info,
                 has_default_syntax,
             )
         }
@@ -518,6 +584,47 @@ mod test {
 
         instructions_match(&mut cs_raw, expected_insns.as_slice(), true);
         instructions_match(cs, expected_insns.as_slice(), true);
+    }
+
+    #[derive(Copy, Clone, Debug)]
+    struct DetailedInsnInfo<'a, T: 'a + Into<ArchOperand>> {
+        pub mnemonic: &'a str,
+        pub bytes: &'a [u8],
+        pub operands: &'a [T],
+    }
+    type DII<'a, T> = DetailedInsnInfo<'a, T>;
+
+    impl<'a, T> DetailedInsnInfo<'a, T>
+    where
+        T: Into<ArchOperand>,
+    {
+        fn new(mnemonic: &'a str, bytes: &'a [u8], operands: &'a [T]) -> DetailedInsnInfo<'a, T>
+        where
+            T: Into<ArchOperand>,
+        {
+            DetailedInsnInfo {
+                mnemonic,
+                bytes,
+                operands,
+            }
+        }
+    }
+
+    fn test_arch_mode_endian_insns_detail<T>(
+        cs: &mut Capstone,
+        arch: Arch,
+        mode: Mode,
+        endian: Option<Endian>,
+        extra_mode: &[ExtraMode],
+        insns: &[DetailedInsnInfo<T>],
+    ) where
+        T: Into<ArchOperand> + Clone,
+    {
+        let extra_mode = extra_mode.iter().map(|x| *x);
+        let mut cs_raw = Capstone::new_raw(arch, mode, extra_mode, endian).unwrap();
+
+        instructions_match_detail(&mut cs_raw, insns, true);
+        instructions_match_detail(cs, insns, true);
     }
 
     #[test]
@@ -841,6 +948,34 @@ mod test {
         );
     }
 
+    #[test]
+    fn test_arch_mips_detail() {
+        use arch::mips::MipsOperand::*;
+
+        test_arch_mode_endian_insns_detail(
+            &mut Capstone::new()
+                .mips()
+                .mode(mips::ArchMode::Mips32R6)
+                .build()
+                .unwrap(),
+            Arch::MIPS,
+            Mode::Mips32R6,
+            Some(Endian::Little),
+            &[],
+            &[
+                DII::new(
+                    "ori",
+                    b"\x56\x34\x21\x34",
+                    &[Reg(RegId(2)), Reg(RegId(2)), Imm(13398)],
+                ),
+                DII::new(
+                    "srl",
+                    b"\xc2\x17\x01\x00",
+                    &[Reg(RegId(3)), Reg(RegId(2)), Imm(31)],
+                ),
+            ],
+        );
+    }
 
     #[test]
     fn test_arch_ppc() {

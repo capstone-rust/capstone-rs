@@ -308,7 +308,6 @@ pub trait BuildsCapstoneEndian<ArchMode>: BuildsCapstone<ArchMode> {
     fn endian(&mut self, endian: Endian) -> &mut Self;
 }
 
-
 /// Contains builder-pattern implementations
 pub(crate) mod arch_builder {
     use super::*;
@@ -348,16 +347,53 @@ impl CapstoneBuilder {
 }
 
 pub trait DetailsArch {
-    type OperandIterator;
-    //type Operand;
+    type Operand: Into<ArchOperand>;
+    type OperandIterator: Iterator<Item = Self::Operand>;
 
-    //fn operands(&self) -> OperandIterator<Item=Self::Operand>;
     fn operands(&self) -> Self::OperandIterator;
 }
 
-use self::mips::MipsInsnDetail;
+use self::mips::{MipsInsnDetail, MipsOperand};
 
+/// Architecture-independent enum of detail structures
 #[derive(Debug)]
 pub enum ArchDetail<'a> {
     MipsDetail(MipsInsnDetail<'a>),
+    _RemoveMe,
+}
+
+/// Architecture-independent enum of operands
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub enum ArchOperand {
+    MipsOperand(MipsOperand),
+}
+
+impl<'a> ArchDetail<'a> {
+    /// Returns architecture independent set of operands
+    pub fn operands(&'a self) -> Vec<ArchOperand> {
+        match *self {
+            ArchDetail::MipsDetail(ref detail) => {
+                let ops = detail.operands();
+                let map = ops.map(|mips_op| ArchOperand::from(mips_op));
+                let vec: Vec<ArchOperand> = map.collect();
+                vec
+            }
+            _ => panic!("Unknown detail type"),
+        }
+    }
+
+    /// Returns the MIPS details, if any
+    pub fn mips(&self) -> Option<&MipsInsnDetail> {
+        if let ArchDetail::MipsDetail(ref arch_detail) = *self {
+            Some(arch_detail)
+        } else {
+            None
+        }
+    }
+}
+
+impl From<MipsOperand> for ArchOperand {
+    fn from(op: MipsOperand) -> ArchOperand {
+        ArchOperand::MipsOperand(op)
+    }
 }

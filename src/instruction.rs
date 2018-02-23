@@ -229,9 +229,9 @@ impl<'a> InsnDetail<'a> {
     /// Architecture-specific detail
     pub fn arch_detail(&self) -> ArchDetail {
         match self.1 {
-            Arch::MIPS => ArchDetail::MipsDetail(
-                MipsInsnDetail(unsafe { &self.0.__bindgen_anon_1.mips }),
-            ),
+            Arch::MIPS => {
+                ArchDetail::MipsDetail(MipsInsnDetail(unsafe { &self.0.__bindgen_anon_1.mips }))
+            }
             _ => panic!("Unsupported detail arch"),
         }
     }
