@@ -62,51 +62,12 @@ impl<'a> From<&'a cs_mips_op> for MipsOperand {
     }
 }
 
-// Todo(tmfink) Make OperandIterator generic
-
-/// Iterates over instruction operands
-pub struct MipsOperandIterator<'a>(slice::Iter<'a, cs_mips_op>);
-
-impl<'a> MipsOperandIterator<'a> {
-    fn new(ops: &[cs_mips_op]) -> MipsOperandIterator {
-        MipsOperandIterator(ops.iter())
-    }
-}
-
-impl<'a> Iterator for MipsOperandIterator<'a> {
-    type Item = MipsOperand;
-
-    fn next(&mut self) -> Option<Self::Item> {
-        match self.0.next() {
-            None => None,
-            Some(op) => Some(MipsOperand::from(op)),
-        }
-    }
-}
-
-impl<'a> ExactSizeIterator for MipsOperandIterator<'a> {
-    fn len(&self) -> usize { self.0.len() }
-}
-
-impl<'a> fmt::Debug for MipsOperandIterator<'a> {
-    fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result {
-        fmt.debug_struct("MipsOperandIterator").finish()
-    }
-}
-
-impl<'a> fmt::Debug for MipsInsnDetail<'a> {
-    fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result {
-        fmt.debug_struct("MipsInsnDetail")
-            .field("cs_mips", &(self.0 as *const cs_mips))
-            .finish()
-    }
-}
-
-impl<'a> DetailsArch for MipsInsnDetail<'a> {
-    type OperandIterator = MipsOperandIterator<'a>;
-    type Operand = MipsOperand;
-
-    fn operands(&self) -> MipsOperandIterator<'a> {
-        MipsOperandIterator::new(&self.0.operands[..self.0.op_count as usize])
-    }
-}
+def_arch_details_struct!(
+    InsnDetail = MipsInsnDetail;
+    Operand = MipsOperand;
+    OperandIterator = MipsOperandIterator;
+    OperandIteratorLife = MipsOperandIterator<'a>;
+    [ pub struct MipsOperandIterator<'a>(slice::Iter<'a, cs_mips_op>); ]
+    cs_arch_op = cs_mips_op;
+    cs_arch = cs_mips;
+);

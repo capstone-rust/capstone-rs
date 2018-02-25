@@ -315,6 +315,169 @@ pub(crate) mod arch_builder {
     arch_info_base!(define_arch_builder);
 }
 
+/// Builds `Capstone` object
+#[derive(Debug)]
+pub struct CapstoneBuilder(
+    /// Hidden field to prevent users from instantiating `CapstoneBuilder`
+    PhantomData<()>
+);
+
+impl CapstoneBuilder {
+    /// Create a `CapstoneBuilder`
+    pub(crate) fn new() -> Self {
+        CapstoneBuilder(PhantomData)
+    }
+}
+
+/// Provides details about an architecture
+pub trait DetailsArch {
+    type Operand: Into<ArchOperand>;
+    type OperandIterator: Iterator<Item = Self::Operand>;
+
+    fn operands(&self) -> Self::OperandIterator;
+}
+
+/// Base macro for defining arch details
+macro_rules! detail_arch_base {
+    ( $x_macro:ident ) => { $x_macro!(
+        [
+            detail = MipsDetail,
+            insn_detail = MipsInsnDetail<'a>,
+            op = MipsOperand,
+            /// Returns the MIPS details, if any
+            => arch_name = mips,
+        ]
+    ); }
+}
+
+/// Define ArchDetail enum, ArchOperand enum, and From<$Operand> for ArchOperand
+macro_rules! detail_defs {
+    (
+        $( [
+            detail = $Detail:tt,
+            insn_detail = $InsnDetail:ty,
+            op = $Operand:tt,
+            $( #[$func_attr:meta] )+
+            => arch_name = $arch_name:ident,
+        ] )+
+    ) => {
+        $(
+            use self::$arch_name::*;
+        )+
+
+        /// Architecture-independent enum of detail structures
+        #[derive(Debug)]
+        pub enum ArchDetail<'a> {
+            $( $Detail($InsnDetail), )+
+            _RemoveMe,
+        }
+
+        /// Architecture-independent enum of operands
+        #[derive(Clone, Debug, Eq, PartialEq)]
+        pub enum ArchOperand {
+            $( $Operand($Operand), )+
+        }
+
+        impl<'a> ArchDetail<'a> {
+            /// Returns architecture independent set of operands
+            pub fn operands(&'a self) -> Vec<ArchOperand> {
+                match *self {
+                    $(
+                        ArchDetail::$Detail(ref detail) => {
+                            let ops = detail.operands();
+                            let map = ops.map(|arch_op| ArchOperand::from(arch_op));
+                            let vec: Vec<ArchOperand> = map.collect();
+                            vec
+                        }
+                    )+
+                    _ => panic!("Unknown detail type"),
+                }
+            }
+
+            $(
+                $( #[$func_attr] )+
+                pub fn $arch_name(&'a self) -> Option<& $InsnDetail> {
+                    if let ArchDetail::$Detail(ref arch_detail) = *self {
+                        Some(arch_detail)
+                    } else {
+                        None
+                    }
+                }
+            )+
+        }
+
+        $(
+            impl From<$Operand> for ArchOperand {
+                fn from(op: $Operand) -> ArchOperand {
+                    ArchOperand::$Operand(op)
+                }
+            }
+        )+
+    }
+}
+
+/// Define OperandIterator and DetailsArch impl
+macro_rules! def_arch_details_struct {
+    (
+        InsnDetail = $InsnDetail:ident;
+        Operand = $Operand:ident;
+        OperandIterator = $OperandIterator:ident;
+        OperandIteratorLife = $OperandIteratorLife:ty;
+        [ $iter_struct:item ]
+        cs_arch_op = $cs_arch_op:ty;
+        cs_arch = $cs_arch:ty;
+    ) => {
+        /// Iterates over instruction operands
+        $iter_struct
+
+        impl<'a> $OperandIteratorLife {
+            fn new(ops: &[$cs_arch_op]) -> $OperandIterator {
+                $OperandIterator(ops.iter())
+            }
+        }
+
+        impl<'a> Iterator for $OperandIteratorLife {
+            type Item = $Operand;
+
+            fn next(&mut self) -> Option<Self::Item> {
+                match self.0.next() {
+                    None => None,
+                    Some(op) => Some($Operand::from(op)),
+                }
+            }
+        }
+
+        impl<'a> ExactSizeIterator for $OperandIteratorLife {
+            fn len(&self) -> usize { self.0.len() }
+        }
+
+        impl<'a> fmt::Debug for $OperandIteratorLife {
+            fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result {
+                fmt.debug_struct(stringify!($OperandIterator)).finish()
+            }
+        }
+
+        impl<'a> fmt::Debug for $InsnDetail<'a> {
+            fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result {
+                fmt.debug_struct(stringify!($InsnDetail))
+                    .field(stringify!($cs_arch), &(self.0 as *const $cs_arch))
+                    .finish()
+            }
+        }
+
+        impl<'a> DetailsArch for $InsnDetail<'a> {
+            type OperandIterator = $OperandIteratorLife;
+            type Operand = $Operand;
+
+            fn operands(&self) -> $OperandIteratorLife {
+                $OperandIterator::new(&self.0.operands[..self.0.op_count as usize])
+            }
+        }
+    }
+}
+
+detail_arch_base!(detail_defs);
+
 /// Define "pub mod" uses
 macro_rules! define_arch_mods {
     (
@@ -330,70 +493,5 @@ macro_rules! define_arch_mods {
     }
 }
 
+// Define modules at the end so that they can see macro definitions
 arch_info_base!(define_arch_mods);
-
-/// Builds `Capstone` object
-#[derive(Debug)]
-pub struct CapstoneBuilder(
-    /// Hidden field to prevent users from instantiating `CapstoneBuilder`
-    PhantomData<()>
-);
-
-impl CapstoneBuilder {
-    /// Create a `CapstoneBuilder`
-    pub(crate) fn new() -> Self {
-        CapstoneBuilder(PhantomData)
-    }
-}
-
-pub trait DetailsArch {
-    type Operand: Into<ArchOperand>;
-    type OperandIterator: Iterator<Item = Self::Operand>;
-
-    fn operands(&self) -> Self::OperandIterator;
-}
-
-use self::mips::{MipsInsnDetail, MipsOperand};
-
-/// Architecture-independent enum of detail structures
-#[derive(Debug)]
-pub enum ArchDetail<'a> {
-    MipsDetail(MipsInsnDetail<'a>),
-    _RemoveMe,
-}
-
-/// Architecture-independent enum of operands
-#[derive(Clone, Debug, Eq, PartialEq)]
-pub enum ArchOperand {
-    MipsOperand(MipsOperand),
-}
-
-impl<'a> ArchDetail<'a> {
-    /// Returns architecture independent set of operands
-    pub fn operands(&'a self) -> Vec<ArchOperand> {
-        match *self {
-            ArchDetail::MipsDetail(ref detail) => {
-                let ops = detail.operands();
-                let map = ops.map(|mips_op| ArchOperand::from(mips_op));
-                let vec: Vec<ArchOperand> = map.collect();
-                vec
-            }
-            _ => panic!("Unknown detail type"),
-        }
-    }
-
-    /// Returns the MIPS details, if any
-    pub fn mips(&self) -> Option<&MipsInsnDetail> {
-        if let ArchDetail::MipsDetail(ref arch_detail) = *self {
-            Some(arch_detail)
-        } else {
-            None
-        }
-    }
-}
-
-impl From<MipsOperand> for ArchOperand {
-    fn from(op: MipsOperand) -> ArchOperand {
-        ArchOperand::MipsOperand(op)
-    }
-}
