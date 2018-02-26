@@ -1,5 +1,4 @@
 use arch::ArchDetail;
-use arch::mips::MipsInsnDetail;
 use std::ffi::CStr;
 use std::ptr;
 use std::slice;
@@ -228,12 +227,28 @@ impl<'a> InsnDetail<'a> {
 
     /// Architecture-specific detail
     pub fn arch_detail(&self) -> ArchDetail {
-        match self.1 {
-            Arch::MIPS => {
-                ArchDetail::MipsDetail(MipsInsnDetail(unsafe { &self.0.__bindgen_anon_1.mips }))
+        macro_rules! def_arch_detail_match {
+            (
+                $( [ $ARCH:ident, $detail:ident, $insn_detail:ident, $arch:ident ] )*
+            ) => {
+                use self::ArchDetail::*;
+                use Arch::*;
+                $( use arch::$arch::$insn_detail; )*
+
+                return match self.1 {
+                    $(
+                        $ARCH => {
+                            $detail($insn_detail(unsafe { &self.0.__bindgen_anon_1.$arch }))
+                        }
+                    )*
+                    _ => panic!("Unsupported detail arch"),
+                }
             }
-            _ => panic!("Unsupported detail arch"),
         }
+        def_arch_detail_match!(
+            [MIPS, MipsDetail, MipsInsnDetail, mips]
+            [ARM, ArmDetail, ArmInsnDetail, arm]
+        );
     }
 }
 

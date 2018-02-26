@@ -347,6 +347,13 @@ macro_rules! detail_arch_base {
             /// Returns the MIPS details, if any
             => arch_name = mips,
         ]
+        [
+            detail = ArmDetail,
+            insn_detail = ArmInsnDetail<'a>,
+            op = ArmOperand,
+            /// Returns the ARM details, if any
+            => arch_name = arm,
+        ]
     ); }
 }
 
@@ -373,7 +380,7 @@ macro_rules! detail_defs {
         }
 
         /// Architecture-independent enum of operands
-        #[derive(Clone, Debug, Eq, PartialEq)]
+        #[derive(Clone, Debug, PartialEq)]
         pub enum ArchOperand {
             $( $Operand($Operand), )+
         }

@@ -296,10 +296,11 @@ mod test {
         let arch_detail = detail.arch_detail();
         let arch_ops = arch_detail.operands();
 
-        assert!(info.operands.iter().zip(arch_ops).all(|(expected_op, op)| {
+        let expected_ops: Vec<_> = info.operands.iter().map(|expected_op| {
             let expected_op: ArchOperand = (*expected_op).clone().into();
-            expected_op.eq(&op)
-        }));
+            expected_op
+        }).collect();
+        assert_eq!(expected_ops, arch_ops, "operands do not match");
     }
 
     /// Assert instruction belongs or does not belong to groups, testing both insn_belongs_to_group
@@ -841,6 +842,81 @@ mod test {
     }
 
     #[test]
+    fn test_arch_arm_detail() {
+        use arch::arm::*;
+        use arch::arm::ArmOperandType::*;
+        use capstone_sys::arm_op_mem;
+
+        let r0_op = ArmOperand {
+            op_type: Reg(RegId(ArmReg::ARM_REG_R0 as RegIdInt)),
+            ..Default::default()
+        };
+
+        test_arch_mode_endian_insns_detail(
+            &mut Capstone::new()
+                .arm()
+                .mode(arm::ArchMode::Arm)
+                .build()
+                .unwrap(),
+            Arch::ARM,
+            Mode::Arm,
+            Some(Endian::Little),
+            &[],
+            &[
+                DII::new(
+                    "bl",
+                    b"\xed\xff\xff\xeb",
+                    &[ArmOperand { op_type: Imm(0xfbc), ..Default::default() }],
+                ),
+                DII::new(
+                    "str",
+                    b"\x04\xe0\x2d\xe5",
+                    &[
+                        ArmOperand {
+                            op_type: Reg(RegId(ArmReg::ARM_REG_LR as RegIdInt)),
+                            ..Default::default()
+                        },
+                        ArmOperand {
+                            op_type: Mem(ArmOpMem(arm_op_mem {
+                                base: ArmReg::ARM_REG_SP,
+                                index: 0,
+                                scale: 1,
+                                disp: -4,
+                            })),
+                            ..Default::default()
+                        }
+                    ],
+                ),
+                DII::new(
+                    "andeq",
+                    b"\x00\x00\x00\x00",
+                    &[r0_op.clone(), r0_op.clone(), r0_op.clone()],
+                ),
+                DII::new(
+                    "mcreq",
+                    b"\xf1\x02\x03\x0e",
+                    &[
+                        ArmOperand { op_type: Pimm(2), ..Default::default() },
+                        ArmOperand { op_type: Imm(0), ..Default::default() },
+                        r0_op.clone(),
+                        ArmOperand { op_type: Cimm(3), ..Default::default() },
+                        ArmOperand { op_type: Cimm(1), ..Default::default() },
+                        ArmOperand { op_type: Imm(7), ..Default::default() },
+                    ],
+                ),
+                DII::new(
+                    "mov",
+                    b"\x00\x00\xa0\xe3",
+                    &[
+                        r0_op.clone(),
+                        ArmOperand { op_type: Imm(0), ..Default::default() },
+                    ],
+                ),
+            ],
+        );
+    }
+
+    #[test]
     fn test_arch_arm64() {
         test_arch_mode_endian_insns(
             &mut Capstone::new()
@@ -951,6 +1027,8 @@ mod test {
     #[test]
     fn test_arch_mips_detail() {
         use arch::mips::MipsOperand::*;
+        use arch::mips::*;
+        use capstone_sys::mips_op_mem;
 
         test_arch_mode_endian_insns_detail(
             &mut Capstone::new()
@@ -972,6 +1050,34 @@ mod test {
                     "srl",
                     b"\xc2\x17\x01\x00",
                     &[Reg(RegId(3)), Reg(RegId(2)), Imm(31)],
+                ),
+                DII::new(
+                    "syscall",
+                    b"\x0c\x00\x00\x00",
+                    &[],
+                ),
+            ],
+        );
+
+        test_arch_mode_endian_insns_detail(
+            &mut Capstone::new()
+                .mips()
+                .mode(mips::ArchMode::Mips32R6)
+                .endian(Endian::Big)
+                .build()
+                .unwrap(),
+            Arch::MIPS,
+            Mode::Mips32R6,
+            Some(Endian::Big),
+            &[],
+            &[
+                DII::new(
+                    "lw",
+                    b"\x8f\xa2\x00\x00",
+                    &[
+                        Reg(RegId(MipsReg::MIPS_REG_V0 as RegIdInt)),
+                        Mem(MipsOpMem(mips_op_mem { base: MipsReg::MIPS_REG_SP,disp: 0 }))
+                    ],
                 ),
             ],
         );

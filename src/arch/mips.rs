@@ -2,8 +2,8 @@
 
 pub use arch::arch_builder::mips::*;
 use arch::DetailsArch;
-use capstone_sys::{cs_mips, cs_mips_op, mips_op_type, mips_op_mem};
-use instruction::RegId;
+use capstone_sys::{cs_mips, cs_mips_op, mips_op_mem, mips_op_type};
+use instruction::{RegId, RegIdInt};
 use std::convert::From;
 use std::{cmp, fmt, slice};
 
@@ -33,14 +33,18 @@ pub enum MipsOperand {
 
 /// MIPS memory operand
 #[derive(Debug, Copy, Clone)]
-pub struct MipsOpMem(mips_op_mem);
+pub struct MipsOpMem(pub(crate) mips_op_mem);
 
 impl MipsOpMem {
-    /// Base value
-    pub fn base(&self) -> u32 { self.0.base as u32 }
+    /// Base register
+    pub fn base(&self) -> RegId {
+        RegId(self.0.base as RegIdInt)
+    }
 
     /// Disp value
-    pub fn disp(&self) -> i64 { self.0.disp }
+    pub fn disp(&self) -> i64 {
+        self.0.disp
+    }
 }
 
 impl cmp::PartialEq for MipsOpMem {
@@ -54,9 +58,13 @@ impl cmp::Eq for MipsOpMem {}
 impl<'a> From<&'a cs_mips_op> for MipsOperand {
     fn from(insn: &cs_mips_op) -> MipsOperand {
         match insn.type_ {
-            mips_op_type::MIPS_OP_REG => MipsOperand::Reg(RegId(unsafe { insn.__bindgen_anon_1.reg } as u8)),
+            mips_op_type::MIPS_OP_REG => {
+                MipsOperand::Reg(RegId(unsafe { insn.__bindgen_anon_1.reg } as RegIdInt))
+            }
             mips_op_type::MIPS_OP_IMM => MipsOperand::Imm(unsafe { insn.__bindgen_anon_1.imm }),
-            mips_op_type::MIPS_OP_MEM => MipsOperand::Mem(MipsOpMem(unsafe { insn.__bindgen_anon_1.mem })),
+            mips_op_type::MIPS_OP_MEM => {
+                MipsOperand::Mem(MipsOpMem(unsafe { insn.__bindgen_anon_1.mem }))
+            }
             mips_op_type::MIPS_OP_INVALID => MipsOperand::Invalid,
         }
     }
