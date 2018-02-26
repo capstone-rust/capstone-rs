@@ -31,6 +31,12 @@ pub enum MipsOperand {
     Invalid,
 }
 
+impl Default for MipsOperand {
+    fn default() -> Self {
+        MipsOperand::Invalid
+    }
+}
+
 /// MIPS memory operand
 #[derive(Debug, Copy, Clone)]
 pub struct MipsOpMem(pub(crate) mips_op_mem);

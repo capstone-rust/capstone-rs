@@ -3,6 +3,7 @@
 use capstone::Capstone;
 use constants::Endian;
 use error::CsResult;
+use std::fmt::Debug;
 use std::marker::PhantomData;
 
 macro_rules! define_subset_enum {
@@ -329,9 +330,9 @@ impl CapstoneBuilder {
     }
 }
 
-/// Provides details about an architecture
+/// Provides architecture-specific details about an instruction
 pub trait DetailsArch {
-    type Operand: Into<ArchOperand>;
+    type Operand: Into<ArchOperand> + Default + Clone + Debug + PartialEq;
     type OperandIterator: Iterator<Item = Self::Operand>;
 
     fn operands(&self) -> Self::OperandIterator;
