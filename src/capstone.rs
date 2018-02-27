@@ -372,9 +372,9 @@ impl Capstone {
     }
 
     /// Returns list of ids of registers that are implicitly read by instruction `insn`.
-    pub fn read_register_ids<'i>(&self, insn: &'i Insn) -> CsResult<RegsIter<'i>> {
+    pub fn read_register_ids<'i>(&self, insn: &'i Insn) -> CsResult<RegsIter<'i, u8>> {
         let detail = self.insn_detail(insn)?;
-        let reg_read_ids: RegsIter<'i> = unsafe { mem::transmute(detail.regs_read()) };
+        let reg_read_ids: RegsIter<'i, u8> = unsafe { mem::transmute(detail.regs_read()) };
         Ok(reg_read_ids)
     }
 
@@ -387,9 +387,9 @@ impl Capstone {
     }
 
     /// Returns a list of ids of registers that are implicitly written to by the instruction `insn`.
-    pub fn write_register_ids<'i>(&self, insn: &'i Insn) -> CsResult<RegsIter<'i>> {
+    pub fn write_register_ids<'i>(&self, insn: &'i Insn) -> CsResult<RegsIter<'i, u8>> {
         let detail = self.insn_detail(insn)?;
-        let reg_write_ids: RegsIter<'i> = unsafe { mem::transmute(detail.regs_write()) };
+        let reg_write_ids: RegsIter<'i, u8> = unsafe { mem::transmute(detail.regs_write()) };
         Ok(reg_write_ids)
     }
 

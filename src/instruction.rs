@@ -29,7 +29,7 @@ pub type InsnGroupIdInt = u8;
 pub struct InsnGroupId(pub InsnGroupIdInt);
 
 /// Integer type used in `RegId`
-pub type RegIdInt = u8;
+pub type RegIdInt = u16;
 
 /// Represents an register id, which is architecture-specific.
 #[derive(Copy, Clone, Debug, Hash, PartialEq, Eq)]
@@ -164,13 +164,13 @@ impl Display for Insn {
 
 /// Iterator over registers ids
 #[derive(Debug, Clone)]
-pub struct RegsIter<'a>(slice::Iter<'a, RegIdInt>);
+pub struct RegsIter<'a, T: 'a + Into<RegIdInt> + Copy>(slice::Iter<'a, T>);
 
-impl<'a> Iterator for RegsIter<'a> {
+impl<'a, T: 'a + Into<RegIdInt> + Copy> Iterator for RegsIter<'a, T> {
     type Item = RegId;
     fn next(&mut self) -> Option<Self::Item> {
         match self.0.next() {
-            Some(x) => Some(RegId(*x as RegIdInt)),
+            Some(x) => Some(RegId((*x).into())),
             None => None,
         }
     }
@@ -192,7 +192,7 @@ impl<'a> Iterator for InsnGroupIter<'a> {
 
 impl<'a> InsnDetail<'a> {
     /// Returns the implicit read registers
-    pub fn regs_read(&self) -> RegsIter {
+    pub fn regs_read(&self) -> RegsIter<u8> {
         RegsIter(
             (*self.0).regs_read[..self.regs_read_count() as usize].iter(),
         )
@@ -204,7 +204,7 @@ impl<'a> InsnDetail<'a> {
     }
 
     /// Returns the implicit write registers
-    pub fn regs_write(&self) -> RegsIter {
+    pub fn regs_write(&self) -> RegsIter<u8> {
         RegsIter(
             (*self.0).regs_write[..self.regs_write_count() as usize].iter(),
         )
