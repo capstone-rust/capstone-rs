@@ -914,6 +914,30 @@ mod test {
                 ),
             ],
         );
+
+        test_arch_mode_endian_insns_detail(
+            &mut Capstone::new()
+                .arm()
+                .mode(arm::ArchMode::Thumb)
+                .build()
+                .unwrap(),
+            Arch::ARM,
+            Mode::Thumb,
+            None,
+            &[],
+            &[
+                DII::new(
+                    "bx",
+                    b"\x70\x47",
+                    &[
+                        ArmOperand {
+                            op_type: Reg(RegId(ArmReg::ARM_REG_LR as RegIdInt)),
+                            ..Default::default()
+                        }
+                    ],
+                ),
+            ],
+        );
     }
 
     #[test]
@@ -946,6 +970,139 @@ mod test {
                 ("cneg", b"\x20\x04\x81\xda"),
                 ("add", b"\x20\x08\x02\x8b"),
                 ("ldr", b"\x10\x5b\xe8\x3c"),
+            ],
+        );
+    }
+
+    #[test]
+    fn test_arch_arm64_detail() {
+        use arch::arm64::*;
+        use arch::arm64::Arm64OperandType::*;
+        use arch::arm64::Arm64Pstate::*;
+        use arch::arm64::Arm64Reg::*;
+        use arch::arm64::Arm64Sysreg::*;
+        use arch::arm64::Arm64Vas::*;
+        use arch::arm64::Arm64Vess::*;
+        use capstone_sys::arm_op_mem;
+
+        let s0 = Arm64Operand {
+            op_type: Reg(RegId(ARM64_REG_S0 as RegIdInt)),
+            ..Default::default()
+        };
+
+        test_arch_mode_endian_insns_detail(
+            &mut Capstone::new()
+                .arm64()
+                .mode(arm64::ArchMode::Arm)
+                .build()
+                .unwrap(),
+            Arch::ARM64,
+            Mode::Arm,
+            None,
+            &[],
+            &[
+                // mrs x9, midr_el1
+                DII::new(
+                    "mrs",
+                    b"\x09\x00\x38\xd5",
+                    &[
+                        Arm64Operand {
+                            op_type: Reg(RegId(ARM64_REG_X9 as RegIdInt)),
+                            ..Default::default()
+                        },
+                        Arm64Operand {
+                            op_type: RegMrs(ARM64_SYSREG_MIDR_EL1),
+                            ..Default::default()
+                        }
+                    ],
+                ),
+
+                // msr spsel, #0
+                DII::new(
+                    "msr",
+                    b"\xbf\x40\x00\xd5",
+                    &[
+                        Arm64Operand {
+                            op_type: Pstate(ARM64_PSTATE_SPSEL),
+                            ..Default::default()
+                        },
+                        Arm64Operand {
+                            op_type: Imm(0),
+                            ..Default::default()
+                        }
+                    ],
+                ),
+
+                // tbx  v0.8b, {v1.16b, v2.16b, v3.16b}, v2.8b
+                DII::new(
+                    "tbx",
+                    b"\x20\x50\x02\x0e",
+                    &[
+                        Arm64Operand {
+                            vas: ARM64_VAS_8B,
+                            op_type: Reg(RegId(ARM64_REG_V0 as RegIdInt)),
+                            ..Default::default()
+                        },
+                        Arm64Operand {
+                            vas: ARM64_VAS_16B,
+                            op_type: Reg(RegId(ARM64_REG_V1 as RegIdInt)),
+                            ..Default::default()
+                        },
+                        Arm64Operand {
+                            vas: ARM64_VAS_16B,
+                            op_type: Reg(RegId(ARM64_REG_V2 as RegIdInt)),
+                            ..Default::default()
+                        },
+                        Arm64Operand {
+                            vas: ARM64_VAS_16B,
+                            op_type: Reg(RegId(ARM64_REG_V3 as RegIdInt)),
+                            ..Default::default()
+                        },
+                        Arm64Operand {
+                            vas: ARM64_VAS_8B,
+                            op_type: Reg(RegId(ARM64_REG_V2 as RegIdInt)),
+                            ..Default::default()
+                        },
+                    ],
+                ),
+
+                // scvtf v0.2s, v1.2s, #3
+                DII::new(
+                    "scvtf",
+                    b"\x20\xe4\x3d\x0f",
+                    &[
+                        Arm64Operand {
+                            vas: ARM64_VAS_2S,
+                            op_type: Reg(RegId(ARM64_REG_V0 as RegIdInt)),
+                            ..Default::default()
+                        },
+                        Arm64Operand {
+                            vas: ARM64_VAS_2S,
+                            op_type: Reg(RegId(ARM64_REG_V1 as RegIdInt)),
+                            ..Default::default()
+                        },
+                        Arm64Operand {
+                            op_type: Imm(3),
+                            ..Default::default()
+                        },
+                    ],
+                ),
+
+                // fmla s0, s0, v0.s[3]
+                DII::new(
+                    "fmla",
+                    b"\x00\x18\xa0\x5f",
+                    &[
+                        s0.clone(),
+                        s0.clone(),
+                        Arm64Operand {
+                            vector_index: Some(3),
+                            vess: ARM64_VESS_S,
+                            op_type: Reg(RegId(ARM64_REG_V0 as RegIdInt)),
+                            ..Default::default()
+                        },
+                    ],
+                ),
             ],
         );
     }

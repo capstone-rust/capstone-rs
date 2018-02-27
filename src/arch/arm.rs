@@ -18,8 +18,7 @@ pub use capstone_sys::arm_cpsflag_type as ArmCPSFlag;
 pub use capstone_sys::arm_cc as ArmCC;
 pub use capstone_sys::arm_mem_barrier as ArmMemBarrier;
 pub use capstone_sys::arm_setend_type as ArmSetendType;
-use capstone_sys::arm_shifter;
-use capstone_sys::cs_arm_op__bindgen_ty_2;
+use capstone_sys::{arm_shifter, cs_arm_op__bindgen_ty_2};
 
 /// Contains ARM-specific details for an instruction
 pub struct ArmInsnDetail<'a>(pub(crate) &'a cs_arm);
@@ -181,22 +180,22 @@ impl<'a> ArmInsnDetail<'a> {
         self.0.vector_data
     }
 
-    /// CPS mode
+    /// CPS mode for CPS instruction
     pub fn cps_mode(&self) -> ArmCPSMode {
         self.0.cps_mode
     }
 
-    /// CPS flag
+    /// CPS flag for CPS instruction
     pub fn cps_flag(&self) -> ArmCPSFlag {
         self.0.cps_flag
     }
 
-    /// Condition code
+    /// Condition codes
     pub fn cc(&self) -> ArmCC {
         self.0.cc
     }
 
-    /// Whether flags are update
+    /// Whether this insn updates flags
     pub fn update_flags(&self) -> bool {
         self.0.update_flags
     }

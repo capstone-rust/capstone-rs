@@ -355,6 +355,13 @@ macro_rules! detail_arch_base {
             /// Returns the ARM details, if any
             => arch_name = arm,
         ]
+        [
+            detail = Arm64Detail,
+            insn_detail = Arm64InsnDetail<'a>,
+            op = Arm64Operand,
+            /// Returns the ARM64 details, if any
+            => arch_name = arm64,
+        ]
     ); }
 }
 

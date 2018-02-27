@@ -248,6 +248,7 @@ impl<'a> InsnDetail<'a> {
         def_arch_detail_match!(
             [MIPS, MipsDetail, MipsInsnDetail, mips]
             [ARM, ArmDetail, ArmInsnDetail, arm]
+            [ARM64, Arm64Detail, Arm64InsnDetail, arm64]
         );
     }
 }
