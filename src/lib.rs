@@ -863,11 +863,14 @@ mod test {
             Some(Endian::Little),
             &[],
             &[
+                // bl	#0xfbc
                 DII::new(
                     "bl",
                     b"\xed\xff\xff\xeb",
                     &[ArmOperand { op_type: Imm(0xfbc), ..Default::default() }],
                 ),
+
+                // str     lr, [sp, #-4]!
                 DII::new(
                     "str",
                     b"\x04\xe0\x2d\xe5",
@@ -887,11 +890,36 @@ mod test {
                         }
                     ],
                 ),
+
+                // andeq   r0, r0, r0
                 DII::new(
                     "andeq",
                     b"\x00\x00\x00\x00",
                     &[r0_op.clone(), r0_op.clone(), r0_op.clone()],
                 ),
+
+                // str     r8, [r2, #-0x3e0]!
+                DII::new(
+                    "str",
+                    b"\xe0\x83\x22\xe5",
+                    &[
+                        ArmOperand {
+                            op_type: Reg(RegId(ArmReg::ARM_REG_R8 as RegIdInt)),
+                            ..Default::default()
+                        },
+                        ArmOperand {
+                            op_type: Mem(ArmOpMem(arm_op_mem {
+                                base: ArmReg::ARM_REG_R2,
+                                index: 0,
+                                scale: 1,
+                                disp: -992,
+                            })),
+                            ..Default::default()
+                        }
+                    ],
+                ),
+
+                // mcreq   p2, #0, r0, c3, c1, #7
                 DII::new(
                     "mcreq",
                     b"\xf1\x02\x03\x0e",
@@ -904,6 +932,8 @@ mod test {
                         ArmOperand { op_type: Imm(7), ..Default::default() },
                     ],
                 ),
+
+                // mov     r0, #0
                 DII::new(
                     "mov",
                     b"\x00\x00\xa0\xe3",
