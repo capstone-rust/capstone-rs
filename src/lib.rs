@@ -983,10 +983,22 @@ mod test {
         use arch::arm64::Arm64Sysreg::*;
         use arch::arm64::Arm64Vas::*;
         use arch::arm64::Arm64Vess::*;
-        use capstone_sys::arm_op_mem;
+        use capstone_sys::arm64_op_mem;
 
         let s0 = Arm64Operand {
             op_type: Reg(RegId(ARM64_REG_S0 as RegIdInt)),
+            ..Default::default()
+        };
+        let x0 = Arm64Operand {
+            op_type: Reg(RegId(ARM64_REG_X0 as RegIdInt)),
+            ..Default::default()
+        };
+        let x1 = Arm64Operand {
+            op_type: Reg(RegId(ARM64_REG_X1 as RegIdInt)),
+            ..Default::default()
+        };
+        let x2 = Arm64Operand {
+            op_type: Reg(RegId(ARM64_REG_X2 as RegIdInt)),
             ..Default::default()
         };
 
@@ -1101,6 +1113,167 @@ mod test {
                             op_type: Reg(RegId(ARM64_REG_V0 as RegIdInt)),
                             ..Default::default()
                         },
+                    ],
+                ),
+
+                // fmov x2, v5.d[1]
+                DII::new(
+                    "fmov",
+                    b"\xa2\x00\xae\x9e",
+                    &[
+                        Arm64Operand {
+                            op_type: Reg(RegId(ARM64_REG_X2 as RegIdInt)),
+                            ..Default::default()
+                        },
+                        Arm64Operand {
+                            vector_index: Some(1),
+                            vess: ARM64_VESS_D,
+                            op_type: Reg(RegId(ARM64_REG_V5 as RegIdInt)),
+                            ..Default::default()
+                        },
+                    ],
+                ),
+
+                // dsb nsh
+                DII::new(
+                    "dsb",
+                    b"\x9f\x37\x03\xd5",
+                    &[
+                        Arm64Operand {
+                            op_type: Barrier(Arm64BarrierOp::ARM64_BARRIER_NSH),
+                            ..Default::default()
+                        },
+                    ],
+                ),
+
+                // dmb osh
+                DII::new(
+                    "dmb",
+                    b"\xbf\x33\x03\xd5",
+                    &[
+                        Arm64Operand {
+                            op_type: Barrier(Arm64BarrierOp::ARM64_BARRIER_OSH),
+                            ..Default::default()
+                        },
+                    ],
+                ),
+
+                // isb
+                DII::new(
+                    "isb",
+                    b"\xdf\x3f\x03\xd5",
+                    &[],
+                ),
+
+                // mul x1, x1, x2
+                DII::new(
+                    "mul",
+                    b"\x21\x7c\x02\x9b",
+                    &[
+                        x1.clone(),
+                        x1.clone(),
+                        x2.clone(),
+                    ],
+                ),
+
+                // lsr w1, w1, #0
+                DII::new(
+                    "lsr",
+                    b"\x21\x7c\x00\x53",
+                    &[
+                        Arm64Operand {
+                            op_type: Reg(RegId(ARM64_REG_W1 as RegIdInt)),
+                            ..Default::default()
+                        },
+                        Arm64Operand {
+                            op_type: Reg(RegId(ARM64_REG_W1 as RegIdInt)),
+                            ..Default::default()
+                        },
+                        Arm64Operand {
+                            op_type: Imm(0),
+                            ..Default::default()
+                        },
+                    ],
+                ),
+
+                // sub w0, w0, w1, uxtw
+                DII::new(
+                    "sub",
+                    b"\x00\x40\x21\x4b",
+                    &[
+                        Arm64Operand {
+                            op_type: Reg(RegId(ARM64_REG_W0 as RegIdInt)),
+                            ..Default::default()
+                        },
+                        Arm64Operand {
+                            op_type: Reg(RegId(ARM64_REG_W0 as RegIdInt)),
+                            ..Default::default()
+                        },
+                        Arm64Operand {
+                            ext: Arm64Extender::ARM64_EXT_UXTW,
+                            op_type: Reg(RegId(ARM64_REG_W1 as RegIdInt)),
+                            ..Default::default()
+                        },
+                    ],
+                ),
+
+                // ldr w1, [sp, #8]
+                DII::new(
+                    "ldr",
+                    b"\xe1\x0b\x40\xb9",
+                    &[
+                        Arm64Operand {
+                            op_type: Reg(RegId(ARM64_REG_W1 as RegIdInt)),
+                            ..Default::default()
+                        },
+                        Arm64Operand {
+                            op_type: Mem(Arm64OpMem(arm64_op_mem {
+                                base: ARM64_REG_SP,
+                                index: 0,
+                                disp: 8
+                            })),
+                            ..Default::default()
+                        },
+                    ],
+                ),
+
+                // cneg x0, x1, ne
+                DII::new(
+                    "cneg",
+                    b"\x20\x04\x81\xda",
+                    &[x0.clone(), x1.clone()],
+                ),
+
+                // add x0, x1, x2, lsl #2
+                DII::new(
+                    "add",
+                    b"\x20\x08\x02\x8b",
+                    &[
+                        x0.clone(),
+                        x1.clone(),
+                        Arm64Operand { shift: Arm64Shift::Lsl(2), ..x2 },
+                    ],
+                ),
+
+                // ldr q16, [x24, w8, uxtw #4]
+                DII::new(
+                    "ldr",
+                    b"\x10\x5b\xe8\x3c",
+                    &[
+                        Arm64Operand {
+                            op_type: Reg(RegId(ARM64_REG_Q16 as RegIdInt)),
+                            ..Default::default()
+                        },
+                        Arm64Operand {
+                            shift: Arm64Shift::Lsl(4),
+                            ext: Arm64Extender::ARM64_EXT_UXTW,
+                            op_type: Mem(Arm64OpMem(arm64_op_mem {
+                                base: ARM64_REG_X24,
+                                index: ARM64_REG_W8,
+                                disp: 0
+                            })),
+                            ..Default::default()
+                        }
                     ],
                 ),
             ],

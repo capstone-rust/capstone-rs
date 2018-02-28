@@ -167,9 +167,9 @@ impl Arm64OpMem {
         RegId(self.0.base as RegIdInt)
     }
 
-    /// Index value
-    pub fn index(&self) -> u32 {
-        self.0.index as u32
+    /// Index register
+    pub fn index(&self) -> RegId {
+        RegId(self.0.index as RegIdInt)
     }
 
     /// Disp value
