@@ -1476,6 +1476,127 @@ mod test {
     }
 
     #[test]
+    fn test_arch_ppc_detail() {
+        use arch::ppc::*;
+        use arch::ppc::PpcOperand::*;
+        use arch::ppc::PpcReg::*;
+        use capstone_sys::ppc_op_mem;
+
+        test_arch_mode_endian_insns_detail(
+            &mut Capstone::new()
+                .ppc()
+                .mode(ppc::ArchMode::Mode64)
+                .endian(Endian::Big)
+                .build()
+                .unwrap(),
+            Arch::PPC,
+            Mode::Mode64,
+            Some(Endian::Big),
+            &[],
+            &[
+                // lwz     r1, 0(0)
+                DII::new(
+                    "lwz",
+                    b"\x80\x20\x00\x00",
+                    &[
+                        Reg(RegId(PPC_REG_R1 as RegIdInt)),
+                        Mem(PpcOpMem(ppc_op_mem { base: 45, disp: 0 }))
+                    ],
+                ),
+
+                // lwz     r1, 0(r31)
+                DII::new(
+                    "lwz",
+                    b"\x80\x3f\x00\x00",
+                    &[
+                        Reg(RegId(PPC_REG_R1 as RegIdInt)),
+                        Mem(PpcOpMem(ppc_op_mem { base: PPC_REG_R31, disp: 0 }))
+                    ],
+                ),
+
+                // vpkpx   v2, v3, v4
+                DII::new(
+                    "vpkpx",
+                    b"\x10\x43\x23\x0e",
+                    &[
+                        Reg(RegId(PPC_REG_V2 as RegIdInt)),
+                        Reg(RegId(PPC_REG_V3 as RegIdInt)),
+                        Reg(RegId(PPC_REG_V4 as RegIdInt)),
+                    ],
+                ),
+
+                // stfs    f2, 0x80(r4)
+                DII::new(
+                    "stfs",
+                    b"\xd0\x44\x00\x80",
+                    &[
+                        Reg(RegId(PPC_REG_F2 as RegIdInt)),
+                        Mem(PpcOpMem(ppc_op_mem { base: PPC_REG_R4, disp: 0x80 }))
+                    ],
+                ),
+
+                // crand   2, 3, 4
+                DII::new(
+                    "crand",
+                    b"\x4c\x43\x22\x02",
+                    &[
+                        Reg(RegId(PPC_REG_R2 as RegIdInt)),
+                        Reg(RegId(PPC_REG_R3 as RegIdInt)),
+                        Reg(RegId(PPC_REG_R4 as RegIdInt))
+                    ],
+                ),
+
+                // cmpwi   cr2, r3, 0x80
+                DII::new(
+                    "cmpwi",
+                    b"\x2d\x03\x00\x80",
+                    &[
+                        Reg(RegId(PPC_REG_CR2 as RegIdInt)),
+                        Reg(RegId(PPC_REG_R3 as RegIdInt)),
+                        Imm(0x80)
+                    ],
+                ),
+
+                // addc    r2, r3, r4
+                DII::new(
+                    "addc",
+                    b"\x7c\x43\x20\x14",
+                    &[
+                        Reg(RegId(PPC_REG_R2 as RegIdInt)),
+                        Reg(RegId(PPC_REG_R3 as RegIdInt)),
+                        Reg(RegId(PPC_REG_R4 as RegIdInt)),
+                    ],
+                ),
+
+                // mulhd.  r2, r3, r4
+                DII::new(
+                    "mulhd.",
+                    b"\x7c\x43\x20\x93",
+                    &[
+                        Reg(RegId(PPC_REG_R2 as RegIdInt)),
+                        Reg(RegId(PPC_REG_R3 as RegIdInt)),
+                        Reg(RegId(PPC_REG_R4 as RegIdInt)),
+                    ],
+                ),
+
+                // bdnzlrl+
+                DII::new(
+                    "bdnzlrl+",
+                    b"\x4f\x20\x00\x21",
+                    &[],
+                ),
+
+                // bgelrl- cr2
+                DII::new(
+                    "bgelrl-",
+                    b"\x4c\xc8\x00\x21",
+                    &[Reg(RegId(PPC_REG_CR2 as RegIdInt))],
+                ),
+            ],
+        );
+    }
+
+    #[test]
     fn test_arch_sparc() {
         test_arch_mode_endian_insns(
             &mut Capstone::new()

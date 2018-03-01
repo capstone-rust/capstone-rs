@@ -342,13 +342,6 @@ pub trait DetailsArch {
 macro_rules! detail_arch_base {
     ( $x_macro:ident ) => { $x_macro!(
         [
-            detail = MipsDetail,
-            insn_detail = MipsInsnDetail<'a>,
-            op = MipsOperand,
-            /// Returns the MIPS details, if any
-            => arch_name = mips,
-        ]
-        [
             detail = ArmDetail,
             insn_detail = ArmInsnDetail<'a>,
             op = ArmOperand,
@@ -361,6 +354,20 @@ macro_rules! detail_arch_base {
             op = Arm64Operand,
             /// Returns the ARM64 details, if any
             => arch_name = arm64,
+        ]
+        [
+            detail = MipsDetail,
+            insn_detail = MipsInsnDetail<'a>,
+            op = MipsOperand,
+            /// Returns the MIPS details, if any
+            => arch_name = mips,
+        ]
+        [
+            detail = PpcDetail,
+            insn_detail = PpcInsnDetail<'a>,
+            op = PpcOperand,
+            /// Returns the PPC details, if any
+            => arch_name = ppc,
         ]
     ); }
 }
