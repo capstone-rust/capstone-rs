@@ -376,6 +376,13 @@ macro_rules! detail_arch_base {
             /// Returns the SPARC details, if any
             => arch_name = sparc,
         ]
+        [
+            detail = XcoreDetail,
+            insn_detail = XcoreInsnDetail<'a>,
+            op = XcoreOperand,
+            /// Returns the XCore details, if any
+            => arch_name = xcore,
+        ]
     ); }
 }
 

@@ -1980,4 +1980,129 @@ mod test {
             ],
         );
     }
+
+    // XXX todo(tmfink) investigate upstream xcore operand bugs
+    #[test]
+    fn test_arch_xcore_detail() {
+        use arch::xcore::*;
+        use arch::xcore::XcoreOperand::*;
+        use arch::xcore::XcoreReg::*;
+        use capstone_sys::xcore_op_mem;
+
+        test_arch_mode_endian_insns_detail(
+            &mut Capstone::new()
+                .xcore()
+                .mode(xcore::ArchMode::Default)
+                .build()
+                .unwrap(),
+            Arch::XCORE,
+            Mode::Default,
+            None,
+            &[],
+            &[
+                // get     r11, ed
+                DII::new(
+                    "get",
+                    b"\xfe\x0f",
+                    &[
+                        Reg(RegId(XCORE_REG_R11 as RegIdInt)),
+                        Reg(RegId(XCORE_REG_ED as RegIdInt)),
+                    ],
+                ),
+
+                // ldw     et, sp[4]
+                DII::new(
+                    "ldw",
+                    b"\xfe\x17",
+                    &[
+                        Reg(RegId(XCORE_REG_ET as RegIdInt)),
+                        Mem(XcoreOpMem(xcore_op_mem {
+                            base: XCORE_REG_SP as u8,
+                            index: XCORE_REG_INVALID as u8,
+                            disp: 4,
+                            direct: 1,
+                        })),
+                    ],
+                ),
+
+                // setd    res[r3], r4
+                DII::new(
+                    "setd",
+                    b"\x13\x17",
+                    &[
+                        Reg(RegId(XCORE_REG_R4 as RegIdInt)),
+                    ],
+                ),
+
+                // init    t[r2]:lr, r1
+                DII::new(
+                    "init",
+                    b"\xc6\xfe\xec\x17",
+                    &[
+                        Mem(XcoreOpMem(xcore_op_mem {
+                            base: XCORE_REG_R2 as u8,
+                            index: XCORE_REG_LR as u8,
+                            disp: 0,
+                            direct: 1,
+                        })),
+                        Reg(RegId(XCORE_REG_R1 as RegIdInt)),
+                    ],
+                ),
+
+                // divu    r9, r1, r3
+                DII::new(
+                    "divu",
+                    b"\x97\xf8\xec\x4f",
+                    &[
+                        Reg(RegId(XCORE_REG_R9 as RegIdInt)),
+                        Reg(RegId(XCORE_REG_R1 as RegIdInt)),
+                        Reg(RegId(XCORE_REG_R3 as RegIdInt)),
+                    ],
+                ),
+
+                // lda16   r9, r3[-r11]
+                DII::new(
+                    "lda16",
+                    b"\x1f\xfd\xec\x37",
+                    &[
+                        Reg(RegId(XCORE_REG_R9 as RegIdInt)),
+                    ],
+                ),
+
+                // ldw     dp, dp[0x81c5]
+                DII::new(
+                    "ldw",
+                    b"\x07\xf2\x45\x5b",
+                    &[
+                        Reg(RegId(XCORE_REG_DP as RegIdInt)),
+                    ],
+                ),
+
+                // lmul    r11, r0, r2, r5, r8, r10
+                DII::new(
+                    "lmul",
+                    b"\xf9\xfa\x02\x06",
+                    &[
+                        Reg(RegId(XCORE_REG_R11 as RegIdInt)),
+                        Reg(RegId(XCORE_REG_R0 as RegIdInt)),
+                        Reg(RegId(XCORE_REG_R2 as RegIdInt)),
+                        Reg(RegId(XCORE_REG_R5 as RegIdInt)),
+                        Reg(RegId(XCORE_REG_R8 as RegIdInt)),
+                        Reg(RegId(XCORE_REG_R10 as RegIdInt)),
+                    ],
+                ),
+
+                // add     r1, r2, r3
+                DII::new(
+                    "add",
+                    b"\x1b\x10",
+                    &[
+                        Reg(RegId(XCORE_REG_R1 as RegIdInt)),
+                        Reg(RegId(XCORE_REG_R2 as RegIdInt)),
+                        Reg(RegId(XCORE_REG_R3 as RegIdInt)),
+                    ],
+                ),
+            ],
+        );
+    }
 }
