@@ -1648,6 +1648,219 @@ mod test {
     }
 
     #[test]
+    fn test_arch_sparc_detail() {
+        use arch::sparc::*;
+        use arch::sparc::SparcOperand::*;
+        use arch::sparc::SparcReg::*;
+        use capstone_sys::sparc_op_mem;
+
+        test_arch_mode_endian_insns_detail(
+            &mut Capstone::new()
+                .sparc()
+                .mode(sparc::ArchMode::Default)
+                .build()
+                .unwrap(),
+            Arch::SPARC,
+            Mode::Default,
+            None,
+            &[],
+            &[
+                // cmp     %g1, %g2
+                DII::new(
+                    "cmp",
+                    b"\x80\xa0\x40\x02",
+                    &[
+                        Reg(RegId(SPARC_REG_G1 as RegIdInt)),
+                        Reg(RegId(SPARC_REG_G2 as RegIdInt)),
+                    ],
+                ),
+
+                // jmpl    %o1+8, %g2
+                DII::new(
+                    "jmpl",
+                    b"\x85\xc2\x60\x08",
+                    &[
+                        Mem(SparcOpMem(sparc_op_mem { base: SPARC_REG_O1 as u8, index: 0, disp: 8 })),
+                        Reg(RegId(SPARC_REG_G2 as RegIdInt)),
+                    ],
+                ),
+
+                // restore %g0, 1, %g2
+                DII::new(
+                    "restore",
+                    b"\x85\xe8\x20\x01",
+                    &[
+                        Reg(RegId(SPARC_REG_G0 as RegIdInt)),
+                        Imm(1),
+                        Reg(RegId(SPARC_REG_G2 as RegIdInt)),
+                    ],
+                ),
+
+                // mov     1, %o0
+                DII::new(
+                    "mov",
+                    b"\x90\x10\x20\x01",
+                    &[
+                        Imm(1),
+                        Reg(RegId(SPARC_REG_O0 as RegIdInt)),
+                    ],
+                ),
+
+                // casx    [%i0], %l6, %o2
+                DII::new(
+                    "casx",
+                    b"\xd5\xf6\x10\x16",
+                    &[
+                        Mem(SparcOpMem(sparc_op_mem { base: SPARC_REG_I0 as u8, index: 0, disp: 0 })),
+                        Reg(RegId(SPARC_REG_L6 as RegIdInt)),
+                        Reg(RegId(SPARC_REG_O2 as RegIdInt)),
+                    ],
+                ),
+
+                // sethi   0xa, %l0
+                DII::new(
+                    "sethi",
+                    b"\x21\x00\x00\x0a",
+                    &[
+                        Imm(0xa),
+                        Reg(RegId(SPARC_REG_L0 as RegIdInt)),
+                    ],
+                ),
+
+                // add     %g1, %g2, %g3
+                DII::new(
+                    "add",
+                    b"\x86\x00\x40\x02",
+                    &[
+                        Reg(RegId(SPARC_REG_G1 as RegIdInt)),
+                        Reg(RegId(SPARC_REG_G2 as RegIdInt)),
+                        Reg(RegId(SPARC_REG_G3 as RegIdInt)),
+                    ],
+                ),
+
+                // nop
+                DII::new(
+                    "nop",
+                    b"\x01\x00\x00\x00",
+                    &[],
+                ),
+
+                // bne     0x1020
+                DII::new(
+                    "bne",
+                    b"\x12\xbf\xff\xff",
+                    &[Imm(0x101c)],
+                ),
+
+                // ba      0x1024
+                DII::new(
+                    "ba",
+                    b"\x10\xbf\xff\xff",
+                    &[Imm(0x1020)],
+                ),
+
+                // add     %o0, %o1, %l0
+                DII::new(
+                    "add",
+                    b"\xa0\x02\x00\x09",
+                    &[
+                        Reg(RegId(SPARC_REG_O0 as RegIdInt)),
+                        Reg(RegId(SPARC_REG_O1 as RegIdInt)),
+                        Reg(RegId(SPARC_REG_L0 as RegIdInt)),
+                    ],
+                ),
+
+                // fbg     0x102c
+                DII::new(
+                    "fbg",
+                    b"\x0d\xbf\xff\xff",
+                    &[Imm(0x1028)],
+                ),
+
+                // st      %o2, [%g1]
+                DII::new(
+                    "st",
+                    b"\xd4\x20\x60\x00",
+                    &[
+                        Reg(RegId(SPARC_REG_O2 as RegIdInt)),
+                        Mem(SparcOpMem(sparc_op_mem { base: SPARC_REG_G1 as u8, index: 0, disp: 0 })),
+                    ],
+                ),
+
+                // ldsb    [%i0+%l6], %o2
+                DII::new(
+                    "ldsb",
+                    b"\xd4\x4e\x00\x16",
+                    &[
+                        Mem(SparcOpMem(sparc_op_mem {
+                            base: SPARC_REG_I0 as u8,
+                            index: SPARC_REG_L6 as u8,
+                            disp: 0
+                        })),
+                        Reg(RegId(SPARC_REG_O2 as RegIdInt)),
+                    ],
+                ),
+
+                // brnz,a,pn       %o2, 0x1048
+                DII::new(
+                    "brnz,a,pn",
+                    b"\x2a\xc2\x80\x03",
+                    &[
+                        Reg(RegId(SPARC_REG_O2 as RegIdInt)),
+                        Imm(0x1044),
+                    ],
+                ),
+            ],
+        );
+
+        let f0_f4 = [
+            Reg(RegId(SPARC_REG_F0 as RegIdInt)),
+            Reg(RegId(SPARC_REG_F4 as RegIdInt)),
+        ];
+
+        test_arch_mode_endian_insns_detail(
+            &mut Capstone::new()
+                .sparc()
+                .mode(sparc::ArchMode::V9)
+                .build()
+                .unwrap(),
+            Arch::SPARC,
+            Mode::V9,
+            None,
+            &[],
+            &[
+                // fcmps   %f0, %f4
+                DII::new(
+                    "fcmps",
+                    b"\x81\xa8\x0a\x24",
+                    &f0_f4,
+                ),
+
+                // fstox   %f0, %f4
+                DII::new(
+                    "fstox",
+                    b"\x89\xa0\x10\x20",
+                    &f0_f4,
+                ),
+
+                // fqtoi   %f0, %f4
+                DII::new(
+                    "fqtoi",
+                    b"\x89\xa0\x1a\x60",
+                    &f0_f4,
+                ),
+
+                // fnegq   %f0, %f4
+                DII::new(
+                    "fnegq",
+                    b"\x89\xa0\x00\xe0",
+                    &f0_f4,
+                ),
+            ],
+        );
+    }
+
+    #[test]
     fn test_arch_systemz() {
         test_arch_mode_endian_insns(
             &mut Capstone::new()

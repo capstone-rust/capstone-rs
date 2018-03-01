@@ -369,6 +369,13 @@ macro_rules! detail_arch_base {
             /// Returns the PPC details, if any
             => arch_name = ppc,
         ]
+        [
+            detail = SparcDetail,
+            insn_detail = SparcInsnDetail<'a>,
+            op = SparcOperand,
+            /// Returns the SPARC details, if any
+            => arch_name = sparc,
+        ]
     ); }
 }
 

@@ -250,6 +250,7 @@ impl<'a> InsnDetail<'a> {
             [ARM64, Arm64Detail, Arm64InsnDetail, arm64]
             [MIPS, MipsDetail, MipsInsnDetail, mips]
             [PPC, PpcDetail, PpcInsnDetail, ppc]
+            [SPARC, SparcDetail, SparcInsnDetail, sparc]
         );
     }
 }
