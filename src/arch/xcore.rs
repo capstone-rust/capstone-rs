@@ -15,6 +15,11 @@ pub use capstone_sys::xcore_reg as XcoreReg;
 /// Contains XCORE-specific details for an instruction
 pub struct XcoreInsnDetail<'a>(pub(crate) &'a cs_xcore);
 
+impl_Representative!(XcoreInsnDetail<'a> [ 'a ];
+    operands: XcoreOperandIterator<'a>
+);
+impl_repr_PartialEq!(XcoreInsnDetail<'a> [ 'a ]);
+
 /// XCORE operand
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum XcoreOperand {
@@ -63,12 +68,8 @@ impl XcoreOpMem {
     }
 }
 
-impl cmp::PartialEq for XcoreOpMem {
-    fn eq(&self, other: &Self) -> bool {
-        (self.base(), self.index(), self.disp(), self.direct()) ==
-            (other.base(), other.index(), other.disp(), other.direct())
-    }
-}
+impl_Representative!(XcoreOpMem; base: RegId, index: RegId, disp: i32, direct: i32);
+impl_repr_PartialEq!(XcoreOpMem);
 
 impl cmp::Eq for XcoreOpMem {}
 

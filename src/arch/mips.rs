@@ -15,6 +15,11 @@ pub use capstone_sys::mips_reg as MipsReg;
 /// Contains MIPS-specific details for an instruction
 pub struct MipsInsnDetail<'a>(pub(crate) &'a cs_mips);
 
+impl_Representative!(MipsInsnDetail<'a> [ 'a ];
+    operands: MipsOperandIterator<'a>
+);
+impl_repr_PartialEq!(MipsInsnDetail<'a> [ 'a ]);
+
 /// MIPS operand
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum MipsOperand {
@@ -53,11 +58,8 @@ impl MipsOpMem {
     }
 }
 
-impl cmp::PartialEq for MipsOpMem {
-    fn eq(&self, other: &Self) -> bool {
-        self.base() == other.base() && self.disp() == other.disp()
-    }
-}
+impl_Representative!(MipsOpMem; base: RegId, disp: i64);
+impl_repr_PartialEq!(MipsOpMem);
 
 impl cmp::Eq for MipsOpMem {}
 

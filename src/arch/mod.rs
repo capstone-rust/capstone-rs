@@ -331,11 +331,64 @@ impl CapstoneBuilder {
 }
 
 /// Provides architecture-specific details about an instruction
-pub trait DetailsArch {
+pub trait DetailsArch: PartialEq {
     type Operand: Into<ArchOperand> + Default + Clone + Debug + PartialEq;
     type OperandIterator: Iterator<Item = Self::Operand>;
 
     fn operands(&self) -> Self::OperandIterator;
+}
+
+pub(crate) trait Representative<T> {
+
+    /// Returns a "representative" that can be used for equality.
+    ///
+    /// Acts a a mapping (morphism) from one type to another that preserves relations (such as
+    /// equality)
+    fn representative(&self) -> T;
+}
+
+/// Convenient implementation for Representative
+macro_rules! impl_Representative {
+    // With generic parameters
+    (
+        $name:ty [ $( $lifetime:tt ),* ];
+        $( $field:ident : $type:ty ),*
+    ) => {
+        impl<$( $lifetime ),*> ::arch::Representative<( $( $type ),* )> for $name {
+            fn representative(&self) -> ( $( $type ),* ) {
+                ( $( self . $field() ),* )
+            }
+        }
+    };
+
+    // No generic parameters
+    (
+        $name:ty;
+        $( $field:ident : $type:ty ),*
+    ) => {
+        impl_Representative!(
+            $name [];
+            $( $field : $type ),*
+        );
+    };
+}
+
+/// Define PartialEq for a type that implements Representative
+macro_rules! impl_repr_PartialEq {
+    // With generic parameters
+    ($type:ty [ $( $lifetime:tt ),* ]) => {
+        impl<$( $lifetime ),*> ::std::cmp::PartialEq for $type {
+            fn eq(&self, other: &Self) -> bool {
+                use ::arch::Representative;
+                self.representative() == other.representative()
+            }
+        }
+    };
+
+    // No generic parameters
+    ($name:ty) => {
+        impl_repr_PartialEq!($name []);
+    };
 }
 
 /// Base macro for defining arch details
@@ -405,7 +458,6 @@ macro_rules! detail_defs {
         #[derive(Debug)]
         pub enum ArchDetail<'a> {
             $( $Detail($InsnDetail), )+
-            _RemoveMe,
         }
 
         /// Architecture-independent enum of operands
@@ -426,7 +478,6 @@ macro_rules! detail_defs {
                             vec
                         }
                     )+
-                    _ => panic!("Unknown detail type"),
                 }
             }
 
@@ -464,6 +515,7 @@ macro_rules! def_arch_details_struct {
         cs_arch = $cs_arch:ty;
     ) => {
         /// Iterates over instruction operands
+        #[derive(Clone)]
         $iter_struct
 
         impl<'a> $OperandIteratorLife {
@@ -485,6 +537,16 @@ macro_rules! def_arch_details_struct {
 
         impl<'a> ExactSizeIterator for $OperandIteratorLife {
             fn len(&self) -> usize { self.0.len() }
+        }
+
+        impl<'a> PartialEq for $OperandIteratorLife {
+            fn eq(&self, other: & $OperandIteratorLife) -> bool {
+                self.len() == other.len() && {
+                    let self_clone: $OperandIterator = self.clone();
+                    let other_clone: $OperandIterator = (*other).clone();
+                    self_clone.zip(other_clone).all(|(a, b)| a == b)
+                }
+            }
         }
 
         impl<'a> fmt::Debug for $OperandIteratorLife {

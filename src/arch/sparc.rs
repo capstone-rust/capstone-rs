@@ -45,6 +45,11 @@ impl<'a> SparcInsnDetail<'a> {
     }
 }
 
+impl_Representative!(SparcInsnDetail<'a> [ 'a ];
+    cc: SparcCC, hint: SparcHint, operands: SparcOperandIterator<'a>
+);
+impl_repr_PartialEq!(SparcInsnDetail<'a> [ 'a ]);
+
 impl Default for SparcOperand {
     fn default() -> Self {
         SparcOperand::Invalid
@@ -72,11 +77,8 @@ impl SparcOpMem {
     }
 }
 
-impl cmp::PartialEq for SparcOpMem {
-    fn eq(&self, other: &Self) -> bool {
-        (self.base(), self.index(), self.disp()) == (other.base(), other.index(), other.disp())
-    }
-}
+impl_Representative!(SparcOpMem; base: RegId, index: RegId, disp: i32);
+impl_repr_PartialEq!(SparcOpMem);
 
 impl cmp::Eq for SparcOpMem {}
 

@@ -161,6 +161,11 @@ impl<'a> Arm64InsnDetail<'a> {
     }
 }
 
+impl_Representative!(Arm64InsnDetail<'a> [ 'a ];
+    cc: Arm64CC, update_flags: bool, writeback: bool, operands: Arm64OperandIterator<'a>
+);
+impl_repr_PartialEq!(Arm64InsnDetail<'a> [ 'a ]);
+
 impl Arm64OpMem {
     /// Base register
     pub fn base(&self) -> RegId {
@@ -178,12 +183,8 @@ impl Arm64OpMem {
     }
 }
 
-impl cmp::PartialEq for Arm64OpMem {
-    fn eq(&self, other: &Self) -> bool {
-        (self.base(), self.index(), self.disp())
-            == (other.base(), other.index(), other.disp())
-    }
-}
+impl_Representative!(Arm64OpMem; base: RegId, index: RegId, disp: i32);
+impl_repr_PartialEq!(Arm64OpMem);
 
 impl cmp::Eq for Arm64OpMem {}
 

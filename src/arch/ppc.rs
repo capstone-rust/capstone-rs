@@ -35,6 +35,11 @@ impl<'a> PpcInsnDetail<'a> {
     }
 }
 
+impl_Representative!(PpcInsnDetail<'a> [ 'a ];
+    bc: PpcBc, bh: PpcBh, update_cr0: PpcBh, operands: PpcOperandIterator<'a>
+);
+impl_repr_PartialEq!(PpcInsnDetail<'a> [ 'a ]);
+
 /// PPC operand
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum PpcOperand {
@@ -76,11 +81,8 @@ impl PpcOpMem {
     }
 }
 
-impl cmp::PartialEq for PpcOpMem {
-    fn eq(&self, other: &Self) -> bool {
-        self.base() == other.base() && self.disp() == other.disp()
-    }
-}
+impl_Representative!(PpcOpMem; base: RegId, disp: i32);
+impl_repr_PartialEq!(PpcOpMem);
 
 impl cmp::Eq for PpcOpMem {}
 

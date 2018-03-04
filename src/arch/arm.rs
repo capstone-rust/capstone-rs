@@ -211,6 +211,13 @@ impl<'a> ArmInsnDetail<'a> {
     }
 }
 
+impl_Representative!(ArmInsnDetail<'a> [ 'a ];
+    usermode: bool, vector_size: i32, vector_data: ArmVectorData, cps_mode: ArmCPSMode,
+    cps_flag: ArmCPSFlag, cc: ArmCC, update_flags: bool, writeback: bool,
+    mem_barrier: ArmMemBarrier, operands: ArmOperandIterator<'a>
+);
+impl_repr_PartialEq!(ArmInsnDetail<'a> [ 'a ]);
+
 impl ArmOpMem {
     /// Base register
     pub fn base(&self) -> RegId {
@@ -233,12 +240,8 @@ impl ArmOpMem {
     }
 }
 
-impl cmp::PartialEq for ArmOpMem {
-    fn eq(&self, other: &Self) -> bool {
-        (self.base(), self.index(), self.scale(), self.disp())
-            == (other.base(), other.index(), other.scale(), other.disp())
-    }
-}
+impl_Representative!(ArmOpMem; base: RegId, index: u32, scale: i32, disp: i32);
+impl_repr_PartialEq!(ArmOpMem);
 
 impl cmp::Eq for ArmOpMem {}
 
@@ -284,6 +287,7 @@ def_arch_details_struct!(
 #[cfg(test)]
 mod test {
     use super::*;
+    use capstone_sys::*;
 
     #[test]
     fn test_armshift() {
@@ -324,5 +328,51 @@ mod test {
             (ARM_OP_REG, cs_arm_op__bindgen_ty_2 { reg: 0 }),
             Reg(RegId(0)),
         );
+    }
+
+    #[test]
+    fn test_arm_insn_detail_eq() {
+        let a1 = cs_arm {
+            usermode: false,
+            vector_size: 0,
+            vector_data: arm_vectordata_type::ARM_VECTORDATA_INVALID,
+            cps_mode: arm_cpsmode_type::ARM_CPSMODE_INVALID,
+            cps_flag: arm_cpsflag_type::ARM_CPSFLAG_INVALID,
+            cc: arm_cc::ARM_CC_INVALID,
+            update_flags: false,
+            writeback: false,
+            mem_barrier: arm_mem_barrier::ARM_MB_INVALID,
+            op_count: 0,
+            operands: [
+                cs_arm_op {
+                    vector_index: 0,
+                    shift: cs_arm_op__bindgen_ty_1 {
+                        type_: arm_shifter::ARM_SFT_INVALID,
+                        value: 0
+                    },
+                    type_: arm_op_type::ARM_OP_INVALID,
+                    __bindgen_anon_1: cs_arm_op__bindgen_ty_2 { imm: 0 },
+                    subtracted: false,
+                }
+            ; 36]
+        };
+        let a2 = cs_arm {
+            usermode: true,
+            ..a1
+        };
+        let a3 = cs_arm {
+            op_count: 20,
+            ..a1
+        };
+        let a4 = cs_arm {
+            op_count: 19,
+            ..a1
+        };
+        let a4_clone = a4.clone();
+        assert_eq!(ArmInsnDetail(&a1), ArmInsnDetail(&a1));
+        assert_ne!(ArmInsnDetail(&a1), ArmInsnDetail(&a2));
+        assert_ne!(ArmInsnDetail(&a1), ArmInsnDetail(&a3));
+        assert_ne!(ArmInsnDetail(&a3), ArmInsnDetail(&a4));
+        assert_eq!(ArmInsnDetail(&a4), ArmInsnDetail(&a4_clone));
     }
 }
