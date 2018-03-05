@@ -338,25 +338,21 @@ pub trait DetailsArch: PartialEq {
     fn operands(&self) -> Self::OperandIterator;
 }
 
-pub(crate) trait Representative<T> {
-
-    /// Returns a "representative" that can be used for equality.
-    ///
-    /// Acts a a mapping (morphism) from one type to another that preserves relations (such as
-    /// equality)
-    fn representative(&self) -> T;
-}
-
-/// Convenient implementation for Representative
-macro_rules! impl_Representative {
+/// Define PartialEq for a type given representation getter methods
+macro_rules! impl_PartialEq_repr_fields {
     // With generic parameters
     (
         $name:ty [ $( $lifetime:tt ),* ];
-        $( $field:ident : $type:ty ),*
+        $( $field:ident),*
     ) => {
-        impl<$( $lifetime ),*> ::arch::Representative<( $( $type ),* )> for $name {
-            fn representative(&self) -> ( $( $type ),* ) {
-                ( $( self . $field() ),* )
+        impl<$( $lifetime ),*> ::std::cmp::PartialEq for $name {
+            fn eq(&self, other: &Self) -> bool {
+                $(
+                    if self.$field() != other.$field() {
+                        return false;
+                    }
+                )*
+                true
             }
         }
     };
@@ -364,30 +360,12 @@ macro_rules! impl_Representative {
     // No generic parameters
     (
         $name:ty;
-        $( $field:ident : $type:ty ),*
+        $( $field:ident),*
     ) => {
-        impl_Representative!(
+        impl_PartialEq_repr_fields!(
             $name [];
-            $( $field : $type ),*
+            $( $field),*
         );
-    };
-}
-
-/// Define PartialEq for a type that implements Representative
-macro_rules! impl_repr_PartialEq {
-    // With generic parameters
-    ($type:ty [ $( $lifetime:tt ),* ]) => {
-        impl<$( $lifetime ),*> ::std::cmp::PartialEq for $type {
-            fn eq(&self, other: &Self) -> bool {
-                use ::arch::Representative;
-                self.representative() == other.representative()
-            }
-        }
-    };
-
-    // No generic parameters
-    ($name:ty) => {
-        impl_repr_PartialEq!($name []);
     };
 }
 
@@ -428,6 +406,13 @@ macro_rules! detail_arch_base {
             op = SparcOperand,
             /// Returns the SPARC details, if any
             => arch_name = sparc,
+        ]
+        [
+            detail = X86Detail,
+            insn_detail = X86InsnDetail<'a>,
+            op = X86Operand,
+            /// Returns the X86 details, if any
+            => arch_name = x86,
         ]
         [
             detail = XcoreDetail,

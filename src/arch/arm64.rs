@@ -161,10 +161,9 @@ impl<'a> Arm64InsnDetail<'a> {
     }
 }
 
-impl_Representative!(Arm64InsnDetail<'a> [ 'a ];
-    cc: Arm64CC, update_flags: bool, writeback: bool, operands: Arm64OperandIterator<'a>
+impl_PartialEq_repr_fields!(Arm64InsnDetail<'a> [ 'a ];
+    cc, update_flags, writeback, operands
 );
-impl_repr_PartialEq!(Arm64InsnDetail<'a> [ 'a ]);
 
 impl Arm64OpMem {
     /// Base register
@@ -183,8 +182,9 @@ impl Arm64OpMem {
     }
 }
 
-impl_Representative!(Arm64OpMem; base: RegId, index: RegId, disp: i32);
-impl_repr_PartialEq!(Arm64OpMem);
+impl_PartialEq_repr_fields!(Arm64OpMem;
+    base, index, disp
+);
 
 impl cmp::Eq for Arm64OpMem {}
 

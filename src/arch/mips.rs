@@ -15,10 +15,9 @@ pub use capstone_sys::mips_reg as MipsReg;
 /// Contains MIPS-specific details for an instruction
 pub struct MipsInsnDetail<'a>(pub(crate) &'a cs_mips);
 
-impl_Representative!(MipsInsnDetail<'a> [ 'a ];
-    operands: MipsOperandIterator<'a>
+impl_PartialEq_repr_fields!(MipsInsnDetail<'a> [ 'a ];
+    operands
 );
-impl_repr_PartialEq!(MipsInsnDetail<'a> [ 'a ]);
 
 /// MIPS operand
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -58,8 +57,9 @@ impl MipsOpMem {
     }
 }
 
-impl_Representative!(MipsOpMem; base: RegId, disp: i64);
-impl_repr_PartialEq!(MipsOpMem);
+impl_PartialEq_repr_fields!(MipsOpMem;
+    base, disp
+);
 
 impl cmp::Eq for MipsOpMem {}
 

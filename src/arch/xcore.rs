@@ -15,10 +15,9 @@ pub use capstone_sys::xcore_reg as XcoreReg;
 /// Contains XCORE-specific details for an instruction
 pub struct XcoreInsnDetail<'a>(pub(crate) &'a cs_xcore);
 
-impl_Representative!(XcoreInsnDetail<'a> [ 'a ];
-    operands: XcoreOperandIterator<'a>
+impl_PartialEq_repr_fields!(XcoreInsnDetail<'a> [ 'a ];
+    operands
 );
-impl_repr_PartialEq!(XcoreInsnDetail<'a> [ 'a ]);
 
 /// XCORE operand
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -68,8 +67,9 @@ impl XcoreOpMem {
     }
 }
 
-impl_Representative!(XcoreOpMem; base: RegId, index: RegId, disp: i32, direct: i32);
-impl_repr_PartialEq!(XcoreOpMem);
+impl_PartialEq_repr_fields!(XcoreOpMem;
+    base, index, disp, direct
+);
 
 impl cmp::Eq for XcoreOpMem {}
 

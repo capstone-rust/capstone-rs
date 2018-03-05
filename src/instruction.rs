@@ -251,6 +251,7 @@ impl<'a> InsnDetail<'a> {
             [MIPS, MipsDetail, MipsInsnDetail, mips]
             [PPC, PpcDetail, PpcInsnDetail, ppc]
             [SPARC, SparcDetail, SparcInsnDetail, sparc]
+            [X86, X86Detail, X86InsnDetail, x86]
             [XCORE, XcoreDetail, XcoreInsnDetail, xcore]
         );
     }

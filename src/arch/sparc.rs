@@ -45,10 +45,9 @@ impl<'a> SparcInsnDetail<'a> {
     }
 }
 
-impl_Representative!(SparcInsnDetail<'a> [ 'a ];
-    cc: SparcCC, hint: SparcHint, operands: SparcOperandIterator<'a>
+impl_PartialEq_repr_fields!(SparcInsnDetail<'a> [ 'a ];
+    cc, hint, operands
 );
-impl_repr_PartialEq!(SparcInsnDetail<'a> [ 'a ]);
 
 impl Default for SparcOperand {
     fn default() -> Self {
@@ -77,8 +76,9 @@ impl SparcOpMem {
     }
 }
 
-impl_Representative!(SparcOpMem; base: RegId, index: RegId, disp: i32);
-impl_repr_PartialEq!(SparcOpMem);
+impl_PartialEq_repr_fields!(SparcOpMem;
+    base, index, disp
+);
 
 impl cmp::Eq for SparcOpMem {}
 

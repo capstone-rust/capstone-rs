@@ -35,10 +35,9 @@ impl<'a> PpcInsnDetail<'a> {
     }
 }
 
-impl_Representative!(PpcInsnDetail<'a> [ 'a ];
-    bc: PpcBc, bh: PpcBh, update_cr0: PpcBh, operands: PpcOperandIterator<'a>
+impl_PartialEq_repr_fields!(PpcInsnDetail<'a> [ 'a ];
+    bc, bh, update_cr0, operands
 );
-impl_repr_PartialEq!(PpcInsnDetail<'a> [ 'a ]);
 
 /// PPC operand
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -81,8 +80,9 @@ impl PpcOpMem {
     }
 }
 
-impl_Representative!(PpcOpMem; base: RegId, disp: i32);
-impl_repr_PartialEq!(PpcOpMem);
+impl_PartialEq_repr_fields!(PpcOpMem;
+    base, disp
+);
 
 impl cmp::Eq for PpcOpMem {}
 

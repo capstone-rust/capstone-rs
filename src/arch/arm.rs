@@ -211,12 +211,10 @@ impl<'a> ArmInsnDetail<'a> {
     }
 }
 
-impl_Representative!(ArmInsnDetail<'a> [ 'a ];
-    usermode: bool, vector_size: i32, vector_data: ArmVectorData, cps_mode: ArmCPSMode,
-    cps_flag: ArmCPSFlag, cc: ArmCC, update_flags: bool, writeback: bool,
-    mem_barrier: ArmMemBarrier, operands: ArmOperandIterator<'a>
+impl_PartialEq_repr_fields!(ArmInsnDetail<'a> [ 'a ];
+    usermode, vector_size, vector_data, cps_mode, cps_flag, cc, update_flags, writeback,
+    mem_barrier, operands
 );
-impl_repr_PartialEq!(ArmInsnDetail<'a> [ 'a ]);
 
 impl ArmOpMem {
     /// Base register
@@ -240,8 +238,9 @@ impl ArmOpMem {
     }
 }
 
-impl_Representative!(ArmOpMem; base: RegId, index: u32, scale: i32, disp: i32);
-impl_repr_PartialEq!(ArmOpMem);
+impl_PartialEq_repr_fields!(ArmOpMem;
+    base, index, scale, disp
+);
 
 impl cmp::Eq for ArmOpMem {}
 

@@ -1955,6 +1955,244 @@ mod test {
     }
 
     #[test]
+    fn test_arch_x86_detail() {
+        use arch::x86::*;
+        use arch::x86::X86OperandType::*;
+        use arch::x86::X86Reg::*;
+        use capstone_sys::*;
+
+        // X86 16bit (Intel syntax)
+        test_arch_mode_endian_insns_detail(
+            &mut Capstone::new()
+                .x86()
+                .mode(x86::ArchMode::Mode16)
+                .build()
+                .unwrap(),
+            Arch::X86,
+            Mode::Mode16,
+            None,
+            &[],
+            &[
+                // lea     cx, word ptr [si + 0x32]
+                DII::new(
+                    "lea",
+                    b"\x8d\x4c\x32",
+                    &[
+                        X86Operand {
+                            size: 2,
+                            op_type: Reg(RegId(X86_REG_CX as RegIdInt)),
+                            ..Default::default()
+                        },
+                        X86Operand {
+                            size: 2,
+                            op_type: Mem(X86OpMem(x86_op_mem {
+                                segment: 0,
+                                base: X86_REG_SI,
+                                index: 0,
+                                scale: 1,
+                                disp: 0x32
+                            })),
+                            ..Default::default()
+                        }
+                    ],
+                ),
+
+                // or      byte ptr [bx + di], al
+                DII::new(
+                    "or",
+                    b"\x08\x01",
+                    &[
+                        X86Operand {
+                            size: 1,
+                            op_type: Mem(X86OpMem(x86_op_mem {
+                                segment: 0,
+                                base: X86_REG_BX,
+                                index: X86_REG_DI,
+                                scale: 1,
+                                disp: 0
+                            })),
+                            ..Default::default()
+                        },
+                        X86Operand {
+                            size: 1,
+                            op_type: Reg(RegId(X86_REG_AL as RegIdInt)),
+                            ..Default::default()
+                        },
+                    ],
+                ),
+
+                // fadd    dword ptr [bx + di + 0x34c6]
+                DII::new(
+                    "fadd",
+                    b"\xd8\x81\xc6\x34",
+                    &[
+                        X86Operand {
+                            size: 4,
+                            op_type: Mem(X86OpMem(x86_op_mem {
+                                segment: 0,
+                                base: X86_REG_BX,
+                                index: X86_REG_DI,
+                                scale: 1,
+                                disp: 0x34c6
+                            })),
+                            ..Default::default()
+                        }
+                    ],
+                ),
+
+                // adc     al, byte ptr [bx + si]
+                DII::new(
+                    "adc",
+                    b"\x12\x00",
+                    &[
+                        X86Operand {
+                            size: 1,
+                            op_type: Reg(RegId(X86_REG_AL as RegIdInt)),
+                            ..Default::default()
+                        },
+                        X86Operand {
+                            size: 1,
+                            op_type: Mem(X86OpMem(x86_op_mem {
+                                segment: 0,
+                                base: X86_REG_BX,
+                                index: X86_REG_SI,
+                                scale: 1,
+                                disp: 0
+                            })),
+                            ..Default::default()
+                        }
+                    ],
+                ),
+            ],
+        );
+
+        // X86 32bit
+        test_arch_mode_endian_insns_detail(
+            &mut Capstone::new()
+                .x86()
+                .mode(x86::ArchMode::Mode32)
+                .build()
+                .unwrap(),
+            Arch::X86,
+            Mode::Mode32,
+            None,
+            &[],
+            &[
+                // leal    8(%edx, %esi), %ecx
+                DII::new(
+                    "lea",
+                    b"\x8d\x4c\x32\x08",
+                    &[
+                        X86Operand {
+                            size: 4,
+                            op_type: Reg(RegId(X86_REG_ECX as RegIdInt)),
+                            ..Default::default()
+                        },
+                        X86Operand {
+                            size: 4,
+                            op_type: Mem(X86OpMem(x86_op_mem {
+                                segment: 0,
+                                base: X86_REG_EDX,
+                                index: X86_REG_ESI,
+                                scale: 1,
+                                disp: 8
+                            })),
+                            ..Default::default()
+                        }
+                    ],
+                ),
+
+                // addl    %ebx, %eax
+                DII::new(
+                    "add",
+                    b"\x01\xd8",
+                    &[
+                        X86Operand {
+                            size: 4,
+                            op_type: Reg(RegId(X86_REG_EAX as RegIdInt)),
+                            ..Default::default()
+                        },
+                        X86Operand {
+                            size: 4,
+                            op_type: Reg(RegId(X86_REG_EBX as RegIdInt)),
+                            ..Default::default()
+                        },
+                    ],
+                ),
+
+                // addl    $0x1234, %esi
+                DII::new(
+                    "add",
+                    b"\x81\xc6\x34\x12\x00\x00",
+                    &[
+                        X86Operand {
+                            size: 4,
+                            op_type: Reg(RegId(X86_REG_ESI as RegIdInt)),
+                            ..Default::default()
+                        },
+                        X86Operand {
+                            size: 4,
+                            op_type: Imm(0x1234),
+                            ..Default::default()
+                        },
+                    ],
+                ),
+            ],
+        );
+
+        // X86 64
+        test_arch_mode_endian_insns_detail(
+            &mut Capstone::new()
+                .x86()
+                .mode(x86::ArchMode::Mode64)
+                .build()
+                .unwrap(),
+            Arch::X86,
+            Mode::Mode64,
+            None,
+            &[],
+            &[
+                // push    rbp
+                DII::new(
+                    "push",
+                    b"\x55",
+                    &[
+                        X86Operand {
+                            size: 8,
+                            op_type: Reg(RegId(X86_REG_RBP as RegIdInt)),
+                            ..Default::default()
+                        },
+                    ],
+                ),
+
+                // mov     rax, qword ptr [rip + 0x13b8]
+                DII::new(
+                    "mov",
+                    b"\x48\x8b\x05\xb8\x13\x00\x00",
+                    &[
+                        X86Operand {
+                            size: 8,
+                            op_type: Reg(RegId(X86_REG_RAX as RegIdInt)),
+                            ..Default::default()
+                        },
+                        X86Operand {
+                            size: 8,
+                            op_type: Mem(X86OpMem(x86_op_mem {
+                                segment: 0,
+                                base: X86_REG_RIP,
+                                index: 0,
+                                scale: 1,
+                                disp: 0x13b8
+                            })),
+                            ..Default::default()
+                        }
+                    ],
+                ),
+            ],
+        );
+    }
+
+    #[test]
     fn test_arch_xcore() {
         test_arch_mode_endian_insns(
             &mut Capstone::new()
