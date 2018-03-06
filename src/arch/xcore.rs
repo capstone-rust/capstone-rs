@@ -1,7 +1,7 @@
 //! Contains xcore-specific types
 
 pub use arch::arch_builder::xcore::*;
-use arch::DetailsArch;
+use arch::DetailsArchInsn;
 use capstone_sys::{cs_xcore, cs_xcore_op, xcore_op_mem, xcore_op_type};
 use instruction::{RegId, RegIdInt};
 use std::convert::From;

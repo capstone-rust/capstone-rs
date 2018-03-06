@@ -1,7 +1,7 @@
 //! Contains mips-specific types
 
 pub use arch::arch_builder::mips::*;
-use arch::DetailsArch;
+use arch::DetailsArchInsn;
 use capstone_sys::{cs_mips, cs_mips_op, mips_op_mem, mips_op_type};
 use instruction::{RegId, RegIdInt};
 use std::convert::From;

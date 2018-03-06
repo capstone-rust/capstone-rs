@@ -1,7 +1,7 @@
 //! Contains arm-specific types
 
 pub use arch::arch_builder::arm::*;
-use arch::DetailsArch;
+use arch::DetailsArchInsn;
 use capstone_sys::{arm_op_mem, arm_op_type, cs_arm, cs_arm_op};
 use instruction::{RegId, RegIdInt};
 use std::convert::From;

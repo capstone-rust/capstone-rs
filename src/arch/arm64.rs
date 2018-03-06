@@ -1,7 +1,7 @@
 //! Contains arm64-specific types
 
 pub use arch::arch_builder::arm64::*;
-use arch::DetailsArch;
+use arch::DetailsArchInsn;
 use capstone_sys::{arm64_op_mem, arm64_op_type, cs_arm64, cs_arm64_op};
 use instruction::{RegId, RegIdInt};
 use std::convert::From;

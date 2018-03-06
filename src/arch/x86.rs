@@ -1,7 +1,7 @@
 //! Contains x86-specific types
 
 pub use arch::arch_builder::x86::*;
-use arch::DetailsArch;
+use arch::DetailsArchInsn;
 use capstone_sys::{x86_op_mem, x86_op_type, cs_x86, cs_x86_op};
 use instruction::{RegId, RegIdInt};
 use std::convert::From;

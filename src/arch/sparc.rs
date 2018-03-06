@@ -1,7 +1,7 @@
 //! Contains sparc-specific types
 
 pub use arch::arch_builder::sparc::*;
-use arch::DetailsArch;
+use arch::DetailsArchInsn;
 use capstone_sys::{cs_sparc, cs_sparc_op, sparc_op_mem, sparc_op_type};
 use instruction::{RegId, RegIdInt};
 use std::convert::From;

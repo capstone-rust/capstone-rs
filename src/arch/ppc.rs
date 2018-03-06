@@ -1,7 +1,7 @@
 //! Contains ppc-specific types
 
 pub use arch::arch_builder::ppc::*;
-use arch::DetailsArch;
+use arch::DetailsArchInsn;
 use capstone_sys::{cs_ppc, cs_ppc_op, ppc_op_mem, ppc_op_type};
 use instruction::{RegId, RegIdInt};
 use std::convert::From;

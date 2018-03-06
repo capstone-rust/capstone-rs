@@ -331,7 +331,7 @@ impl CapstoneBuilder {
 }
 
 /// Provides architecture-specific details about an instruction
-pub trait DetailsArch: PartialEq {
+pub trait DetailsArchInsn: PartialEq + Debug {
     type Operand: Into<ArchOperand> + Default + Clone + Debug + PartialEq;
     type OperandIterator: Iterator<Item = Self::Operand>;
 
@@ -534,21 +534,21 @@ macro_rules! def_arch_details_struct {
             }
         }
 
-        impl<'a> fmt::Debug for $OperandIteratorLife {
-            fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result {
+        impl<'a> ::std::fmt::Debug for $OperandIteratorLife {
+            fn fmt(&self, fmt: &mut fmt::Formatter) -> ::std::fmt::Result {
                 fmt.debug_struct(stringify!($OperandIterator)).finish()
             }
         }
 
-        impl<'a> fmt::Debug for $InsnDetail<'a> {
-            fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result {
+        impl<'a> ::std::fmt::Debug for $InsnDetail<'a> {
+            fn fmt(&self, fmt: &mut fmt::Formatter) -> ::std::fmt::Result {
                 fmt.debug_struct(stringify!($InsnDetail))
                     .field(stringify!($cs_arch), &(self.0 as *const $cs_arch))
                     .finish()
             }
         }
 
-        impl<'a> DetailsArch for $InsnDetail<'a> {
+        impl<'a> ::arch::DetailsArchInsn for $InsnDetail<'a> {
             type OperandIterator = $OperandIteratorLife;
             type Operand = $Operand;
 
