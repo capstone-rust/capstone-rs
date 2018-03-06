@@ -320,7 +320,7 @@ pub(crate) mod arch_builder {
 #[derive(Debug)]
 pub struct CapstoneBuilder(
     /// Hidden field to prevent users from instantiating `CapstoneBuilder`
-    PhantomData<()>
+    PhantomData<()>,
 );
 
 impl CapstoneBuilder {

@@ -30,8 +30,8 @@ fn main() {
         if segment.segname == "__TEXT" {
             for section in segment.sections {
                 if section.sectname == "__text" {
-                    let text = &buf[section.offset as usize..
-                                        (u64::from(section.offset) + section.size) as usize];
+                    let text = &buf[section.offset as usize
+                                        ..(u64::from(section.offset) + section.size) as usize];
                     match cs.disasm_all(text, section.addr) {
                         Ok(insns) => {
                             println!("Got {} instructions", insns.len());

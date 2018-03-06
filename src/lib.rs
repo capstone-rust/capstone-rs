@@ -225,23 +225,21 @@ mod test {
     #[test]
     fn test_x86_simple() {
         match Capstone::new().x86().mode(x86::ArchMode::Mode64).build() {
-            Ok(cs) => {
-                match cs.disasm_all(X86_CODE, 0x1000) {
-                    Ok(insns) => {
-                        assert_eq!(insns.len(), 2);
-                        let is: Vec<_> = insns.iter().collect();
-                        assert_eq!(is[0].mnemonic().unwrap(), "push");
-                        assert_eq!(is[1].mnemonic().unwrap(), "mov");
+            Ok(cs) => match cs.disasm_all(X86_CODE, 0x1000) {
+                Ok(insns) => {
+                    assert_eq!(insns.len(), 2);
+                    let is: Vec<_> = insns.iter().collect();
+                    assert_eq!(is[0].mnemonic().unwrap(), "push");
+                    assert_eq!(is[1].mnemonic().unwrap(), "mov");
 
-                        assert_eq!(is[0].address(), 0x1000);
-                        assert_eq!(is[1].address(), 0x1001);
+                    assert_eq!(is[0].address(), 0x1000);
+                    assert_eq!(is[1].address(), 0x1001);
 
-                        assert_eq!(is[0].bytes(), b"\x55");
-                        assert_eq!(is[1].bytes(), b"\x48\x8b\x05\xb8\x13\x00\x00");
-                    }
-                    Err(err) => assert!(false, "Couldn't disasm instructions: {}", err),
+                    assert_eq!(is[0].bytes(), b"\x55");
+                    assert_eq!(is[1].bytes(), b"\x48\x8b\x05\xb8\x13\x00\x00");
                 }
-            }
+                Err(err) => assert!(false, "Couldn't disasm instructions: {}", err),
+            },
             Err(e) => {
                 assert!(false, "Couldn't create a cs engine: {}", e);
             }
@@ -251,20 +249,18 @@ mod test {
     #[test]
     fn test_arm_simple() {
         match Capstone::new().arm().mode(arm::ArchMode::Arm).build() {
-            Ok(cs) => {
-                match cs.disasm_all(ARM_CODE, 0x1000) {
-                    Ok(insns) => {
-                        assert_eq!(insns.len(), 2);
-                        let is: Vec<_> = insns.iter().collect();
-                        assert_eq!(is[0].mnemonic().unwrap(), "streq");
-                        assert_eq!(is[1].mnemonic().unwrap(), "strheq");
+            Ok(cs) => match cs.disasm_all(ARM_CODE, 0x1000) {
+                Ok(insns) => {
+                    assert_eq!(insns.len(), 2);
+                    let is: Vec<_> = insns.iter().collect();
+                    assert_eq!(is[0].mnemonic().unwrap(), "streq");
+                    assert_eq!(is[1].mnemonic().unwrap(), "strheq");
 
-                        assert_eq!(is[0].address(), 0x1000);
-                        assert_eq!(is[1].address(), 0x1004);
-                    }
-                    Err(err) => assert!(false, "Couldn't disasm instructions: {}", err),
+                    assert_eq!(is[0].address(), 0x1000);
+                    assert_eq!(is[1].address(), 0x1004);
                 }
-            }
+                Err(err) => assert!(false, "Couldn't disasm instructions: {}", err),
+            },
             Err(e) => {
                 assert!(false, "Couldn't create a cs engine: {}", e);
             }
@@ -388,9 +384,8 @@ mod test {
         if has_default_syntax {
             // insn_name() does not respect current syntax
             // does not always match the internal mnemonic
-            cs.insn_name(insn.id()).expect(
-                "Failed to get instruction name",
-            );
+            cs.insn_name(insn.id())
+                .expect("Failed to get instruction name");
         }
         assert_eq!(
             mnemonic_name,
@@ -430,10 +425,13 @@ mod test {
         let arch_detail = detail.arch_detail();
         let arch_ops = arch_detail.operands();
 
-        let expected_ops: Vec<_> = info.operands.iter().map(|expected_op| {
-            let expected_op: ArchOperand = (*expected_op).clone().into();
-            expected_op
-        }).collect();
+        let expected_ops: Vec<_> = info.operands
+            .iter()
+            .map(|expected_op| {
+                let expected_op: ArchOperand = (*expected_op).clone().into();
+                expected_op
+            })
+            .collect();
         assert_eq!(expected_ops, arch_ops, "operands do not match");
     }
 
@@ -624,30 +622,24 @@ mod test {
         assert_eq!(insns.len(), info.len());
 
         for (insn, info) in insns.iter().zip(info) {
-            test_instruction_detail_helper(
-                &cs,
-                insn,
-                info,
-                has_default_syntax,
-            )
+            test_instruction_detail_helper(&cs, insn, info, has_default_syntax)
         }
     }
 
     #[test]
     fn test_instruction_group_ids() {
-        let expected_insns: &[(&str, &[u8], &[cs_group_type])] =
-            &[
-                ("nop", b"\x90", &[]),
-                ("je", b"\x74\x05", &[JUMP]),
-                ("call", b"\xe8\x28\x07\x00\x00", &[CALL]),
-                ("ret", b"\xc3", &[RET]),
-                ("syscall", b"\x0f\x05", &[INT]),
-                ("iretd", b"\xcf", &[IRET]),
-                ("sub", b"\x48\x83\xec\x08", &[]),
-                ("test", b"\x48\x85\xc0", &[]),
-                ("mov", b"\x48\x8b\x05\x95\x4a\x4d\x00", &[]),
-                ("mov", b"\xb9\x04\x02\x00\x00", &[]),
-            ];
+        let expected_insns: &[(&str, &[u8], &[cs_group_type])] = &[
+            ("nop", b"\x90", &[]),
+            ("je", b"\x74\x05", &[JUMP]),
+            ("call", b"\xe8\x28\x07\x00\x00", &[CALL]),
+            ("ret", b"\xc3", &[RET]),
+            ("syscall", b"\x0f\x05", &[INT]),
+            ("iretd", b"\xcf", &[IRET]),
+            ("sub", b"\x48\x83\xec\x08", &[]),
+            ("test", b"\x48\x85\xc0", &[]),
+            ("mov", b"\x48\x8b\x05\x95\x4a\x4d\x00", &[]),
+            ("mov", b"\xb9\x04\x02\x00\x00", &[]),
+        ];
 
         let mut cs = Capstone::new()
             .x86()
@@ -764,19 +756,18 @@ mod test {
 
     #[test]
     fn test_syntax() {
-        let expected_insns: &[(&str, &str, &[u8], &[cs_group_type])] =
-            &[
-                ("nop", "nop", b"\x90", &[]),
-                ("je", "je", b"\x74\x05", &[JUMP]),
-                ("call", "callq", b"\xe8\x28\x07\x00\x00", &[CALL]),
-                ("ret", "retq", b"\xc3", &[RET]),
-                ("syscall", "syscall", b"\x0f\x05", &[INT]),
-                ("iretd", "iretl", b"\xcf", &[IRET]),
-                ("sub", "subq", b"\x48\x83\xec\x08", &[]),
-                ("test", "testq", b"\x48\x85\xc0", &[]),
-                ("mov", "movq", b"\x48\x8b\x05\x95\x4a\x4d\x00", &[]),
-                ("mov", "movl", b"\xb9\x04\x02\x00\x00", &[]),
-            ];
+        let expected_insns: &[(&str, &str, &[u8], &[cs_group_type])] = &[
+            ("nop", "nop", b"\x90", &[]),
+            ("je", "je", b"\x74\x05", &[JUMP]),
+            ("call", "callq", b"\xe8\x28\x07\x00\x00", &[CALL]),
+            ("ret", "retq", b"\xc3", &[RET]),
+            ("syscall", "syscall", b"\x0f\x05", &[INT]),
+            ("iretd", "iretl", b"\xcf", &[IRET]),
+            ("sub", "subq", b"\x48\x83\xec\x08", &[]),
+            ("test", "testq", b"\x48\x85\xc0", &[]),
+            ("mov", "movq", b"\x48\x8b\x05\x95\x4a\x4d\x00", &[]),
+            ("mov", "movl", b"\xb9\x04\x02\x00\x00", &[]),
+        ];
 
         let expected_insns_intel: Vec<(&str, &[u8], &[cs_group_type])> = expected_insns
             .iter()
@@ -1001,9 +992,13 @@ mod test {
                 DII::new(
                     "bl",
                     b"\xed\xff\xff\xeb",
-                    &[ArmOperand { op_type: Imm(0xfbc), ..Default::default() }],
+                    &[
+                        ArmOperand {
+                            op_type: Imm(0xfbc),
+                            ..Default::default()
+                        },
+                    ],
                 ),
-
                 // str     lr, [sp, #-4]!
                 DII::new(
                     "str",
@@ -1021,17 +1016,15 @@ mod test {
                                 disp: -4,
                             })),
                             ..Default::default()
-                        }
+                        },
                     ],
                 ),
-
                 // andeq   r0, r0, r0
                 DII::new(
                     "andeq",
                     b"\x00\x00\x00\x00",
                     &[r0_op.clone(), r0_op.clone(), r0_op.clone()],
                 ),
-
                 // str     r8, [r2, #-0x3e0]!
                 DII::new(
                     "str",
@@ -1049,31 +1042,47 @@ mod test {
                                 disp: -992,
                             })),
                             ..Default::default()
-                        }
+                        },
                     ],
                 ),
-
                 // mcreq   p2, #0, r0, c3, c1, #7
                 DII::new(
                     "mcreq",
                     b"\xf1\x02\x03\x0e",
                     &[
-                        ArmOperand { op_type: Pimm(2), ..Default::default() },
-                        ArmOperand { op_type: Imm(0), ..Default::default() },
+                        ArmOperand {
+                            op_type: Pimm(2),
+                            ..Default::default()
+                        },
+                        ArmOperand {
+                            op_type: Imm(0),
+                            ..Default::default()
+                        },
                         r0_op.clone(),
-                        ArmOperand { op_type: Cimm(3), ..Default::default() },
-                        ArmOperand { op_type: Cimm(1), ..Default::default() },
-                        ArmOperand { op_type: Imm(7), ..Default::default() },
+                        ArmOperand {
+                            op_type: Cimm(3),
+                            ..Default::default()
+                        },
+                        ArmOperand {
+                            op_type: Cimm(1),
+                            ..Default::default()
+                        },
+                        ArmOperand {
+                            op_type: Imm(7),
+                            ..Default::default()
+                        },
                     ],
                 ),
-
                 // mov     r0, #0
                 DII::new(
                     "mov",
                     b"\x00\x00\xa0\xe3",
                     &[
                         r0_op.clone(),
-                        ArmOperand { op_type: Imm(0), ..Default::default() },
+                        ArmOperand {
+                            op_type: Imm(0),
+                            ..Default::default()
+                        },
                     ],
                 ),
             ],
@@ -1097,7 +1106,7 @@ mod test {
                         ArmOperand {
                             op_type: Reg(RegId(ArmReg::ARM_REG_LR as RegIdInt)),
                             ..Default::default()
-                        }
+                        },
                     ],
                 ),
             ],
@@ -1189,10 +1198,9 @@ mod test {
                         Arm64Operand {
                             op_type: RegMrs(ARM64_SYSREG_MIDR_EL1),
                             ..Default::default()
-                        }
+                        },
                     ],
                 ),
-
                 // msr spsel, #0
                 DII::new(
                     "msr",
@@ -1205,10 +1213,9 @@ mod test {
                         Arm64Operand {
                             op_type: Imm(0),
                             ..Default::default()
-                        }
+                        },
                     ],
                 ),
-
                 // tbx  v0.8b, {v1.16b, v2.16b, v3.16b}, v2.8b
                 DII::new(
                     "tbx",
@@ -1241,7 +1248,6 @@ mod test {
                         },
                     ],
                 ),
-
                 // scvtf v0.2s, v1.2s, #3
                 DII::new(
                     "scvtf",
@@ -1263,7 +1269,6 @@ mod test {
                         },
                     ],
                 ),
-
                 // fmla s0, s0, v0.s[3]
                 DII::new(
                     "fmla",
@@ -1279,7 +1284,6 @@ mod test {
                         },
                     ],
                 ),
-
                 // fmov x2, v5.d[1]
                 DII::new(
                     "fmov",
@@ -1297,7 +1301,6 @@ mod test {
                         },
                     ],
                 ),
-
                 // dsb nsh
                 DII::new(
                     "dsb",
@@ -1309,7 +1312,6 @@ mod test {
                         },
                     ],
                 ),
-
                 // dmb osh
                 DII::new(
                     "dmb",
@@ -1321,25 +1323,14 @@ mod test {
                         },
                     ],
                 ),
-
                 // isb
-                DII::new(
-                    "isb",
-                    b"\xdf\x3f\x03\xd5",
-                    &[],
-                ),
-
+                DII::new("isb", b"\xdf\x3f\x03\xd5", &[]),
                 // mul x1, x1, x2
                 DII::new(
                     "mul",
                     b"\x21\x7c\x02\x9b",
-                    &[
-                        x1.clone(),
-                        x1.clone(),
-                        x2.clone(),
-                    ],
+                    &[x1.clone(), x1.clone(), x2.clone()],
                 ),
-
                 // lsr w1, w1, #0
                 DII::new(
                     "lsr",
@@ -1359,7 +1350,6 @@ mod test {
                         },
                     ],
                 ),
-
                 // sub w0, w0, w1, uxtw
                 DII::new(
                     "sub",
@@ -1380,7 +1370,6 @@ mod test {
                         },
                     ],
                 ),
-
                 // ldr w1, [sp, #8]
                 DII::new(
                     "ldr",
@@ -1394,20 +1383,14 @@ mod test {
                             op_type: Mem(Arm64OpMem(arm64_op_mem {
                                 base: ARM64_REG_SP,
                                 index: 0,
-                                disp: 8
+                                disp: 8,
                             })),
                             ..Default::default()
                         },
                     ],
                 ),
-
                 // cneg x0, x1, ne
-                DII::new(
-                    "cneg",
-                    b"\x20\x04\x81\xda",
-                    &[x0.clone(), x1.clone()],
-                ),
-
+                DII::new("cneg", b"\x20\x04\x81\xda", &[x0.clone(), x1.clone()]),
                 // add x0, x1, x2, lsl #2
                 DII::new(
                     "add",
@@ -1415,10 +1398,12 @@ mod test {
                     &[
                         x0.clone(),
                         x1.clone(),
-                        Arm64Operand { shift: Arm64Shift::Lsl(2), ..x2 },
+                        Arm64Operand {
+                            shift: Arm64Shift::Lsl(2),
+                            ..x2
+                        },
                     ],
                 ),
-
                 // ldr q16, [x24, w8, uxtw #4]
                 DII::new(
                     "ldr",
@@ -1434,10 +1419,10 @@ mod test {
                             op_type: Mem(Arm64OpMem(arm64_op_mem {
                                 base: ARM64_REG_X24,
                                 index: ARM64_REG_W8,
-                                disp: 0
+                                disp: 0,
                             })),
                             ..Default::default()
-                        }
+                        },
                     ],
                 ),
             ],
@@ -1545,11 +1530,7 @@ mod test {
                     b"\xc2\x17\x01\x00",
                     &[Reg(RegId(3)), Reg(RegId(2)), Imm(31)],
                 ),
-                DII::new(
-                    "syscall",
-                    b"\x0c\x00\x00\x00",
-                    &[],
-                ),
+                DII::new("syscall", b"\x0c\x00\x00\x00", &[]),
             ],
         );
 
@@ -1570,7 +1551,10 @@ mod test {
                     b"\x8f\xa2\x00\x00",
                     &[
                         Reg(RegId(MipsReg::MIPS_REG_V0 as RegIdInt)),
-                        Mem(MipsOpMem(mips_op_mem { base: MipsReg::MIPS_REG_SP,disp: 0 }))
+                        Mem(MipsOpMem(mips_op_mem {
+                            base: MipsReg::MIPS_REG_SP,
+                            disp: 0,
+                        })),
                     ],
                 ),
             ],
@@ -1634,20 +1618,21 @@ mod test {
                     b"\x80\x20\x00\x00",
                     &[
                         Reg(RegId(PPC_REG_R1 as RegIdInt)),
-                        Mem(PpcOpMem(ppc_op_mem { base: 45, disp: 0 }))
+                        Mem(PpcOpMem(ppc_op_mem { base: 45, disp: 0 })),
                     ],
                 ),
-
                 // lwz     r1, 0(r31)
                 DII::new(
                     "lwz",
                     b"\x80\x3f\x00\x00",
                     &[
                         Reg(RegId(PPC_REG_R1 as RegIdInt)),
-                        Mem(PpcOpMem(ppc_op_mem { base: PPC_REG_R31, disp: 0 }))
+                        Mem(PpcOpMem(ppc_op_mem {
+                            base: PPC_REG_R31,
+                            disp: 0,
+                        })),
                     ],
                 ),
-
                 // vpkpx   v2, v3, v4
                 DII::new(
                     "vpkpx",
@@ -1658,17 +1643,18 @@ mod test {
                         Reg(RegId(PPC_REG_V4 as RegIdInt)),
                     ],
                 ),
-
                 // stfs    f2, 0x80(r4)
                 DII::new(
                     "stfs",
                     b"\xd0\x44\x00\x80",
                     &[
                         Reg(RegId(PPC_REG_F2 as RegIdInt)),
-                        Mem(PpcOpMem(ppc_op_mem { base: PPC_REG_R4, disp: 0x80 }))
+                        Mem(PpcOpMem(ppc_op_mem {
+                            base: PPC_REG_R4,
+                            disp: 0x80,
+                        })),
                     ],
                 ),
-
                 // crand   2, 3, 4
                 DII::new(
                     "crand",
@@ -1676,10 +1662,9 @@ mod test {
                     &[
                         Reg(RegId(PPC_REG_R2 as RegIdInt)),
                         Reg(RegId(PPC_REG_R3 as RegIdInt)),
-                        Reg(RegId(PPC_REG_R4 as RegIdInt))
+                        Reg(RegId(PPC_REG_R4 as RegIdInt)),
                     ],
                 ),
-
                 // cmpwi   cr2, r3, 0x80
                 DII::new(
                     "cmpwi",
@@ -1687,10 +1672,9 @@ mod test {
                     &[
                         Reg(RegId(PPC_REG_CR2 as RegIdInt)),
                         Reg(RegId(PPC_REG_R3 as RegIdInt)),
-                        Imm(0x80)
+                        Imm(0x80),
                     ],
                 ),
-
                 // addc    r2, r3, r4
                 DII::new(
                     "addc",
@@ -1701,7 +1685,6 @@ mod test {
                         Reg(RegId(PPC_REG_R4 as RegIdInt)),
                     ],
                 ),
-
                 // mulhd.  r2, r3, r4
                 DII::new(
                     "mulhd.",
@@ -1712,14 +1695,8 @@ mod test {
                         Reg(RegId(PPC_REG_R4 as RegIdInt)),
                     ],
                 ),
-
                 // bdnzlrl+
-                DII::new(
-                    "bdnzlrl+",
-                    b"\x4f\x20\x00\x21",
-                    &[],
-                ),
-
+                DII::new("bdnzlrl+", b"\x4f\x20\x00\x21", &[]),
                 // bgelrl- cr2
                 DII::new(
                     "bgelrl-",
@@ -1808,17 +1785,19 @@ mod test {
                         Reg(RegId(SPARC_REG_G2 as RegIdInt)),
                     ],
                 ),
-
                 // jmpl    %o1+8, %g2
                 DII::new(
                     "jmpl",
                     b"\x85\xc2\x60\x08",
                     &[
-                        Mem(SparcOpMem(sparc_op_mem { base: SPARC_REG_O1 as u8, index: 0, disp: 8 })),
+                        Mem(SparcOpMem(sparc_op_mem {
+                            base: SPARC_REG_O1 as u8,
+                            index: 0,
+                            disp: 8,
+                        })),
                         Reg(RegId(SPARC_REG_G2 as RegIdInt)),
                     ],
                 ),
-
                 // restore %g0, 1, %g2
                 DII::new(
                     "restore",
@@ -1829,38 +1808,32 @@ mod test {
                         Reg(RegId(SPARC_REG_G2 as RegIdInt)),
                     ],
                 ),
-
                 // mov     1, %o0
                 DII::new(
                     "mov",
                     b"\x90\x10\x20\x01",
-                    &[
-                        Imm(1),
-                        Reg(RegId(SPARC_REG_O0 as RegIdInt)),
-                    ],
+                    &[Imm(1), Reg(RegId(SPARC_REG_O0 as RegIdInt))],
                 ),
-
                 // casx    [%i0], %l6, %o2
                 DII::new(
                     "casx",
                     b"\xd5\xf6\x10\x16",
                     &[
-                        Mem(SparcOpMem(sparc_op_mem { base: SPARC_REG_I0 as u8, index: 0, disp: 0 })),
+                        Mem(SparcOpMem(sparc_op_mem {
+                            base: SPARC_REG_I0 as u8,
+                            index: 0,
+                            disp: 0,
+                        })),
                         Reg(RegId(SPARC_REG_L6 as RegIdInt)),
                         Reg(RegId(SPARC_REG_O2 as RegIdInt)),
                     ],
                 ),
-
                 // sethi   0xa, %l0
                 DII::new(
                     "sethi",
                     b"\x21\x00\x00\x0a",
-                    &[
-                        Imm(0xa),
-                        Reg(RegId(SPARC_REG_L0 as RegIdInt)),
-                    ],
+                    &[Imm(0xa), Reg(RegId(SPARC_REG_L0 as RegIdInt))],
                 ),
-
                 // add     %g1, %g2, %g3
                 DII::new(
                     "add",
@@ -1871,28 +1844,12 @@ mod test {
                         Reg(RegId(SPARC_REG_G3 as RegIdInt)),
                     ],
                 ),
-
                 // nop
-                DII::new(
-                    "nop",
-                    b"\x01\x00\x00\x00",
-                    &[],
-                ),
-
+                DII::new("nop", b"\x01\x00\x00\x00", &[]),
                 // bne     0x1020
-                DII::new(
-                    "bne",
-                    b"\x12\xbf\xff\xff",
-                    &[Imm(0x101c)],
-                ),
-
+                DII::new("bne", b"\x12\xbf\xff\xff", &[Imm(0x101c)]),
                 // ba      0x1024
-                DII::new(
-                    "ba",
-                    b"\x10\xbf\xff\xff",
-                    &[Imm(0x1020)],
-                ),
-
+                DII::new("ba", b"\x10\xbf\xff\xff", &[Imm(0x1020)]),
                 // add     %o0, %o1, %l0
                 DII::new(
                     "add",
@@ -1903,24 +1860,21 @@ mod test {
                         Reg(RegId(SPARC_REG_L0 as RegIdInt)),
                     ],
                 ),
-
                 // fbg     0x102c
-                DII::new(
-                    "fbg",
-                    b"\x0d\xbf\xff\xff",
-                    &[Imm(0x1028)],
-                ),
-
+                DII::new("fbg", b"\x0d\xbf\xff\xff", &[Imm(0x1028)]),
                 // st      %o2, [%g1]
                 DII::new(
                     "st",
                     b"\xd4\x20\x60\x00",
                     &[
                         Reg(RegId(SPARC_REG_O2 as RegIdInt)),
-                        Mem(SparcOpMem(sparc_op_mem { base: SPARC_REG_G1 as u8, index: 0, disp: 0 })),
+                        Mem(SparcOpMem(sparc_op_mem {
+                            base: SPARC_REG_G1 as u8,
+                            index: 0,
+                            disp: 0,
+                        })),
                     ],
                 ),
-
                 // ldsb    [%i0+%l6], %o2
                 DII::new(
                     "ldsb",
@@ -1929,20 +1883,16 @@ mod test {
                         Mem(SparcOpMem(sparc_op_mem {
                             base: SPARC_REG_I0 as u8,
                             index: SPARC_REG_L6 as u8,
-                            disp: 0
+                            disp: 0,
                         })),
                         Reg(RegId(SPARC_REG_O2 as RegIdInt)),
                     ],
                 ),
-
                 // brnz,a,pn       %o2, 0x1048
                 DII::new(
                     "brnz,a,pn",
                     b"\x2a\xc2\x80\x03",
-                    &[
-                        Reg(RegId(SPARC_REG_O2 as RegIdInt)),
-                        Imm(0x1044),
-                    ],
+                    &[Reg(RegId(SPARC_REG_O2 as RegIdInt)), Imm(0x1044)],
                 ),
             ],
         );
@@ -1964,32 +1914,13 @@ mod test {
             &[],
             &[
                 // fcmps   %f0, %f4
-                DII::new(
-                    "fcmps",
-                    b"\x81\xa8\x0a\x24",
-                    &f0_f4,
-                ),
-
+                DII::new("fcmps", b"\x81\xa8\x0a\x24", &f0_f4),
                 // fstox   %f0, %f4
-                DII::new(
-                    "fstox",
-                    b"\x89\xa0\x10\x20",
-                    &f0_f4,
-                ),
-
+                DII::new("fstox", b"\x89\xa0\x10\x20", &f0_f4),
                 // fqtoi   %f0, %f4
-                DII::new(
-                    "fqtoi",
-                    b"\x89\xa0\x1a\x60",
-                    &f0_f4,
-                ),
-
+                DII::new("fqtoi", b"\x89\xa0\x1a\x60", &f0_f4),
                 // fnegq   %f0, %f4
-                DII::new(
-                    "fnegq",
-                    b"\x89\xa0\x00\xe0",
-                    &f0_f4,
-                ),
+                DII::new("fnegq", b"\x89\xa0\x00\xe0", &f0_f4),
             ],
         );
     }
@@ -2124,13 +2055,12 @@ mod test {
                                 base: X86_REG_SI,
                                 index: 0,
                                 scale: 1,
-                                disp: 0x32
+                                disp: 0x32,
                             })),
                             ..Default::default()
-                        }
+                        },
                     ],
                 ),
-
                 // or      byte ptr [bx + di], al
                 DII::new(
                     "or",
@@ -2143,7 +2073,7 @@ mod test {
                                 base: X86_REG_BX,
                                 index: X86_REG_DI,
                                 scale: 1,
-                                disp: 0
+                                disp: 0,
                             })),
                             ..Default::default()
                         },
@@ -2154,7 +2084,6 @@ mod test {
                         },
                     ],
                 ),
-
                 // fadd    dword ptr [bx + di + 0x34c6]
                 DII::new(
                     "fadd",
@@ -2167,13 +2096,12 @@ mod test {
                                 base: X86_REG_BX,
                                 index: X86_REG_DI,
                                 scale: 1,
-                                disp: 0x34c6
+                                disp: 0x34c6,
                             })),
                             ..Default::default()
-                        }
+                        },
                     ],
                 ),
-
                 // adc     al, byte ptr [bx + si]
                 DII::new(
                     "adc",
@@ -2191,10 +2119,10 @@ mod test {
                                 base: X86_REG_BX,
                                 index: X86_REG_SI,
                                 scale: 1,
-                                disp: 0
+                                disp: 0,
                             })),
                             ..Default::default()
-                        }
+                        },
                     ],
                 ),
             ],
@@ -2229,13 +2157,12 @@ mod test {
                                 base: X86_REG_EDX,
                                 index: X86_REG_ESI,
                                 scale: 1,
-                                disp: 8
+                                disp: 8,
                             })),
                             ..Default::default()
-                        }
+                        },
                     ],
                 ),
-
                 // addl    %ebx, %eax
                 DII::new(
                     "add",
@@ -2253,7 +2180,6 @@ mod test {
                         },
                     ],
                 ),
-
                 // addl    $0x1234, %esi
                 DII::new(
                     "add",
@@ -2298,7 +2224,6 @@ mod test {
                         },
                     ],
                 ),
-
                 // mov     rax, qword ptr [rip + 0x13b8]
                 DII::new(
                     "mov",
@@ -2316,10 +2241,10 @@ mod test {
                                 base: X86_REG_RIP,
                                 index: 0,
                                 scale: 1,
-                                disp: 0x13b8
+                                disp: 0x13b8,
                             })),
                             ..Default::default()
-                        }
+                        },
                     ],
                 ),
             ],
@@ -2381,7 +2306,6 @@ mod test {
                         Reg(RegId(XCORE_REG_ED as RegIdInt)),
                     ],
                 ),
-
                 // ldw     et, sp[4]
                 DII::new(
                     "ldw",
@@ -2396,16 +2320,8 @@ mod test {
                         })),
                     ],
                 ),
-
                 // setd    res[r3], r4
-                DII::new(
-                    "setd",
-                    b"\x13\x17",
-                    &[
-                        Reg(RegId(XCORE_REG_R4 as RegIdInt)),
-                    ],
-                ),
-
+                DII::new("setd", b"\x13\x17", &[Reg(RegId(XCORE_REG_R4 as RegIdInt))]),
                 // init    t[r2]:lr, r1
                 DII::new(
                     "init",
@@ -2420,7 +2336,6 @@ mod test {
                         Reg(RegId(XCORE_REG_R1 as RegIdInt)),
                     ],
                 ),
-
                 // divu    r9, r1, r3
                 DII::new(
                     "divu",
@@ -2431,25 +2346,18 @@ mod test {
                         Reg(RegId(XCORE_REG_R3 as RegIdInt)),
                     ],
                 ),
-
                 // lda16   r9, r3[-r11]
                 DII::new(
                     "lda16",
                     b"\x1f\xfd\xec\x37",
-                    &[
-                        Reg(RegId(XCORE_REG_R9 as RegIdInt)),
-                    ],
+                    &[Reg(RegId(XCORE_REG_R9 as RegIdInt))],
                 ),
-
                 // ldw     dp, dp[0x81c5]
                 DII::new(
                     "ldw",
                     b"\x07\xf2\x45\x5b",
-                    &[
-                        Reg(RegId(XCORE_REG_DP as RegIdInt)),
-                    ],
+                    &[Reg(RegId(XCORE_REG_DP as RegIdInt))],
                 ),
-
                 // lmul    r11, r0, r2, r5, r8, r10
                 DII::new(
                     "lmul",
@@ -2463,7 +2371,6 @@ mod test {
                         Reg(RegId(XCORE_REG_R10 as RegIdInt)),
                     ],
                 ),
-
                 // add     r1, r2, r3
                 DII::new(
                     "add",

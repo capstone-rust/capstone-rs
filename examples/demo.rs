@@ -73,10 +73,7 @@ fn example() -> CsResult<()> {
         .detail(true)
         .build()?;
 
-    let mut examples = [
-        ("MIPS", cs_mips, MIPS_CODE),
-        ("X86", cs_x86, X86_CODE),
-    ];
+    let mut examples = [("MIPS", cs_mips, MIPS_CODE), ("X86", cs_x86, X86_CODE)];
 
     for &mut (arch, ref mut cs, code) in examples.iter_mut() {
         println!("\n*************************************");

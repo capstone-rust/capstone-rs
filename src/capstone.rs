@@ -179,9 +179,7 @@ impl Capstone {
                 Err(err) => Err(err),
             }
         } else {
-            Ok(unsafe {
-                Instructions::from_raw_parts(ptr, insn_count as isize)
-            })
+            Ok(unsafe { Instructions::from_raw_parts(ptr, insn_count as isize) })
         }
     }
 
@@ -360,11 +358,8 @@ impl Capstone {
     /// Returns whether the instruction `insn` belongs to the group with id `group_id`.
     pub fn insn_belongs_to_group(&self, insn: &Insn, group_id: InsnGroupId) -> CsResult<bool> {
         self.insn_detail(insn)?;
-        Ok(unsafe {
-            cs_insn_group(self.csh, &insn.0 as *const cs_insn, group_id.0 as c_uint)
-        })
+        Ok(unsafe { cs_insn_group(self.csh, &insn.0 as *const cs_insn, group_id.0 as c_uint) })
     }
-
 
     /// Returns groups ids to which an instruction belongs.
     pub fn insn_group_ids<'i>(&self, insn: &'i Insn) -> CsResult<InsnGroupIter<'i>> {
@@ -376,9 +371,7 @@ impl Capstone {
     /// Checks if an instruction implicitly reads a register with id `reg_id`.
     pub fn register_id_is_read(&self, insn: &Insn, reg_id: RegId) -> CsResult<bool> {
         self.insn_detail(insn)?;
-        Ok(unsafe {
-            cs_reg_read(self.csh, &insn.0 as *const cs_insn, reg_id.0 as c_uint)
-        })
+        Ok(unsafe { cs_reg_read(self.csh, &insn.0 as *const cs_insn, reg_id.0 as c_uint) })
     }
 
     /// Returns list of ids of registers that are implicitly read by instruction `insn`.
@@ -391,9 +384,7 @@ impl Capstone {
     /// Checks if an instruction implicitly writes to a register with id `reg_id`.
     pub fn register_id_is_written(&self, insn: &Insn, reg_id: RegId) -> CsResult<bool> {
         self.insn_detail(insn)?;
-        Ok(unsafe {
-            cs_reg_write(self.csh, &insn.0 as *const cs_insn, reg_id.0 as c_uint)
-        })
+        Ok(unsafe { cs_reg_write(self.csh, &insn.0 as *const cs_insn, reg_id.0 as c_uint) })
     }
 
     /// Returns a list of ids of registers that are implicitly written to by the instruction `insn`.
@@ -467,8 +458,8 @@ mod test {
             Mode::Mips32R6,
             Endian::Big,
             &[ExtraMode::Micro],
-            (CS_MODE_BIG_ENDIAN as usize) | (CS_MODE_MIPS32R6 as usize) | (CS_MODE_32 as usize) |
-                (CS_MODE_MICRO as usize),
+            (CS_MODE_BIG_ENDIAN as usize) | (CS_MODE_MIPS32R6 as usize) | (CS_MODE_32 as usize)
+                | (CS_MODE_MICRO as usize),
         );
     }
 }
