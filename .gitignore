@@ -4,3 +4,4 @@ Cargo.lock
 *.pyc
 #*#
 README.html
+CHANGELOG.html
