@@ -8,28 +8,97 @@
 //!
 //! ```rust
 //! extern crate capstone;
+//!
 //! use capstone::prelude::*;
+//! use capstone::InsnDetail;
 //!
-//! const CODE: &'static [u8] = b"\x55\x48\x8b\x05\xb8\x13\x00\x00";
-//! fn main() {
-//!     match Capstone::new().x86().mode(arch::x86::ArchMode::Mode32).build() {
-//!         Ok(cs) => {
-//!             match cs.disasm_all(CODE, 0x1000) {
-//!                 Ok(insns) => {
-//!                     println!("Got {} instructions", insns.len());
+//! const MIPS_CODE: &'static [u8] = b"\x56\x34\x21\x34\xc2\x17\x01\x00";
 //!
-//!                     for i in insns.iter() {
-//!                         println!("{}", i);
-//!                     }
-//!                 },
-//!                 Err(err) => {
-//!                     println!("Error: {}", err)
-//!                 }
-//!             }
-//!         },
-//!         Err(err) => {
-//!             println!("Error: {}", err)
+//! const X86_CODE: &'static [u8] = b"\x55\x48\x8b\x05\xb8\x13\x00\x00\xe9\x14\x9e\x08\x00\x45\x31\xe4";
+//!
+//! /// Print register names
+//! fn reg_names<T, I>(cs: &Capstone, regs: T) -> String
+//! where
+//!     T: Iterator<Item = I>,
+//!     I: Into<RegId>,
+//! {
+//!     let names: Vec<String> = regs.map(|x| cs.reg_name(x.into()).unwrap()).collect();
+//!     names.join(", ")
+//! }
+//!
+//! /// Print instruction group names
+//! fn group_names<T, I>(cs: &Capstone, regs: T) -> String
+//! where
+//!     T: Iterator<Item = I>,
+//!     I: Into<InsnGroupId>,
+//! {
+//!     let names: Vec<String> = regs.map(|x| cs.group_name(x.into()).unwrap()).collect();
+//!     names.join(", ")
+//! }
+//!
+//! /// Disassemble code and print information
+//! fn arch_example(cs: &mut Capstone, code: &[u8]) -> CsResult<()> {
+//!     let insns = cs.disasm_all(code, 0x1000)?;
+//!     println!("Found {} instructions", insns.len());
+//!     for i in insns.iter() {
+//!         println!();
+//!         println!("{}", i);
+//!
+//!         let detail: InsnDetail = cs.insn_detail(&i)?;
+//!         let arch_detail: ArchDetail = detail.arch_detail();
+//!         let ops = arch_detail.operands();
+//!
+//!         let output: &[(&str, String)] = &[
+//!             ("insn id:", format!("{:?}", i.id().0)),
+//!             ("bytes:", format!("{:?}", i.bytes())),
+//!             ("read regs:", reg_names(&cs, cs.read_register_ids(&i)?)),
+//!             ("write regs:", reg_names(&cs, cs.write_register_ids(&i)?)),
+//!             ("insn groups:", group_names(&cs, cs.insn_group_ids(&i)?)),
+//!         ];
+//!
+//!         for &(ref name, ref message) in output.iter() {
+//!             println!("{:4}{:12} {}", "", name, message);
 //!         }
+//!
+//!         println!("{:4}operands: {}", "", ops.len());
+//!         for op in ops {
+//!             println!("{:8}{:?}", "", op);
+//!         }
+//!     }
+//!     Ok(())
+//! }
+//!
+//! fn example() -> CsResult<()> {
+//!     let cs_mips: Capstone = Capstone::new()
+//!         .mips()
+//!         .mode(arch::mips::ArchMode::Mips32R6)
+//!         .detail(true)
+//!         .build()?;
+//!
+//!     let cs_x86 = Capstone::new()
+//!         .x86()
+//!         .mode(arch::x86::ArchMode::Mode64)
+//!         .syntax(arch::x86::ArchSyntax::Att)
+//!         .detail(true)
+//!         .build()?;
+//!
+//!     let mut examples = [
+//!         ("MIPS", cs_mips, MIPS_CODE),
+//!         ("X86", cs_x86, X86_CODE),
+//!     ];
+//!
+//!     for &mut (arch, ref mut cs, code) in examples.iter_mut() {
+//!         println!("\n*************************************");
+//!         println!("Architecture {}:", arch);
+//!         arch_example(cs, &code)?;
+//!     }
+//!
+//!     Ok(())
+//! }
+//!
+//! fn main() {
+//!     if let Err(err) = example() {
+//!         println!("Error: {}", err);
 //!     }
 //! }
 //! ```
@@ -37,9 +106,74 @@
 //! Produces:
 //!
 //! ```no_test
-//! Got 2 instructions
-//! 0x1000: push rbp
-//! 0x1001: mov rax, qword ptr [rip + 0x13b8]
+//!
+//! *************************************
+//! Architecture MIPS:
+//! Found 2 instructions
+//!
+//! 0x1000: ori $at, $at, 0x3456
+//!     insn id:     445
+//!     bytes:       [86, 52, 33, 52]
+//!     read regs:
+//!     write regs:
+//!     insn groups: stdenc
+//!     operands: 3
+//!         MipsOperand(Reg(RegId(2)))
+//!         MipsOperand(Reg(RegId(2)))
+//!         MipsOperand(Imm(13398))
+//!
+//! 0x1004: srl $v0, $at, 0x1f
+//!     insn id:     525
+//!     bytes:       [194, 23, 1, 0]
+//!     read regs:
+//!     write regs:
+//!     insn groups: stdenc
+//!     operands: 3
+//!         MipsOperand(Reg(RegId(3)))
+//!         MipsOperand(Reg(RegId(2)))
+//!         MipsOperand(Imm(31))
+//!
+//! *************************************
+//! Architecture X86:
+//! Found 4 instructions
+//!
+//! 0x1000: pushq %rbp
+//!     insn id:     580
+//!     bytes:       [85]
+//!     read regs:   rsp
+//!     write regs:  rsp
+//!     insn groups: mode64
+//!     operands: 1
+//!         X86Operand(X86Operand { size: 8, avx_bcast: X86_AVX_BCAST_INVALID, avx_zero_opmask: false, op_type: Reg(RegId(36)) })
+//!
+//! 0x1001: movq 0x13b8(%rip), %rax
+//!     insn id:     442
+//!     bytes:       [72, 139, 5, 184, 19, 0, 0]
+//!     read regs:
+//!     write regs:
+//!     insn groups:
+//!     operands: 2
+//!         X86Operand(X86Operand { size: 8, avx_bcast: X86_AVX_BCAST_INVALID, avx_zero_opmask: false, op_type: Mem(X86OpMem(x86_op_mem { segment: 0, base: 41, index: 0, scale: 1, disp: 5048 })) })
+//!         X86Operand(X86Operand { size: 8, avx_bcast: X86_AVX_BCAST_INVALID, avx_zero_opmask: false, op_type: Reg(RegId(35)) })
+//!
+//! 0x1008: jmp 0x8ae21
+//!     insn id:     266
+//!     bytes:       [233, 20, 158, 8, 0]
+//!     read regs:
+//!     write regs:
+//!     insn groups: jump
+//!     operands: 1
+//!         X86Operand(X86Operand { size: 8, avx_bcast: X86_AVX_BCAST_INVALID, avx_zero_opmask: false, op_type: Imm(568865) })
+//!
+//! 0x100d: xorl %r12d, %r12d
+//!     insn id:     327
+//!     bytes:       [69, 49, 228]
+//!     read regs:
+//!     write regs:  rflags
+//!     insn groups:
+//!     operands: 2
+//!         X86Operand(X86Operand { size: 4, avx_bcast: X86_AVX_BCAST_INVALID, avx_zero_opmask: false, op_type: Reg(RegId(222)) })
+//!         X86Operand(X86Operand { size: 4, avx_bcast: X86_AVX_BCAST_INVALID, avx_zero_opmask: false, op_type: Reg(RegId(222)) })
 //! ```
 //!
 //! [upstream]: http://capstone-engine.org/
@@ -66,9 +200,9 @@ pub use error::*;
 /// use capstone::prelude::*;
 /// ```
 pub mod prelude {
-    pub use {Capstone, CsResult};
-    pub use arch::{self, BuildsCapstone, BuildsCapstoneEndian, BuildsCapstoneExtraMode,
-                   BuildsCapstoneSyntax};
+    pub use {Capstone, CsResult, InsnGroupId, InsnGroupIdInt, InsnId, InsnIdInt, RegId, RegIdInt};
+    pub use arch::{self, ArchDetail, BuildsCapstone, BuildsCapstoneEndian,
+                   BuildsCapstoneExtraMode, BuildsCapstoneSyntax, DetailsArchInsn};
 }
 
 #[cfg(test)]
@@ -91,23 +225,21 @@ mod test {
     #[test]
     fn test_x86_simple() {
         match Capstone::new().x86().mode(x86::ArchMode::Mode64).build() {
-            Ok(cs) => {
-                match cs.disasm_all(X86_CODE, 0x1000) {
-                    Ok(insns) => {
-                        assert_eq!(insns.len(), 2);
-                        let is: Vec<_> = insns.iter().collect();
-                        assert_eq!(is[0].mnemonic().unwrap(), "push");
-                        assert_eq!(is[1].mnemonic().unwrap(), "mov");
+            Ok(cs) => match cs.disasm_all(X86_CODE, 0x1000) {
+                Ok(insns) => {
+                    assert_eq!(insns.len(), 2);
+                    let is: Vec<_> = insns.iter().collect();
+                    assert_eq!(is[0].mnemonic().unwrap(), "push");
+                    assert_eq!(is[1].mnemonic().unwrap(), "mov");
 
-                        assert_eq!(is[0].address(), 0x1000);
-                        assert_eq!(is[1].address(), 0x1001);
+                    assert_eq!(is[0].address(), 0x1000);
+                    assert_eq!(is[1].address(), 0x1001);
 
-                        assert_eq!(is[0].bytes(), b"\x55");
-                        assert_eq!(is[1].bytes(), b"\x48\x8b\x05\xb8\x13\x00\x00");
-                    }
-                    Err(err) => assert!(false, "Couldn't disasm instructions: {}", err),
+                    assert_eq!(is[0].bytes(), b"\x55");
+                    assert_eq!(is[1].bytes(), b"\x48\x8b\x05\xb8\x13\x00\x00");
                 }
-            }
+                Err(err) => assert!(false, "Couldn't disasm instructions: {}", err),
+            },
             Err(e) => {
                 assert!(false, "Couldn't create a cs engine: {}", e);
             }
@@ -117,20 +249,18 @@ mod test {
     #[test]
     fn test_arm_simple() {
         match Capstone::new().arm().mode(arm::ArchMode::Arm).build() {
-            Ok(cs) => {
-                match cs.disasm_all(ARM_CODE, 0x1000) {
-                    Ok(insns) => {
-                        assert_eq!(insns.len(), 2);
-                        let is: Vec<_> = insns.iter().collect();
-                        assert_eq!(is[0].mnemonic().unwrap(), "streq");
-                        assert_eq!(is[1].mnemonic().unwrap(), "strheq");
+            Ok(cs) => match cs.disasm_all(ARM_CODE, 0x1000) {
+                Ok(insns) => {
+                    assert_eq!(insns.len(), 2);
+                    let is: Vec<_> = insns.iter().collect();
+                    assert_eq!(is[0].mnemonic().unwrap(), "streq");
+                    assert_eq!(is[1].mnemonic().unwrap(), "strheq");
 
-                        assert_eq!(is[0].address(), 0x1000);
-                        assert_eq!(is[1].address(), 0x1004);
-                    }
-                    Err(err) => assert!(false, "Couldn't disasm instructions: {}", err),
+                    assert_eq!(is[0].address(), 0x1000);
+                    assert_eq!(is[1].address(), 0x1004);
                 }
-            }
+                Err(err) => assert!(false, "Couldn't disasm instructions: {}", err),
+            },
             Err(e) => {
                 assert!(false, "Couldn't create a cs engine: {}", e);
             }
@@ -151,33 +281,33 @@ mod test {
     fn test_x86_names() {
         match Capstone::new().x86().mode(x86::ArchMode::Mode32).build() {
             Ok(cs) => {
-                let reg_id = 1;
+                let reg_id = RegId(1);
                 match cs.reg_name(reg_id) {
                     Some(reg_name) => assert_eq!(reg_name, "ah"),
                     None => assert!(false, "Couldn't get register name"),
                 }
 
-                let insn_id = 1;
+                let insn_id = InsnId(1);
                 match cs.insn_name(insn_id) {
                     Some(insn_name) => assert_eq!(insn_name, "aaa"),
                     None => assert!(false, "Couldn't get instruction name"),
                 }
 
-                assert_eq!(cs.group_name(1), Some(String::from("jump")));
+                assert_eq!(cs.group_name(InsnGroupId(1)), Some(String::from("jump")));
 
-                let reg_id = 6000;
+                let reg_id = RegId(250);
                 match cs.reg_name(reg_id) {
                     Some(_) => assert!(false, "invalid register worked"),
                     None => {}
                 }
 
-                let insn_id = 6000;
+                let insn_id = InsnId(6000);
                 match cs.insn_name(insn_id) {
                     Some(_) => assert!(false, "invalid instruction worked"),
                     None => {}
                 }
 
-                assert_eq!(cs.group_name(6000), None);
+                assert_eq!(cs.group_name(InsnGroupId(250)), None);
             }
             Err(e) => {
                 assert!(false, "Couldn't create a cs engine: {}", e);
@@ -195,11 +325,11 @@ mod test {
         cs.set_detail(false).unwrap();
         let insns: Vec<_> = cs.disasm_all(X86_CODE, 0x1000).unwrap().iter().collect();
         assert_eq!(
-            cs.insn_belongs_to_group(&insns[0], 0),
+            cs.insn_belongs_to_group(&insns[0], InsnGroupId(0)),
             Err(Error::Capstone(CapstoneError::DetailOff))
         );
         assert_eq!(
-            cs.insn_belongs_to_group(&insns[1], 0),
+            cs.insn_belongs_to_group(&insns[1], InsnGroupId(0)),
             Err(Error::Capstone(CapstoneError::DetailOff))
         );
     }
@@ -232,7 +362,10 @@ mod test {
             for insn_idx in 0..1 + 1 {
                 for insn_group_id in &insn_group_ids {
                     assert_eq!(
-                        cs.insn_belongs_to_group(&insns[insn_idx], *insn_group_id as u64),
+                        cs.insn_belongs_to_group(
+                            &insns[insn_idx],
+                            InsnGroupId(*insn_group_id as InsnGroupIdInt),
+                        ),
                         Ok(false)
                     );
                 }
@@ -251,9 +384,8 @@ mod test {
         if has_default_syntax {
             // insn_name() does not respect current syntax
             // does not always match the internal mnemonic
-            cs.insn_name(insn.id() as u64).expect(
-                "Failed to get instruction name",
-            );
+            cs.insn_name(insn.id())
+                .expect("Failed to get instruction name");
         }
         assert_eq!(
             mnemonic_name,
@@ -263,6 +395,44 @@ mod test {
 
         // Assert instruction bytes match
         assert_eq!(bytes, insn.bytes());
+    }
+
+    fn test_instruction_detail_helper<T>(
+        cs: &Capstone,
+        insn: &Insn,
+        info: &DetailedInsnInfo<T>,
+        has_default_syntax: bool,
+    ) where
+        T: Into<ArchOperand> + Clone,
+    {
+        // Check mnemonic
+        if has_default_syntax {
+            // insn_name() does not respect current syntax
+            // does not always match the internal mnemonic
+            cs.insn_name(insn.id())
+                .expect("Failed to get instruction name");
+        }
+        assert_eq!(
+            info.mnemonic,
+            insn.mnemonic().expect("Failed to get mnemonic"),
+            "Did not match contained insn.mnemonic"
+        );
+
+        // Assert instruction bytes match
+        assert_eq!(info.bytes, insn.bytes());
+
+        let detail = cs.insn_detail(insn).expect("Could not get detail");
+        let arch_detail = detail.arch_detail();
+        let arch_ops = arch_detail.operands();
+
+        let expected_ops: Vec<_> = info.operands
+            .iter()
+            .map(|expected_op| {
+                let expected_op: ArchOperand = (*expected_op).clone().into();
+                expected_op
+            })
+            .collect();
+        assert_eq!(expected_ops, arch_ops, "operands do not match");
     }
 
     /// Assert instruction belongs or does not belong to groups, testing both insn_belongs_to_group
@@ -278,12 +448,13 @@ mod test {
         test_instruction_helper(&cs, insn, mnemonic_name, bytes, has_default_syntax);
 
         // Assert expected instruction groups is a subset of computed groups through ids
-        let instruction_group_ids: HashSet<u8> = cs.insn_group_ids(&insn)
+        let instruction_group_ids: HashSet<InsnGroupId> = cs.insn_group_ids(&insn)
             .expect("failed to get instruction groups")
-            .iter()
-            .map(|&x| x)
             .collect();
-        let expected_groups_ids: HashSet<u8> = expected_groups.iter().map(|&x| x as u8).collect();
+        let expected_groups_ids: HashSet<InsnGroupId> = expected_groups
+            .iter()
+            .map(|&x| InsnGroupId(x as u8))
+            .collect();
         assert!(
             expected_groups_ids.is_subset(&instruction_group_ids),
             "Expected groups {:?} does NOT match computed insn groups {:?} with ",
@@ -292,12 +463,13 @@ mod test {
         );
 
         // Assert expected instruction groups is a subset of computed groups through enum
-        let instruction_groups_set: HashSet<u8> = cs.insn_group_ids(&insn)
+        let instruction_groups_set: HashSet<InsnGroupId> = cs.insn_group_ids(&insn)
             .expect("failed to get instruction groups")
-            .iter()
-            .map(|&x| x)
             .collect();
-        let expected_groups_set: HashSet<u8> = expected_groups.iter().map(|&x| x as u8).collect();
+        let expected_groups_set: HashSet<InsnGroupId> = expected_groups
+            .iter()
+            .map(|&x| InsnGroupId(x as u8))
+            .collect();
         assert!(
             expected_groups_set.is_subset(&instruction_groups_set),
             "Expected groups {:?} does NOT match computed insn groups {:?}",
@@ -323,7 +495,7 @@ mod test {
         for &belong_group in expected_groups {
             assert_eq!(
                 Ok(true),
-                cs.insn_belongs_to_group(&insn, belong_group as u64),
+                cs.insn_belongs_to_group(&insn, InsnGroupId(belong_group as InsnGroupIdInt)),
                 "{:?} does NOT BELONG to group {:?}, but the instruction SHOULD",
                 insn,
                 belong_group
@@ -334,7 +506,7 @@ mod test {
         for &not_belong_group in not_belong_groups {
             assert_eq!(
                 Ok(false),
-                cs.insn_belongs_to_group(&insn, not_belong_group as u64),
+                cs.insn_belongs_to_group(&insn, InsnGroupId(not_belong_group as InsnGroupIdInt)),
                 "{:?} BELONGS to group {:?}, but the instruction SHOULD NOT",
                 insn,
                 not_belong_group
@@ -359,7 +531,6 @@ mod test {
 
         // Details required to get groups information
         cs.set_detail(true).unwrap();
-
 
         if expected_insns.len() == 0 {
             // Input was empty, which will cause disasm_all() to fail
@@ -402,12 +573,6 @@ mod test {
         // Details required to get groups information
         cs.set_detail(true).unwrap();
 
-
-        if expected_insns.len() == 0 {
-            // Input was empty, which will cause disasm_all() to fail
-            return;
-        }
-
         let insns: Vec<_> = cs.disasm_all(&insns_buf, 0x1000)
             .expect("Failed to disassemble")
             .iter()
@@ -427,21 +592,54 @@ mod test {
         }
     }
 
+    fn instructions_match_detail<T>(
+        cs: &mut Capstone,
+        info: &[DetailedInsnInfo<T>],
+        has_default_syntax: bool,
+    ) where
+        T: Into<ArchOperand> + Clone,
+    {
+        let insns_buf: Vec<u8> = info.iter()
+            .flat_map(|ref info| info.bytes)
+            .map(|x| *x)
+            .collect();
+
+        // Details required to get groups information
+        cs.set_detail(true).unwrap();
+
+        // todo(tmfink) eliminate check
+        if info.len() == 0 {
+            // Input was empty, which will cause disasm_all() to fail
+            return;
+        }
+
+        let insns: Vec<_> = cs.disasm_all(&insns_buf, 0x1000)
+            .expect("Failed to disassemble")
+            .iter()
+            .collect();
+
+        // Check number of instructions
+        assert_eq!(insns.len(), info.len());
+
+        for (insn, info) in insns.iter().zip(info) {
+            test_instruction_detail_helper(&cs, insn, info, has_default_syntax)
+        }
+    }
+
     #[test]
     fn test_instruction_group_ids() {
-        let expected_insns: &[(&str, &[u8], &[cs_group_type])] =
-            &[
-                ("nop", b"\x90", &[]),
-                ("je", b"\x74\x05", &[JUMP]),
-                ("call", b"\xe8\x28\x07\x00\x00", &[CALL]),
-                ("ret", b"\xc3", &[RET]),
-                ("syscall", b"\x0f\x05", &[INT]),
-                ("iretd", b"\xcf", &[IRET]),
-                ("sub", b"\x48\x83\xec\x08", &[]),
-                ("test", b"\x48\x85\xc0", &[]),
-                ("mov", b"\x48\x8b\x05\x95\x4a\x4d\x00", &[]),
-                ("mov", b"\xb9\x04\x02\x00\x00", &[]),
-            ];
+        let expected_insns: &[(&str, &[u8], &[cs_group_type])] = &[
+            ("nop", b"\x90", &[]),
+            ("je", b"\x74\x05", &[JUMP]),
+            ("call", b"\xe8\x28\x07\x00\x00", &[CALL]),
+            ("ret", b"\xc3", &[RET]),
+            ("syscall", b"\x0f\x05", &[INT]),
+            ("iretd", b"\xcf", &[IRET]),
+            ("sub", b"\x48\x83\xec\x08", &[]),
+            ("test", b"\x48\x85\xc0", &[]),
+            ("mov", b"\x48\x8b\x05\x95\x4a\x4d\x00", &[]),
+            ("mov", b"\xb9\x04\x02\x00\x00", &[]),
+        ];
 
         let mut cs = Capstone::new()
             .x86()
@@ -515,21 +713,61 @@ mod test {
         instructions_match(cs, expected_insns.as_slice(), true);
     }
 
+    #[derive(Copy, Clone, Debug)]
+    struct DetailedInsnInfo<'a, T: 'a + Into<ArchOperand>> {
+        pub mnemonic: &'a str,
+        pub bytes: &'a [u8],
+        pub operands: &'a [T],
+    }
+    type DII<'a, T> = DetailedInsnInfo<'a, T>;
+
+    impl<'a, T> DetailedInsnInfo<'a, T>
+    where
+        T: Into<ArchOperand>,
+    {
+        fn new(mnemonic: &'a str, bytes: &'a [u8], operands: &'a [T]) -> DetailedInsnInfo<'a, T>
+        where
+            T: Into<ArchOperand>,
+        {
+            DetailedInsnInfo {
+                mnemonic,
+                bytes,
+                operands,
+            }
+        }
+    }
+
+    fn test_arch_mode_endian_insns_detail<T>(
+        cs: &mut Capstone,
+        arch: Arch,
+        mode: Mode,
+        endian: Option<Endian>,
+        extra_mode: &[ExtraMode],
+        insns: &[DetailedInsnInfo<T>],
+    ) where
+        T: Into<ArchOperand> + Clone,
+    {
+        let extra_mode = extra_mode.iter().map(|x| *x);
+        let mut cs_raw = Capstone::new_raw(arch, mode, extra_mode, endian).unwrap();
+
+        instructions_match_detail(&mut cs_raw, insns, true);
+        instructions_match_detail(cs, insns, true);
+    }
+
     #[test]
     fn test_syntax() {
-        let expected_insns: &[(&str, &str, &[u8], &[cs_group_type])] =
-            &[
-                ("nop", "nop", b"\x90", &[]),
-                ("je", "je", b"\x74\x05", &[JUMP]),
-                ("call", "callq", b"\xe8\x28\x07\x00\x00", &[CALL]),
-                ("ret", "retq", b"\xc3", &[RET]),
-                ("syscall", "syscall", b"\x0f\x05", &[INT]),
-                ("iretd", "iretl", b"\xcf", &[IRET]),
-                ("sub", "subq", b"\x48\x83\xec\x08", &[]),
-                ("test", "testq", b"\x48\x85\xc0", &[]),
-                ("mov", "movq", b"\x48\x8b\x05\x95\x4a\x4d\x00", &[]),
-                ("mov", "movl", b"\xb9\x04\x02\x00\x00", &[]),
-            ];
+        let expected_insns: &[(&str, &str, &[u8], &[cs_group_type])] = &[
+            ("nop", "nop", b"\x90", &[]),
+            ("je", "je", b"\x74\x05", &[JUMP]),
+            ("call", "callq", b"\xe8\x28\x07\x00\x00", &[CALL]),
+            ("ret", "retq", b"\xc3", &[RET]),
+            ("syscall", "syscall", b"\x0f\x05", &[INT]),
+            ("iretd", "iretl", b"\xcf", &[IRET]),
+            ("sub", "subq", b"\x48\x83\xec\x08", &[]),
+            ("test", "testq", b"\x48\x85\xc0", &[]),
+            ("mov", "movq", b"\x48\x8b\x05\x95\x4a\x4d\x00", &[]),
+            ("mov", "movl", b"\xb9\x04\x02\x00\x00", &[]),
+        ];
 
         let expected_insns_intel: Vec<(&str, &[u8], &[cs_group_type])> = expected_insns
             .iter()
@@ -729,6 +967,153 @@ mod test {
     }
 
     #[test]
+    fn test_arch_arm_detail() {
+        use arch::arm::*;
+        use arch::arm::ArmOperandType::*;
+        use capstone_sys::arm_op_mem;
+
+        let r0_op = ArmOperand {
+            op_type: Reg(RegId(ArmReg::ARM_REG_R0 as RegIdInt)),
+            ..Default::default()
+        };
+
+        test_arch_mode_endian_insns_detail(
+            &mut Capstone::new()
+                .arm()
+                .mode(arm::ArchMode::Arm)
+                .build()
+                .unwrap(),
+            Arch::ARM,
+            Mode::Arm,
+            Some(Endian::Little),
+            &[],
+            &[
+                // bl	#0xfbc
+                DII::new(
+                    "bl",
+                    b"\xed\xff\xff\xeb",
+                    &[
+                        ArmOperand {
+                            op_type: Imm(0xfbc),
+                            ..Default::default()
+                        },
+                    ],
+                ),
+                // str     lr, [sp, #-4]!
+                DII::new(
+                    "str",
+                    b"\x04\xe0\x2d\xe5",
+                    &[
+                        ArmOperand {
+                            op_type: Reg(RegId(ArmReg::ARM_REG_LR as RegIdInt)),
+                            ..Default::default()
+                        },
+                        ArmOperand {
+                            op_type: Mem(ArmOpMem(arm_op_mem {
+                                base: ArmReg::ARM_REG_SP,
+                                index: 0,
+                                scale: 1,
+                                disp: -4,
+                            })),
+                            ..Default::default()
+                        },
+                    ],
+                ),
+                // andeq   r0, r0, r0
+                DII::new(
+                    "andeq",
+                    b"\x00\x00\x00\x00",
+                    &[r0_op.clone(), r0_op.clone(), r0_op.clone()],
+                ),
+                // str     r8, [r2, #-0x3e0]!
+                DII::new(
+                    "str",
+                    b"\xe0\x83\x22\xe5",
+                    &[
+                        ArmOperand {
+                            op_type: Reg(RegId(ArmReg::ARM_REG_R8 as RegIdInt)),
+                            ..Default::default()
+                        },
+                        ArmOperand {
+                            op_type: Mem(ArmOpMem(arm_op_mem {
+                                base: ArmReg::ARM_REG_R2,
+                                index: 0,
+                                scale: 1,
+                                disp: -992,
+                            })),
+                            ..Default::default()
+                        },
+                    ],
+                ),
+                // mcreq   p2, #0, r0, c3, c1, #7
+                DII::new(
+                    "mcreq",
+                    b"\xf1\x02\x03\x0e",
+                    &[
+                        ArmOperand {
+                            op_type: Pimm(2),
+                            ..Default::default()
+                        },
+                        ArmOperand {
+                            op_type: Imm(0),
+                            ..Default::default()
+                        },
+                        r0_op.clone(),
+                        ArmOperand {
+                            op_type: Cimm(3),
+                            ..Default::default()
+                        },
+                        ArmOperand {
+                            op_type: Cimm(1),
+                            ..Default::default()
+                        },
+                        ArmOperand {
+                            op_type: Imm(7),
+                            ..Default::default()
+                        },
+                    ],
+                ),
+                // mov     r0, #0
+                DII::new(
+                    "mov",
+                    b"\x00\x00\xa0\xe3",
+                    &[
+                        r0_op.clone(),
+                        ArmOperand {
+                            op_type: Imm(0),
+                            ..Default::default()
+                        },
+                    ],
+                ),
+            ],
+        );
+
+        test_arch_mode_endian_insns_detail(
+            &mut Capstone::new()
+                .arm()
+                .mode(arm::ArchMode::Thumb)
+                .build()
+                .unwrap(),
+            Arch::ARM,
+            Mode::Thumb,
+            None,
+            &[],
+            &[
+                DII::new(
+                    "bx",
+                    b"\x70\x47",
+                    &[
+                        ArmOperand {
+                            op_type: Reg(RegId(ArmReg::ARM_REG_LR as RegIdInt)),
+                            ..Default::default()
+                        },
+                    ],
+                ),
+            ],
+        );
+    }
+
+    #[test]
     fn test_arch_arm64() {
         test_arch_mode_endian_insns(
             &mut Capstone::new()
@@ -758,6 +1143,288 @@ mod test {
                 ("cneg", b"\x20\x04\x81\xda"),
                 ("add", b"\x20\x08\x02\x8b"),
                 ("ldr", b"\x10\x5b\xe8\x3c"),
+            ],
+        );
+    }
+
+    #[test]
+    fn test_arch_arm64_detail() {
+        use arch::arm64::*;
+        use arch::arm64::Arm64OperandType::*;
+        use arch::arm64::Arm64Pstate::*;
+        use arch::arm64::Arm64Reg::*;
+        use arch::arm64::Arm64Sysreg::*;
+        use arch::arm64::Arm64Vas::*;
+        use arch::arm64::Arm64Vess::*;
+        use capstone_sys::arm64_op_mem;
+
+        let s0 = Arm64Operand {
+            op_type: Reg(RegId(ARM64_REG_S0 as RegIdInt)),
+            ..Default::default()
+        };
+        let x0 = Arm64Operand {
+            op_type: Reg(RegId(ARM64_REG_X0 as RegIdInt)),
+            ..Default::default()
+        };
+        let x1 = Arm64Operand {
+            op_type: Reg(RegId(ARM64_REG_X1 as RegIdInt)),
+            ..Default::default()
+        };
+        let x2 = Arm64Operand {
+            op_type: Reg(RegId(ARM64_REG_X2 as RegIdInt)),
+            ..Default::default()
+        };
+
+        test_arch_mode_endian_insns_detail(
+            &mut Capstone::new()
+                .arm64()
+                .mode(arm64::ArchMode::Arm)
+                .build()
+                .unwrap(),
+            Arch::ARM64,
+            Mode::Arm,
+            None,
+            &[],
+            &[
+                // mrs x9, midr_el1
+                DII::new(
+                    "mrs",
+                    b"\x09\x00\x38\xd5",
+                    &[
+                        Arm64Operand {
+                            op_type: Reg(RegId(ARM64_REG_X9 as RegIdInt)),
+                            ..Default::default()
+                        },
+                        Arm64Operand {
+                            op_type: RegMrs(ARM64_SYSREG_MIDR_EL1),
+                            ..Default::default()
+                        },
+                    ],
+                ),
+                // msr spsel, #0
+                DII::new(
+                    "msr",
+                    b"\xbf\x40\x00\xd5",
+                    &[
+                        Arm64Operand {
+                            op_type: Pstate(ARM64_PSTATE_SPSEL),
+                            ..Default::default()
+                        },
+                        Arm64Operand {
+                            op_type: Imm(0),
+                            ..Default::default()
+                        },
+                    ],
+                ),
+                // tbx  v0.8b, {v1.16b, v2.16b, v3.16b}, v2.8b
+                DII::new(
+                    "tbx",
+                    b"\x20\x50\x02\x0e",
+                    &[
+                        Arm64Operand {
+                            vas: ARM64_VAS_8B,
+                            op_type: Reg(RegId(ARM64_REG_V0 as RegIdInt)),
+                            ..Default::default()
+                        },
+                        Arm64Operand {
+                            vas: ARM64_VAS_16B,
+                            op_type: Reg(RegId(ARM64_REG_V1 as RegIdInt)),
+                            ..Default::default()
+                        },
+                        Arm64Operand {
+                            vas: ARM64_VAS_16B,
+                            op_type: Reg(RegId(ARM64_REG_V2 as RegIdInt)),
+                            ..Default::default()
+                        },
+                        Arm64Operand {
+                            vas: ARM64_VAS_16B,
+                            op_type: Reg(RegId(ARM64_REG_V3 as RegIdInt)),
+                            ..Default::default()
+                        },
+                        Arm64Operand {
+                            vas: ARM64_VAS_8B,
+                            op_type: Reg(RegId(ARM64_REG_V2 as RegIdInt)),
+                            ..Default::default()
+                        },
+                    ],
+                ),
+                // scvtf v0.2s, v1.2s, #3
+                DII::new(
+                    "scvtf",
+                    b"\x20\xe4\x3d\x0f",
+                    &[
+                        Arm64Operand {
+                            vas: ARM64_VAS_2S,
+                            op_type: Reg(RegId(ARM64_REG_V0 as RegIdInt)),
+                            ..Default::default()
+                        },
+                        Arm64Operand {
+                            vas: ARM64_VAS_2S,
+                            op_type: Reg(RegId(ARM64_REG_V1 as RegIdInt)),
+                            ..Default::default()
+                        },
+                        Arm64Operand {
+                            op_type: Imm(3),
+                            ..Default::default()
+                        },
+                    ],
+                ),
+                // fmla s0, s0, v0.s[3]
+                DII::new(
+                    "fmla",
+                    b"\x00\x18\xa0\x5f",
+                    &[
+                        s0.clone(),
+                        s0.clone(),
+                        Arm64Operand {
+                            vector_index: Some(3),
+                            vess: ARM64_VESS_S,
+                            op_type: Reg(RegId(ARM64_REG_V0 as RegIdInt)),
+                            ..Default::default()
+                        },
+                    ],
+                ),
+                // fmov x2, v5.d[1]
+                DII::new(
+                    "fmov",
+                    b"\xa2\x00\xae\x9e",
+                    &[
+                        Arm64Operand {
+                            op_type: Reg(RegId(ARM64_REG_X2 as RegIdInt)),
+                            ..Default::default()
+                        },
+                        Arm64Operand {
+                            vector_index: Some(1),
+                            vess: ARM64_VESS_D,
+                            op_type: Reg(RegId(ARM64_REG_V5 as RegIdInt)),
+                            ..Default::default()
+                        },
+                    ],
+                ),
+                // dsb nsh
+                DII::new(
+                    "dsb",
+                    b"\x9f\x37\x03\xd5",
+                    &[
+                        Arm64Operand {
+                            op_type: Barrier(Arm64BarrierOp::ARM64_BARRIER_NSH),
+                            ..Default::default()
+                        },
+                    ],
+                ),
+                // dmb osh
+                DII::new(
+                    "dmb",
+                    b"\xbf\x33\x03\xd5",
+                    &[
+                        Arm64Operand {
+                            op_type: Barrier(Arm64BarrierOp::ARM64_BARRIER_OSH),
+                            ..Default::default()
+                        },
+                    ],
+                ),
+                // isb
+                DII::new("isb", b"\xdf\x3f\x03\xd5", &[]),
+                // mul x1, x1, x2
+                DII::new(
+                    "mul",
+                    b"\x21\x7c\x02\x9b",
+                    &[x1.clone(), x1.clone(), x2.clone()],
+                ),
+                // lsr w1, w1, #0
+                DII::new(
+                    "lsr",
+                    b"\x21\x7c\x00\x53",
+                    &[
+                        Arm64Operand {
+                            op_type: Reg(RegId(ARM64_REG_W1 as RegIdInt)),
+                            ..Default::default()
+                        },
+                        Arm64Operand {
+                            op_type: Reg(RegId(ARM64_REG_W1 as RegIdInt)),
+                            ..Default::default()
+                        },
+                        Arm64Operand {
+                            op_type: Imm(0),
+                            ..Default::default()
+                        },
+                    ],
+                ),
+                // sub w0, w0, w1, uxtw
+                DII::new(
+                    "sub",
+                    b"\x00\x40\x21\x4b",
+                    &[
+                        Arm64Operand {
+                            op_type: Reg(RegId(ARM64_REG_W0 as RegIdInt)),
+                            ..Default::default()
+                        },
+                        Arm64Operand {
+                            op_type: Reg(RegId(ARM64_REG_W0 as RegIdInt)),
+                            ..Default::default()
+                        },
+                        Arm64Operand {
+                            ext: Arm64Extender::ARM64_EXT_UXTW,
+                            op_type: Reg(RegId(ARM64_REG_W1 as RegIdInt)),
+                            ..Default::default()
+                        },
+                    ],
+                ),
+                // ldr w1, [sp, #8]
+                DII::new(
+                    "ldr",
+                    b"\xe1\x0b\x40\xb9",
+                    &[
+                        Arm64Operand {
+                            op_type: Reg(RegId(ARM64_REG_W1 as RegIdInt)),
+                            ..Default::default()
+                        },
+                        Arm64Operand {
+                            op_type: Mem(Arm64OpMem(arm64_op_mem {
+                                base: ARM64_REG_SP,
+                                index: 0,
+                                disp: 8,
+                            })),
+                            ..Default::default()
+                        },
+                    ],
+                ),
+                // cneg x0, x1, ne
+                DII::new("cneg", b"\x20\x04\x81\xda", &[x0.clone(), x1.clone()]),
+                // add x0, x1, x2, lsl #2
+                DII::new(
+                    "add",
+                    b"\x20\x08\x02\x8b",
+                    &[
+                        x0.clone(),
+                        x1.clone(),
+                        Arm64Operand {
+                            shift: Arm64Shift::Lsl(2),
+                            ..x2
+                        },
+                    ],
+                ),
+                // ldr q16, [x24, w8, uxtw #4]
+                DII::new(
+                    "ldr",
+                    b"\x10\x5b\xe8\x3c",
+                    &[
+                        Arm64Operand {
+                            op_type: Reg(RegId(ARM64_REG_Q16 as RegIdInt)),
+                            ..Default::default()
+                        },
+                        Arm64Operand {
+                            shift: Arm64Shift::Lsl(4),
+                            ext: Arm64Extender::ARM64_EXT_UXTW,
+                            op_type: Mem(Arm64OpMem(arm64_op_mem {
+                                base: ARM64_REG_X24,
+                                index: ARM64_REG_W8,
+                                disp: 0,
+                            })),
+                            ..Default::default()
+                        },
+                    ],
+                ),
             ],
         );
     }
@@ -836,6 +1503,63 @@ mod test {
         );
     }
 
+    #[test]
+    fn test_arch_mips_detail() {
+        use arch::mips::MipsOperand::*;
+        use arch::mips::*;
+        use capstone_sys::mips_op_mem;
+
+        test_arch_mode_endian_insns_detail(
+            &mut Capstone::new()
+                .mips()
+                .mode(mips::ArchMode::Mips32R6)
+                .build()
+                .unwrap(),
+            Arch::MIPS,
+            Mode::Mips32R6,
+            Some(Endian::Little),
+            &[],
+            &[
+                DII::new(
+                    "ori",
+                    b"\x56\x34\x21\x34",
+                    &[Reg(RegId(2)), Reg(RegId(2)), Imm(13398)],
+                ),
+                DII::new(
+                    "srl",
+                    b"\xc2\x17\x01\x00",
+                    &[Reg(RegId(3)), Reg(RegId(2)), Imm(31)],
+                ),
+                DII::new("syscall", b"\x0c\x00\x00\x00", &[]),
+            ],
+        );
+
+        test_arch_mode_endian_insns_detail(
+            &mut Capstone::new()
+                .mips()
+                .mode(mips::ArchMode::Mips32R6)
+                .endian(Endian::Big)
+                .build()
+                .unwrap(),
+            Arch::MIPS,
+            Mode::Mips32R6,
+            Some(Endian::Big),
+            &[],
+            &[
+                DII::new(
+                    "lw",
+                    b"\x8f\xa2\x00\x00",
+                    &[
+                        Reg(RegId(MipsReg::MIPS_REG_V0 as RegIdInt)),
+                        Mem(MipsOpMem(mips_op_mem {
+                            base: MipsReg::MIPS_REG_SP,
+                            disp: 0,
+                        })),
+                    ],
+                ),
+            ],
+        );
+    }
 
     #[test]
     fn test_arch_ppc() {
@@ -865,6 +1589,120 @@ mod test {
                 ("bdnzlrl+", b"\x4f\x20\x00\x21"),
                 ("bgelrl-", b"\x4c\xc8\x00\x21"),
                 ("bne", b"\x40\x82\x00\x14"),
+            ],
+        );
+    }
+
+    #[test]
+    fn test_arch_ppc_detail() {
+        use arch::ppc::*;
+        use arch::ppc::PpcOperand::*;
+        use arch::ppc::PpcReg::*;
+        use capstone_sys::ppc_op_mem;
+
+        test_arch_mode_endian_insns_detail(
+            &mut Capstone::new()
+                .ppc()
+                .mode(ppc::ArchMode::Mode64)
+                .endian(Endian::Big)
+                .build()
+                .unwrap(),
+            Arch::PPC,
+            Mode::Mode64,
+            Some(Endian::Big),
+            &[],
+            &[
+                // lwz     r1, 0(0)
+                DII::new(
+                    "lwz",
+                    b"\x80\x20\x00\x00",
+                    &[
+                        Reg(RegId(PPC_REG_R1 as RegIdInt)),
+                        Mem(PpcOpMem(ppc_op_mem { base: 45, disp: 0 })),
+                    ],
+                ),
+                // lwz     r1, 0(r31)
+                DII::new(
+                    "lwz",
+                    b"\x80\x3f\x00\x00",
+                    &[
+                        Reg(RegId(PPC_REG_R1 as RegIdInt)),
+                        Mem(PpcOpMem(ppc_op_mem {
+                            base: PPC_REG_R31,
+                            disp: 0,
+                        })),
+                    ],
+                ),
+                // vpkpx   v2, v3, v4
+                DII::new(
+                    "vpkpx",
+                    b"\x10\x43\x23\x0e",
+                    &[
+                        Reg(RegId(PPC_REG_V2 as RegIdInt)),
+                        Reg(RegId(PPC_REG_V3 as RegIdInt)),
+                        Reg(RegId(PPC_REG_V4 as RegIdInt)),
+                    ],
+                ),
+                // stfs    f2, 0x80(r4)
+                DII::new(
+                    "stfs",
+                    b"\xd0\x44\x00\x80",
+                    &[
+                        Reg(RegId(PPC_REG_F2 as RegIdInt)),
+                        Mem(PpcOpMem(ppc_op_mem {
+                            base: PPC_REG_R4,
+                            disp: 0x80,
+                        })),
+                    ],
+                ),
+                // crand   2, 3, 4
+                DII::new(
+                    "crand",
+                    b"\x4c\x43\x22\x02",
+                    &[
+                        Reg(RegId(PPC_REG_R2 as RegIdInt)),
+                        Reg(RegId(PPC_REG_R3 as RegIdInt)),
+                        Reg(RegId(PPC_REG_R4 as RegIdInt)),
+                    ],
+                ),
+                // cmpwi   cr2, r3, 0x80
+                DII::new(
+                    "cmpwi",
+                    b"\x2d\x03\x00\x80",
+                    &[
+                        Reg(RegId(PPC_REG_CR2 as RegIdInt)),
+                        Reg(RegId(PPC_REG_R3 as RegIdInt)),
+                        Imm(0x80),
+                    ],
+                ),
+                // addc    r2, r3, r4
+                DII::new(
+                    "addc",
+                    b"\x7c\x43\x20\x14",
+                    &[
+                        Reg(RegId(PPC_REG_R2 as RegIdInt)),
+                        Reg(RegId(PPC_REG_R3 as RegIdInt)),
+                        Reg(RegId(PPC_REG_R4 as RegIdInt)),
+                    ],
+                ),
+                // mulhd.  r2, r3, r4
+                DII::new(
+                    "mulhd.",
+                    b"\x7c\x43\x20\x93",
+                    &[
+                        Reg(RegId(PPC_REG_R2 as RegIdInt)),
+                        Reg(RegId(PPC_REG_R3 as RegIdInt)),
+                        Reg(RegId(PPC_REG_R4 as RegIdInt)),
+                    ],
+                ),
+                // bdnzlrl+
+                DII::new("bdnzlrl+", b"\x4f\x20\x00\x21", &[]),
+                // bgelrl- cr2
+                DII::new(
+                    "bgelrl-",
+                    b"\x4c\xc8\x00\x21",
+                    &[Reg(RegId(PPC_REG_CR2 as RegIdInt))],
+                ),
             ],
         );
     }
@@ -916,6 +1754,173 @@ mod test {
                 ("fstox", b"\x89\xa0\x10\x20"),
                 ("fqtoi", b"\x89\xa0\x1a\x60"),
                 ("fnegq", b"\x89\xa0\x00\xe0"),
+            ],
+        );
+    }
+
+    #[test]
+    fn test_arch_sparc_detail() {
+        use arch::sparc::*;
+        use arch::sparc::SparcOperand::*;
+        use arch::sparc::SparcReg::*;
+        use capstone_sys::sparc_op_mem;
+
+        test_arch_mode_endian_insns_detail(
+            &mut Capstone::new()
+                .sparc()
+                .mode(sparc::ArchMode::Default)
+                .build()
+                .unwrap(),
+            Arch::SPARC,
+            Mode::Default,
+            None,
+            &[],
+            &[
+                // cmp     %g1, %g2
+                DII::new(
+                    "cmp",
+                    b"\x80\xa0\x40\x02",
+                    &[
+                        Reg(RegId(SPARC_REG_G1 as RegIdInt)),
+                        Reg(RegId(SPARC_REG_G2 as RegIdInt)),
+                    ],
+                ),
+                // jmpl    %o1+8, %g2
+                DII::new(
+                    "jmpl",
+                    b"\x85\xc2\x60\x08",
+                    &[
+                        Mem(SparcOpMem(sparc_op_mem {
+                            base: SPARC_REG_O1 as u8,
+                            index: 0,
+                            disp: 8,
+                        })),
+                        Reg(RegId(SPARC_REG_G2 as RegIdInt)),
+                    ],
+                ),
+                // restore %g0, 1, %g2
+                DII::new(
+                    "restore",
+                    b"\x85\xe8\x20\x01",
+                    &[
+                        Reg(RegId(SPARC_REG_G0 as RegIdInt)),
+                        Imm(1),
+                        Reg(RegId(SPARC_REG_G2 as RegIdInt)),
+                    ],
+                ),
+                // mov     1, %o0
+                DII::new(
+                    "mov",
+                    b"\x90\x10\x20\x01",
+                    &[Imm(1), Reg(RegId(SPARC_REG_O0 as RegIdInt))],
+                ),
+                // casx    [%i0], %l6, %o2
+                DII::new(
+                    "casx",
+                    b"\xd5\xf6\x10\x16",
+                    &[
+                        Mem(SparcOpMem(sparc_op_mem {
+                            base: SPARC_REG_I0 as u8,
+                            index: 0,
+                            disp: 0,
+                        })),
+                        Reg(RegId(SPARC_REG_L6 as RegIdInt)),
+                        Reg(RegId(SPARC_REG_O2 as RegIdInt)),
+                    ],
+                ),
+                // sethi   0xa, %l0
+                DII::new(
+                    "sethi",
+                    b"\x21\x00\x00\x0a",
+                    &[Imm(0xa), Reg(RegId(SPARC_REG_L0 as RegIdInt))],
+                ),
+                // add     %g1, %g2, %g3
+                DII::new(
+                    "add",
+                    b"\x86\x00\x40\x02",
+                    &[
+                        Reg(RegId(SPARC_REG_G1 as RegIdInt)),
+                        Reg(RegId(SPARC_REG_G2 as RegIdInt)),
+                        Reg(RegId(SPARC_REG_G3 as RegIdInt)),
+                    ],
+                ),
+                // nop
+                DII::new("nop", b"\x01\x00\x00\x00", &[]),
+                // bne     0x1020
+                DII::new("bne", b"\x12\xbf\xff\xff", &[Imm(0x101c)]),
+                // ba      0x1024
+                DII::new("ba", b"\x10\xbf\xff\xff", &[Imm(0x1020)]),
+                // add     %o0, %o1, %l0
+                DII::new(
+                    "add",
+                    b"\xa0\x02\x00\x09",
+                    &[
+                        Reg(RegId(SPARC_REG_O0 as RegIdInt)),
+                        Reg(RegId(SPARC_REG_O1 as RegIdInt)),
+                        Reg(RegId(SPARC_REG_L0 as RegIdInt)),
+                    ],
+                ),
+                // fbg     0x102c
+                DII::new("fbg", b"\x0d\xbf\xff\xff", &[Imm(0x1028)]),
+                // st      %o2, [%g1]
+                DII::new(
+                    "st",
+                    b"\xd4\x20\x60\x00",
+                    &[
+                        Reg(RegId(SPARC_REG_O2 as RegIdInt)),
+                        Mem(SparcOpMem(sparc_op_mem {
+                            base: SPARC_REG_G1 as u8,
+                            index: 0,
+                            disp: 0,
+                        })),
+                    ],
+                ),
+                // ldsb    [%i0+%l6], %o2
+                DII::new(
+                    "ldsb",
+                    b"\xd4\x4e\x00\x16",
+                    &[
+                        Mem(SparcOpMem(sparc_op_mem {
+                            base: SPARC_REG_I0 as u8,
+                            index: SPARC_REG_L6 as u8,
+                            disp: 0,
+                        })),
+                        Reg(RegId(SPARC_REG_O2 as RegIdInt)),
+                    ],
+                ),
+                // brnz,a,pn       %o2, 0x1048
+                DII::new(
+                    "brnz,a,pn",
+                    b"\x2a\xc2\x80\x03",
+                    &[Reg(RegId(SPARC_REG_O2 as RegIdInt)), Imm(0x1044)],
+                ),
+            ],
+        );
+
+        let f0_f4 = [
+            Reg(RegId(SPARC_REG_F0 as RegIdInt)),
+            Reg(RegId(SPARC_REG_F4 as RegIdInt)),
+        ];
+
+        test_arch_mode_endian_insns_detail(
+            &mut Capstone::new()
+                .sparc()
+                .mode(sparc::ArchMode::V9)
+                .build()
+                .unwrap(),
+            Arch::SPARC,
+            Mode::V9,
+            None,
+            &[],
+            &[
+                // fcmps   %f0, %f4
+                DII::new("fcmps", b"\x81\xa8\x0a\x24", &f0_f4),
+                // fstox   %f0, %f4
+                DII::new("fstox", b"\x89\xa0\x10\x20", &f0_f4),
+                // fqtoi   %f0, %f4
+                DII::new("fqtoi", b"\x89\xa0\x1a\x60", &f0_f4),
+                // fnegq   %f0, %f4
+                DII::new("fnegq", b"\x89\xa0\x00\xe0", &f0_f4),
             ],
         );
     }
@@ -1015,6 +2020,238 @@ mod test {
     }
 
     #[test]
+    fn test_arch_x86_detail() {
+        use arch::x86::*;
+        use arch::x86::X86OperandType::*;
+        use arch::x86::X86Reg::*;
+        use capstone_sys::*;
+
+        // X86 16bit (Intel syntax)
+        test_arch_mode_endian_insns_detail(
+            &mut Capstone::new()
+                .x86()
+                .mode(x86::ArchMode::Mode16)
+                .build()
+                .unwrap(),
+            Arch::X86,
+            Mode::Mode16,
+            None,
+            &[],
+            &[
+                // lea     cx, word ptr [si + 0x32]
+                DII::new(
+                    "lea",
+                    b"\x8d\x4c\x32",
+                    &[
+                        X86Operand {
+                            size: 2,
+                            op_type: Reg(RegId(X86_REG_CX as RegIdInt)),
+                            ..Default::default()
+                        },
+                        X86Operand {
+                            size: 2,
+                            op_type: Mem(X86OpMem(x86_op_mem {
+                                segment: 0,
+                                base: X86_REG_SI,
+                                index: 0,
+                                scale: 1,
+                                disp: 0x32,
+                            })),
+                            ..Default::default()
+                        },
+                    ],
+                ),
+                // or      byte ptr [bx + di], al
+                DII::new(
+                    "or",
+                    b"\x08\x01",
+                    &[
+                        X86Operand {
+                            size: 1,
+                            op_type: Mem(X86OpMem(x86_op_mem {
+                                segment: 0,
+                                base: X86_REG_BX,
+                                index: X86_REG_DI,
+                                scale: 1,
+                                disp: 0,
+                            })),
+                            ..Default::default()
+                        },
+                        X86Operand {
+                            size: 1,
+                            op_type: Reg(RegId(X86_REG_AL as RegIdInt)),
+                            ..Default::default()
+                        },
+                    ],
+                ),
+                // fadd    dword ptr [bx + di + 0x34c6]
+                DII::new(
+                    "fadd",
+                    b"\xd8\x81\xc6\x34",
+                    &[
+                        X86Operand {
+                            size: 4,
+                            op_type: Mem(X86OpMem(x86_op_mem {
+                                segment: 0,
+                                base: X86_REG_BX,
+                                index: X86_REG_DI,
+                                scale: 1,
+                                disp: 0x34c6,
+                            })),
+                            ..Default::default()
+                        },
+                    ],
+                ),
+                // adc     al, byte ptr [bx + si]
+                DII::new(
+                    "adc",
+                    b"\x12\x00",
+                    &[
+                        X86Operand {
+                            size: 1,
+                            op_type: Reg(RegId(X86_REG_AL as RegIdInt)),
+                            ..Default::default()
+                        },
+                        X86Operand {
+                            size: 1,
+                            op_type: Mem(X86OpMem(x86_op_mem {
+                                segment: 0,
+                                base: X86_REG_BX,
+                                index: X86_REG_SI,
+                                scale: 1,
+                                disp: 0,
+                            })),
+                            ..Default::default()
+                        },
+                    ],
+                ),
+            ],
+        );
+
+        // X86 32bit
+        test_arch_mode_endian_insns_detail(
+            &mut Capstone::new()
+                .x86()
+                .mode(x86::ArchMode::Mode32)
+                .build()
+                .unwrap(),
+            Arch::X86,
+            Mode::Mode32,
+            None,
+            &[],
+            &[
+                // leal    8(%edx, %esi), %ecx
+                DII::new(
+                    "lea",
+                    b"\x8d\x4c\x32\x08",
+                    &[
+                        X86Operand {
+                            size: 4,
+                            op_type: Reg(RegId(X86_REG_ECX as RegIdInt)),
+                            ..Default::default()
+                        },
+                        X86Operand {
+                            size: 4,
+                            op_type: Mem(X86OpMem(x86_op_mem {
+                                segment: 0,
+                                base: X86_REG_EDX,
+                                index: X86_REG_ESI,
+                                scale: 1,
+                                disp: 8,
+                            })),
+                            ..Default::default()
+                        },
+                    ],
+                ),
+                // addl    %ebx, %eax
+                DII::new(
+                    "add",
+                    b"\x01\xd8",
+                    &[
+                        X86Operand {
+                            size: 4,
+                            op_type: Reg(RegId(X86_REG_EAX as RegIdInt)),
+                            ..Default::default()
+                        },
+                        X86Operand {
+                            size: 4,
+                            op_type: Reg(RegId(X86_REG_EBX as RegIdInt)),
+                            ..Default::default()
+                        },
+                    ],
+                ),
+                // addl    $0x1234, %esi
+                DII::new(
+                    "add",
+                    b"\x81\xc6\x34\x12\x00\x00",
+                    &[
+                        X86Operand {
+                            size: 4,
+                            op_type: Reg(RegId(X86_REG_ESI as RegIdInt)),
+                            ..Default::default()
+                        },
+                        X86Operand {
+                            size: 4,
+                            op_type: Imm(0x1234),
+                            ..Default::default()
+                        },
+                    ],
+                ),
+            ],
+        );
+
+        // X86 64
+        test_arch_mode_endian_insns_detail(
+            &mut Capstone::new()
+                .x86()
+                .mode(x86::ArchMode::Mode64)
+                .build()
+                .unwrap(),
+            Arch::X86,
+            Mode::Mode64,
+            None,
+            &[],
+            &[
+                // push    rbp
+                DII::new(
+                    "push",
+                    b"\x55",
+                    &[
+                        X86Operand {
+                            size: 8,
+                            op_type: Reg(RegId(X86_REG_RBP as RegIdInt)),
+                            ..Default::default()
+                        },
+                    ],
+                ),
+                // mov     rax, qword ptr [rip + 0x13b8]
+                DII::new(
+                    "mov",
+                    b"\x48\x8b\x05\xb8\x13\x00\x00",
+                    &[
+                        X86Operand {
+                            size: 8,
+                            op_type: Reg(RegId(X86_REG_RAX as RegIdInt)),
+                            ..Default::default()
+                        },
+                        X86Operand {
+                            size: 8,
+                            op_type: Mem(X86OpMem(x86_op_mem {
+                                segment: 0,
+                                base: X86_REG_RIP,
+                                index: 0,
+                                scale: 1,
+                                disp: 0x13b8,
+                            })),
+                            ..Default::default()
+                        },
+                    ],
+                ),
+            ],
+        );
+    }
+
+    #[test]
     fn test_arch_xcore() {
         test_arch_mode_endian_insns(
             &mut Capstone::new()
@@ -1037,6 +2274,113 @@ mod test {
                 ("lmul", b"\xf9\xfa\x02\x06"),
                 ("add", b"\x1b\x10"),
                 ("ldaw", b"\x09\xfd\xec\xa7"),
+            ],
+        );
+    }
+
+    // XXX todo(tmfink) investigate upstream xcore operand bugs
+    #[test]
+    fn test_arch_xcore_detail() {
+        use arch::xcore::*;
+        use arch::xcore::XcoreOperand::*;
+        use arch::xcore::XcoreReg::*;
+        use capstone_sys::xcore_op_mem;
+
+        test_arch_mode_endian_insns_detail(
+            &mut Capstone::new()
+                .xcore()
+                .mode(xcore::ArchMode::Default)
+                .build()
+                .unwrap(),
+            Arch::XCORE,
+            Mode::Default,
+            None,
+            &[],
+            &[
+                // get     r11, ed
+                DII::new(
+                    "get",
+                    b"\xfe\x0f",
+                    &[
+                        Reg(RegId(XCORE_REG_R11 as RegIdInt)),
+                        Reg(RegId(XCORE_REG_ED as RegIdInt)),
+                    ],
+                ),
+                // ldw     et, sp[4]
+                DII::new(
+                    "ldw",
+                    b"\xfe\x17",
+                    &[
+                        Reg(RegId(XCORE_REG_ET as RegIdInt)),
+                        Mem(XcoreOpMem(xcore_op_mem {
+                            base: XCORE_REG_SP as u8,
+                            index: XCORE_REG_INVALID as u8,
+                            disp: 4,
+                            direct: 1,
+                        })),
+                    ],
+                ),
+                // setd    res[r3], r4
+                DII::new("setd", b"\x13\x17", &[Reg(RegId(XCORE_REG_R4 as RegIdInt))]),
+                // init    t[r2]:lr, r1
+                DII::new(
+                    "init",
+                    b"\xc6\xfe\xec\x17",
+                    &[
+                        Mem(XcoreOpMem(xcore_op_mem {
+                            base: XCORE_REG_R2 as u8,
+                            index: XCORE_REG_LR as u8,
+                            disp: 0,
+                            direct: 1,
+                        })),
+                        Reg(RegId(XCORE_REG_R1 as RegIdInt)),
+                    ],
+                ),
+                // divu    r9, r1, r3
+                DII::new(
+                    "divu",
+                    b"\x97\xf8\xec\x4f",
+                    &[
+                        Reg(RegId(XCORE_REG_R9 as RegIdInt)),
+                        Reg(RegId(XCORE_REG_R1 as RegIdInt)),
+                        Reg(RegId(XCORE_REG_R3 as RegIdInt)),
+                    ],
+                ),
+                // lda16   r9, r3[-r11]
+                DII::new(
+                    "lda16",
+                    b"\x1f\xfd\xec\x37",
+                    &[Reg(RegId(XCORE_REG_R9 as RegIdInt))],
+                ),
+                // ldw     dp, dp[0x81c5]
+                DII::new(
+                    "ldw",
+                    b"\x07\xf2\x45\x5b",
+                    &[Reg(RegId(XCORE_REG_DP as RegIdInt))],
+                ),
+                // lmul    r11, r0, r2, r5, r8, r10
+                DII::new(
+                    "lmul",
+                    b"\xf9\xfa\x02\x06",
+                    &[
+                        Reg(RegId(XCORE_REG_R11 as RegIdInt)),
+                        Reg(RegId(XCORE_REG_R0 as RegIdInt)),
+                        Reg(RegId(XCORE_REG_R2 as RegIdInt)),
+                        Reg(RegId(XCORE_REG_R5 as RegIdInt)),
+                        Reg(RegId(XCORE_REG_R8 as RegIdInt)),
+                        Reg(RegId(XCORE_REG_R10 as RegIdInt)),
+                    ],
+                ),
+                // add     r1, r2, r3
+                DII::new(
+                    "add",
+                    b"\x1b\x10",
+                    &[
+                        Reg(RegId(XCORE_REG_R1 as RegIdInt)),
+                        Reg(RegId(XCORE_REG_R2 as RegIdInt)),
+                        Reg(RegId(XCORE_REG_R3 as RegIdInt)),
+                    ],
+                ),
             ],
         );
     }
