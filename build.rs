@@ -2,6 +2,34 @@
 //!
 //! * `UPDATE_CAPSTONE_BINDINGS`: setting indicates that the pre-generated `capstone.rs` should be
 //!   updated with the output bindgen
+//!
+//! # Bindgen enum mapping
+//!
+//! Bindgen can convert C enums in several ways:
+//!
+//! 1. **"Rustified" enum**: Bindgen creates a Rust enum, which provides the most "type safety" and
+//!    reduces the chance of confusing variants for a different type. For variants whose
+//!    discriminant values are not distinct, bindgen defines constants.
+//! 2. **"Constified" enum**: Bindgen defines constants for each enum variant.
+//! 3. **"Constified" enum module**: Bindgen defines constants for each enum variant in a separate
+//!    module.
+//!
+//! # Rationale for enum types
+//!
+//! Rustified enum: these have distinct variant discriminants
+//!
+//! * `cs_arch`
+//! * `cs_op_type`
+//! * `cs_opt_type`
+//!
+//! Constified enum module:
+//!
+//! * `cs_err`: avoid undefined behavior in case an error is instantiated with an invalid value; the
+//!   compiler could make false assumptions that the value is only within a certain range.
+//! * `cs_group_type`: each architecture adds group types; avoids needing to transmute
+//! * `cs_mode`: used as a bitmask; when values are OR'd together, they are not a valid discriminant
+//!   value
+//! * `cs_opt_value`: variant discriminants are not unique
 
 #[cfg(feature = "use_bindgen")]
 extern crate bindgen;
@@ -169,19 +197,24 @@ fn write_bindgen_bindings(
         .disable_name_namespacing()
         .prepend_enum_name(false)
         .generate_comments(true)
-        .constified_enum_module("[^_]+_reg$"); // Some registers have aliases
-
+        .impl_debug(true)
+        // Avoid overlapping regex to work around rust-bindgen bug:
+        // https://github.com/rust-lang-nursery/rust-bindgen/issues/1198
+        .rustified_enum("cs_arch|cs_op_type|cs_opt_type")
+        .constified_enum_module("cs_err|cs_group_type|cs_mode|cs_opt_value");
 
     // Whitelist cs_.* functions and types
     let pattern = String::from("cs_.*");
     builder = builder
-        .whitelisted_function(pattern.clone())
-        .whitelisted_type(pattern.clone());
+        .whitelist_function(&pattern)
+        .whitelist_type(&pattern);
 
     // Whitelist types with architectures
     for arch in ARCH_INCLUDES {
         let pattern = format!(".*(^|_){}(_|$).*", arch.cs_name);
-        builder = builder.whitelisted_type(pattern);
+        builder = builder
+            .whitelist_type(&pattern)
+            .constified_enum_module(&pattern);
     }
 
     let bindings = builder.generate().expect("Unable to generate bindings");

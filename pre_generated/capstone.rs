@@ -27,67 +27,66 @@ pub enum cs_arch {
     /// All architectures - for cs_support()
     CS_ARCH_ALL = 65535,
 }
-/// 32-bit ARM
-pub const CS_MODE_ARM: cs_mode = cs_mode::CS_MODE_LITTLE_ENDIAN;
-/// MicroMips mode (MIPS)
-pub const CS_MODE_MICRO: cs_mode = cs_mode::CS_MODE_THUMB;
-/// Mips III ISA
-pub const CS_MODE_MIPS3: cs_mode = cs_mode::CS_MODE_MCLASS;
-/// Mips32r6 ISA
-pub const CS_MODE_MIPS32R6: cs_mode = cs_mode::CS_MODE_V8;
-/// SparcV9 mode (Sparc)
-pub const CS_MODE_V9: cs_mode = cs_mode::CS_MODE_THUMB;
-/// Mips32 ISA (Mips)
-pub const CS_MODE_MIPS32: cs_mode = cs_mode::CS_MODE_32;
-/// Mips64 ISA (Mips)
-pub const CS_MODE_MIPS64: cs_mode = cs_mode::CS_MODE_64;
-#[repr(i32)]
-#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
 /// Mode type
-pub enum cs_mode {
+pub mod cs_mode {
+    pub type Type = ::std::os::raw::c_int;
     /// little-endian mode (default mode)
-    CS_MODE_LITTLE_ENDIAN = 0,
+    pub const CS_MODE_LITTLE_ENDIAN: Type = 0;
+    /// 32-bit ARM
+    pub const CS_MODE_ARM: Type = 0;
     /// 16-bit mode (X86)
-    CS_MODE_16 = 2,
+    pub const CS_MODE_16: Type = 2;
     /// 32-bit mode (X86)
-    CS_MODE_32 = 4,
+    pub const CS_MODE_32: Type = 4;
     /// 64-bit mode (X86, PPC)
-    CS_MODE_64 = 8,
+    pub const CS_MODE_64: Type = 8;
     /// ARM's Thumb mode, including Thumb-2
-    CS_MODE_THUMB = 16,
+    pub const CS_MODE_THUMB: Type = 16;
     /// ARM's Cortex-M series
-    CS_MODE_MCLASS = 32,
+    pub const CS_MODE_MCLASS: Type = 32;
     /// ARMv8 A32 encodings for ARM
-    CS_MODE_V8 = 64,
+    pub const CS_MODE_V8: Type = 64;
     /// MicroMips mode (MIPS)
-    CS_MODE_MIPSGP64 = 128,
+    pub const CS_MODE_MICRO: Type = 16;
+    /// Mips III ISA
+    pub const CS_MODE_MIPS3: Type = 32;
+    /// Mips32r6 ISA
+    pub const CS_MODE_MIPS32R6: Type = 64;
+    /// MicroMips mode (MIPS)
+    pub const CS_MODE_MIPSGP64: Type = 128;
+    /// SparcV9 mode (Sparc)
+    pub const CS_MODE_V9: Type = 16;
     /// big-endian mode
-    CS_MODE_BIG_ENDIAN = -2147483648,
+    pub const CS_MODE_BIG_ENDIAN: Type = -2147483648;
+    /// Mips32 ISA (Mips)
+    pub const CS_MODE_MIPS32: Type = 4;
+    /// Mips64 ISA (Mips)
+    pub const CS_MODE_MIPS64: Type = 8;
 }
-pub type cs_malloc_t =
-    ::std::option::Option<unsafe extern "C" fn(size: usize)
-                              -> *mut ::std::os::raw::c_void>;
-pub type cs_calloc_t =
-    ::std::option::Option<unsafe extern "C" fn(nmemb: usize, size: usize)
-                              -> *mut ::std::os::raw::c_void>;
-pub type cs_realloc_t =
-    ::std::option::Option<unsafe extern "C" fn(ptr:
-                                                   *mut ::std::os::raw::c_void,
-                                               size: usize)
-                              -> *mut ::std::os::raw::c_void>;
-pub type cs_free_t =
-    ::std::option::Option<unsafe extern "C" fn(ptr:
-                                                   *mut ::std::os::raw::c_void)>;
-pub type cs_vsnprintf_t =
-    ::std::option::Option<unsafe extern "C" fn(str:
-                                                   *mut ::std::os::raw::c_char,
-                                               size: usize,
-                                               format:
-                                                   *const ::std::os::raw::c_char,
-                                               ap: *mut __va_list_tag)
-                              -> ::std::os::raw::c_int>;
+pub type cs_malloc_t = ::std::option::Option<
+    unsafe extern "C" fn(size: usize) -> *mut ::std::os::raw::c_void,
+>;
+pub type cs_calloc_t = ::std::option::Option<
+    unsafe extern "C" fn(nmemb: usize, size: usize) -> *mut ::std::os::raw::c_void,
+>;
+pub type cs_realloc_t = ::std::option::Option<
+    unsafe extern "C" fn(ptr: *mut ::std::os::raw::c_void, size: usize)
+        -> *mut ::std::os::raw::c_void,
+>;
+pub type cs_free_t = ::std::option::Option<unsafe extern "C" fn(ptr: *mut ::std::os::raw::c_void)>;
+pub type cs_vsnprintf_t = ::std::option::Option<
+    unsafe extern "C" fn(
+        str: *mut ::std::os::raw::c_char,
+        size: usize,
+        format: *const ::std::os::raw::c_char,
+        ap: *mut __va_list_tag,
+    ) -> ::std::os::raw::c_int,
+>;
 #[repr(C)]
 #[derive(Debug, Copy)]
+/// User-defined dynamic memory related functions: malloc/calloc/realloc/free/vsnprintf()
+///
+/// By default, Capstone uses system's malloc(), calloc(), realloc(), free() & vsnprintf().
 pub struct cs_opt_mem {
     pub malloc: cs_malloc_t,
     pub calloc: cs_calloc_t,
@@ -97,41 +96,75 @@ pub struct cs_opt_mem {
 }
 #[test]
 fn bindgen_test_layout_cs_opt_mem() {
-    assert_eq!(::std::mem::size_of::<cs_opt_mem>() , 40usize , concat ! (
-               "Size of: " , stringify ! ( cs_opt_mem ) ));
-    assert_eq! (::std::mem::align_of::<cs_opt_mem>() , 8usize , concat ! (
-                "Alignment of " , stringify ! ( cs_opt_mem ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const cs_opt_mem ) ) . malloc as * const _ as
-                usize } , 0usize , concat ! (
-                "Alignment of field: " , stringify ! ( cs_opt_mem ) , "::" ,
-                stringify ! ( malloc ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const cs_opt_mem ) ) . calloc as * const _ as
-                usize } , 8usize , concat ! (
-                "Alignment of field: " , stringify ! ( cs_opt_mem ) , "::" ,
-                stringify ! ( calloc ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const cs_opt_mem ) ) . realloc as * const _ as
-                usize } , 16usize , concat ! (
-                "Alignment of field: " , stringify ! ( cs_opt_mem ) , "::" ,
-                stringify ! ( realloc ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const cs_opt_mem ) ) . free as * const _ as
-                usize } , 24usize , concat ! (
-                "Alignment of field: " , stringify ! ( cs_opt_mem ) , "::" ,
-                stringify ! ( free ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const cs_opt_mem ) ) . vsnprintf as * const _
-                as usize } , 32usize , concat ! (
-                "Alignment of field: " , stringify ! ( cs_opt_mem ) , "::" ,
-                stringify ! ( vsnprintf ) ));
+    assert_eq!(
+        ::std::mem::size_of::<cs_opt_mem>(),
+        40usize,
+        concat!("Size of: ", stringify!(cs_opt_mem))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<cs_opt_mem>(),
+        8usize,
+        concat!("Alignment of ", stringify!(cs_opt_mem))
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const cs_opt_mem)).malloc as *const _ as usize },
+        0usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(cs_opt_mem),
+            "::",
+            stringify!(malloc)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const cs_opt_mem)).calloc as *const _ as usize },
+        8usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(cs_opt_mem),
+            "::",
+            stringify!(calloc)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const cs_opt_mem)).realloc as *const _ as usize },
+        16usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(cs_opt_mem),
+            "::",
+            stringify!(realloc)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const cs_opt_mem)).free as *const _ as usize },
+        24usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(cs_opt_mem),
+            "::",
+            stringify!(free)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const cs_opt_mem)).vsnprintf as *const _ as usize },
+        32usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(cs_opt_mem),
+            "::",
+            stringify!(vsnprintf)
+        )
+    );
 }
 impl Clone for cs_opt_mem {
-    fn clone(&self) -> Self { *self }
+    fn clone(&self) -> Self {
+        *self
+    }
 }
 #[repr(u32)]
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
+/// Runtime option for the disassembled engine
 pub enum cs_opt_type {
     CS_OPT_INVALID = 0,
     CS_OPT_SYNTAX = 1,
@@ -141,18 +174,19 @@ pub enum cs_opt_type {
     CS_OPT_SKIPDATA = 5,
     CS_OPT_SKIPDATA_SETUP = 6,
 }
-pub const CS_OPT_SYNTAX_DEFAULT: cs_opt_value = cs_opt_value::CS_OPT_OFF;
-pub const CS_OPT_SYNTAX_NOREGNAME: cs_opt_value = cs_opt_value::CS_OPT_ON;
-#[repr(u32)]
-#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
-pub enum cs_opt_value {
-    CS_OPT_OFF = 0,
-    CS_OPT_ON = 3,
-    CS_OPT_SYNTAX_INTEL = 1,
-    CS_OPT_SYNTAX_ATT = 2,
+/// Runtime option value (associated with option type above)
+pub mod cs_opt_value {
+    pub type Type = ::std::os::raw::c_uint;
+    pub const CS_OPT_OFF: Type = 0;
+    pub const CS_OPT_ON: Type = 3;
+    pub const CS_OPT_SYNTAX_DEFAULT: Type = 0;
+    pub const CS_OPT_SYNTAX_INTEL: Type = 1;
+    pub const CS_OPT_SYNTAX_ATT: Type = 2;
+    pub const CS_OPT_SYNTAX_NOREGNAME: Type = 3;
 }
 #[repr(u32)]
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
+/// Common instruction operand types - to be consistent across all architectures.
 pub enum cs_op_type {
     CS_OP_INVALID = 0,
     CS_OP_REG = 1,
@@ -160,224 +194,275 @@ pub enum cs_op_type {
     CS_OP_MEM = 3,
     CS_OP_FP = 4,
 }
-#[repr(u32)]
-#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
-pub enum cs_group_type {
-    CS_GRP_INVALID = 0,
-    CS_GRP_JUMP = 1,
-    CS_GRP_CALL = 2,
-    CS_GRP_RET = 3,
-    CS_GRP_INT = 4,
-    CS_GRP_IRET = 5,
+/// Common instruction groups - to be consistent across all architectures.
+pub mod cs_group_type {
+    pub type Type = ::std::os::raw::c_uint;
+    pub const CS_GRP_INVALID: Type = 0;
+    pub const CS_GRP_JUMP: Type = 1;
+    pub const CS_GRP_CALL: Type = 2;
+    pub const CS_GRP_RET: Type = 3;
+    pub const CS_GRP_INT: Type = 4;
+    pub const CS_GRP_IRET: Type = 5;
 }
-pub type cs_skipdata_cb_t =
-    ::std::option::Option<unsafe extern "C" fn(code: *const u8,
-                                               code_size: usize,
-                                               offset: usize,
-                                               user_data:
-                                                   *mut ::std::os::raw::c_void)
-                              -> usize>;
+/// User-defined callback function for SKIPDATA option.
+/// See tests/test_skipdata.c for sample code demonstrating this API.
+///
+/// * @code: the input buffer containing code to be disassembled.
+///        This is the same buffer passed to cs_disasm().
+/// * @code_size: size (in bytes) of the above @code buffer.
+/// * @offset: the position of the currently-examining byte in the input
+///      buffer @code mentioned above.
+/// * @user_data: user-data passed to cs_option() via @user_data field in
+///      cs_opt_skipdata struct below.
+///
+/// @return: return number of bytes to skip, or 0 to immediately stop disassembling.
+pub type cs_skipdata_cb_t = ::std::option::Option<
+    unsafe extern "C" fn(
+        code: *const u8,
+        code_size: usize,
+        offset: usize,
+        user_data: *mut ::std::os::raw::c_void,
+    ) -> usize,
+>;
 #[repr(C)]
 #[derive(Debug, Copy)]
+/// User-customized setup for SKIPDATA option
 pub struct cs_opt_skipdata {
+    /// Capstone considers data to skip as special "instructions".
+    /// User can specify the string for this instruction's "mnemonic" here.
+    /// By default (if @mnemonic is NULL), Capstone use ".byte".
     pub mnemonic: *const ::std::os::raw::c_char,
+
+    /// User-defined callback function to be called when Capstone hits data.
+    /// If the returned value from this callback is positive (>0), Capstone
+    /// will skip exactly that number of bytes & continue. Otherwise, if
+    /// the callback returns 0, Capstone stops disassembling and returns
+    /// immediately from cs_disasm()
+    ///
+    /// NOTE: if this callback pointer is NULL, Capstone would skip a number
+    /// of bytes depending on architectures, as following:
+    ///
+    /// * Arm:     2 bytes (Thumb mode) or 4 bytes.
+    /// * Arm64:   4 bytes.
+    /// * Mips:    4 bytes.
+    /// * PowerPC: 4 bytes.
+    /// * Sparc:   4 bytes.
+    /// * SystemZ: 2 bytes.
+    /// * X86:     1 bytes.
+    /// * XCore:   2 bytes.
     pub callback: cs_skipdata_cb_t,
+
+    /// User-defined data to be passed to @callback function pointer.
     pub user_data: *mut ::std::os::raw::c_void,
 }
 #[test]
 fn bindgen_test_layout_cs_opt_skipdata() {
-    assert_eq!(::std::mem::size_of::<cs_opt_skipdata>() , 24usize , concat ! (
-               "Size of: " , stringify ! ( cs_opt_skipdata ) ));
-    assert_eq! (::std::mem::align_of::<cs_opt_skipdata>() , 8usize , concat !
-                ( "Alignment of " , stringify ! ( cs_opt_skipdata ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const cs_opt_skipdata ) ) . mnemonic as * const
-                _ as usize } , 0usize , concat ! (
-                "Alignment of field: " , stringify ! ( cs_opt_skipdata ) ,
-                "::" , stringify ! ( mnemonic ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const cs_opt_skipdata ) ) . callback as * const
-                _ as usize } , 8usize , concat ! (
-                "Alignment of field: " , stringify ! ( cs_opt_skipdata ) ,
-                "::" , stringify ! ( callback ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const cs_opt_skipdata ) ) . user_data as *
-                const _ as usize } , 16usize , concat ! (
-                "Alignment of field: " , stringify ! ( cs_opt_skipdata ) ,
-                "::" , stringify ! ( user_data ) ));
+    assert_eq!(
+        ::std::mem::size_of::<cs_opt_skipdata>(),
+        24usize,
+        concat!("Size of: ", stringify!(cs_opt_skipdata))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<cs_opt_skipdata>(),
+        8usize,
+        concat!("Alignment of ", stringify!(cs_opt_skipdata))
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const cs_opt_skipdata)).mnemonic as *const _ as usize },
+        0usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(cs_opt_skipdata),
+            "::",
+            stringify!(mnemonic)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const cs_opt_skipdata)).callback as *const _ as usize },
+        8usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(cs_opt_skipdata),
+            "::",
+            stringify!(callback)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const cs_opt_skipdata)).user_data as *const _ as usize },
+        16usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(cs_opt_skipdata),
+            "::",
+            stringify!(user_data)
+        )
+    );
 }
 impl Clone for cs_opt_skipdata {
-    fn clone(&self) -> Self { *self }
+    fn clone(&self) -> Self {
+        *self
+    }
 }
-#[repr(u32)]
-#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
-pub enum arm_shifter {
-    ARM_SFT_INVALID = 0,
-    ARM_SFT_ASR = 1,
-    ARM_SFT_LSL = 2,
-    ARM_SFT_LSR = 3,
-    ARM_SFT_ROR = 4,
-    ARM_SFT_RRX = 5,
-    ARM_SFT_ASR_REG = 6,
-    ARM_SFT_LSL_REG = 7,
-    ARM_SFT_LSR_REG = 8,
-    ARM_SFT_ROR_REG = 9,
-    ARM_SFT_RRX_REG = 10,
+pub mod arm_shifter {
+    pub type Type = ::std::os::raw::c_uint;
+    pub const ARM_SFT_INVALID: Type = 0;
+    pub const ARM_SFT_ASR: Type = 1;
+    pub const ARM_SFT_LSL: Type = 2;
+    pub const ARM_SFT_LSR: Type = 3;
+    pub const ARM_SFT_ROR: Type = 4;
+    pub const ARM_SFT_RRX: Type = 5;
+    pub const ARM_SFT_ASR_REG: Type = 6;
+    pub const ARM_SFT_LSL_REG: Type = 7;
+    pub const ARM_SFT_LSR_REG: Type = 8;
+    pub const ARM_SFT_ROR_REG: Type = 9;
+    pub const ARM_SFT_RRX_REG: Type = 10;
 }
-#[repr(u32)]
-#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
-pub enum arm_cc {
-    ARM_CC_INVALID = 0,
-    ARM_CC_EQ = 1,
-    ARM_CC_NE = 2,
-    ARM_CC_HS = 3,
-    ARM_CC_LO = 4,
-    ARM_CC_MI = 5,
-    ARM_CC_PL = 6,
-    ARM_CC_VS = 7,
-    ARM_CC_VC = 8,
-    ARM_CC_HI = 9,
-    ARM_CC_LS = 10,
-    ARM_CC_GE = 11,
-    ARM_CC_LT = 12,
-    ARM_CC_GT = 13,
-    ARM_CC_LE = 14,
-    ARM_CC_AL = 15,
+pub mod arm_cc {
+    pub type Type = ::std::os::raw::c_uint;
+    pub const ARM_CC_INVALID: Type = 0;
+    pub const ARM_CC_EQ: Type = 1;
+    pub const ARM_CC_NE: Type = 2;
+    pub const ARM_CC_HS: Type = 3;
+    pub const ARM_CC_LO: Type = 4;
+    pub const ARM_CC_MI: Type = 5;
+    pub const ARM_CC_PL: Type = 6;
+    pub const ARM_CC_VS: Type = 7;
+    pub const ARM_CC_VC: Type = 8;
+    pub const ARM_CC_HI: Type = 9;
+    pub const ARM_CC_LS: Type = 10;
+    pub const ARM_CC_GE: Type = 11;
+    pub const ARM_CC_LT: Type = 12;
+    pub const ARM_CC_GT: Type = 13;
+    pub const ARM_CC_LE: Type = 14;
+    pub const ARM_CC_AL: Type = 15;
 }
-#[repr(u32)]
-#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
-pub enum arm_sysreg {
-    ARM_SYSREG_INVALID = 0,
-    ARM_SYSREG_SPSR_C = 1,
-    ARM_SYSREG_SPSR_X = 2,
-    ARM_SYSREG_SPSR_S = 4,
-    ARM_SYSREG_SPSR_F = 8,
-    ARM_SYSREG_CPSR_C = 16,
-    ARM_SYSREG_CPSR_X = 32,
-    ARM_SYSREG_CPSR_S = 64,
-    ARM_SYSREG_CPSR_F = 128,
-    ARM_SYSREG_APSR = 256,
-    ARM_SYSREG_APSR_G = 257,
-    ARM_SYSREG_APSR_NZCVQ = 258,
-    ARM_SYSREG_APSR_NZCVQG = 259,
-    ARM_SYSREG_IAPSR = 260,
-    ARM_SYSREG_IAPSR_G = 261,
-    ARM_SYSREG_IAPSR_NZCVQG = 262,
-    ARM_SYSREG_EAPSR = 263,
-    ARM_SYSREG_EAPSR_G = 264,
-    ARM_SYSREG_EAPSR_NZCVQG = 265,
-    ARM_SYSREG_XPSR = 266,
-    ARM_SYSREG_XPSR_G = 267,
-    ARM_SYSREG_XPSR_NZCVQG = 268,
-    ARM_SYSREG_IPSR = 269,
-    ARM_SYSREG_EPSR = 270,
-    ARM_SYSREG_IEPSR = 271,
-    ARM_SYSREG_MSP = 272,
-    ARM_SYSREG_PSP = 273,
-    ARM_SYSREG_PRIMASK = 274,
-    ARM_SYSREG_BASEPRI = 275,
-    ARM_SYSREG_BASEPRI_MAX = 276,
-    ARM_SYSREG_FAULTMASK = 277,
-    ARM_SYSREG_CONTROL = 278,
+pub mod arm_sysreg {
+    pub type Type = ::std::os::raw::c_uint;
+    pub const ARM_SYSREG_INVALID: Type = 0;
+    pub const ARM_SYSREG_SPSR_C: Type = 1;
+    pub const ARM_SYSREG_SPSR_X: Type = 2;
+    pub const ARM_SYSREG_SPSR_S: Type = 4;
+    pub const ARM_SYSREG_SPSR_F: Type = 8;
+    pub const ARM_SYSREG_CPSR_C: Type = 16;
+    pub const ARM_SYSREG_CPSR_X: Type = 32;
+    pub const ARM_SYSREG_CPSR_S: Type = 64;
+    pub const ARM_SYSREG_CPSR_F: Type = 128;
+    pub const ARM_SYSREG_APSR: Type = 256;
+    pub const ARM_SYSREG_APSR_G: Type = 257;
+    pub const ARM_SYSREG_APSR_NZCVQ: Type = 258;
+    pub const ARM_SYSREG_APSR_NZCVQG: Type = 259;
+    pub const ARM_SYSREG_IAPSR: Type = 260;
+    pub const ARM_SYSREG_IAPSR_G: Type = 261;
+    pub const ARM_SYSREG_IAPSR_NZCVQG: Type = 262;
+    pub const ARM_SYSREG_EAPSR: Type = 263;
+    pub const ARM_SYSREG_EAPSR_G: Type = 264;
+    pub const ARM_SYSREG_EAPSR_NZCVQG: Type = 265;
+    pub const ARM_SYSREG_XPSR: Type = 266;
+    pub const ARM_SYSREG_XPSR_G: Type = 267;
+    pub const ARM_SYSREG_XPSR_NZCVQG: Type = 268;
+    pub const ARM_SYSREG_IPSR: Type = 269;
+    pub const ARM_SYSREG_EPSR: Type = 270;
+    pub const ARM_SYSREG_IEPSR: Type = 271;
+    pub const ARM_SYSREG_MSP: Type = 272;
+    pub const ARM_SYSREG_PSP: Type = 273;
+    pub const ARM_SYSREG_PRIMASK: Type = 274;
+    pub const ARM_SYSREG_BASEPRI: Type = 275;
+    pub const ARM_SYSREG_BASEPRI_MAX: Type = 276;
+    pub const ARM_SYSREG_FAULTMASK: Type = 277;
+    pub const ARM_SYSREG_CONTROL: Type = 278;
 }
-#[repr(u32)]
-#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
-pub enum arm_mem_barrier {
-    ARM_MB_INVALID = 0,
-    ARM_MB_RESERVED_0 = 1,
-    ARM_MB_OSHLD = 2,
-    ARM_MB_OSHST = 3,
-    ARM_MB_OSH = 4,
-    ARM_MB_RESERVED_4 = 5,
-    ARM_MB_NSHLD = 6,
-    ARM_MB_NSHST = 7,
-    ARM_MB_NSH = 8,
-    ARM_MB_RESERVED_8 = 9,
-    ARM_MB_ISHLD = 10,
-    ARM_MB_ISHST = 11,
-    ARM_MB_ISH = 12,
-    ARM_MB_RESERVED_12 = 13,
-    ARM_MB_LD = 14,
-    ARM_MB_ST = 15,
-    ARM_MB_SY = 16,
+pub mod arm_mem_barrier {
+    pub type Type = ::std::os::raw::c_uint;
+    pub const ARM_MB_INVALID: Type = 0;
+    pub const ARM_MB_RESERVED_0: Type = 1;
+    pub const ARM_MB_OSHLD: Type = 2;
+    pub const ARM_MB_OSHST: Type = 3;
+    pub const ARM_MB_OSH: Type = 4;
+    pub const ARM_MB_RESERVED_4: Type = 5;
+    pub const ARM_MB_NSHLD: Type = 6;
+    pub const ARM_MB_NSHST: Type = 7;
+    pub const ARM_MB_NSH: Type = 8;
+    pub const ARM_MB_RESERVED_8: Type = 9;
+    pub const ARM_MB_ISHLD: Type = 10;
+    pub const ARM_MB_ISHST: Type = 11;
+    pub const ARM_MB_ISH: Type = 12;
+    pub const ARM_MB_RESERVED_12: Type = 13;
+    pub const ARM_MB_LD: Type = 14;
+    pub const ARM_MB_ST: Type = 15;
+    pub const ARM_MB_SY: Type = 16;
 }
-#[repr(u32)]
-#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
-pub enum arm_op_type {
-    ARM_OP_INVALID = 0,
-    ARM_OP_REG = 1,
-    ARM_OP_IMM = 2,
-    ARM_OP_MEM = 3,
-    ARM_OP_FP = 4,
-    ARM_OP_CIMM = 64,
-    ARM_OP_PIMM = 65,
-    ARM_OP_SETEND = 66,
-    ARM_OP_SYSREG = 67,
+pub mod arm_op_type {
+    pub type Type = ::std::os::raw::c_uint;
+    pub const ARM_OP_INVALID: Type = 0;
+    pub const ARM_OP_REG: Type = 1;
+    pub const ARM_OP_IMM: Type = 2;
+    pub const ARM_OP_MEM: Type = 3;
+    pub const ARM_OP_FP: Type = 4;
+    pub const ARM_OP_CIMM: Type = 64;
+    pub const ARM_OP_PIMM: Type = 65;
+    pub const ARM_OP_SETEND: Type = 66;
+    pub const ARM_OP_SYSREG: Type = 67;
 }
-#[repr(u32)]
-#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
-pub enum arm_setend_type {
-    ARM_SETEND_INVALID = 0,
-    ARM_SETEND_BE = 1,
-    ARM_SETEND_LE = 2,
+pub mod arm_setend_type {
+    pub type Type = ::std::os::raw::c_uint;
+    pub const ARM_SETEND_INVALID: Type = 0;
+    pub const ARM_SETEND_BE: Type = 1;
+    pub const ARM_SETEND_LE: Type = 2;
 }
-#[repr(u32)]
-#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
-pub enum arm_cpsmode_type {
-    ARM_CPSMODE_INVALID = 0,
-    ARM_CPSMODE_IE = 2,
-    ARM_CPSMODE_ID = 3,
+pub mod arm_cpsmode_type {
+    pub type Type = ::std::os::raw::c_uint;
+    pub const ARM_CPSMODE_INVALID: Type = 0;
+    pub const ARM_CPSMODE_IE: Type = 2;
+    pub const ARM_CPSMODE_ID: Type = 3;
 }
-#[repr(u32)]
-#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
-pub enum arm_cpsflag_type {
-    ARM_CPSFLAG_INVALID = 0,
-    ARM_CPSFLAG_F = 1,
-    ARM_CPSFLAG_I = 2,
-    ARM_CPSFLAG_A = 4,
-    ARM_CPSFLAG_NONE = 16,
+pub mod arm_cpsflag_type {
+    pub type Type = ::std::os::raw::c_uint;
+    pub const ARM_CPSFLAG_INVALID: Type = 0;
+    pub const ARM_CPSFLAG_F: Type = 1;
+    pub const ARM_CPSFLAG_I: Type = 2;
+    pub const ARM_CPSFLAG_A: Type = 4;
+    pub const ARM_CPSFLAG_NONE: Type = 16;
 }
-#[repr(u32)]
-#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
-pub enum arm_vectordata_type {
-    ARM_VECTORDATA_INVALID = 0,
-    ARM_VECTORDATA_I8 = 1,
-    ARM_VECTORDATA_I16 = 2,
-    ARM_VECTORDATA_I32 = 3,
-    ARM_VECTORDATA_I64 = 4,
-    ARM_VECTORDATA_S8 = 5,
-    ARM_VECTORDATA_S16 = 6,
-    ARM_VECTORDATA_S32 = 7,
-    ARM_VECTORDATA_S64 = 8,
-    ARM_VECTORDATA_U8 = 9,
-    ARM_VECTORDATA_U16 = 10,
-    ARM_VECTORDATA_U32 = 11,
-    ARM_VECTORDATA_U64 = 12,
-    ARM_VECTORDATA_P8 = 13,
-    ARM_VECTORDATA_F32 = 14,
-    ARM_VECTORDATA_F64 = 15,
-    ARM_VECTORDATA_F16F64 = 16,
-    ARM_VECTORDATA_F64F16 = 17,
-    ARM_VECTORDATA_F32F16 = 18,
-    ARM_VECTORDATA_F16F32 = 19,
-    ARM_VECTORDATA_F64F32 = 20,
-    ARM_VECTORDATA_F32F64 = 21,
-    ARM_VECTORDATA_S32F32 = 22,
-    ARM_VECTORDATA_U32F32 = 23,
-    ARM_VECTORDATA_F32S32 = 24,
-    ARM_VECTORDATA_F32U32 = 25,
-    ARM_VECTORDATA_F64S16 = 26,
-    ARM_VECTORDATA_F32S16 = 27,
-    ARM_VECTORDATA_F64S32 = 28,
-    ARM_VECTORDATA_S16F64 = 29,
-    ARM_VECTORDATA_S16F32 = 30,
-    ARM_VECTORDATA_S32F64 = 31,
-    ARM_VECTORDATA_U16F64 = 32,
-    ARM_VECTORDATA_U16F32 = 33,
-    ARM_VECTORDATA_U32F64 = 34,
-    ARM_VECTORDATA_F64U16 = 35,
-    ARM_VECTORDATA_F32U16 = 36,
-    ARM_VECTORDATA_F64U32 = 37,
+pub mod arm_vectordata_type {
+    pub type Type = ::std::os::raw::c_uint;
+    pub const ARM_VECTORDATA_INVALID: Type = 0;
+    pub const ARM_VECTORDATA_I8: Type = 1;
+    pub const ARM_VECTORDATA_I16: Type = 2;
+    pub const ARM_VECTORDATA_I32: Type = 3;
+    pub const ARM_VECTORDATA_I64: Type = 4;
+    pub const ARM_VECTORDATA_S8: Type = 5;
+    pub const ARM_VECTORDATA_S16: Type = 6;
+    pub const ARM_VECTORDATA_S32: Type = 7;
+    pub const ARM_VECTORDATA_S64: Type = 8;
+    pub const ARM_VECTORDATA_U8: Type = 9;
+    pub const ARM_VECTORDATA_U16: Type = 10;
+    pub const ARM_VECTORDATA_U32: Type = 11;
+    pub const ARM_VECTORDATA_U64: Type = 12;
+    pub const ARM_VECTORDATA_P8: Type = 13;
+    pub const ARM_VECTORDATA_F32: Type = 14;
+    pub const ARM_VECTORDATA_F64: Type = 15;
+    pub const ARM_VECTORDATA_F16F64: Type = 16;
+    pub const ARM_VECTORDATA_F64F16: Type = 17;
+    pub const ARM_VECTORDATA_F32F16: Type = 18;
+    pub const ARM_VECTORDATA_F16F32: Type = 19;
+    pub const ARM_VECTORDATA_F64F32: Type = 20;
+    pub const ARM_VECTORDATA_F32F64: Type = 21;
+    pub const ARM_VECTORDATA_S32F32: Type = 22;
+    pub const ARM_VECTORDATA_U32F32: Type = 23;
+    pub const ARM_VECTORDATA_F32S32: Type = 24;
+    pub const ARM_VECTORDATA_F32U32: Type = 25;
+    pub const ARM_VECTORDATA_F64S16: Type = 26;
+    pub const ARM_VECTORDATA_F32S16: Type = 27;
+    pub const ARM_VECTORDATA_F64S32: Type = 28;
+    pub const ARM_VECTORDATA_S16F64: Type = 29;
+    pub const ARM_VECTORDATA_S16F32: Type = 30;
+    pub const ARM_VECTORDATA_S32F64: Type = 31;
+    pub const ARM_VECTORDATA_U16F64: Type = 32;
+    pub const ARM_VECTORDATA_U16F32: Type = 33;
+    pub const ARM_VECTORDATA_U32F64: Type = 34;
+    pub const ARM_VECTORDATA_F64U16: Type = 35;
+    pub const ARM_VECTORDATA_F32U16: Type = 36;
+    pub const ARM_VECTORDATA_F64U32: Type = 37;
 }
 #[repr(C)]
 #[derive(Debug, Copy)]
@@ -389,70 +474,114 @@ pub struct arm_op_mem {
 }
 #[test]
 fn bindgen_test_layout_arm_op_mem() {
-    assert_eq!(::std::mem::size_of::<arm_op_mem>() , 16usize , concat ! (
-               "Size of: " , stringify ! ( arm_op_mem ) ));
-    assert_eq! (::std::mem::align_of::<arm_op_mem>() , 4usize , concat ! (
-                "Alignment of " , stringify ! ( arm_op_mem ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const arm_op_mem ) ) . base as * const _ as
-                usize } , 0usize , concat ! (
-                "Alignment of field: " , stringify ! ( arm_op_mem ) , "::" ,
-                stringify ! ( base ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const arm_op_mem ) ) . index as * const _ as
-                usize } , 4usize , concat ! (
-                "Alignment of field: " , stringify ! ( arm_op_mem ) , "::" ,
-                stringify ! ( index ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const arm_op_mem ) ) . scale as * const _ as
-                usize } , 8usize , concat ! (
-                "Alignment of field: " , stringify ! ( arm_op_mem ) , "::" ,
-                stringify ! ( scale ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const arm_op_mem ) ) . disp as * const _ as
-                usize } , 12usize , concat ! (
-                "Alignment of field: " , stringify ! ( arm_op_mem ) , "::" ,
-                stringify ! ( disp ) ));
+    assert_eq!(
+        ::std::mem::size_of::<arm_op_mem>(),
+        16usize,
+        concat!("Size of: ", stringify!(arm_op_mem))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<arm_op_mem>(),
+        4usize,
+        concat!("Alignment of ", stringify!(arm_op_mem))
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const arm_op_mem)).base as *const _ as usize },
+        0usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(arm_op_mem),
+            "::",
+            stringify!(base)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const arm_op_mem)).index as *const _ as usize },
+        4usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(arm_op_mem),
+            "::",
+            stringify!(index)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const arm_op_mem)).scale as *const _ as usize },
+        8usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(arm_op_mem),
+            "::",
+            stringify!(scale)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const arm_op_mem)).disp as *const _ as usize },
+        12usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(arm_op_mem),
+            "::",
+            stringify!(disp)
+        )
+    );
 }
 impl Clone for arm_op_mem {
-    fn clone(&self) -> Self { *self }
+    fn clone(&self) -> Self {
+        *self
+    }
 }
 #[repr(C)]
 #[derive(Copy)]
 pub struct cs_arm_op {
     pub vector_index: ::std::os::raw::c_int,
     pub shift: cs_arm_op__bindgen_ty_1,
-    pub type_: arm_op_type,
+    pub type_: arm_op_type::Type,
     pub __bindgen_anon_1: cs_arm_op__bindgen_ty_2,
     pub subtracted: bool,
 }
 #[repr(C)]
 #[derive(Debug, Copy)]
 pub struct cs_arm_op__bindgen_ty_1 {
-    pub type_: arm_shifter,
+    pub type_: arm_shifter::Type,
     pub value: ::std::os::raw::c_uint,
 }
 #[test]
 fn bindgen_test_layout_cs_arm_op__bindgen_ty_1() {
-    assert_eq!(::std::mem::size_of::<cs_arm_op__bindgen_ty_1>() , 8usize ,
-               concat ! (
-               "Size of: " , stringify ! ( cs_arm_op__bindgen_ty_1 ) ));
-    assert_eq! (::std::mem::align_of::<cs_arm_op__bindgen_ty_1>() , 4usize ,
-                concat ! (
-                "Alignment of " , stringify ! ( cs_arm_op__bindgen_ty_1 ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const cs_arm_op__bindgen_ty_1 ) ) . type_ as *
-                const _ as usize } , 0usize , concat ! (
-                "Alignment of field: " , stringify ! ( cs_arm_op__bindgen_ty_1
-                ) , "::" , stringify ! ( type_ ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const cs_arm_op__bindgen_ty_1 ) ) . value as *
-                const _ as usize } , 4usize , concat ! (
-                "Alignment of field: " , stringify ! ( cs_arm_op__bindgen_ty_1
-                ) , "::" , stringify ! ( value ) ));
+    assert_eq!(
+        ::std::mem::size_of::<cs_arm_op__bindgen_ty_1>(),
+        8usize,
+        concat!("Size of: ", stringify!(cs_arm_op__bindgen_ty_1))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<cs_arm_op__bindgen_ty_1>(),
+        4usize,
+        concat!("Alignment of ", stringify!(cs_arm_op__bindgen_ty_1))
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const cs_arm_op__bindgen_ty_1)).type_ as *const _ as usize },
+        0usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(cs_arm_op__bindgen_ty_1),
+            "::",
+            stringify!(type_)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const cs_arm_op__bindgen_ty_1)).value as *const _ as usize },
+        4usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(cs_arm_op__bindgen_ty_1),
+            "::",
+            stringify!(value)
+        )
+    );
 }
 impl Clone for cs_arm_op__bindgen_ty_1 {
-    fn clone(&self) -> Self { *self }
+    fn clone(&self) -> Self {
+        *self
+    }
 }
 #[repr(C)]
 #[derive(Copy)]
@@ -461,155 +590,292 @@ pub union cs_arm_op__bindgen_ty_2 {
     pub imm: i32,
     pub fp: f64,
     pub mem: arm_op_mem,
-    pub setend: arm_setend_type,
+    pub setend: arm_setend_type::Type,
     _bindgen_union_align: [u64; 2usize],
 }
 #[test]
 fn bindgen_test_layout_cs_arm_op__bindgen_ty_2() {
-    assert_eq!(::std::mem::size_of::<cs_arm_op__bindgen_ty_2>() , 16usize ,
-               concat ! (
-               "Size of: " , stringify ! ( cs_arm_op__bindgen_ty_2 ) ));
-    assert_eq! (::std::mem::align_of::<cs_arm_op__bindgen_ty_2>() , 8usize ,
-                concat ! (
-                "Alignment of " , stringify ! ( cs_arm_op__bindgen_ty_2 ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const cs_arm_op__bindgen_ty_2 ) ) . reg as *
-                const _ as usize } , 0usize , concat ! (
-                "Alignment of field: " , stringify ! ( cs_arm_op__bindgen_ty_2
-                ) , "::" , stringify ! ( reg ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const cs_arm_op__bindgen_ty_2 ) ) . imm as *
-                const _ as usize } , 0usize , concat ! (
-                "Alignment of field: " , stringify ! ( cs_arm_op__bindgen_ty_2
-                ) , "::" , stringify ! ( imm ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const cs_arm_op__bindgen_ty_2 ) ) . fp as *
-                const _ as usize } , 0usize , concat ! (
-                "Alignment of field: " , stringify ! ( cs_arm_op__bindgen_ty_2
-                ) , "::" , stringify ! ( fp ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const cs_arm_op__bindgen_ty_2 ) ) . mem as *
-                const _ as usize } , 0usize , concat ! (
-                "Alignment of field: " , stringify ! ( cs_arm_op__bindgen_ty_2
-                ) , "::" , stringify ! ( mem ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const cs_arm_op__bindgen_ty_2 ) ) . setend as *
-                const _ as usize } , 0usize , concat ! (
-                "Alignment of field: " , stringify ! ( cs_arm_op__bindgen_ty_2
-                ) , "::" , stringify ! ( setend ) ));
+    assert_eq!(
+        ::std::mem::size_of::<cs_arm_op__bindgen_ty_2>(),
+        16usize,
+        concat!("Size of: ", stringify!(cs_arm_op__bindgen_ty_2))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<cs_arm_op__bindgen_ty_2>(),
+        8usize,
+        concat!("Alignment of ", stringify!(cs_arm_op__bindgen_ty_2))
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const cs_arm_op__bindgen_ty_2)).reg as *const _ as usize },
+        0usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(cs_arm_op__bindgen_ty_2),
+            "::",
+            stringify!(reg)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const cs_arm_op__bindgen_ty_2)).imm as *const _ as usize },
+        0usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(cs_arm_op__bindgen_ty_2),
+            "::",
+            stringify!(imm)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const cs_arm_op__bindgen_ty_2)).fp as *const _ as usize },
+        0usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(cs_arm_op__bindgen_ty_2),
+            "::",
+            stringify!(fp)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const cs_arm_op__bindgen_ty_2)).mem as *const _ as usize },
+        0usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(cs_arm_op__bindgen_ty_2),
+            "::",
+            stringify!(mem)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const cs_arm_op__bindgen_ty_2)).setend as *const _ as usize },
+        0usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(cs_arm_op__bindgen_ty_2),
+            "::",
+            stringify!(setend)
+        )
+    );
 }
 impl Clone for cs_arm_op__bindgen_ty_2 {
-    fn clone(&self) -> Self { *self }
+    fn clone(&self) -> Self {
+        *self
+    }
+}
+impl ::std::fmt::Debug for cs_arm_op__bindgen_ty_2 {
+    fn fmt(&self, f: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
+        write!(f, "cs_arm_op__bindgen_ty_2 {{ union }}")
+    }
 }
 #[test]
 fn bindgen_test_layout_cs_arm_op() {
-    assert_eq!(::std::mem::size_of::<cs_arm_op>() , 40usize , concat ! (
-               "Size of: " , stringify ! ( cs_arm_op ) ));
-    assert_eq! (::std::mem::align_of::<cs_arm_op>() , 8usize , concat ! (
-                "Alignment of " , stringify ! ( cs_arm_op ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const cs_arm_op ) ) . vector_index as * const _
-                as usize } , 0usize , concat ! (
-                "Alignment of field: " , stringify ! ( cs_arm_op ) , "::" ,
-                stringify ! ( vector_index ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const cs_arm_op ) ) . shift as * const _ as
-                usize } , 4usize , concat ! (
-                "Alignment of field: " , stringify ! ( cs_arm_op ) , "::" ,
-                stringify ! ( shift ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const cs_arm_op ) ) . type_ as * const _ as
-                usize } , 12usize , concat ! (
-                "Alignment of field: " , stringify ! ( cs_arm_op ) , "::" ,
-                stringify ! ( type_ ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const cs_arm_op ) ) . subtracted as * const _
-                as usize } , 32usize , concat ! (
-                "Alignment of field: " , stringify ! ( cs_arm_op ) , "::" ,
-                stringify ! ( subtracted ) ));
+    assert_eq!(
+        ::std::mem::size_of::<cs_arm_op>(),
+        40usize,
+        concat!("Size of: ", stringify!(cs_arm_op))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<cs_arm_op>(),
+        8usize,
+        concat!("Alignment of ", stringify!(cs_arm_op))
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const cs_arm_op)).vector_index as *const _ as usize },
+        0usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(cs_arm_op),
+            "::",
+            stringify!(vector_index)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const cs_arm_op)).shift as *const _ as usize },
+        4usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(cs_arm_op),
+            "::",
+            stringify!(shift)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const cs_arm_op)).type_ as *const _ as usize },
+        12usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(cs_arm_op),
+            "::",
+            stringify!(type_)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const cs_arm_op)).subtracted as *const _ as usize },
+        32usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(cs_arm_op),
+            "::",
+            stringify!(subtracted)
+        )
+    );
 }
 impl Clone for cs_arm_op {
-    fn clone(&self) -> Self { *self }
+    fn clone(&self) -> Self {
+        *self
+    }
+}
+impl ::std::fmt::Debug for cs_arm_op {
+    fn fmt(&self, f: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
+        write ! ( f , "cs_arm_op {{ vector_index: {:?}, shift: {:?}, type: {:?}, __bindgen_anon_1: {:?}, subtracted: {:?} }}" , self . vector_index , self . shift , self . type_ , self . __bindgen_anon_1 , self . subtracted )
+    }
 }
 #[repr(C)]
 #[derive(Copy)]
 pub struct cs_arm {
     pub usermode: bool,
     pub vector_size: ::std::os::raw::c_int,
-    pub vector_data: arm_vectordata_type,
-    pub cps_mode: arm_cpsmode_type,
-    pub cps_flag: arm_cpsflag_type,
-    pub cc: arm_cc,
+    pub vector_data: arm_vectordata_type::Type,
+    pub cps_mode: arm_cpsmode_type::Type,
+    pub cps_flag: arm_cpsflag_type::Type,
+    pub cc: arm_cc::Type,
     pub update_flags: bool,
     pub writeback: bool,
-    pub mem_barrier: arm_mem_barrier,
+    pub mem_barrier: arm_mem_barrier::Type,
     pub op_count: u8,
     pub operands: [cs_arm_op; 36usize],
 }
 #[test]
 fn bindgen_test_layout_cs_arm() {
-    assert_eq!(::std::mem::size_of::<cs_arm>() , 1480usize , concat ! (
-               "Size of: " , stringify ! ( cs_arm ) ));
-    assert_eq! (::std::mem::align_of::<cs_arm>() , 8usize , concat ! (
-                "Alignment of " , stringify ! ( cs_arm ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const cs_arm ) ) . usermode as * const _ as
-                usize } , 0usize , concat ! (
-                "Alignment of field: " , stringify ! ( cs_arm ) , "::" ,
-                stringify ! ( usermode ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const cs_arm ) ) . vector_size as * const _ as
-                usize } , 4usize , concat ! (
-                "Alignment of field: " , stringify ! ( cs_arm ) , "::" ,
-                stringify ! ( vector_size ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const cs_arm ) ) . vector_data as * const _ as
-                usize } , 8usize , concat ! (
-                "Alignment of field: " , stringify ! ( cs_arm ) , "::" ,
-                stringify ! ( vector_data ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const cs_arm ) ) . cps_mode as * const _ as
-                usize } , 12usize , concat ! (
-                "Alignment of field: " , stringify ! ( cs_arm ) , "::" ,
-                stringify ! ( cps_mode ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const cs_arm ) ) . cps_flag as * const _ as
-                usize } , 16usize , concat ! (
-                "Alignment of field: " , stringify ! ( cs_arm ) , "::" ,
-                stringify ! ( cps_flag ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const cs_arm ) ) . cc as * const _ as usize } ,
-                20usize , concat ! (
-                "Alignment of field: " , stringify ! ( cs_arm ) , "::" ,
-                stringify ! ( cc ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const cs_arm ) ) . update_flags as * const _ as
-                usize } , 24usize , concat ! (
-                "Alignment of field: " , stringify ! ( cs_arm ) , "::" ,
-                stringify ! ( update_flags ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const cs_arm ) ) . writeback as * const _ as
-                usize } , 25usize , concat ! (
-                "Alignment of field: " , stringify ! ( cs_arm ) , "::" ,
-                stringify ! ( writeback ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const cs_arm ) ) . mem_barrier as * const _ as
-                usize } , 28usize , concat ! (
-                "Alignment of field: " , stringify ! ( cs_arm ) , "::" ,
-                stringify ! ( mem_barrier ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const cs_arm ) ) . op_count as * const _ as
-                usize } , 32usize , concat ! (
-                "Alignment of field: " , stringify ! ( cs_arm ) , "::" ,
-                stringify ! ( op_count ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const cs_arm ) ) . operands as * const _ as
-                usize } , 40usize , concat ! (
-                "Alignment of field: " , stringify ! ( cs_arm ) , "::" ,
-                stringify ! ( operands ) ));
+    assert_eq!(
+        ::std::mem::size_of::<cs_arm>(),
+        1480usize,
+        concat!("Size of: ", stringify!(cs_arm))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<cs_arm>(),
+        8usize,
+        concat!("Alignment of ", stringify!(cs_arm))
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const cs_arm)).usermode as *const _ as usize },
+        0usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(cs_arm),
+            "::",
+            stringify!(usermode)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const cs_arm)).vector_size as *const _ as usize },
+        4usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(cs_arm),
+            "::",
+            stringify!(vector_size)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const cs_arm)).vector_data as *const _ as usize },
+        8usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(cs_arm),
+            "::",
+            stringify!(vector_data)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const cs_arm)).cps_mode as *const _ as usize },
+        12usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(cs_arm),
+            "::",
+            stringify!(cps_mode)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const cs_arm)).cps_flag as *const _ as usize },
+        16usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(cs_arm),
+            "::",
+            stringify!(cps_flag)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const cs_arm)).cc as *const _ as usize },
+        20usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(cs_arm),
+            "::",
+            stringify!(cc)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const cs_arm)).update_flags as *const _ as usize },
+        24usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(cs_arm),
+            "::",
+            stringify!(update_flags)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const cs_arm)).writeback as *const _ as usize },
+        25usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(cs_arm),
+            "::",
+            stringify!(writeback)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const cs_arm)).mem_barrier as *const _ as usize },
+        28usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(cs_arm),
+            "::",
+            stringify!(mem_barrier)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const cs_arm)).op_count as *const _ as usize },
+        32usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(cs_arm),
+            "::",
+            stringify!(op_count)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const cs_arm)).operands as *const _ as usize },
+        40usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(cs_arm),
+            "::",
+            stringify!(operands)
+        )
+    );
 }
 impl Clone for cs_arm {
-    fn clone(&self) -> Self { *self }
+    fn clone(&self) -> Self {
+        *self
+    }
+}
+impl ::std::fmt::Debug for cs_arm {
+    fn fmt(&self, f: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
+        write ! ( f , "cs_arm {{ usermode: {:?}, vector_size: {:?}, vector_data: {:?}, cps_mode: {:?}, cps_flag: {:?}, cc: {:?}, update_flags: {:?}, writeback: {:?}, mem_barrier: {:?}, op_count: {:?}, operands: [{}] }}" , self . usermode , self . vector_size , self . vector_data , self . cps_mode , self . cps_flag , self . cc , self . update_flags , self . writeback , self . mem_barrier , self . op_count , self . operands . iter ( ) . enumerate ( ) . map ( | ( i , v ) | format ! ( "{}{:?}" , if i > 0 { ", " } else { "" } , v ) ) . collect :: < String > ( ) )
+    }
 }
 pub mod arm_reg {
     pub type Type = ::std::os::raw::c_uint;
@@ -733,800 +999,783 @@ pub mod arm_reg {
     pub const ARM_REG_FP: Type = 77;
     pub const ARM_REG_IP: Type = 78;
 }
-#[repr(u32)]
-#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
-pub enum arm_insn {
-    ARM_INS_INVALID = 0,
-    ARM_INS_ADC = 1,
-    ARM_INS_ADD = 2,
-    ARM_INS_ADR = 3,
-    ARM_INS_AESD = 4,
-    ARM_INS_AESE = 5,
-    ARM_INS_AESIMC = 6,
-    ARM_INS_AESMC = 7,
-    ARM_INS_AND = 8,
-    ARM_INS_BFC = 9,
-    ARM_INS_BFI = 10,
-    ARM_INS_BIC = 11,
-    ARM_INS_BKPT = 12,
-    ARM_INS_BL = 13,
-    ARM_INS_BLX = 14,
-    ARM_INS_BX = 15,
-    ARM_INS_BXJ = 16,
-    ARM_INS_B = 17,
-    ARM_INS_CDP = 18,
-    ARM_INS_CDP2 = 19,
-    ARM_INS_CLREX = 20,
-    ARM_INS_CLZ = 21,
-    ARM_INS_CMN = 22,
-    ARM_INS_CMP = 23,
-    ARM_INS_CPS = 24,
-    ARM_INS_CRC32B = 25,
-    ARM_INS_CRC32CB = 26,
-    ARM_INS_CRC32CH = 27,
-    ARM_INS_CRC32CW = 28,
-    ARM_INS_CRC32H = 29,
-    ARM_INS_CRC32W = 30,
-    ARM_INS_DBG = 31,
-    ARM_INS_DMB = 32,
-    ARM_INS_DSB = 33,
-    ARM_INS_EOR = 34,
-    ARM_INS_VMOV = 35,
-    ARM_INS_FLDMDBX = 36,
-    ARM_INS_FLDMIAX = 37,
-    ARM_INS_VMRS = 38,
-    ARM_INS_FSTMDBX = 39,
-    ARM_INS_FSTMIAX = 40,
-    ARM_INS_HINT = 41,
-    ARM_INS_HLT = 42,
-    ARM_INS_ISB = 43,
-    ARM_INS_LDA = 44,
-    ARM_INS_LDAB = 45,
-    ARM_INS_LDAEX = 46,
-    ARM_INS_LDAEXB = 47,
-    ARM_INS_LDAEXD = 48,
-    ARM_INS_LDAEXH = 49,
-    ARM_INS_LDAH = 50,
-    ARM_INS_LDC2L = 51,
-    ARM_INS_LDC2 = 52,
-    ARM_INS_LDCL = 53,
-    ARM_INS_LDC = 54,
-    ARM_INS_LDMDA = 55,
-    ARM_INS_LDMDB = 56,
-    ARM_INS_LDM = 57,
-    ARM_INS_LDMIB = 58,
-    ARM_INS_LDRBT = 59,
-    ARM_INS_LDRB = 60,
-    ARM_INS_LDRD = 61,
-    ARM_INS_LDREX = 62,
-    ARM_INS_LDREXB = 63,
-    ARM_INS_LDREXD = 64,
-    ARM_INS_LDREXH = 65,
-    ARM_INS_LDRH = 66,
-    ARM_INS_LDRHT = 67,
-    ARM_INS_LDRSB = 68,
-    ARM_INS_LDRSBT = 69,
-    ARM_INS_LDRSH = 70,
-    ARM_INS_LDRSHT = 71,
-    ARM_INS_LDRT = 72,
-    ARM_INS_LDR = 73,
-    ARM_INS_MCR = 74,
-    ARM_INS_MCR2 = 75,
-    ARM_INS_MCRR = 76,
-    ARM_INS_MCRR2 = 77,
-    ARM_INS_MLA = 78,
-    ARM_INS_MLS = 79,
-    ARM_INS_MOV = 80,
-    ARM_INS_MOVT = 81,
-    ARM_INS_MOVW = 82,
-    ARM_INS_MRC = 83,
-    ARM_INS_MRC2 = 84,
-    ARM_INS_MRRC = 85,
-    ARM_INS_MRRC2 = 86,
-    ARM_INS_MRS = 87,
-    ARM_INS_MSR = 88,
-    ARM_INS_MUL = 89,
-    ARM_INS_MVN = 90,
-    ARM_INS_ORR = 91,
-    ARM_INS_PKHBT = 92,
-    ARM_INS_PKHTB = 93,
-    ARM_INS_PLDW = 94,
-    ARM_INS_PLD = 95,
-    ARM_INS_PLI = 96,
-    ARM_INS_QADD = 97,
-    ARM_INS_QADD16 = 98,
-    ARM_INS_QADD8 = 99,
-    ARM_INS_QASX = 100,
-    ARM_INS_QDADD = 101,
-    ARM_INS_QDSUB = 102,
-    ARM_INS_QSAX = 103,
-    ARM_INS_QSUB = 104,
-    ARM_INS_QSUB16 = 105,
-    ARM_INS_QSUB8 = 106,
-    ARM_INS_RBIT = 107,
-    ARM_INS_REV = 108,
-    ARM_INS_REV16 = 109,
-    ARM_INS_REVSH = 110,
-    ARM_INS_RFEDA = 111,
-    ARM_INS_RFEDB = 112,
-    ARM_INS_RFEIA = 113,
-    ARM_INS_RFEIB = 114,
-    ARM_INS_RSB = 115,
-    ARM_INS_RSC = 116,
-    ARM_INS_SADD16 = 117,
-    ARM_INS_SADD8 = 118,
-    ARM_INS_SASX = 119,
-    ARM_INS_SBC = 120,
-    ARM_INS_SBFX = 121,
-    ARM_INS_SDIV = 122,
-    ARM_INS_SEL = 123,
-    ARM_INS_SETEND = 124,
-    ARM_INS_SHA1C = 125,
-    ARM_INS_SHA1H = 126,
-    ARM_INS_SHA1M = 127,
-    ARM_INS_SHA1P = 128,
-    ARM_INS_SHA1SU0 = 129,
-    ARM_INS_SHA1SU1 = 130,
-    ARM_INS_SHA256H = 131,
-    ARM_INS_SHA256H2 = 132,
-    ARM_INS_SHA256SU0 = 133,
-    ARM_INS_SHA256SU1 = 134,
-    ARM_INS_SHADD16 = 135,
-    ARM_INS_SHADD8 = 136,
-    ARM_INS_SHASX = 137,
-    ARM_INS_SHSAX = 138,
-    ARM_INS_SHSUB16 = 139,
-    ARM_INS_SHSUB8 = 140,
-    ARM_INS_SMC = 141,
-    ARM_INS_SMLABB = 142,
-    ARM_INS_SMLABT = 143,
-    ARM_INS_SMLAD = 144,
-    ARM_INS_SMLADX = 145,
-    ARM_INS_SMLAL = 146,
-    ARM_INS_SMLALBB = 147,
-    ARM_INS_SMLALBT = 148,
-    ARM_INS_SMLALD = 149,
-    ARM_INS_SMLALDX = 150,
-    ARM_INS_SMLALTB = 151,
-    ARM_INS_SMLALTT = 152,
-    ARM_INS_SMLATB = 153,
-    ARM_INS_SMLATT = 154,
-    ARM_INS_SMLAWB = 155,
-    ARM_INS_SMLAWT = 156,
-    ARM_INS_SMLSD = 157,
-    ARM_INS_SMLSDX = 158,
-    ARM_INS_SMLSLD = 159,
-    ARM_INS_SMLSLDX = 160,
-    ARM_INS_SMMLA = 161,
-    ARM_INS_SMMLAR = 162,
-    ARM_INS_SMMLS = 163,
-    ARM_INS_SMMLSR = 164,
-    ARM_INS_SMMUL = 165,
-    ARM_INS_SMMULR = 166,
-    ARM_INS_SMUAD = 167,
-    ARM_INS_SMUADX = 168,
-    ARM_INS_SMULBB = 169,
-    ARM_INS_SMULBT = 170,
-    ARM_INS_SMULL = 171,
-    ARM_INS_SMULTB = 172,
-    ARM_INS_SMULTT = 173,
-    ARM_INS_SMULWB = 174,
-    ARM_INS_SMULWT = 175,
-    ARM_INS_SMUSD = 176,
-    ARM_INS_SMUSDX = 177,
-    ARM_INS_SRSDA = 178,
-    ARM_INS_SRSDB = 179,
-    ARM_INS_SRSIA = 180,
-    ARM_INS_SRSIB = 181,
-    ARM_INS_SSAT = 182,
-    ARM_INS_SSAT16 = 183,
-    ARM_INS_SSAX = 184,
-    ARM_INS_SSUB16 = 185,
-    ARM_INS_SSUB8 = 186,
-    ARM_INS_STC2L = 187,
-    ARM_INS_STC2 = 188,
-    ARM_INS_STCL = 189,
-    ARM_INS_STC = 190,
-    ARM_INS_STL = 191,
-    ARM_INS_STLB = 192,
-    ARM_INS_STLEX = 193,
-    ARM_INS_STLEXB = 194,
-    ARM_INS_STLEXD = 195,
-    ARM_INS_STLEXH = 196,
-    ARM_INS_STLH = 197,
-    ARM_INS_STMDA = 198,
-    ARM_INS_STMDB = 199,
-    ARM_INS_STM = 200,
-    ARM_INS_STMIB = 201,
-    ARM_INS_STRBT = 202,
-    ARM_INS_STRB = 203,
-    ARM_INS_STRD = 204,
-    ARM_INS_STREX = 205,
-    ARM_INS_STREXB = 206,
-    ARM_INS_STREXD = 207,
-    ARM_INS_STREXH = 208,
-    ARM_INS_STRH = 209,
-    ARM_INS_STRHT = 210,
-    ARM_INS_STRT = 211,
-    ARM_INS_STR = 212,
-    ARM_INS_SUB = 213,
-    ARM_INS_SVC = 214,
-    ARM_INS_SWP = 215,
-    ARM_INS_SWPB = 216,
-    ARM_INS_SXTAB = 217,
-    ARM_INS_SXTAB16 = 218,
-    ARM_INS_SXTAH = 219,
-    ARM_INS_SXTB = 220,
-    ARM_INS_SXTB16 = 221,
-    ARM_INS_SXTH = 222,
-    ARM_INS_TEQ = 223,
-    ARM_INS_TRAP = 224,
-    ARM_INS_TST = 225,
-    ARM_INS_UADD16 = 226,
-    ARM_INS_UADD8 = 227,
-    ARM_INS_UASX = 228,
-    ARM_INS_UBFX = 229,
-    ARM_INS_UDF = 230,
-    ARM_INS_UDIV = 231,
-    ARM_INS_UHADD16 = 232,
-    ARM_INS_UHADD8 = 233,
-    ARM_INS_UHASX = 234,
-    ARM_INS_UHSAX = 235,
-    ARM_INS_UHSUB16 = 236,
-    ARM_INS_UHSUB8 = 237,
-    ARM_INS_UMAAL = 238,
-    ARM_INS_UMLAL = 239,
-    ARM_INS_UMULL = 240,
-    ARM_INS_UQADD16 = 241,
-    ARM_INS_UQADD8 = 242,
-    ARM_INS_UQASX = 243,
-    ARM_INS_UQSAX = 244,
-    ARM_INS_UQSUB16 = 245,
-    ARM_INS_UQSUB8 = 246,
-    ARM_INS_USAD8 = 247,
-    ARM_INS_USADA8 = 248,
-    ARM_INS_USAT = 249,
-    ARM_INS_USAT16 = 250,
-    ARM_INS_USAX = 251,
-    ARM_INS_USUB16 = 252,
-    ARM_INS_USUB8 = 253,
-    ARM_INS_UXTAB = 254,
-    ARM_INS_UXTAB16 = 255,
-    ARM_INS_UXTAH = 256,
-    ARM_INS_UXTB = 257,
-    ARM_INS_UXTB16 = 258,
-    ARM_INS_UXTH = 259,
-    ARM_INS_VABAL = 260,
-    ARM_INS_VABA = 261,
-    ARM_INS_VABDL = 262,
-    ARM_INS_VABD = 263,
-    ARM_INS_VABS = 264,
-    ARM_INS_VACGE = 265,
-    ARM_INS_VACGT = 266,
-    ARM_INS_VADD = 267,
-    ARM_INS_VADDHN = 268,
-    ARM_INS_VADDL = 269,
-    ARM_INS_VADDW = 270,
-    ARM_INS_VAND = 271,
-    ARM_INS_VBIC = 272,
-    ARM_INS_VBIF = 273,
-    ARM_INS_VBIT = 274,
-    ARM_INS_VBSL = 275,
-    ARM_INS_VCEQ = 276,
-    ARM_INS_VCGE = 277,
-    ARM_INS_VCGT = 278,
-    ARM_INS_VCLE = 279,
-    ARM_INS_VCLS = 280,
-    ARM_INS_VCLT = 281,
-    ARM_INS_VCLZ = 282,
-    ARM_INS_VCMP = 283,
-    ARM_INS_VCMPE = 284,
-    ARM_INS_VCNT = 285,
-    ARM_INS_VCVTA = 286,
-    ARM_INS_VCVTB = 287,
-    ARM_INS_VCVT = 288,
-    ARM_INS_VCVTM = 289,
-    ARM_INS_VCVTN = 290,
-    ARM_INS_VCVTP = 291,
-    ARM_INS_VCVTT = 292,
-    ARM_INS_VDIV = 293,
-    ARM_INS_VDUP = 294,
-    ARM_INS_VEOR = 295,
-    ARM_INS_VEXT = 296,
-    ARM_INS_VFMA = 297,
-    ARM_INS_VFMS = 298,
-    ARM_INS_VFNMA = 299,
-    ARM_INS_VFNMS = 300,
-    ARM_INS_VHADD = 301,
-    ARM_INS_VHSUB = 302,
-    ARM_INS_VLD1 = 303,
-    ARM_INS_VLD2 = 304,
-    ARM_INS_VLD3 = 305,
-    ARM_INS_VLD4 = 306,
-    ARM_INS_VLDMDB = 307,
-    ARM_INS_VLDMIA = 308,
-    ARM_INS_VLDR = 309,
-    ARM_INS_VMAXNM = 310,
-    ARM_INS_VMAX = 311,
-    ARM_INS_VMINNM = 312,
-    ARM_INS_VMIN = 313,
-    ARM_INS_VMLA = 314,
-    ARM_INS_VMLAL = 315,
-    ARM_INS_VMLS = 316,
-    ARM_INS_VMLSL = 317,
-    ARM_INS_VMOVL = 318,
-    ARM_INS_VMOVN = 319,
-    ARM_INS_VMSR = 320,
-    ARM_INS_VMUL = 321,
-    ARM_INS_VMULL = 322,
-    ARM_INS_VMVN = 323,
-    ARM_INS_VNEG = 324,
-    ARM_INS_VNMLA = 325,
-    ARM_INS_VNMLS = 326,
-    ARM_INS_VNMUL = 327,
-    ARM_INS_VORN = 328,
-    ARM_INS_VORR = 329,
-    ARM_INS_VPADAL = 330,
-    ARM_INS_VPADDL = 331,
-    ARM_INS_VPADD = 332,
-    ARM_INS_VPMAX = 333,
-    ARM_INS_VPMIN = 334,
-    ARM_INS_VQABS = 335,
-    ARM_INS_VQADD = 336,
-    ARM_INS_VQDMLAL = 337,
-    ARM_INS_VQDMLSL = 338,
-    ARM_INS_VQDMULH = 339,
-    ARM_INS_VQDMULL = 340,
-    ARM_INS_VQMOVUN = 341,
-    ARM_INS_VQMOVN = 342,
-    ARM_INS_VQNEG = 343,
-    ARM_INS_VQRDMULH = 344,
-    ARM_INS_VQRSHL = 345,
-    ARM_INS_VQRSHRN = 346,
-    ARM_INS_VQRSHRUN = 347,
-    ARM_INS_VQSHL = 348,
-    ARM_INS_VQSHLU = 349,
-    ARM_INS_VQSHRN = 350,
-    ARM_INS_VQSHRUN = 351,
-    ARM_INS_VQSUB = 352,
-    ARM_INS_VRADDHN = 353,
-    ARM_INS_VRECPE = 354,
-    ARM_INS_VRECPS = 355,
-    ARM_INS_VREV16 = 356,
-    ARM_INS_VREV32 = 357,
-    ARM_INS_VREV64 = 358,
-    ARM_INS_VRHADD = 359,
-    ARM_INS_VRINTA = 360,
-    ARM_INS_VRINTM = 361,
-    ARM_INS_VRINTN = 362,
-    ARM_INS_VRINTP = 363,
-    ARM_INS_VRINTR = 364,
-    ARM_INS_VRINTX = 365,
-    ARM_INS_VRINTZ = 366,
-    ARM_INS_VRSHL = 367,
-    ARM_INS_VRSHRN = 368,
-    ARM_INS_VRSHR = 369,
-    ARM_INS_VRSQRTE = 370,
-    ARM_INS_VRSQRTS = 371,
-    ARM_INS_VRSRA = 372,
-    ARM_INS_VRSUBHN = 373,
-    ARM_INS_VSELEQ = 374,
-    ARM_INS_VSELGE = 375,
-    ARM_INS_VSELGT = 376,
-    ARM_INS_VSELVS = 377,
-    ARM_INS_VSHLL = 378,
-    ARM_INS_VSHL = 379,
-    ARM_INS_VSHRN = 380,
-    ARM_INS_VSHR = 381,
-    ARM_INS_VSLI = 382,
-    ARM_INS_VSQRT = 383,
-    ARM_INS_VSRA = 384,
-    ARM_INS_VSRI = 385,
-    ARM_INS_VST1 = 386,
-    ARM_INS_VST2 = 387,
-    ARM_INS_VST3 = 388,
-    ARM_INS_VST4 = 389,
-    ARM_INS_VSTMDB = 390,
-    ARM_INS_VSTMIA = 391,
-    ARM_INS_VSTR = 392,
-    ARM_INS_VSUB = 393,
-    ARM_INS_VSUBHN = 394,
-    ARM_INS_VSUBL = 395,
-    ARM_INS_VSUBW = 396,
-    ARM_INS_VSWP = 397,
-    ARM_INS_VTBL = 398,
-    ARM_INS_VTBX = 399,
-    ARM_INS_VCVTR = 400,
-    ARM_INS_VTRN = 401,
-    ARM_INS_VTST = 402,
-    ARM_INS_VUZP = 403,
-    ARM_INS_VZIP = 404,
-    ARM_INS_ADDW = 405,
-    ARM_INS_ASR = 406,
-    ARM_INS_DCPS1 = 407,
-    ARM_INS_DCPS2 = 408,
-    ARM_INS_DCPS3 = 409,
-    ARM_INS_IT = 410,
-    ARM_INS_LSL = 411,
-    ARM_INS_LSR = 412,
-    ARM_INS_ASRS = 413,
-    ARM_INS_LSRS = 414,
-    ARM_INS_ORN = 415,
-    ARM_INS_ROR = 416,
-    ARM_INS_RRX = 417,
-    ARM_INS_SUBS = 418,
-    ARM_INS_SUBW = 419,
-    ARM_INS_TBB = 420,
-    ARM_INS_TBH = 421,
-    ARM_INS_CBNZ = 422,
-    ARM_INS_CBZ = 423,
-    ARM_INS_MOVS = 424,
-    ARM_INS_POP = 425,
-    ARM_INS_PUSH = 426,
-    ARM_INS_NOP = 427,
-    ARM_INS_YIELD = 428,
-    ARM_INS_WFE = 429,
-    ARM_INS_WFI = 430,
-    ARM_INS_SEV = 431,
-    ARM_INS_SEVL = 432,
-    ARM_INS_VPUSH = 433,
-    ARM_INS_VPOP = 434,
-    ARM_INS_ENDING = 435,
+pub mod arm_insn {
+    pub type Type = ::std::os::raw::c_uint;
+    pub const ARM_INS_INVALID: Type = 0;
+    pub const ARM_INS_ADC: Type = 1;
+    pub const ARM_INS_ADD: Type = 2;
+    pub const ARM_INS_ADR: Type = 3;
+    pub const ARM_INS_AESD: Type = 4;
+    pub const ARM_INS_AESE: Type = 5;
+    pub const ARM_INS_AESIMC: Type = 6;
+    pub const ARM_INS_AESMC: Type = 7;
+    pub const ARM_INS_AND: Type = 8;
+    pub const ARM_INS_BFC: Type = 9;
+    pub const ARM_INS_BFI: Type = 10;
+    pub const ARM_INS_BIC: Type = 11;
+    pub const ARM_INS_BKPT: Type = 12;
+    pub const ARM_INS_BL: Type = 13;
+    pub const ARM_INS_BLX: Type = 14;
+    pub const ARM_INS_BX: Type = 15;
+    pub const ARM_INS_BXJ: Type = 16;
+    pub const ARM_INS_B: Type = 17;
+    pub const ARM_INS_CDP: Type = 18;
+    pub const ARM_INS_CDP2: Type = 19;
+    pub const ARM_INS_CLREX: Type = 20;
+    pub const ARM_INS_CLZ: Type = 21;
+    pub const ARM_INS_CMN: Type = 22;
+    pub const ARM_INS_CMP: Type = 23;
+    pub const ARM_INS_CPS: Type = 24;
+    pub const ARM_INS_CRC32B: Type = 25;
+    pub const ARM_INS_CRC32CB: Type = 26;
+    pub const ARM_INS_CRC32CH: Type = 27;
+    pub const ARM_INS_CRC32CW: Type = 28;
+    pub const ARM_INS_CRC32H: Type = 29;
+    pub const ARM_INS_CRC32W: Type = 30;
+    pub const ARM_INS_DBG: Type = 31;
+    pub const ARM_INS_DMB: Type = 32;
+    pub const ARM_INS_DSB: Type = 33;
+    pub const ARM_INS_EOR: Type = 34;
+    pub const ARM_INS_VMOV: Type = 35;
+    pub const ARM_INS_FLDMDBX: Type = 36;
+    pub const ARM_INS_FLDMIAX: Type = 37;
+    pub const ARM_INS_VMRS: Type = 38;
+    pub const ARM_INS_FSTMDBX: Type = 39;
+    pub const ARM_INS_FSTMIAX: Type = 40;
+    pub const ARM_INS_HINT: Type = 41;
+    pub const ARM_INS_HLT: Type = 42;
+    pub const ARM_INS_ISB: Type = 43;
+    pub const ARM_INS_LDA: Type = 44;
+    pub const ARM_INS_LDAB: Type = 45;
+    pub const ARM_INS_LDAEX: Type = 46;
+    pub const ARM_INS_LDAEXB: Type = 47;
+    pub const ARM_INS_LDAEXD: Type = 48;
+    pub const ARM_INS_LDAEXH: Type = 49;
+    pub const ARM_INS_LDAH: Type = 50;
+    pub const ARM_INS_LDC2L: Type = 51;
+    pub const ARM_INS_LDC2: Type = 52;
+    pub const ARM_INS_LDCL: Type = 53;
+    pub const ARM_INS_LDC: Type = 54;
+    pub const ARM_INS_LDMDA: Type = 55;
+    pub const ARM_INS_LDMDB: Type = 56;
+    pub const ARM_INS_LDM: Type = 57;
+    pub const ARM_INS_LDMIB: Type = 58;
+    pub const ARM_INS_LDRBT: Type = 59;
+    pub const ARM_INS_LDRB: Type = 60;
+    pub const ARM_INS_LDRD: Type = 61;
+    pub const ARM_INS_LDREX: Type = 62;
+    pub const ARM_INS_LDREXB: Type = 63;
+    pub const ARM_INS_LDREXD: Type = 64;
+    pub const ARM_INS_LDREXH: Type = 65;
+    pub const ARM_INS_LDRH: Type = 66;
+    pub const ARM_INS_LDRHT: Type = 67;
+    pub const ARM_INS_LDRSB: Type = 68;
+    pub const ARM_INS_LDRSBT: Type = 69;
+    pub const ARM_INS_LDRSH: Type = 70;
+    pub const ARM_INS_LDRSHT: Type = 71;
+    pub const ARM_INS_LDRT: Type = 72;
+    pub const ARM_INS_LDR: Type = 73;
+    pub const ARM_INS_MCR: Type = 74;
+    pub const ARM_INS_MCR2: Type = 75;
+    pub const ARM_INS_MCRR: Type = 76;
+    pub const ARM_INS_MCRR2: Type = 77;
+    pub const ARM_INS_MLA: Type = 78;
+    pub const ARM_INS_MLS: Type = 79;
+    pub const ARM_INS_MOV: Type = 80;
+    pub const ARM_INS_MOVT: Type = 81;
+    pub const ARM_INS_MOVW: Type = 82;
+    pub const ARM_INS_MRC: Type = 83;
+    pub const ARM_INS_MRC2: Type = 84;
+    pub const ARM_INS_MRRC: Type = 85;
+    pub const ARM_INS_MRRC2: Type = 86;
+    pub const ARM_INS_MRS: Type = 87;
+    pub const ARM_INS_MSR: Type = 88;
+    pub const ARM_INS_MUL: Type = 89;
+    pub const ARM_INS_MVN: Type = 90;
+    pub const ARM_INS_ORR: Type = 91;
+    pub const ARM_INS_PKHBT: Type = 92;
+    pub const ARM_INS_PKHTB: Type = 93;
+    pub const ARM_INS_PLDW: Type = 94;
+    pub const ARM_INS_PLD: Type = 95;
+    pub const ARM_INS_PLI: Type = 96;
+    pub const ARM_INS_QADD: Type = 97;
+    pub const ARM_INS_QADD16: Type = 98;
+    pub const ARM_INS_QADD8: Type = 99;
+    pub const ARM_INS_QASX: Type = 100;
+    pub const ARM_INS_QDADD: Type = 101;
+    pub const ARM_INS_QDSUB: Type = 102;
+    pub const ARM_INS_QSAX: Type = 103;
+    pub const ARM_INS_QSUB: Type = 104;
+    pub const ARM_INS_QSUB16: Type = 105;
+    pub const ARM_INS_QSUB8: Type = 106;
+    pub const ARM_INS_RBIT: Type = 107;
+    pub const ARM_INS_REV: Type = 108;
+    pub const ARM_INS_REV16: Type = 109;
+    pub const ARM_INS_REVSH: Type = 110;
+    pub const ARM_INS_RFEDA: Type = 111;
+    pub const ARM_INS_RFEDB: Type = 112;
+    pub const ARM_INS_RFEIA: Type = 113;
+    pub const ARM_INS_RFEIB: Type = 114;
+    pub const ARM_INS_RSB: Type = 115;
+    pub const ARM_INS_RSC: Type = 116;
+    pub const ARM_INS_SADD16: Type = 117;
+    pub const ARM_INS_SADD8: Type = 118;
+    pub const ARM_INS_SASX: Type = 119;
+    pub const ARM_INS_SBC: Type = 120;
+    pub const ARM_INS_SBFX: Type = 121;
+    pub const ARM_INS_SDIV: Type = 122;
+    pub const ARM_INS_SEL: Type = 123;
+    pub const ARM_INS_SETEND: Type = 124;
+    pub const ARM_INS_SHA1C: Type = 125;
+    pub const ARM_INS_SHA1H: Type = 126;
+    pub const ARM_INS_SHA1M: Type = 127;
+    pub const ARM_INS_SHA1P: Type = 128;
+    pub const ARM_INS_SHA1SU0: Type = 129;
+    pub const ARM_INS_SHA1SU1: Type = 130;
+    pub const ARM_INS_SHA256H: Type = 131;
+    pub const ARM_INS_SHA256H2: Type = 132;
+    pub const ARM_INS_SHA256SU0: Type = 133;
+    pub const ARM_INS_SHA256SU1: Type = 134;
+    pub const ARM_INS_SHADD16: Type = 135;
+    pub const ARM_INS_SHADD8: Type = 136;
+    pub const ARM_INS_SHASX: Type = 137;
+    pub const ARM_INS_SHSAX: Type = 138;
+    pub const ARM_INS_SHSUB16: Type = 139;
+    pub const ARM_INS_SHSUB8: Type = 140;
+    pub const ARM_INS_SMC: Type = 141;
+    pub const ARM_INS_SMLABB: Type = 142;
+    pub const ARM_INS_SMLABT: Type = 143;
+    pub const ARM_INS_SMLAD: Type = 144;
+    pub const ARM_INS_SMLADX: Type = 145;
+    pub const ARM_INS_SMLAL: Type = 146;
+    pub const ARM_INS_SMLALBB: Type = 147;
+    pub const ARM_INS_SMLALBT: Type = 148;
+    pub const ARM_INS_SMLALD: Type = 149;
+    pub const ARM_INS_SMLALDX: Type = 150;
+    pub const ARM_INS_SMLALTB: Type = 151;
+    pub const ARM_INS_SMLALTT: Type = 152;
+    pub const ARM_INS_SMLATB: Type = 153;
+    pub const ARM_INS_SMLATT: Type = 154;
+    pub const ARM_INS_SMLAWB: Type = 155;
+    pub const ARM_INS_SMLAWT: Type = 156;
+    pub const ARM_INS_SMLSD: Type = 157;
+    pub const ARM_INS_SMLSDX: Type = 158;
+    pub const ARM_INS_SMLSLD: Type = 159;
+    pub const ARM_INS_SMLSLDX: Type = 160;
+    pub const ARM_INS_SMMLA: Type = 161;
+    pub const ARM_INS_SMMLAR: Type = 162;
+    pub const ARM_INS_SMMLS: Type = 163;
+    pub const ARM_INS_SMMLSR: Type = 164;
+    pub const ARM_INS_SMMUL: Type = 165;
+    pub const ARM_INS_SMMULR: Type = 166;
+    pub const ARM_INS_SMUAD: Type = 167;
+    pub const ARM_INS_SMUADX: Type = 168;
+    pub const ARM_INS_SMULBB: Type = 169;
+    pub const ARM_INS_SMULBT: Type = 170;
+    pub const ARM_INS_SMULL: Type = 171;
+    pub const ARM_INS_SMULTB: Type = 172;
+    pub const ARM_INS_SMULTT: Type = 173;
+    pub const ARM_INS_SMULWB: Type = 174;
+    pub const ARM_INS_SMULWT: Type = 175;
+    pub const ARM_INS_SMUSD: Type = 176;
+    pub const ARM_INS_SMUSDX: Type = 177;
+    pub const ARM_INS_SRSDA: Type = 178;
+    pub const ARM_INS_SRSDB: Type = 179;
+    pub const ARM_INS_SRSIA: Type = 180;
+    pub const ARM_INS_SRSIB: Type = 181;
+    pub const ARM_INS_SSAT: Type = 182;
+    pub const ARM_INS_SSAT16: Type = 183;
+    pub const ARM_INS_SSAX: Type = 184;
+    pub const ARM_INS_SSUB16: Type = 185;
+    pub const ARM_INS_SSUB8: Type = 186;
+    pub const ARM_INS_STC2L: Type = 187;
+    pub const ARM_INS_STC2: Type = 188;
+    pub const ARM_INS_STCL: Type = 189;
+    pub const ARM_INS_STC: Type = 190;
+    pub const ARM_INS_STL: Type = 191;
+    pub const ARM_INS_STLB: Type = 192;
+    pub const ARM_INS_STLEX: Type = 193;
+    pub const ARM_INS_STLEXB: Type = 194;
+    pub const ARM_INS_STLEXD: Type = 195;
+    pub const ARM_INS_STLEXH: Type = 196;
+    pub const ARM_INS_STLH: Type = 197;
+    pub const ARM_INS_STMDA: Type = 198;
+    pub const ARM_INS_STMDB: Type = 199;
+    pub const ARM_INS_STM: Type = 200;
+    pub const ARM_INS_STMIB: Type = 201;
+    pub const ARM_INS_STRBT: Type = 202;
+    pub const ARM_INS_STRB: Type = 203;
+    pub const ARM_INS_STRD: Type = 204;
+    pub const ARM_INS_STREX: Type = 205;
+    pub const ARM_INS_STREXB: Type = 206;
+    pub const ARM_INS_STREXD: Type = 207;
+    pub const ARM_INS_STREXH: Type = 208;
+    pub const ARM_INS_STRH: Type = 209;
+    pub const ARM_INS_STRHT: Type = 210;
+    pub const ARM_INS_STRT: Type = 211;
+    pub const ARM_INS_STR: Type = 212;
+    pub const ARM_INS_SUB: Type = 213;
+    pub const ARM_INS_SVC: Type = 214;
+    pub const ARM_INS_SWP: Type = 215;
+    pub const ARM_INS_SWPB: Type = 216;
+    pub const ARM_INS_SXTAB: Type = 217;
+    pub const ARM_INS_SXTAB16: Type = 218;
+    pub const ARM_INS_SXTAH: Type = 219;
+    pub const ARM_INS_SXTB: Type = 220;
+    pub const ARM_INS_SXTB16: Type = 221;
+    pub const ARM_INS_SXTH: Type = 222;
+    pub const ARM_INS_TEQ: Type = 223;
+    pub const ARM_INS_TRAP: Type = 224;
+    pub const ARM_INS_TST: Type = 225;
+    pub const ARM_INS_UADD16: Type = 226;
+    pub const ARM_INS_UADD8: Type = 227;
+    pub const ARM_INS_UASX: Type = 228;
+    pub const ARM_INS_UBFX: Type = 229;
+    pub const ARM_INS_UDF: Type = 230;
+    pub const ARM_INS_UDIV: Type = 231;
+    pub const ARM_INS_UHADD16: Type = 232;
+    pub const ARM_INS_UHADD8: Type = 233;
+    pub const ARM_INS_UHASX: Type = 234;
+    pub const ARM_INS_UHSAX: Type = 235;
+    pub const ARM_INS_UHSUB16: Type = 236;
+    pub const ARM_INS_UHSUB8: Type = 237;
+    pub const ARM_INS_UMAAL: Type = 238;
+    pub const ARM_INS_UMLAL: Type = 239;
+    pub const ARM_INS_UMULL: Type = 240;
+    pub const ARM_INS_UQADD16: Type = 241;
+    pub const ARM_INS_UQADD8: Type = 242;
+    pub const ARM_INS_UQASX: Type = 243;
+    pub const ARM_INS_UQSAX: Type = 244;
+    pub const ARM_INS_UQSUB16: Type = 245;
+    pub const ARM_INS_UQSUB8: Type = 246;
+    pub const ARM_INS_USAD8: Type = 247;
+    pub const ARM_INS_USADA8: Type = 248;
+    pub const ARM_INS_USAT: Type = 249;
+    pub const ARM_INS_USAT16: Type = 250;
+    pub const ARM_INS_USAX: Type = 251;
+    pub const ARM_INS_USUB16: Type = 252;
+    pub const ARM_INS_USUB8: Type = 253;
+    pub const ARM_INS_UXTAB: Type = 254;
+    pub const ARM_INS_UXTAB16: Type = 255;
+    pub const ARM_INS_UXTAH: Type = 256;
+    pub const ARM_INS_UXTB: Type = 257;
+    pub const ARM_INS_UXTB16: Type = 258;
+    pub const ARM_INS_UXTH: Type = 259;
+    pub const ARM_INS_VABAL: Type = 260;
+    pub const ARM_INS_VABA: Type = 261;
+    pub const ARM_INS_VABDL: Type = 262;
+    pub const ARM_INS_VABD: Type = 263;
+    pub const ARM_INS_VABS: Type = 264;
+    pub const ARM_INS_VACGE: Type = 265;
+    pub const ARM_INS_VACGT: Type = 266;
+    pub const ARM_INS_VADD: Type = 267;
+    pub const ARM_INS_VADDHN: Type = 268;
+    pub const ARM_INS_VADDL: Type = 269;
+    pub const ARM_INS_VADDW: Type = 270;
+    pub const ARM_INS_VAND: Type = 271;
+    pub const ARM_INS_VBIC: Type = 272;
+    pub const ARM_INS_VBIF: Type = 273;
+    pub const ARM_INS_VBIT: Type = 274;
+    pub const ARM_INS_VBSL: Type = 275;
+    pub const ARM_INS_VCEQ: Type = 276;
+    pub const ARM_INS_VCGE: Type = 277;
+    pub const ARM_INS_VCGT: Type = 278;
+    pub const ARM_INS_VCLE: Type = 279;
+    pub const ARM_INS_VCLS: Type = 280;
+    pub const ARM_INS_VCLT: Type = 281;
+    pub const ARM_INS_VCLZ: Type = 282;
+    pub const ARM_INS_VCMP: Type = 283;
+    pub const ARM_INS_VCMPE: Type = 284;
+    pub const ARM_INS_VCNT: Type = 285;
+    pub const ARM_INS_VCVTA: Type = 286;
+    pub const ARM_INS_VCVTB: Type = 287;
+    pub const ARM_INS_VCVT: Type = 288;
+    pub const ARM_INS_VCVTM: Type = 289;
+    pub const ARM_INS_VCVTN: Type = 290;
+    pub const ARM_INS_VCVTP: Type = 291;
+    pub const ARM_INS_VCVTT: Type = 292;
+    pub const ARM_INS_VDIV: Type = 293;
+    pub const ARM_INS_VDUP: Type = 294;
+    pub const ARM_INS_VEOR: Type = 295;
+    pub const ARM_INS_VEXT: Type = 296;
+    pub const ARM_INS_VFMA: Type = 297;
+    pub const ARM_INS_VFMS: Type = 298;
+    pub const ARM_INS_VFNMA: Type = 299;
+    pub const ARM_INS_VFNMS: Type = 300;
+    pub const ARM_INS_VHADD: Type = 301;
+    pub const ARM_INS_VHSUB: Type = 302;
+    pub const ARM_INS_VLD1: Type = 303;
+    pub const ARM_INS_VLD2: Type = 304;
+    pub const ARM_INS_VLD3: Type = 305;
+    pub const ARM_INS_VLD4: Type = 306;
+    pub const ARM_INS_VLDMDB: Type = 307;
+    pub const ARM_INS_VLDMIA: Type = 308;
+    pub const ARM_INS_VLDR: Type = 309;
+    pub const ARM_INS_VMAXNM: Type = 310;
+    pub const ARM_INS_VMAX: Type = 311;
+    pub const ARM_INS_VMINNM: Type = 312;
+    pub const ARM_INS_VMIN: Type = 313;
+    pub const ARM_INS_VMLA: Type = 314;
+    pub const ARM_INS_VMLAL: Type = 315;
+    pub const ARM_INS_VMLS: Type = 316;
+    pub const ARM_INS_VMLSL: Type = 317;
+    pub const ARM_INS_VMOVL: Type = 318;
+    pub const ARM_INS_VMOVN: Type = 319;
+    pub const ARM_INS_VMSR: Type = 320;
+    pub const ARM_INS_VMUL: Type = 321;
+    pub const ARM_INS_VMULL: Type = 322;
+    pub const ARM_INS_VMVN: Type = 323;
+    pub const ARM_INS_VNEG: Type = 324;
+    pub const ARM_INS_VNMLA: Type = 325;
+    pub const ARM_INS_VNMLS: Type = 326;
+    pub const ARM_INS_VNMUL: Type = 327;
+    pub const ARM_INS_VORN: Type = 328;
+    pub const ARM_INS_VORR: Type = 329;
+    pub const ARM_INS_VPADAL: Type = 330;
+    pub const ARM_INS_VPADDL: Type = 331;
+    pub const ARM_INS_VPADD: Type = 332;
+    pub const ARM_INS_VPMAX: Type = 333;
+    pub const ARM_INS_VPMIN: Type = 334;
+    pub const ARM_INS_VQABS: Type = 335;
+    pub const ARM_INS_VQADD: Type = 336;
+    pub const ARM_INS_VQDMLAL: Type = 337;
+    pub const ARM_INS_VQDMLSL: Type = 338;
+    pub const ARM_INS_VQDMULH: Type = 339;
+    pub const ARM_INS_VQDMULL: Type = 340;
+    pub const ARM_INS_VQMOVUN: Type = 341;
+    pub const ARM_INS_VQMOVN: Type = 342;
+    pub const ARM_INS_VQNEG: Type = 343;
+    pub const ARM_INS_VQRDMULH: Type = 344;
+    pub const ARM_INS_VQRSHL: Type = 345;
+    pub const ARM_INS_VQRSHRN: Type = 346;
+    pub const ARM_INS_VQRSHRUN: Type = 347;
+    pub const ARM_INS_VQSHL: Type = 348;
+    pub const ARM_INS_VQSHLU: Type = 349;
+    pub const ARM_INS_VQSHRN: Type = 350;
+    pub const ARM_INS_VQSHRUN: Type = 351;
+    pub const ARM_INS_VQSUB: Type = 352;
+    pub const ARM_INS_VRADDHN: Type = 353;
+    pub const ARM_INS_VRECPE: Type = 354;
+    pub const ARM_INS_VRECPS: Type = 355;
+    pub const ARM_INS_VREV16: Type = 356;
+    pub const ARM_INS_VREV32: Type = 357;
+    pub const ARM_INS_VREV64: Type = 358;
+    pub const ARM_INS_VRHADD: Type = 359;
+    pub const ARM_INS_VRINTA: Type = 360;
+    pub const ARM_INS_VRINTM: Type = 361;
+    pub const ARM_INS_VRINTN: Type = 362;
+    pub const ARM_INS_VRINTP: Type = 363;
+    pub const ARM_INS_VRINTR: Type = 364;
+    pub const ARM_INS_VRINTX: Type = 365;
+    pub const ARM_INS_VRINTZ: Type = 366;
+    pub const ARM_INS_VRSHL: Type = 367;
+    pub const ARM_INS_VRSHRN: Type = 368;
+    pub const ARM_INS_VRSHR: Type = 369;
+    pub const ARM_INS_VRSQRTE: Type = 370;
+    pub const ARM_INS_VRSQRTS: Type = 371;
+    pub const ARM_INS_VRSRA: Type = 372;
+    pub const ARM_INS_VRSUBHN: Type = 373;
+    pub const ARM_INS_VSELEQ: Type = 374;
+    pub const ARM_INS_VSELGE: Type = 375;
+    pub const ARM_INS_VSELGT: Type = 376;
+    pub const ARM_INS_VSELVS: Type = 377;
+    pub const ARM_INS_VSHLL: Type = 378;
+    pub const ARM_INS_VSHL: Type = 379;
+    pub const ARM_INS_VSHRN: Type = 380;
+    pub const ARM_INS_VSHR: Type = 381;
+    pub const ARM_INS_VSLI: Type = 382;
+    pub const ARM_INS_VSQRT: Type = 383;
+    pub const ARM_INS_VSRA: Type = 384;
+    pub const ARM_INS_VSRI: Type = 385;
+    pub const ARM_INS_VST1: Type = 386;
+    pub const ARM_INS_VST2: Type = 387;
+    pub const ARM_INS_VST3: Type = 388;
+    pub const ARM_INS_VST4: Type = 389;
+    pub const ARM_INS_VSTMDB: Type = 390;
+    pub const ARM_INS_VSTMIA: Type = 391;
+    pub const ARM_INS_VSTR: Type = 392;
+    pub const ARM_INS_VSUB: Type = 393;
+    pub const ARM_INS_VSUBHN: Type = 394;
+    pub const ARM_INS_VSUBL: Type = 395;
+    pub const ARM_INS_VSUBW: Type = 396;
+    pub const ARM_INS_VSWP: Type = 397;
+    pub const ARM_INS_VTBL: Type = 398;
+    pub const ARM_INS_VTBX: Type = 399;
+    pub const ARM_INS_VCVTR: Type = 400;
+    pub const ARM_INS_VTRN: Type = 401;
+    pub const ARM_INS_VTST: Type = 402;
+    pub const ARM_INS_VUZP: Type = 403;
+    pub const ARM_INS_VZIP: Type = 404;
+    pub const ARM_INS_ADDW: Type = 405;
+    pub const ARM_INS_ASR: Type = 406;
+    pub const ARM_INS_DCPS1: Type = 407;
+    pub const ARM_INS_DCPS2: Type = 408;
+    pub const ARM_INS_DCPS3: Type = 409;
+    pub const ARM_INS_IT: Type = 410;
+    pub const ARM_INS_LSL: Type = 411;
+    pub const ARM_INS_LSR: Type = 412;
+    pub const ARM_INS_ASRS: Type = 413;
+    pub const ARM_INS_LSRS: Type = 414;
+    pub const ARM_INS_ORN: Type = 415;
+    pub const ARM_INS_ROR: Type = 416;
+    pub const ARM_INS_RRX: Type = 417;
+    pub const ARM_INS_SUBS: Type = 418;
+    pub const ARM_INS_SUBW: Type = 419;
+    pub const ARM_INS_TBB: Type = 420;
+    pub const ARM_INS_TBH: Type = 421;
+    pub const ARM_INS_CBNZ: Type = 422;
+    pub const ARM_INS_CBZ: Type = 423;
+    pub const ARM_INS_MOVS: Type = 424;
+    pub const ARM_INS_POP: Type = 425;
+    pub const ARM_INS_PUSH: Type = 426;
+    pub const ARM_INS_NOP: Type = 427;
+    pub const ARM_INS_YIELD: Type = 428;
+    pub const ARM_INS_WFE: Type = 429;
+    pub const ARM_INS_WFI: Type = 430;
+    pub const ARM_INS_SEV: Type = 431;
+    pub const ARM_INS_SEVL: Type = 432;
+    pub const ARM_INS_VPUSH: Type = 433;
+    pub const ARM_INS_VPOP: Type = 434;
+    pub const ARM_INS_ENDING: Type = 435;
 }
-#[repr(u32)]
-#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
-pub enum arm_insn_group {
-    ARM_GRP_INVALID = 0,
-    ARM_GRP_JUMP = 1,
-    ARM_GRP_CRYPTO = 128,
-    ARM_GRP_DATABARRIER = 129,
-    ARM_GRP_DIVIDE = 130,
-    ARM_GRP_FPARMV8 = 131,
-    ARM_GRP_MULTPRO = 132,
-    ARM_GRP_NEON = 133,
-    ARM_GRP_T2EXTRACTPACK = 134,
-    ARM_GRP_THUMB2DSP = 135,
-    ARM_GRP_TRUSTZONE = 136,
-    ARM_GRP_V4T = 137,
-    ARM_GRP_V5T = 138,
-    ARM_GRP_V5TE = 139,
-    ARM_GRP_V6 = 140,
-    ARM_GRP_V6T2 = 141,
-    ARM_GRP_V7 = 142,
-    ARM_GRP_V8 = 143,
-    ARM_GRP_VFP2 = 144,
-    ARM_GRP_VFP3 = 145,
-    ARM_GRP_VFP4 = 146,
-    ARM_GRP_ARM = 147,
-    ARM_GRP_MCLASS = 148,
-    ARM_GRP_NOTMCLASS = 149,
-    ARM_GRP_THUMB = 150,
-    ARM_GRP_THUMB1ONLY = 151,
-    ARM_GRP_THUMB2 = 152,
-    ARM_GRP_PREV8 = 153,
-    ARM_GRP_FPVMLX = 154,
-    ARM_GRP_MULOPS = 155,
-    ARM_GRP_CRC = 156,
-    ARM_GRP_DPVFP = 157,
-    ARM_GRP_V6M = 158,
-    ARM_GRP_ENDING = 159,
+pub mod arm_insn_group {
+    pub type Type = ::std::os::raw::c_uint;
+    pub const ARM_GRP_INVALID: Type = 0;
+    pub const ARM_GRP_JUMP: Type = 1;
+    pub const ARM_GRP_CRYPTO: Type = 128;
+    pub const ARM_GRP_DATABARRIER: Type = 129;
+    pub const ARM_GRP_DIVIDE: Type = 130;
+    pub const ARM_GRP_FPARMV8: Type = 131;
+    pub const ARM_GRP_MULTPRO: Type = 132;
+    pub const ARM_GRP_NEON: Type = 133;
+    pub const ARM_GRP_T2EXTRACTPACK: Type = 134;
+    pub const ARM_GRP_THUMB2DSP: Type = 135;
+    pub const ARM_GRP_TRUSTZONE: Type = 136;
+    pub const ARM_GRP_V4T: Type = 137;
+    pub const ARM_GRP_V5T: Type = 138;
+    pub const ARM_GRP_V5TE: Type = 139;
+    pub const ARM_GRP_V6: Type = 140;
+    pub const ARM_GRP_V6T2: Type = 141;
+    pub const ARM_GRP_V7: Type = 142;
+    pub const ARM_GRP_V8: Type = 143;
+    pub const ARM_GRP_VFP2: Type = 144;
+    pub const ARM_GRP_VFP3: Type = 145;
+    pub const ARM_GRP_VFP4: Type = 146;
+    pub const ARM_GRP_ARM: Type = 147;
+    pub const ARM_GRP_MCLASS: Type = 148;
+    pub const ARM_GRP_NOTMCLASS: Type = 149;
+    pub const ARM_GRP_THUMB: Type = 150;
+    pub const ARM_GRP_THUMB1ONLY: Type = 151;
+    pub const ARM_GRP_THUMB2: Type = 152;
+    pub const ARM_GRP_PREV8: Type = 153;
+    pub const ARM_GRP_FPVMLX: Type = 154;
+    pub const ARM_GRP_MULOPS: Type = 155;
+    pub const ARM_GRP_CRC: Type = 156;
+    pub const ARM_GRP_DPVFP: Type = 157;
+    pub const ARM_GRP_V6M: Type = 158;
+    pub const ARM_GRP_ENDING: Type = 159;
 }
-#[repr(u32)]
-#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
-pub enum arm64_shifter {
-    ARM64_SFT_INVALID = 0,
-    ARM64_SFT_LSL = 1,
-    ARM64_SFT_MSL = 2,
-    ARM64_SFT_LSR = 3,
-    ARM64_SFT_ASR = 4,
-    ARM64_SFT_ROR = 5,
+pub mod arm64_shifter {
+    pub type Type = ::std::os::raw::c_uint;
+    pub const ARM64_SFT_INVALID: Type = 0;
+    pub const ARM64_SFT_LSL: Type = 1;
+    pub const ARM64_SFT_MSL: Type = 2;
+    pub const ARM64_SFT_LSR: Type = 3;
+    pub const ARM64_SFT_ASR: Type = 4;
+    pub const ARM64_SFT_ROR: Type = 5;
 }
-#[repr(u32)]
-#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
-pub enum arm64_extender {
-    ARM64_EXT_INVALID = 0,
-    ARM64_EXT_UXTB = 1,
-    ARM64_EXT_UXTH = 2,
-    ARM64_EXT_UXTW = 3,
-    ARM64_EXT_UXTX = 4,
-    ARM64_EXT_SXTB = 5,
-    ARM64_EXT_SXTH = 6,
-    ARM64_EXT_SXTW = 7,
-    ARM64_EXT_SXTX = 8,
+pub mod arm64_extender {
+    pub type Type = ::std::os::raw::c_uint;
+    pub const ARM64_EXT_INVALID: Type = 0;
+    pub const ARM64_EXT_UXTB: Type = 1;
+    pub const ARM64_EXT_UXTH: Type = 2;
+    pub const ARM64_EXT_UXTW: Type = 3;
+    pub const ARM64_EXT_UXTX: Type = 4;
+    pub const ARM64_EXT_SXTB: Type = 5;
+    pub const ARM64_EXT_SXTH: Type = 6;
+    pub const ARM64_EXT_SXTW: Type = 7;
+    pub const ARM64_EXT_SXTX: Type = 8;
 }
-#[repr(u32)]
-#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
-pub enum arm64_cc {
-    ARM64_CC_INVALID = 0,
-    ARM64_CC_EQ = 1,
-    ARM64_CC_NE = 2,
-    ARM64_CC_HS = 3,
-    ARM64_CC_LO = 4,
-    ARM64_CC_MI = 5,
-    ARM64_CC_PL = 6,
-    ARM64_CC_VS = 7,
-    ARM64_CC_VC = 8,
-    ARM64_CC_HI = 9,
-    ARM64_CC_LS = 10,
-    ARM64_CC_GE = 11,
-    ARM64_CC_LT = 12,
-    ARM64_CC_GT = 13,
-    ARM64_CC_LE = 14,
-    ARM64_CC_AL = 15,
-    ARM64_CC_NV = 16,
+pub mod arm64_cc {
+    pub type Type = ::std::os::raw::c_uint;
+    pub const ARM64_CC_INVALID: Type = 0;
+    pub const ARM64_CC_EQ: Type = 1;
+    pub const ARM64_CC_NE: Type = 2;
+    pub const ARM64_CC_HS: Type = 3;
+    pub const ARM64_CC_LO: Type = 4;
+    pub const ARM64_CC_MI: Type = 5;
+    pub const ARM64_CC_PL: Type = 6;
+    pub const ARM64_CC_VS: Type = 7;
+    pub const ARM64_CC_VC: Type = 8;
+    pub const ARM64_CC_HI: Type = 9;
+    pub const ARM64_CC_LS: Type = 10;
+    pub const ARM64_CC_GE: Type = 11;
+    pub const ARM64_CC_LT: Type = 12;
+    pub const ARM64_CC_GT: Type = 13;
+    pub const ARM64_CC_LE: Type = 14;
+    pub const ARM64_CC_AL: Type = 15;
+    pub const ARM64_CC_NV: Type = 16;
 }
-#[repr(u32)]
-#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
-pub enum arm64_sysreg {
-    ARM64_SYSREG_INVALID = 0,
-    ARM64_SYSREG_MDCCSR_EL0 = 38920,
-    ARM64_SYSREG_DBGDTRRX_EL0 = 38952,
-    ARM64_SYSREG_MDRAR_EL1 = 32896,
-    ARM64_SYSREG_OSLSR_EL1 = 32908,
-    ARM64_SYSREG_DBGAUTHSTATUS_EL1 = 33782,
-    ARM64_SYSREG_PMCEID0_EL0 = 56550,
-    ARM64_SYSREG_PMCEID1_EL0 = 56551,
-    ARM64_SYSREG_MIDR_EL1 = 49152,
-    ARM64_SYSREG_CCSIDR_EL1 = 51200,
-    ARM64_SYSREG_CLIDR_EL1 = 51201,
-    ARM64_SYSREG_CTR_EL0 = 55297,
-    ARM64_SYSREG_MPIDR_EL1 = 49157,
-    ARM64_SYSREG_REVIDR_EL1 = 49158,
-    ARM64_SYSREG_AIDR_EL1 = 51207,
-    ARM64_SYSREG_DCZID_EL0 = 55303,
-    ARM64_SYSREG_ID_PFR0_EL1 = 49160,
-    ARM64_SYSREG_ID_PFR1_EL1 = 49161,
-    ARM64_SYSREG_ID_DFR0_EL1 = 49162,
-    ARM64_SYSREG_ID_AFR0_EL1 = 49163,
-    ARM64_SYSREG_ID_MMFR0_EL1 = 49164,
-    ARM64_SYSREG_ID_MMFR1_EL1 = 49165,
-    ARM64_SYSREG_ID_MMFR2_EL1 = 49166,
-    ARM64_SYSREG_ID_MMFR3_EL1 = 49167,
-    ARM64_SYSREG_ID_ISAR0_EL1 = 49168,
-    ARM64_SYSREG_ID_ISAR1_EL1 = 49169,
-    ARM64_SYSREG_ID_ISAR2_EL1 = 49170,
-    ARM64_SYSREG_ID_ISAR3_EL1 = 49171,
-    ARM64_SYSREG_ID_ISAR4_EL1 = 49172,
-    ARM64_SYSREG_ID_ISAR5_EL1 = 49173,
-    ARM64_SYSREG_ID_A64PFR0_EL1 = 49184,
-    ARM64_SYSREG_ID_A64PFR1_EL1 = 49185,
-    ARM64_SYSREG_ID_A64DFR0_EL1 = 49192,
-    ARM64_SYSREG_ID_A64DFR1_EL1 = 49193,
-    ARM64_SYSREG_ID_A64AFR0_EL1 = 49196,
-    ARM64_SYSREG_ID_A64AFR1_EL1 = 49197,
-    ARM64_SYSREG_ID_A64ISAR0_EL1 = 49200,
-    ARM64_SYSREG_ID_A64ISAR1_EL1 = 49201,
-    ARM64_SYSREG_ID_A64MMFR0_EL1 = 49208,
-    ARM64_SYSREG_ID_A64MMFR1_EL1 = 49209,
-    ARM64_SYSREG_MVFR0_EL1 = 49176,
-    ARM64_SYSREG_MVFR1_EL1 = 49177,
-    ARM64_SYSREG_MVFR2_EL1 = 49178,
-    ARM64_SYSREG_RVBAR_EL1 = 50689,
-    ARM64_SYSREG_RVBAR_EL2 = 58881,
-    ARM64_SYSREG_RVBAR_EL3 = 62977,
-    ARM64_SYSREG_ISR_EL1 = 50696,
-    ARM64_SYSREG_CNTPCT_EL0 = 57089,
-    ARM64_SYSREG_CNTVCT_EL0 = 57090,
-    ARM64_SYSREG_TRCSTATR = 34840,
-    ARM64_SYSREG_TRCIDR8 = 34822,
-    ARM64_SYSREG_TRCIDR9 = 34830,
-    ARM64_SYSREG_TRCIDR10 = 34838,
-    ARM64_SYSREG_TRCIDR11 = 34846,
-    ARM64_SYSREG_TRCIDR12 = 34854,
-    ARM64_SYSREG_TRCIDR13 = 34862,
-    ARM64_SYSREG_TRCIDR0 = 34887,
-    ARM64_SYSREG_TRCIDR1 = 34895,
-    ARM64_SYSREG_TRCIDR2 = 34903,
-    ARM64_SYSREG_TRCIDR3 = 34911,
-    ARM64_SYSREG_TRCIDR4 = 34919,
-    ARM64_SYSREG_TRCIDR5 = 34927,
-    ARM64_SYSREG_TRCIDR6 = 34935,
-    ARM64_SYSREG_TRCIDR7 = 34943,
-    ARM64_SYSREG_TRCOSLSR = 34956,
-    ARM64_SYSREG_TRCPDSR = 34988,
-    ARM64_SYSREG_TRCDEVAFF0 = 35798,
-    ARM64_SYSREG_TRCDEVAFF1 = 35806,
-    ARM64_SYSREG_TRCLSR = 35822,
-    ARM64_SYSREG_TRCAUTHSTATUS = 35830,
-    ARM64_SYSREG_TRCDEVARCH = 35838,
-    ARM64_SYSREG_TRCDEVID = 35735,
-    ARM64_SYSREG_TRCDEVTYPE = 35743,
-    ARM64_SYSREG_TRCPIDR4 = 35751,
-    ARM64_SYSREG_TRCPIDR5 = 35759,
-    ARM64_SYSREG_TRCPIDR6 = 35767,
-    ARM64_SYSREG_TRCPIDR7 = 35775,
-    ARM64_SYSREG_TRCPIDR0 = 35783,
-    ARM64_SYSREG_TRCPIDR1 = 35791,
-    ARM64_SYSREG_TRCPIDR2 = 35799,
-    ARM64_SYSREG_TRCPIDR3 = 35807,
-    ARM64_SYSREG_TRCCIDR0 = 35815,
-    ARM64_SYSREG_TRCCIDR1 = 35823,
-    ARM64_SYSREG_TRCCIDR2 = 35831,
-    ARM64_SYSREG_TRCCIDR3 = 35839,
-    ARM64_SYSREG_ICC_IAR1_EL1 = 50784,
-    ARM64_SYSREG_ICC_IAR0_EL1 = 50752,
-    ARM64_SYSREG_ICC_HPPIR1_EL1 = 50786,
-    ARM64_SYSREG_ICC_HPPIR0_EL1 = 50754,
-    ARM64_SYSREG_ICC_RPR_EL1 = 50779,
-    ARM64_SYSREG_ICH_VTR_EL2 = 58969,
-    ARM64_SYSREG_ICH_EISR_EL2 = 58971,
-    ARM64_SYSREG_ICH_ELSR_EL2 = 58973,
+pub mod arm64_sysreg {
+    pub type Type = ::std::os::raw::c_uint;
+    pub const ARM64_SYSREG_INVALID: Type = 0;
+    pub const ARM64_SYSREG_MDCCSR_EL0: Type = 38920;
+    pub const ARM64_SYSREG_DBGDTRRX_EL0: Type = 38952;
+    pub const ARM64_SYSREG_MDRAR_EL1: Type = 32896;
+    pub const ARM64_SYSREG_OSLSR_EL1: Type = 32908;
+    pub const ARM64_SYSREG_DBGAUTHSTATUS_EL1: Type = 33782;
+    pub const ARM64_SYSREG_PMCEID0_EL0: Type = 56550;
+    pub const ARM64_SYSREG_PMCEID1_EL0: Type = 56551;
+    pub const ARM64_SYSREG_MIDR_EL1: Type = 49152;
+    pub const ARM64_SYSREG_CCSIDR_EL1: Type = 51200;
+    pub const ARM64_SYSREG_CLIDR_EL1: Type = 51201;
+    pub const ARM64_SYSREG_CTR_EL0: Type = 55297;
+    pub const ARM64_SYSREG_MPIDR_EL1: Type = 49157;
+    pub const ARM64_SYSREG_REVIDR_EL1: Type = 49158;
+    pub const ARM64_SYSREG_AIDR_EL1: Type = 51207;
+    pub const ARM64_SYSREG_DCZID_EL0: Type = 55303;
+    pub const ARM64_SYSREG_ID_PFR0_EL1: Type = 49160;
+    pub const ARM64_SYSREG_ID_PFR1_EL1: Type = 49161;
+    pub const ARM64_SYSREG_ID_DFR0_EL1: Type = 49162;
+    pub const ARM64_SYSREG_ID_AFR0_EL1: Type = 49163;
+    pub const ARM64_SYSREG_ID_MMFR0_EL1: Type = 49164;
+    pub const ARM64_SYSREG_ID_MMFR1_EL1: Type = 49165;
+    pub const ARM64_SYSREG_ID_MMFR2_EL1: Type = 49166;
+    pub const ARM64_SYSREG_ID_MMFR3_EL1: Type = 49167;
+    pub const ARM64_SYSREG_ID_ISAR0_EL1: Type = 49168;
+    pub const ARM64_SYSREG_ID_ISAR1_EL1: Type = 49169;
+    pub const ARM64_SYSREG_ID_ISAR2_EL1: Type = 49170;
+    pub const ARM64_SYSREG_ID_ISAR3_EL1: Type = 49171;
+    pub const ARM64_SYSREG_ID_ISAR4_EL1: Type = 49172;
+    pub const ARM64_SYSREG_ID_ISAR5_EL1: Type = 49173;
+    pub const ARM64_SYSREG_ID_A64PFR0_EL1: Type = 49184;
+    pub const ARM64_SYSREG_ID_A64PFR1_EL1: Type = 49185;
+    pub const ARM64_SYSREG_ID_A64DFR0_EL1: Type = 49192;
+    pub const ARM64_SYSREG_ID_A64DFR1_EL1: Type = 49193;
+    pub const ARM64_SYSREG_ID_A64AFR0_EL1: Type = 49196;
+    pub const ARM64_SYSREG_ID_A64AFR1_EL1: Type = 49197;
+    pub const ARM64_SYSREG_ID_A64ISAR0_EL1: Type = 49200;
+    pub const ARM64_SYSREG_ID_A64ISAR1_EL1: Type = 49201;
+    pub const ARM64_SYSREG_ID_A64MMFR0_EL1: Type = 49208;
+    pub const ARM64_SYSREG_ID_A64MMFR1_EL1: Type = 49209;
+    pub const ARM64_SYSREG_MVFR0_EL1: Type = 49176;
+    pub const ARM64_SYSREG_MVFR1_EL1: Type = 49177;
+    pub const ARM64_SYSREG_MVFR2_EL1: Type = 49178;
+    pub const ARM64_SYSREG_RVBAR_EL1: Type = 50689;
+    pub const ARM64_SYSREG_RVBAR_EL2: Type = 58881;
+    pub const ARM64_SYSREG_RVBAR_EL3: Type = 62977;
+    pub const ARM64_SYSREG_ISR_EL1: Type = 50696;
+    pub const ARM64_SYSREG_CNTPCT_EL0: Type = 57089;
+    pub const ARM64_SYSREG_CNTVCT_EL0: Type = 57090;
+    pub const ARM64_SYSREG_TRCSTATR: Type = 34840;
+    pub const ARM64_SYSREG_TRCIDR8: Type = 34822;
+    pub const ARM64_SYSREG_TRCIDR9: Type = 34830;
+    pub const ARM64_SYSREG_TRCIDR10: Type = 34838;
+    pub const ARM64_SYSREG_TRCIDR11: Type = 34846;
+    pub const ARM64_SYSREG_TRCIDR12: Type = 34854;
+    pub const ARM64_SYSREG_TRCIDR13: Type = 34862;
+    pub const ARM64_SYSREG_TRCIDR0: Type = 34887;
+    pub const ARM64_SYSREG_TRCIDR1: Type = 34895;
+    pub const ARM64_SYSREG_TRCIDR2: Type = 34903;
+    pub const ARM64_SYSREG_TRCIDR3: Type = 34911;
+    pub const ARM64_SYSREG_TRCIDR4: Type = 34919;
+    pub const ARM64_SYSREG_TRCIDR5: Type = 34927;
+    pub const ARM64_SYSREG_TRCIDR6: Type = 34935;
+    pub const ARM64_SYSREG_TRCIDR7: Type = 34943;
+    pub const ARM64_SYSREG_TRCOSLSR: Type = 34956;
+    pub const ARM64_SYSREG_TRCPDSR: Type = 34988;
+    pub const ARM64_SYSREG_TRCDEVAFF0: Type = 35798;
+    pub const ARM64_SYSREG_TRCDEVAFF1: Type = 35806;
+    pub const ARM64_SYSREG_TRCLSR: Type = 35822;
+    pub const ARM64_SYSREG_TRCAUTHSTATUS: Type = 35830;
+    pub const ARM64_SYSREG_TRCDEVARCH: Type = 35838;
+    pub const ARM64_SYSREG_TRCDEVID: Type = 35735;
+    pub const ARM64_SYSREG_TRCDEVTYPE: Type = 35743;
+    pub const ARM64_SYSREG_TRCPIDR4: Type = 35751;
+    pub const ARM64_SYSREG_TRCPIDR5: Type = 35759;
+    pub const ARM64_SYSREG_TRCPIDR6: Type = 35767;
+    pub const ARM64_SYSREG_TRCPIDR7: Type = 35775;
+    pub const ARM64_SYSREG_TRCPIDR0: Type = 35783;
+    pub const ARM64_SYSREG_TRCPIDR1: Type = 35791;
+    pub const ARM64_SYSREG_TRCPIDR2: Type = 35799;
+    pub const ARM64_SYSREG_TRCPIDR3: Type = 35807;
+    pub const ARM64_SYSREG_TRCCIDR0: Type = 35815;
+    pub const ARM64_SYSREG_TRCCIDR1: Type = 35823;
+    pub const ARM64_SYSREG_TRCCIDR2: Type = 35831;
+    pub const ARM64_SYSREG_TRCCIDR3: Type = 35839;
+    pub const ARM64_SYSREG_ICC_IAR1_EL1: Type = 50784;
+    pub const ARM64_SYSREG_ICC_IAR0_EL1: Type = 50752;
+    pub const ARM64_SYSREG_ICC_HPPIR1_EL1: Type = 50786;
+    pub const ARM64_SYSREG_ICC_HPPIR0_EL1: Type = 50754;
+    pub const ARM64_SYSREG_ICC_RPR_EL1: Type = 50779;
+    pub const ARM64_SYSREG_ICH_VTR_EL2: Type = 58969;
+    pub const ARM64_SYSREG_ICH_EISR_EL2: Type = 58971;
+    pub const ARM64_SYSREG_ICH_ELSR_EL2: Type = 58973;
 }
-#[repr(u32)]
-#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
-pub enum arm64_msr_reg {
-    ARM64_SYSREG_DBGDTRTX_EL0 = 38952,
-    ARM64_SYSREG_OSLAR_EL1 = 32900,
-    ARM64_SYSREG_PMSWINC_EL0 = 56548,
-    ARM64_SYSREG_TRCOSLAR = 34948,
-    ARM64_SYSREG_TRCLAR = 35814,
-    ARM64_SYSREG_ICC_EOIR1_EL1 = 50785,
-    ARM64_SYSREG_ICC_EOIR0_EL1 = 50753,
-    ARM64_SYSREG_ICC_DIR_EL1 = 50777,
-    ARM64_SYSREG_ICC_SGI1R_EL1 = 50781,
-    ARM64_SYSREG_ICC_ASGI1R_EL1 = 50782,
-    ARM64_SYSREG_ICC_SGI0R_EL1 = 50783,
+pub mod arm64_msr_reg {
+    pub type Type = ::std::os::raw::c_uint;
+    pub const ARM64_SYSREG_DBGDTRTX_EL0: Type = 38952;
+    pub const ARM64_SYSREG_OSLAR_EL1: Type = 32900;
+    pub const ARM64_SYSREG_PMSWINC_EL0: Type = 56548;
+    pub const ARM64_SYSREG_TRCOSLAR: Type = 34948;
+    pub const ARM64_SYSREG_TRCLAR: Type = 35814;
+    pub const ARM64_SYSREG_ICC_EOIR1_EL1: Type = 50785;
+    pub const ARM64_SYSREG_ICC_EOIR0_EL1: Type = 50753;
+    pub const ARM64_SYSREG_ICC_DIR_EL1: Type = 50777;
+    pub const ARM64_SYSREG_ICC_SGI1R_EL1: Type = 50781;
+    pub const ARM64_SYSREG_ICC_ASGI1R_EL1: Type = 50782;
+    pub const ARM64_SYSREG_ICC_SGI0R_EL1: Type = 50783;
 }
-#[repr(u32)]
-#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
-pub enum arm64_pstate {
-    ARM64_PSTATE_INVALID = 0,
-    ARM64_PSTATE_SPSEL = 5,
-    ARM64_PSTATE_DAIFSET = 30,
-    ARM64_PSTATE_DAIFCLR = 31,
+pub mod arm64_pstate {
+    pub type Type = ::std::os::raw::c_uint;
+    pub const ARM64_PSTATE_INVALID: Type = 0;
+    pub const ARM64_PSTATE_SPSEL: Type = 5;
+    pub const ARM64_PSTATE_DAIFSET: Type = 30;
+    pub const ARM64_PSTATE_DAIFCLR: Type = 31;
 }
-#[repr(u32)]
-#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
-pub enum arm64_vas {
-    ARM64_VAS_INVALID = 0,
-    ARM64_VAS_8B = 1,
-    ARM64_VAS_16B = 2,
-    ARM64_VAS_4H = 3,
-    ARM64_VAS_8H = 4,
-    ARM64_VAS_2S = 5,
-    ARM64_VAS_4S = 6,
-    ARM64_VAS_1D = 7,
-    ARM64_VAS_2D = 8,
-    ARM64_VAS_1Q = 9,
+pub mod arm64_vas {
+    pub type Type = ::std::os::raw::c_uint;
+    pub const ARM64_VAS_INVALID: Type = 0;
+    pub const ARM64_VAS_8B: Type = 1;
+    pub const ARM64_VAS_16B: Type = 2;
+    pub const ARM64_VAS_4H: Type = 3;
+    pub const ARM64_VAS_8H: Type = 4;
+    pub const ARM64_VAS_2S: Type = 5;
+    pub const ARM64_VAS_4S: Type = 6;
+    pub const ARM64_VAS_1D: Type = 7;
+    pub const ARM64_VAS_2D: Type = 8;
+    pub const ARM64_VAS_1Q: Type = 9;
 }
-#[repr(u32)]
-#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
-pub enum arm64_vess {
-    ARM64_VESS_INVALID = 0,
-    ARM64_VESS_B = 1,
-    ARM64_VESS_H = 2,
-    ARM64_VESS_S = 3,
-    ARM64_VESS_D = 4,
+pub mod arm64_vess {
+    pub type Type = ::std::os::raw::c_uint;
+    pub const ARM64_VESS_INVALID: Type = 0;
+    pub const ARM64_VESS_B: Type = 1;
+    pub const ARM64_VESS_H: Type = 2;
+    pub const ARM64_VESS_S: Type = 3;
+    pub const ARM64_VESS_D: Type = 4;
 }
-#[repr(u32)]
-#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
-pub enum arm64_barrier_op {
-    ARM64_BARRIER_INVALID = 0,
-    ARM64_BARRIER_OSHLD = 1,
-    ARM64_BARRIER_OSHST = 2,
-    ARM64_BARRIER_OSH = 3,
-    ARM64_BARRIER_NSHLD = 5,
-    ARM64_BARRIER_NSHST = 6,
-    ARM64_BARRIER_NSH = 7,
-    ARM64_BARRIER_ISHLD = 9,
-    ARM64_BARRIER_ISHST = 10,
-    ARM64_BARRIER_ISH = 11,
-    ARM64_BARRIER_LD = 13,
-    ARM64_BARRIER_ST = 14,
-    ARM64_BARRIER_SY = 15,
+pub mod arm64_barrier_op {
+    pub type Type = ::std::os::raw::c_uint;
+    pub const ARM64_BARRIER_INVALID: Type = 0;
+    pub const ARM64_BARRIER_OSHLD: Type = 1;
+    pub const ARM64_BARRIER_OSHST: Type = 2;
+    pub const ARM64_BARRIER_OSH: Type = 3;
+    pub const ARM64_BARRIER_NSHLD: Type = 5;
+    pub const ARM64_BARRIER_NSHST: Type = 6;
+    pub const ARM64_BARRIER_NSH: Type = 7;
+    pub const ARM64_BARRIER_ISHLD: Type = 9;
+    pub const ARM64_BARRIER_ISHST: Type = 10;
+    pub const ARM64_BARRIER_ISH: Type = 11;
+    pub const ARM64_BARRIER_LD: Type = 13;
+    pub const ARM64_BARRIER_ST: Type = 14;
+    pub const ARM64_BARRIER_SY: Type = 15;
 }
-#[repr(u32)]
-#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
-pub enum arm64_op_type {
-    ARM64_OP_INVALID = 0,
-    ARM64_OP_REG = 1,
-    ARM64_OP_IMM = 2,
-    ARM64_OP_MEM = 3,
-    ARM64_OP_FP = 4,
-    ARM64_OP_CIMM = 64,
-    ARM64_OP_REG_MRS = 65,
-    ARM64_OP_REG_MSR = 66,
-    ARM64_OP_PSTATE = 67,
-    ARM64_OP_SYS = 68,
-    ARM64_OP_PREFETCH = 69,
-    ARM64_OP_BARRIER = 70,
+pub mod arm64_op_type {
+    pub type Type = ::std::os::raw::c_uint;
+    pub const ARM64_OP_INVALID: Type = 0;
+    pub const ARM64_OP_REG: Type = 1;
+    pub const ARM64_OP_IMM: Type = 2;
+    pub const ARM64_OP_MEM: Type = 3;
+    pub const ARM64_OP_FP: Type = 4;
+    pub const ARM64_OP_CIMM: Type = 64;
+    pub const ARM64_OP_REG_MRS: Type = 65;
+    pub const ARM64_OP_REG_MSR: Type = 66;
+    pub const ARM64_OP_PSTATE: Type = 67;
+    pub const ARM64_OP_SYS: Type = 68;
+    pub const ARM64_OP_PREFETCH: Type = 69;
+    pub const ARM64_OP_BARRIER: Type = 70;
 }
-#[repr(u32)]
-#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
-pub enum arm64_tlbi_op {
-    ARM64_TLBI_INVALID = 0,
-    ARM64_TLBI_VMALLE1IS = 1,
-    ARM64_TLBI_VAE1IS = 2,
-    ARM64_TLBI_ASIDE1IS = 3,
-    ARM64_TLBI_VAAE1IS = 4,
-    ARM64_TLBI_VALE1IS = 5,
-    ARM64_TLBI_VAALE1IS = 6,
-    ARM64_TLBI_ALLE2IS = 7,
-    ARM64_TLBI_VAE2IS = 8,
-    ARM64_TLBI_ALLE1IS = 9,
-    ARM64_TLBI_VALE2IS = 10,
-    ARM64_TLBI_VMALLS12E1IS = 11,
-    ARM64_TLBI_ALLE3IS = 12,
-    ARM64_TLBI_VAE3IS = 13,
-    ARM64_TLBI_VALE3IS = 14,
-    ARM64_TLBI_IPAS2E1IS = 15,
-    ARM64_TLBI_IPAS2LE1IS = 16,
-    ARM64_TLBI_IPAS2E1 = 17,
-    ARM64_TLBI_IPAS2LE1 = 18,
-    ARM64_TLBI_VMALLE1 = 19,
-    ARM64_TLBI_VAE1 = 20,
-    ARM64_TLBI_ASIDE1 = 21,
-    ARM64_TLBI_VAAE1 = 22,
-    ARM64_TLBI_VALE1 = 23,
-    ARM64_TLBI_VAALE1 = 24,
-    ARM64_TLBI_ALLE2 = 25,
-    ARM64_TLBI_VAE2 = 26,
-    ARM64_TLBI_ALLE1 = 27,
-    ARM64_TLBI_VALE2 = 28,
-    ARM64_TLBI_VMALLS12E1 = 29,
-    ARM64_TLBI_ALLE3 = 30,
-    ARM64_TLBI_VAE3 = 31,
-    ARM64_TLBI_VALE3 = 32,
+pub mod arm64_tlbi_op {
+    pub type Type = ::std::os::raw::c_uint;
+    pub const ARM64_TLBI_INVALID: Type = 0;
+    pub const ARM64_TLBI_VMALLE1IS: Type = 1;
+    pub const ARM64_TLBI_VAE1IS: Type = 2;
+    pub const ARM64_TLBI_ASIDE1IS: Type = 3;
+    pub const ARM64_TLBI_VAAE1IS: Type = 4;
+    pub const ARM64_TLBI_VALE1IS: Type = 5;
+    pub const ARM64_TLBI_VAALE1IS: Type = 6;
+    pub const ARM64_TLBI_ALLE2IS: Type = 7;
+    pub const ARM64_TLBI_VAE2IS: Type = 8;
+    pub const ARM64_TLBI_ALLE1IS: Type = 9;
+    pub const ARM64_TLBI_VALE2IS: Type = 10;
+    pub const ARM64_TLBI_VMALLS12E1IS: Type = 11;
+    pub const ARM64_TLBI_ALLE3IS: Type = 12;
+    pub const ARM64_TLBI_VAE3IS: Type = 13;
+    pub const ARM64_TLBI_VALE3IS: Type = 14;
+    pub const ARM64_TLBI_IPAS2E1IS: Type = 15;
+    pub const ARM64_TLBI_IPAS2LE1IS: Type = 16;
+    pub const ARM64_TLBI_IPAS2E1: Type = 17;
+    pub const ARM64_TLBI_IPAS2LE1: Type = 18;
+    pub const ARM64_TLBI_VMALLE1: Type = 19;
+    pub const ARM64_TLBI_VAE1: Type = 20;
+    pub const ARM64_TLBI_ASIDE1: Type = 21;
+    pub const ARM64_TLBI_VAAE1: Type = 22;
+    pub const ARM64_TLBI_VALE1: Type = 23;
+    pub const ARM64_TLBI_VAALE1: Type = 24;
+    pub const ARM64_TLBI_ALLE2: Type = 25;
+    pub const ARM64_TLBI_VAE2: Type = 26;
+    pub const ARM64_TLBI_ALLE1: Type = 27;
+    pub const ARM64_TLBI_VALE2: Type = 28;
+    pub const ARM64_TLBI_VMALLS12E1: Type = 29;
+    pub const ARM64_TLBI_ALLE3: Type = 30;
+    pub const ARM64_TLBI_VAE3: Type = 31;
+    pub const ARM64_TLBI_VALE3: Type = 32;
 }
-#[repr(u32)]
-#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
-pub enum arm64_at_op {
-    ARM64_AT_S1E1R = 0,
-    ARM64_AT_S1E1W = 1,
-    ARM64_AT_S1E0R = 2,
-    ARM64_AT_S1E0W = 3,
-    ARM64_AT_S1E2R = 4,
-    ARM64_AT_S1E2W = 5,
-    ARM64_AT_S12E1R = 6,
-    ARM64_AT_S12E1W = 7,
-    ARM64_AT_S12E0R = 8,
-    ARM64_AT_S12E0W = 9,
-    ARM64_AT_S1E3R = 10,
-    ARM64_AT_S1E3W = 11,
+pub mod arm64_at_op {
+    pub type Type = ::std::os::raw::c_uint;
+    pub const ARM64_AT_S1E1R: Type = 0;
+    pub const ARM64_AT_S1E1W: Type = 1;
+    pub const ARM64_AT_S1E0R: Type = 2;
+    pub const ARM64_AT_S1E0W: Type = 3;
+    pub const ARM64_AT_S1E2R: Type = 4;
+    pub const ARM64_AT_S1E2W: Type = 5;
+    pub const ARM64_AT_S12E1R: Type = 6;
+    pub const ARM64_AT_S12E1W: Type = 7;
+    pub const ARM64_AT_S12E0R: Type = 8;
+    pub const ARM64_AT_S12E0W: Type = 9;
+    pub const ARM64_AT_S1E3R: Type = 10;
+    pub const ARM64_AT_S1E3W: Type = 11;
 }
-#[repr(u32)]
-#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
-pub enum arm64_dc_op {
-    ARM64_DC_INVALID = 0,
-    ARM64_DC_ZVA = 1,
-    ARM64_DC_IVAC = 2,
-    ARM64_DC_ISW = 3,
-    ARM64_DC_CVAC = 4,
-    ARM64_DC_CSW = 5,
-    ARM64_DC_CVAU = 6,
-    ARM64_DC_CIVAC = 7,
-    ARM64_DC_CISW = 8,
+pub mod arm64_dc_op {
+    pub type Type = ::std::os::raw::c_uint;
+    pub const ARM64_DC_INVALID: Type = 0;
+    pub const ARM64_DC_ZVA: Type = 1;
+    pub const ARM64_DC_IVAC: Type = 2;
+    pub const ARM64_DC_ISW: Type = 3;
+    pub const ARM64_DC_CVAC: Type = 4;
+    pub const ARM64_DC_CSW: Type = 5;
+    pub const ARM64_DC_CVAU: Type = 6;
+    pub const ARM64_DC_CIVAC: Type = 7;
+    pub const ARM64_DC_CISW: Type = 8;
 }
-#[repr(u32)]
-#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
-pub enum arm64_ic_op {
-    ARM64_IC_INVALID = 0,
-    ARM64_IC_IALLUIS = 1,
-    ARM64_IC_IALLU = 2,
-    ARM64_IC_IVAU = 3,
+pub mod arm64_ic_op {
+    pub type Type = ::std::os::raw::c_uint;
+    pub const ARM64_IC_INVALID: Type = 0;
+    pub const ARM64_IC_IALLUIS: Type = 1;
+    pub const ARM64_IC_IALLU: Type = 2;
+    pub const ARM64_IC_IVAU: Type = 3;
 }
-#[repr(u32)]
-#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
-pub enum arm64_prefetch_op {
-    ARM64_PRFM_INVALID = 0,
-    ARM64_PRFM_PLDL1KEEP = 1,
-    ARM64_PRFM_PLDL1STRM = 2,
-    ARM64_PRFM_PLDL2KEEP = 3,
-    ARM64_PRFM_PLDL2STRM = 4,
-    ARM64_PRFM_PLDL3KEEP = 5,
-    ARM64_PRFM_PLDL3STRM = 6,
-    ARM64_PRFM_PLIL1KEEP = 9,
-    ARM64_PRFM_PLIL1STRM = 10,
-    ARM64_PRFM_PLIL2KEEP = 11,
-    ARM64_PRFM_PLIL2STRM = 12,
-    ARM64_PRFM_PLIL3KEEP = 13,
-    ARM64_PRFM_PLIL3STRM = 14,
-    ARM64_PRFM_PSTL1KEEP = 17,
-    ARM64_PRFM_PSTL1STRM = 18,
-    ARM64_PRFM_PSTL2KEEP = 19,
-    ARM64_PRFM_PSTL2STRM = 20,
-    ARM64_PRFM_PSTL3KEEP = 21,
-    ARM64_PRFM_PSTL3STRM = 22,
+pub mod arm64_prefetch_op {
+    pub type Type = ::std::os::raw::c_uint;
+    pub const ARM64_PRFM_INVALID: Type = 0;
+    pub const ARM64_PRFM_PLDL1KEEP: Type = 1;
+    pub const ARM64_PRFM_PLDL1STRM: Type = 2;
+    pub const ARM64_PRFM_PLDL2KEEP: Type = 3;
+    pub const ARM64_PRFM_PLDL2STRM: Type = 4;
+    pub const ARM64_PRFM_PLDL3KEEP: Type = 5;
+    pub const ARM64_PRFM_PLDL3STRM: Type = 6;
+    pub const ARM64_PRFM_PLIL1KEEP: Type = 9;
+    pub const ARM64_PRFM_PLIL1STRM: Type = 10;
+    pub const ARM64_PRFM_PLIL2KEEP: Type = 11;
+    pub const ARM64_PRFM_PLIL2STRM: Type = 12;
+    pub const ARM64_PRFM_PLIL3KEEP: Type = 13;
+    pub const ARM64_PRFM_PLIL3STRM: Type = 14;
+    pub const ARM64_PRFM_PSTL1KEEP: Type = 17;
+    pub const ARM64_PRFM_PSTL1STRM: Type = 18;
+    pub const ARM64_PRFM_PSTL2KEEP: Type = 19;
+    pub const ARM64_PRFM_PSTL2STRM: Type = 20;
+    pub const ARM64_PRFM_PSTL3KEEP: Type = 21;
+    pub const ARM64_PRFM_PSTL3STRM: Type = 22;
 }
 #[repr(C)]
 #[derive(Debug, Copy)]
@@ -1537,68 +1786,106 @@ pub struct arm64_op_mem {
 }
 #[test]
 fn bindgen_test_layout_arm64_op_mem() {
-    assert_eq!(::std::mem::size_of::<arm64_op_mem>() , 12usize , concat ! (
-               "Size of: " , stringify ! ( arm64_op_mem ) ));
-    assert_eq! (::std::mem::align_of::<arm64_op_mem>() , 4usize , concat ! (
-                "Alignment of " , stringify ! ( arm64_op_mem ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const arm64_op_mem ) ) . base as * const _ as
-                usize } , 0usize , concat ! (
-                "Alignment of field: " , stringify ! ( arm64_op_mem ) , "::" ,
-                stringify ! ( base ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const arm64_op_mem ) ) . index as * const _ as
-                usize } , 4usize , concat ! (
-                "Alignment of field: " , stringify ! ( arm64_op_mem ) , "::" ,
-                stringify ! ( index ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const arm64_op_mem ) ) . disp as * const _ as
-                usize } , 8usize , concat ! (
-                "Alignment of field: " , stringify ! ( arm64_op_mem ) , "::" ,
-                stringify ! ( disp ) ));
+    assert_eq!(
+        ::std::mem::size_of::<arm64_op_mem>(),
+        12usize,
+        concat!("Size of: ", stringify!(arm64_op_mem))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<arm64_op_mem>(),
+        4usize,
+        concat!("Alignment of ", stringify!(arm64_op_mem))
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const arm64_op_mem)).base as *const _ as usize },
+        0usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(arm64_op_mem),
+            "::",
+            stringify!(base)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const arm64_op_mem)).index as *const _ as usize },
+        4usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(arm64_op_mem),
+            "::",
+            stringify!(index)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const arm64_op_mem)).disp as *const _ as usize },
+        8usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(arm64_op_mem),
+            "::",
+            stringify!(disp)
+        )
+    );
 }
 impl Clone for arm64_op_mem {
-    fn clone(&self) -> Self { *self }
+    fn clone(&self) -> Self {
+        *self
+    }
 }
 #[repr(C)]
 #[derive(Copy)]
 pub struct cs_arm64_op {
     pub vector_index: ::std::os::raw::c_int,
-    pub vas: arm64_vas,
-    pub vess: arm64_vess,
+    pub vas: arm64_vas::Type,
+    pub vess: arm64_vess::Type,
     pub shift: cs_arm64_op__bindgen_ty_1,
-    pub ext: arm64_extender,
-    pub type_: arm64_op_type,
+    pub ext: arm64_extender::Type,
+    pub type_: arm64_op_type::Type,
     pub __bindgen_anon_1: cs_arm64_op__bindgen_ty_2,
 }
 #[repr(C)]
 #[derive(Debug, Copy)]
 pub struct cs_arm64_op__bindgen_ty_1 {
-    pub type_: arm64_shifter,
+    pub type_: arm64_shifter::Type,
     pub value: ::std::os::raw::c_uint,
 }
 #[test]
 fn bindgen_test_layout_cs_arm64_op__bindgen_ty_1() {
-    assert_eq!(::std::mem::size_of::<cs_arm64_op__bindgen_ty_1>() , 8usize ,
-               concat ! (
-               "Size of: " , stringify ! ( cs_arm64_op__bindgen_ty_1 ) ));
-    assert_eq! (::std::mem::align_of::<cs_arm64_op__bindgen_ty_1>() , 4usize ,
-                concat ! (
-                "Alignment of " , stringify ! ( cs_arm64_op__bindgen_ty_1 )
-                ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const cs_arm64_op__bindgen_ty_1 ) ) . type_ as
-                * const _ as usize } , 0usize , concat ! (
-                "Alignment of field: " , stringify ! (
-                cs_arm64_op__bindgen_ty_1 ) , "::" , stringify ! ( type_ ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const cs_arm64_op__bindgen_ty_1 ) ) . value as
-                * const _ as usize } , 4usize , concat ! (
-                "Alignment of field: " , stringify ! (
-                cs_arm64_op__bindgen_ty_1 ) , "::" , stringify ! ( value ) ));
+    assert_eq!(
+        ::std::mem::size_of::<cs_arm64_op__bindgen_ty_1>(),
+        8usize,
+        concat!("Size of: ", stringify!(cs_arm64_op__bindgen_ty_1))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<cs_arm64_op__bindgen_ty_1>(),
+        4usize,
+        concat!("Alignment of ", stringify!(cs_arm64_op__bindgen_ty_1))
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const cs_arm64_op__bindgen_ty_1)).type_ as *const _ as usize },
+        0usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(cs_arm64_op__bindgen_ty_1),
+            "::",
+            stringify!(type_)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const cs_arm64_op__bindgen_ty_1)).value as *const _ as usize },
+        4usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(cs_arm64_op__bindgen_ty_1),
+            "::",
+            stringify!(value)
+        )
+    );
 }
 impl Clone for cs_arm64_op__bindgen_ty_1 {
-    fn clone(&self) -> Self { *self }
+    fn clone(&self) -> Self {
+        *self
+    }
 }
 #[repr(C)]
 #[derive(Copy)]
@@ -1607,112 +1894,202 @@ pub union cs_arm64_op__bindgen_ty_2 {
     pub imm: i64,
     pub fp: f64,
     pub mem: arm64_op_mem,
-    pub pstate: arm64_pstate,
+    pub pstate: arm64_pstate::Type,
     pub sys: ::std::os::raw::c_uint,
-    pub prefetch: arm64_prefetch_op,
-    pub barrier: arm64_barrier_op,
+    pub prefetch: arm64_prefetch_op::Type,
+    pub barrier: arm64_barrier_op::Type,
     _bindgen_union_align: [u64; 2usize],
 }
 #[test]
 fn bindgen_test_layout_cs_arm64_op__bindgen_ty_2() {
-    assert_eq!(::std::mem::size_of::<cs_arm64_op__bindgen_ty_2>() , 16usize ,
-               concat ! (
-               "Size of: " , stringify ! ( cs_arm64_op__bindgen_ty_2 ) ));
-    assert_eq! (::std::mem::align_of::<cs_arm64_op__bindgen_ty_2>() , 8usize ,
-                concat ! (
-                "Alignment of " , stringify ! ( cs_arm64_op__bindgen_ty_2 )
-                ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const cs_arm64_op__bindgen_ty_2 ) ) . reg as *
-                const _ as usize } , 0usize , concat ! (
-                "Alignment of field: " , stringify ! (
-                cs_arm64_op__bindgen_ty_2 ) , "::" , stringify ! ( reg ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const cs_arm64_op__bindgen_ty_2 ) ) . imm as *
-                const _ as usize } , 0usize , concat ! (
-                "Alignment of field: " , stringify ! (
-                cs_arm64_op__bindgen_ty_2 ) , "::" , stringify ! ( imm ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const cs_arm64_op__bindgen_ty_2 ) ) . fp as *
-                const _ as usize } , 0usize , concat ! (
-                "Alignment of field: " , stringify ! (
-                cs_arm64_op__bindgen_ty_2 ) , "::" , stringify ! ( fp ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const cs_arm64_op__bindgen_ty_2 ) ) . mem as *
-                const _ as usize } , 0usize , concat ! (
-                "Alignment of field: " , stringify ! (
-                cs_arm64_op__bindgen_ty_2 ) , "::" , stringify ! ( mem ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const cs_arm64_op__bindgen_ty_2 ) ) . pstate as
-                * const _ as usize } , 0usize , concat ! (
-                "Alignment of field: " , stringify ! (
-                cs_arm64_op__bindgen_ty_2 ) , "::" , stringify ! ( pstate )
-                ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const cs_arm64_op__bindgen_ty_2 ) ) . sys as *
-                const _ as usize } , 0usize , concat ! (
-                "Alignment of field: " , stringify ! (
-                cs_arm64_op__bindgen_ty_2 ) , "::" , stringify ! ( sys ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const cs_arm64_op__bindgen_ty_2 ) ) . prefetch
-                as * const _ as usize } , 0usize , concat ! (
-                "Alignment of field: " , stringify ! (
-                cs_arm64_op__bindgen_ty_2 ) , "::" , stringify ! ( prefetch )
-                ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const cs_arm64_op__bindgen_ty_2 ) ) . barrier
-                as * const _ as usize } , 0usize , concat ! (
-                "Alignment of field: " , stringify ! (
-                cs_arm64_op__bindgen_ty_2 ) , "::" , stringify ! ( barrier )
-                ));
+    assert_eq!(
+        ::std::mem::size_of::<cs_arm64_op__bindgen_ty_2>(),
+        16usize,
+        concat!("Size of: ", stringify!(cs_arm64_op__bindgen_ty_2))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<cs_arm64_op__bindgen_ty_2>(),
+        8usize,
+        concat!("Alignment of ", stringify!(cs_arm64_op__bindgen_ty_2))
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const cs_arm64_op__bindgen_ty_2)).reg as *const _ as usize },
+        0usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(cs_arm64_op__bindgen_ty_2),
+            "::",
+            stringify!(reg)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const cs_arm64_op__bindgen_ty_2)).imm as *const _ as usize },
+        0usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(cs_arm64_op__bindgen_ty_2),
+            "::",
+            stringify!(imm)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const cs_arm64_op__bindgen_ty_2)).fp as *const _ as usize },
+        0usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(cs_arm64_op__bindgen_ty_2),
+            "::",
+            stringify!(fp)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const cs_arm64_op__bindgen_ty_2)).mem as *const _ as usize },
+        0usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(cs_arm64_op__bindgen_ty_2),
+            "::",
+            stringify!(mem)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const cs_arm64_op__bindgen_ty_2)).pstate as *const _ as usize },
+        0usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(cs_arm64_op__bindgen_ty_2),
+            "::",
+            stringify!(pstate)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const cs_arm64_op__bindgen_ty_2)).sys as *const _ as usize },
+        0usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(cs_arm64_op__bindgen_ty_2),
+            "::",
+            stringify!(sys)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const cs_arm64_op__bindgen_ty_2)).prefetch as *const _ as usize },
+        0usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(cs_arm64_op__bindgen_ty_2),
+            "::",
+            stringify!(prefetch)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const cs_arm64_op__bindgen_ty_2)).barrier as *const _ as usize },
+        0usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(cs_arm64_op__bindgen_ty_2),
+            "::",
+            stringify!(barrier)
+        )
+    );
 }
 impl Clone for cs_arm64_op__bindgen_ty_2 {
-    fn clone(&self) -> Self { *self }
+    fn clone(&self) -> Self {
+        *self
+    }
+}
+impl ::std::fmt::Debug for cs_arm64_op__bindgen_ty_2 {
+    fn fmt(&self, f: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
+        write!(f, "cs_arm64_op__bindgen_ty_2 {{ union }}")
+    }
 }
 #[test]
 fn bindgen_test_layout_cs_arm64_op() {
-    assert_eq!(::std::mem::size_of::<cs_arm64_op>() , 48usize , concat ! (
-               "Size of: " , stringify ! ( cs_arm64_op ) ));
-    assert_eq! (::std::mem::align_of::<cs_arm64_op>() , 8usize , concat ! (
-                "Alignment of " , stringify ! ( cs_arm64_op ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const cs_arm64_op ) ) . vector_index as * const
-                _ as usize } , 0usize , concat ! (
-                "Alignment of field: " , stringify ! ( cs_arm64_op ) , "::" ,
-                stringify ! ( vector_index ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const cs_arm64_op ) ) . vas as * const _ as
-                usize } , 4usize , concat ! (
-                "Alignment of field: " , stringify ! ( cs_arm64_op ) , "::" ,
-                stringify ! ( vas ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const cs_arm64_op ) ) . vess as * const _ as
-                usize } , 8usize , concat ! (
-                "Alignment of field: " , stringify ! ( cs_arm64_op ) , "::" ,
-                stringify ! ( vess ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const cs_arm64_op ) ) . shift as * const _ as
-                usize } , 12usize , concat ! (
-                "Alignment of field: " , stringify ! ( cs_arm64_op ) , "::" ,
-                stringify ! ( shift ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const cs_arm64_op ) ) . ext as * const _ as
-                usize } , 20usize , concat ! (
-                "Alignment of field: " , stringify ! ( cs_arm64_op ) , "::" ,
-                stringify ! ( ext ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const cs_arm64_op ) ) . type_ as * const _ as
-                usize } , 24usize , concat ! (
-                "Alignment of field: " , stringify ! ( cs_arm64_op ) , "::" ,
-                stringify ! ( type_ ) ));
+    assert_eq!(
+        ::std::mem::size_of::<cs_arm64_op>(),
+        48usize,
+        concat!("Size of: ", stringify!(cs_arm64_op))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<cs_arm64_op>(),
+        8usize,
+        concat!("Alignment of ", stringify!(cs_arm64_op))
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const cs_arm64_op)).vector_index as *const _ as usize },
+        0usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(cs_arm64_op),
+            "::",
+            stringify!(vector_index)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const cs_arm64_op)).vas as *const _ as usize },
+        4usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(cs_arm64_op),
+            "::",
+            stringify!(vas)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const cs_arm64_op)).vess as *const _ as usize },
+        8usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(cs_arm64_op),
+            "::",
+            stringify!(vess)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const cs_arm64_op)).shift as *const _ as usize },
+        12usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(cs_arm64_op),
+            "::",
+            stringify!(shift)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const cs_arm64_op)).ext as *const _ as usize },
+        20usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(cs_arm64_op),
+            "::",
+            stringify!(ext)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const cs_arm64_op)).type_ as *const _ as usize },
+        24usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(cs_arm64_op),
+            "::",
+            stringify!(type_)
+        )
+    );
 }
 impl Clone for cs_arm64_op {
-    fn clone(&self) -> Self { *self }
+    fn clone(&self) -> Self {
+        *self
+    }
+}
+impl ::std::fmt::Debug for cs_arm64_op {
+    fn fmt(&self, f: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
+        write ! ( f , "cs_arm64_op {{ vector_index: {:?}, vas: {:?}, vess: {:?}, shift: {:?}, ext: {:?}, type: {:?}, __bindgen_anon_1: {:?} }}" , self . vector_index , self . vas , self . vess , self . shift , self . ext , self . type_ , self . __bindgen_anon_1 )
+    }
 }
 #[repr(C)]
 #[derive(Copy)]
 pub struct cs_arm64 {
-    pub cc: arm64_cc,
+    pub cc: arm64_cc::Type,
     pub update_flags: bool,
     pub writeback: bool,
     pub op_count: u8,
@@ -1720,38 +2097,76 @@ pub struct cs_arm64 {
 }
 #[test]
 fn bindgen_test_layout_cs_arm64() {
-    assert_eq!(::std::mem::size_of::<cs_arm64>() , 392usize , concat ! (
-               "Size of: " , stringify ! ( cs_arm64 ) ));
-    assert_eq! (::std::mem::align_of::<cs_arm64>() , 8usize , concat ! (
-                "Alignment of " , stringify ! ( cs_arm64 ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const cs_arm64 ) ) . cc as * const _ as usize }
-                , 0usize , concat ! (
-                "Alignment of field: " , stringify ! ( cs_arm64 ) , "::" ,
-                stringify ! ( cc ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const cs_arm64 ) ) . update_flags as * const _
-                as usize } , 4usize , concat ! (
-                "Alignment of field: " , stringify ! ( cs_arm64 ) , "::" ,
-                stringify ! ( update_flags ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const cs_arm64 ) ) . writeback as * const _ as
-                usize } , 5usize , concat ! (
-                "Alignment of field: " , stringify ! ( cs_arm64 ) , "::" ,
-                stringify ! ( writeback ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const cs_arm64 ) ) . op_count as * const _ as
-                usize } , 6usize , concat ! (
-                "Alignment of field: " , stringify ! ( cs_arm64 ) , "::" ,
-                stringify ! ( op_count ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const cs_arm64 ) ) . operands as * const _ as
-                usize } , 8usize , concat ! (
-                "Alignment of field: " , stringify ! ( cs_arm64 ) , "::" ,
-                stringify ! ( operands ) ));
+    assert_eq!(
+        ::std::mem::size_of::<cs_arm64>(),
+        392usize,
+        concat!("Size of: ", stringify!(cs_arm64))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<cs_arm64>(),
+        8usize,
+        concat!("Alignment of ", stringify!(cs_arm64))
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const cs_arm64)).cc as *const _ as usize },
+        0usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(cs_arm64),
+            "::",
+            stringify!(cc)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const cs_arm64)).update_flags as *const _ as usize },
+        4usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(cs_arm64),
+            "::",
+            stringify!(update_flags)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const cs_arm64)).writeback as *const _ as usize },
+        5usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(cs_arm64),
+            "::",
+            stringify!(writeback)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const cs_arm64)).op_count as *const _ as usize },
+        6usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(cs_arm64),
+            "::",
+            stringify!(op_count)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const cs_arm64)).operands as *const _ as usize },
+        8usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(cs_arm64),
+            "::",
+            stringify!(operands)
+        )
+    );
 }
 impl Clone for cs_arm64 {
-    fn clone(&self) -> Self { *self }
+    fn clone(&self) -> Self {
+        *self
+    }
+}
+impl ::std::fmt::Debug for cs_arm64 {
+    fn fmt(&self, f: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
+        write ! ( f , "cs_arm64 {{ cc: {:?}, update_flags: {:?}, writeback: {:?}, op_count: {:?}, operands: {:?} }}" , self . cc , self . update_flags , self . writeback , self . op_count , self . operands )
+    }
 }
 pub mod arm64_reg {
     pub type Type = ::std::os::raw::c_uint;
@@ -2021,481 +2436,478 @@ pub mod arm64_reg {
     pub const ARM64_REG_FP: Type = 1;
     pub const ARM64_REG_LR: Type = 2;
 }
-#[repr(u32)]
-#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
-pub enum arm64_insn {
-    ARM64_INS_INVALID = 0,
-    ARM64_INS_ABS = 1,
-    ARM64_INS_ADC = 2,
-    ARM64_INS_ADDHN = 3,
-    ARM64_INS_ADDHN2 = 4,
-    ARM64_INS_ADDP = 5,
-    ARM64_INS_ADD = 6,
-    ARM64_INS_ADDV = 7,
-    ARM64_INS_ADR = 8,
-    ARM64_INS_ADRP = 9,
-    ARM64_INS_AESD = 10,
-    ARM64_INS_AESE = 11,
-    ARM64_INS_AESIMC = 12,
-    ARM64_INS_AESMC = 13,
-    ARM64_INS_AND = 14,
-    ARM64_INS_ASR = 15,
-    ARM64_INS_B = 16,
-    ARM64_INS_BFM = 17,
-    ARM64_INS_BIC = 18,
-    ARM64_INS_BIF = 19,
-    ARM64_INS_BIT = 20,
-    ARM64_INS_BL = 21,
-    ARM64_INS_BLR = 22,
-    ARM64_INS_BR = 23,
-    ARM64_INS_BRK = 24,
-    ARM64_INS_BSL = 25,
-    ARM64_INS_CBNZ = 26,
-    ARM64_INS_CBZ = 27,
-    ARM64_INS_CCMN = 28,
-    ARM64_INS_CCMP = 29,
-    ARM64_INS_CLREX = 30,
-    ARM64_INS_CLS = 31,
-    ARM64_INS_CLZ = 32,
-    ARM64_INS_CMEQ = 33,
-    ARM64_INS_CMGE = 34,
-    ARM64_INS_CMGT = 35,
-    ARM64_INS_CMHI = 36,
-    ARM64_INS_CMHS = 37,
-    ARM64_INS_CMLE = 38,
-    ARM64_INS_CMLT = 39,
-    ARM64_INS_CMTST = 40,
-    ARM64_INS_CNT = 41,
-    ARM64_INS_MOV = 42,
-    ARM64_INS_CRC32B = 43,
-    ARM64_INS_CRC32CB = 44,
-    ARM64_INS_CRC32CH = 45,
-    ARM64_INS_CRC32CW = 46,
-    ARM64_INS_CRC32CX = 47,
-    ARM64_INS_CRC32H = 48,
-    ARM64_INS_CRC32W = 49,
-    ARM64_INS_CRC32X = 50,
-    ARM64_INS_CSEL = 51,
-    ARM64_INS_CSINC = 52,
-    ARM64_INS_CSINV = 53,
-    ARM64_INS_CSNEG = 54,
-    ARM64_INS_DCPS1 = 55,
-    ARM64_INS_DCPS2 = 56,
-    ARM64_INS_DCPS3 = 57,
-    ARM64_INS_DMB = 58,
-    ARM64_INS_DRPS = 59,
-    ARM64_INS_DSB = 60,
-    ARM64_INS_DUP = 61,
-    ARM64_INS_EON = 62,
-    ARM64_INS_EOR = 63,
-    ARM64_INS_ERET = 64,
-    ARM64_INS_EXTR = 65,
-    ARM64_INS_EXT = 66,
-    ARM64_INS_FABD = 67,
-    ARM64_INS_FABS = 68,
-    ARM64_INS_FACGE = 69,
-    ARM64_INS_FACGT = 70,
-    ARM64_INS_FADD = 71,
-    ARM64_INS_FADDP = 72,
-    ARM64_INS_FCCMP = 73,
-    ARM64_INS_FCCMPE = 74,
-    ARM64_INS_FCMEQ = 75,
-    ARM64_INS_FCMGE = 76,
-    ARM64_INS_FCMGT = 77,
-    ARM64_INS_FCMLE = 78,
-    ARM64_INS_FCMLT = 79,
-    ARM64_INS_FCMP = 80,
-    ARM64_INS_FCMPE = 81,
-    ARM64_INS_FCSEL = 82,
-    ARM64_INS_FCVTAS = 83,
-    ARM64_INS_FCVTAU = 84,
-    ARM64_INS_FCVT = 85,
-    ARM64_INS_FCVTL = 86,
-    ARM64_INS_FCVTL2 = 87,
-    ARM64_INS_FCVTMS = 88,
-    ARM64_INS_FCVTMU = 89,
-    ARM64_INS_FCVTNS = 90,
-    ARM64_INS_FCVTNU = 91,
-    ARM64_INS_FCVTN = 92,
-    ARM64_INS_FCVTN2 = 93,
-    ARM64_INS_FCVTPS = 94,
-    ARM64_INS_FCVTPU = 95,
-    ARM64_INS_FCVTXN = 96,
-    ARM64_INS_FCVTXN2 = 97,
-    ARM64_INS_FCVTZS = 98,
-    ARM64_INS_FCVTZU = 99,
-    ARM64_INS_FDIV = 100,
-    ARM64_INS_FMADD = 101,
-    ARM64_INS_FMAX = 102,
-    ARM64_INS_FMAXNM = 103,
-    ARM64_INS_FMAXNMP = 104,
-    ARM64_INS_FMAXNMV = 105,
-    ARM64_INS_FMAXP = 106,
-    ARM64_INS_FMAXV = 107,
-    ARM64_INS_FMIN = 108,
-    ARM64_INS_FMINNM = 109,
-    ARM64_INS_FMINNMP = 110,
-    ARM64_INS_FMINNMV = 111,
-    ARM64_INS_FMINP = 112,
-    ARM64_INS_FMINV = 113,
-    ARM64_INS_FMLA = 114,
-    ARM64_INS_FMLS = 115,
-    ARM64_INS_FMOV = 116,
-    ARM64_INS_FMSUB = 117,
-    ARM64_INS_FMUL = 118,
-    ARM64_INS_FMULX = 119,
-    ARM64_INS_FNEG = 120,
-    ARM64_INS_FNMADD = 121,
-    ARM64_INS_FNMSUB = 122,
-    ARM64_INS_FNMUL = 123,
-    ARM64_INS_FRECPE = 124,
-    ARM64_INS_FRECPS = 125,
-    ARM64_INS_FRECPX = 126,
-    ARM64_INS_FRINTA = 127,
-    ARM64_INS_FRINTI = 128,
-    ARM64_INS_FRINTM = 129,
-    ARM64_INS_FRINTN = 130,
-    ARM64_INS_FRINTP = 131,
-    ARM64_INS_FRINTX = 132,
-    ARM64_INS_FRINTZ = 133,
-    ARM64_INS_FRSQRTE = 134,
-    ARM64_INS_FRSQRTS = 135,
-    ARM64_INS_FSQRT = 136,
-    ARM64_INS_FSUB = 137,
-    ARM64_INS_HINT = 138,
-    ARM64_INS_HLT = 139,
-    ARM64_INS_HVC = 140,
-    ARM64_INS_INS = 141,
-    ARM64_INS_ISB = 142,
-    ARM64_INS_LD1 = 143,
-    ARM64_INS_LD1R = 144,
-    ARM64_INS_LD2R = 145,
-    ARM64_INS_LD2 = 146,
-    ARM64_INS_LD3R = 147,
-    ARM64_INS_LD3 = 148,
-    ARM64_INS_LD4 = 149,
-    ARM64_INS_LD4R = 150,
-    ARM64_INS_LDARB = 151,
-    ARM64_INS_LDARH = 152,
-    ARM64_INS_LDAR = 153,
-    ARM64_INS_LDAXP = 154,
-    ARM64_INS_LDAXRB = 155,
-    ARM64_INS_LDAXRH = 156,
-    ARM64_INS_LDAXR = 157,
-    ARM64_INS_LDNP = 158,
-    ARM64_INS_LDP = 159,
-    ARM64_INS_LDPSW = 160,
-    ARM64_INS_LDRB = 161,
-    ARM64_INS_LDR = 162,
-    ARM64_INS_LDRH = 163,
-    ARM64_INS_LDRSB = 164,
-    ARM64_INS_LDRSH = 165,
-    ARM64_INS_LDRSW = 166,
-    ARM64_INS_LDTRB = 167,
-    ARM64_INS_LDTRH = 168,
-    ARM64_INS_LDTRSB = 169,
-    ARM64_INS_LDTRSH = 170,
-    ARM64_INS_LDTRSW = 171,
-    ARM64_INS_LDTR = 172,
-    ARM64_INS_LDURB = 173,
-    ARM64_INS_LDUR = 174,
-    ARM64_INS_LDURH = 175,
-    ARM64_INS_LDURSB = 176,
-    ARM64_INS_LDURSH = 177,
-    ARM64_INS_LDURSW = 178,
-    ARM64_INS_LDXP = 179,
-    ARM64_INS_LDXRB = 180,
-    ARM64_INS_LDXRH = 181,
-    ARM64_INS_LDXR = 182,
-    ARM64_INS_LSL = 183,
-    ARM64_INS_LSR = 184,
-    ARM64_INS_MADD = 185,
-    ARM64_INS_MLA = 186,
-    ARM64_INS_MLS = 187,
-    ARM64_INS_MOVI = 188,
-    ARM64_INS_MOVK = 189,
-    ARM64_INS_MOVN = 190,
-    ARM64_INS_MOVZ = 191,
-    ARM64_INS_MRS = 192,
-    ARM64_INS_MSR = 193,
-    ARM64_INS_MSUB = 194,
-    ARM64_INS_MUL = 195,
-    ARM64_INS_MVNI = 196,
-    ARM64_INS_NEG = 197,
-    ARM64_INS_NOT = 198,
-    ARM64_INS_ORN = 199,
-    ARM64_INS_ORR = 200,
-    ARM64_INS_PMULL2 = 201,
-    ARM64_INS_PMULL = 202,
-    ARM64_INS_PMUL = 203,
-    ARM64_INS_PRFM = 204,
-    ARM64_INS_PRFUM = 205,
-    ARM64_INS_RADDHN = 206,
-    ARM64_INS_RADDHN2 = 207,
-    ARM64_INS_RBIT = 208,
-    ARM64_INS_RET = 209,
-    ARM64_INS_REV16 = 210,
-    ARM64_INS_REV32 = 211,
-    ARM64_INS_REV64 = 212,
-    ARM64_INS_REV = 213,
-    ARM64_INS_ROR = 214,
-    ARM64_INS_RSHRN2 = 215,
-    ARM64_INS_RSHRN = 216,
-    ARM64_INS_RSUBHN = 217,
-    ARM64_INS_RSUBHN2 = 218,
-    ARM64_INS_SABAL2 = 219,
-    ARM64_INS_SABAL = 220,
-    ARM64_INS_SABA = 221,
-    ARM64_INS_SABDL2 = 222,
-    ARM64_INS_SABDL = 223,
-    ARM64_INS_SABD = 224,
-    ARM64_INS_SADALP = 225,
-    ARM64_INS_SADDLP = 226,
-    ARM64_INS_SADDLV = 227,
-    ARM64_INS_SADDL2 = 228,
-    ARM64_INS_SADDL = 229,
-    ARM64_INS_SADDW2 = 230,
-    ARM64_INS_SADDW = 231,
-    ARM64_INS_SBC = 232,
-    ARM64_INS_SBFM = 233,
-    ARM64_INS_SCVTF = 234,
-    ARM64_INS_SDIV = 235,
-    ARM64_INS_SHA1C = 236,
-    ARM64_INS_SHA1H = 237,
-    ARM64_INS_SHA1M = 238,
-    ARM64_INS_SHA1P = 239,
-    ARM64_INS_SHA1SU0 = 240,
-    ARM64_INS_SHA1SU1 = 241,
-    ARM64_INS_SHA256H2 = 242,
-    ARM64_INS_SHA256H = 243,
-    ARM64_INS_SHA256SU0 = 244,
-    ARM64_INS_SHA256SU1 = 245,
-    ARM64_INS_SHADD = 246,
-    ARM64_INS_SHLL2 = 247,
-    ARM64_INS_SHLL = 248,
-    ARM64_INS_SHL = 249,
-    ARM64_INS_SHRN2 = 250,
-    ARM64_INS_SHRN = 251,
-    ARM64_INS_SHSUB = 252,
-    ARM64_INS_SLI = 253,
-    ARM64_INS_SMADDL = 254,
-    ARM64_INS_SMAXP = 255,
-    ARM64_INS_SMAXV = 256,
-    ARM64_INS_SMAX = 257,
-    ARM64_INS_SMC = 258,
-    ARM64_INS_SMINP = 259,
-    ARM64_INS_SMINV = 260,
-    ARM64_INS_SMIN = 261,
-    ARM64_INS_SMLAL2 = 262,
-    ARM64_INS_SMLAL = 263,
-    ARM64_INS_SMLSL2 = 264,
-    ARM64_INS_SMLSL = 265,
-    ARM64_INS_SMOV = 266,
-    ARM64_INS_SMSUBL = 267,
-    ARM64_INS_SMULH = 268,
-    ARM64_INS_SMULL2 = 269,
-    ARM64_INS_SMULL = 270,
-    ARM64_INS_SQABS = 271,
-    ARM64_INS_SQADD = 272,
-    ARM64_INS_SQDMLAL = 273,
-    ARM64_INS_SQDMLAL2 = 274,
-    ARM64_INS_SQDMLSL = 275,
-    ARM64_INS_SQDMLSL2 = 276,
-    ARM64_INS_SQDMULH = 277,
-    ARM64_INS_SQDMULL = 278,
-    ARM64_INS_SQDMULL2 = 279,
-    ARM64_INS_SQNEG = 280,
-    ARM64_INS_SQRDMULH = 281,
-    ARM64_INS_SQRSHL = 282,
-    ARM64_INS_SQRSHRN = 283,
-    ARM64_INS_SQRSHRN2 = 284,
-    ARM64_INS_SQRSHRUN = 285,
-    ARM64_INS_SQRSHRUN2 = 286,
-    ARM64_INS_SQSHLU = 287,
-    ARM64_INS_SQSHL = 288,
-    ARM64_INS_SQSHRN = 289,
-    ARM64_INS_SQSHRN2 = 290,
-    ARM64_INS_SQSHRUN = 291,
-    ARM64_INS_SQSHRUN2 = 292,
-    ARM64_INS_SQSUB = 293,
-    ARM64_INS_SQXTN2 = 294,
-    ARM64_INS_SQXTN = 295,
-    ARM64_INS_SQXTUN2 = 296,
-    ARM64_INS_SQXTUN = 297,
-    ARM64_INS_SRHADD = 298,
-    ARM64_INS_SRI = 299,
-    ARM64_INS_SRSHL = 300,
-    ARM64_INS_SRSHR = 301,
-    ARM64_INS_SRSRA = 302,
-    ARM64_INS_SSHLL2 = 303,
-    ARM64_INS_SSHLL = 304,
-    ARM64_INS_SSHL = 305,
-    ARM64_INS_SSHR = 306,
-    ARM64_INS_SSRA = 307,
-    ARM64_INS_SSUBL2 = 308,
-    ARM64_INS_SSUBL = 309,
-    ARM64_INS_SSUBW2 = 310,
-    ARM64_INS_SSUBW = 311,
-    ARM64_INS_ST1 = 312,
-    ARM64_INS_ST2 = 313,
-    ARM64_INS_ST3 = 314,
-    ARM64_INS_ST4 = 315,
-    ARM64_INS_STLRB = 316,
-    ARM64_INS_STLRH = 317,
-    ARM64_INS_STLR = 318,
-    ARM64_INS_STLXP = 319,
-    ARM64_INS_STLXRB = 320,
-    ARM64_INS_STLXRH = 321,
-    ARM64_INS_STLXR = 322,
-    ARM64_INS_STNP = 323,
-    ARM64_INS_STP = 324,
-    ARM64_INS_STRB = 325,
-    ARM64_INS_STR = 326,
-    ARM64_INS_STRH = 327,
-    ARM64_INS_STTRB = 328,
-    ARM64_INS_STTRH = 329,
-    ARM64_INS_STTR = 330,
-    ARM64_INS_STURB = 331,
-    ARM64_INS_STUR = 332,
-    ARM64_INS_STURH = 333,
-    ARM64_INS_STXP = 334,
-    ARM64_INS_STXRB = 335,
-    ARM64_INS_STXRH = 336,
-    ARM64_INS_STXR = 337,
-    ARM64_INS_SUBHN = 338,
-    ARM64_INS_SUBHN2 = 339,
-    ARM64_INS_SUB = 340,
-    ARM64_INS_SUQADD = 341,
-    ARM64_INS_SVC = 342,
-    ARM64_INS_SYSL = 343,
-    ARM64_INS_SYS = 344,
-    ARM64_INS_TBL = 345,
-    ARM64_INS_TBNZ = 346,
-    ARM64_INS_TBX = 347,
-    ARM64_INS_TBZ = 348,
-    ARM64_INS_TRN1 = 349,
-    ARM64_INS_TRN2 = 350,
-    ARM64_INS_UABAL2 = 351,
-    ARM64_INS_UABAL = 352,
-    ARM64_INS_UABA = 353,
-    ARM64_INS_UABDL2 = 354,
-    ARM64_INS_UABDL = 355,
-    ARM64_INS_UABD = 356,
-    ARM64_INS_UADALP = 357,
-    ARM64_INS_UADDLP = 358,
-    ARM64_INS_UADDLV = 359,
-    ARM64_INS_UADDL2 = 360,
-    ARM64_INS_UADDL = 361,
-    ARM64_INS_UADDW2 = 362,
-    ARM64_INS_UADDW = 363,
-    ARM64_INS_UBFM = 364,
-    ARM64_INS_UCVTF = 365,
-    ARM64_INS_UDIV = 366,
-    ARM64_INS_UHADD = 367,
-    ARM64_INS_UHSUB = 368,
-    ARM64_INS_UMADDL = 369,
-    ARM64_INS_UMAXP = 370,
-    ARM64_INS_UMAXV = 371,
-    ARM64_INS_UMAX = 372,
-    ARM64_INS_UMINP = 373,
-    ARM64_INS_UMINV = 374,
-    ARM64_INS_UMIN = 375,
-    ARM64_INS_UMLAL2 = 376,
-    ARM64_INS_UMLAL = 377,
-    ARM64_INS_UMLSL2 = 378,
-    ARM64_INS_UMLSL = 379,
-    ARM64_INS_UMOV = 380,
-    ARM64_INS_UMSUBL = 381,
-    ARM64_INS_UMULH = 382,
-    ARM64_INS_UMULL2 = 383,
-    ARM64_INS_UMULL = 384,
-    ARM64_INS_UQADD = 385,
-    ARM64_INS_UQRSHL = 386,
-    ARM64_INS_UQRSHRN = 387,
-    ARM64_INS_UQRSHRN2 = 388,
-    ARM64_INS_UQSHL = 389,
-    ARM64_INS_UQSHRN = 390,
-    ARM64_INS_UQSHRN2 = 391,
-    ARM64_INS_UQSUB = 392,
-    ARM64_INS_UQXTN2 = 393,
-    ARM64_INS_UQXTN = 394,
-    ARM64_INS_URECPE = 395,
-    ARM64_INS_URHADD = 396,
-    ARM64_INS_URSHL = 397,
-    ARM64_INS_URSHR = 398,
-    ARM64_INS_URSQRTE = 399,
-    ARM64_INS_URSRA = 400,
-    ARM64_INS_USHLL2 = 401,
-    ARM64_INS_USHLL = 402,
-    ARM64_INS_USHL = 403,
-    ARM64_INS_USHR = 404,
-    ARM64_INS_USQADD = 405,
-    ARM64_INS_USRA = 406,
-    ARM64_INS_USUBL2 = 407,
-    ARM64_INS_USUBL = 408,
-    ARM64_INS_USUBW2 = 409,
-    ARM64_INS_USUBW = 410,
-    ARM64_INS_UZP1 = 411,
-    ARM64_INS_UZP2 = 412,
-    ARM64_INS_XTN2 = 413,
-    ARM64_INS_XTN = 414,
-    ARM64_INS_ZIP1 = 415,
-    ARM64_INS_ZIP2 = 416,
-    ARM64_INS_MNEG = 417,
-    ARM64_INS_UMNEGL = 418,
-    ARM64_INS_SMNEGL = 419,
-    ARM64_INS_NOP = 420,
-    ARM64_INS_YIELD = 421,
-    ARM64_INS_WFE = 422,
-    ARM64_INS_WFI = 423,
-    ARM64_INS_SEV = 424,
-    ARM64_INS_SEVL = 425,
-    ARM64_INS_NGC = 426,
-    ARM64_INS_SBFIZ = 427,
-    ARM64_INS_UBFIZ = 428,
-    ARM64_INS_SBFX = 429,
-    ARM64_INS_UBFX = 430,
-    ARM64_INS_BFI = 431,
-    ARM64_INS_BFXIL = 432,
-    ARM64_INS_CMN = 433,
-    ARM64_INS_MVN = 434,
-    ARM64_INS_TST = 435,
-    ARM64_INS_CSET = 436,
-    ARM64_INS_CINC = 437,
-    ARM64_INS_CSETM = 438,
-    ARM64_INS_CINV = 439,
-    ARM64_INS_CNEG = 440,
-    ARM64_INS_SXTB = 441,
-    ARM64_INS_SXTH = 442,
-    ARM64_INS_SXTW = 443,
-    ARM64_INS_CMP = 444,
-    ARM64_INS_UXTB = 445,
-    ARM64_INS_UXTH = 446,
-    ARM64_INS_UXTW = 447,
-    ARM64_INS_IC = 448,
-    ARM64_INS_DC = 449,
-    ARM64_INS_AT = 450,
-    ARM64_INS_TLBI = 451,
-    ARM64_INS_ENDING = 452,
+pub mod arm64_insn {
+    pub type Type = ::std::os::raw::c_uint;
+    pub const ARM64_INS_INVALID: Type = 0;
+    pub const ARM64_INS_ABS: Type = 1;
+    pub const ARM64_INS_ADC: Type = 2;
+    pub const ARM64_INS_ADDHN: Type = 3;
+    pub const ARM64_INS_ADDHN2: Type = 4;
+    pub const ARM64_INS_ADDP: Type = 5;
+    pub const ARM64_INS_ADD: Type = 6;
+    pub const ARM64_INS_ADDV: Type = 7;
+    pub const ARM64_INS_ADR: Type = 8;
+    pub const ARM64_INS_ADRP: Type = 9;
+    pub const ARM64_INS_AESD: Type = 10;
+    pub const ARM64_INS_AESE: Type = 11;
+    pub const ARM64_INS_AESIMC: Type = 12;
+    pub const ARM64_INS_AESMC: Type = 13;
+    pub const ARM64_INS_AND: Type = 14;
+    pub const ARM64_INS_ASR: Type = 15;
+    pub const ARM64_INS_B: Type = 16;
+    pub const ARM64_INS_BFM: Type = 17;
+    pub const ARM64_INS_BIC: Type = 18;
+    pub const ARM64_INS_BIF: Type = 19;
+    pub const ARM64_INS_BIT: Type = 20;
+    pub const ARM64_INS_BL: Type = 21;
+    pub const ARM64_INS_BLR: Type = 22;
+    pub const ARM64_INS_BR: Type = 23;
+    pub const ARM64_INS_BRK: Type = 24;
+    pub const ARM64_INS_BSL: Type = 25;
+    pub const ARM64_INS_CBNZ: Type = 26;
+    pub const ARM64_INS_CBZ: Type = 27;
+    pub const ARM64_INS_CCMN: Type = 28;
+    pub const ARM64_INS_CCMP: Type = 29;
+    pub const ARM64_INS_CLREX: Type = 30;
+    pub const ARM64_INS_CLS: Type = 31;
+    pub const ARM64_INS_CLZ: Type = 32;
+    pub const ARM64_INS_CMEQ: Type = 33;
+    pub const ARM64_INS_CMGE: Type = 34;
+    pub const ARM64_INS_CMGT: Type = 35;
+    pub const ARM64_INS_CMHI: Type = 36;
+    pub const ARM64_INS_CMHS: Type = 37;
+    pub const ARM64_INS_CMLE: Type = 38;
+    pub const ARM64_INS_CMLT: Type = 39;
+    pub const ARM64_INS_CMTST: Type = 40;
+    pub const ARM64_INS_CNT: Type = 41;
+    pub const ARM64_INS_MOV: Type = 42;
+    pub const ARM64_INS_CRC32B: Type = 43;
+    pub const ARM64_INS_CRC32CB: Type = 44;
+    pub const ARM64_INS_CRC32CH: Type = 45;
+    pub const ARM64_INS_CRC32CW: Type = 46;
+    pub const ARM64_INS_CRC32CX: Type = 47;
+    pub const ARM64_INS_CRC32H: Type = 48;
+    pub const ARM64_INS_CRC32W: Type = 49;
+    pub const ARM64_INS_CRC32X: Type = 50;
+    pub const ARM64_INS_CSEL: Type = 51;
+    pub const ARM64_INS_CSINC: Type = 52;
+    pub const ARM64_INS_CSINV: Type = 53;
+    pub const ARM64_INS_CSNEG: Type = 54;
+    pub const ARM64_INS_DCPS1: Type = 55;
+    pub const ARM64_INS_DCPS2: Type = 56;
+    pub const ARM64_INS_DCPS3: Type = 57;
+    pub const ARM64_INS_DMB: Type = 58;
+    pub const ARM64_INS_DRPS: Type = 59;
+    pub const ARM64_INS_DSB: Type = 60;
+    pub const ARM64_INS_DUP: Type = 61;
+    pub const ARM64_INS_EON: Type = 62;
+    pub const ARM64_INS_EOR: Type = 63;
+    pub const ARM64_INS_ERET: Type = 64;
+    pub const ARM64_INS_EXTR: Type = 65;
+    pub const ARM64_INS_EXT: Type = 66;
+    pub const ARM64_INS_FABD: Type = 67;
+    pub const ARM64_INS_FABS: Type = 68;
+    pub const ARM64_INS_FACGE: Type = 69;
+    pub const ARM64_INS_FACGT: Type = 70;
+    pub const ARM64_INS_FADD: Type = 71;
+    pub const ARM64_INS_FADDP: Type = 72;
+    pub const ARM64_INS_FCCMP: Type = 73;
+    pub const ARM64_INS_FCCMPE: Type = 74;
+    pub const ARM64_INS_FCMEQ: Type = 75;
+    pub const ARM64_INS_FCMGE: Type = 76;
+    pub const ARM64_INS_FCMGT: Type = 77;
+    pub const ARM64_INS_FCMLE: Type = 78;
+    pub const ARM64_INS_FCMLT: Type = 79;
+    pub const ARM64_INS_FCMP: Type = 80;
+    pub const ARM64_INS_FCMPE: Type = 81;
+    pub const ARM64_INS_FCSEL: Type = 82;
+    pub const ARM64_INS_FCVTAS: Type = 83;
+    pub const ARM64_INS_FCVTAU: Type = 84;
+    pub const ARM64_INS_FCVT: Type = 85;
+    pub const ARM64_INS_FCVTL: Type = 86;
+    pub const ARM64_INS_FCVTL2: Type = 87;
+    pub const ARM64_INS_FCVTMS: Type = 88;
+    pub const ARM64_INS_FCVTMU: Type = 89;
+    pub const ARM64_INS_FCVTNS: Type = 90;
+    pub const ARM64_INS_FCVTNU: Type = 91;
+    pub const ARM64_INS_FCVTN: Type = 92;
+    pub const ARM64_INS_FCVTN2: Type = 93;
+    pub const ARM64_INS_FCVTPS: Type = 94;
+    pub const ARM64_INS_FCVTPU: Type = 95;
+    pub const ARM64_INS_FCVTXN: Type = 96;
+    pub const ARM64_INS_FCVTXN2: Type = 97;
+    pub const ARM64_INS_FCVTZS: Type = 98;
+    pub const ARM64_INS_FCVTZU: Type = 99;
+    pub const ARM64_INS_FDIV: Type = 100;
+    pub const ARM64_INS_FMADD: Type = 101;
+    pub const ARM64_INS_FMAX: Type = 102;
+    pub const ARM64_INS_FMAXNM: Type = 103;
+    pub const ARM64_INS_FMAXNMP: Type = 104;
+    pub const ARM64_INS_FMAXNMV: Type = 105;
+    pub const ARM64_INS_FMAXP: Type = 106;
+    pub const ARM64_INS_FMAXV: Type = 107;
+    pub const ARM64_INS_FMIN: Type = 108;
+    pub const ARM64_INS_FMINNM: Type = 109;
+    pub const ARM64_INS_FMINNMP: Type = 110;
+    pub const ARM64_INS_FMINNMV: Type = 111;
+    pub const ARM64_INS_FMINP: Type = 112;
+    pub const ARM64_INS_FMINV: Type = 113;
+    pub const ARM64_INS_FMLA: Type = 114;
+    pub const ARM64_INS_FMLS: Type = 115;
+    pub const ARM64_INS_FMOV: Type = 116;
+    pub const ARM64_INS_FMSUB: Type = 117;
+    pub const ARM64_INS_FMUL: Type = 118;
+    pub const ARM64_INS_FMULX: Type = 119;
+    pub const ARM64_INS_FNEG: Type = 120;
+    pub const ARM64_INS_FNMADD: Type = 121;
+    pub const ARM64_INS_FNMSUB: Type = 122;
+    pub const ARM64_INS_FNMUL: Type = 123;
+    pub const ARM64_INS_FRECPE: Type = 124;
+    pub const ARM64_INS_FRECPS: Type = 125;
+    pub const ARM64_INS_FRECPX: Type = 126;
+    pub const ARM64_INS_FRINTA: Type = 127;
+    pub const ARM64_INS_FRINTI: Type = 128;
+    pub const ARM64_INS_FRINTM: Type = 129;
+    pub const ARM64_INS_FRINTN: Type = 130;
+    pub const ARM64_INS_FRINTP: Type = 131;
+    pub const ARM64_INS_FRINTX: Type = 132;
+    pub const ARM64_INS_FRINTZ: Type = 133;
+    pub const ARM64_INS_FRSQRTE: Type = 134;
+    pub const ARM64_INS_FRSQRTS: Type = 135;
+    pub const ARM64_INS_FSQRT: Type = 136;
+    pub const ARM64_INS_FSUB: Type = 137;
+    pub const ARM64_INS_HINT: Type = 138;
+    pub const ARM64_INS_HLT: Type = 139;
+    pub const ARM64_INS_HVC: Type = 140;
+    pub const ARM64_INS_INS: Type = 141;
+    pub const ARM64_INS_ISB: Type = 142;
+    pub const ARM64_INS_LD1: Type = 143;
+    pub const ARM64_INS_LD1R: Type = 144;
+    pub const ARM64_INS_LD2R: Type = 145;
+    pub const ARM64_INS_LD2: Type = 146;
+    pub const ARM64_INS_LD3R: Type = 147;
+    pub const ARM64_INS_LD3: Type = 148;
+    pub const ARM64_INS_LD4: Type = 149;
+    pub const ARM64_INS_LD4R: Type = 150;
+    pub const ARM64_INS_LDARB: Type = 151;
+    pub const ARM64_INS_LDARH: Type = 152;
+    pub const ARM64_INS_LDAR: Type = 153;
+    pub const ARM64_INS_LDAXP: Type = 154;
+    pub const ARM64_INS_LDAXRB: Type = 155;
+    pub const ARM64_INS_LDAXRH: Type = 156;
+    pub const ARM64_INS_LDAXR: Type = 157;
+    pub const ARM64_INS_LDNP: Type = 158;
+    pub const ARM64_INS_LDP: Type = 159;
+    pub const ARM64_INS_LDPSW: Type = 160;
+    pub const ARM64_INS_LDRB: Type = 161;
+    pub const ARM64_INS_LDR: Type = 162;
+    pub const ARM64_INS_LDRH: Type = 163;
+    pub const ARM64_INS_LDRSB: Type = 164;
+    pub const ARM64_INS_LDRSH: Type = 165;
+    pub const ARM64_INS_LDRSW: Type = 166;
+    pub const ARM64_INS_LDTRB: Type = 167;
+    pub const ARM64_INS_LDTRH: Type = 168;
+    pub const ARM64_INS_LDTRSB: Type = 169;
+    pub const ARM64_INS_LDTRSH: Type = 170;
+    pub const ARM64_INS_LDTRSW: Type = 171;
+    pub const ARM64_INS_LDTR: Type = 172;
+    pub const ARM64_INS_LDURB: Type = 173;
+    pub const ARM64_INS_LDUR: Type = 174;
+    pub const ARM64_INS_LDURH: Type = 175;
+    pub const ARM64_INS_LDURSB: Type = 176;
+    pub const ARM64_INS_LDURSH: Type = 177;
+    pub const ARM64_INS_LDURSW: Type = 178;
+    pub const ARM64_INS_LDXP: Type = 179;
+    pub const ARM64_INS_LDXRB: Type = 180;
+    pub const ARM64_INS_LDXRH: Type = 181;
+    pub const ARM64_INS_LDXR: Type = 182;
+    pub const ARM64_INS_LSL: Type = 183;
+    pub const ARM64_INS_LSR: Type = 184;
+    pub const ARM64_INS_MADD: Type = 185;
+    pub const ARM64_INS_MLA: Type = 186;
+    pub const ARM64_INS_MLS: Type = 187;
+    pub const ARM64_INS_MOVI: Type = 188;
+    pub const ARM64_INS_MOVK: Type = 189;
+    pub const ARM64_INS_MOVN: Type = 190;
+    pub const ARM64_INS_MOVZ: Type = 191;
+    pub const ARM64_INS_MRS: Type = 192;
+    pub const ARM64_INS_MSR: Type = 193;
+    pub const ARM64_INS_MSUB: Type = 194;
+    pub const ARM64_INS_MUL: Type = 195;
+    pub const ARM64_INS_MVNI: Type = 196;
+    pub const ARM64_INS_NEG: Type = 197;
+    pub const ARM64_INS_NOT: Type = 198;
+    pub const ARM64_INS_ORN: Type = 199;
+    pub const ARM64_INS_ORR: Type = 200;
+    pub const ARM64_INS_PMULL2: Type = 201;
+    pub const ARM64_INS_PMULL: Type = 202;
+    pub const ARM64_INS_PMUL: Type = 203;
+    pub const ARM64_INS_PRFM: Type = 204;
+    pub const ARM64_INS_PRFUM: Type = 205;
+    pub const ARM64_INS_RADDHN: Type = 206;
+    pub const ARM64_INS_RADDHN2: Type = 207;
+    pub const ARM64_INS_RBIT: Type = 208;
+    pub const ARM64_INS_RET: Type = 209;
+    pub const ARM64_INS_REV16: Type = 210;
+    pub const ARM64_INS_REV32: Type = 211;
+    pub const ARM64_INS_REV64: Type = 212;
+    pub const ARM64_INS_REV: Type = 213;
+    pub const ARM64_INS_ROR: Type = 214;
+    pub const ARM64_INS_RSHRN2: Type = 215;
+    pub const ARM64_INS_RSHRN: Type = 216;
+    pub const ARM64_INS_RSUBHN: Type = 217;
+    pub const ARM64_INS_RSUBHN2: Type = 218;
+    pub const ARM64_INS_SABAL2: Type = 219;
+    pub const ARM64_INS_SABAL: Type = 220;
+    pub const ARM64_INS_SABA: Type = 221;
+    pub const ARM64_INS_SABDL2: Type = 222;
+    pub const ARM64_INS_SABDL: Type = 223;
+    pub const ARM64_INS_SABD: Type = 224;
+    pub const ARM64_INS_SADALP: Type = 225;
+    pub const ARM64_INS_SADDLP: Type = 226;
+    pub const ARM64_INS_SADDLV: Type = 227;
+    pub const ARM64_INS_SADDL2: Type = 228;
+    pub const ARM64_INS_SADDL: Type = 229;
+    pub const ARM64_INS_SADDW2: Type = 230;
+    pub const ARM64_INS_SADDW: Type = 231;
+    pub const ARM64_INS_SBC: Type = 232;
+    pub const ARM64_INS_SBFM: Type = 233;
+    pub const ARM64_INS_SCVTF: Type = 234;
+    pub const ARM64_INS_SDIV: Type = 235;
+    pub const ARM64_INS_SHA1C: Type = 236;
+    pub const ARM64_INS_SHA1H: Type = 237;
+    pub const ARM64_INS_SHA1M: Type = 238;
+    pub const ARM64_INS_SHA1P: Type = 239;
+    pub const ARM64_INS_SHA1SU0: Type = 240;
+    pub const ARM64_INS_SHA1SU1: Type = 241;
+    pub const ARM64_INS_SHA256H2: Type = 242;
+    pub const ARM64_INS_SHA256H: Type = 243;
+    pub const ARM64_INS_SHA256SU0: Type = 244;
+    pub const ARM64_INS_SHA256SU1: Type = 245;
+    pub const ARM64_INS_SHADD: Type = 246;
+    pub const ARM64_INS_SHLL2: Type = 247;
+    pub const ARM64_INS_SHLL: Type = 248;
+    pub const ARM64_INS_SHL: Type = 249;
+    pub const ARM64_INS_SHRN2: Type = 250;
+    pub const ARM64_INS_SHRN: Type = 251;
+    pub const ARM64_INS_SHSUB: Type = 252;
+    pub const ARM64_INS_SLI: Type = 253;
+    pub const ARM64_INS_SMADDL: Type = 254;
+    pub const ARM64_INS_SMAXP: Type = 255;
+    pub const ARM64_INS_SMAXV: Type = 256;
+    pub const ARM64_INS_SMAX: Type = 257;
+    pub const ARM64_INS_SMC: Type = 258;
+    pub const ARM64_INS_SMINP: Type = 259;
+    pub const ARM64_INS_SMINV: Type = 260;
+    pub const ARM64_INS_SMIN: Type = 261;
+    pub const ARM64_INS_SMLAL2: Type = 262;
+    pub const ARM64_INS_SMLAL: Type = 263;
+    pub const ARM64_INS_SMLSL2: Type = 264;
+    pub const ARM64_INS_SMLSL: Type = 265;
+    pub const ARM64_INS_SMOV: Type = 266;
+    pub const ARM64_INS_SMSUBL: Type = 267;
+    pub const ARM64_INS_SMULH: Type = 268;
+    pub const ARM64_INS_SMULL2: Type = 269;
+    pub const ARM64_INS_SMULL: Type = 270;
+    pub const ARM64_INS_SQABS: Type = 271;
+    pub const ARM64_INS_SQADD: Type = 272;
+    pub const ARM64_INS_SQDMLAL: Type = 273;
+    pub const ARM64_INS_SQDMLAL2: Type = 274;
+    pub const ARM64_INS_SQDMLSL: Type = 275;
+    pub const ARM64_INS_SQDMLSL2: Type = 276;
+    pub const ARM64_INS_SQDMULH: Type = 277;
+    pub const ARM64_INS_SQDMULL: Type = 278;
+    pub const ARM64_INS_SQDMULL2: Type = 279;
+    pub const ARM64_INS_SQNEG: Type = 280;
+    pub const ARM64_INS_SQRDMULH: Type = 281;
+    pub const ARM64_INS_SQRSHL: Type = 282;
+    pub const ARM64_INS_SQRSHRN: Type = 283;
+    pub const ARM64_INS_SQRSHRN2: Type = 284;
+    pub const ARM64_INS_SQRSHRUN: Type = 285;
+    pub const ARM64_INS_SQRSHRUN2: Type = 286;
+    pub const ARM64_INS_SQSHLU: Type = 287;
+    pub const ARM64_INS_SQSHL: Type = 288;
+    pub const ARM64_INS_SQSHRN: Type = 289;
+    pub const ARM64_INS_SQSHRN2: Type = 290;
+    pub const ARM64_INS_SQSHRUN: Type = 291;
+    pub const ARM64_INS_SQSHRUN2: Type = 292;
+    pub const ARM64_INS_SQSUB: Type = 293;
+    pub const ARM64_INS_SQXTN2: Type = 294;
+    pub const ARM64_INS_SQXTN: Type = 295;
+    pub const ARM64_INS_SQXTUN2: Type = 296;
+    pub const ARM64_INS_SQXTUN: Type = 297;
+    pub const ARM64_INS_SRHADD: Type = 298;
+    pub const ARM64_INS_SRI: Type = 299;
+    pub const ARM64_INS_SRSHL: Type = 300;
+    pub const ARM64_INS_SRSHR: Type = 301;
+    pub const ARM64_INS_SRSRA: Type = 302;
+    pub const ARM64_INS_SSHLL2: Type = 303;
+    pub const ARM64_INS_SSHLL: Type = 304;
+    pub const ARM64_INS_SSHL: Type = 305;
+    pub const ARM64_INS_SSHR: Type = 306;
+    pub const ARM64_INS_SSRA: Type = 307;
+    pub const ARM64_INS_SSUBL2: Type = 308;
+    pub const ARM64_INS_SSUBL: Type = 309;
+    pub const ARM64_INS_SSUBW2: Type = 310;
+    pub const ARM64_INS_SSUBW: Type = 311;
+    pub const ARM64_INS_ST1: Type = 312;
+    pub const ARM64_INS_ST2: Type = 313;
+    pub const ARM64_INS_ST3: Type = 314;
+    pub const ARM64_INS_ST4: Type = 315;
+    pub const ARM64_INS_STLRB: Type = 316;
+    pub const ARM64_INS_STLRH: Type = 317;
+    pub const ARM64_INS_STLR: Type = 318;
+    pub const ARM64_INS_STLXP: Type = 319;
+    pub const ARM64_INS_STLXRB: Type = 320;
+    pub const ARM64_INS_STLXRH: Type = 321;
+    pub const ARM64_INS_STLXR: Type = 322;
+    pub const ARM64_INS_STNP: Type = 323;
+    pub const ARM64_INS_STP: Type = 324;
+    pub const ARM64_INS_STRB: Type = 325;
+    pub const ARM64_INS_STR: Type = 326;
+    pub const ARM64_INS_STRH: Type = 327;
+    pub const ARM64_INS_STTRB: Type = 328;
+    pub const ARM64_INS_STTRH: Type = 329;
+    pub const ARM64_INS_STTR: Type = 330;
+    pub const ARM64_INS_STURB: Type = 331;
+    pub const ARM64_INS_STUR: Type = 332;
+    pub const ARM64_INS_STURH: Type = 333;
+    pub const ARM64_INS_STXP: Type = 334;
+    pub const ARM64_INS_STXRB: Type = 335;
+    pub const ARM64_INS_STXRH: Type = 336;
+    pub const ARM64_INS_STXR: Type = 337;
+    pub const ARM64_INS_SUBHN: Type = 338;
+    pub const ARM64_INS_SUBHN2: Type = 339;
+    pub const ARM64_INS_SUB: Type = 340;
+    pub const ARM64_INS_SUQADD: Type = 341;
+    pub const ARM64_INS_SVC: Type = 342;
+    pub const ARM64_INS_SYSL: Type = 343;
+    pub const ARM64_INS_SYS: Type = 344;
+    pub const ARM64_INS_TBL: Type = 345;
+    pub const ARM64_INS_TBNZ: Type = 346;
+    pub const ARM64_INS_TBX: Type = 347;
+    pub const ARM64_INS_TBZ: Type = 348;
+    pub const ARM64_INS_TRN1: Type = 349;
+    pub const ARM64_INS_TRN2: Type = 350;
+    pub const ARM64_INS_UABAL2: Type = 351;
+    pub const ARM64_INS_UABAL: Type = 352;
+    pub const ARM64_INS_UABA: Type = 353;
+    pub const ARM64_INS_UABDL2: Type = 354;
+    pub const ARM64_INS_UABDL: Type = 355;
+    pub const ARM64_INS_UABD: Type = 356;
+    pub const ARM64_INS_UADALP: Type = 357;
+    pub const ARM64_INS_UADDLP: Type = 358;
+    pub const ARM64_INS_UADDLV: Type = 359;
+    pub const ARM64_INS_UADDL2: Type = 360;
+    pub const ARM64_INS_UADDL: Type = 361;
+    pub const ARM64_INS_UADDW2: Type = 362;
+    pub const ARM64_INS_UADDW: Type = 363;
+    pub const ARM64_INS_UBFM: Type = 364;
+    pub const ARM64_INS_UCVTF: Type = 365;
+    pub const ARM64_INS_UDIV: Type = 366;
+    pub const ARM64_INS_UHADD: Type = 367;
+    pub const ARM64_INS_UHSUB: Type = 368;
+    pub const ARM64_INS_UMADDL: Type = 369;
+    pub const ARM64_INS_UMAXP: Type = 370;
+    pub const ARM64_INS_UMAXV: Type = 371;
+    pub const ARM64_INS_UMAX: Type = 372;
+    pub const ARM64_INS_UMINP: Type = 373;
+    pub const ARM64_INS_UMINV: Type = 374;
+    pub const ARM64_INS_UMIN: Type = 375;
+    pub const ARM64_INS_UMLAL2: Type = 376;
+    pub const ARM64_INS_UMLAL: Type = 377;
+    pub const ARM64_INS_UMLSL2: Type = 378;
+    pub const ARM64_INS_UMLSL: Type = 379;
+    pub const ARM64_INS_UMOV: Type = 380;
+    pub const ARM64_INS_UMSUBL: Type = 381;
+    pub const ARM64_INS_UMULH: Type = 382;
+    pub const ARM64_INS_UMULL2: Type = 383;
+    pub const ARM64_INS_UMULL: Type = 384;
+    pub const ARM64_INS_UQADD: Type = 385;
+    pub const ARM64_INS_UQRSHL: Type = 386;
+    pub const ARM64_INS_UQRSHRN: Type = 387;
+    pub const ARM64_INS_UQRSHRN2: Type = 388;
+    pub const ARM64_INS_UQSHL: Type = 389;
+    pub const ARM64_INS_UQSHRN: Type = 390;
+    pub const ARM64_INS_UQSHRN2: Type = 391;
+    pub const ARM64_INS_UQSUB: Type = 392;
+    pub const ARM64_INS_UQXTN2: Type = 393;
+    pub const ARM64_INS_UQXTN: Type = 394;
+    pub const ARM64_INS_URECPE: Type = 395;
+    pub const ARM64_INS_URHADD: Type = 396;
+    pub const ARM64_INS_URSHL: Type = 397;
+    pub const ARM64_INS_URSHR: Type = 398;
+    pub const ARM64_INS_URSQRTE: Type = 399;
+    pub const ARM64_INS_URSRA: Type = 400;
+    pub const ARM64_INS_USHLL2: Type = 401;
+    pub const ARM64_INS_USHLL: Type = 402;
+    pub const ARM64_INS_USHL: Type = 403;
+    pub const ARM64_INS_USHR: Type = 404;
+    pub const ARM64_INS_USQADD: Type = 405;
+    pub const ARM64_INS_USRA: Type = 406;
+    pub const ARM64_INS_USUBL2: Type = 407;
+    pub const ARM64_INS_USUBL: Type = 408;
+    pub const ARM64_INS_USUBW2: Type = 409;
+    pub const ARM64_INS_USUBW: Type = 410;
+    pub const ARM64_INS_UZP1: Type = 411;
+    pub const ARM64_INS_UZP2: Type = 412;
+    pub const ARM64_INS_XTN2: Type = 413;
+    pub const ARM64_INS_XTN: Type = 414;
+    pub const ARM64_INS_ZIP1: Type = 415;
+    pub const ARM64_INS_ZIP2: Type = 416;
+    pub const ARM64_INS_MNEG: Type = 417;
+    pub const ARM64_INS_UMNEGL: Type = 418;
+    pub const ARM64_INS_SMNEGL: Type = 419;
+    pub const ARM64_INS_NOP: Type = 420;
+    pub const ARM64_INS_YIELD: Type = 421;
+    pub const ARM64_INS_WFE: Type = 422;
+    pub const ARM64_INS_WFI: Type = 423;
+    pub const ARM64_INS_SEV: Type = 424;
+    pub const ARM64_INS_SEVL: Type = 425;
+    pub const ARM64_INS_NGC: Type = 426;
+    pub const ARM64_INS_SBFIZ: Type = 427;
+    pub const ARM64_INS_UBFIZ: Type = 428;
+    pub const ARM64_INS_SBFX: Type = 429;
+    pub const ARM64_INS_UBFX: Type = 430;
+    pub const ARM64_INS_BFI: Type = 431;
+    pub const ARM64_INS_BFXIL: Type = 432;
+    pub const ARM64_INS_CMN: Type = 433;
+    pub const ARM64_INS_MVN: Type = 434;
+    pub const ARM64_INS_TST: Type = 435;
+    pub const ARM64_INS_CSET: Type = 436;
+    pub const ARM64_INS_CINC: Type = 437;
+    pub const ARM64_INS_CSETM: Type = 438;
+    pub const ARM64_INS_CINV: Type = 439;
+    pub const ARM64_INS_CNEG: Type = 440;
+    pub const ARM64_INS_SXTB: Type = 441;
+    pub const ARM64_INS_SXTH: Type = 442;
+    pub const ARM64_INS_SXTW: Type = 443;
+    pub const ARM64_INS_CMP: Type = 444;
+    pub const ARM64_INS_UXTB: Type = 445;
+    pub const ARM64_INS_UXTH: Type = 446;
+    pub const ARM64_INS_UXTW: Type = 447;
+    pub const ARM64_INS_IC: Type = 448;
+    pub const ARM64_INS_DC: Type = 449;
+    pub const ARM64_INS_AT: Type = 450;
+    pub const ARM64_INS_TLBI: Type = 451;
+    pub const ARM64_INS_ENDING: Type = 452;
 }
-#[repr(u32)]
-#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
-pub enum arm64_insn_group {
-    ARM64_GRP_INVALID = 0,
-    ARM64_GRP_JUMP = 1,
-    ARM64_GRP_CRYPTO = 128,
-    ARM64_GRP_FPARMV8 = 129,
-    ARM64_GRP_NEON = 130,
-    ARM64_GRP_CRC = 131,
-    ARM64_GRP_ENDING = 132,
+pub mod arm64_insn_group {
+    pub type Type = ::std::os::raw::c_uint;
+    pub const ARM64_GRP_INVALID: Type = 0;
+    pub const ARM64_GRP_JUMP: Type = 1;
+    pub const ARM64_GRP_CRYPTO: Type = 128;
+    pub const ARM64_GRP_FPARMV8: Type = 129;
+    pub const ARM64_GRP_NEON: Type = 130;
+    pub const ARM64_GRP_CRC: Type = 131;
+    pub const ARM64_GRP_ENDING: Type = 132;
 }
-#[repr(u32)]
-#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
-pub enum mips_op_type {
-    MIPS_OP_INVALID = 0,
-    MIPS_OP_REG = 1,
-    MIPS_OP_IMM = 2,
-    MIPS_OP_MEM = 3,
+pub mod mips_op_type {
+    pub type Type = ::std::os::raw::c_uint;
+    pub const MIPS_OP_INVALID: Type = 0;
+    pub const MIPS_OP_REG: Type = 1;
+    pub const MIPS_OP_IMM: Type = 2;
+    pub const MIPS_OP_MEM: Type = 3;
 }
 #[repr(C)]
 #[derive(Debug, Copy)]
@@ -2505,28 +2917,46 @@ pub struct mips_op_mem {
 }
 #[test]
 fn bindgen_test_layout_mips_op_mem() {
-    assert_eq!(::std::mem::size_of::<mips_op_mem>() , 16usize , concat ! (
-               "Size of: " , stringify ! ( mips_op_mem ) ));
-    assert_eq! (::std::mem::align_of::<mips_op_mem>() , 8usize , concat ! (
-                "Alignment of " , stringify ! ( mips_op_mem ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const mips_op_mem ) ) . base as * const _ as
-                usize } , 0usize , concat ! (
-                "Alignment of field: " , stringify ! ( mips_op_mem ) , "::" ,
-                stringify ! ( base ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const mips_op_mem ) ) . disp as * const _ as
-                usize } , 8usize , concat ! (
-                "Alignment of field: " , stringify ! ( mips_op_mem ) , "::" ,
-                stringify ! ( disp ) ));
+    assert_eq!(
+        ::std::mem::size_of::<mips_op_mem>(),
+        16usize,
+        concat!("Size of: ", stringify!(mips_op_mem))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<mips_op_mem>(),
+        8usize,
+        concat!("Alignment of ", stringify!(mips_op_mem))
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const mips_op_mem)).base as *const _ as usize },
+        0usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(mips_op_mem),
+            "::",
+            stringify!(base)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const mips_op_mem)).disp as *const _ as usize },
+        8usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(mips_op_mem),
+            "::",
+            stringify!(disp)
+        )
+    );
 }
 impl Clone for mips_op_mem {
-    fn clone(&self) -> Self { *self }
+    fn clone(&self) -> Self {
+        *self
+    }
 }
 #[repr(C)]
 #[derive(Copy)]
 pub struct cs_mips_op {
-    pub type_: mips_op_type,
+    pub type_: mips_op_type::Type,
     pub __bindgen_anon_1: cs_mips_op__bindgen_ty_1,
 }
 #[repr(C)]
@@ -2539,45 +2969,93 @@ pub union cs_mips_op__bindgen_ty_1 {
 }
 #[test]
 fn bindgen_test_layout_cs_mips_op__bindgen_ty_1() {
-    assert_eq!(::std::mem::size_of::<cs_mips_op__bindgen_ty_1>() , 16usize ,
-               concat ! (
-               "Size of: " , stringify ! ( cs_mips_op__bindgen_ty_1 ) ));
-    assert_eq! (::std::mem::align_of::<cs_mips_op__bindgen_ty_1>() , 8usize ,
-                concat ! (
-                "Alignment of " , stringify ! ( cs_mips_op__bindgen_ty_1 ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const cs_mips_op__bindgen_ty_1 ) ) . reg as *
-                const _ as usize } , 0usize , concat ! (
-                "Alignment of field: " , stringify ! (
-                cs_mips_op__bindgen_ty_1 ) , "::" , stringify ! ( reg ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const cs_mips_op__bindgen_ty_1 ) ) . imm as *
-                const _ as usize } , 0usize , concat ! (
-                "Alignment of field: " , stringify ! (
-                cs_mips_op__bindgen_ty_1 ) , "::" , stringify ! ( imm ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const cs_mips_op__bindgen_ty_1 ) ) . mem as *
-                const _ as usize } , 0usize , concat ! (
-                "Alignment of field: " , stringify ! (
-                cs_mips_op__bindgen_ty_1 ) , "::" , stringify ! ( mem ) ));
+    assert_eq!(
+        ::std::mem::size_of::<cs_mips_op__bindgen_ty_1>(),
+        16usize,
+        concat!("Size of: ", stringify!(cs_mips_op__bindgen_ty_1))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<cs_mips_op__bindgen_ty_1>(),
+        8usize,
+        concat!("Alignment of ", stringify!(cs_mips_op__bindgen_ty_1))
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const cs_mips_op__bindgen_ty_1)).reg as *const _ as usize },
+        0usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(cs_mips_op__bindgen_ty_1),
+            "::",
+            stringify!(reg)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const cs_mips_op__bindgen_ty_1)).imm as *const _ as usize },
+        0usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(cs_mips_op__bindgen_ty_1),
+            "::",
+            stringify!(imm)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const cs_mips_op__bindgen_ty_1)).mem as *const _ as usize },
+        0usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(cs_mips_op__bindgen_ty_1),
+            "::",
+            stringify!(mem)
+        )
+    );
 }
 impl Clone for cs_mips_op__bindgen_ty_1 {
-    fn clone(&self) -> Self { *self }
+    fn clone(&self) -> Self {
+        *self
+    }
+}
+impl ::std::fmt::Debug for cs_mips_op__bindgen_ty_1 {
+    fn fmt(&self, f: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
+        write!(f, "cs_mips_op__bindgen_ty_1 {{ union }}")
+    }
 }
 #[test]
 fn bindgen_test_layout_cs_mips_op() {
-    assert_eq!(::std::mem::size_of::<cs_mips_op>() , 24usize , concat ! (
-               "Size of: " , stringify ! ( cs_mips_op ) ));
-    assert_eq! (::std::mem::align_of::<cs_mips_op>() , 8usize , concat ! (
-                "Alignment of " , stringify ! ( cs_mips_op ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const cs_mips_op ) ) . type_ as * const _ as
-                usize } , 0usize , concat ! (
-                "Alignment of field: " , stringify ! ( cs_mips_op ) , "::" ,
-                stringify ! ( type_ ) ));
+    assert_eq!(
+        ::std::mem::size_of::<cs_mips_op>(),
+        24usize,
+        concat!("Size of: ", stringify!(cs_mips_op))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<cs_mips_op>(),
+        8usize,
+        concat!("Alignment of ", stringify!(cs_mips_op))
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const cs_mips_op)).type_ as *const _ as usize },
+        0usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(cs_mips_op),
+            "::",
+            stringify!(type_)
+        )
+    );
 }
 impl Clone for cs_mips_op {
-    fn clone(&self) -> Self { *self }
+    fn clone(&self) -> Self {
+        *self
+    }
+}
+impl ::std::fmt::Debug for cs_mips_op {
+    fn fmt(&self, f: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
+        write!(
+            f,
+            "cs_mips_op {{ type: {:?}, __bindgen_anon_1: {:?} }}",
+            self.type_, self.__bindgen_anon_1
+        )
+    }
 }
 #[repr(C)]
 #[derive(Copy)]
@@ -2587,23 +3065,50 @@ pub struct cs_mips {
 }
 #[test]
 fn bindgen_test_layout_cs_mips() {
-    assert_eq!(::std::mem::size_of::<cs_mips>() , 200usize , concat ! (
-               "Size of: " , stringify ! ( cs_mips ) ));
-    assert_eq! (::std::mem::align_of::<cs_mips>() , 8usize , concat ! (
-                "Alignment of " , stringify ! ( cs_mips ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const cs_mips ) ) . op_count as * const _ as
-                usize } , 0usize , concat ! (
-                "Alignment of field: " , stringify ! ( cs_mips ) , "::" ,
-                stringify ! ( op_count ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const cs_mips ) ) . operands as * const _ as
-                usize } , 8usize , concat ! (
-                "Alignment of field: " , stringify ! ( cs_mips ) , "::" ,
-                stringify ! ( operands ) ));
+    assert_eq!(
+        ::std::mem::size_of::<cs_mips>(),
+        200usize,
+        concat!("Size of: ", stringify!(cs_mips))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<cs_mips>(),
+        8usize,
+        concat!("Alignment of ", stringify!(cs_mips))
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const cs_mips)).op_count as *const _ as usize },
+        0usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(cs_mips),
+            "::",
+            stringify!(op_count)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const cs_mips)).operands as *const _ as usize },
+        8usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(cs_mips),
+            "::",
+            stringify!(operands)
+        )
+    );
 }
 impl Clone for cs_mips {
-    fn clone(&self) -> Self { *self }
+    fn clone(&self) -> Self {
+        *self
+    }
+}
+impl ::std::fmt::Debug for cs_mips {
+    fn fmt(&self, f: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
+        write!(
+            f,
+            "cs_mips {{ op_count: {:?}, operands: {:?} }}",
+            self.op_count, self.operands
+        )
+    }
 }
 pub mod mips_reg {
     pub type Type = ::std::os::raw::c_uint;
@@ -2786,655 +3291,655 @@ pub mod mips_reg {
     pub const MIPS_REG_LO2: Type = 46;
     pub const MIPS_REG_LO3: Type = 47;
 }
-#[repr(u32)]
-#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
-pub enum mips_insn {
-    MIPS_INS_INVALID = 0,
-    MIPS_INS_ABSQ_S = 1,
-    MIPS_INS_ADD = 2,
-    MIPS_INS_ADDIUPC = 3,
-    MIPS_INS_ADDQH = 4,
-    MIPS_INS_ADDQH_R = 5,
-    MIPS_INS_ADDQ = 6,
-    MIPS_INS_ADDQ_S = 7,
-    MIPS_INS_ADDSC = 8,
-    MIPS_INS_ADDS_A = 9,
-    MIPS_INS_ADDS_S = 10,
-    MIPS_INS_ADDS_U = 11,
-    MIPS_INS_ADDUH = 12,
-    MIPS_INS_ADDUH_R = 13,
-    MIPS_INS_ADDU = 14,
-    MIPS_INS_ADDU_S = 15,
-    MIPS_INS_ADDVI = 16,
-    MIPS_INS_ADDV = 17,
-    MIPS_INS_ADDWC = 18,
-    MIPS_INS_ADD_A = 19,
-    MIPS_INS_ADDI = 20,
-    MIPS_INS_ADDIU = 21,
-    MIPS_INS_ALIGN = 22,
-    MIPS_INS_ALUIPC = 23,
-    MIPS_INS_AND = 24,
-    MIPS_INS_ANDI = 25,
-    MIPS_INS_APPEND = 26,
-    MIPS_INS_ASUB_S = 27,
-    MIPS_INS_ASUB_U = 28,
-    MIPS_INS_AUI = 29,
-    MIPS_INS_AUIPC = 30,
-    MIPS_INS_AVER_S = 31,
-    MIPS_INS_AVER_U = 32,
-    MIPS_INS_AVE_S = 33,
-    MIPS_INS_AVE_U = 34,
-    MIPS_INS_BADDU = 35,
-    MIPS_INS_BAL = 36,
-    MIPS_INS_BALC = 37,
-    MIPS_INS_BALIGN = 38,
-    MIPS_INS_BC = 39,
-    MIPS_INS_BC0F = 40,
-    MIPS_INS_BC0FL = 41,
-    MIPS_INS_BC0T = 42,
-    MIPS_INS_BC0TL = 43,
-    MIPS_INS_BC1EQZ = 44,
-    MIPS_INS_BC1F = 45,
-    MIPS_INS_BC1FL = 46,
-    MIPS_INS_BC1NEZ = 47,
-    MIPS_INS_BC1T = 48,
-    MIPS_INS_BC1TL = 49,
-    MIPS_INS_BC2EQZ = 50,
-    MIPS_INS_BC2F = 51,
-    MIPS_INS_BC2FL = 52,
-    MIPS_INS_BC2NEZ = 53,
-    MIPS_INS_BC2T = 54,
-    MIPS_INS_BC2TL = 55,
-    MIPS_INS_BC3F = 56,
-    MIPS_INS_BC3FL = 57,
-    MIPS_INS_BC3T = 58,
-    MIPS_INS_BC3TL = 59,
-    MIPS_INS_BCLRI = 60,
-    MIPS_INS_BCLR = 61,
-    MIPS_INS_BEQ = 62,
-    MIPS_INS_BEQC = 63,
-    MIPS_INS_BEQL = 64,
-    MIPS_INS_BEQZALC = 65,
-    MIPS_INS_BEQZC = 66,
-    MIPS_INS_BGEC = 67,
-    MIPS_INS_BGEUC = 68,
-    MIPS_INS_BGEZ = 69,
-    MIPS_INS_BGEZAL = 70,
-    MIPS_INS_BGEZALC = 71,
-    MIPS_INS_BGEZALL = 72,
-    MIPS_INS_BGEZALS = 73,
-    MIPS_INS_BGEZC = 74,
-    MIPS_INS_BGEZL = 75,
-    MIPS_INS_BGTZ = 76,
-    MIPS_INS_BGTZALC = 77,
-    MIPS_INS_BGTZC = 78,
-    MIPS_INS_BGTZL = 79,
-    MIPS_INS_BINSLI = 80,
-    MIPS_INS_BINSL = 81,
-    MIPS_INS_BINSRI = 82,
-    MIPS_INS_BINSR = 83,
-    MIPS_INS_BITREV = 84,
-    MIPS_INS_BITSWAP = 85,
-    MIPS_INS_BLEZ = 86,
-    MIPS_INS_BLEZALC = 87,
-    MIPS_INS_BLEZC = 88,
-    MIPS_INS_BLEZL = 89,
-    MIPS_INS_BLTC = 90,
-    MIPS_INS_BLTUC = 91,
-    MIPS_INS_BLTZ = 92,
-    MIPS_INS_BLTZAL = 93,
-    MIPS_INS_BLTZALC = 94,
-    MIPS_INS_BLTZALL = 95,
-    MIPS_INS_BLTZALS = 96,
-    MIPS_INS_BLTZC = 97,
-    MIPS_INS_BLTZL = 98,
-    MIPS_INS_BMNZI = 99,
-    MIPS_INS_BMNZ = 100,
-    MIPS_INS_BMZI = 101,
-    MIPS_INS_BMZ = 102,
-    MIPS_INS_BNE = 103,
-    MIPS_INS_BNEC = 104,
-    MIPS_INS_BNEGI = 105,
-    MIPS_INS_BNEG = 106,
-    MIPS_INS_BNEL = 107,
-    MIPS_INS_BNEZALC = 108,
-    MIPS_INS_BNEZC = 109,
-    MIPS_INS_BNVC = 110,
-    MIPS_INS_BNZ = 111,
-    MIPS_INS_BOVC = 112,
-    MIPS_INS_BPOSGE32 = 113,
-    MIPS_INS_BREAK = 114,
-    MIPS_INS_BSELI = 115,
-    MIPS_INS_BSEL = 116,
-    MIPS_INS_BSETI = 117,
-    MIPS_INS_BSET = 118,
-    MIPS_INS_BZ = 119,
-    MIPS_INS_BEQZ = 120,
-    MIPS_INS_B = 121,
-    MIPS_INS_BNEZ = 122,
-    MIPS_INS_BTEQZ = 123,
-    MIPS_INS_BTNEZ = 124,
-    MIPS_INS_CACHE = 125,
-    MIPS_INS_CEIL = 126,
-    MIPS_INS_CEQI = 127,
-    MIPS_INS_CEQ = 128,
-    MIPS_INS_CFC1 = 129,
-    MIPS_INS_CFCMSA = 130,
-    MIPS_INS_CINS = 131,
-    MIPS_INS_CINS32 = 132,
-    MIPS_INS_CLASS = 133,
-    MIPS_INS_CLEI_S = 134,
-    MIPS_INS_CLEI_U = 135,
-    MIPS_INS_CLE_S = 136,
-    MIPS_INS_CLE_U = 137,
-    MIPS_INS_CLO = 138,
-    MIPS_INS_CLTI_S = 139,
-    MIPS_INS_CLTI_U = 140,
-    MIPS_INS_CLT_S = 141,
-    MIPS_INS_CLT_U = 142,
-    MIPS_INS_CLZ = 143,
-    MIPS_INS_CMPGDU = 144,
-    MIPS_INS_CMPGU = 145,
-    MIPS_INS_CMPU = 146,
-    MIPS_INS_CMP = 147,
-    MIPS_INS_COPY_S = 148,
-    MIPS_INS_COPY_U = 149,
-    MIPS_INS_CTC1 = 150,
-    MIPS_INS_CTCMSA = 151,
-    MIPS_INS_CVT = 152,
-    MIPS_INS_C = 153,
-    MIPS_INS_CMPI = 154,
-    MIPS_INS_DADD = 155,
-    MIPS_INS_DADDI = 156,
-    MIPS_INS_DADDIU = 157,
-    MIPS_INS_DADDU = 158,
-    MIPS_INS_DAHI = 159,
-    MIPS_INS_DALIGN = 160,
-    MIPS_INS_DATI = 161,
-    MIPS_INS_DAUI = 162,
-    MIPS_INS_DBITSWAP = 163,
-    MIPS_INS_DCLO = 164,
-    MIPS_INS_DCLZ = 165,
-    MIPS_INS_DDIV = 166,
-    MIPS_INS_DDIVU = 167,
-    MIPS_INS_DERET = 168,
-    MIPS_INS_DEXT = 169,
-    MIPS_INS_DEXTM = 170,
-    MIPS_INS_DEXTU = 171,
-    MIPS_INS_DI = 172,
-    MIPS_INS_DINS = 173,
-    MIPS_INS_DINSM = 174,
-    MIPS_INS_DINSU = 175,
-    MIPS_INS_DIV = 176,
-    MIPS_INS_DIVU = 177,
-    MIPS_INS_DIV_S = 178,
-    MIPS_INS_DIV_U = 179,
-    MIPS_INS_DLSA = 180,
-    MIPS_INS_DMFC0 = 181,
-    MIPS_INS_DMFC1 = 182,
-    MIPS_INS_DMFC2 = 183,
-    MIPS_INS_DMOD = 184,
-    MIPS_INS_DMODU = 185,
-    MIPS_INS_DMTC0 = 186,
-    MIPS_INS_DMTC1 = 187,
-    MIPS_INS_DMTC2 = 188,
-    MIPS_INS_DMUH = 189,
-    MIPS_INS_DMUHU = 190,
-    MIPS_INS_DMUL = 191,
-    MIPS_INS_DMULT = 192,
-    MIPS_INS_DMULTU = 193,
-    MIPS_INS_DMULU = 194,
-    MIPS_INS_DOTP_S = 195,
-    MIPS_INS_DOTP_U = 196,
-    MIPS_INS_DPADD_S = 197,
-    MIPS_INS_DPADD_U = 198,
-    MIPS_INS_DPAQX_SA = 199,
-    MIPS_INS_DPAQX_S = 200,
-    MIPS_INS_DPAQ_SA = 201,
-    MIPS_INS_DPAQ_S = 202,
-    MIPS_INS_DPAU = 203,
-    MIPS_INS_DPAX = 204,
-    MIPS_INS_DPA = 205,
-    MIPS_INS_DPOP = 206,
-    MIPS_INS_DPSQX_SA = 207,
-    MIPS_INS_DPSQX_S = 208,
-    MIPS_INS_DPSQ_SA = 209,
-    MIPS_INS_DPSQ_S = 210,
-    MIPS_INS_DPSUB_S = 211,
-    MIPS_INS_DPSUB_U = 212,
-    MIPS_INS_DPSU = 213,
-    MIPS_INS_DPSX = 214,
-    MIPS_INS_DPS = 215,
-    MIPS_INS_DROTR = 216,
-    MIPS_INS_DROTR32 = 217,
-    MIPS_INS_DROTRV = 218,
-    MIPS_INS_DSBH = 219,
-    MIPS_INS_DSHD = 220,
-    MIPS_INS_DSLL = 221,
-    MIPS_INS_DSLL32 = 222,
-    MIPS_INS_DSLLV = 223,
-    MIPS_INS_DSRA = 224,
-    MIPS_INS_DSRA32 = 225,
-    MIPS_INS_DSRAV = 226,
-    MIPS_INS_DSRL = 227,
-    MIPS_INS_DSRL32 = 228,
-    MIPS_INS_DSRLV = 229,
-    MIPS_INS_DSUB = 230,
-    MIPS_INS_DSUBU = 231,
-    MIPS_INS_EHB = 232,
-    MIPS_INS_EI = 233,
-    MIPS_INS_ERET = 234,
-    MIPS_INS_EXT = 235,
-    MIPS_INS_EXTP = 236,
-    MIPS_INS_EXTPDP = 237,
-    MIPS_INS_EXTPDPV = 238,
-    MIPS_INS_EXTPV = 239,
-    MIPS_INS_EXTRV_RS = 240,
-    MIPS_INS_EXTRV_R = 241,
-    MIPS_INS_EXTRV_S = 242,
-    MIPS_INS_EXTRV = 243,
-    MIPS_INS_EXTR_RS = 244,
-    MIPS_INS_EXTR_R = 245,
-    MIPS_INS_EXTR_S = 246,
-    MIPS_INS_EXTR = 247,
-    MIPS_INS_EXTS = 248,
-    MIPS_INS_EXTS32 = 249,
-    MIPS_INS_ABS = 250,
-    MIPS_INS_FADD = 251,
-    MIPS_INS_FCAF = 252,
-    MIPS_INS_FCEQ = 253,
-    MIPS_INS_FCLASS = 254,
-    MIPS_INS_FCLE = 255,
-    MIPS_INS_FCLT = 256,
-    MIPS_INS_FCNE = 257,
-    MIPS_INS_FCOR = 258,
-    MIPS_INS_FCUEQ = 259,
-    MIPS_INS_FCULE = 260,
-    MIPS_INS_FCULT = 261,
-    MIPS_INS_FCUNE = 262,
-    MIPS_INS_FCUN = 263,
-    MIPS_INS_FDIV = 264,
-    MIPS_INS_FEXDO = 265,
-    MIPS_INS_FEXP2 = 266,
-    MIPS_INS_FEXUPL = 267,
-    MIPS_INS_FEXUPR = 268,
-    MIPS_INS_FFINT_S = 269,
-    MIPS_INS_FFINT_U = 270,
-    MIPS_INS_FFQL = 271,
-    MIPS_INS_FFQR = 272,
-    MIPS_INS_FILL = 273,
-    MIPS_INS_FLOG2 = 274,
-    MIPS_INS_FLOOR = 275,
-    MIPS_INS_FMADD = 276,
-    MIPS_INS_FMAX_A = 277,
-    MIPS_INS_FMAX = 278,
-    MIPS_INS_FMIN_A = 279,
-    MIPS_INS_FMIN = 280,
-    MIPS_INS_MOV = 281,
-    MIPS_INS_FMSUB = 282,
-    MIPS_INS_FMUL = 283,
-    MIPS_INS_MUL = 284,
-    MIPS_INS_NEG = 285,
-    MIPS_INS_FRCP = 286,
-    MIPS_INS_FRINT = 287,
-    MIPS_INS_FRSQRT = 288,
-    MIPS_INS_FSAF = 289,
-    MIPS_INS_FSEQ = 290,
-    MIPS_INS_FSLE = 291,
-    MIPS_INS_FSLT = 292,
-    MIPS_INS_FSNE = 293,
-    MIPS_INS_FSOR = 294,
-    MIPS_INS_FSQRT = 295,
-    MIPS_INS_SQRT = 296,
-    MIPS_INS_FSUB = 297,
-    MIPS_INS_SUB = 298,
-    MIPS_INS_FSUEQ = 299,
-    MIPS_INS_FSULE = 300,
-    MIPS_INS_FSULT = 301,
-    MIPS_INS_FSUNE = 302,
-    MIPS_INS_FSUN = 303,
-    MIPS_INS_FTINT_S = 304,
-    MIPS_INS_FTINT_U = 305,
-    MIPS_INS_FTQ = 306,
-    MIPS_INS_FTRUNC_S = 307,
-    MIPS_INS_FTRUNC_U = 308,
-    MIPS_INS_HADD_S = 309,
-    MIPS_INS_HADD_U = 310,
-    MIPS_INS_HSUB_S = 311,
-    MIPS_INS_HSUB_U = 312,
-    MIPS_INS_ILVEV = 313,
-    MIPS_INS_ILVL = 314,
-    MIPS_INS_ILVOD = 315,
-    MIPS_INS_ILVR = 316,
-    MIPS_INS_INS = 317,
-    MIPS_INS_INSERT = 318,
-    MIPS_INS_INSV = 319,
-    MIPS_INS_INSVE = 320,
-    MIPS_INS_J = 321,
-    MIPS_INS_JAL = 322,
-    MIPS_INS_JALR = 323,
-    MIPS_INS_JALRS = 324,
-    MIPS_INS_JALS = 325,
-    MIPS_INS_JALX = 326,
-    MIPS_INS_JIALC = 327,
-    MIPS_INS_JIC = 328,
-    MIPS_INS_JR = 329,
-    MIPS_INS_JRADDIUSP = 330,
-    MIPS_INS_JRC = 331,
-    MIPS_INS_JALRC = 332,
-    MIPS_INS_LB = 333,
-    MIPS_INS_LBUX = 334,
-    MIPS_INS_LBU = 335,
-    MIPS_INS_LD = 336,
-    MIPS_INS_LDC1 = 337,
-    MIPS_INS_LDC2 = 338,
-    MIPS_INS_LDC3 = 339,
-    MIPS_INS_LDI = 340,
-    MIPS_INS_LDL = 341,
-    MIPS_INS_LDPC = 342,
-    MIPS_INS_LDR = 343,
-    MIPS_INS_LDXC1 = 344,
-    MIPS_INS_LH = 345,
-    MIPS_INS_LHX = 346,
-    MIPS_INS_LHU = 347,
-    MIPS_INS_LL = 348,
-    MIPS_INS_LLD = 349,
-    MIPS_INS_LSA = 350,
-    MIPS_INS_LUXC1 = 351,
-    MIPS_INS_LUI = 352,
-    MIPS_INS_LW = 353,
-    MIPS_INS_LWC1 = 354,
-    MIPS_INS_LWC2 = 355,
-    MIPS_INS_LWC3 = 356,
-    MIPS_INS_LWL = 357,
-    MIPS_INS_LWPC = 358,
-    MIPS_INS_LWR = 359,
-    MIPS_INS_LWUPC = 360,
-    MIPS_INS_LWU = 361,
-    MIPS_INS_LWX = 362,
-    MIPS_INS_LWXC1 = 363,
-    MIPS_INS_LI = 364,
-    MIPS_INS_MADD = 365,
-    MIPS_INS_MADDF = 366,
-    MIPS_INS_MADDR_Q = 367,
-    MIPS_INS_MADDU = 368,
-    MIPS_INS_MADDV = 369,
-    MIPS_INS_MADD_Q = 370,
-    MIPS_INS_MAQ_SA = 371,
-    MIPS_INS_MAQ_S = 372,
-    MIPS_INS_MAXA = 373,
-    MIPS_INS_MAXI_S = 374,
-    MIPS_INS_MAXI_U = 375,
-    MIPS_INS_MAX_A = 376,
-    MIPS_INS_MAX = 377,
-    MIPS_INS_MAX_S = 378,
-    MIPS_INS_MAX_U = 379,
-    MIPS_INS_MFC0 = 380,
-    MIPS_INS_MFC1 = 381,
-    MIPS_INS_MFC2 = 382,
-    MIPS_INS_MFHC1 = 383,
-    MIPS_INS_MFHI = 384,
-    MIPS_INS_MFLO = 385,
-    MIPS_INS_MINA = 386,
-    MIPS_INS_MINI_S = 387,
-    MIPS_INS_MINI_U = 388,
-    MIPS_INS_MIN_A = 389,
-    MIPS_INS_MIN = 390,
-    MIPS_INS_MIN_S = 391,
-    MIPS_INS_MIN_U = 392,
-    MIPS_INS_MOD = 393,
-    MIPS_INS_MODSUB = 394,
-    MIPS_INS_MODU = 395,
-    MIPS_INS_MOD_S = 396,
-    MIPS_INS_MOD_U = 397,
-    MIPS_INS_MOVE = 398,
-    MIPS_INS_MOVF = 399,
-    MIPS_INS_MOVN = 400,
-    MIPS_INS_MOVT = 401,
-    MIPS_INS_MOVZ = 402,
-    MIPS_INS_MSUB = 403,
-    MIPS_INS_MSUBF = 404,
-    MIPS_INS_MSUBR_Q = 405,
-    MIPS_INS_MSUBU = 406,
-    MIPS_INS_MSUBV = 407,
-    MIPS_INS_MSUB_Q = 408,
-    MIPS_INS_MTC0 = 409,
-    MIPS_INS_MTC1 = 410,
-    MIPS_INS_MTC2 = 411,
-    MIPS_INS_MTHC1 = 412,
-    MIPS_INS_MTHI = 413,
-    MIPS_INS_MTHLIP = 414,
-    MIPS_INS_MTLO = 415,
-    MIPS_INS_MTM0 = 416,
-    MIPS_INS_MTM1 = 417,
-    MIPS_INS_MTM2 = 418,
-    MIPS_INS_MTP0 = 419,
-    MIPS_INS_MTP1 = 420,
-    MIPS_INS_MTP2 = 421,
-    MIPS_INS_MUH = 422,
-    MIPS_INS_MUHU = 423,
-    MIPS_INS_MULEQ_S = 424,
-    MIPS_INS_MULEU_S = 425,
-    MIPS_INS_MULQ_RS = 426,
-    MIPS_INS_MULQ_S = 427,
-    MIPS_INS_MULR_Q = 428,
-    MIPS_INS_MULSAQ_S = 429,
-    MIPS_INS_MULSA = 430,
-    MIPS_INS_MULT = 431,
-    MIPS_INS_MULTU = 432,
-    MIPS_INS_MULU = 433,
-    MIPS_INS_MULV = 434,
-    MIPS_INS_MUL_Q = 435,
-    MIPS_INS_MUL_S = 436,
-    MIPS_INS_NLOC = 437,
-    MIPS_INS_NLZC = 438,
-    MIPS_INS_NMADD = 439,
-    MIPS_INS_NMSUB = 440,
-    MIPS_INS_NOR = 441,
-    MIPS_INS_NORI = 442,
-    MIPS_INS_NOT = 443,
-    MIPS_INS_OR = 444,
-    MIPS_INS_ORI = 445,
-    MIPS_INS_PACKRL = 446,
-    MIPS_INS_PAUSE = 447,
-    MIPS_INS_PCKEV = 448,
-    MIPS_INS_PCKOD = 449,
-    MIPS_INS_PCNT = 450,
-    MIPS_INS_PICK = 451,
-    MIPS_INS_POP = 452,
-    MIPS_INS_PRECEQU = 453,
-    MIPS_INS_PRECEQ = 454,
-    MIPS_INS_PRECEU = 455,
-    MIPS_INS_PRECRQU_S = 456,
-    MIPS_INS_PRECRQ = 457,
-    MIPS_INS_PRECRQ_RS = 458,
-    MIPS_INS_PRECR = 459,
-    MIPS_INS_PRECR_SRA = 460,
-    MIPS_INS_PRECR_SRA_R = 461,
-    MIPS_INS_PREF = 462,
-    MIPS_INS_PREPEND = 463,
-    MIPS_INS_RADDU = 464,
-    MIPS_INS_RDDSP = 465,
-    MIPS_INS_RDHWR = 466,
-    MIPS_INS_REPLV = 467,
-    MIPS_INS_REPL = 468,
-    MIPS_INS_RINT = 469,
-    MIPS_INS_ROTR = 470,
-    MIPS_INS_ROTRV = 471,
-    MIPS_INS_ROUND = 472,
-    MIPS_INS_SAT_S = 473,
-    MIPS_INS_SAT_U = 474,
-    MIPS_INS_SB = 475,
-    MIPS_INS_SC = 476,
-    MIPS_INS_SCD = 477,
-    MIPS_INS_SD = 478,
-    MIPS_INS_SDBBP = 479,
-    MIPS_INS_SDC1 = 480,
-    MIPS_INS_SDC2 = 481,
-    MIPS_INS_SDC3 = 482,
-    MIPS_INS_SDL = 483,
-    MIPS_INS_SDR = 484,
-    MIPS_INS_SDXC1 = 485,
-    MIPS_INS_SEB = 486,
-    MIPS_INS_SEH = 487,
-    MIPS_INS_SELEQZ = 488,
-    MIPS_INS_SELNEZ = 489,
-    MIPS_INS_SEL = 490,
-    MIPS_INS_SEQ = 491,
-    MIPS_INS_SEQI = 492,
-    MIPS_INS_SH = 493,
-    MIPS_INS_SHF = 494,
-    MIPS_INS_SHILO = 495,
-    MIPS_INS_SHILOV = 496,
-    MIPS_INS_SHLLV = 497,
-    MIPS_INS_SHLLV_S = 498,
-    MIPS_INS_SHLL = 499,
-    MIPS_INS_SHLL_S = 500,
-    MIPS_INS_SHRAV = 501,
-    MIPS_INS_SHRAV_R = 502,
-    MIPS_INS_SHRA = 503,
-    MIPS_INS_SHRA_R = 504,
-    MIPS_INS_SHRLV = 505,
-    MIPS_INS_SHRL = 506,
-    MIPS_INS_SLDI = 507,
-    MIPS_INS_SLD = 508,
-    MIPS_INS_SLL = 509,
-    MIPS_INS_SLLI = 510,
-    MIPS_INS_SLLV = 511,
-    MIPS_INS_SLT = 512,
-    MIPS_INS_SLTI = 513,
-    MIPS_INS_SLTIU = 514,
-    MIPS_INS_SLTU = 515,
-    MIPS_INS_SNE = 516,
-    MIPS_INS_SNEI = 517,
-    MIPS_INS_SPLATI = 518,
-    MIPS_INS_SPLAT = 519,
-    MIPS_INS_SRA = 520,
-    MIPS_INS_SRAI = 521,
-    MIPS_INS_SRARI = 522,
-    MIPS_INS_SRAR = 523,
-    MIPS_INS_SRAV = 524,
-    MIPS_INS_SRL = 525,
-    MIPS_INS_SRLI = 526,
-    MIPS_INS_SRLRI = 527,
-    MIPS_INS_SRLR = 528,
-    MIPS_INS_SRLV = 529,
-    MIPS_INS_SSNOP = 530,
-    MIPS_INS_ST = 531,
-    MIPS_INS_SUBQH = 532,
-    MIPS_INS_SUBQH_R = 533,
-    MIPS_INS_SUBQ = 534,
-    MIPS_INS_SUBQ_S = 535,
-    MIPS_INS_SUBSUS_U = 536,
-    MIPS_INS_SUBSUU_S = 537,
-    MIPS_INS_SUBS_S = 538,
-    MIPS_INS_SUBS_U = 539,
-    MIPS_INS_SUBUH = 540,
-    MIPS_INS_SUBUH_R = 541,
-    MIPS_INS_SUBU = 542,
-    MIPS_INS_SUBU_S = 543,
-    MIPS_INS_SUBVI = 544,
-    MIPS_INS_SUBV = 545,
-    MIPS_INS_SUXC1 = 546,
-    MIPS_INS_SW = 547,
-    MIPS_INS_SWC1 = 548,
-    MIPS_INS_SWC2 = 549,
-    MIPS_INS_SWC3 = 550,
-    MIPS_INS_SWL = 551,
-    MIPS_INS_SWR = 552,
-    MIPS_INS_SWXC1 = 553,
-    MIPS_INS_SYNC = 554,
-    MIPS_INS_SYSCALL = 555,
-    MIPS_INS_TEQ = 556,
-    MIPS_INS_TEQI = 557,
-    MIPS_INS_TGE = 558,
-    MIPS_INS_TGEI = 559,
-    MIPS_INS_TGEIU = 560,
-    MIPS_INS_TGEU = 561,
-    MIPS_INS_TLBP = 562,
-    MIPS_INS_TLBR = 563,
-    MIPS_INS_TLBWI = 564,
-    MIPS_INS_TLBWR = 565,
-    MIPS_INS_TLT = 566,
-    MIPS_INS_TLTI = 567,
-    MIPS_INS_TLTIU = 568,
-    MIPS_INS_TLTU = 569,
-    MIPS_INS_TNE = 570,
-    MIPS_INS_TNEI = 571,
-    MIPS_INS_TRUNC = 572,
-    MIPS_INS_V3MULU = 573,
-    MIPS_INS_VMM0 = 574,
-    MIPS_INS_VMULU = 575,
-    MIPS_INS_VSHF = 576,
-    MIPS_INS_WAIT = 577,
-    MIPS_INS_WRDSP = 578,
-    MIPS_INS_WSBH = 579,
-    MIPS_INS_XOR = 580,
-    MIPS_INS_XORI = 581,
-    MIPS_INS_NOP = 582,
-    MIPS_INS_NEGU = 583,
-    MIPS_INS_JALR_HB = 584,
-    MIPS_INS_JR_HB = 585,
-    MIPS_INS_ENDING = 586,
+pub mod mips_insn {
+    pub type Type = ::std::os::raw::c_uint;
+    pub const MIPS_INS_INVALID: Type = 0;
+    pub const MIPS_INS_ABSQ_S: Type = 1;
+    pub const MIPS_INS_ADD: Type = 2;
+    pub const MIPS_INS_ADDIUPC: Type = 3;
+    pub const MIPS_INS_ADDQH: Type = 4;
+    pub const MIPS_INS_ADDQH_R: Type = 5;
+    pub const MIPS_INS_ADDQ: Type = 6;
+    pub const MIPS_INS_ADDQ_S: Type = 7;
+    pub const MIPS_INS_ADDSC: Type = 8;
+    pub const MIPS_INS_ADDS_A: Type = 9;
+    pub const MIPS_INS_ADDS_S: Type = 10;
+    pub const MIPS_INS_ADDS_U: Type = 11;
+    pub const MIPS_INS_ADDUH: Type = 12;
+    pub const MIPS_INS_ADDUH_R: Type = 13;
+    pub const MIPS_INS_ADDU: Type = 14;
+    pub const MIPS_INS_ADDU_S: Type = 15;
+    pub const MIPS_INS_ADDVI: Type = 16;
+    pub const MIPS_INS_ADDV: Type = 17;
+    pub const MIPS_INS_ADDWC: Type = 18;
+    pub const MIPS_INS_ADD_A: Type = 19;
+    pub const MIPS_INS_ADDI: Type = 20;
+    pub const MIPS_INS_ADDIU: Type = 21;
+    pub const MIPS_INS_ALIGN: Type = 22;
+    pub const MIPS_INS_ALUIPC: Type = 23;
+    pub const MIPS_INS_AND: Type = 24;
+    pub const MIPS_INS_ANDI: Type = 25;
+    pub const MIPS_INS_APPEND: Type = 26;
+    pub const MIPS_INS_ASUB_S: Type = 27;
+    pub const MIPS_INS_ASUB_U: Type = 28;
+    pub const MIPS_INS_AUI: Type = 29;
+    pub const MIPS_INS_AUIPC: Type = 30;
+    pub const MIPS_INS_AVER_S: Type = 31;
+    pub const MIPS_INS_AVER_U: Type = 32;
+    pub const MIPS_INS_AVE_S: Type = 33;
+    pub const MIPS_INS_AVE_U: Type = 34;
+    pub const MIPS_INS_BADDU: Type = 35;
+    pub const MIPS_INS_BAL: Type = 36;
+    pub const MIPS_INS_BALC: Type = 37;
+    pub const MIPS_INS_BALIGN: Type = 38;
+    pub const MIPS_INS_BC: Type = 39;
+    pub const MIPS_INS_BC0F: Type = 40;
+    pub const MIPS_INS_BC0FL: Type = 41;
+    pub const MIPS_INS_BC0T: Type = 42;
+    pub const MIPS_INS_BC0TL: Type = 43;
+    pub const MIPS_INS_BC1EQZ: Type = 44;
+    pub const MIPS_INS_BC1F: Type = 45;
+    pub const MIPS_INS_BC1FL: Type = 46;
+    pub const MIPS_INS_BC1NEZ: Type = 47;
+    pub const MIPS_INS_BC1T: Type = 48;
+    pub const MIPS_INS_BC1TL: Type = 49;
+    pub const MIPS_INS_BC2EQZ: Type = 50;
+    pub const MIPS_INS_BC2F: Type = 51;
+    pub const MIPS_INS_BC2FL: Type = 52;
+    pub const MIPS_INS_BC2NEZ: Type = 53;
+    pub const MIPS_INS_BC2T: Type = 54;
+    pub const MIPS_INS_BC2TL: Type = 55;
+    pub const MIPS_INS_BC3F: Type = 56;
+    pub const MIPS_INS_BC3FL: Type = 57;
+    pub const MIPS_INS_BC3T: Type = 58;
+    pub const MIPS_INS_BC3TL: Type = 59;
+    pub const MIPS_INS_BCLRI: Type = 60;
+    pub const MIPS_INS_BCLR: Type = 61;
+    pub const MIPS_INS_BEQ: Type = 62;
+    pub const MIPS_INS_BEQC: Type = 63;
+    pub const MIPS_INS_BEQL: Type = 64;
+    pub const MIPS_INS_BEQZALC: Type = 65;
+    pub const MIPS_INS_BEQZC: Type = 66;
+    pub const MIPS_INS_BGEC: Type = 67;
+    pub const MIPS_INS_BGEUC: Type = 68;
+    pub const MIPS_INS_BGEZ: Type = 69;
+    pub const MIPS_INS_BGEZAL: Type = 70;
+    pub const MIPS_INS_BGEZALC: Type = 71;
+    pub const MIPS_INS_BGEZALL: Type = 72;
+    pub const MIPS_INS_BGEZALS: Type = 73;
+    pub const MIPS_INS_BGEZC: Type = 74;
+    pub const MIPS_INS_BGEZL: Type = 75;
+    pub const MIPS_INS_BGTZ: Type = 76;
+    pub const MIPS_INS_BGTZALC: Type = 77;
+    pub const MIPS_INS_BGTZC: Type = 78;
+    pub const MIPS_INS_BGTZL: Type = 79;
+    pub const MIPS_INS_BINSLI: Type = 80;
+    pub const MIPS_INS_BINSL: Type = 81;
+    pub const MIPS_INS_BINSRI: Type = 82;
+    pub const MIPS_INS_BINSR: Type = 83;
+    pub const MIPS_INS_BITREV: Type = 84;
+    pub const MIPS_INS_BITSWAP: Type = 85;
+    pub const MIPS_INS_BLEZ: Type = 86;
+    pub const MIPS_INS_BLEZALC: Type = 87;
+    pub const MIPS_INS_BLEZC: Type = 88;
+    pub const MIPS_INS_BLEZL: Type = 89;
+    pub const MIPS_INS_BLTC: Type = 90;
+    pub const MIPS_INS_BLTUC: Type = 91;
+    pub const MIPS_INS_BLTZ: Type = 92;
+    pub const MIPS_INS_BLTZAL: Type = 93;
+    pub const MIPS_INS_BLTZALC: Type = 94;
+    pub const MIPS_INS_BLTZALL: Type = 95;
+    pub const MIPS_INS_BLTZALS: Type = 96;
+    pub const MIPS_INS_BLTZC: Type = 97;
+    pub const MIPS_INS_BLTZL: Type = 98;
+    pub const MIPS_INS_BMNZI: Type = 99;
+    pub const MIPS_INS_BMNZ: Type = 100;
+    pub const MIPS_INS_BMZI: Type = 101;
+    pub const MIPS_INS_BMZ: Type = 102;
+    pub const MIPS_INS_BNE: Type = 103;
+    pub const MIPS_INS_BNEC: Type = 104;
+    pub const MIPS_INS_BNEGI: Type = 105;
+    pub const MIPS_INS_BNEG: Type = 106;
+    pub const MIPS_INS_BNEL: Type = 107;
+    pub const MIPS_INS_BNEZALC: Type = 108;
+    pub const MIPS_INS_BNEZC: Type = 109;
+    pub const MIPS_INS_BNVC: Type = 110;
+    pub const MIPS_INS_BNZ: Type = 111;
+    pub const MIPS_INS_BOVC: Type = 112;
+    pub const MIPS_INS_BPOSGE32: Type = 113;
+    pub const MIPS_INS_BREAK: Type = 114;
+    pub const MIPS_INS_BSELI: Type = 115;
+    pub const MIPS_INS_BSEL: Type = 116;
+    pub const MIPS_INS_BSETI: Type = 117;
+    pub const MIPS_INS_BSET: Type = 118;
+    pub const MIPS_INS_BZ: Type = 119;
+    pub const MIPS_INS_BEQZ: Type = 120;
+    pub const MIPS_INS_B: Type = 121;
+    pub const MIPS_INS_BNEZ: Type = 122;
+    pub const MIPS_INS_BTEQZ: Type = 123;
+    pub const MIPS_INS_BTNEZ: Type = 124;
+    pub const MIPS_INS_CACHE: Type = 125;
+    pub const MIPS_INS_CEIL: Type = 126;
+    pub const MIPS_INS_CEQI: Type = 127;
+    pub const MIPS_INS_CEQ: Type = 128;
+    pub const MIPS_INS_CFC1: Type = 129;
+    pub const MIPS_INS_CFCMSA: Type = 130;
+    pub const MIPS_INS_CINS: Type = 131;
+    pub const MIPS_INS_CINS32: Type = 132;
+    pub const MIPS_INS_CLASS: Type = 133;
+    pub const MIPS_INS_CLEI_S: Type = 134;
+    pub const MIPS_INS_CLEI_U: Type = 135;
+    pub const MIPS_INS_CLE_S: Type = 136;
+    pub const MIPS_INS_CLE_U: Type = 137;
+    pub const MIPS_INS_CLO: Type = 138;
+    pub const MIPS_INS_CLTI_S: Type = 139;
+    pub const MIPS_INS_CLTI_U: Type = 140;
+    pub const MIPS_INS_CLT_S: Type = 141;
+    pub const MIPS_INS_CLT_U: Type = 142;
+    pub const MIPS_INS_CLZ: Type = 143;
+    pub const MIPS_INS_CMPGDU: Type = 144;
+    pub const MIPS_INS_CMPGU: Type = 145;
+    pub const MIPS_INS_CMPU: Type = 146;
+    pub const MIPS_INS_CMP: Type = 147;
+    pub const MIPS_INS_COPY_S: Type = 148;
+    pub const MIPS_INS_COPY_U: Type = 149;
+    pub const MIPS_INS_CTC1: Type = 150;
+    pub const MIPS_INS_CTCMSA: Type = 151;
+    pub const MIPS_INS_CVT: Type = 152;
+    pub const MIPS_INS_C: Type = 153;
+    pub const MIPS_INS_CMPI: Type = 154;
+    pub const MIPS_INS_DADD: Type = 155;
+    pub const MIPS_INS_DADDI: Type = 156;
+    pub const MIPS_INS_DADDIU: Type = 157;
+    pub const MIPS_INS_DADDU: Type = 158;
+    pub const MIPS_INS_DAHI: Type = 159;
+    pub const MIPS_INS_DALIGN: Type = 160;
+    pub const MIPS_INS_DATI: Type = 161;
+    pub const MIPS_INS_DAUI: Type = 162;
+    pub const MIPS_INS_DBITSWAP: Type = 163;
+    pub const MIPS_INS_DCLO: Type = 164;
+    pub const MIPS_INS_DCLZ: Type = 165;
+    pub const MIPS_INS_DDIV: Type = 166;
+    pub const MIPS_INS_DDIVU: Type = 167;
+    pub const MIPS_INS_DERET: Type = 168;
+    pub const MIPS_INS_DEXT: Type = 169;
+    pub const MIPS_INS_DEXTM: Type = 170;
+    pub const MIPS_INS_DEXTU: Type = 171;
+    pub const MIPS_INS_DI: Type = 172;
+    pub const MIPS_INS_DINS: Type = 173;
+    pub const MIPS_INS_DINSM: Type = 174;
+    pub const MIPS_INS_DINSU: Type = 175;
+    pub const MIPS_INS_DIV: Type = 176;
+    pub const MIPS_INS_DIVU: Type = 177;
+    pub const MIPS_INS_DIV_S: Type = 178;
+    pub const MIPS_INS_DIV_U: Type = 179;
+    pub const MIPS_INS_DLSA: Type = 180;
+    pub const MIPS_INS_DMFC0: Type = 181;
+    pub const MIPS_INS_DMFC1: Type = 182;
+    pub const MIPS_INS_DMFC2: Type = 183;
+    pub const MIPS_INS_DMOD: Type = 184;
+    pub const MIPS_INS_DMODU: Type = 185;
+    pub const MIPS_INS_DMTC0: Type = 186;
+    pub const MIPS_INS_DMTC1: Type = 187;
+    pub const MIPS_INS_DMTC2: Type = 188;
+    pub const MIPS_INS_DMUH: Type = 189;
+    pub const MIPS_INS_DMUHU: Type = 190;
+    pub const MIPS_INS_DMUL: Type = 191;
+    pub const MIPS_INS_DMULT: Type = 192;
+    pub const MIPS_INS_DMULTU: Type = 193;
+    pub const MIPS_INS_DMULU: Type = 194;
+    pub const MIPS_INS_DOTP_S: Type = 195;
+    pub const MIPS_INS_DOTP_U: Type = 196;
+    pub const MIPS_INS_DPADD_S: Type = 197;
+    pub const MIPS_INS_DPADD_U: Type = 198;
+    pub const MIPS_INS_DPAQX_SA: Type = 199;
+    pub const MIPS_INS_DPAQX_S: Type = 200;
+    pub const MIPS_INS_DPAQ_SA: Type = 201;
+    pub const MIPS_INS_DPAQ_S: Type = 202;
+    pub const MIPS_INS_DPAU: Type = 203;
+    pub const MIPS_INS_DPAX: Type = 204;
+    pub const MIPS_INS_DPA: Type = 205;
+    pub const MIPS_INS_DPOP: Type = 206;
+    pub const MIPS_INS_DPSQX_SA: Type = 207;
+    pub const MIPS_INS_DPSQX_S: Type = 208;
+    pub const MIPS_INS_DPSQ_SA: Type = 209;
+    pub const MIPS_INS_DPSQ_S: Type = 210;
+    pub const MIPS_INS_DPSUB_S: Type = 211;
+    pub const MIPS_INS_DPSUB_U: Type = 212;
+    pub const MIPS_INS_DPSU: Type = 213;
+    pub const MIPS_INS_DPSX: Type = 214;
+    pub const MIPS_INS_DPS: Type = 215;
+    pub const MIPS_INS_DROTR: Type = 216;
+    pub const MIPS_INS_DROTR32: Type = 217;
+    pub const MIPS_INS_DROTRV: Type = 218;
+    pub const MIPS_INS_DSBH: Type = 219;
+    pub const MIPS_INS_DSHD: Type = 220;
+    pub const MIPS_INS_DSLL: Type = 221;
+    pub const MIPS_INS_DSLL32: Type = 222;
+    pub const MIPS_INS_DSLLV: Type = 223;
+    pub const MIPS_INS_DSRA: Type = 224;
+    pub const MIPS_INS_DSRA32: Type = 225;
+    pub const MIPS_INS_DSRAV: Type = 226;
+    pub const MIPS_INS_DSRL: Type = 227;
+    pub const MIPS_INS_DSRL32: Type = 228;
+    pub const MIPS_INS_DSRLV: Type = 229;
+    pub const MIPS_INS_DSUB: Type = 230;
+    pub const MIPS_INS_DSUBU: Type = 231;
+    pub const MIPS_INS_EHB: Type = 232;
+    pub const MIPS_INS_EI: Type = 233;
+    pub const MIPS_INS_ERET: Type = 234;
+    pub const MIPS_INS_EXT: Type = 235;
+    pub const MIPS_INS_EXTP: Type = 236;
+    pub const MIPS_INS_EXTPDP: Type = 237;
+    pub const MIPS_INS_EXTPDPV: Type = 238;
+    pub const MIPS_INS_EXTPV: Type = 239;
+    pub const MIPS_INS_EXTRV_RS: Type = 240;
+    pub const MIPS_INS_EXTRV_R: Type = 241;
+    pub const MIPS_INS_EXTRV_S: Type = 242;
+    pub const MIPS_INS_EXTRV: Type = 243;
+    pub const MIPS_INS_EXTR_RS: Type = 244;
+    pub const MIPS_INS_EXTR_R: Type = 245;
+    pub const MIPS_INS_EXTR_S: Type = 246;
+    pub const MIPS_INS_EXTR: Type = 247;
+    pub const MIPS_INS_EXTS: Type = 248;
+    pub const MIPS_INS_EXTS32: Type = 249;
+    pub const MIPS_INS_ABS: Type = 250;
+    pub const MIPS_INS_FADD: Type = 251;
+    pub const MIPS_INS_FCAF: Type = 252;
+    pub const MIPS_INS_FCEQ: Type = 253;
+    pub const MIPS_INS_FCLASS: Type = 254;
+    pub const MIPS_INS_FCLE: Type = 255;
+    pub const MIPS_INS_FCLT: Type = 256;
+    pub const MIPS_INS_FCNE: Type = 257;
+    pub const MIPS_INS_FCOR: Type = 258;
+    pub const MIPS_INS_FCUEQ: Type = 259;
+    pub const MIPS_INS_FCULE: Type = 260;
+    pub const MIPS_INS_FCULT: Type = 261;
+    pub const MIPS_INS_FCUNE: Type = 262;
+    pub const MIPS_INS_FCUN: Type = 263;
+    pub const MIPS_INS_FDIV: Type = 264;
+    pub const MIPS_INS_FEXDO: Type = 265;
+    pub const MIPS_INS_FEXP2: Type = 266;
+    pub const MIPS_INS_FEXUPL: Type = 267;
+    pub const MIPS_INS_FEXUPR: Type = 268;
+    pub const MIPS_INS_FFINT_S: Type = 269;
+    pub const MIPS_INS_FFINT_U: Type = 270;
+    pub const MIPS_INS_FFQL: Type = 271;
+    pub const MIPS_INS_FFQR: Type = 272;
+    pub const MIPS_INS_FILL: Type = 273;
+    pub const MIPS_INS_FLOG2: Type = 274;
+    pub const MIPS_INS_FLOOR: Type = 275;
+    pub const MIPS_INS_FMADD: Type = 276;
+    pub const MIPS_INS_FMAX_A: Type = 277;
+    pub const MIPS_INS_FMAX: Type = 278;
+    pub const MIPS_INS_FMIN_A: Type = 279;
+    pub const MIPS_INS_FMIN: Type = 280;
+    pub const MIPS_INS_MOV: Type = 281;
+    pub const MIPS_INS_FMSUB: Type = 282;
+    pub const MIPS_INS_FMUL: Type = 283;
+    pub const MIPS_INS_MUL: Type = 284;
+    pub const MIPS_INS_NEG: Type = 285;
+    pub const MIPS_INS_FRCP: Type = 286;
+    pub const MIPS_INS_FRINT: Type = 287;
+    pub const MIPS_INS_FRSQRT: Type = 288;
+    pub const MIPS_INS_FSAF: Type = 289;
+    pub const MIPS_INS_FSEQ: Type = 290;
+    pub const MIPS_INS_FSLE: Type = 291;
+    pub const MIPS_INS_FSLT: Type = 292;
+    pub const MIPS_INS_FSNE: Type = 293;
+    pub const MIPS_INS_FSOR: Type = 294;
+    pub const MIPS_INS_FSQRT: Type = 295;
+    pub const MIPS_INS_SQRT: Type = 296;
+    pub const MIPS_INS_FSUB: Type = 297;
+    pub const MIPS_INS_SUB: Type = 298;
+    pub const MIPS_INS_FSUEQ: Type = 299;
+    pub const MIPS_INS_FSULE: Type = 300;
+    pub const MIPS_INS_FSULT: Type = 301;
+    pub const MIPS_INS_FSUNE: Type = 302;
+    pub const MIPS_INS_FSUN: Type = 303;
+    pub const MIPS_INS_FTINT_S: Type = 304;
+    pub const MIPS_INS_FTINT_U: Type = 305;
+    pub const MIPS_INS_FTQ: Type = 306;
+    pub const MIPS_INS_FTRUNC_S: Type = 307;
+    pub const MIPS_INS_FTRUNC_U: Type = 308;
+    pub const MIPS_INS_HADD_S: Type = 309;
+    pub const MIPS_INS_HADD_U: Type = 310;
+    pub const MIPS_INS_HSUB_S: Type = 311;
+    pub const MIPS_INS_HSUB_U: Type = 312;
+    pub const MIPS_INS_ILVEV: Type = 313;
+    pub const MIPS_INS_ILVL: Type = 314;
+    pub const MIPS_INS_ILVOD: Type = 315;
+    pub const MIPS_INS_ILVR: Type = 316;
+    pub const MIPS_INS_INS: Type = 317;
+    pub const MIPS_INS_INSERT: Type = 318;
+    pub const MIPS_INS_INSV: Type = 319;
+    pub const MIPS_INS_INSVE: Type = 320;
+    pub const MIPS_INS_J: Type = 321;
+    pub const MIPS_INS_JAL: Type = 322;
+    pub const MIPS_INS_JALR: Type = 323;
+    pub const MIPS_INS_JALRS: Type = 324;
+    pub const MIPS_INS_JALS: Type = 325;
+    pub const MIPS_INS_JALX: Type = 326;
+    pub const MIPS_INS_JIALC: Type = 327;
+    pub const MIPS_INS_JIC: Type = 328;
+    pub const MIPS_INS_JR: Type = 329;
+    pub const MIPS_INS_JRADDIUSP: Type = 330;
+    pub const MIPS_INS_JRC: Type = 331;
+    pub const MIPS_INS_JALRC: Type = 332;
+    pub const MIPS_INS_LB: Type = 333;
+    pub const MIPS_INS_LBUX: Type = 334;
+    pub const MIPS_INS_LBU: Type = 335;
+    pub const MIPS_INS_LD: Type = 336;
+    pub const MIPS_INS_LDC1: Type = 337;
+    pub const MIPS_INS_LDC2: Type = 338;
+    pub const MIPS_INS_LDC3: Type = 339;
+    pub const MIPS_INS_LDI: Type = 340;
+    pub const MIPS_INS_LDL: Type = 341;
+    pub const MIPS_INS_LDPC: Type = 342;
+    pub const MIPS_INS_LDR: Type = 343;
+    pub const MIPS_INS_LDXC1: Type = 344;
+    pub const MIPS_INS_LH: Type = 345;
+    pub const MIPS_INS_LHX: Type = 346;
+    pub const MIPS_INS_LHU: Type = 347;
+    pub const MIPS_INS_LL: Type = 348;
+    pub const MIPS_INS_LLD: Type = 349;
+    pub const MIPS_INS_LSA: Type = 350;
+    pub const MIPS_INS_LUXC1: Type = 351;
+    pub const MIPS_INS_LUI: Type = 352;
+    pub const MIPS_INS_LW: Type = 353;
+    pub const MIPS_INS_LWC1: Type = 354;
+    pub const MIPS_INS_LWC2: Type = 355;
+    pub const MIPS_INS_LWC3: Type = 356;
+    pub const MIPS_INS_LWL: Type = 357;
+    pub const MIPS_INS_LWPC: Type = 358;
+    pub const MIPS_INS_LWR: Type = 359;
+    pub const MIPS_INS_LWUPC: Type = 360;
+    pub const MIPS_INS_LWU: Type = 361;
+    pub const MIPS_INS_LWX: Type = 362;
+    pub const MIPS_INS_LWXC1: Type = 363;
+    pub const MIPS_INS_LI: Type = 364;
+    pub const MIPS_INS_MADD: Type = 365;
+    pub const MIPS_INS_MADDF: Type = 366;
+    pub const MIPS_INS_MADDR_Q: Type = 367;
+    pub const MIPS_INS_MADDU: Type = 368;
+    pub const MIPS_INS_MADDV: Type = 369;
+    pub const MIPS_INS_MADD_Q: Type = 370;
+    pub const MIPS_INS_MAQ_SA: Type = 371;
+    pub const MIPS_INS_MAQ_S: Type = 372;
+    pub const MIPS_INS_MAXA: Type = 373;
+    pub const MIPS_INS_MAXI_S: Type = 374;
+    pub const MIPS_INS_MAXI_U: Type = 375;
+    pub const MIPS_INS_MAX_A: Type = 376;
+    pub const MIPS_INS_MAX: Type = 377;
+    pub const MIPS_INS_MAX_S: Type = 378;
+    pub const MIPS_INS_MAX_U: Type = 379;
+    pub const MIPS_INS_MFC0: Type = 380;
+    pub const MIPS_INS_MFC1: Type = 381;
+    pub const MIPS_INS_MFC2: Type = 382;
+    pub const MIPS_INS_MFHC1: Type = 383;
+    pub const MIPS_INS_MFHI: Type = 384;
+    pub const MIPS_INS_MFLO: Type = 385;
+    pub const MIPS_INS_MINA: Type = 386;
+    pub const MIPS_INS_MINI_S: Type = 387;
+    pub const MIPS_INS_MINI_U: Type = 388;
+    pub const MIPS_INS_MIN_A: Type = 389;
+    pub const MIPS_INS_MIN: Type = 390;
+    pub const MIPS_INS_MIN_S: Type = 391;
+    pub const MIPS_INS_MIN_U: Type = 392;
+    pub const MIPS_INS_MOD: Type = 393;
+    pub const MIPS_INS_MODSUB: Type = 394;
+    pub const MIPS_INS_MODU: Type = 395;
+    pub const MIPS_INS_MOD_S: Type = 396;
+    pub const MIPS_INS_MOD_U: Type = 397;
+    pub const MIPS_INS_MOVE: Type = 398;
+    pub const MIPS_INS_MOVF: Type = 399;
+    pub const MIPS_INS_MOVN: Type = 400;
+    pub const MIPS_INS_MOVT: Type = 401;
+    pub const MIPS_INS_MOVZ: Type = 402;
+    pub const MIPS_INS_MSUB: Type = 403;
+    pub const MIPS_INS_MSUBF: Type = 404;
+    pub const MIPS_INS_MSUBR_Q: Type = 405;
+    pub const MIPS_INS_MSUBU: Type = 406;
+    pub const MIPS_INS_MSUBV: Type = 407;
+    pub const MIPS_INS_MSUB_Q: Type = 408;
+    pub const MIPS_INS_MTC0: Type = 409;
+    pub const MIPS_INS_MTC1: Type = 410;
+    pub const MIPS_INS_MTC2: Type = 411;
+    pub const MIPS_INS_MTHC1: Type = 412;
+    pub const MIPS_INS_MTHI: Type = 413;
+    pub const MIPS_INS_MTHLIP: Type = 414;
+    pub const MIPS_INS_MTLO: Type = 415;
+    pub const MIPS_INS_MTM0: Type = 416;
+    pub const MIPS_INS_MTM1: Type = 417;
+    pub const MIPS_INS_MTM2: Type = 418;
+    pub const MIPS_INS_MTP0: Type = 419;
+    pub const MIPS_INS_MTP1: Type = 420;
+    pub const MIPS_INS_MTP2: Type = 421;
+    pub const MIPS_INS_MUH: Type = 422;
+    pub const MIPS_INS_MUHU: Type = 423;
+    pub const MIPS_INS_MULEQ_S: Type = 424;
+    pub const MIPS_INS_MULEU_S: Type = 425;
+    pub const MIPS_INS_MULQ_RS: Type = 426;
+    pub const MIPS_INS_MULQ_S: Type = 427;
+    pub const MIPS_INS_MULR_Q: Type = 428;
+    pub const MIPS_INS_MULSAQ_S: Type = 429;
+    pub const MIPS_INS_MULSA: Type = 430;
+    pub const MIPS_INS_MULT: Type = 431;
+    pub const MIPS_INS_MULTU: Type = 432;
+    pub const MIPS_INS_MULU: Type = 433;
+    pub const MIPS_INS_MULV: Type = 434;
+    pub const MIPS_INS_MUL_Q: Type = 435;
+    pub const MIPS_INS_MUL_S: Type = 436;
+    pub const MIPS_INS_NLOC: Type = 437;
+    pub const MIPS_INS_NLZC: Type = 438;
+    pub const MIPS_INS_NMADD: Type = 439;
+    pub const MIPS_INS_NMSUB: Type = 440;
+    pub const MIPS_INS_NOR: Type = 441;
+    pub const MIPS_INS_NORI: Type = 442;
+    pub const MIPS_INS_NOT: Type = 443;
+    pub const MIPS_INS_OR: Type = 444;
+    pub const MIPS_INS_ORI: Type = 445;
+    pub const MIPS_INS_PACKRL: Type = 446;
+    pub const MIPS_INS_PAUSE: Type = 447;
+    pub const MIPS_INS_PCKEV: Type = 448;
+    pub const MIPS_INS_PCKOD: Type = 449;
+    pub const MIPS_INS_PCNT: Type = 450;
+    pub const MIPS_INS_PICK: Type = 451;
+    pub const MIPS_INS_POP: Type = 452;
+    pub const MIPS_INS_PRECEQU: Type = 453;
+    pub const MIPS_INS_PRECEQ: Type = 454;
+    pub const MIPS_INS_PRECEU: Type = 455;
+    pub const MIPS_INS_PRECRQU_S: Type = 456;
+    pub const MIPS_INS_PRECRQ: Type = 457;
+    pub const MIPS_INS_PRECRQ_RS: Type = 458;
+    pub const MIPS_INS_PRECR: Type = 459;
+    pub const MIPS_INS_PRECR_SRA: Type = 460;
+    pub const MIPS_INS_PRECR_SRA_R: Type = 461;
+    pub const MIPS_INS_PREF: Type = 462;
+    pub const MIPS_INS_PREPEND: Type = 463;
+    pub const MIPS_INS_RADDU: Type = 464;
+    pub const MIPS_INS_RDDSP: Type = 465;
+    pub const MIPS_INS_RDHWR: Type = 466;
+    pub const MIPS_INS_REPLV: Type = 467;
+    pub const MIPS_INS_REPL: Type = 468;
+    pub const MIPS_INS_RINT: Type = 469;
+    pub const MIPS_INS_ROTR: Type = 470;
+    pub const MIPS_INS_ROTRV: Type = 471;
+    pub const MIPS_INS_ROUND: Type = 472;
+    pub const MIPS_INS_SAT_S: Type = 473;
+    pub const MIPS_INS_SAT_U: Type = 474;
+    pub const MIPS_INS_SB: Type = 475;
+    pub const MIPS_INS_SC: Type = 476;
+    pub const MIPS_INS_SCD: Type = 477;
+    pub const MIPS_INS_SD: Type = 478;
+    pub const MIPS_INS_SDBBP: Type = 479;
+    pub const MIPS_INS_SDC1: Type = 480;
+    pub const MIPS_INS_SDC2: Type = 481;
+    pub const MIPS_INS_SDC3: Type = 482;
+    pub const MIPS_INS_SDL: Type = 483;
+    pub const MIPS_INS_SDR: Type = 484;
+    pub const MIPS_INS_SDXC1: Type = 485;
+    pub const MIPS_INS_SEB: Type = 486;
+    pub const MIPS_INS_SEH: Type = 487;
+    pub const MIPS_INS_SELEQZ: Type = 488;
+    pub const MIPS_INS_SELNEZ: Type = 489;
+    pub const MIPS_INS_SEL: Type = 490;
+    pub const MIPS_INS_SEQ: Type = 491;
+    pub const MIPS_INS_SEQI: Type = 492;
+    pub const MIPS_INS_SH: Type = 493;
+    pub const MIPS_INS_SHF: Type = 494;
+    pub const MIPS_INS_SHILO: Type = 495;
+    pub const MIPS_INS_SHILOV: Type = 496;
+    pub const MIPS_INS_SHLLV: Type = 497;
+    pub const MIPS_INS_SHLLV_S: Type = 498;
+    pub const MIPS_INS_SHLL: Type = 499;
+    pub const MIPS_INS_SHLL_S: Type = 500;
+    pub const MIPS_INS_SHRAV: Type = 501;
+    pub const MIPS_INS_SHRAV_R: Type = 502;
+    pub const MIPS_INS_SHRA: Type = 503;
+    pub const MIPS_INS_SHRA_R: Type = 504;
+    pub const MIPS_INS_SHRLV: Type = 505;
+    pub const MIPS_INS_SHRL: Type = 506;
+    pub const MIPS_INS_SLDI: Type = 507;
+    pub const MIPS_INS_SLD: Type = 508;
+    pub const MIPS_INS_SLL: Type = 509;
+    pub const MIPS_INS_SLLI: Type = 510;
+    pub const MIPS_INS_SLLV: Type = 511;
+    pub const MIPS_INS_SLT: Type = 512;
+    pub const MIPS_INS_SLTI: Type = 513;
+    pub const MIPS_INS_SLTIU: Type = 514;
+    pub const MIPS_INS_SLTU: Type = 515;
+    pub const MIPS_INS_SNE: Type = 516;
+    pub const MIPS_INS_SNEI: Type = 517;
+    pub const MIPS_INS_SPLATI: Type = 518;
+    pub const MIPS_INS_SPLAT: Type = 519;
+    pub const MIPS_INS_SRA: Type = 520;
+    pub const MIPS_INS_SRAI: Type = 521;
+    pub const MIPS_INS_SRARI: Type = 522;
+    pub const MIPS_INS_SRAR: Type = 523;
+    pub const MIPS_INS_SRAV: Type = 524;
+    pub const MIPS_INS_SRL: Type = 525;
+    pub const MIPS_INS_SRLI: Type = 526;
+    pub const MIPS_INS_SRLRI: Type = 527;
+    pub const MIPS_INS_SRLR: Type = 528;
+    pub const MIPS_INS_SRLV: Type = 529;
+    pub const MIPS_INS_SSNOP: Type = 530;
+    pub const MIPS_INS_ST: Type = 531;
+    pub const MIPS_INS_SUBQH: Type = 532;
+    pub const MIPS_INS_SUBQH_R: Type = 533;
+    pub const MIPS_INS_SUBQ: Type = 534;
+    pub const MIPS_INS_SUBQ_S: Type = 535;
+    pub const MIPS_INS_SUBSUS_U: Type = 536;
+    pub const MIPS_INS_SUBSUU_S: Type = 537;
+    pub const MIPS_INS_SUBS_S: Type = 538;
+    pub const MIPS_INS_SUBS_U: Type = 539;
+    pub const MIPS_INS_SUBUH: Type = 540;
+    pub const MIPS_INS_SUBUH_R: Type = 541;
+    pub const MIPS_INS_SUBU: Type = 542;
+    pub const MIPS_INS_SUBU_S: Type = 543;
+    pub const MIPS_INS_SUBVI: Type = 544;
+    pub const MIPS_INS_SUBV: Type = 545;
+    pub const MIPS_INS_SUXC1: Type = 546;
+    pub const MIPS_INS_SW: Type = 547;
+    pub const MIPS_INS_SWC1: Type = 548;
+    pub const MIPS_INS_SWC2: Type = 549;
+    pub const MIPS_INS_SWC3: Type = 550;
+    pub const MIPS_INS_SWL: Type = 551;
+    pub const MIPS_INS_SWR: Type = 552;
+    pub const MIPS_INS_SWXC1: Type = 553;
+    pub const MIPS_INS_SYNC: Type = 554;
+    pub const MIPS_INS_SYSCALL: Type = 555;
+    pub const MIPS_INS_TEQ: Type = 556;
+    pub const MIPS_INS_TEQI: Type = 557;
+    pub const MIPS_INS_TGE: Type = 558;
+    pub const MIPS_INS_TGEI: Type = 559;
+    pub const MIPS_INS_TGEIU: Type = 560;
+    pub const MIPS_INS_TGEU: Type = 561;
+    pub const MIPS_INS_TLBP: Type = 562;
+    pub const MIPS_INS_TLBR: Type = 563;
+    pub const MIPS_INS_TLBWI: Type = 564;
+    pub const MIPS_INS_TLBWR: Type = 565;
+    pub const MIPS_INS_TLT: Type = 566;
+    pub const MIPS_INS_TLTI: Type = 567;
+    pub const MIPS_INS_TLTIU: Type = 568;
+    pub const MIPS_INS_TLTU: Type = 569;
+    pub const MIPS_INS_TNE: Type = 570;
+    pub const MIPS_INS_TNEI: Type = 571;
+    pub const MIPS_INS_TRUNC: Type = 572;
+    pub const MIPS_INS_V3MULU: Type = 573;
+    pub const MIPS_INS_VMM0: Type = 574;
+    pub const MIPS_INS_VMULU: Type = 575;
+    pub const MIPS_INS_VSHF: Type = 576;
+    pub const MIPS_INS_WAIT: Type = 577;
+    pub const MIPS_INS_WRDSP: Type = 578;
+    pub const MIPS_INS_WSBH: Type = 579;
+    pub const MIPS_INS_XOR: Type = 580;
+    pub const MIPS_INS_XORI: Type = 581;
+    pub const MIPS_INS_NOP: Type = 582;
+    pub const MIPS_INS_NEGU: Type = 583;
+    pub const MIPS_INS_JALR_HB: Type = 584;
+    pub const MIPS_INS_JR_HB: Type = 585;
+    pub const MIPS_INS_ENDING: Type = 586;
 }
-#[repr(u32)]
-#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
-pub enum mips_insn_group {
-    MIPS_GRP_INVALID = 0,
-    MIPS_GRP_JUMP = 1,
-    MIPS_GRP_BITCOUNT = 128,
-    MIPS_GRP_DSP = 129,
-    MIPS_GRP_DSPR2 = 130,
-    MIPS_GRP_FPIDX = 131,
-    MIPS_GRP_MSA = 132,
-    MIPS_GRP_MIPS32R2 = 133,
-    MIPS_GRP_MIPS64 = 134,
-    MIPS_GRP_MIPS64R2 = 135,
-    MIPS_GRP_SEINREG = 136,
-    MIPS_GRP_STDENC = 137,
-    MIPS_GRP_SWAP = 138,
-    MIPS_GRP_MICROMIPS = 139,
-    MIPS_GRP_MIPS16MODE = 140,
-    MIPS_GRP_FP64BIT = 141,
-    MIPS_GRP_NONANSFPMATH = 142,
-    MIPS_GRP_NOTFP64BIT = 143,
-    MIPS_GRP_NOTINMICROMIPS = 144,
-    MIPS_GRP_NOTNACL = 145,
-    MIPS_GRP_NOTMIPS32R6 = 146,
-    MIPS_GRP_NOTMIPS64R6 = 147,
-    MIPS_GRP_CNMIPS = 148,
-    MIPS_GRP_MIPS32 = 149,
-    MIPS_GRP_MIPS32R6 = 150,
-    MIPS_GRP_MIPS64R6 = 151,
-    MIPS_GRP_MIPS2 = 152,
-    MIPS_GRP_MIPS3 = 153,
-    MIPS_GRP_MIPS3_32 = 154,
-    MIPS_GRP_MIPS3_32R2 = 155,
-    MIPS_GRP_MIPS4_32 = 156,
-    MIPS_GRP_MIPS4_32R2 = 157,
-    MIPS_GRP_MIPS5_32R2 = 158,
-    MIPS_GRP_GP32BIT = 159,
-    MIPS_GRP_GP64BIT = 160,
-    MIPS_GRP_ENDING = 161,
+pub mod mips_insn_group {
+    pub type Type = ::std::os::raw::c_uint;
+    pub const MIPS_GRP_INVALID: Type = 0;
+    pub const MIPS_GRP_JUMP: Type = 1;
+    pub const MIPS_GRP_BITCOUNT: Type = 128;
+    pub const MIPS_GRP_DSP: Type = 129;
+    pub const MIPS_GRP_DSPR2: Type = 130;
+    pub const MIPS_GRP_FPIDX: Type = 131;
+    pub const MIPS_GRP_MSA: Type = 132;
+    pub const MIPS_GRP_MIPS32R2: Type = 133;
+    pub const MIPS_GRP_MIPS64: Type = 134;
+    pub const MIPS_GRP_MIPS64R2: Type = 135;
+    pub const MIPS_GRP_SEINREG: Type = 136;
+    pub const MIPS_GRP_STDENC: Type = 137;
+    pub const MIPS_GRP_SWAP: Type = 138;
+    pub const MIPS_GRP_MICROMIPS: Type = 139;
+    pub const MIPS_GRP_MIPS16MODE: Type = 140;
+    pub const MIPS_GRP_FP64BIT: Type = 141;
+    pub const MIPS_GRP_NONANSFPMATH: Type = 142;
+    pub const MIPS_GRP_NOTFP64BIT: Type = 143;
+    pub const MIPS_GRP_NOTINMICROMIPS: Type = 144;
+    pub const MIPS_GRP_NOTNACL: Type = 145;
+    pub const MIPS_GRP_NOTMIPS32R6: Type = 146;
+    pub const MIPS_GRP_NOTMIPS64R6: Type = 147;
+    pub const MIPS_GRP_CNMIPS: Type = 148;
+    pub const MIPS_GRP_MIPS32: Type = 149;
+    pub const MIPS_GRP_MIPS32R6: Type = 150;
+    pub const MIPS_GRP_MIPS64R6: Type = 151;
+    pub const MIPS_GRP_MIPS2: Type = 152;
+    pub const MIPS_GRP_MIPS3: Type = 153;
+    pub const MIPS_GRP_MIPS3_32: Type = 154;
+    pub const MIPS_GRP_MIPS3_32R2: Type = 155;
+    pub const MIPS_GRP_MIPS4_32: Type = 156;
+    pub const MIPS_GRP_MIPS4_32R2: Type = 157;
+    pub const MIPS_GRP_MIPS5_32R2: Type = 158;
+    pub const MIPS_GRP_GP32BIT: Type = 159;
+    pub const MIPS_GRP_GP64BIT: Type = 160;
+    pub const MIPS_GRP_ENDING: Type = 161;
 }
-#[repr(u32)]
-#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
-pub enum ppc_bc {
-    PPC_BC_INVALID = 0,
-    PPC_BC_LT = 12,
-    PPC_BC_LE = 36,
-    PPC_BC_EQ = 76,
-    PPC_BC_GE = 4,
-    PPC_BC_GT = 44,
-    PPC_BC_NE = 68,
-    PPC_BC_UN = 108,
-    PPC_BC_NU = 100,
-    PPC_BC_SO = 140,
-    PPC_BC_NS = 132,
+pub mod ppc_bc {
+    pub type Type = ::std::os::raw::c_uint;
+    pub const PPC_BC_INVALID: Type = 0;
+    pub const PPC_BC_LT: Type = 12;
+    pub const PPC_BC_LE: Type = 36;
+    pub const PPC_BC_EQ: Type = 76;
+    pub const PPC_BC_GE: Type = 4;
+    pub const PPC_BC_GT: Type = 44;
+    pub const PPC_BC_NE: Type = 68;
+    pub const PPC_BC_UN: Type = 108;
+    pub const PPC_BC_NU: Type = 100;
+    pub const PPC_BC_SO: Type = 140;
+    pub const PPC_BC_NS: Type = 132;
 }
-#[repr(u32)]
-#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
-pub enum ppc_bh { PPC_BH_INVALID = 0, PPC_BH_PLUS = 1, PPC_BH_MINUS = 2, }
+pub mod ppc_bh {
+    pub type Type = ::std::os::raw::c_uint;
+    pub const PPC_BH_INVALID: Type = 0;
+    pub const PPC_BH_PLUS: Type = 1;
+    pub const PPC_BH_MINUS: Type = 2;
+}
 pub mod ppc_reg {
     pub type Type = ::std::os::raw::c_uint;
     pub const PPC_REG_INVALID: Type = 0;
@@ -3617,14 +4122,13 @@ pub mod ppc_reg {
     pub const PPC_REG_CR1EQ: Type = 177;
     pub const PPC_REG_ENDING: Type = 178;
 }
-#[repr(u32)]
-#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
-pub enum ppc_op_type {
-    PPC_OP_INVALID = 0,
-    PPC_OP_REG = 1,
-    PPC_OP_IMM = 2,
-    PPC_OP_MEM = 3,
-    PPC_OP_CRX = 64,
+pub mod ppc_op_type {
+    pub type Type = ::std::os::raw::c_uint;
+    pub const PPC_OP_INVALID: Type = 0;
+    pub const PPC_OP_REG: Type = 1;
+    pub const PPC_OP_IMM: Type = 2;
+    pub const PPC_OP_MEM: Type = 3;
+    pub const PPC_OP_CRX: Type = 64;
 }
 #[repr(C)]
 #[derive(Debug, Copy)]
@@ -3634,60 +4138,101 @@ pub struct ppc_op_mem {
 }
 #[test]
 fn bindgen_test_layout_ppc_op_mem() {
-    assert_eq!(::std::mem::size_of::<ppc_op_mem>() , 8usize , concat ! (
-               "Size of: " , stringify ! ( ppc_op_mem ) ));
-    assert_eq! (::std::mem::align_of::<ppc_op_mem>() , 4usize , concat ! (
-                "Alignment of " , stringify ! ( ppc_op_mem ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const ppc_op_mem ) ) . base as * const _ as
-                usize } , 0usize , concat ! (
-                "Alignment of field: " , stringify ! ( ppc_op_mem ) , "::" ,
-                stringify ! ( base ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const ppc_op_mem ) ) . disp as * const _ as
-                usize } , 4usize , concat ! (
-                "Alignment of field: " , stringify ! ( ppc_op_mem ) , "::" ,
-                stringify ! ( disp ) ));
+    assert_eq!(
+        ::std::mem::size_of::<ppc_op_mem>(),
+        8usize,
+        concat!("Size of: ", stringify!(ppc_op_mem))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<ppc_op_mem>(),
+        4usize,
+        concat!("Alignment of ", stringify!(ppc_op_mem))
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const ppc_op_mem)).base as *const _ as usize },
+        0usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(ppc_op_mem),
+            "::",
+            stringify!(base)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const ppc_op_mem)).disp as *const _ as usize },
+        4usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(ppc_op_mem),
+            "::",
+            stringify!(disp)
+        )
+    );
 }
 impl Clone for ppc_op_mem {
-    fn clone(&self) -> Self { *self }
+    fn clone(&self) -> Self {
+        *self
+    }
 }
 #[repr(C)]
 #[derive(Debug, Copy)]
 pub struct ppc_op_crx {
     pub scale: ::std::os::raw::c_uint,
     pub reg: ppc_reg::Type,
-    pub cond: ppc_bc,
+    pub cond: ppc_bc::Type,
 }
 #[test]
 fn bindgen_test_layout_ppc_op_crx() {
-    assert_eq!(::std::mem::size_of::<ppc_op_crx>() , 12usize , concat ! (
-               "Size of: " , stringify ! ( ppc_op_crx ) ));
-    assert_eq! (::std::mem::align_of::<ppc_op_crx>() , 4usize , concat ! (
-                "Alignment of " , stringify ! ( ppc_op_crx ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const ppc_op_crx ) ) . scale as * const _ as
-                usize } , 0usize , concat ! (
-                "Alignment of field: " , stringify ! ( ppc_op_crx ) , "::" ,
-                stringify ! ( scale ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const ppc_op_crx ) ) . reg as * const _ as
-                usize } , 4usize , concat ! (
-                "Alignment of field: " , stringify ! ( ppc_op_crx ) , "::" ,
-                stringify ! ( reg ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const ppc_op_crx ) ) . cond as * const _ as
-                usize } , 8usize , concat ! (
-                "Alignment of field: " , stringify ! ( ppc_op_crx ) , "::" ,
-                stringify ! ( cond ) ));
+    assert_eq!(
+        ::std::mem::size_of::<ppc_op_crx>(),
+        12usize,
+        concat!("Size of: ", stringify!(ppc_op_crx))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<ppc_op_crx>(),
+        4usize,
+        concat!("Alignment of ", stringify!(ppc_op_crx))
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const ppc_op_crx)).scale as *const _ as usize },
+        0usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(ppc_op_crx),
+            "::",
+            stringify!(scale)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const ppc_op_crx)).reg as *const _ as usize },
+        4usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(ppc_op_crx),
+            "::",
+            stringify!(reg)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const ppc_op_crx)).cond as *const _ as usize },
+        8usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(ppc_op_crx),
+            "::",
+            stringify!(cond)
+        )
+    );
 }
 impl Clone for ppc_op_crx {
-    fn clone(&self) -> Self { *self }
+    fn clone(&self) -> Self {
+        *self
+    }
 }
 #[repr(C)]
 #[derive(Copy)]
 pub struct cs_ppc_op {
-    pub type_: ppc_op_type,
+    pub type_: ppc_op_type::Type,
     pub __bindgen_anon_1: cs_ppc_op__bindgen_ty_1,
 }
 #[repr(C)]
@@ -3701,1103 +4246,1193 @@ pub union cs_ppc_op__bindgen_ty_1 {
 }
 #[test]
 fn bindgen_test_layout_cs_ppc_op__bindgen_ty_1() {
-    assert_eq!(::std::mem::size_of::<cs_ppc_op__bindgen_ty_1>() , 12usize ,
-               concat ! (
-               "Size of: " , stringify ! ( cs_ppc_op__bindgen_ty_1 ) ));
-    assert_eq! (::std::mem::align_of::<cs_ppc_op__bindgen_ty_1>() , 4usize ,
-                concat ! (
-                "Alignment of " , stringify ! ( cs_ppc_op__bindgen_ty_1 ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const cs_ppc_op__bindgen_ty_1 ) ) . reg as *
-                const _ as usize } , 0usize , concat ! (
-                "Alignment of field: " , stringify ! ( cs_ppc_op__bindgen_ty_1
-                ) , "::" , stringify ! ( reg ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const cs_ppc_op__bindgen_ty_1 ) ) . imm as *
-                const _ as usize } , 0usize , concat ! (
-                "Alignment of field: " , stringify ! ( cs_ppc_op__bindgen_ty_1
-                ) , "::" , stringify ! ( imm ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const cs_ppc_op__bindgen_ty_1 ) ) . mem as *
-                const _ as usize } , 0usize , concat ! (
-                "Alignment of field: " , stringify ! ( cs_ppc_op__bindgen_ty_1
-                ) , "::" , stringify ! ( mem ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const cs_ppc_op__bindgen_ty_1 ) ) . crx as *
-                const _ as usize } , 0usize , concat ! (
-                "Alignment of field: " , stringify ! ( cs_ppc_op__bindgen_ty_1
-                ) , "::" , stringify ! ( crx ) ));
+    assert_eq!(
+        ::std::mem::size_of::<cs_ppc_op__bindgen_ty_1>(),
+        12usize,
+        concat!("Size of: ", stringify!(cs_ppc_op__bindgen_ty_1))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<cs_ppc_op__bindgen_ty_1>(),
+        4usize,
+        concat!("Alignment of ", stringify!(cs_ppc_op__bindgen_ty_1))
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const cs_ppc_op__bindgen_ty_1)).reg as *const _ as usize },
+        0usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(cs_ppc_op__bindgen_ty_1),
+            "::",
+            stringify!(reg)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const cs_ppc_op__bindgen_ty_1)).imm as *const _ as usize },
+        0usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(cs_ppc_op__bindgen_ty_1),
+            "::",
+            stringify!(imm)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const cs_ppc_op__bindgen_ty_1)).mem as *const _ as usize },
+        0usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(cs_ppc_op__bindgen_ty_1),
+            "::",
+            stringify!(mem)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const cs_ppc_op__bindgen_ty_1)).crx as *const _ as usize },
+        0usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(cs_ppc_op__bindgen_ty_1),
+            "::",
+            stringify!(crx)
+        )
+    );
 }
 impl Clone for cs_ppc_op__bindgen_ty_1 {
-    fn clone(&self) -> Self { *self }
+    fn clone(&self) -> Self {
+        *self
+    }
+}
+impl ::std::fmt::Debug for cs_ppc_op__bindgen_ty_1 {
+    fn fmt(&self, f: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
+        write!(f, "cs_ppc_op__bindgen_ty_1 {{ union }}")
+    }
 }
 #[test]
 fn bindgen_test_layout_cs_ppc_op() {
-    assert_eq!(::std::mem::size_of::<cs_ppc_op>() , 16usize , concat ! (
-               "Size of: " , stringify ! ( cs_ppc_op ) ));
-    assert_eq! (::std::mem::align_of::<cs_ppc_op>() , 4usize , concat ! (
-                "Alignment of " , stringify ! ( cs_ppc_op ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const cs_ppc_op ) ) . type_ as * const _ as
-                usize } , 0usize , concat ! (
-                "Alignment of field: " , stringify ! ( cs_ppc_op ) , "::" ,
-                stringify ! ( type_ ) ));
+    assert_eq!(
+        ::std::mem::size_of::<cs_ppc_op>(),
+        16usize,
+        concat!("Size of: ", stringify!(cs_ppc_op))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<cs_ppc_op>(),
+        4usize,
+        concat!("Alignment of ", stringify!(cs_ppc_op))
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const cs_ppc_op)).type_ as *const _ as usize },
+        0usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(cs_ppc_op),
+            "::",
+            stringify!(type_)
+        )
+    );
 }
 impl Clone for cs_ppc_op {
-    fn clone(&self) -> Self { *self }
+    fn clone(&self) -> Self {
+        *self
+    }
+}
+impl ::std::fmt::Debug for cs_ppc_op {
+    fn fmt(&self, f: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
+        write!(
+            f,
+            "cs_ppc_op {{ type: {:?}, __bindgen_anon_1: {:?} }}",
+            self.type_, self.__bindgen_anon_1
+        )
+    }
 }
 #[repr(C)]
 #[derive(Copy)]
 pub struct cs_ppc {
-    pub bc: ppc_bc,
-    pub bh: ppc_bh,
+    pub bc: ppc_bc::Type,
+    pub bh: ppc_bh::Type,
     pub update_cr0: bool,
     pub op_count: u8,
     pub operands: [cs_ppc_op; 8usize],
 }
 #[test]
 fn bindgen_test_layout_cs_ppc() {
-    assert_eq!(::std::mem::size_of::<cs_ppc>() , 140usize , concat ! (
-               "Size of: " , stringify ! ( cs_ppc ) ));
-    assert_eq! (::std::mem::align_of::<cs_ppc>() , 4usize , concat ! (
-                "Alignment of " , stringify ! ( cs_ppc ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const cs_ppc ) ) . bc as * const _ as usize } ,
-                0usize , concat ! (
-                "Alignment of field: " , stringify ! ( cs_ppc ) , "::" ,
-                stringify ! ( bc ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const cs_ppc ) ) . bh as * const _ as usize } ,
-                4usize , concat ! (
-                "Alignment of field: " , stringify ! ( cs_ppc ) , "::" ,
-                stringify ! ( bh ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const cs_ppc ) ) . update_cr0 as * const _ as
-                usize } , 8usize , concat ! (
-                "Alignment of field: " , stringify ! ( cs_ppc ) , "::" ,
-                stringify ! ( update_cr0 ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const cs_ppc ) ) . op_count as * const _ as
-                usize } , 9usize , concat ! (
-                "Alignment of field: " , stringify ! ( cs_ppc ) , "::" ,
-                stringify ! ( op_count ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const cs_ppc ) ) . operands as * const _ as
-                usize } , 12usize , concat ! (
-                "Alignment of field: " , stringify ! ( cs_ppc ) , "::" ,
-                stringify ! ( operands ) ));
+    assert_eq!(
+        ::std::mem::size_of::<cs_ppc>(),
+        140usize,
+        concat!("Size of: ", stringify!(cs_ppc))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<cs_ppc>(),
+        4usize,
+        concat!("Alignment of ", stringify!(cs_ppc))
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const cs_ppc)).bc as *const _ as usize },
+        0usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(cs_ppc),
+            "::",
+            stringify!(bc)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const cs_ppc)).bh as *const _ as usize },
+        4usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(cs_ppc),
+            "::",
+            stringify!(bh)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const cs_ppc)).update_cr0 as *const _ as usize },
+        8usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(cs_ppc),
+            "::",
+            stringify!(update_cr0)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const cs_ppc)).op_count as *const _ as usize },
+        9usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(cs_ppc),
+            "::",
+            stringify!(op_count)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const cs_ppc)).operands as *const _ as usize },
+        12usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(cs_ppc),
+            "::",
+            stringify!(operands)
+        )
+    );
 }
 impl Clone for cs_ppc {
-    fn clone(&self) -> Self { *self }
+    fn clone(&self) -> Self {
+        *self
+    }
 }
-#[repr(u32)]
-#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
-pub enum ppc_insn {
-    PPC_INS_INVALID = 0,
-    PPC_INS_ADD = 1,
-    PPC_INS_ADDC = 2,
-    PPC_INS_ADDE = 3,
-    PPC_INS_ADDI = 4,
-    PPC_INS_ADDIC = 5,
-    PPC_INS_ADDIS = 6,
-    PPC_INS_ADDME = 7,
-    PPC_INS_ADDZE = 8,
-    PPC_INS_AND = 9,
-    PPC_INS_ANDC = 10,
-    PPC_INS_ANDIS = 11,
-    PPC_INS_ANDI = 12,
-    PPC_INS_B = 13,
-    PPC_INS_BA = 14,
-    PPC_INS_BC = 15,
-    PPC_INS_BCCTR = 16,
-    PPC_INS_BCCTRL = 17,
-    PPC_INS_BCL = 18,
-    PPC_INS_BCLR = 19,
-    PPC_INS_BCLRL = 20,
-    PPC_INS_BCTR = 21,
-    PPC_INS_BCTRL = 22,
-    PPC_INS_BDNZ = 23,
-    PPC_INS_BDNZA = 24,
-    PPC_INS_BDNZL = 25,
-    PPC_INS_BDNZLA = 26,
-    PPC_INS_BDNZLR = 27,
-    PPC_INS_BDNZLRL = 28,
-    PPC_INS_BDZ = 29,
-    PPC_INS_BDZA = 30,
-    PPC_INS_BDZL = 31,
-    PPC_INS_BDZLA = 32,
-    PPC_INS_BDZLR = 33,
-    PPC_INS_BDZLRL = 34,
-    PPC_INS_BL = 35,
-    PPC_INS_BLA = 36,
-    PPC_INS_BLR = 37,
-    PPC_INS_BLRL = 38,
-    PPC_INS_BRINC = 39,
-    PPC_INS_CMPD = 40,
-    PPC_INS_CMPDI = 41,
-    PPC_INS_CMPLD = 42,
-    PPC_INS_CMPLDI = 43,
-    PPC_INS_CMPLW = 44,
-    PPC_INS_CMPLWI = 45,
-    PPC_INS_CMPW = 46,
-    PPC_INS_CMPWI = 47,
-    PPC_INS_CNTLZD = 48,
-    PPC_INS_CNTLZW = 49,
-    PPC_INS_CREQV = 50,
-    PPC_INS_CRXOR = 51,
-    PPC_INS_CRAND = 52,
-    PPC_INS_CRANDC = 53,
-    PPC_INS_CRNAND = 54,
-    PPC_INS_CRNOR = 55,
-    PPC_INS_CROR = 56,
-    PPC_INS_CRORC = 57,
-    PPC_INS_DCBA = 58,
-    PPC_INS_DCBF = 59,
-    PPC_INS_DCBI = 60,
-    PPC_INS_DCBST = 61,
-    PPC_INS_DCBT = 62,
-    PPC_INS_DCBTST = 63,
-    PPC_INS_DCBZ = 64,
-    PPC_INS_DCBZL = 65,
-    PPC_INS_DCCCI = 66,
-    PPC_INS_DIVD = 67,
-    PPC_INS_DIVDU = 68,
-    PPC_INS_DIVW = 69,
-    PPC_INS_DIVWU = 70,
-    PPC_INS_DSS = 71,
-    PPC_INS_DSSALL = 72,
-    PPC_INS_DST = 73,
-    PPC_INS_DSTST = 74,
-    PPC_INS_DSTSTT = 75,
-    PPC_INS_DSTT = 76,
-    PPC_INS_EIEIO = 77,
-    PPC_INS_EQV = 78,
-    PPC_INS_EVABS = 79,
-    PPC_INS_EVADDIW = 80,
-    PPC_INS_EVADDSMIAAW = 81,
-    PPC_INS_EVADDSSIAAW = 82,
-    PPC_INS_EVADDUMIAAW = 83,
-    PPC_INS_EVADDUSIAAW = 84,
-    PPC_INS_EVADDW = 85,
-    PPC_INS_EVAND = 86,
-    PPC_INS_EVANDC = 87,
-    PPC_INS_EVCMPEQ = 88,
-    PPC_INS_EVCMPGTS = 89,
-    PPC_INS_EVCMPGTU = 90,
-    PPC_INS_EVCMPLTS = 91,
-    PPC_INS_EVCMPLTU = 92,
-    PPC_INS_EVCNTLSW = 93,
-    PPC_INS_EVCNTLZW = 94,
-    PPC_INS_EVDIVWS = 95,
-    PPC_INS_EVDIVWU = 96,
-    PPC_INS_EVEQV = 97,
-    PPC_INS_EVEXTSB = 98,
-    PPC_INS_EVEXTSH = 99,
-    PPC_INS_EVLDD = 100,
-    PPC_INS_EVLDDX = 101,
-    PPC_INS_EVLDH = 102,
-    PPC_INS_EVLDHX = 103,
-    PPC_INS_EVLDW = 104,
-    PPC_INS_EVLDWX = 105,
-    PPC_INS_EVLHHESPLAT = 106,
-    PPC_INS_EVLHHESPLATX = 107,
-    PPC_INS_EVLHHOSSPLAT = 108,
-    PPC_INS_EVLHHOSSPLATX = 109,
-    PPC_INS_EVLHHOUSPLAT = 110,
-    PPC_INS_EVLHHOUSPLATX = 111,
-    PPC_INS_EVLWHE = 112,
-    PPC_INS_EVLWHEX = 113,
-    PPC_INS_EVLWHOS = 114,
-    PPC_INS_EVLWHOSX = 115,
-    PPC_INS_EVLWHOU = 116,
-    PPC_INS_EVLWHOUX = 117,
-    PPC_INS_EVLWHSPLAT = 118,
-    PPC_INS_EVLWHSPLATX = 119,
-    PPC_INS_EVLWWSPLAT = 120,
-    PPC_INS_EVLWWSPLATX = 121,
-    PPC_INS_EVMERGEHI = 122,
-    PPC_INS_EVMERGEHILO = 123,
-    PPC_INS_EVMERGELO = 124,
-    PPC_INS_EVMERGELOHI = 125,
-    PPC_INS_EVMHEGSMFAA = 126,
-    PPC_INS_EVMHEGSMFAN = 127,
-    PPC_INS_EVMHEGSMIAA = 128,
-    PPC_INS_EVMHEGSMIAN = 129,
-    PPC_INS_EVMHEGUMIAA = 130,
-    PPC_INS_EVMHEGUMIAN = 131,
-    PPC_INS_EVMHESMF = 132,
-    PPC_INS_EVMHESMFA = 133,
-    PPC_INS_EVMHESMFAAW = 134,
-    PPC_INS_EVMHESMFANW = 135,
-    PPC_INS_EVMHESMI = 136,
-    PPC_INS_EVMHESMIA = 137,
-    PPC_INS_EVMHESMIAAW = 138,
-    PPC_INS_EVMHESMIANW = 139,
-    PPC_INS_EVMHESSF = 140,
-    PPC_INS_EVMHESSFA = 141,
-    PPC_INS_EVMHESSFAAW = 142,
-    PPC_INS_EVMHESSFANW = 143,
-    PPC_INS_EVMHESSIAAW = 144,
-    PPC_INS_EVMHESSIANW = 145,
-    PPC_INS_EVMHEUMI = 146,
-    PPC_INS_EVMHEUMIA = 147,
-    PPC_INS_EVMHEUMIAAW = 148,
-    PPC_INS_EVMHEUMIANW = 149,
-    PPC_INS_EVMHEUSIAAW = 150,
-    PPC_INS_EVMHEUSIANW = 151,
-    PPC_INS_EVMHOGSMFAA = 152,
-    PPC_INS_EVMHOGSMFAN = 153,
-    PPC_INS_EVMHOGSMIAA = 154,
-    PPC_INS_EVMHOGSMIAN = 155,
-    PPC_INS_EVMHOGUMIAA = 156,
-    PPC_INS_EVMHOGUMIAN = 157,
-    PPC_INS_EVMHOSMF = 158,
-    PPC_INS_EVMHOSMFA = 159,
-    PPC_INS_EVMHOSMFAAW = 160,
-    PPC_INS_EVMHOSMFANW = 161,
-    PPC_INS_EVMHOSMI = 162,
-    PPC_INS_EVMHOSMIA = 163,
-    PPC_INS_EVMHOSMIAAW = 164,
-    PPC_INS_EVMHOSMIANW = 165,
-    PPC_INS_EVMHOSSF = 166,
-    PPC_INS_EVMHOSSFA = 167,
-    PPC_INS_EVMHOSSFAAW = 168,
-    PPC_INS_EVMHOSSFANW = 169,
-    PPC_INS_EVMHOSSIAAW = 170,
-    PPC_INS_EVMHOSSIANW = 171,
-    PPC_INS_EVMHOUMI = 172,
-    PPC_INS_EVMHOUMIA = 173,
-    PPC_INS_EVMHOUMIAAW = 174,
-    PPC_INS_EVMHOUMIANW = 175,
-    PPC_INS_EVMHOUSIAAW = 176,
-    PPC_INS_EVMHOUSIANW = 177,
-    PPC_INS_EVMRA = 178,
-    PPC_INS_EVMWHSMF = 179,
-    PPC_INS_EVMWHSMFA = 180,
-    PPC_INS_EVMWHSMI = 181,
-    PPC_INS_EVMWHSMIA = 182,
-    PPC_INS_EVMWHSSF = 183,
-    PPC_INS_EVMWHSSFA = 184,
-    PPC_INS_EVMWHUMI = 185,
-    PPC_INS_EVMWHUMIA = 186,
-    PPC_INS_EVMWLSMIAAW = 187,
-    PPC_INS_EVMWLSMIANW = 188,
-    PPC_INS_EVMWLSSIAAW = 189,
-    PPC_INS_EVMWLSSIANW = 190,
-    PPC_INS_EVMWLUMI = 191,
-    PPC_INS_EVMWLUMIA = 192,
-    PPC_INS_EVMWLUMIAAW = 193,
-    PPC_INS_EVMWLUMIANW = 194,
-    PPC_INS_EVMWLUSIAAW = 195,
-    PPC_INS_EVMWLUSIANW = 196,
-    PPC_INS_EVMWSMF = 197,
-    PPC_INS_EVMWSMFA = 198,
-    PPC_INS_EVMWSMFAA = 199,
-    PPC_INS_EVMWSMFAN = 200,
-    PPC_INS_EVMWSMI = 201,
-    PPC_INS_EVMWSMIA = 202,
-    PPC_INS_EVMWSMIAA = 203,
-    PPC_INS_EVMWSMIAN = 204,
-    PPC_INS_EVMWSSF = 205,
-    PPC_INS_EVMWSSFA = 206,
-    PPC_INS_EVMWSSFAA = 207,
-    PPC_INS_EVMWSSFAN = 208,
-    PPC_INS_EVMWUMI = 209,
-    PPC_INS_EVMWUMIA = 210,
-    PPC_INS_EVMWUMIAA = 211,
-    PPC_INS_EVMWUMIAN = 212,
-    PPC_INS_EVNAND = 213,
-    PPC_INS_EVNEG = 214,
-    PPC_INS_EVNOR = 215,
-    PPC_INS_EVOR = 216,
-    PPC_INS_EVORC = 217,
-    PPC_INS_EVRLW = 218,
-    PPC_INS_EVRLWI = 219,
-    PPC_INS_EVRNDW = 220,
-    PPC_INS_EVSLW = 221,
-    PPC_INS_EVSLWI = 222,
-    PPC_INS_EVSPLATFI = 223,
-    PPC_INS_EVSPLATI = 224,
-    PPC_INS_EVSRWIS = 225,
-    PPC_INS_EVSRWIU = 226,
-    PPC_INS_EVSRWS = 227,
-    PPC_INS_EVSRWU = 228,
-    PPC_INS_EVSTDD = 229,
-    PPC_INS_EVSTDDX = 230,
-    PPC_INS_EVSTDH = 231,
-    PPC_INS_EVSTDHX = 232,
-    PPC_INS_EVSTDW = 233,
-    PPC_INS_EVSTDWX = 234,
-    PPC_INS_EVSTWHE = 235,
-    PPC_INS_EVSTWHEX = 236,
-    PPC_INS_EVSTWHO = 237,
-    PPC_INS_EVSTWHOX = 238,
-    PPC_INS_EVSTWWE = 239,
-    PPC_INS_EVSTWWEX = 240,
-    PPC_INS_EVSTWWO = 241,
-    PPC_INS_EVSTWWOX = 242,
-    PPC_INS_EVSUBFSMIAAW = 243,
-    PPC_INS_EVSUBFSSIAAW = 244,
-    PPC_INS_EVSUBFUMIAAW = 245,
-    PPC_INS_EVSUBFUSIAAW = 246,
-    PPC_INS_EVSUBFW = 247,
-    PPC_INS_EVSUBIFW = 248,
-    PPC_INS_EVXOR = 249,
-    PPC_INS_EXTSB = 250,
-    PPC_INS_EXTSH = 251,
-    PPC_INS_EXTSW = 252,
-    PPC_INS_FABS = 253,
-    PPC_INS_FADD = 254,
-    PPC_INS_FADDS = 255,
-    PPC_INS_FCFID = 256,
-    PPC_INS_FCFIDS = 257,
-    PPC_INS_FCFIDU = 258,
-    PPC_INS_FCFIDUS = 259,
-    PPC_INS_FCMPU = 260,
-    PPC_INS_FCPSGN = 261,
-    PPC_INS_FCTID = 262,
-    PPC_INS_FCTIDUZ = 263,
-    PPC_INS_FCTIDZ = 264,
-    PPC_INS_FCTIW = 265,
-    PPC_INS_FCTIWUZ = 266,
-    PPC_INS_FCTIWZ = 267,
-    PPC_INS_FDIV = 268,
-    PPC_INS_FDIVS = 269,
-    PPC_INS_FMADD = 270,
-    PPC_INS_FMADDS = 271,
-    PPC_INS_FMR = 272,
-    PPC_INS_FMSUB = 273,
-    PPC_INS_FMSUBS = 274,
-    PPC_INS_FMUL = 275,
-    PPC_INS_FMULS = 276,
-    PPC_INS_FNABS = 277,
-    PPC_INS_FNEG = 278,
-    PPC_INS_FNMADD = 279,
-    PPC_INS_FNMADDS = 280,
-    PPC_INS_FNMSUB = 281,
-    PPC_INS_FNMSUBS = 282,
-    PPC_INS_FRE = 283,
-    PPC_INS_FRES = 284,
-    PPC_INS_FRIM = 285,
-    PPC_INS_FRIN = 286,
-    PPC_INS_FRIP = 287,
-    PPC_INS_FRIZ = 288,
-    PPC_INS_FRSP = 289,
-    PPC_INS_FRSQRTE = 290,
-    PPC_INS_FRSQRTES = 291,
-    PPC_INS_FSEL = 292,
-    PPC_INS_FSQRT = 293,
-    PPC_INS_FSQRTS = 294,
-    PPC_INS_FSUB = 295,
-    PPC_INS_FSUBS = 296,
-    PPC_INS_ICBI = 297,
-    PPC_INS_ICCCI = 298,
-    PPC_INS_ISEL = 299,
-    PPC_INS_ISYNC = 300,
-    PPC_INS_LA = 301,
-    PPC_INS_LBZ = 302,
-    PPC_INS_LBZU = 303,
-    PPC_INS_LBZUX = 304,
-    PPC_INS_LBZX = 305,
-    PPC_INS_LD = 306,
-    PPC_INS_LDARX = 307,
-    PPC_INS_LDBRX = 308,
-    PPC_INS_LDU = 309,
-    PPC_INS_LDUX = 310,
-    PPC_INS_LDX = 311,
-    PPC_INS_LFD = 312,
-    PPC_INS_LFDU = 313,
-    PPC_INS_LFDUX = 314,
-    PPC_INS_LFDX = 315,
-    PPC_INS_LFIWAX = 316,
-    PPC_INS_LFIWZX = 317,
-    PPC_INS_LFS = 318,
-    PPC_INS_LFSU = 319,
-    PPC_INS_LFSUX = 320,
-    PPC_INS_LFSX = 321,
-    PPC_INS_LHA = 322,
-    PPC_INS_LHAU = 323,
-    PPC_INS_LHAUX = 324,
-    PPC_INS_LHAX = 325,
-    PPC_INS_LHBRX = 326,
-    PPC_INS_LHZ = 327,
-    PPC_INS_LHZU = 328,
-    PPC_INS_LHZUX = 329,
-    PPC_INS_LHZX = 330,
-    PPC_INS_LI = 331,
-    PPC_INS_LIS = 332,
-    PPC_INS_LMW = 333,
-    PPC_INS_LSWI = 334,
-    PPC_INS_LVEBX = 335,
-    PPC_INS_LVEHX = 336,
-    PPC_INS_LVEWX = 337,
-    PPC_INS_LVSL = 338,
-    PPC_INS_LVSR = 339,
-    PPC_INS_LVX = 340,
-    PPC_INS_LVXL = 341,
-    PPC_INS_LWA = 342,
-    PPC_INS_LWARX = 343,
-    PPC_INS_LWAUX = 344,
-    PPC_INS_LWAX = 345,
-    PPC_INS_LWBRX = 346,
-    PPC_INS_LWZ = 347,
-    PPC_INS_LWZU = 348,
-    PPC_INS_LWZUX = 349,
-    PPC_INS_LWZX = 350,
-    PPC_INS_LXSDX = 351,
-    PPC_INS_LXVD2X = 352,
-    PPC_INS_LXVDSX = 353,
-    PPC_INS_LXVW4X = 354,
-    PPC_INS_MBAR = 355,
-    PPC_INS_MCRF = 356,
-    PPC_INS_MFCR = 357,
-    PPC_INS_MFCTR = 358,
-    PPC_INS_MFDCR = 359,
-    PPC_INS_MFFS = 360,
-    PPC_INS_MFLR = 361,
-    PPC_INS_MFMSR = 362,
-    PPC_INS_MFOCRF = 363,
-    PPC_INS_MFSPR = 364,
-    PPC_INS_MFSR = 365,
-    PPC_INS_MFSRIN = 366,
-    PPC_INS_MFTB = 367,
-    PPC_INS_MFVSCR = 368,
-    PPC_INS_MSYNC = 369,
-    PPC_INS_MTCRF = 370,
-    PPC_INS_MTCTR = 371,
-    PPC_INS_MTDCR = 372,
-    PPC_INS_MTFSB0 = 373,
-    PPC_INS_MTFSB1 = 374,
-    PPC_INS_MTFSF = 375,
-    PPC_INS_MTLR = 376,
-    PPC_INS_MTMSR = 377,
-    PPC_INS_MTMSRD = 378,
-    PPC_INS_MTOCRF = 379,
-    PPC_INS_MTSPR = 380,
-    PPC_INS_MTSR = 381,
-    PPC_INS_MTSRIN = 382,
-    PPC_INS_MTVSCR = 383,
-    PPC_INS_MULHD = 384,
-    PPC_INS_MULHDU = 385,
-    PPC_INS_MULHW = 386,
-    PPC_INS_MULHWU = 387,
-    PPC_INS_MULLD = 388,
-    PPC_INS_MULLI = 389,
-    PPC_INS_MULLW = 390,
-    PPC_INS_NAND = 391,
-    PPC_INS_NEG = 392,
-    PPC_INS_NOP = 393,
-    PPC_INS_ORI = 394,
-    PPC_INS_NOR = 395,
-    PPC_INS_OR = 396,
-    PPC_INS_ORC = 397,
-    PPC_INS_ORIS = 398,
-    PPC_INS_POPCNTD = 399,
-    PPC_INS_POPCNTW = 400,
-    PPC_INS_RFCI = 401,
-    PPC_INS_RFDI = 402,
-    PPC_INS_RFI = 403,
-    PPC_INS_RFID = 404,
-    PPC_INS_RFMCI = 405,
-    PPC_INS_RLDCL = 406,
-    PPC_INS_RLDCR = 407,
-    PPC_INS_RLDIC = 408,
-    PPC_INS_RLDICL = 409,
-    PPC_INS_RLDICR = 410,
-    PPC_INS_RLDIMI = 411,
-    PPC_INS_RLWIMI = 412,
-    PPC_INS_RLWINM = 413,
-    PPC_INS_RLWNM = 414,
-    PPC_INS_SC = 415,
-    PPC_INS_SLBIA = 416,
-    PPC_INS_SLBIE = 417,
-    PPC_INS_SLBMFEE = 418,
-    PPC_INS_SLBMTE = 419,
-    PPC_INS_SLD = 420,
-    PPC_INS_SLW = 421,
-    PPC_INS_SRAD = 422,
-    PPC_INS_SRADI = 423,
-    PPC_INS_SRAW = 424,
-    PPC_INS_SRAWI = 425,
-    PPC_INS_SRD = 426,
-    PPC_INS_SRW = 427,
-    PPC_INS_STB = 428,
-    PPC_INS_STBU = 429,
-    PPC_INS_STBUX = 430,
-    PPC_INS_STBX = 431,
-    PPC_INS_STD = 432,
-    PPC_INS_STDBRX = 433,
-    PPC_INS_STDCX = 434,
-    PPC_INS_STDU = 435,
-    PPC_INS_STDUX = 436,
-    PPC_INS_STDX = 437,
-    PPC_INS_STFD = 438,
-    PPC_INS_STFDU = 439,
-    PPC_INS_STFDUX = 440,
-    PPC_INS_STFDX = 441,
-    PPC_INS_STFIWX = 442,
-    PPC_INS_STFS = 443,
-    PPC_INS_STFSU = 444,
-    PPC_INS_STFSUX = 445,
-    PPC_INS_STFSX = 446,
-    PPC_INS_STH = 447,
-    PPC_INS_STHBRX = 448,
-    PPC_INS_STHU = 449,
-    PPC_INS_STHUX = 450,
-    PPC_INS_STHX = 451,
-    PPC_INS_STMW = 452,
-    PPC_INS_STSWI = 453,
-    PPC_INS_STVEBX = 454,
-    PPC_INS_STVEHX = 455,
-    PPC_INS_STVEWX = 456,
-    PPC_INS_STVX = 457,
-    PPC_INS_STVXL = 458,
-    PPC_INS_STW = 459,
-    PPC_INS_STWBRX = 460,
-    PPC_INS_STWCX = 461,
-    PPC_INS_STWU = 462,
-    PPC_INS_STWUX = 463,
-    PPC_INS_STWX = 464,
-    PPC_INS_STXSDX = 465,
-    PPC_INS_STXVD2X = 466,
-    PPC_INS_STXVW4X = 467,
-    PPC_INS_SUBF = 468,
-    PPC_INS_SUBFC = 469,
-    PPC_INS_SUBFE = 470,
-    PPC_INS_SUBFIC = 471,
-    PPC_INS_SUBFME = 472,
-    PPC_INS_SUBFZE = 473,
-    PPC_INS_SYNC = 474,
-    PPC_INS_TD = 475,
-    PPC_INS_TDI = 476,
-    PPC_INS_TLBIA = 477,
-    PPC_INS_TLBIE = 478,
-    PPC_INS_TLBIEL = 479,
-    PPC_INS_TLBIVAX = 480,
-    PPC_INS_TLBLD = 481,
-    PPC_INS_TLBLI = 482,
-    PPC_INS_TLBRE = 483,
-    PPC_INS_TLBSX = 484,
-    PPC_INS_TLBSYNC = 485,
-    PPC_INS_TLBWE = 486,
-    PPC_INS_TRAP = 487,
-    PPC_INS_TW = 488,
-    PPC_INS_TWI = 489,
-    PPC_INS_VADDCUW = 490,
-    PPC_INS_VADDFP = 491,
-    PPC_INS_VADDSBS = 492,
-    PPC_INS_VADDSHS = 493,
-    PPC_INS_VADDSWS = 494,
-    PPC_INS_VADDUBM = 495,
-    PPC_INS_VADDUBS = 496,
-    PPC_INS_VADDUHM = 497,
-    PPC_INS_VADDUHS = 498,
-    PPC_INS_VADDUWM = 499,
-    PPC_INS_VADDUWS = 500,
-    PPC_INS_VAND = 501,
-    PPC_INS_VANDC = 502,
-    PPC_INS_VAVGSB = 503,
-    PPC_INS_VAVGSH = 504,
-    PPC_INS_VAVGSW = 505,
-    PPC_INS_VAVGUB = 506,
-    PPC_INS_VAVGUH = 507,
-    PPC_INS_VAVGUW = 508,
-    PPC_INS_VCFSX = 509,
-    PPC_INS_VCFUX = 510,
-    PPC_INS_VCMPBFP = 511,
-    PPC_INS_VCMPEQFP = 512,
-    PPC_INS_VCMPEQUB = 513,
-    PPC_INS_VCMPEQUH = 514,
-    PPC_INS_VCMPEQUW = 515,
-    PPC_INS_VCMPGEFP = 516,
-    PPC_INS_VCMPGTFP = 517,
-    PPC_INS_VCMPGTSB = 518,
-    PPC_INS_VCMPGTSH = 519,
-    PPC_INS_VCMPGTSW = 520,
-    PPC_INS_VCMPGTUB = 521,
-    PPC_INS_VCMPGTUH = 522,
-    PPC_INS_VCMPGTUW = 523,
-    PPC_INS_VCTSXS = 524,
-    PPC_INS_VCTUXS = 525,
-    PPC_INS_VEXPTEFP = 526,
-    PPC_INS_VLOGEFP = 527,
-    PPC_INS_VMADDFP = 528,
-    PPC_INS_VMAXFP = 529,
-    PPC_INS_VMAXSB = 530,
-    PPC_INS_VMAXSH = 531,
-    PPC_INS_VMAXSW = 532,
-    PPC_INS_VMAXUB = 533,
-    PPC_INS_VMAXUH = 534,
-    PPC_INS_VMAXUW = 535,
-    PPC_INS_VMHADDSHS = 536,
-    PPC_INS_VMHRADDSHS = 537,
-    PPC_INS_VMINFP = 538,
-    PPC_INS_VMINSB = 539,
-    PPC_INS_VMINSH = 540,
-    PPC_INS_VMINSW = 541,
-    PPC_INS_VMINUB = 542,
-    PPC_INS_VMINUH = 543,
-    PPC_INS_VMINUW = 544,
-    PPC_INS_VMLADDUHM = 545,
-    PPC_INS_VMRGHB = 546,
-    PPC_INS_VMRGHH = 547,
-    PPC_INS_VMRGHW = 548,
-    PPC_INS_VMRGLB = 549,
-    PPC_INS_VMRGLH = 550,
-    PPC_INS_VMRGLW = 551,
-    PPC_INS_VMSUMMBM = 552,
-    PPC_INS_VMSUMSHM = 553,
-    PPC_INS_VMSUMSHS = 554,
-    PPC_INS_VMSUMUBM = 555,
-    PPC_INS_VMSUMUHM = 556,
-    PPC_INS_VMSUMUHS = 557,
-    PPC_INS_VMULESB = 558,
-    PPC_INS_VMULESH = 559,
-    PPC_INS_VMULEUB = 560,
-    PPC_INS_VMULEUH = 561,
-    PPC_INS_VMULOSB = 562,
-    PPC_INS_VMULOSH = 563,
-    PPC_INS_VMULOUB = 564,
-    PPC_INS_VMULOUH = 565,
-    PPC_INS_VNMSUBFP = 566,
-    PPC_INS_VNOR = 567,
-    PPC_INS_VOR = 568,
-    PPC_INS_VPERM = 569,
-    PPC_INS_VPKPX = 570,
-    PPC_INS_VPKSHSS = 571,
-    PPC_INS_VPKSHUS = 572,
-    PPC_INS_VPKSWSS = 573,
-    PPC_INS_VPKSWUS = 574,
-    PPC_INS_VPKUHUM = 575,
-    PPC_INS_VPKUHUS = 576,
-    PPC_INS_VPKUWUM = 577,
-    PPC_INS_VPKUWUS = 578,
-    PPC_INS_VREFP = 579,
-    PPC_INS_VRFIM = 580,
-    PPC_INS_VRFIN = 581,
-    PPC_INS_VRFIP = 582,
-    PPC_INS_VRFIZ = 583,
-    PPC_INS_VRLB = 584,
-    PPC_INS_VRLH = 585,
-    PPC_INS_VRLW = 586,
-    PPC_INS_VRSQRTEFP = 587,
-    PPC_INS_VSEL = 588,
-    PPC_INS_VSL = 589,
-    PPC_INS_VSLB = 590,
-    PPC_INS_VSLDOI = 591,
-    PPC_INS_VSLH = 592,
-    PPC_INS_VSLO = 593,
-    PPC_INS_VSLW = 594,
-    PPC_INS_VSPLTB = 595,
-    PPC_INS_VSPLTH = 596,
-    PPC_INS_VSPLTISB = 597,
-    PPC_INS_VSPLTISH = 598,
-    PPC_INS_VSPLTISW = 599,
-    PPC_INS_VSPLTW = 600,
-    PPC_INS_VSR = 601,
-    PPC_INS_VSRAB = 602,
-    PPC_INS_VSRAH = 603,
-    PPC_INS_VSRAW = 604,
-    PPC_INS_VSRB = 605,
-    PPC_INS_VSRH = 606,
-    PPC_INS_VSRO = 607,
-    PPC_INS_VSRW = 608,
-    PPC_INS_VSUBCUW = 609,
-    PPC_INS_VSUBFP = 610,
-    PPC_INS_VSUBSBS = 611,
-    PPC_INS_VSUBSHS = 612,
-    PPC_INS_VSUBSWS = 613,
-    PPC_INS_VSUBUBM = 614,
-    PPC_INS_VSUBUBS = 615,
-    PPC_INS_VSUBUHM = 616,
-    PPC_INS_VSUBUHS = 617,
-    PPC_INS_VSUBUWM = 618,
-    PPC_INS_VSUBUWS = 619,
-    PPC_INS_VSUM2SWS = 620,
-    PPC_INS_VSUM4SBS = 621,
-    PPC_INS_VSUM4SHS = 622,
-    PPC_INS_VSUM4UBS = 623,
-    PPC_INS_VSUMSWS = 624,
-    PPC_INS_VUPKHPX = 625,
-    PPC_INS_VUPKHSB = 626,
-    PPC_INS_VUPKHSH = 627,
-    PPC_INS_VUPKLPX = 628,
-    PPC_INS_VUPKLSB = 629,
-    PPC_INS_VUPKLSH = 630,
-    PPC_INS_VXOR = 631,
-    PPC_INS_WAIT = 632,
-    PPC_INS_WRTEE = 633,
-    PPC_INS_WRTEEI = 634,
-    PPC_INS_XOR = 635,
-    PPC_INS_XORI = 636,
-    PPC_INS_XORIS = 637,
-    PPC_INS_XSABSDP = 638,
-    PPC_INS_XSADDDP = 639,
-    PPC_INS_XSCMPODP = 640,
-    PPC_INS_XSCMPUDP = 641,
-    PPC_INS_XSCPSGNDP = 642,
-    PPC_INS_XSCVDPSP = 643,
-    PPC_INS_XSCVDPSXDS = 644,
-    PPC_INS_XSCVDPSXWS = 645,
-    PPC_INS_XSCVDPUXDS = 646,
-    PPC_INS_XSCVDPUXWS = 647,
-    PPC_INS_XSCVSPDP = 648,
-    PPC_INS_XSCVSXDDP = 649,
-    PPC_INS_XSCVUXDDP = 650,
-    PPC_INS_XSDIVDP = 651,
-    PPC_INS_XSMADDADP = 652,
-    PPC_INS_XSMADDMDP = 653,
-    PPC_INS_XSMAXDP = 654,
-    PPC_INS_XSMINDP = 655,
-    PPC_INS_XSMSUBADP = 656,
-    PPC_INS_XSMSUBMDP = 657,
-    PPC_INS_XSMULDP = 658,
-    PPC_INS_XSNABSDP = 659,
-    PPC_INS_XSNEGDP = 660,
-    PPC_INS_XSNMADDADP = 661,
-    PPC_INS_XSNMADDMDP = 662,
-    PPC_INS_XSNMSUBADP = 663,
-    PPC_INS_XSNMSUBMDP = 664,
-    PPC_INS_XSRDPI = 665,
-    PPC_INS_XSRDPIC = 666,
-    PPC_INS_XSRDPIM = 667,
-    PPC_INS_XSRDPIP = 668,
-    PPC_INS_XSRDPIZ = 669,
-    PPC_INS_XSREDP = 670,
-    PPC_INS_XSRSQRTEDP = 671,
-    PPC_INS_XSSQRTDP = 672,
-    PPC_INS_XSSUBDP = 673,
-    PPC_INS_XSTDIVDP = 674,
-    PPC_INS_XSTSQRTDP = 675,
-    PPC_INS_XVABSDP = 676,
-    PPC_INS_XVABSSP = 677,
-    PPC_INS_XVADDDP = 678,
-    PPC_INS_XVADDSP = 679,
-    PPC_INS_XVCMPEQDP = 680,
-    PPC_INS_XVCMPEQSP = 681,
-    PPC_INS_XVCMPGEDP = 682,
-    PPC_INS_XVCMPGESP = 683,
-    PPC_INS_XVCMPGTDP = 684,
-    PPC_INS_XVCMPGTSP = 685,
-    PPC_INS_XVCPSGNDP = 686,
-    PPC_INS_XVCPSGNSP = 687,
-    PPC_INS_XVCVDPSP = 688,
-    PPC_INS_XVCVDPSXDS = 689,
-    PPC_INS_XVCVDPSXWS = 690,
-    PPC_INS_XVCVDPUXDS = 691,
-    PPC_INS_XVCVDPUXWS = 692,
-    PPC_INS_XVCVSPDP = 693,
-    PPC_INS_XVCVSPSXDS = 694,
-    PPC_INS_XVCVSPSXWS = 695,
-    PPC_INS_XVCVSPUXDS = 696,
-    PPC_INS_XVCVSPUXWS = 697,
-    PPC_INS_XVCVSXDDP = 698,
-    PPC_INS_XVCVSXDSP = 699,
-    PPC_INS_XVCVSXWDP = 700,
-    PPC_INS_XVCVSXWSP = 701,
-    PPC_INS_XVCVUXDDP = 702,
-    PPC_INS_XVCVUXDSP = 703,
-    PPC_INS_XVCVUXWDP = 704,
-    PPC_INS_XVCVUXWSP = 705,
-    PPC_INS_XVDIVDP = 706,
-    PPC_INS_XVDIVSP = 707,
-    PPC_INS_XVMADDADP = 708,
-    PPC_INS_XVMADDASP = 709,
-    PPC_INS_XVMADDMDP = 710,
-    PPC_INS_XVMADDMSP = 711,
-    PPC_INS_XVMAXDP = 712,
-    PPC_INS_XVMAXSP = 713,
-    PPC_INS_XVMINDP = 714,
-    PPC_INS_XVMINSP = 715,
-    PPC_INS_XVMSUBADP = 716,
-    PPC_INS_XVMSUBASP = 717,
-    PPC_INS_XVMSUBMDP = 718,
-    PPC_INS_XVMSUBMSP = 719,
-    PPC_INS_XVMULDP = 720,
-    PPC_INS_XVMULSP = 721,
-    PPC_INS_XVNABSDP = 722,
-    PPC_INS_XVNABSSP = 723,
-    PPC_INS_XVNEGDP = 724,
-    PPC_INS_XVNEGSP = 725,
-    PPC_INS_XVNMADDADP = 726,
-    PPC_INS_XVNMADDASP = 727,
-    PPC_INS_XVNMADDMDP = 728,
-    PPC_INS_XVNMADDMSP = 729,
-    PPC_INS_XVNMSUBADP = 730,
-    PPC_INS_XVNMSUBASP = 731,
-    PPC_INS_XVNMSUBMDP = 732,
-    PPC_INS_XVNMSUBMSP = 733,
-    PPC_INS_XVRDPI = 734,
-    PPC_INS_XVRDPIC = 735,
-    PPC_INS_XVRDPIM = 736,
-    PPC_INS_XVRDPIP = 737,
-    PPC_INS_XVRDPIZ = 738,
-    PPC_INS_XVREDP = 739,
-    PPC_INS_XVRESP = 740,
-    PPC_INS_XVRSPI = 741,
-    PPC_INS_XVRSPIC = 742,
-    PPC_INS_XVRSPIM = 743,
-    PPC_INS_XVRSPIP = 744,
-    PPC_INS_XVRSPIZ = 745,
-    PPC_INS_XVRSQRTEDP = 746,
-    PPC_INS_XVRSQRTESP = 747,
-    PPC_INS_XVSQRTDP = 748,
-    PPC_INS_XVSQRTSP = 749,
-    PPC_INS_XVSUBDP = 750,
-    PPC_INS_XVSUBSP = 751,
-    PPC_INS_XVTDIVDP = 752,
-    PPC_INS_XVTDIVSP = 753,
-    PPC_INS_XVTSQRTDP = 754,
-    PPC_INS_XVTSQRTSP = 755,
-    PPC_INS_XXLAND = 756,
-    PPC_INS_XXLANDC = 757,
-    PPC_INS_XXLNOR = 758,
-    PPC_INS_XXLOR = 759,
-    PPC_INS_XXLXOR = 760,
-    PPC_INS_XXMRGHW = 761,
-    PPC_INS_XXMRGLW = 762,
-    PPC_INS_XXPERMDI = 763,
-    PPC_INS_XXSEL = 764,
-    PPC_INS_XXSLDWI = 765,
-    PPC_INS_XXSPLTW = 766,
-    PPC_INS_BCA = 767,
-    PPC_INS_BCLA = 768,
-    PPC_INS_SLWI = 769,
-    PPC_INS_SRWI = 770,
-    PPC_INS_SLDI = 771,
-    PPC_INS_BTA = 772,
-    PPC_INS_CRSET = 773,
-    PPC_INS_CRNOT = 774,
-    PPC_INS_CRMOVE = 775,
-    PPC_INS_CRCLR = 776,
-    PPC_INS_MFBR0 = 777,
-    PPC_INS_MFBR1 = 778,
-    PPC_INS_MFBR2 = 779,
-    PPC_INS_MFBR3 = 780,
-    PPC_INS_MFBR4 = 781,
-    PPC_INS_MFBR5 = 782,
-    PPC_INS_MFBR6 = 783,
-    PPC_INS_MFBR7 = 784,
-    PPC_INS_MFXER = 785,
-    PPC_INS_MFRTCU = 786,
-    PPC_INS_MFRTCL = 787,
-    PPC_INS_MFDSCR = 788,
-    PPC_INS_MFDSISR = 789,
-    PPC_INS_MFDAR = 790,
-    PPC_INS_MFSRR2 = 791,
-    PPC_INS_MFSRR3 = 792,
-    PPC_INS_MFCFAR = 793,
-    PPC_INS_MFAMR = 794,
-    PPC_INS_MFPID = 795,
-    PPC_INS_MFTBLO = 796,
-    PPC_INS_MFTBHI = 797,
-    PPC_INS_MFDBATU = 798,
-    PPC_INS_MFDBATL = 799,
-    PPC_INS_MFIBATU = 800,
-    PPC_INS_MFIBATL = 801,
-    PPC_INS_MFDCCR = 802,
-    PPC_INS_MFICCR = 803,
-    PPC_INS_MFDEAR = 804,
-    PPC_INS_MFESR = 805,
-    PPC_INS_MFSPEFSCR = 806,
-    PPC_INS_MFTCR = 807,
-    PPC_INS_MFASR = 808,
-    PPC_INS_MFPVR = 809,
-    PPC_INS_MFTBU = 810,
-    PPC_INS_MTCR = 811,
-    PPC_INS_MTBR0 = 812,
-    PPC_INS_MTBR1 = 813,
-    PPC_INS_MTBR2 = 814,
-    PPC_INS_MTBR3 = 815,
-    PPC_INS_MTBR4 = 816,
-    PPC_INS_MTBR5 = 817,
-    PPC_INS_MTBR6 = 818,
-    PPC_INS_MTBR7 = 819,
-    PPC_INS_MTXER = 820,
-    PPC_INS_MTDSCR = 821,
-    PPC_INS_MTDSISR = 822,
-    PPC_INS_MTDAR = 823,
-    PPC_INS_MTSRR2 = 824,
-    PPC_INS_MTSRR3 = 825,
-    PPC_INS_MTCFAR = 826,
-    PPC_INS_MTAMR = 827,
-    PPC_INS_MTPID = 828,
-    PPC_INS_MTTBL = 829,
-    PPC_INS_MTTBU = 830,
-    PPC_INS_MTTBLO = 831,
-    PPC_INS_MTTBHI = 832,
-    PPC_INS_MTDBATU = 833,
-    PPC_INS_MTDBATL = 834,
-    PPC_INS_MTIBATU = 835,
-    PPC_INS_MTIBATL = 836,
-    PPC_INS_MTDCCR = 837,
-    PPC_INS_MTICCR = 838,
-    PPC_INS_MTDEAR = 839,
-    PPC_INS_MTESR = 840,
-    PPC_INS_MTSPEFSCR = 841,
-    PPC_INS_MTTCR = 842,
-    PPC_INS_NOT = 843,
-    PPC_INS_MR = 844,
-    PPC_INS_ROTLD = 845,
-    PPC_INS_ROTLDI = 846,
-    PPC_INS_CLRLDI = 847,
-    PPC_INS_ROTLWI = 848,
-    PPC_INS_CLRLWI = 849,
-    PPC_INS_ROTLW = 850,
-    PPC_INS_SUB = 851,
-    PPC_INS_SUBC = 852,
-    PPC_INS_LWSYNC = 853,
-    PPC_INS_PTESYNC = 854,
-    PPC_INS_TDLT = 855,
-    PPC_INS_TDEQ = 856,
-    PPC_INS_TDGT = 857,
-    PPC_INS_TDNE = 858,
-    PPC_INS_TDLLT = 859,
-    PPC_INS_TDLGT = 860,
-    PPC_INS_TDU = 861,
-    PPC_INS_TDLTI = 862,
-    PPC_INS_TDEQI = 863,
-    PPC_INS_TDGTI = 864,
-    PPC_INS_TDNEI = 865,
-    PPC_INS_TDLLTI = 866,
-    PPC_INS_TDLGTI = 867,
-    PPC_INS_TDUI = 868,
-    PPC_INS_TLBREHI = 869,
-    PPC_INS_TLBRELO = 870,
-    PPC_INS_TLBWEHI = 871,
-    PPC_INS_TLBWELO = 872,
-    PPC_INS_TWLT = 873,
-    PPC_INS_TWEQ = 874,
-    PPC_INS_TWGT = 875,
-    PPC_INS_TWNE = 876,
-    PPC_INS_TWLLT = 877,
-    PPC_INS_TWLGT = 878,
-    PPC_INS_TWU = 879,
-    PPC_INS_TWLTI = 880,
-    PPC_INS_TWEQI = 881,
-    PPC_INS_TWGTI = 882,
-    PPC_INS_TWNEI = 883,
-    PPC_INS_TWLLTI = 884,
-    PPC_INS_TWLGTI = 885,
-    PPC_INS_TWUI = 886,
-    PPC_INS_WAITRSV = 887,
-    PPC_INS_WAITIMPL = 888,
-    PPC_INS_XNOP = 889,
-    PPC_INS_XVMOVDP = 890,
-    PPC_INS_XVMOVSP = 891,
-    PPC_INS_XXSPLTD = 892,
-    PPC_INS_XXMRGHD = 893,
-    PPC_INS_XXMRGLD = 894,
-    PPC_INS_XXSWAPD = 895,
-    PPC_INS_BT = 896,
-    PPC_INS_BF = 897,
-    PPC_INS_BDNZT = 898,
-    PPC_INS_BDNZF = 899,
-    PPC_INS_BDZF = 900,
-    PPC_INS_BDZT = 901,
-    PPC_INS_BFA = 902,
-    PPC_INS_BDNZTA = 903,
-    PPC_INS_BDNZFA = 904,
-    PPC_INS_BDZTA = 905,
-    PPC_INS_BDZFA = 906,
-    PPC_INS_BTCTR = 907,
-    PPC_INS_BFCTR = 908,
-    PPC_INS_BTCTRL = 909,
-    PPC_INS_BFCTRL = 910,
-    PPC_INS_BTL = 911,
-    PPC_INS_BFL = 912,
-    PPC_INS_BDNZTL = 913,
-    PPC_INS_BDNZFL = 914,
-    PPC_INS_BDZTL = 915,
-    PPC_INS_BDZFL = 916,
-    PPC_INS_BTLA = 917,
-    PPC_INS_BFLA = 918,
-    PPC_INS_BDNZTLA = 919,
-    PPC_INS_BDNZFLA = 920,
-    PPC_INS_BDZTLA = 921,
-    PPC_INS_BDZFLA = 922,
-    PPC_INS_BTLR = 923,
-    PPC_INS_BFLR = 924,
-    PPC_INS_BDNZTLR = 925,
-    PPC_INS_BDZTLR = 926,
-    PPC_INS_BDZFLR = 927,
-    PPC_INS_BTLRL = 928,
-    PPC_INS_BFLRL = 929,
-    PPC_INS_BDNZTLRL = 930,
-    PPC_INS_BDNZFLRL = 931,
-    PPC_INS_BDZTLRL = 932,
-    PPC_INS_BDZFLRL = 933,
-    PPC_INS_ENDING = 934,
+impl ::std::fmt::Debug for cs_ppc {
+    fn fmt(&self, f: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
+        write!(
+            f,
+            "cs_ppc {{ bc: {:?}, bh: {:?}, update_cr0: {:?}, op_count: {:?}, operands: {:?} }}",
+            self.bc, self.bh, self.update_cr0, self.op_count, self.operands
+        )
+    }
 }
-#[repr(u32)]
-#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
-pub enum ppc_insn_group {
-    PPC_GRP_INVALID = 0,
-    PPC_GRP_JUMP = 1,
-    PPC_GRP_ALTIVEC = 128,
-    PPC_GRP_MODE32 = 129,
-    PPC_GRP_MODE64 = 130,
-    PPC_GRP_BOOKE = 131,
-    PPC_GRP_NOTBOOKE = 132,
-    PPC_GRP_SPE = 133,
-    PPC_GRP_VSX = 134,
-    PPC_GRP_E500 = 135,
-    PPC_GRP_PPC4XX = 136,
-    PPC_GRP_PPC6XX = 137,
-    PPC_GRP_ENDING = 138,
+pub mod ppc_insn {
+    pub type Type = ::std::os::raw::c_uint;
+    pub const PPC_INS_INVALID: Type = 0;
+    pub const PPC_INS_ADD: Type = 1;
+    pub const PPC_INS_ADDC: Type = 2;
+    pub const PPC_INS_ADDE: Type = 3;
+    pub const PPC_INS_ADDI: Type = 4;
+    pub const PPC_INS_ADDIC: Type = 5;
+    pub const PPC_INS_ADDIS: Type = 6;
+    pub const PPC_INS_ADDME: Type = 7;
+    pub const PPC_INS_ADDZE: Type = 8;
+    pub const PPC_INS_AND: Type = 9;
+    pub const PPC_INS_ANDC: Type = 10;
+    pub const PPC_INS_ANDIS: Type = 11;
+    pub const PPC_INS_ANDI: Type = 12;
+    pub const PPC_INS_B: Type = 13;
+    pub const PPC_INS_BA: Type = 14;
+    pub const PPC_INS_BC: Type = 15;
+    pub const PPC_INS_BCCTR: Type = 16;
+    pub const PPC_INS_BCCTRL: Type = 17;
+    pub const PPC_INS_BCL: Type = 18;
+    pub const PPC_INS_BCLR: Type = 19;
+    pub const PPC_INS_BCLRL: Type = 20;
+    pub const PPC_INS_BCTR: Type = 21;
+    pub const PPC_INS_BCTRL: Type = 22;
+    pub const PPC_INS_BDNZ: Type = 23;
+    pub const PPC_INS_BDNZA: Type = 24;
+    pub const PPC_INS_BDNZL: Type = 25;
+    pub const PPC_INS_BDNZLA: Type = 26;
+    pub const PPC_INS_BDNZLR: Type = 27;
+    pub const PPC_INS_BDNZLRL: Type = 28;
+    pub const PPC_INS_BDZ: Type = 29;
+    pub const PPC_INS_BDZA: Type = 30;
+    pub const PPC_INS_BDZL: Type = 31;
+    pub const PPC_INS_BDZLA: Type = 32;
+    pub const PPC_INS_BDZLR: Type = 33;
+    pub const PPC_INS_BDZLRL: Type = 34;
+    pub const PPC_INS_BL: Type = 35;
+    pub const PPC_INS_BLA: Type = 36;
+    pub const PPC_INS_BLR: Type = 37;
+    pub const PPC_INS_BLRL: Type = 38;
+    pub const PPC_INS_BRINC: Type = 39;
+    pub const PPC_INS_CMPD: Type = 40;
+    pub const PPC_INS_CMPDI: Type = 41;
+    pub const PPC_INS_CMPLD: Type = 42;
+    pub const PPC_INS_CMPLDI: Type = 43;
+    pub const PPC_INS_CMPLW: Type = 44;
+    pub const PPC_INS_CMPLWI: Type = 45;
+    pub const PPC_INS_CMPW: Type = 46;
+    pub const PPC_INS_CMPWI: Type = 47;
+    pub const PPC_INS_CNTLZD: Type = 48;
+    pub const PPC_INS_CNTLZW: Type = 49;
+    pub const PPC_INS_CREQV: Type = 50;
+    pub const PPC_INS_CRXOR: Type = 51;
+    pub const PPC_INS_CRAND: Type = 52;
+    pub const PPC_INS_CRANDC: Type = 53;
+    pub const PPC_INS_CRNAND: Type = 54;
+    pub const PPC_INS_CRNOR: Type = 55;
+    pub const PPC_INS_CROR: Type = 56;
+    pub const PPC_INS_CRORC: Type = 57;
+    pub const PPC_INS_DCBA: Type = 58;
+    pub const PPC_INS_DCBF: Type = 59;
+    pub const PPC_INS_DCBI: Type = 60;
+    pub const PPC_INS_DCBST: Type = 61;
+    pub const PPC_INS_DCBT: Type = 62;
+    pub const PPC_INS_DCBTST: Type = 63;
+    pub const PPC_INS_DCBZ: Type = 64;
+    pub const PPC_INS_DCBZL: Type = 65;
+    pub const PPC_INS_DCCCI: Type = 66;
+    pub const PPC_INS_DIVD: Type = 67;
+    pub const PPC_INS_DIVDU: Type = 68;
+    pub const PPC_INS_DIVW: Type = 69;
+    pub const PPC_INS_DIVWU: Type = 70;
+    pub const PPC_INS_DSS: Type = 71;
+    pub const PPC_INS_DSSALL: Type = 72;
+    pub const PPC_INS_DST: Type = 73;
+    pub const PPC_INS_DSTST: Type = 74;
+    pub const PPC_INS_DSTSTT: Type = 75;
+    pub const PPC_INS_DSTT: Type = 76;
+    pub const PPC_INS_EIEIO: Type = 77;
+    pub const PPC_INS_EQV: Type = 78;
+    pub const PPC_INS_EVABS: Type = 79;
+    pub const PPC_INS_EVADDIW: Type = 80;
+    pub const PPC_INS_EVADDSMIAAW: Type = 81;
+    pub const PPC_INS_EVADDSSIAAW: Type = 82;
+    pub const PPC_INS_EVADDUMIAAW: Type = 83;
+    pub const PPC_INS_EVADDUSIAAW: Type = 84;
+    pub const PPC_INS_EVADDW: Type = 85;
+    pub const PPC_INS_EVAND: Type = 86;
+    pub const PPC_INS_EVANDC: Type = 87;
+    pub const PPC_INS_EVCMPEQ: Type = 88;
+    pub const PPC_INS_EVCMPGTS: Type = 89;
+    pub const PPC_INS_EVCMPGTU: Type = 90;
+    pub const PPC_INS_EVCMPLTS: Type = 91;
+    pub const PPC_INS_EVCMPLTU: Type = 92;
+    pub const PPC_INS_EVCNTLSW: Type = 93;
+    pub const PPC_INS_EVCNTLZW: Type = 94;
+    pub const PPC_INS_EVDIVWS: Type = 95;
+    pub const PPC_INS_EVDIVWU: Type = 96;
+    pub const PPC_INS_EVEQV: Type = 97;
+    pub const PPC_INS_EVEXTSB: Type = 98;
+    pub const PPC_INS_EVEXTSH: Type = 99;
+    pub const PPC_INS_EVLDD: Type = 100;
+    pub const PPC_INS_EVLDDX: Type = 101;
+    pub const PPC_INS_EVLDH: Type = 102;
+    pub const PPC_INS_EVLDHX: Type = 103;
+    pub const PPC_INS_EVLDW: Type = 104;
+    pub const PPC_INS_EVLDWX: Type = 105;
+    pub const PPC_INS_EVLHHESPLAT: Type = 106;
+    pub const PPC_INS_EVLHHESPLATX: Type = 107;
+    pub const PPC_INS_EVLHHOSSPLAT: Type = 108;
+    pub const PPC_INS_EVLHHOSSPLATX: Type = 109;
+    pub const PPC_INS_EVLHHOUSPLAT: Type = 110;
+    pub const PPC_INS_EVLHHOUSPLATX: Type = 111;
+    pub const PPC_INS_EVLWHE: Type = 112;
+    pub const PPC_INS_EVLWHEX: Type = 113;
+    pub const PPC_INS_EVLWHOS: Type = 114;
+    pub const PPC_INS_EVLWHOSX: Type = 115;
+    pub const PPC_INS_EVLWHOU: Type = 116;
+    pub const PPC_INS_EVLWHOUX: Type = 117;
+    pub const PPC_INS_EVLWHSPLAT: Type = 118;
+    pub const PPC_INS_EVLWHSPLATX: Type = 119;
+    pub const PPC_INS_EVLWWSPLAT: Type = 120;
+    pub const PPC_INS_EVLWWSPLATX: Type = 121;
+    pub const PPC_INS_EVMERGEHI: Type = 122;
+    pub const PPC_INS_EVMERGEHILO: Type = 123;
+    pub const PPC_INS_EVMERGELO: Type = 124;
+    pub const PPC_INS_EVMERGELOHI: Type = 125;
+    pub const PPC_INS_EVMHEGSMFAA: Type = 126;
+    pub const PPC_INS_EVMHEGSMFAN: Type = 127;
+    pub const PPC_INS_EVMHEGSMIAA: Type = 128;
+    pub const PPC_INS_EVMHEGSMIAN: Type = 129;
+    pub const PPC_INS_EVMHEGUMIAA: Type = 130;
+    pub const PPC_INS_EVMHEGUMIAN: Type = 131;
+    pub const PPC_INS_EVMHESMF: Type = 132;
+    pub const PPC_INS_EVMHESMFA: Type = 133;
+    pub const PPC_INS_EVMHESMFAAW: Type = 134;
+    pub const PPC_INS_EVMHESMFANW: Type = 135;
+    pub const PPC_INS_EVMHESMI: Type = 136;
+    pub const PPC_INS_EVMHESMIA: Type = 137;
+    pub const PPC_INS_EVMHESMIAAW: Type = 138;
+    pub const PPC_INS_EVMHESMIANW: Type = 139;
+    pub const PPC_INS_EVMHESSF: Type = 140;
+    pub const PPC_INS_EVMHESSFA: Type = 141;
+    pub const PPC_INS_EVMHESSFAAW: Type = 142;
+    pub const PPC_INS_EVMHESSFANW: Type = 143;
+    pub const PPC_INS_EVMHESSIAAW: Type = 144;
+    pub const PPC_INS_EVMHESSIANW: Type = 145;
+    pub const PPC_INS_EVMHEUMI: Type = 146;
+    pub const PPC_INS_EVMHEUMIA: Type = 147;
+    pub const PPC_INS_EVMHEUMIAAW: Type = 148;
+    pub const PPC_INS_EVMHEUMIANW: Type = 149;
+    pub const PPC_INS_EVMHEUSIAAW: Type = 150;
+    pub const PPC_INS_EVMHEUSIANW: Type = 151;
+    pub const PPC_INS_EVMHOGSMFAA: Type = 152;
+    pub const PPC_INS_EVMHOGSMFAN: Type = 153;
+    pub const PPC_INS_EVMHOGSMIAA: Type = 154;
+    pub const PPC_INS_EVMHOGSMIAN: Type = 155;
+    pub const PPC_INS_EVMHOGUMIAA: Type = 156;
+    pub const PPC_INS_EVMHOGUMIAN: Type = 157;
+    pub const PPC_INS_EVMHOSMF: Type = 158;
+    pub const PPC_INS_EVMHOSMFA: Type = 159;
+    pub const PPC_INS_EVMHOSMFAAW: Type = 160;
+    pub const PPC_INS_EVMHOSMFANW: Type = 161;
+    pub const PPC_INS_EVMHOSMI: Type = 162;
+    pub const PPC_INS_EVMHOSMIA: Type = 163;
+    pub const PPC_INS_EVMHOSMIAAW: Type = 164;
+    pub const PPC_INS_EVMHOSMIANW: Type = 165;
+    pub const PPC_INS_EVMHOSSF: Type = 166;
+    pub const PPC_INS_EVMHOSSFA: Type = 167;
+    pub const PPC_INS_EVMHOSSFAAW: Type = 168;
+    pub const PPC_INS_EVMHOSSFANW: Type = 169;
+    pub const PPC_INS_EVMHOSSIAAW: Type = 170;
+    pub const PPC_INS_EVMHOSSIANW: Type = 171;
+    pub const PPC_INS_EVMHOUMI: Type = 172;
+    pub const PPC_INS_EVMHOUMIA: Type = 173;
+    pub const PPC_INS_EVMHOUMIAAW: Type = 174;
+    pub const PPC_INS_EVMHOUMIANW: Type = 175;
+    pub const PPC_INS_EVMHOUSIAAW: Type = 176;
+    pub const PPC_INS_EVMHOUSIANW: Type = 177;
+    pub const PPC_INS_EVMRA: Type = 178;
+    pub const PPC_INS_EVMWHSMF: Type = 179;
+    pub const PPC_INS_EVMWHSMFA: Type = 180;
+    pub const PPC_INS_EVMWHSMI: Type = 181;
+    pub const PPC_INS_EVMWHSMIA: Type = 182;
+    pub const PPC_INS_EVMWHSSF: Type = 183;
+    pub const PPC_INS_EVMWHSSFA: Type = 184;
+    pub const PPC_INS_EVMWHUMI: Type = 185;
+    pub const PPC_INS_EVMWHUMIA: Type = 186;
+    pub const PPC_INS_EVMWLSMIAAW: Type = 187;
+    pub const PPC_INS_EVMWLSMIANW: Type = 188;
+    pub const PPC_INS_EVMWLSSIAAW: Type = 189;
+    pub const PPC_INS_EVMWLSSIANW: Type = 190;
+    pub const PPC_INS_EVMWLUMI: Type = 191;
+    pub const PPC_INS_EVMWLUMIA: Type = 192;
+    pub const PPC_INS_EVMWLUMIAAW: Type = 193;
+    pub const PPC_INS_EVMWLUMIANW: Type = 194;
+    pub const PPC_INS_EVMWLUSIAAW: Type = 195;
+    pub const PPC_INS_EVMWLUSIANW: Type = 196;
+    pub const PPC_INS_EVMWSMF: Type = 197;
+    pub const PPC_INS_EVMWSMFA: Type = 198;
+    pub const PPC_INS_EVMWSMFAA: Type = 199;
+    pub const PPC_INS_EVMWSMFAN: Type = 200;
+    pub const PPC_INS_EVMWSMI: Type = 201;
+    pub const PPC_INS_EVMWSMIA: Type = 202;
+    pub const PPC_INS_EVMWSMIAA: Type = 203;
+    pub const PPC_INS_EVMWSMIAN: Type = 204;
+    pub const PPC_INS_EVMWSSF: Type = 205;
+    pub const PPC_INS_EVMWSSFA: Type = 206;
+    pub const PPC_INS_EVMWSSFAA: Type = 207;
+    pub const PPC_INS_EVMWSSFAN: Type = 208;
+    pub const PPC_INS_EVMWUMI: Type = 209;
+    pub const PPC_INS_EVMWUMIA: Type = 210;
+    pub const PPC_INS_EVMWUMIAA: Type = 211;
+    pub const PPC_INS_EVMWUMIAN: Type = 212;
+    pub const PPC_INS_EVNAND: Type = 213;
+    pub const PPC_INS_EVNEG: Type = 214;
+    pub const PPC_INS_EVNOR: Type = 215;
+    pub const PPC_INS_EVOR: Type = 216;
+    pub const PPC_INS_EVORC: Type = 217;
+    pub const PPC_INS_EVRLW: Type = 218;
+    pub const PPC_INS_EVRLWI: Type = 219;
+    pub const PPC_INS_EVRNDW: Type = 220;
+    pub const PPC_INS_EVSLW: Type = 221;
+    pub const PPC_INS_EVSLWI: Type = 222;
+    pub const PPC_INS_EVSPLATFI: Type = 223;
+    pub const PPC_INS_EVSPLATI: Type = 224;
+    pub const PPC_INS_EVSRWIS: Type = 225;
+    pub const PPC_INS_EVSRWIU: Type = 226;
+    pub const PPC_INS_EVSRWS: Type = 227;
+    pub const PPC_INS_EVSRWU: Type = 228;
+    pub const PPC_INS_EVSTDD: Type = 229;
+    pub const PPC_INS_EVSTDDX: Type = 230;
+    pub const PPC_INS_EVSTDH: Type = 231;
+    pub const PPC_INS_EVSTDHX: Type = 232;
+    pub const PPC_INS_EVSTDW: Type = 233;
+    pub const PPC_INS_EVSTDWX: Type = 234;
+    pub const PPC_INS_EVSTWHE: Type = 235;
+    pub const PPC_INS_EVSTWHEX: Type = 236;
+    pub const PPC_INS_EVSTWHO: Type = 237;
+    pub const PPC_INS_EVSTWHOX: Type = 238;
+    pub const PPC_INS_EVSTWWE: Type = 239;
+    pub const PPC_INS_EVSTWWEX: Type = 240;
+    pub const PPC_INS_EVSTWWO: Type = 241;
+    pub const PPC_INS_EVSTWWOX: Type = 242;
+    pub const PPC_INS_EVSUBFSMIAAW: Type = 243;
+    pub const PPC_INS_EVSUBFSSIAAW: Type = 244;
+    pub const PPC_INS_EVSUBFUMIAAW: Type = 245;
+    pub const PPC_INS_EVSUBFUSIAAW: Type = 246;
+    pub const PPC_INS_EVSUBFW: Type = 247;
+    pub const PPC_INS_EVSUBIFW: Type = 248;
+    pub const PPC_INS_EVXOR: Type = 249;
+    pub const PPC_INS_EXTSB: Type = 250;
+    pub const PPC_INS_EXTSH: Type = 251;
+    pub const PPC_INS_EXTSW: Type = 252;
+    pub const PPC_INS_FABS: Type = 253;
+    pub const PPC_INS_FADD: Type = 254;
+    pub const PPC_INS_FADDS: Type = 255;
+    pub const PPC_INS_FCFID: Type = 256;
+    pub const PPC_INS_FCFIDS: Type = 257;
+    pub const PPC_INS_FCFIDU: Type = 258;
+    pub const PPC_INS_FCFIDUS: Type = 259;
+    pub const PPC_INS_FCMPU: Type = 260;
+    pub const PPC_INS_FCPSGN: Type = 261;
+    pub const PPC_INS_FCTID: Type = 262;
+    pub const PPC_INS_FCTIDUZ: Type = 263;
+    pub const PPC_INS_FCTIDZ: Type = 264;
+    pub const PPC_INS_FCTIW: Type = 265;
+    pub const PPC_INS_FCTIWUZ: Type = 266;
+    pub const PPC_INS_FCTIWZ: Type = 267;
+    pub const PPC_INS_FDIV: Type = 268;
+    pub const PPC_INS_FDIVS: Type = 269;
+    pub const PPC_INS_FMADD: Type = 270;
+    pub const PPC_INS_FMADDS: Type = 271;
+    pub const PPC_INS_FMR: Type = 272;
+    pub const PPC_INS_FMSUB: Type = 273;
+    pub const PPC_INS_FMSUBS: Type = 274;
+    pub const PPC_INS_FMUL: Type = 275;
+    pub const PPC_INS_FMULS: Type = 276;
+    pub const PPC_INS_FNABS: Type = 277;
+    pub const PPC_INS_FNEG: Type = 278;
+    pub const PPC_INS_FNMADD: Type = 279;
+    pub const PPC_INS_FNMADDS: Type = 280;
+    pub const PPC_INS_FNMSUB: Type = 281;
+    pub const PPC_INS_FNMSUBS: Type = 282;
+    pub const PPC_INS_FRE: Type = 283;
+    pub const PPC_INS_FRES: Type = 284;
+    pub const PPC_INS_FRIM: Type = 285;
+    pub const PPC_INS_FRIN: Type = 286;
+    pub const PPC_INS_FRIP: Type = 287;
+    pub const PPC_INS_FRIZ: Type = 288;
+    pub const PPC_INS_FRSP: Type = 289;
+    pub const PPC_INS_FRSQRTE: Type = 290;
+    pub const PPC_INS_FRSQRTES: Type = 291;
+    pub const PPC_INS_FSEL: Type = 292;
+    pub const PPC_INS_FSQRT: Type = 293;
+    pub const PPC_INS_FSQRTS: Type = 294;
+    pub const PPC_INS_FSUB: Type = 295;
+    pub const PPC_INS_FSUBS: Type = 296;
+    pub const PPC_INS_ICBI: Type = 297;
+    pub const PPC_INS_ICCCI: Type = 298;
+    pub const PPC_INS_ISEL: Type = 299;
+    pub const PPC_INS_ISYNC: Type = 300;
+    pub const PPC_INS_LA: Type = 301;
+    pub const PPC_INS_LBZ: Type = 302;
+    pub const PPC_INS_LBZU: Type = 303;
+    pub const PPC_INS_LBZUX: Type = 304;
+    pub const PPC_INS_LBZX: Type = 305;
+    pub const PPC_INS_LD: Type = 306;
+    pub const PPC_INS_LDARX: Type = 307;
+    pub const PPC_INS_LDBRX: Type = 308;
+    pub const PPC_INS_LDU: Type = 309;
+    pub const PPC_INS_LDUX: Type = 310;
+    pub const PPC_INS_LDX: Type = 311;
+    pub const PPC_INS_LFD: Type = 312;
+    pub const PPC_INS_LFDU: Type = 313;
+    pub const PPC_INS_LFDUX: Type = 314;
+    pub const PPC_INS_LFDX: Type = 315;
+    pub const PPC_INS_LFIWAX: Type = 316;
+    pub const PPC_INS_LFIWZX: Type = 317;
+    pub const PPC_INS_LFS: Type = 318;
+    pub const PPC_INS_LFSU: Type = 319;
+    pub const PPC_INS_LFSUX: Type = 320;
+    pub const PPC_INS_LFSX: Type = 321;
+    pub const PPC_INS_LHA: Type = 322;
+    pub const PPC_INS_LHAU: Type = 323;
+    pub const PPC_INS_LHAUX: Type = 324;
+    pub const PPC_INS_LHAX: Type = 325;
+    pub const PPC_INS_LHBRX: Type = 326;
+    pub const PPC_INS_LHZ: Type = 327;
+    pub const PPC_INS_LHZU: Type = 328;
+    pub const PPC_INS_LHZUX: Type = 329;
+    pub const PPC_INS_LHZX: Type = 330;
+    pub const PPC_INS_LI: Type = 331;
+    pub const PPC_INS_LIS: Type = 332;
+    pub const PPC_INS_LMW: Type = 333;
+    pub const PPC_INS_LSWI: Type = 334;
+    pub const PPC_INS_LVEBX: Type = 335;
+    pub const PPC_INS_LVEHX: Type = 336;
+    pub const PPC_INS_LVEWX: Type = 337;
+    pub const PPC_INS_LVSL: Type = 338;
+    pub const PPC_INS_LVSR: Type = 339;
+    pub const PPC_INS_LVX: Type = 340;
+    pub const PPC_INS_LVXL: Type = 341;
+    pub const PPC_INS_LWA: Type = 342;
+    pub const PPC_INS_LWARX: Type = 343;
+    pub const PPC_INS_LWAUX: Type = 344;
+    pub const PPC_INS_LWAX: Type = 345;
+    pub const PPC_INS_LWBRX: Type = 346;
+    pub const PPC_INS_LWZ: Type = 347;
+    pub const PPC_INS_LWZU: Type = 348;
+    pub const PPC_INS_LWZUX: Type = 349;
+    pub const PPC_INS_LWZX: Type = 350;
+    pub const PPC_INS_LXSDX: Type = 351;
+    pub const PPC_INS_LXVD2X: Type = 352;
+    pub const PPC_INS_LXVDSX: Type = 353;
+    pub const PPC_INS_LXVW4X: Type = 354;
+    pub const PPC_INS_MBAR: Type = 355;
+    pub const PPC_INS_MCRF: Type = 356;
+    pub const PPC_INS_MFCR: Type = 357;
+    pub const PPC_INS_MFCTR: Type = 358;
+    pub const PPC_INS_MFDCR: Type = 359;
+    pub const PPC_INS_MFFS: Type = 360;
+    pub const PPC_INS_MFLR: Type = 361;
+    pub const PPC_INS_MFMSR: Type = 362;
+    pub const PPC_INS_MFOCRF: Type = 363;
+    pub const PPC_INS_MFSPR: Type = 364;
+    pub const PPC_INS_MFSR: Type = 365;
+    pub const PPC_INS_MFSRIN: Type = 366;
+    pub const PPC_INS_MFTB: Type = 367;
+    pub const PPC_INS_MFVSCR: Type = 368;
+    pub const PPC_INS_MSYNC: Type = 369;
+    pub const PPC_INS_MTCRF: Type = 370;
+    pub const PPC_INS_MTCTR: Type = 371;
+    pub const PPC_INS_MTDCR: Type = 372;
+    pub const PPC_INS_MTFSB0: Type = 373;
+    pub const PPC_INS_MTFSB1: Type = 374;
+    pub const PPC_INS_MTFSF: Type = 375;
+    pub const PPC_INS_MTLR: Type = 376;
+    pub const PPC_INS_MTMSR: Type = 377;
+    pub const PPC_INS_MTMSRD: Type = 378;
+    pub const PPC_INS_MTOCRF: Type = 379;
+    pub const PPC_INS_MTSPR: Type = 380;
+    pub const PPC_INS_MTSR: Type = 381;
+    pub const PPC_INS_MTSRIN: Type = 382;
+    pub const PPC_INS_MTVSCR: Type = 383;
+    pub const PPC_INS_MULHD: Type = 384;
+    pub const PPC_INS_MULHDU: Type = 385;
+    pub const PPC_INS_MULHW: Type = 386;
+    pub const PPC_INS_MULHWU: Type = 387;
+    pub const PPC_INS_MULLD: Type = 388;
+    pub const PPC_INS_MULLI: Type = 389;
+    pub const PPC_INS_MULLW: Type = 390;
+    pub const PPC_INS_NAND: Type = 391;
+    pub const PPC_INS_NEG: Type = 392;
+    pub const PPC_INS_NOP: Type = 393;
+    pub const PPC_INS_ORI: Type = 394;
+    pub const PPC_INS_NOR: Type = 395;
+    pub const PPC_INS_OR: Type = 396;
+    pub const PPC_INS_ORC: Type = 397;
+    pub const PPC_INS_ORIS: Type = 398;
+    pub const PPC_INS_POPCNTD: Type = 399;
+    pub const PPC_INS_POPCNTW: Type = 400;
+    pub const PPC_INS_RFCI: Type = 401;
+    pub const PPC_INS_RFDI: Type = 402;
+    pub const PPC_INS_RFI: Type = 403;
+    pub const PPC_INS_RFID: Type = 404;
+    pub const PPC_INS_RFMCI: Type = 405;
+    pub const PPC_INS_RLDCL: Type = 406;
+    pub const PPC_INS_RLDCR: Type = 407;
+    pub const PPC_INS_RLDIC: Type = 408;
+    pub const PPC_INS_RLDICL: Type = 409;
+    pub const PPC_INS_RLDICR: Type = 410;
+    pub const PPC_INS_RLDIMI: Type = 411;
+    pub const PPC_INS_RLWIMI: Type = 412;
+    pub const PPC_INS_RLWINM: Type = 413;
+    pub const PPC_INS_RLWNM: Type = 414;
+    pub const PPC_INS_SC: Type = 415;
+    pub const PPC_INS_SLBIA: Type = 416;
+    pub const PPC_INS_SLBIE: Type = 417;
+    pub const PPC_INS_SLBMFEE: Type = 418;
+    pub const PPC_INS_SLBMTE: Type = 419;
+    pub const PPC_INS_SLD: Type = 420;
+    pub const PPC_INS_SLW: Type = 421;
+    pub const PPC_INS_SRAD: Type = 422;
+    pub const PPC_INS_SRADI: Type = 423;
+    pub const PPC_INS_SRAW: Type = 424;
+    pub const PPC_INS_SRAWI: Type = 425;
+    pub const PPC_INS_SRD: Type = 426;
+    pub const PPC_INS_SRW: Type = 427;
+    pub const PPC_INS_STB: Type = 428;
+    pub const PPC_INS_STBU: Type = 429;
+    pub const PPC_INS_STBUX: Type = 430;
+    pub const PPC_INS_STBX: Type = 431;
+    pub const PPC_INS_STD: Type = 432;
+    pub const PPC_INS_STDBRX: Type = 433;
+    pub const PPC_INS_STDCX: Type = 434;
+    pub const PPC_INS_STDU: Type = 435;
+    pub const PPC_INS_STDUX: Type = 436;
+    pub const PPC_INS_STDX: Type = 437;
+    pub const PPC_INS_STFD: Type = 438;
+    pub const PPC_INS_STFDU: Type = 439;
+    pub const PPC_INS_STFDUX: Type = 440;
+    pub const PPC_INS_STFDX: Type = 441;
+    pub const PPC_INS_STFIWX: Type = 442;
+    pub const PPC_INS_STFS: Type = 443;
+    pub const PPC_INS_STFSU: Type = 444;
+    pub const PPC_INS_STFSUX: Type = 445;
+    pub const PPC_INS_STFSX: Type = 446;
+    pub const PPC_INS_STH: Type = 447;
+    pub const PPC_INS_STHBRX: Type = 448;
+    pub const PPC_INS_STHU: Type = 449;
+    pub const PPC_INS_STHUX: Type = 450;
+    pub const PPC_INS_STHX: Type = 451;
+    pub const PPC_INS_STMW: Type = 452;
+    pub const PPC_INS_STSWI: Type = 453;
+    pub const PPC_INS_STVEBX: Type = 454;
+    pub const PPC_INS_STVEHX: Type = 455;
+    pub const PPC_INS_STVEWX: Type = 456;
+    pub const PPC_INS_STVX: Type = 457;
+    pub const PPC_INS_STVXL: Type = 458;
+    pub const PPC_INS_STW: Type = 459;
+    pub const PPC_INS_STWBRX: Type = 460;
+    pub const PPC_INS_STWCX: Type = 461;
+    pub const PPC_INS_STWU: Type = 462;
+    pub const PPC_INS_STWUX: Type = 463;
+    pub const PPC_INS_STWX: Type = 464;
+    pub const PPC_INS_STXSDX: Type = 465;
+    pub const PPC_INS_STXVD2X: Type = 466;
+    pub const PPC_INS_STXVW4X: Type = 467;
+    pub const PPC_INS_SUBF: Type = 468;
+    pub const PPC_INS_SUBFC: Type = 469;
+    pub const PPC_INS_SUBFE: Type = 470;
+    pub const PPC_INS_SUBFIC: Type = 471;
+    pub const PPC_INS_SUBFME: Type = 472;
+    pub const PPC_INS_SUBFZE: Type = 473;
+    pub const PPC_INS_SYNC: Type = 474;
+    pub const PPC_INS_TD: Type = 475;
+    pub const PPC_INS_TDI: Type = 476;
+    pub const PPC_INS_TLBIA: Type = 477;
+    pub const PPC_INS_TLBIE: Type = 478;
+    pub const PPC_INS_TLBIEL: Type = 479;
+    pub const PPC_INS_TLBIVAX: Type = 480;
+    pub const PPC_INS_TLBLD: Type = 481;
+    pub const PPC_INS_TLBLI: Type = 482;
+    pub const PPC_INS_TLBRE: Type = 483;
+    pub const PPC_INS_TLBSX: Type = 484;
+    pub const PPC_INS_TLBSYNC: Type = 485;
+    pub const PPC_INS_TLBWE: Type = 486;
+    pub const PPC_INS_TRAP: Type = 487;
+    pub const PPC_INS_TW: Type = 488;
+    pub const PPC_INS_TWI: Type = 489;
+    pub const PPC_INS_VADDCUW: Type = 490;
+    pub const PPC_INS_VADDFP: Type = 491;
+    pub const PPC_INS_VADDSBS: Type = 492;
+    pub const PPC_INS_VADDSHS: Type = 493;
+    pub const PPC_INS_VADDSWS: Type = 494;
+    pub const PPC_INS_VADDUBM: Type = 495;
+    pub const PPC_INS_VADDUBS: Type = 496;
+    pub const PPC_INS_VADDUHM: Type = 497;
+    pub const PPC_INS_VADDUHS: Type = 498;
+    pub const PPC_INS_VADDUWM: Type = 499;
+    pub const PPC_INS_VADDUWS: Type = 500;
+    pub const PPC_INS_VAND: Type = 501;
+    pub const PPC_INS_VANDC: Type = 502;
+    pub const PPC_INS_VAVGSB: Type = 503;
+    pub const PPC_INS_VAVGSH: Type = 504;
+    pub const PPC_INS_VAVGSW: Type = 505;
+    pub const PPC_INS_VAVGUB: Type = 506;
+    pub const PPC_INS_VAVGUH: Type = 507;
+    pub const PPC_INS_VAVGUW: Type = 508;
+    pub const PPC_INS_VCFSX: Type = 509;
+    pub const PPC_INS_VCFUX: Type = 510;
+    pub const PPC_INS_VCMPBFP: Type = 511;
+    pub const PPC_INS_VCMPEQFP: Type = 512;
+    pub const PPC_INS_VCMPEQUB: Type = 513;
+    pub const PPC_INS_VCMPEQUH: Type = 514;
+    pub const PPC_INS_VCMPEQUW: Type = 515;
+    pub const PPC_INS_VCMPGEFP: Type = 516;
+    pub const PPC_INS_VCMPGTFP: Type = 517;
+    pub const PPC_INS_VCMPGTSB: Type = 518;
+    pub const PPC_INS_VCMPGTSH: Type = 519;
+    pub const PPC_INS_VCMPGTSW: Type = 520;
+    pub const PPC_INS_VCMPGTUB: Type = 521;
+    pub const PPC_INS_VCMPGTUH: Type = 522;
+    pub const PPC_INS_VCMPGTUW: Type = 523;
+    pub const PPC_INS_VCTSXS: Type = 524;
+    pub const PPC_INS_VCTUXS: Type = 525;
+    pub const PPC_INS_VEXPTEFP: Type = 526;
+    pub const PPC_INS_VLOGEFP: Type = 527;
+    pub const PPC_INS_VMADDFP: Type = 528;
+    pub const PPC_INS_VMAXFP: Type = 529;
+    pub const PPC_INS_VMAXSB: Type = 530;
+    pub const PPC_INS_VMAXSH: Type = 531;
+    pub const PPC_INS_VMAXSW: Type = 532;
+    pub const PPC_INS_VMAXUB: Type = 533;
+    pub const PPC_INS_VMAXUH: Type = 534;
+    pub const PPC_INS_VMAXUW: Type = 535;
+    pub const PPC_INS_VMHADDSHS: Type = 536;
+    pub const PPC_INS_VMHRADDSHS: Type = 537;
+    pub const PPC_INS_VMINFP: Type = 538;
+    pub const PPC_INS_VMINSB: Type = 539;
+    pub const PPC_INS_VMINSH: Type = 540;
+    pub const PPC_INS_VMINSW: Type = 541;
+    pub const PPC_INS_VMINUB: Type = 542;
+    pub const PPC_INS_VMINUH: Type = 543;
+    pub const PPC_INS_VMINUW: Type = 544;
+    pub const PPC_INS_VMLADDUHM: Type = 545;
+    pub const PPC_INS_VMRGHB: Type = 546;
+    pub const PPC_INS_VMRGHH: Type = 547;
+    pub const PPC_INS_VMRGHW: Type = 548;
+    pub const PPC_INS_VMRGLB: Type = 549;
+    pub const PPC_INS_VMRGLH: Type = 550;
+    pub const PPC_INS_VMRGLW: Type = 551;
+    pub const PPC_INS_VMSUMMBM: Type = 552;
+    pub const PPC_INS_VMSUMSHM: Type = 553;
+    pub const PPC_INS_VMSUMSHS: Type = 554;
+    pub const PPC_INS_VMSUMUBM: Type = 555;
+    pub const PPC_INS_VMSUMUHM: Type = 556;
+    pub const PPC_INS_VMSUMUHS: Type = 557;
+    pub const PPC_INS_VMULESB: Type = 558;
+    pub const PPC_INS_VMULESH: Type = 559;
+    pub const PPC_INS_VMULEUB: Type = 560;
+    pub const PPC_INS_VMULEUH: Type = 561;
+    pub const PPC_INS_VMULOSB: Type = 562;
+    pub const PPC_INS_VMULOSH: Type = 563;
+    pub const PPC_INS_VMULOUB: Type = 564;
+    pub const PPC_INS_VMULOUH: Type = 565;
+    pub const PPC_INS_VNMSUBFP: Type = 566;
+    pub const PPC_INS_VNOR: Type = 567;
+    pub const PPC_INS_VOR: Type = 568;
+    pub const PPC_INS_VPERM: Type = 569;
+    pub const PPC_INS_VPKPX: Type = 570;
+    pub const PPC_INS_VPKSHSS: Type = 571;
+    pub const PPC_INS_VPKSHUS: Type = 572;
+    pub const PPC_INS_VPKSWSS: Type = 573;
+    pub const PPC_INS_VPKSWUS: Type = 574;
+    pub const PPC_INS_VPKUHUM: Type = 575;
+    pub const PPC_INS_VPKUHUS: Type = 576;
+    pub const PPC_INS_VPKUWUM: Type = 577;
+    pub const PPC_INS_VPKUWUS: Type = 578;
+    pub const PPC_INS_VREFP: Type = 579;
+    pub const PPC_INS_VRFIM: Type = 580;
+    pub const PPC_INS_VRFIN: Type = 581;
+    pub const PPC_INS_VRFIP: Type = 582;
+    pub const PPC_INS_VRFIZ: Type = 583;
+    pub const PPC_INS_VRLB: Type = 584;
+    pub const PPC_INS_VRLH: Type = 585;
+    pub const PPC_INS_VRLW: Type = 586;
+    pub const PPC_INS_VRSQRTEFP: Type = 587;
+    pub const PPC_INS_VSEL: Type = 588;
+    pub const PPC_INS_VSL: Type = 589;
+    pub const PPC_INS_VSLB: Type = 590;
+    pub const PPC_INS_VSLDOI: Type = 591;
+    pub const PPC_INS_VSLH: Type = 592;
+    pub const PPC_INS_VSLO: Type = 593;
+    pub const PPC_INS_VSLW: Type = 594;
+    pub const PPC_INS_VSPLTB: Type = 595;
+    pub const PPC_INS_VSPLTH: Type = 596;
+    pub const PPC_INS_VSPLTISB: Type = 597;
+    pub const PPC_INS_VSPLTISH: Type = 598;
+    pub const PPC_INS_VSPLTISW: Type = 599;
+    pub const PPC_INS_VSPLTW: Type = 600;
+    pub const PPC_INS_VSR: Type = 601;
+    pub const PPC_INS_VSRAB: Type = 602;
+    pub const PPC_INS_VSRAH: Type = 603;
+    pub const PPC_INS_VSRAW: Type = 604;
+    pub const PPC_INS_VSRB: Type = 605;
+    pub const PPC_INS_VSRH: Type = 606;
+    pub const PPC_INS_VSRO: Type = 607;
+    pub const PPC_INS_VSRW: Type = 608;
+    pub const PPC_INS_VSUBCUW: Type = 609;
+    pub const PPC_INS_VSUBFP: Type = 610;
+    pub const PPC_INS_VSUBSBS: Type = 611;
+    pub const PPC_INS_VSUBSHS: Type = 612;
+    pub const PPC_INS_VSUBSWS: Type = 613;
+    pub const PPC_INS_VSUBUBM: Type = 614;
+    pub const PPC_INS_VSUBUBS: Type = 615;
+    pub const PPC_INS_VSUBUHM: Type = 616;
+    pub const PPC_INS_VSUBUHS: Type = 617;
+    pub const PPC_INS_VSUBUWM: Type = 618;
+    pub const PPC_INS_VSUBUWS: Type = 619;
+    pub const PPC_INS_VSUM2SWS: Type = 620;
+    pub const PPC_INS_VSUM4SBS: Type = 621;
+    pub const PPC_INS_VSUM4SHS: Type = 622;
+    pub const PPC_INS_VSUM4UBS: Type = 623;
+    pub const PPC_INS_VSUMSWS: Type = 624;
+    pub const PPC_INS_VUPKHPX: Type = 625;
+    pub const PPC_INS_VUPKHSB: Type = 626;
+    pub const PPC_INS_VUPKHSH: Type = 627;
+    pub const PPC_INS_VUPKLPX: Type = 628;
+    pub const PPC_INS_VUPKLSB: Type = 629;
+    pub const PPC_INS_VUPKLSH: Type = 630;
+    pub const PPC_INS_VXOR: Type = 631;
+    pub const PPC_INS_WAIT: Type = 632;
+    pub const PPC_INS_WRTEE: Type = 633;
+    pub const PPC_INS_WRTEEI: Type = 634;
+    pub const PPC_INS_XOR: Type = 635;
+    pub const PPC_INS_XORI: Type = 636;
+    pub const PPC_INS_XORIS: Type = 637;
+    pub const PPC_INS_XSABSDP: Type = 638;
+    pub const PPC_INS_XSADDDP: Type = 639;
+    pub const PPC_INS_XSCMPODP: Type = 640;
+    pub const PPC_INS_XSCMPUDP: Type = 641;
+    pub const PPC_INS_XSCPSGNDP: Type = 642;
+    pub const PPC_INS_XSCVDPSP: Type = 643;
+    pub const PPC_INS_XSCVDPSXDS: Type = 644;
+    pub const PPC_INS_XSCVDPSXWS: Type = 645;
+    pub const PPC_INS_XSCVDPUXDS: Type = 646;
+    pub const PPC_INS_XSCVDPUXWS: Type = 647;
+    pub const PPC_INS_XSCVSPDP: Type = 648;
+    pub const PPC_INS_XSCVSXDDP: Type = 649;
+    pub const PPC_INS_XSCVUXDDP: Type = 650;
+    pub const PPC_INS_XSDIVDP: Type = 651;
+    pub const PPC_INS_XSMADDADP: Type = 652;
+    pub const PPC_INS_XSMADDMDP: Type = 653;
+    pub const PPC_INS_XSMAXDP: Type = 654;
+    pub const PPC_INS_XSMINDP: Type = 655;
+    pub const PPC_INS_XSMSUBADP: Type = 656;
+    pub const PPC_INS_XSMSUBMDP: Type = 657;
+    pub const PPC_INS_XSMULDP: Type = 658;
+    pub const PPC_INS_XSNABSDP: Type = 659;
+    pub const PPC_INS_XSNEGDP: Type = 660;
+    pub const PPC_INS_XSNMADDADP: Type = 661;
+    pub const PPC_INS_XSNMADDMDP: Type = 662;
+    pub const PPC_INS_XSNMSUBADP: Type = 663;
+    pub const PPC_INS_XSNMSUBMDP: Type = 664;
+    pub const PPC_INS_XSRDPI: Type = 665;
+    pub const PPC_INS_XSRDPIC: Type = 666;
+    pub const PPC_INS_XSRDPIM: Type = 667;
+    pub const PPC_INS_XSRDPIP: Type = 668;
+    pub const PPC_INS_XSRDPIZ: Type = 669;
+    pub const PPC_INS_XSREDP: Type = 670;
+    pub const PPC_INS_XSRSQRTEDP: Type = 671;
+    pub const PPC_INS_XSSQRTDP: Type = 672;
+    pub const PPC_INS_XSSUBDP: Type = 673;
+    pub const PPC_INS_XSTDIVDP: Type = 674;
+    pub const PPC_INS_XSTSQRTDP: Type = 675;
+    pub const PPC_INS_XVABSDP: Type = 676;
+    pub const PPC_INS_XVABSSP: Type = 677;
+    pub const PPC_INS_XVADDDP: Type = 678;
+    pub const PPC_INS_XVADDSP: Type = 679;
+    pub const PPC_INS_XVCMPEQDP: Type = 680;
+    pub const PPC_INS_XVCMPEQSP: Type = 681;
+    pub const PPC_INS_XVCMPGEDP: Type = 682;
+    pub const PPC_INS_XVCMPGESP: Type = 683;
+    pub const PPC_INS_XVCMPGTDP: Type = 684;
+    pub const PPC_INS_XVCMPGTSP: Type = 685;
+    pub const PPC_INS_XVCPSGNDP: Type = 686;
+    pub const PPC_INS_XVCPSGNSP: Type = 687;
+    pub const PPC_INS_XVCVDPSP: Type = 688;
+    pub const PPC_INS_XVCVDPSXDS: Type = 689;
+    pub const PPC_INS_XVCVDPSXWS: Type = 690;
+    pub const PPC_INS_XVCVDPUXDS: Type = 691;
+    pub const PPC_INS_XVCVDPUXWS: Type = 692;
+    pub const PPC_INS_XVCVSPDP: Type = 693;
+    pub const PPC_INS_XVCVSPSXDS: Type = 694;
+    pub const PPC_INS_XVCVSPSXWS: Type = 695;
+    pub const PPC_INS_XVCVSPUXDS: Type = 696;
+    pub const PPC_INS_XVCVSPUXWS: Type = 697;
+    pub const PPC_INS_XVCVSXDDP: Type = 698;
+    pub const PPC_INS_XVCVSXDSP: Type = 699;
+    pub const PPC_INS_XVCVSXWDP: Type = 700;
+    pub const PPC_INS_XVCVSXWSP: Type = 701;
+    pub const PPC_INS_XVCVUXDDP: Type = 702;
+    pub const PPC_INS_XVCVUXDSP: Type = 703;
+    pub const PPC_INS_XVCVUXWDP: Type = 704;
+    pub const PPC_INS_XVCVUXWSP: Type = 705;
+    pub const PPC_INS_XVDIVDP: Type = 706;
+    pub const PPC_INS_XVDIVSP: Type = 707;
+    pub const PPC_INS_XVMADDADP: Type = 708;
+    pub const PPC_INS_XVMADDASP: Type = 709;
+    pub const PPC_INS_XVMADDMDP: Type = 710;
+    pub const PPC_INS_XVMADDMSP: Type = 711;
+    pub const PPC_INS_XVMAXDP: Type = 712;
+    pub const PPC_INS_XVMAXSP: Type = 713;
+    pub const PPC_INS_XVMINDP: Type = 714;
+    pub const PPC_INS_XVMINSP: Type = 715;
+    pub const PPC_INS_XVMSUBADP: Type = 716;
+    pub const PPC_INS_XVMSUBASP: Type = 717;
+    pub const PPC_INS_XVMSUBMDP: Type = 718;
+    pub const PPC_INS_XVMSUBMSP: Type = 719;
+    pub const PPC_INS_XVMULDP: Type = 720;
+    pub const PPC_INS_XVMULSP: Type = 721;
+    pub const PPC_INS_XVNABSDP: Type = 722;
+    pub const PPC_INS_XVNABSSP: Type = 723;
+    pub const PPC_INS_XVNEGDP: Type = 724;
+    pub const PPC_INS_XVNEGSP: Type = 725;
+    pub const PPC_INS_XVNMADDADP: Type = 726;
+    pub const PPC_INS_XVNMADDASP: Type = 727;
+    pub const PPC_INS_XVNMADDMDP: Type = 728;
+    pub const PPC_INS_XVNMADDMSP: Type = 729;
+    pub const PPC_INS_XVNMSUBADP: Type = 730;
+    pub const PPC_INS_XVNMSUBASP: Type = 731;
+    pub const PPC_INS_XVNMSUBMDP: Type = 732;
+    pub const PPC_INS_XVNMSUBMSP: Type = 733;
+    pub const PPC_INS_XVRDPI: Type = 734;
+    pub const PPC_INS_XVRDPIC: Type = 735;
+    pub const PPC_INS_XVRDPIM: Type = 736;
+    pub const PPC_INS_XVRDPIP: Type = 737;
+    pub const PPC_INS_XVRDPIZ: Type = 738;
+    pub const PPC_INS_XVREDP: Type = 739;
+    pub const PPC_INS_XVRESP: Type = 740;
+    pub const PPC_INS_XVRSPI: Type = 741;
+    pub const PPC_INS_XVRSPIC: Type = 742;
+    pub const PPC_INS_XVRSPIM: Type = 743;
+    pub const PPC_INS_XVRSPIP: Type = 744;
+    pub const PPC_INS_XVRSPIZ: Type = 745;
+    pub const PPC_INS_XVRSQRTEDP: Type = 746;
+    pub const PPC_INS_XVRSQRTESP: Type = 747;
+    pub const PPC_INS_XVSQRTDP: Type = 748;
+    pub const PPC_INS_XVSQRTSP: Type = 749;
+    pub const PPC_INS_XVSUBDP: Type = 750;
+    pub const PPC_INS_XVSUBSP: Type = 751;
+    pub const PPC_INS_XVTDIVDP: Type = 752;
+    pub const PPC_INS_XVTDIVSP: Type = 753;
+    pub const PPC_INS_XVTSQRTDP: Type = 754;
+    pub const PPC_INS_XVTSQRTSP: Type = 755;
+    pub const PPC_INS_XXLAND: Type = 756;
+    pub const PPC_INS_XXLANDC: Type = 757;
+    pub const PPC_INS_XXLNOR: Type = 758;
+    pub const PPC_INS_XXLOR: Type = 759;
+    pub const PPC_INS_XXLXOR: Type = 760;
+    pub const PPC_INS_XXMRGHW: Type = 761;
+    pub const PPC_INS_XXMRGLW: Type = 762;
+    pub const PPC_INS_XXPERMDI: Type = 763;
+    pub const PPC_INS_XXSEL: Type = 764;
+    pub const PPC_INS_XXSLDWI: Type = 765;
+    pub const PPC_INS_XXSPLTW: Type = 766;
+    pub const PPC_INS_BCA: Type = 767;
+    pub const PPC_INS_BCLA: Type = 768;
+    pub const PPC_INS_SLWI: Type = 769;
+    pub const PPC_INS_SRWI: Type = 770;
+    pub const PPC_INS_SLDI: Type = 771;
+    pub const PPC_INS_BTA: Type = 772;
+    pub const PPC_INS_CRSET: Type = 773;
+    pub const PPC_INS_CRNOT: Type = 774;
+    pub const PPC_INS_CRMOVE: Type = 775;
+    pub const PPC_INS_CRCLR: Type = 776;
+    pub const PPC_INS_MFBR0: Type = 777;
+    pub const PPC_INS_MFBR1: Type = 778;
+    pub const PPC_INS_MFBR2: Type = 779;
+    pub const PPC_INS_MFBR3: Type = 780;
+    pub const PPC_INS_MFBR4: Type = 781;
+    pub const PPC_INS_MFBR5: Type = 782;
+    pub const PPC_INS_MFBR6: Type = 783;
+    pub const PPC_INS_MFBR7: Type = 784;
+    pub const PPC_INS_MFXER: Type = 785;
+    pub const PPC_INS_MFRTCU: Type = 786;
+    pub const PPC_INS_MFRTCL: Type = 787;
+    pub const PPC_INS_MFDSCR: Type = 788;
+    pub const PPC_INS_MFDSISR: Type = 789;
+    pub const PPC_INS_MFDAR: Type = 790;
+    pub const PPC_INS_MFSRR2: Type = 791;
+    pub const PPC_INS_MFSRR3: Type = 792;
+    pub const PPC_INS_MFCFAR: Type = 793;
+    pub const PPC_INS_MFAMR: Type = 794;
+    pub const PPC_INS_MFPID: Type = 795;
+    pub const PPC_INS_MFTBLO: Type = 796;
+    pub const PPC_INS_MFTBHI: Type = 797;
+    pub const PPC_INS_MFDBATU: Type = 798;
+    pub const PPC_INS_MFDBATL: Type = 799;
+    pub const PPC_INS_MFIBATU: Type = 800;
+    pub const PPC_INS_MFIBATL: Type = 801;
+    pub const PPC_INS_MFDCCR: Type = 802;
+    pub const PPC_INS_MFICCR: Type = 803;
+    pub const PPC_INS_MFDEAR: Type = 804;
+    pub const PPC_INS_MFESR: Type = 805;
+    pub const PPC_INS_MFSPEFSCR: Type = 806;
+    pub const PPC_INS_MFTCR: Type = 807;
+    pub const PPC_INS_MFASR: Type = 808;
+    pub const PPC_INS_MFPVR: Type = 809;
+    pub const PPC_INS_MFTBU: Type = 810;
+    pub const PPC_INS_MTCR: Type = 811;
+    pub const PPC_INS_MTBR0: Type = 812;
+    pub const PPC_INS_MTBR1: Type = 813;
+    pub const PPC_INS_MTBR2: Type = 814;
+    pub const PPC_INS_MTBR3: Type = 815;
+    pub const PPC_INS_MTBR4: Type = 816;
+    pub const PPC_INS_MTBR5: Type = 817;
+    pub const PPC_INS_MTBR6: Type = 818;
+    pub const PPC_INS_MTBR7: Type = 819;
+    pub const PPC_INS_MTXER: Type = 820;
+    pub const PPC_INS_MTDSCR: Type = 821;
+    pub const PPC_INS_MTDSISR: Type = 822;
+    pub const PPC_INS_MTDAR: Type = 823;
+    pub const PPC_INS_MTSRR2: Type = 824;
+    pub const PPC_INS_MTSRR3: Type = 825;
+    pub const PPC_INS_MTCFAR: Type = 826;
+    pub const PPC_INS_MTAMR: Type = 827;
+    pub const PPC_INS_MTPID: Type = 828;
+    pub const PPC_INS_MTTBL: Type = 829;
+    pub const PPC_INS_MTTBU: Type = 830;
+    pub const PPC_INS_MTTBLO: Type = 831;
+    pub const PPC_INS_MTTBHI: Type = 832;
+    pub const PPC_INS_MTDBATU: Type = 833;
+    pub const PPC_INS_MTDBATL: Type = 834;
+    pub const PPC_INS_MTIBATU: Type = 835;
+    pub const PPC_INS_MTIBATL: Type = 836;
+    pub const PPC_INS_MTDCCR: Type = 837;
+    pub const PPC_INS_MTICCR: Type = 838;
+    pub const PPC_INS_MTDEAR: Type = 839;
+    pub const PPC_INS_MTESR: Type = 840;
+    pub const PPC_INS_MTSPEFSCR: Type = 841;
+    pub const PPC_INS_MTTCR: Type = 842;
+    pub const PPC_INS_NOT: Type = 843;
+    pub const PPC_INS_MR: Type = 844;
+    pub const PPC_INS_ROTLD: Type = 845;
+    pub const PPC_INS_ROTLDI: Type = 846;
+    pub const PPC_INS_CLRLDI: Type = 847;
+    pub const PPC_INS_ROTLWI: Type = 848;
+    pub const PPC_INS_CLRLWI: Type = 849;
+    pub const PPC_INS_ROTLW: Type = 850;
+    pub const PPC_INS_SUB: Type = 851;
+    pub const PPC_INS_SUBC: Type = 852;
+    pub const PPC_INS_LWSYNC: Type = 853;
+    pub const PPC_INS_PTESYNC: Type = 854;
+    pub const PPC_INS_TDLT: Type = 855;
+    pub const PPC_INS_TDEQ: Type = 856;
+    pub const PPC_INS_TDGT: Type = 857;
+    pub const PPC_INS_TDNE: Type = 858;
+    pub const PPC_INS_TDLLT: Type = 859;
+    pub const PPC_INS_TDLGT: Type = 860;
+    pub const PPC_INS_TDU: Type = 861;
+    pub const PPC_INS_TDLTI: Type = 862;
+    pub const PPC_INS_TDEQI: Type = 863;
+    pub const PPC_INS_TDGTI: Type = 864;
+    pub const PPC_INS_TDNEI: Type = 865;
+    pub const PPC_INS_TDLLTI: Type = 866;
+    pub const PPC_INS_TDLGTI: Type = 867;
+    pub const PPC_INS_TDUI: Type = 868;
+    pub const PPC_INS_TLBREHI: Type = 869;
+    pub const PPC_INS_TLBRELO: Type = 870;
+    pub const PPC_INS_TLBWEHI: Type = 871;
+    pub const PPC_INS_TLBWELO: Type = 872;
+    pub const PPC_INS_TWLT: Type = 873;
+    pub const PPC_INS_TWEQ: Type = 874;
+    pub const PPC_INS_TWGT: Type = 875;
+    pub const PPC_INS_TWNE: Type = 876;
+    pub const PPC_INS_TWLLT: Type = 877;
+    pub const PPC_INS_TWLGT: Type = 878;
+    pub const PPC_INS_TWU: Type = 879;
+    pub const PPC_INS_TWLTI: Type = 880;
+    pub const PPC_INS_TWEQI: Type = 881;
+    pub const PPC_INS_TWGTI: Type = 882;
+    pub const PPC_INS_TWNEI: Type = 883;
+    pub const PPC_INS_TWLLTI: Type = 884;
+    pub const PPC_INS_TWLGTI: Type = 885;
+    pub const PPC_INS_TWUI: Type = 886;
+    pub const PPC_INS_WAITRSV: Type = 887;
+    pub const PPC_INS_WAITIMPL: Type = 888;
+    pub const PPC_INS_XNOP: Type = 889;
+    pub const PPC_INS_XVMOVDP: Type = 890;
+    pub const PPC_INS_XVMOVSP: Type = 891;
+    pub const PPC_INS_XXSPLTD: Type = 892;
+    pub const PPC_INS_XXMRGHD: Type = 893;
+    pub const PPC_INS_XXMRGLD: Type = 894;
+    pub const PPC_INS_XXSWAPD: Type = 895;
+    pub const PPC_INS_BT: Type = 896;
+    pub const PPC_INS_BF: Type = 897;
+    pub const PPC_INS_BDNZT: Type = 898;
+    pub const PPC_INS_BDNZF: Type = 899;
+    pub const PPC_INS_BDZF: Type = 900;
+    pub const PPC_INS_BDZT: Type = 901;
+    pub const PPC_INS_BFA: Type = 902;
+    pub const PPC_INS_BDNZTA: Type = 903;
+    pub const PPC_INS_BDNZFA: Type = 904;
+    pub const PPC_INS_BDZTA: Type = 905;
+    pub const PPC_INS_BDZFA: Type = 906;
+    pub const PPC_INS_BTCTR: Type = 907;
+    pub const PPC_INS_BFCTR: Type = 908;
+    pub const PPC_INS_BTCTRL: Type = 909;
+    pub const PPC_INS_BFCTRL: Type = 910;
+    pub const PPC_INS_BTL: Type = 911;
+    pub const PPC_INS_BFL: Type = 912;
+    pub const PPC_INS_BDNZTL: Type = 913;
+    pub const PPC_INS_BDNZFL: Type = 914;
+    pub const PPC_INS_BDZTL: Type = 915;
+    pub const PPC_INS_BDZFL: Type = 916;
+    pub const PPC_INS_BTLA: Type = 917;
+    pub const PPC_INS_BFLA: Type = 918;
+    pub const PPC_INS_BDNZTLA: Type = 919;
+    pub const PPC_INS_BDNZFLA: Type = 920;
+    pub const PPC_INS_BDZTLA: Type = 921;
+    pub const PPC_INS_BDZFLA: Type = 922;
+    pub const PPC_INS_BTLR: Type = 923;
+    pub const PPC_INS_BFLR: Type = 924;
+    pub const PPC_INS_BDNZTLR: Type = 925;
+    pub const PPC_INS_BDZTLR: Type = 926;
+    pub const PPC_INS_BDZFLR: Type = 927;
+    pub const PPC_INS_BTLRL: Type = 928;
+    pub const PPC_INS_BFLRL: Type = 929;
+    pub const PPC_INS_BDNZTLRL: Type = 930;
+    pub const PPC_INS_BDNZFLRL: Type = 931;
+    pub const PPC_INS_BDZTLRL: Type = 932;
+    pub const PPC_INS_BDZFLRL: Type = 933;
+    pub const PPC_INS_ENDING: Type = 934;
 }
-#[repr(u32)]
-#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
-pub enum sparc_cc {
-    SPARC_CC_INVALID = 0,
-    SPARC_CC_ICC_A = 264,
-    SPARC_CC_ICC_N = 256,
-    SPARC_CC_ICC_NE = 265,
-    SPARC_CC_ICC_E = 257,
-    SPARC_CC_ICC_G = 266,
-    SPARC_CC_ICC_LE = 258,
-    SPARC_CC_ICC_GE = 267,
-    SPARC_CC_ICC_L = 259,
-    SPARC_CC_ICC_GU = 268,
-    SPARC_CC_ICC_LEU = 260,
-    SPARC_CC_ICC_CC = 269,
-    SPARC_CC_ICC_CS = 261,
-    SPARC_CC_ICC_POS = 270,
-    SPARC_CC_ICC_NEG = 262,
-    SPARC_CC_ICC_VC = 271,
-    SPARC_CC_ICC_VS = 263,
-    SPARC_CC_FCC_A = 280,
-    SPARC_CC_FCC_N = 272,
-    SPARC_CC_FCC_U = 279,
-    SPARC_CC_FCC_G = 278,
-    SPARC_CC_FCC_UG = 277,
-    SPARC_CC_FCC_L = 276,
-    SPARC_CC_FCC_UL = 275,
-    SPARC_CC_FCC_LG = 274,
-    SPARC_CC_FCC_NE = 273,
-    SPARC_CC_FCC_E = 281,
-    SPARC_CC_FCC_UE = 282,
-    SPARC_CC_FCC_GE = 283,
-    SPARC_CC_FCC_UGE = 284,
-    SPARC_CC_FCC_LE = 285,
-    SPARC_CC_FCC_ULE = 286,
-    SPARC_CC_FCC_O = 287,
+pub mod ppc_insn_group {
+    pub type Type = ::std::os::raw::c_uint;
+    pub const PPC_GRP_INVALID: Type = 0;
+    pub const PPC_GRP_JUMP: Type = 1;
+    pub const PPC_GRP_ALTIVEC: Type = 128;
+    pub const PPC_GRP_MODE32: Type = 129;
+    pub const PPC_GRP_MODE64: Type = 130;
+    pub const PPC_GRP_BOOKE: Type = 131;
+    pub const PPC_GRP_NOTBOOKE: Type = 132;
+    pub const PPC_GRP_SPE: Type = 133;
+    pub const PPC_GRP_VSX: Type = 134;
+    pub const PPC_GRP_E500: Type = 135;
+    pub const PPC_GRP_PPC4XX: Type = 136;
+    pub const PPC_GRP_PPC6XX: Type = 137;
+    pub const PPC_GRP_ENDING: Type = 138;
 }
-#[repr(u32)]
-#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
-pub enum sparc_hint {
-    SPARC_HINT_INVALID = 0,
-    SPARC_HINT_A = 1,
-    SPARC_HINT_PT = 2,
-    SPARC_HINT_PN = 4,
+pub mod sparc_cc {
+    pub type Type = ::std::os::raw::c_uint;
+    pub const SPARC_CC_INVALID: Type = 0;
+    pub const SPARC_CC_ICC_A: Type = 264;
+    pub const SPARC_CC_ICC_N: Type = 256;
+    pub const SPARC_CC_ICC_NE: Type = 265;
+    pub const SPARC_CC_ICC_E: Type = 257;
+    pub const SPARC_CC_ICC_G: Type = 266;
+    pub const SPARC_CC_ICC_LE: Type = 258;
+    pub const SPARC_CC_ICC_GE: Type = 267;
+    pub const SPARC_CC_ICC_L: Type = 259;
+    pub const SPARC_CC_ICC_GU: Type = 268;
+    pub const SPARC_CC_ICC_LEU: Type = 260;
+    pub const SPARC_CC_ICC_CC: Type = 269;
+    pub const SPARC_CC_ICC_CS: Type = 261;
+    pub const SPARC_CC_ICC_POS: Type = 270;
+    pub const SPARC_CC_ICC_NEG: Type = 262;
+    pub const SPARC_CC_ICC_VC: Type = 271;
+    pub const SPARC_CC_ICC_VS: Type = 263;
+    pub const SPARC_CC_FCC_A: Type = 280;
+    pub const SPARC_CC_FCC_N: Type = 272;
+    pub const SPARC_CC_FCC_U: Type = 279;
+    pub const SPARC_CC_FCC_G: Type = 278;
+    pub const SPARC_CC_FCC_UG: Type = 277;
+    pub const SPARC_CC_FCC_L: Type = 276;
+    pub const SPARC_CC_FCC_UL: Type = 275;
+    pub const SPARC_CC_FCC_LG: Type = 274;
+    pub const SPARC_CC_FCC_NE: Type = 273;
+    pub const SPARC_CC_FCC_E: Type = 281;
+    pub const SPARC_CC_FCC_UE: Type = 282;
+    pub const SPARC_CC_FCC_GE: Type = 283;
+    pub const SPARC_CC_FCC_UGE: Type = 284;
+    pub const SPARC_CC_FCC_LE: Type = 285;
+    pub const SPARC_CC_FCC_ULE: Type = 286;
+    pub const SPARC_CC_FCC_O: Type = 287;
 }
-#[repr(u32)]
-#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
-pub enum sparc_op_type {
-    SPARC_OP_INVALID = 0,
-    SPARC_OP_REG = 1,
-    SPARC_OP_IMM = 2,
-    SPARC_OP_MEM = 3,
+pub mod sparc_hint {
+    pub type Type = ::std::os::raw::c_uint;
+    pub const SPARC_HINT_INVALID: Type = 0;
+    pub const SPARC_HINT_A: Type = 1;
+    pub const SPARC_HINT_PT: Type = 2;
+    pub const SPARC_HINT_PN: Type = 4;
+}
+pub mod sparc_op_type {
+    pub type Type = ::std::os::raw::c_uint;
+    pub const SPARC_OP_INVALID: Type = 0;
+    pub const SPARC_OP_REG: Type = 1;
+    pub const SPARC_OP_IMM: Type = 2;
+    pub const SPARC_OP_MEM: Type = 3;
 }
 #[repr(C)]
 #[derive(Debug, Copy)]
@@ -4808,33 +5443,56 @@ pub struct sparc_op_mem {
 }
 #[test]
 fn bindgen_test_layout_sparc_op_mem() {
-    assert_eq!(::std::mem::size_of::<sparc_op_mem>() , 8usize , concat ! (
-               "Size of: " , stringify ! ( sparc_op_mem ) ));
-    assert_eq! (::std::mem::align_of::<sparc_op_mem>() , 4usize , concat ! (
-                "Alignment of " , stringify ! ( sparc_op_mem ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const sparc_op_mem ) ) . base as * const _ as
-                usize } , 0usize , concat ! (
-                "Alignment of field: " , stringify ! ( sparc_op_mem ) , "::" ,
-                stringify ! ( base ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const sparc_op_mem ) ) . index as * const _ as
-                usize } , 1usize , concat ! (
-                "Alignment of field: " , stringify ! ( sparc_op_mem ) , "::" ,
-                stringify ! ( index ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const sparc_op_mem ) ) . disp as * const _ as
-                usize } , 4usize , concat ! (
-                "Alignment of field: " , stringify ! ( sparc_op_mem ) , "::" ,
-                stringify ! ( disp ) ));
+    assert_eq!(
+        ::std::mem::size_of::<sparc_op_mem>(),
+        8usize,
+        concat!("Size of: ", stringify!(sparc_op_mem))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<sparc_op_mem>(),
+        4usize,
+        concat!("Alignment of ", stringify!(sparc_op_mem))
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const sparc_op_mem)).base as *const _ as usize },
+        0usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(sparc_op_mem),
+            "::",
+            stringify!(base)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const sparc_op_mem)).index as *const _ as usize },
+        1usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(sparc_op_mem),
+            "::",
+            stringify!(index)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const sparc_op_mem)).disp as *const _ as usize },
+        4usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(sparc_op_mem),
+            "::",
+            stringify!(disp)
+        )
+    );
 }
 impl Clone for sparc_op_mem {
-    fn clone(&self) -> Self { *self }
+    fn clone(&self) -> Self {
+        *self
+    }
 }
 #[repr(C)]
 #[derive(Copy)]
 pub struct cs_sparc_op {
-    pub type_: sparc_op_type,
+    pub type_: sparc_op_type::Type,
     pub __bindgen_anon_1: cs_sparc_op__bindgen_ty_1,
 }
 #[repr(C)]
@@ -4847,84 +5505,168 @@ pub union cs_sparc_op__bindgen_ty_1 {
 }
 #[test]
 fn bindgen_test_layout_cs_sparc_op__bindgen_ty_1() {
-    assert_eq!(::std::mem::size_of::<cs_sparc_op__bindgen_ty_1>() , 8usize ,
-               concat ! (
-               "Size of: " , stringify ! ( cs_sparc_op__bindgen_ty_1 ) ));
-    assert_eq! (::std::mem::align_of::<cs_sparc_op__bindgen_ty_1>() , 4usize ,
-                concat ! (
-                "Alignment of " , stringify ! ( cs_sparc_op__bindgen_ty_1 )
-                ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const cs_sparc_op__bindgen_ty_1 ) ) . reg as *
-                const _ as usize } , 0usize , concat ! (
-                "Alignment of field: " , stringify ! (
-                cs_sparc_op__bindgen_ty_1 ) , "::" , stringify ! ( reg ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const cs_sparc_op__bindgen_ty_1 ) ) . imm as *
-                const _ as usize } , 0usize , concat ! (
-                "Alignment of field: " , stringify ! (
-                cs_sparc_op__bindgen_ty_1 ) , "::" , stringify ! ( imm ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const cs_sparc_op__bindgen_ty_1 ) ) . mem as *
-                const _ as usize } , 0usize , concat ! (
-                "Alignment of field: " , stringify ! (
-                cs_sparc_op__bindgen_ty_1 ) , "::" , stringify ! ( mem ) ));
+    assert_eq!(
+        ::std::mem::size_of::<cs_sparc_op__bindgen_ty_1>(),
+        8usize,
+        concat!("Size of: ", stringify!(cs_sparc_op__bindgen_ty_1))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<cs_sparc_op__bindgen_ty_1>(),
+        4usize,
+        concat!("Alignment of ", stringify!(cs_sparc_op__bindgen_ty_1))
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const cs_sparc_op__bindgen_ty_1)).reg as *const _ as usize },
+        0usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(cs_sparc_op__bindgen_ty_1),
+            "::",
+            stringify!(reg)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const cs_sparc_op__bindgen_ty_1)).imm as *const _ as usize },
+        0usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(cs_sparc_op__bindgen_ty_1),
+            "::",
+            stringify!(imm)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const cs_sparc_op__bindgen_ty_1)).mem as *const _ as usize },
+        0usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(cs_sparc_op__bindgen_ty_1),
+            "::",
+            stringify!(mem)
+        )
+    );
 }
 impl Clone for cs_sparc_op__bindgen_ty_1 {
-    fn clone(&self) -> Self { *self }
+    fn clone(&self) -> Self {
+        *self
+    }
+}
+impl ::std::fmt::Debug for cs_sparc_op__bindgen_ty_1 {
+    fn fmt(&self, f: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
+        write!(f, "cs_sparc_op__bindgen_ty_1 {{ union }}")
+    }
 }
 #[test]
 fn bindgen_test_layout_cs_sparc_op() {
-    assert_eq!(::std::mem::size_of::<cs_sparc_op>() , 12usize , concat ! (
-               "Size of: " , stringify ! ( cs_sparc_op ) ));
-    assert_eq! (::std::mem::align_of::<cs_sparc_op>() , 4usize , concat ! (
-                "Alignment of " , stringify ! ( cs_sparc_op ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const cs_sparc_op ) ) . type_ as * const _ as
-                usize } , 0usize , concat ! (
-                "Alignment of field: " , stringify ! ( cs_sparc_op ) , "::" ,
-                stringify ! ( type_ ) ));
+    assert_eq!(
+        ::std::mem::size_of::<cs_sparc_op>(),
+        12usize,
+        concat!("Size of: ", stringify!(cs_sparc_op))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<cs_sparc_op>(),
+        4usize,
+        concat!("Alignment of ", stringify!(cs_sparc_op))
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const cs_sparc_op)).type_ as *const _ as usize },
+        0usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(cs_sparc_op),
+            "::",
+            stringify!(type_)
+        )
+    );
 }
 impl Clone for cs_sparc_op {
-    fn clone(&self) -> Self { *self }
+    fn clone(&self) -> Self {
+        *self
+    }
+}
+impl ::std::fmt::Debug for cs_sparc_op {
+    fn fmt(&self, f: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
+        write!(
+            f,
+            "cs_sparc_op {{ type: {:?}, __bindgen_anon_1: {:?} }}",
+            self.type_, self.__bindgen_anon_1
+        )
+    }
 }
 #[repr(C)]
 #[derive(Copy)]
 pub struct cs_sparc {
-    pub cc: sparc_cc,
-    pub hint: sparc_hint,
+    pub cc: sparc_cc::Type,
+    pub hint: sparc_hint::Type,
     pub op_count: u8,
     pub operands: [cs_sparc_op; 4usize],
 }
 #[test]
 fn bindgen_test_layout_cs_sparc() {
-    assert_eq!(::std::mem::size_of::<cs_sparc>() , 60usize , concat ! (
-               "Size of: " , stringify ! ( cs_sparc ) ));
-    assert_eq! (::std::mem::align_of::<cs_sparc>() , 4usize , concat ! (
-                "Alignment of " , stringify ! ( cs_sparc ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const cs_sparc ) ) . cc as * const _ as usize }
-                , 0usize , concat ! (
-                "Alignment of field: " , stringify ! ( cs_sparc ) , "::" ,
-                stringify ! ( cc ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const cs_sparc ) ) . hint as * const _ as usize
-                } , 4usize , concat ! (
-                "Alignment of field: " , stringify ! ( cs_sparc ) , "::" ,
-                stringify ! ( hint ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const cs_sparc ) ) . op_count as * const _ as
-                usize } , 8usize , concat ! (
-                "Alignment of field: " , stringify ! ( cs_sparc ) , "::" ,
-                stringify ! ( op_count ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const cs_sparc ) ) . operands as * const _ as
-                usize } , 12usize , concat ! (
-                "Alignment of field: " , stringify ! ( cs_sparc ) , "::" ,
-                stringify ! ( operands ) ));
+    assert_eq!(
+        ::std::mem::size_of::<cs_sparc>(),
+        60usize,
+        concat!("Size of: ", stringify!(cs_sparc))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<cs_sparc>(),
+        4usize,
+        concat!("Alignment of ", stringify!(cs_sparc))
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const cs_sparc)).cc as *const _ as usize },
+        0usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(cs_sparc),
+            "::",
+            stringify!(cc)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const cs_sparc)).hint as *const _ as usize },
+        4usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(cs_sparc),
+            "::",
+            stringify!(hint)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const cs_sparc)).op_count as *const _ as usize },
+        8usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(cs_sparc),
+            "::",
+            stringify!(op_count)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const cs_sparc)).operands as *const _ as usize },
+        12usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(cs_sparc),
+            "::",
+            stringify!(operands)
+        )
+    );
 }
 impl Clone for cs_sparc {
-    fn clone(&self) -> Self { *self }
+    fn clone(&self) -> Self {
+        *self
+    }
+}
+impl ::std::fmt::Debug for cs_sparc {
+    fn fmt(&self, f: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
+        write!(
+            f,
+            "cs_sparc {{ cc: {:?}, hint: {:?}, op_count: {:?}, operands: {:?} }}",
+            self.cc, self.hint, self.op_count, self.operands
+        )
+    }
 }
 pub mod sparc_reg {
     pub type Type = ::std::os::raw::c_uint;
@@ -5020,331 +5762,327 @@ pub mod sparc_reg {
     pub const SPARC_REG_O6: Type = 85;
     pub const SPARC_REG_I6: Type = 53;
 }
-#[repr(u32)]
-#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
-pub enum sparc_insn {
-    SPARC_INS_INVALID = 0,
-    SPARC_INS_ADDCC = 1,
-    SPARC_INS_ADDX = 2,
-    SPARC_INS_ADDXCC = 3,
-    SPARC_INS_ADDXC = 4,
-    SPARC_INS_ADDXCCC = 5,
-    SPARC_INS_ADD = 6,
-    SPARC_INS_ALIGNADDR = 7,
-    SPARC_INS_ALIGNADDRL = 8,
-    SPARC_INS_ANDCC = 9,
-    SPARC_INS_ANDNCC = 10,
-    SPARC_INS_ANDN = 11,
-    SPARC_INS_AND = 12,
-    SPARC_INS_ARRAY16 = 13,
-    SPARC_INS_ARRAY32 = 14,
-    SPARC_INS_ARRAY8 = 15,
-    SPARC_INS_B = 16,
-    SPARC_INS_JMP = 17,
-    SPARC_INS_BMASK = 18,
-    SPARC_INS_FB = 19,
-    SPARC_INS_BRGEZ = 20,
-    SPARC_INS_BRGZ = 21,
-    SPARC_INS_BRLEZ = 22,
-    SPARC_INS_BRLZ = 23,
-    SPARC_INS_BRNZ = 24,
-    SPARC_INS_BRZ = 25,
-    SPARC_INS_BSHUFFLE = 26,
-    SPARC_INS_CALL = 27,
-    SPARC_INS_CASX = 28,
-    SPARC_INS_CAS = 29,
-    SPARC_INS_CMASK16 = 30,
-    SPARC_INS_CMASK32 = 31,
-    SPARC_INS_CMASK8 = 32,
-    SPARC_INS_CMP = 33,
-    SPARC_INS_EDGE16 = 34,
-    SPARC_INS_EDGE16L = 35,
-    SPARC_INS_EDGE16LN = 36,
-    SPARC_INS_EDGE16N = 37,
-    SPARC_INS_EDGE32 = 38,
-    SPARC_INS_EDGE32L = 39,
-    SPARC_INS_EDGE32LN = 40,
-    SPARC_INS_EDGE32N = 41,
-    SPARC_INS_EDGE8 = 42,
-    SPARC_INS_EDGE8L = 43,
-    SPARC_INS_EDGE8LN = 44,
-    SPARC_INS_EDGE8N = 45,
-    SPARC_INS_FABSD = 46,
-    SPARC_INS_FABSQ = 47,
-    SPARC_INS_FABSS = 48,
-    SPARC_INS_FADDD = 49,
-    SPARC_INS_FADDQ = 50,
-    SPARC_INS_FADDS = 51,
-    SPARC_INS_FALIGNDATA = 52,
-    SPARC_INS_FAND = 53,
-    SPARC_INS_FANDNOT1 = 54,
-    SPARC_INS_FANDNOT1S = 55,
-    SPARC_INS_FANDNOT2 = 56,
-    SPARC_INS_FANDNOT2S = 57,
-    SPARC_INS_FANDS = 58,
-    SPARC_INS_FCHKSM16 = 59,
-    SPARC_INS_FCMPD = 60,
-    SPARC_INS_FCMPEQ16 = 61,
-    SPARC_INS_FCMPEQ32 = 62,
-    SPARC_INS_FCMPGT16 = 63,
-    SPARC_INS_FCMPGT32 = 64,
-    SPARC_INS_FCMPLE16 = 65,
-    SPARC_INS_FCMPLE32 = 66,
-    SPARC_INS_FCMPNE16 = 67,
-    SPARC_INS_FCMPNE32 = 68,
-    SPARC_INS_FCMPQ = 69,
-    SPARC_INS_FCMPS = 70,
-    SPARC_INS_FDIVD = 71,
-    SPARC_INS_FDIVQ = 72,
-    SPARC_INS_FDIVS = 73,
-    SPARC_INS_FDMULQ = 74,
-    SPARC_INS_FDTOI = 75,
-    SPARC_INS_FDTOQ = 76,
-    SPARC_INS_FDTOS = 77,
-    SPARC_INS_FDTOX = 78,
-    SPARC_INS_FEXPAND = 79,
-    SPARC_INS_FHADDD = 80,
-    SPARC_INS_FHADDS = 81,
-    SPARC_INS_FHSUBD = 82,
-    SPARC_INS_FHSUBS = 83,
-    SPARC_INS_FITOD = 84,
-    SPARC_INS_FITOQ = 85,
-    SPARC_INS_FITOS = 86,
-    SPARC_INS_FLCMPD = 87,
-    SPARC_INS_FLCMPS = 88,
-    SPARC_INS_FLUSHW = 89,
-    SPARC_INS_FMEAN16 = 90,
-    SPARC_INS_FMOVD = 91,
-    SPARC_INS_FMOVQ = 92,
-    SPARC_INS_FMOVRDGEZ = 93,
-    SPARC_INS_FMOVRQGEZ = 94,
-    SPARC_INS_FMOVRSGEZ = 95,
-    SPARC_INS_FMOVRDGZ = 96,
-    SPARC_INS_FMOVRQGZ = 97,
-    SPARC_INS_FMOVRSGZ = 98,
-    SPARC_INS_FMOVRDLEZ = 99,
-    SPARC_INS_FMOVRQLEZ = 100,
-    SPARC_INS_FMOVRSLEZ = 101,
-    SPARC_INS_FMOVRDLZ = 102,
-    SPARC_INS_FMOVRQLZ = 103,
-    SPARC_INS_FMOVRSLZ = 104,
-    SPARC_INS_FMOVRDNZ = 105,
-    SPARC_INS_FMOVRQNZ = 106,
-    SPARC_INS_FMOVRSNZ = 107,
-    SPARC_INS_FMOVRDZ = 108,
-    SPARC_INS_FMOVRQZ = 109,
-    SPARC_INS_FMOVRSZ = 110,
-    SPARC_INS_FMOVS = 111,
-    SPARC_INS_FMUL8SUX16 = 112,
-    SPARC_INS_FMUL8ULX16 = 113,
-    SPARC_INS_FMUL8X16 = 114,
-    SPARC_INS_FMUL8X16AL = 115,
-    SPARC_INS_FMUL8X16AU = 116,
-    SPARC_INS_FMULD = 117,
-    SPARC_INS_FMULD8SUX16 = 118,
-    SPARC_INS_FMULD8ULX16 = 119,
-    SPARC_INS_FMULQ = 120,
-    SPARC_INS_FMULS = 121,
-    SPARC_INS_FNADDD = 122,
-    SPARC_INS_FNADDS = 123,
-    SPARC_INS_FNAND = 124,
-    SPARC_INS_FNANDS = 125,
-    SPARC_INS_FNEGD = 126,
-    SPARC_INS_FNEGQ = 127,
-    SPARC_INS_FNEGS = 128,
-    SPARC_INS_FNHADDD = 129,
-    SPARC_INS_FNHADDS = 130,
-    SPARC_INS_FNOR = 131,
-    SPARC_INS_FNORS = 132,
-    SPARC_INS_FNOT1 = 133,
-    SPARC_INS_FNOT1S = 134,
-    SPARC_INS_FNOT2 = 135,
-    SPARC_INS_FNOT2S = 136,
-    SPARC_INS_FONE = 137,
-    SPARC_INS_FONES = 138,
-    SPARC_INS_FOR = 139,
-    SPARC_INS_FORNOT1 = 140,
-    SPARC_INS_FORNOT1S = 141,
-    SPARC_INS_FORNOT2 = 142,
-    SPARC_INS_FORNOT2S = 143,
-    SPARC_INS_FORS = 144,
-    SPARC_INS_FPACK16 = 145,
-    SPARC_INS_FPACK32 = 146,
-    SPARC_INS_FPACKFIX = 147,
-    SPARC_INS_FPADD16 = 148,
-    SPARC_INS_FPADD16S = 149,
-    SPARC_INS_FPADD32 = 150,
-    SPARC_INS_FPADD32S = 151,
-    SPARC_INS_FPADD64 = 152,
-    SPARC_INS_FPMERGE = 153,
-    SPARC_INS_FPSUB16 = 154,
-    SPARC_INS_FPSUB16S = 155,
-    SPARC_INS_FPSUB32 = 156,
-    SPARC_INS_FPSUB32S = 157,
-    SPARC_INS_FQTOD = 158,
-    SPARC_INS_FQTOI = 159,
-    SPARC_INS_FQTOS = 160,
-    SPARC_INS_FQTOX = 161,
-    SPARC_INS_FSLAS16 = 162,
-    SPARC_INS_FSLAS32 = 163,
-    SPARC_INS_FSLL16 = 164,
-    SPARC_INS_FSLL32 = 165,
-    SPARC_INS_FSMULD = 166,
-    SPARC_INS_FSQRTD = 167,
-    SPARC_INS_FSQRTQ = 168,
-    SPARC_INS_FSQRTS = 169,
-    SPARC_INS_FSRA16 = 170,
-    SPARC_INS_FSRA32 = 171,
-    SPARC_INS_FSRC1 = 172,
-    SPARC_INS_FSRC1S = 173,
-    SPARC_INS_FSRC2 = 174,
-    SPARC_INS_FSRC2S = 175,
-    SPARC_INS_FSRL16 = 176,
-    SPARC_INS_FSRL32 = 177,
-    SPARC_INS_FSTOD = 178,
-    SPARC_INS_FSTOI = 179,
-    SPARC_INS_FSTOQ = 180,
-    SPARC_INS_FSTOX = 181,
-    SPARC_INS_FSUBD = 182,
-    SPARC_INS_FSUBQ = 183,
-    SPARC_INS_FSUBS = 184,
-    SPARC_INS_FXNOR = 185,
-    SPARC_INS_FXNORS = 186,
-    SPARC_INS_FXOR = 187,
-    SPARC_INS_FXORS = 188,
-    SPARC_INS_FXTOD = 189,
-    SPARC_INS_FXTOQ = 190,
-    SPARC_INS_FXTOS = 191,
-    SPARC_INS_FZERO = 192,
-    SPARC_INS_FZEROS = 193,
-    SPARC_INS_JMPL = 194,
-    SPARC_INS_LDD = 195,
-    SPARC_INS_LD = 196,
-    SPARC_INS_LDQ = 197,
-    SPARC_INS_LDSB = 198,
-    SPARC_INS_LDSH = 199,
-    SPARC_INS_LDSW = 200,
-    SPARC_INS_LDUB = 201,
-    SPARC_INS_LDUH = 202,
-    SPARC_INS_LDX = 203,
-    SPARC_INS_LZCNT = 204,
-    SPARC_INS_MEMBAR = 205,
-    SPARC_INS_MOVDTOX = 206,
-    SPARC_INS_MOV = 207,
-    SPARC_INS_MOVRGEZ = 208,
-    SPARC_INS_MOVRGZ = 209,
-    SPARC_INS_MOVRLEZ = 210,
-    SPARC_INS_MOVRLZ = 211,
-    SPARC_INS_MOVRNZ = 212,
-    SPARC_INS_MOVRZ = 213,
-    SPARC_INS_MOVSTOSW = 214,
-    SPARC_INS_MOVSTOUW = 215,
-    SPARC_INS_MULX = 216,
-    SPARC_INS_NOP = 217,
-    SPARC_INS_ORCC = 218,
-    SPARC_INS_ORNCC = 219,
-    SPARC_INS_ORN = 220,
-    SPARC_INS_OR = 221,
-    SPARC_INS_PDIST = 222,
-    SPARC_INS_PDISTN = 223,
-    SPARC_INS_POPC = 224,
-    SPARC_INS_RD = 225,
-    SPARC_INS_RESTORE = 226,
-    SPARC_INS_RETT = 227,
-    SPARC_INS_SAVE = 228,
-    SPARC_INS_SDIVCC = 229,
-    SPARC_INS_SDIVX = 230,
-    SPARC_INS_SDIV = 231,
-    SPARC_INS_SETHI = 232,
-    SPARC_INS_SHUTDOWN = 233,
-    SPARC_INS_SIAM = 234,
-    SPARC_INS_SLLX = 235,
-    SPARC_INS_SLL = 236,
-    SPARC_INS_SMULCC = 237,
-    SPARC_INS_SMUL = 238,
-    SPARC_INS_SRAX = 239,
-    SPARC_INS_SRA = 240,
-    SPARC_INS_SRLX = 241,
-    SPARC_INS_SRL = 242,
-    SPARC_INS_STBAR = 243,
-    SPARC_INS_STB = 244,
-    SPARC_INS_STD = 245,
-    SPARC_INS_ST = 246,
-    SPARC_INS_STH = 247,
-    SPARC_INS_STQ = 248,
-    SPARC_INS_STX = 249,
-    SPARC_INS_SUBCC = 250,
-    SPARC_INS_SUBX = 251,
-    SPARC_INS_SUBXCC = 252,
-    SPARC_INS_SUB = 253,
-    SPARC_INS_SWAP = 254,
-    SPARC_INS_TADDCCTV = 255,
-    SPARC_INS_TADDCC = 256,
-    SPARC_INS_T = 257,
-    SPARC_INS_TSUBCCTV = 258,
-    SPARC_INS_TSUBCC = 259,
-    SPARC_INS_UDIVCC = 260,
-    SPARC_INS_UDIVX = 261,
-    SPARC_INS_UDIV = 262,
-    SPARC_INS_UMULCC = 263,
-    SPARC_INS_UMULXHI = 264,
-    SPARC_INS_UMUL = 265,
-    SPARC_INS_UNIMP = 266,
-    SPARC_INS_FCMPED = 267,
-    SPARC_INS_FCMPEQ = 268,
-    SPARC_INS_FCMPES = 269,
-    SPARC_INS_WR = 270,
-    SPARC_INS_XMULX = 271,
-    SPARC_INS_XMULXHI = 272,
-    SPARC_INS_XNORCC = 273,
-    SPARC_INS_XNOR = 274,
-    SPARC_INS_XORCC = 275,
-    SPARC_INS_XOR = 276,
-    SPARC_INS_RET = 277,
-    SPARC_INS_RETL = 278,
-    SPARC_INS_ENDING = 279,
+pub mod sparc_insn {
+    pub type Type = ::std::os::raw::c_uint;
+    pub const SPARC_INS_INVALID: Type = 0;
+    pub const SPARC_INS_ADDCC: Type = 1;
+    pub const SPARC_INS_ADDX: Type = 2;
+    pub const SPARC_INS_ADDXCC: Type = 3;
+    pub const SPARC_INS_ADDXC: Type = 4;
+    pub const SPARC_INS_ADDXCCC: Type = 5;
+    pub const SPARC_INS_ADD: Type = 6;
+    pub const SPARC_INS_ALIGNADDR: Type = 7;
+    pub const SPARC_INS_ALIGNADDRL: Type = 8;
+    pub const SPARC_INS_ANDCC: Type = 9;
+    pub const SPARC_INS_ANDNCC: Type = 10;
+    pub const SPARC_INS_ANDN: Type = 11;
+    pub const SPARC_INS_AND: Type = 12;
+    pub const SPARC_INS_ARRAY16: Type = 13;
+    pub const SPARC_INS_ARRAY32: Type = 14;
+    pub const SPARC_INS_ARRAY8: Type = 15;
+    pub const SPARC_INS_B: Type = 16;
+    pub const SPARC_INS_JMP: Type = 17;
+    pub const SPARC_INS_BMASK: Type = 18;
+    pub const SPARC_INS_FB: Type = 19;
+    pub const SPARC_INS_BRGEZ: Type = 20;
+    pub const SPARC_INS_BRGZ: Type = 21;
+    pub const SPARC_INS_BRLEZ: Type = 22;
+    pub const SPARC_INS_BRLZ: Type = 23;
+    pub const SPARC_INS_BRNZ: Type = 24;
+    pub const SPARC_INS_BRZ: Type = 25;
+    pub const SPARC_INS_BSHUFFLE: Type = 26;
+    pub const SPARC_INS_CALL: Type = 27;
+    pub const SPARC_INS_CASX: Type = 28;
+    pub const SPARC_INS_CAS: Type = 29;
+    pub const SPARC_INS_CMASK16: Type = 30;
+    pub const SPARC_INS_CMASK32: Type = 31;
+    pub const SPARC_INS_CMASK8: Type = 32;
+    pub const SPARC_INS_CMP: Type = 33;
+    pub const SPARC_INS_EDGE16: Type = 34;
+    pub const SPARC_INS_EDGE16L: Type = 35;
+    pub const SPARC_INS_EDGE16LN: Type = 36;
+    pub const SPARC_INS_EDGE16N: Type = 37;
+    pub const SPARC_INS_EDGE32: Type = 38;
+    pub const SPARC_INS_EDGE32L: Type = 39;
+    pub const SPARC_INS_EDGE32LN: Type = 40;
+    pub const SPARC_INS_EDGE32N: Type = 41;
+    pub const SPARC_INS_EDGE8: Type = 42;
+    pub const SPARC_INS_EDGE8L: Type = 43;
+    pub const SPARC_INS_EDGE8LN: Type = 44;
+    pub const SPARC_INS_EDGE8N: Type = 45;
+    pub const SPARC_INS_FABSD: Type = 46;
+    pub const SPARC_INS_FABSQ: Type = 47;
+    pub const SPARC_INS_FABSS: Type = 48;
+    pub const SPARC_INS_FADDD: Type = 49;
+    pub const SPARC_INS_FADDQ: Type = 50;
+    pub const SPARC_INS_FADDS: Type = 51;
+    pub const SPARC_INS_FALIGNDATA: Type = 52;
+    pub const SPARC_INS_FAND: Type = 53;
+    pub const SPARC_INS_FANDNOT1: Type = 54;
+    pub const SPARC_INS_FANDNOT1S: Type = 55;
+    pub const SPARC_INS_FANDNOT2: Type = 56;
+    pub const SPARC_INS_FANDNOT2S: Type = 57;
+    pub const SPARC_INS_FANDS: Type = 58;
+    pub const SPARC_INS_FCHKSM16: Type = 59;
+    pub const SPARC_INS_FCMPD: Type = 60;
+    pub const SPARC_INS_FCMPEQ16: Type = 61;
+    pub const SPARC_INS_FCMPEQ32: Type = 62;
+    pub const SPARC_INS_FCMPGT16: Type = 63;
+    pub const SPARC_INS_FCMPGT32: Type = 64;
+    pub const SPARC_INS_FCMPLE16: Type = 65;
+    pub const SPARC_INS_FCMPLE32: Type = 66;
+    pub const SPARC_INS_FCMPNE16: Type = 67;
+    pub const SPARC_INS_FCMPNE32: Type = 68;
+    pub const SPARC_INS_FCMPQ: Type = 69;
+    pub const SPARC_INS_FCMPS: Type = 70;
+    pub const SPARC_INS_FDIVD: Type = 71;
+    pub const SPARC_INS_FDIVQ: Type = 72;
+    pub const SPARC_INS_FDIVS: Type = 73;
+    pub const SPARC_INS_FDMULQ: Type = 74;
+    pub const SPARC_INS_FDTOI: Type = 75;
+    pub const SPARC_INS_FDTOQ: Type = 76;
+    pub const SPARC_INS_FDTOS: Type = 77;
+    pub const SPARC_INS_FDTOX: Type = 78;
+    pub const SPARC_INS_FEXPAND: Type = 79;
+    pub const SPARC_INS_FHADDD: Type = 80;
+    pub const SPARC_INS_FHADDS: Type = 81;
+    pub const SPARC_INS_FHSUBD: Type = 82;
+    pub const SPARC_INS_FHSUBS: Type = 83;
+    pub const SPARC_INS_FITOD: Type = 84;
+    pub const SPARC_INS_FITOQ: Type = 85;
+    pub const SPARC_INS_FITOS: Type = 86;
+    pub const SPARC_INS_FLCMPD: Type = 87;
+    pub const SPARC_INS_FLCMPS: Type = 88;
+    pub const SPARC_INS_FLUSHW: Type = 89;
+    pub const SPARC_INS_FMEAN16: Type = 90;
+    pub const SPARC_INS_FMOVD: Type = 91;
+    pub const SPARC_INS_FMOVQ: Type = 92;
+    pub const SPARC_INS_FMOVRDGEZ: Type = 93;
+    pub const SPARC_INS_FMOVRQGEZ: Type = 94;
+    pub const SPARC_INS_FMOVRSGEZ: Type = 95;
+    pub const SPARC_INS_FMOVRDGZ: Type = 96;
+    pub const SPARC_INS_FMOVRQGZ: Type = 97;
+    pub const SPARC_INS_FMOVRSGZ: Type = 98;
+    pub const SPARC_INS_FMOVRDLEZ: Type = 99;
+    pub const SPARC_INS_FMOVRQLEZ: Type = 100;
+    pub const SPARC_INS_FMOVRSLEZ: Type = 101;
+    pub const SPARC_INS_FMOVRDLZ: Type = 102;
+    pub const SPARC_INS_FMOVRQLZ: Type = 103;
+    pub const SPARC_INS_FMOVRSLZ: Type = 104;
+    pub const SPARC_INS_FMOVRDNZ: Type = 105;
+    pub const SPARC_INS_FMOVRQNZ: Type = 106;
+    pub const SPARC_INS_FMOVRSNZ: Type = 107;
+    pub const SPARC_INS_FMOVRDZ: Type = 108;
+    pub const SPARC_INS_FMOVRQZ: Type = 109;
+    pub const SPARC_INS_FMOVRSZ: Type = 110;
+    pub const SPARC_INS_FMOVS: Type = 111;
+    pub const SPARC_INS_FMUL8SUX16: Type = 112;
+    pub const SPARC_INS_FMUL8ULX16: Type = 113;
+    pub const SPARC_INS_FMUL8X16: Type = 114;
+    pub const SPARC_INS_FMUL8X16AL: Type = 115;
+    pub const SPARC_INS_FMUL8X16AU: Type = 116;
+    pub const SPARC_INS_FMULD: Type = 117;
+    pub const SPARC_INS_FMULD8SUX16: Type = 118;
+    pub const SPARC_INS_FMULD8ULX16: Type = 119;
+    pub const SPARC_INS_FMULQ: Type = 120;
+    pub const SPARC_INS_FMULS: Type = 121;
+    pub const SPARC_INS_FNADDD: Type = 122;
+    pub const SPARC_INS_FNADDS: Type = 123;
+    pub const SPARC_INS_FNAND: Type = 124;
+    pub const SPARC_INS_FNANDS: Type = 125;
+    pub const SPARC_INS_FNEGD: Type = 126;
+    pub const SPARC_INS_FNEGQ: Type = 127;
+    pub const SPARC_INS_FNEGS: Type = 128;
+    pub const SPARC_INS_FNHADDD: Type = 129;
+    pub const SPARC_INS_FNHADDS: Type = 130;
+    pub const SPARC_INS_FNOR: Type = 131;
+    pub const SPARC_INS_FNORS: Type = 132;
+    pub const SPARC_INS_FNOT1: Type = 133;
+    pub const SPARC_INS_FNOT1S: Type = 134;
+    pub const SPARC_INS_FNOT2: Type = 135;
+    pub const SPARC_INS_FNOT2S: Type = 136;
+    pub const SPARC_INS_FONE: Type = 137;
+    pub const SPARC_INS_FONES: Type = 138;
+    pub const SPARC_INS_FOR: Type = 139;
+    pub const SPARC_INS_FORNOT1: Type = 140;
+    pub const SPARC_INS_FORNOT1S: Type = 141;
+    pub const SPARC_INS_FORNOT2: Type = 142;
+    pub const SPARC_INS_FORNOT2S: Type = 143;
+    pub const SPARC_INS_FORS: Type = 144;
+    pub const SPARC_INS_FPACK16: Type = 145;
+    pub const SPARC_INS_FPACK32: Type = 146;
+    pub const SPARC_INS_FPACKFIX: Type = 147;
+    pub const SPARC_INS_FPADD16: Type = 148;
+    pub const SPARC_INS_FPADD16S: Type = 149;
+    pub const SPARC_INS_FPADD32: Type = 150;
+    pub const SPARC_INS_FPADD32S: Type = 151;
+    pub const SPARC_INS_FPADD64: Type = 152;
+    pub const SPARC_INS_FPMERGE: Type = 153;
+    pub const SPARC_INS_FPSUB16: Type = 154;
+    pub const SPARC_INS_FPSUB16S: Type = 155;
+    pub const SPARC_INS_FPSUB32: Type = 156;
+    pub const SPARC_INS_FPSUB32S: Type = 157;
+    pub const SPARC_INS_FQTOD: Type = 158;
+    pub const SPARC_INS_FQTOI: Type = 159;
+    pub const SPARC_INS_FQTOS: Type = 160;
+    pub const SPARC_INS_FQTOX: Type = 161;
+    pub const SPARC_INS_FSLAS16: Type = 162;
+    pub const SPARC_INS_FSLAS32: Type = 163;
+    pub const SPARC_INS_FSLL16: Type = 164;
+    pub const SPARC_INS_FSLL32: Type = 165;
+    pub const SPARC_INS_FSMULD: Type = 166;
+    pub const SPARC_INS_FSQRTD: Type = 167;
+    pub const SPARC_INS_FSQRTQ: Type = 168;
+    pub const SPARC_INS_FSQRTS: Type = 169;
+    pub const SPARC_INS_FSRA16: Type = 170;
+    pub const SPARC_INS_FSRA32: Type = 171;
+    pub const SPARC_INS_FSRC1: Type = 172;
+    pub const SPARC_INS_FSRC1S: Type = 173;
+    pub const SPARC_INS_FSRC2: Type = 174;
+    pub const SPARC_INS_FSRC2S: Type = 175;
+    pub const SPARC_INS_FSRL16: Type = 176;
+    pub const SPARC_INS_FSRL32: Type = 177;
+    pub const SPARC_INS_FSTOD: Type = 178;
+    pub const SPARC_INS_FSTOI: Type = 179;
+    pub const SPARC_INS_FSTOQ: Type = 180;
+    pub const SPARC_INS_FSTOX: Type = 181;
+    pub const SPARC_INS_FSUBD: Type = 182;
+    pub const SPARC_INS_FSUBQ: Type = 183;
+    pub const SPARC_INS_FSUBS: Type = 184;
+    pub const SPARC_INS_FXNOR: Type = 185;
+    pub const SPARC_INS_FXNORS: Type = 186;
+    pub const SPARC_INS_FXOR: Type = 187;
+    pub const SPARC_INS_FXORS: Type = 188;
+    pub const SPARC_INS_FXTOD: Type = 189;
+    pub const SPARC_INS_FXTOQ: Type = 190;
+    pub const SPARC_INS_FXTOS: Type = 191;
+    pub const SPARC_INS_FZERO: Type = 192;
+    pub const SPARC_INS_FZEROS: Type = 193;
+    pub const SPARC_INS_JMPL: Type = 194;
+    pub const SPARC_INS_LDD: Type = 195;
+    pub const SPARC_INS_LD: Type = 196;
+    pub const SPARC_INS_LDQ: Type = 197;
+    pub const SPARC_INS_LDSB: Type = 198;
+    pub const SPARC_INS_LDSH: Type = 199;
+    pub const SPARC_INS_LDSW: Type = 200;
+    pub const SPARC_INS_LDUB: Type = 201;
+    pub const SPARC_INS_LDUH: Type = 202;
+    pub const SPARC_INS_LDX: Type = 203;
+    pub const SPARC_INS_LZCNT: Type = 204;
+    pub const SPARC_INS_MEMBAR: Type = 205;
+    pub const SPARC_INS_MOVDTOX: Type = 206;
+    pub const SPARC_INS_MOV: Type = 207;
+    pub const SPARC_INS_MOVRGEZ: Type = 208;
+    pub const SPARC_INS_MOVRGZ: Type = 209;
+    pub const SPARC_INS_MOVRLEZ: Type = 210;
+    pub const SPARC_INS_MOVRLZ: Type = 211;
+    pub const SPARC_INS_MOVRNZ: Type = 212;
+    pub const SPARC_INS_MOVRZ: Type = 213;
+    pub const SPARC_INS_MOVSTOSW: Type = 214;
+    pub const SPARC_INS_MOVSTOUW: Type = 215;
+    pub const SPARC_INS_MULX: Type = 216;
+    pub const SPARC_INS_NOP: Type = 217;
+    pub const SPARC_INS_ORCC: Type = 218;
+    pub const SPARC_INS_ORNCC: Type = 219;
+    pub const SPARC_INS_ORN: Type = 220;
+    pub const SPARC_INS_OR: Type = 221;
+    pub const SPARC_INS_PDIST: Type = 222;
+    pub const SPARC_INS_PDISTN: Type = 223;
+    pub const SPARC_INS_POPC: Type = 224;
+    pub const SPARC_INS_RD: Type = 225;
+    pub const SPARC_INS_RESTORE: Type = 226;
+    pub const SPARC_INS_RETT: Type = 227;
+    pub const SPARC_INS_SAVE: Type = 228;
+    pub const SPARC_INS_SDIVCC: Type = 229;
+    pub const SPARC_INS_SDIVX: Type = 230;
+    pub const SPARC_INS_SDIV: Type = 231;
+    pub const SPARC_INS_SETHI: Type = 232;
+    pub const SPARC_INS_SHUTDOWN: Type = 233;
+    pub const SPARC_INS_SIAM: Type = 234;
+    pub const SPARC_INS_SLLX: Type = 235;
+    pub const SPARC_INS_SLL: Type = 236;
+    pub const SPARC_INS_SMULCC: Type = 237;
+    pub const SPARC_INS_SMUL: Type = 238;
+    pub const SPARC_INS_SRAX: Type = 239;
+    pub const SPARC_INS_SRA: Type = 240;
+    pub const SPARC_INS_SRLX: Type = 241;
+    pub const SPARC_INS_SRL: Type = 242;
+    pub const SPARC_INS_STBAR: Type = 243;
+    pub const SPARC_INS_STB: Type = 244;
+    pub const SPARC_INS_STD: Type = 245;
+    pub const SPARC_INS_ST: Type = 246;
+    pub const SPARC_INS_STH: Type = 247;
+    pub const SPARC_INS_STQ: Type = 248;
+    pub const SPARC_INS_STX: Type = 249;
+    pub const SPARC_INS_SUBCC: Type = 250;
+    pub const SPARC_INS_SUBX: Type = 251;
+    pub const SPARC_INS_SUBXCC: Type = 252;
+    pub const SPARC_INS_SUB: Type = 253;
+    pub const SPARC_INS_SWAP: Type = 254;
+    pub const SPARC_INS_TADDCCTV: Type = 255;
+    pub const SPARC_INS_TADDCC: Type = 256;
+    pub const SPARC_INS_T: Type = 257;
+    pub const SPARC_INS_TSUBCCTV: Type = 258;
+    pub const SPARC_INS_TSUBCC: Type = 259;
+    pub const SPARC_INS_UDIVCC: Type = 260;
+    pub const SPARC_INS_UDIVX: Type = 261;
+    pub const SPARC_INS_UDIV: Type = 262;
+    pub const SPARC_INS_UMULCC: Type = 263;
+    pub const SPARC_INS_UMULXHI: Type = 264;
+    pub const SPARC_INS_UMUL: Type = 265;
+    pub const SPARC_INS_UNIMP: Type = 266;
+    pub const SPARC_INS_FCMPED: Type = 267;
+    pub const SPARC_INS_FCMPEQ: Type = 268;
+    pub const SPARC_INS_FCMPES: Type = 269;
+    pub const SPARC_INS_WR: Type = 270;
+    pub const SPARC_INS_XMULX: Type = 271;
+    pub const SPARC_INS_XMULXHI: Type = 272;
+    pub const SPARC_INS_XNORCC: Type = 273;
+    pub const SPARC_INS_XNOR: Type = 274;
+    pub const SPARC_INS_XORCC: Type = 275;
+    pub const SPARC_INS_XOR: Type = 276;
+    pub const SPARC_INS_RET: Type = 277;
+    pub const SPARC_INS_RETL: Type = 278;
+    pub const SPARC_INS_ENDING: Type = 279;
 }
-#[repr(u32)]
-#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
-pub enum sparc_insn_group {
-    SPARC_GRP_INVALID = 0,
-    SPARC_GRP_JUMP = 1,
-    SPARC_GRP_HARDQUAD = 128,
-    SPARC_GRP_V9 = 129,
-    SPARC_GRP_VIS = 130,
-    SPARC_GRP_VIS2 = 131,
-    SPARC_GRP_VIS3 = 132,
-    SPARC_GRP_32BIT = 133,
-    SPARC_GRP_64BIT = 134,
-    SPARC_GRP_ENDING = 135,
+pub mod sparc_insn_group {
+    pub type Type = ::std::os::raw::c_uint;
+    pub const SPARC_GRP_INVALID: Type = 0;
+    pub const SPARC_GRP_JUMP: Type = 1;
+    pub const SPARC_GRP_HARDQUAD: Type = 128;
+    pub const SPARC_GRP_V9: Type = 129;
+    pub const SPARC_GRP_VIS: Type = 130;
+    pub const SPARC_GRP_VIS2: Type = 131;
+    pub const SPARC_GRP_VIS3: Type = 132;
+    pub const SPARC_GRP_32BIT: Type = 133;
+    pub const SPARC_GRP_64BIT: Type = 134;
+    pub const SPARC_GRP_ENDING: Type = 135;
 }
-#[repr(u32)]
-#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
-pub enum sysz_cc {
-    SYSZ_CC_INVALID = 0,
-    SYSZ_CC_O = 1,
-    SYSZ_CC_H = 2,
-    SYSZ_CC_NLE = 3,
-    SYSZ_CC_L = 4,
-    SYSZ_CC_NHE = 5,
-    SYSZ_CC_LH = 6,
-    SYSZ_CC_NE = 7,
-    SYSZ_CC_E = 8,
-    SYSZ_CC_NLH = 9,
-    SYSZ_CC_HE = 10,
-    SYSZ_CC_NL = 11,
-    SYSZ_CC_LE = 12,
-    SYSZ_CC_NH = 13,
-    SYSZ_CC_NO = 14,
+pub mod sysz_cc {
+    pub type Type = ::std::os::raw::c_uint;
+    pub const SYSZ_CC_INVALID: Type = 0;
+    pub const SYSZ_CC_O: Type = 1;
+    pub const SYSZ_CC_H: Type = 2;
+    pub const SYSZ_CC_NLE: Type = 3;
+    pub const SYSZ_CC_L: Type = 4;
+    pub const SYSZ_CC_NHE: Type = 5;
+    pub const SYSZ_CC_LH: Type = 6;
+    pub const SYSZ_CC_NE: Type = 7;
+    pub const SYSZ_CC_E: Type = 8;
+    pub const SYSZ_CC_NLH: Type = 9;
+    pub const SYSZ_CC_HE: Type = 10;
+    pub const SYSZ_CC_NL: Type = 11;
+    pub const SYSZ_CC_LE: Type = 12;
+    pub const SYSZ_CC_NH: Type = 13;
+    pub const SYSZ_CC_NO: Type = 14;
 }
-#[repr(u32)]
-#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
-pub enum sysz_op_type {
-    SYSZ_OP_INVALID = 0,
-    SYSZ_OP_REG = 1,
-    SYSZ_OP_IMM = 2,
-    SYSZ_OP_MEM = 3,
-    SYSZ_OP_ACREG = 64,
+pub mod sysz_op_type {
+    pub type Type = ::std::os::raw::c_uint;
+    pub const SYSZ_OP_INVALID: Type = 0;
+    pub const SYSZ_OP_REG: Type = 1;
+    pub const SYSZ_OP_IMM: Type = 2;
+    pub const SYSZ_OP_MEM: Type = 3;
+    pub const SYSZ_OP_ACREG: Type = 64;
 }
 #[repr(C)]
 #[derive(Debug, Copy)]
@@ -5356,38 +6094,66 @@ pub struct sysz_op_mem {
 }
 #[test]
 fn bindgen_test_layout_sysz_op_mem() {
-    assert_eq!(::std::mem::size_of::<sysz_op_mem>() , 24usize , concat ! (
-               "Size of: " , stringify ! ( sysz_op_mem ) ));
-    assert_eq! (::std::mem::align_of::<sysz_op_mem>() , 8usize , concat ! (
-                "Alignment of " , stringify ! ( sysz_op_mem ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const sysz_op_mem ) ) . base as * const _ as
-                usize } , 0usize , concat ! (
-                "Alignment of field: " , stringify ! ( sysz_op_mem ) , "::" ,
-                stringify ! ( base ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const sysz_op_mem ) ) . index as * const _ as
-                usize } , 1usize , concat ! (
-                "Alignment of field: " , stringify ! ( sysz_op_mem ) , "::" ,
-                stringify ! ( index ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const sysz_op_mem ) ) . length as * const _ as
-                usize } , 8usize , concat ! (
-                "Alignment of field: " , stringify ! ( sysz_op_mem ) , "::" ,
-                stringify ! ( length ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const sysz_op_mem ) ) . disp as * const _ as
-                usize } , 16usize , concat ! (
-                "Alignment of field: " , stringify ! ( sysz_op_mem ) , "::" ,
-                stringify ! ( disp ) ));
+    assert_eq!(
+        ::std::mem::size_of::<sysz_op_mem>(),
+        24usize,
+        concat!("Size of: ", stringify!(sysz_op_mem))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<sysz_op_mem>(),
+        8usize,
+        concat!("Alignment of ", stringify!(sysz_op_mem))
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const sysz_op_mem)).base as *const _ as usize },
+        0usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(sysz_op_mem),
+            "::",
+            stringify!(base)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const sysz_op_mem)).index as *const _ as usize },
+        1usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(sysz_op_mem),
+            "::",
+            stringify!(index)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const sysz_op_mem)).length as *const _ as usize },
+        8usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(sysz_op_mem),
+            "::",
+            stringify!(length)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const sysz_op_mem)).disp as *const _ as usize },
+        16usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(sysz_op_mem),
+            "::",
+            stringify!(disp)
+        )
+    );
 }
 impl Clone for sysz_op_mem {
-    fn clone(&self) -> Self { *self }
+    fn clone(&self) -> Self {
+        *self
+    }
 }
 #[repr(C)]
 #[derive(Copy)]
 pub struct cs_sysz_op {
-    pub type_: sysz_op_type,
+    pub type_: sysz_op_type::Type,
     pub __bindgen_anon_1: cs_sysz_op__bindgen_ty_1,
 }
 #[repr(C)]
@@ -5400,77 +6166,157 @@ pub union cs_sysz_op__bindgen_ty_1 {
 }
 #[test]
 fn bindgen_test_layout_cs_sysz_op__bindgen_ty_1() {
-    assert_eq!(::std::mem::size_of::<cs_sysz_op__bindgen_ty_1>() , 24usize ,
-               concat ! (
-               "Size of: " , stringify ! ( cs_sysz_op__bindgen_ty_1 ) ));
-    assert_eq! (::std::mem::align_of::<cs_sysz_op__bindgen_ty_1>() , 8usize ,
-                concat ! (
-                "Alignment of " , stringify ! ( cs_sysz_op__bindgen_ty_1 ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const cs_sysz_op__bindgen_ty_1 ) ) . reg as *
-                const _ as usize } , 0usize , concat ! (
-                "Alignment of field: " , stringify ! (
-                cs_sysz_op__bindgen_ty_1 ) , "::" , stringify ! ( reg ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const cs_sysz_op__bindgen_ty_1 ) ) . imm as *
-                const _ as usize } , 0usize , concat ! (
-                "Alignment of field: " , stringify ! (
-                cs_sysz_op__bindgen_ty_1 ) , "::" , stringify ! ( imm ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const cs_sysz_op__bindgen_ty_1 ) ) . mem as *
-                const _ as usize } , 0usize , concat ! (
-                "Alignment of field: " , stringify ! (
-                cs_sysz_op__bindgen_ty_1 ) , "::" , stringify ! ( mem ) ));
+    assert_eq!(
+        ::std::mem::size_of::<cs_sysz_op__bindgen_ty_1>(),
+        24usize,
+        concat!("Size of: ", stringify!(cs_sysz_op__bindgen_ty_1))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<cs_sysz_op__bindgen_ty_1>(),
+        8usize,
+        concat!("Alignment of ", stringify!(cs_sysz_op__bindgen_ty_1))
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const cs_sysz_op__bindgen_ty_1)).reg as *const _ as usize },
+        0usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(cs_sysz_op__bindgen_ty_1),
+            "::",
+            stringify!(reg)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const cs_sysz_op__bindgen_ty_1)).imm as *const _ as usize },
+        0usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(cs_sysz_op__bindgen_ty_1),
+            "::",
+            stringify!(imm)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const cs_sysz_op__bindgen_ty_1)).mem as *const _ as usize },
+        0usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(cs_sysz_op__bindgen_ty_1),
+            "::",
+            stringify!(mem)
+        )
+    );
 }
 impl Clone for cs_sysz_op__bindgen_ty_1 {
-    fn clone(&self) -> Self { *self }
+    fn clone(&self) -> Self {
+        *self
+    }
+}
+impl ::std::fmt::Debug for cs_sysz_op__bindgen_ty_1 {
+    fn fmt(&self, f: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
+        write!(f, "cs_sysz_op__bindgen_ty_1 {{ union }}")
+    }
 }
 #[test]
 fn bindgen_test_layout_cs_sysz_op() {
-    assert_eq!(::std::mem::size_of::<cs_sysz_op>() , 32usize , concat ! (
-               "Size of: " , stringify ! ( cs_sysz_op ) ));
-    assert_eq! (::std::mem::align_of::<cs_sysz_op>() , 8usize , concat ! (
-                "Alignment of " , stringify ! ( cs_sysz_op ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const cs_sysz_op ) ) . type_ as * const _ as
-                usize } , 0usize , concat ! (
-                "Alignment of field: " , stringify ! ( cs_sysz_op ) , "::" ,
-                stringify ! ( type_ ) ));
+    assert_eq!(
+        ::std::mem::size_of::<cs_sysz_op>(),
+        32usize,
+        concat!("Size of: ", stringify!(cs_sysz_op))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<cs_sysz_op>(),
+        8usize,
+        concat!("Alignment of ", stringify!(cs_sysz_op))
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const cs_sysz_op)).type_ as *const _ as usize },
+        0usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(cs_sysz_op),
+            "::",
+            stringify!(type_)
+        )
+    );
 }
 impl Clone for cs_sysz_op {
-    fn clone(&self) -> Self { *self }
+    fn clone(&self) -> Self {
+        *self
+    }
+}
+impl ::std::fmt::Debug for cs_sysz_op {
+    fn fmt(&self, f: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
+        write!(
+            f,
+            "cs_sysz_op {{ type: {:?}, __bindgen_anon_1: {:?} }}",
+            self.type_, self.__bindgen_anon_1
+        )
+    }
 }
 #[repr(C)]
 #[derive(Copy)]
 pub struct cs_sysz {
-    pub cc: sysz_cc,
+    pub cc: sysz_cc::Type,
     pub op_count: u8,
     pub operands: [cs_sysz_op; 6usize],
 }
 #[test]
 fn bindgen_test_layout_cs_sysz() {
-    assert_eq!(::std::mem::size_of::<cs_sysz>() , 200usize , concat ! (
-               "Size of: " , stringify ! ( cs_sysz ) ));
-    assert_eq! (::std::mem::align_of::<cs_sysz>() , 8usize , concat ! (
-                "Alignment of " , stringify ! ( cs_sysz ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const cs_sysz ) ) . cc as * const _ as usize }
-                , 0usize , concat ! (
-                "Alignment of field: " , stringify ! ( cs_sysz ) , "::" ,
-                stringify ! ( cc ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const cs_sysz ) ) . op_count as * const _ as
-                usize } , 4usize , concat ! (
-                "Alignment of field: " , stringify ! ( cs_sysz ) , "::" ,
-                stringify ! ( op_count ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const cs_sysz ) ) . operands as * const _ as
-                usize } , 8usize , concat ! (
-                "Alignment of field: " , stringify ! ( cs_sysz ) , "::" ,
-                stringify ! ( operands ) ));
+    assert_eq!(
+        ::std::mem::size_of::<cs_sysz>(),
+        200usize,
+        concat!("Size of: ", stringify!(cs_sysz))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<cs_sysz>(),
+        8usize,
+        concat!("Alignment of ", stringify!(cs_sysz))
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const cs_sysz)).cc as *const _ as usize },
+        0usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(cs_sysz),
+            "::",
+            stringify!(cc)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const cs_sysz)).op_count as *const _ as usize },
+        4usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(cs_sysz),
+            "::",
+            stringify!(op_count)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const cs_sysz)).operands as *const _ as usize },
+        8usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(cs_sysz),
+            "::",
+            stringify!(operands)
+        )
+    );
 }
 impl Clone for cs_sysz {
-    fn clone(&self) -> Self { *self }
+    fn clone(&self) -> Self {
+        *self
+    }
+}
+impl ::std::fmt::Debug for cs_sysz {
+    fn fmt(&self, f: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
+        write!(
+            f,
+            "cs_sysz {{ cc: {:?}, op_count: {:?}, operands: {:?} }}",
+            self.cc, self.op_count, self.operands
+        )
+    }
 }
 pub mod sysz_reg {
     pub type Type = ::std::os::raw::c_uint;
@@ -5511,704 +6357,702 @@ pub mod sysz_reg {
     pub const SYSZ_REG_R0L: Type = 34;
     pub const SYSZ_REG_ENDING: Type = 35;
 }
-#[repr(u32)]
-#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
-pub enum sysz_insn {
-    SYSZ_INS_INVALID = 0,
-    SYSZ_INS_A = 1,
-    SYSZ_INS_ADB = 2,
-    SYSZ_INS_ADBR = 3,
-    SYSZ_INS_AEB = 4,
-    SYSZ_INS_AEBR = 5,
-    SYSZ_INS_AFI = 6,
-    SYSZ_INS_AG = 7,
-    SYSZ_INS_AGF = 8,
-    SYSZ_INS_AGFI = 9,
-    SYSZ_INS_AGFR = 10,
-    SYSZ_INS_AGHI = 11,
-    SYSZ_INS_AGHIK = 12,
-    SYSZ_INS_AGR = 13,
-    SYSZ_INS_AGRK = 14,
-    SYSZ_INS_AGSI = 15,
-    SYSZ_INS_AH = 16,
-    SYSZ_INS_AHI = 17,
-    SYSZ_INS_AHIK = 18,
-    SYSZ_INS_AHY = 19,
-    SYSZ_INS_AIH = 20,
-    SYSZ_INS_AL = 21,
-    SYSZ_INS_ALC = 22,
-    SYSZ_INS_ALCG = 23,
-    SYSZ_INS_ALCGR = 24,
-    SYSZ_INS_ALCR = 25,
-    SYSZ_INS_ALFI = 26,
-    SYSZ_INS_ALG = 27,
-    SYSZ_INS_ALGF = 28,
-    SYSZ_INS_ALGFI = 29,
-    SYSZ_INS_ALGFR = 30,
-    SYSZ_INS_ALGHSIK = 31,
-    SYSZ_INS_ALGR = 32,
-    SYSZ_INS_ALGRK = 33,
-    SYSZ_INS_ALHSIK = 34,
-    SYSZ_INS_ALR = 35,
-    SYSZ_INS_ALRK = 36,
-    SYSZ_INS_ALY = 37,
-    SYSZ_INS_AR = 38,
-    SYSZ_INS_ARK = 39,
-    SYSZ_INS_ASI = 40,
-    SYSZ_INS_AXBR = 41,
-    SYSZ_INS_AY = 42,
-    SYSZ_INS_BCR = 43,
-    SYSZ_INS_BRC = 44,
-    SYSZ_INS_BRCL = 45,
-    SYSZ_INS_CGIJ = 46,
-    SYSZ_INS_CGRJ = 47,
-    SYSZ_INS_CIJ = 48,
-    SYSZ_INS_CLGIJ = 49,
-    SYSZ_INS_CLGRJ = 50,
-    SYSZ_INS_CLIJ = 51,
-    SYSZ_INS_CLRJ = 52,
-    SYSZ_INS_CRJ = 53,
-    SYSZ_INS_BER = 54,
-    SYSZ_INS_JE = 55,
-    SYSZ_INS_JGE = 56,
-    SYSZ_INS_LOCE = 57,
-    SYSZ_INS_LOCGE = 58,
-    SYSZ_INS_LOCGRE = 59,
-    SYSZ_INS_LOCRE = 60,
-    SYSZ_INS_STOCE = 61,
-    SYSZ_INS_STOCGE = 62,
-    SYSZ_INS_BHR = 63,
-    SYSZ_INS_BHER = 64,
-    SYSZ_INS_JHE = 65,
-    SYSZ_INS_JGHE = 66,
-    SYSZ_INS_LOCHE = 67,
-    SYSZ_INS_LOCGHE = 68,
-    SYSZ_INS_LOCGRHE = 69,
-    SYSZ_INS_LOCRHE = 70,
-    SYSZ_INS_STOCHE = 71,
-    SYSZ_INS_STOCGHE = 72,
-    SYSZ_INS_JH = 73,
-    SYSZ_INS_JGH = 74,
-    SYSZ_INS_LOCH = 75,
-    SYSZ_INS_LOCGH = 76,
-    SYSZ_INS_LOCGRH = 77,
-    SYSZ_INS_LOCRH = 78,
-    SYSZ_INS_STOCH = 79,
-    SYSZ_INS_STOCGH = 80,
-    SYSZ_INS_CGIJNLH = 81,
-    SYSZ_INS_CGRJNLH = 82,
-    SYSZ_INS_CIJNLH = 83,
-    SYSZ_INS_CLGIJNLH = 84,
-    SYSZ_INS_CLGRJNLH = 85,
-    SYSZ_INS_CLIJNLH = 86,
-    SYSZ_INS_CLRJNLH = 87,
-    SYSZ_INS_CRJNLH = 88,
-    SYSZ_INS_CGIJE = 89,
-    SYSZ_INS_CGRJE = 90,
-    SYSZ_INS_CIJE = 91,
-    SYSZ_INS_CLGIJE = 92,
-    SYSZ_INS_CLGRJE = 93,
-    SYSZ_INS_CLIJE = 94,
-    SYSZ_INS_CLRJE = 95,
-    SYSZ_INS_CRJE = 96,
-    SYSZ_INS_CGIJNLE = 97,
-    SYSZ_INS_CGRJNLE = 98,
-    SYSZ_INS_CIJNLE = 99,
-    SYSZ_INS_CLGIJNLE = 100,
-    SYSZ_INS_CLGRJNLE = 101,
-    SYSZ_INS_CLIJNLE = 102,
-    SYSZ_INS_CLRJNLE = 103,
-    SYSZ_INS_CRJNLE = 104,
-    SYSZ_INS_CGIJH = 105,
-    SYSZ_INS_CGRJH = 106,
-    SYSZ_INS_CIJH = 107,
-    SYSZ_INS_CLGIJH = 108,
-    SYSZ_INS_CLGRJH = 109,
-    SYSZ_INS_CLIJH = 110,
-    SYSZ_INS_CLRJH = 111,
-    SYSZ_INS_CRJH = 112,
-    SYSZ_INS_CGIJNL = 113,
-    SYSZ_INS_CGRJNL = 114,
-    SYSZ_INS_CIJNL = 115,
-    SYSZ_INS_CLGIJNL = 116,
-    SYSZ_INS_CLGRJNL = 117,
-    SYSZ_INS_CLIJNL = 118,
-    SYSZ_INS_CLRJNL = 119,
-    SYSZ_INS_CRJNL = 120,
-    SYSZ_INS_CGIJHE = 121,
-    SYSZ_INS_CGRJHE = 122,
-    SYSZ_INS_CIJHE = 123,
-    SYSZ_INS_CLGIJHE = 124,
-    SYSZ_INS_CLGRJHE = 125,
-    SYSZ_INS_CLIJHE = 126,
-    SYSZ_INS_CLRJHE = 127,
-    SYSZ_INS_CRJHE = 128,
-    SYSZ_INS_CGIJNHE = 129,
-    SYSZ_INS_CGRJNHE = 130,
-    SYSZ_INS_CIJNHE = 131,
-    SYSZ_INS_CLGIJNHE = 132,
-    SYSZ_INS_CLGRJNHE = 133,
-    SYSZ_INS_CLIJNHE = 134,
-    SYSZ_INS_CLRJNHE = 135,
-    SYSZ_INS_CRJNHE = 136,
-    SYSZ_INS_CGIJL = 137,
-    SYSZ_INS_CGRJL = 138,
-    SYSZ_INS_CIJL = 139,
-    SYSZ_INS_CLGIJL = 140,
-    SYSZ_INS_CLGRJL = 141,
-    SYSZ_INS_CLIJL = 142,
-    SYSZ_INS_CLRJL = 143,
-    SYSZ_INS_CRJL = 144,
-    SYSZ_INS_CGIJNH = 145,
-    SYSZ_INS_CGRJNH = 146,
-    SYSZ_INS_CIJNH = 147,
-    SYSZ_INS_CLGIJNH = 148,
-    SYSZ_INS_CLGRJNH = 149,
-    SYSZ_INS_CLIJNH = 150,
-    SYSZ_INS_CLRJNH = 151,
-    SYSZ_INS_CRJNH = 152,
-    SYSZ_INS_CGIJLE = 153,
-    SYSZ_INS_CGRJLE = 154,
-    SYSZ_INS_CIJLE = 155,
-    SYSZ_INS_CLGIJLE = 156,
-    SYSZ_INS_CLGRJLE = 157,
-    SYSZ_INS_CLIJLE = 158,
-    SYSZ_INS_CLRJLE = 159,
-    SYSZ_INS_CRJLE = 160,
-    SYSZ_INS_CGIJNE = 161,
-    SYSZ_INS_CGRJNE = 162,
-    SYSZ_INS_CIJNE = 163,
-    SYSZ_INS_CLGIJNE = 164,
-    SYSZ_INS_CLGRJNE = 165,
-    SYSZ_INS_CLIJNE = 166,
-    SYSZ_INS_CLRJNE = 167,
-    SYSZ_INS_CRJNE = 168,
-    SYSZ_INS_CGIJLH = 169,
-    SYSZ_INS_CGRJLH = 170,
-    SYSZ_INS_CIJLH = 171,
-    SYSZ_INS_CLGIJLH = 172,
-    SYSZ_INS_CLGRJLH = 173,
-    SYSZ_INS_CLIJLH = 174,
-    SYSZ_INS_CLRJLH = 175,
-    SYSZ_INS_CRJLH = 176,
-    SYSZ_INS_BLR = 177,
-    SYSZ_INS_BLER = 178,
-    SYSZ_INS_JLE = 179,
-    SYSZ_INS_JGLE = 180,
-    SYSZ_INS_LOCLE = 181,
-    SYSZ_INS_LOCGLE = 182,
-    SYSZ_INS_LOCGRLE = 183,
-    SYSZ_INS_LOCRLE = 184,
-    SYSZ_INS_STOCLE = 185,
-    SYSZ_INS_STOCGLE = 186,
-    SYSZ_INS_BLHR = 187,
-    SYSZ_INS_JLH = 188,
-    SYSZ_INS_JGLH = 189,
-    SYSZ_INS_LOCLH = 190,
-    SYSZ_INS_LOCGLH = 191,
-    SYSZ_INS_LOCGRLH = 192,
-    SYSZ_INS_LOCRLH = 193,
-    SYSZ_INS_STOCLH = 194,
-    SYSZ_INS_STOCGLH = 195,
-    SYSZ_INS_JL = 196,
-    SYSZ_INS_JGL = 197,
-    SYSZ_INS_LOCL = 198,
-    SYSZ_INS_LOCGL = 199,
-    SYSZ_INS_LOCGRL = 200,
-    SYSZ_INS_LOCRL = 201,
-    SYSZ_INS_LOC = 202,
-    SYSZ_INS_LOCG = 203,
-    SYSZ_INS_LOCGR = 204,
-    SYSZ_INS_LOCR = 205,
-    SYSZ_INS_STOCL = 206,
-    SYSZ_INS_STOCGL = 207,
-    SYSZ_INS_BNER = 208,
-    SYSZ_INS_JNE = 209,
-    SYSZ_INS_JGNE = 210,
-    SYSZ_INS_LOCNE = 211,
-    SYSZ_INS_LOCGNE = 212,
-    SYSZ_INS_LOCGRNE = 213,
-    SYSZ_INS_LOCRNE = 214,
-    SYSZ_INS_STOCNE = 215,
-    SYSZ_INS_STOCGNE = 216,
-    SYSZ_INS_BNHR = 217,
-    SYSZ_INS_BNHER = 218,
-    SYSZ_INS_JNHE = 219,
-    SYSZ_INS_JGNHE = 220,
-    SYSZ_INS_LOCNHE = 221,
-    SYSZ_INS_LOCGNHE = 222,
-    SYSZ_INS_LOCGRNHE = 223,
-    SYSZ_INS_LOCRNHE = 224,
-    SYSZ_INS_STOCNHE = 225,
-    SYSZ_INS_STOCGNHE = 226,
-    SYSZ_INS_JNH = 227,
-    SYSZ_INS_JGNH = 228,
-    SYSZ_INS_LOCNH = 229,
-    SYSZ_INS_LOCGNH = 230,
-    SYSZ_INS_LOCGRNH = 231,
-    SYSZ_INS_LOCRNH = 232,
-    SYSZ_INS_STOCNH = 233,
-    SYSZ_INS_STOCGNH = 234,
-    SYSZ_INS_BNLR = 235,
-    SYSZ_INS_BNLER = 236,
-    SYSZ_INS_JNLE = 237,
-    SYSZ_INS_JGNLE = 238,
-    SYSZ_INS_LOCNLE = 239,
-    SYSZ_INS_LOCGNLE = 240,
-    SYSZ_INS_LOCGRNLE = 241,
-    SYSZ_INS_LOCRNLE = 242,
-    SYSZ_INS_STOCNLE = 243,
-    SYSZ_INS_STOCGNLE = 244,
-    SYSZ_INS_BNLHR = 245,
-    SYSZ_INS_JNLH = 246,
-    SYSZ_INS_JGNLH = 247,
-    SYSZ_INS_LOCNLH = 248,
-    SYSZ_INS_LOCGNLH = 249,
-    SYSZ_INS_LOCGRNLH = 250,
-    SYSZ_INS_LOCRNLH = 251,
-    SYSZ_INS_STOCNLH = 252,
-    SYSZ_INS_STOCGNLH = 253,
-    SYSZ_INS_JNL = 254,
-    SYSZ_INS_JGNL = 255,
-    SYSZ_INS_LOCNL = 256,
-    SYSZ_INS_LOCGNL = 257,
-    SYSZ_INS_LOCGRNL = 258,
-    SYSZ_INS_LOCRNL = 259,
-    SYSZ_INS_STOCNL = 260,
-    SYSZ_INS_STOCGNL = 261,
-    SYSZ_INS_BNOR = 262,
-    SYSZ_INS_JNO = 263,
-    SYSZ_INS_JGNO = 264,
-    SYSZ_INS_LOCNO = 265,
-    SYSZ_INS_LOCGNO = 266,
-    SYSZ_INS_LOCGRNO = 267,
-    SYSZ_INS_LOCRNO = 268,
-    SYSZ_INS_STOCNO = 269,
-    SYSZ_INS_STOCGNO = 270,
-    SYSZ_INS_BOR = 271,
-    SYSZ_INS_JO = 272,
-    SYSZ_INS_JGO = 273,
-    SYSZ_INS_LOCO = 274,
-    SYSZ_INS_LOCGO = 275,
-    SYSZ_INS_LOCGRO = 276,
-    SYSZ_INS_LOCRO = 277,
-    SYSZ_INS_STOCO = 278,
-    SYSZ_INS_STOCGO = 279,
-    SYSZ_INS_STOC = 280,
-    SYSZ_INS_STOCG = 281,
-    SYSZ_INS_BASR = 282,
-    SYSZ_INS_BR = 283,
-    SYSZ_INS_BRAS = 284,
-    SYSZ_INS_BRASL = 285,
-    SYSZ_INS_J = 286,
-    SYSZ_INS_JG = 287,
-    SYSZ_INS_BRCT = 288,
-    SYSZ_INS_BRCTG = 289,
-    SYSZ_INS_C = 290,
-    SYSZ_INS_CDB = 291,
-    SYSZ_INS_CDBR = 292,
-    SYSZ_INS_CDFBR = 293,
-    SYSZ_INS_CDGBR = 294,
-    SYSZ_INS_CDLFBR = 295,
-    SYSZ_INS_CDLGBR = 296,
-    SYSZ_INS_CEB = 297,
-    SYSZ_INS_CEBR = 298,
-    SYSZ_INS_CEFBR = 299,
-    SYSZ_INS_CEGBR = 300,
-    SYSZ_INS_CELFBR = 301,
-    SYSZ_INS_CELGBR = 302,
-    SYSZ_INS_CFDBR = 303,
-    SYSZ_INS_CFEBR = 304,
-    SYSZ_INS_CFI = 305,
-    SYSZ_INS_CFXBR = 306,
-    SYSZ_INS_CG = 307,
-    SYSZ_INS_CGDBR = 308,
-    SYSZ_INS_CGEBR = 309,
-    SYSZ_INS_CGF = 310,
-    SYSZ_INS_CGFI = 311,
-    SYSZ_INS_CGFR = 312,
-    SYSZ_INS_CGFRL = 313,
-    SYSZ_INS_CGH = 314,
-    SYSZ_INS_CGHI = 315,
-    SYSZ_INS_CGHRL = 316,
-    SYSZ_INS_CGHSI = 317,
-    SYSZ_INS_CGR = 318,
-    SYSZ_INS_CGRL = 319,
-    SYSZ_INS_CGXBR = 320,
-    SYSZ_INS_CH = 321,
-    SYSZ_INS_CHF = 322,
-    SYSZ_INS_CHHSI = 323,
-    SYSZ_INS_CHI = 324,
-    SYSZ_INS_CHRL = 325,
-    SYSZ_INS_CHSI = 326,
-    SYSZ_INS_CHY = 327,
-    SYSZ_INS_CIH = 328,
-    SYSZ_INS_CL = 329,
-    SYSZ_INS_CLC = 330,
-    SYSZ_INS_CLFDBR = 331,
-    SYSZ_INS_CLFEBR = 332,
-    SYSZ_INS_CLFHSI = 333,
-    SYSZ_INS_CLFI = 334,
-    SYSZ_INS_CLFXBR = 335,
-    SYSZ_INS_CLG = 336,
-    SYSZ_INS_CLGDBR = 337,
-    SYSZ_INS_CLGEBR = 338,
-    SYSZ_INS_CLGF = 339,
-    SYSZ_INS_CLGFI = 340,
-    SYSZ_INS_CLGFR = 341,
-    SYSZ_INS_CLGFRL = 342,
-    SYSZ_INS_CLGHRL = 343,
-    SYSZ_INS_CLGHSI = 344,
-    SYSZ_INS_CLGR = 345,
-    SYSZ_INS_CLGRL = 346,
-    SYSZ_INS_CLGXBR = 347,
-    SYSZ_INS_CLHF = 348,
-    SYSZ_INS_CLHHSI = 349,
-    SYSZ_INS_CLHRL = 350,
-    SYSZ_INS_CLI = 351,
-    SYSZ_INS_CLIH = 352,
-    SYSZ_INS_CLIY = 353,
-    SYSZ_INS_CLR = 354,
-    SYSZ_INS_CLRL = 355,
-    SYSZ_INS_CLST = 356,
-    SYSZ_INS_CLY = 357,
-    SYSZ_INS_CPSDR = 358,
-    SYSZ_INS_CR = 359,
-    SYSZ_INS_CRL = 360,
-    SYSZ_INS_CS = 361,
-    SYSZ_INS_CSG = 362,
-    SYSZ_INS_CSY = 363,
-    SYSZ_INS_CXBR = 364,
-    SYSZ_INS_CXFBR = 365,
-    SYSZ_INS_CXGBR = 366,
-    SYSZ_INS_CXLFBR = 367,
-    SYSZ_INS_CXLGBR = 368,
-    SYSZ_INS_CY = 369,
-    SYSZ_INS_DDB = 370,
-    SYSZ_INS_DDBR = 371,
-    SYSZ_INS_DEB = 372,
-    SYSZ_INS_DEBR = 373,
-    SYSZ_INS_DL = 374,
-    SYSZ_INS_DLG = 375,
-    SYSZ_INS_DLGR = 376,
-    SYSZ_INS_DLR = 377,
-    SYSZ_INS_DSG = 378,
-    SYSZ_INS_DSGF = 379,
-    SYSZ_INS_DSGFR = 380,
-    SYSZ_INS_DSGR = 381,
-    SYSZ_INS_DXBR = 382,
-    SYSZ_INS_EAR = 383,
-    SYSZ_INS_FIDBR = 384,
-    SYSZ_INS_FIDBRA = 385,
-    SYSZ_INS_FIEBR = 386,
-    SYSZ_INS_FIEBRA = 387,
-    SYSZ_INS_FIXBR = 388,
-    SYSZ_INS_FIXBRA = 389,
-    SYSZ_INS_FLOGR = 390,
-    SYSZ_INS_IC = 391,
-    SYSZ_INS_ICY = 392,
-    SYSZ_INS_IIHF = 393,
-    SYSZ_INS_IIHH = 394,
-    SYSZ_INS_IIHL = 395,
-    SYSZ_INS_IILF = 396,
-    SYSZ_INS_IILH = 397,
-    SYSZ_INS_IILL = 398,
-    SYSZ_INS_IPM = 399,
-    SYSZ_INS_L = 400,
-    SYSZ_INS_LA = 401,
-    SYSZ_INS_LAA = 402,
-    SYSZ_INS_LAAG = 403,
-    SYSZ_INS_LAAL = 404,
-    SYSZ_INS_LAALG = 405,
-    SYSZ_INS_LAN = 406,
-    SYSZ_INS_LANG = 407,
-    SYSZ_INS_LAO = 408,
-    SYSZ_INS_LAOG = 409,
-    SYSZ_INS_LARL = 410,
-    SYSZ_INS_LAX = 411,
-    SYSZ_INS_LAXG = 412,
-    SYSZ_INS_LAY = 413,
-    SYSZ_INS_LB = 414,
-    SYSZ_INS_LBH = 415,
-    SYSZ_INS_LBR = 416,
-    SYSZ_INS_LCDBR = 417,
-    SYSZ_INS_LCEBR = 418,
-    SYSZ_INS_LCGFR = 419,
-    SYSZ_INS_LCGR = 420,
-    SYSZ_INS_LCR = 421,
-    SYSZ_INS_LCXBR = 422,
-    SYSZ_INS_LD = 423,
-    SYSZ_INS_LDEB = 424,
-    SYSZ_INS_LDEBR = 425,
-    SYSZ_INS_LDGR = 426,
-    SYSZ_INS_LDR = 427,
-    SYSZ_INS_LDXBR = 428,
-    SYSZ_INS_LDXBRA = 429,
-    SYSZ_INS_LDY = 430,
-    SYSZ_INS_LE = 431,
-    SYSZ_INS_LEDBR = 432,
-    SYSZ_INS_LEDBRA = 433,
-    SYSZ_INS_LER = 434,
-    SYSZ_INS_LEXBR = 435,
-    SYSZ_INS_LEXBRA = 436,
-    SYSZ_INS_LEY = 437,
-    SYSZ_INS_LFH = 438,
-    SYSZ_INS_LG = 439,
-    SYSZ_INS_LGB = 440,
-    SYSZ_INS_LGBR = 441,
-    SYSZ_INS_LGDR = 442,
-    SYSZ_INS_LGF = 443,
-    SYSZ_INS_LGFI = 444,
-    SYSZ_INS_LGFR = 445,
-    SYSZ_INS_LGFRL = 446,
-    SYSZ_INS_LGH = 447,
-    SYSZ_INS_LGHI = 448,
-    SYSZ_INS_LGHR = 449,
-    SYSZ_INS_LGHRL = 450,
-    SYSZ_INS_LGR = 451,
-    SYSZ_INS_LGRL = 452,
-    SYSZ_INS_LH = 453,
-    SYSZ_INS_LHH = 454,
-    SYSZ_INS_LHI = 455,
-    SYSZ_INS_LHR = 456,
-    SYSZ_INS_LHRL = 457,
-    SYSZ_INS_LHY = 458,
-    SYSZ_INS_LLC = 459,
-    SYSZ_INS_LLCH = 460,
-    SYSZ_INS_LLCR = 461,
-    SYSZ_INS_LLGC = 462,
-    SYSZ_INS_LLGCR = 463,
-    SYSZ_INS_LLGF = 464,
-    SYSZ_INS_LLGFR = 465,
-    SYSZ_INS_LLGFRL = 466,
-    SYSZ_INS_LLGH = 467,
-    SYSZ_INS_LLGHR = 468,
-    SYSZ_INS_LLGHRL = 469,
-    SYSZ_INS_LLH = 470,
-    SYSZ_INS_LLHH = 471,
-    SYSZ_INS_LLHR = 472,
-    SYSZ_INS_LLHRL = 473,
-    SYSZ_INS_LLIHF = 474,
-    SYSZ_INS_LLIHH = 475,
-    SYSZ_INS_LLIHL = 476,
-    SYSZ_INS_LLILF = 477,
-    SYSZ_INS_LLILH = 478,
-    SYSZ_INS_LLILL = 479,
-    SYSZ_INS_LMG = 480,
-    SYSZ_INS_LNDBR = 481,
-    SYSZ_INS_LNEBR = 482,
-    SYSZ_INS_LNGFR = 483,
-    SYSZ_INS_LNGR = 484,
-    SYSZ_INS_LNR = 485,
-    SYSZ_INS_LNXBR = 486,
-    SYSZ_INS_LPDBR = 487,
-    SYSZ_INS_LPEBR = 488,
-    SYSZ_INS_LPGFR = 489,
-    SYSZ_INS_LPGR = 490,
-    SYSZ_INS_LPR = 491,
-    SYSZ_INS_LPXBR = 492,
-    SYSZ_INS_LR = 493,
-    SYSZ_INS_LRL = 494,
-    SYSZ_INS_LRV = 495,
-    SYSZ_INS_LRVG = 496,
-    SYSZ_INS_LRVGR = 497,
-    SYSZ_INS_LRVR = 498,
-    SYSZ_INS_LT = 499,
-    SYSZ_INS_LTDBR = 500,
-    SYSZ_INS_LTEBR = 501,
-    SYSZ_INS_LTG = 502,
-    SYSZ_INS_LTGF = 503,
-    SYSZ_INS_LTGFR = 504,
-    SYSZ_INS_LTGR = 505,
-    SYSZ_INS_LTR = 506,
-    SYSZ_INS_LTXBR = 507,
-    SYSZ_INS_LXDB = 508,
-    SYSZ_INS_LXDBR = 509,
-    SYSZ_INS_LXEB = 510,
-    SYSZ_INS_LXEBR = 511,
-    SYSZ_INS_LXR = 512,
-    SYSZ_INS_LY = 513,
-    SYSZ_INS_LZDR = 514,
-    SYSZ_INS_LZER = 515,
-    SYSZ_INS_LZXR = 516,
-    SYSZ_INS_MADB = 517,
-    SYSZ_INS_MADBR = 518,
-    SYSZ_INS_MAEB = 519,
-    SYSZ_INS_MAEBR = 520,
-    SYSZ_INS_MDB = 521,
-    SYSZ_INS_MDBR = 522,
-    SYSZ_INS_MDEB = 523,
-    SYSZ_INS_MDEBR = 524,
-    SYSZ_INS_MEEB = 525,
-    SYSZ_INS_MEEBR = 526,
-    SYSZ_INS_MGHI = 527,
-    SYSZ_INS_MH = 528,
-    SYSZ_INS_MHI = 529,
-    SYSZ_INS_MHY = 530,
-    SYSZ_INS_MLG = 531,
-    SYSZ_INS_MLGR = 532,
-    SYSZ_INS_MS = 533,
-    SYSZ_INS_MSDB = 534,
-    SYSZ_INS_MSDBR = 535,
-    SYSZ_INS_MSEB = 536,
-    SYSZ_INS_MSEBR = 537,
-    SYSZ_INS_MSFI = 538,
-    SYSZ_INS_MSG = 539,
-    SYSZ_INS_MSGF = 540,
-    SYSZ_INS_MSGFI = 541,
-    SYSZ_INS_MSGFR = 542,
-    SYSZ_INS_MSGR = 543,
-    SYSZ_INS_MSR = 544,
-    SYSZ_INS_MSY = 545,
-    SYSZ_INS_MVC = 546,
-    SYSZ_INS_MVGHI = 547,
-    SYSZ_INS_MVHHI = 548,
-    SYSZ_INS_MVHI = 549,
-    SYSZ_INS_MVI = 550,
-    SYSZ_INS_MVIY = 551,
-    SYSZ_INS_MVST = 552,
-    SYSZ_INS_MXBR = 553,
-    SYSZ_INS_MXDB = 554,
-    SYSZ_INS_MXDBR = 555,
-    SYSZ_INS_N = 556,
-    SYSZ_INS_NC = 557,
-    SYSZ_INS_NG = 558,
-    SYSZ_INS_NGR = 559,
-    SYSZ_INS_NGRK = 560,
-    SYSZ_INS_NI = 561,
-    SYSZ_INS_NIHF = 562,
-    SYSZ_INS_NIHH = 563,
-    SYSZ_INS_NIHL = 564,
-    SYSZ_INS_NILF = 565,
-    SYSZ_INS_NILH = 566,
-    SYSZ_INS_NILL = 567,
-    SYSZ_INS_NIY = 568,
-    SYSZ_INS_NR = 569,
-    SYSZ_INS_NRK = 570,
-    SYSZ_INS_NY = 571,
-    SYSZ_INS_O = 572,
-    SYSZ_INS_OC = 573,
-    SYSZ_INS_OG = 574,
-    SYSZ_INS_OGR = 575,
-    SYSZ_INS_OGRK = 576,
-    SYSZ_INS_OI = 577,
-    SYSZ_INS_OIHF = 578,
-    SYSZ_INS_OIHH = 579,
-    SYSZ_INS_OIHL = 580,
-    SYSZ_INS_OILF = 581,
-    SYSZ_INS_OILH = 582,
-    SYSZ_INS_OILL = 583,
-    SYSZ_INS_OIY = 584,
-    SYSZ_INS_OR = 585,
-    SYSZ_INS_ORK = 586,
-    SYSZ_INS_OY = 587,
-    SYSZ_INS_PFD = 588,
-    SYSZ_INS_PFDRL = 589,
-    SYSZ_INS_RISBG = 590,
-    SYSZ_INS_RISBHG = 591,
-    SYSZ_INS_RISBLG = 592,
-    SYSZ_INS_RLL = 593,
-    SYSZ_INS_RLLG = 594,
-    SYSZ_INS_RNSBG = 595,
-    SYSZ_INS_ROSBG = 596,
-    SYSZ_INS_RXSBG = 597,
-    SYSZ_INS_S = 598,
-    SYSZ_INS_SDB = 599,
-    SYSZ_INS_SDBR = 600,
-    SYSZ_INS_SEB = 601,
-    SYSZ_INS_SEBR = 602,
-    SYSZ_INS_SG = 603,
-    SYSZ_INS_SGF = 604,
-    SYSZ_INS_SGFR = 605,
-    SYSZ_INS_SGR = 606,
-    SYSZ_INS_SGRK = 607,
-    SYSZ_INS_SH = 608,
-    SYSZ_INS_SHY = 609,
-    SYSZ_INS_SL = 610,
-    SYSZ_INS_SLB = 611,
-    SYSZ_INS_SLBG = 612,
-    SYSZ_INS_SLBR = 613,
-    SYSZ_INS_SLFI = 614,
-    SYSZ_INS_SLG = 615,
-    SYSZ_INS_SLBGR = 616,
-    SYSZ_INS_SLGF = 617,
-    SYSZ_INS_SLGFI = 618,
-    SYSZ_INS_SLGFR = 619,
-    SYSZ_INS_SLGR = 620,
-    SYSZ_INS_SLGRK = 621,
-    SYSZ_INS_SLL = 622,
-    SYSZ_INS_SLLG = 623,
-    SYSZ_INS_SLLK = 624,
-    SYSZ_INS_SLR = 625,
-    SYSZ_INS_SLRK = 626,
-    SYSZ_INS_SLY = 627,
-    SYSZ_INS_SQDB = 628,
-    SYSZ_INS_SQDBR = 629,
-    SYSZ_INS_SQEB = 630,
-    SYSZ_INS_SQEBR = 631,
-    SYSZ_INS_SQXBR = 632,
-    SYSZ_INS_SR = 633,
-    SYSZ_INS_SRA = 634,
-    SYSZ_INS_SRAG = 635,
-    SYSZ_INS_SRAK = 636,
-    SYSZ_INS_SRK = 637,
-    SYSZ_INS_SRL = 638,
-    SYSZ_INS_SRLG = 639,
-    SYSZ_INS_SRLK = 640,
-    SYSZ_INS_SRST = 641,
-    SYSZ_INS_ST = 642,
-    SYSZ_INS_STC = 643,
-    SYSZ_INS_STCH = 644,
-    SYSZ_INS_STCY = 645,
-    SYSZ_INS_STD = 646,
-    SYSZ_INS_STDY = 647,
-    SYSZ_INS_STE = 648,
-    SYSZ_INS_STEY = 649,
-    SYSZ_INS_STFH = 650,
-    SYSZ_INS_STG = 651,
-    SYSZ_INS_STGRL = 652,
-    SYSZ_INS_STH = 653,
-    SYSZ_INS_STHH = 654,
-    SYSZ_INS_STHRL = 655,
-    SYSZ_INS_STHY = 656,
-    SYSZ_INS_STMG = 657,
-    SYSZ_INS_STRL = 658,
-    SYSZ_INS_STRV = 659,
-    SYSZ_INS_STRVG = 660,
-    SYSZ_INS_STY = 661,
-    SYSZ_INS_SXBR = 662,
-    SYSZ_INS_SY = 663,
-    SYSZ_INS_TM = 664,
-    SYSZ_INS_TMHH = 665,
-    SYSZ_INS_TMHL = 666,
-    SYSZ_INS_TMLH = 667,
-    SYSZ_INS_TMLL = 668,
-    SYSZ_INS_TMY = 669,
-    SYSZ_INS_X = 670,
-    SYSZ_INS_XC = 671,
-    SYSZ_INS_XG = 672,
-    SYSZ_INS_XGR = 673,
-    SYSZ_INS_XGRK = 674,
-    SYSZ_INS_XI = 675,
-    SYSZ_INS_XIHF = 676,
-    SYSZ_INS_XILF = 677,
-    SYSZ_INS_XIY = 678,
-    SYSZ_INS_XR = 679,
-    SYSZ_INS_XRK = 680,
-    SYSZ_INS_XY = 681,
-    SYSZ_INS_ENDING = 682,
+pub mod sysz_insn {
+    pub type Type = ::std::os::raw::c_uint;
+    pub const SYSZ_INS_INVALID: Type = 0;
+    pub const SYSZ_INS_A: Type = 1;
+    pub const SYSZ_INS_ADB: Type = 2;
+    pub const SYSZ_INS_ADBR: Type = 3;
+    pub const SYSZ_INS_AEB: Type = 4;
+    pub const SYSZ_INS_AEBR: Type = 5;
+    pub const SYSZ_INS_AFI: Type = 6;
+    pub const SYSZ_INS_AG: Type = 7;
+    pub const SYSZ_INS_AGF: Type = 8;
+    pub const SYSZ_INS_AGFI: Type = 9;
+    pub const SYSZ_INS_AGFR: Type = 10;
+    pub const SYSZ_INS_AGHI: Type = 11;
+    pub const SYSZ_INS_AGHIK: Type = 12;
+    pub const SYSZ_INS_AGR: Type = 13;
+    pub const SYSZ_INS_AGRK: Type = 14;
+    pub const SYSZ_INS_AGSI: Type = 15;
+    pub const SYSZ_INS_AH: Type = 16;
+    pub const SYSZ_INS_AHI: Type = 17;
+    pub const SYSZ_INS_AHIK: Type = 18;
+    pub const SYSZ_INS_AHY: Type = 19;
+    pub const SYSZ_INS_AIH: Type = 20;
+    pub const SYSZ_INS_AL: Type = 21;
+    pub const SYSZ_INS_ALC: Type = 22;
+    pub const SYSZ_INS_ALCG: Type = 23;
+    pub const SYSZ_INS_ALCGR: Type = 24;
+    pub const SYSZ_INS_ALCR: Type = 25;
+    pub const SYSZ_INS_ALFI: Type = 26;
+    pub const SYSZ_INS_ALG: Type = 27;
+    pub const SYSZ_INS_ALGF: Type = 28;
+    pub const SYSZ_INS_ALGFI: Type = 29;
+    pub const SYSZ_INS_ALGFR: Type = 30;
+    pub const SYSZ_INS_ALGHSIK: Type = 31;
+    pub const SYSZ_INS_ALGR: Type = 32;
+    pub const SYSZ_INS_ALGRK: Type = 33;
+    pub const SYSZ_INS_ALHSIK: Type = 34;
+    pub const SYSZ_INS_ALR: Type = 35;
+    pub const SYSZ_INS_ALRK: Type = 36;
+    pub const SYSZ_INS_ALY: Type = 37;
+    pub const SYSZ_INS_AR: Type = 38;
+    pub const SYSZ_INS_ARK: Type = 39;
+    pub const SYSZ_INS_ASI: Type = 40;
+    pub const SYSZ_INS_AXBR: Type = 41;
+    pub const SYSZ_INS_AY: Type = 42;
+    pub const SYSZ_INS_BCR: Type = 43;
+    pub const SYSZ_INS_BRC: Type = 44;
+    pub const SYSZ_INS_BRCL: Type = 45;
+    pub const SYSZ_INS_CGIJ: Type = 46;
+    pub const SYSZ_INS_CGRJ: Type = 47;
+    pub const SYSZ_INS_CIJ: Type = 48;
+    pub const SYSZ_INS_CLGIJ: Type = 49;
+    pub const SYSZ_INS_CLGRJ: Type = 50;
+    pub const SYSZ_INS_CLIJ: Type = 51;
+    pub const SYSZ_INS_CLRJ: Type = 52;
+    pub const SYSZ_INS_CRJ: Type = 53;
+    pub const SYSZ_INS_BER: Type = 54;
+    pub const SYSZ_INS_JE: Type = 55;
+    pub const SYSZ_INS_JGE: Type = 56;
+    pub const SYSZ_INS_LOCE: Type = 57;
+    pub const SYSZ_INS_LOCGE: Type = 58;
+    pub const SYSZ_INS_LOCGRE: Type = 59;
+    pub const SYSZ_INS_LOCRE: Type = 60;
+    pub const SYSZ_INS_STOCE: Type = 61;
+    pub const SYSZ_INS_STOCGE: Type = 62;
+    pub const SYSZ_INS_BHR: Type = 63;
+    pub const SYSZ_INS_BHER: Type = 64;
+    pub const SYSZ_INS_JHE: Type = 65;
+    pub const SYSZ_INS_JGHE: Type = 66;
+    pub const SYSZ_INS_LOCHE: Type = 67;
+    pub const SYSZ_INS_LOCGHE: Type = 68;
+    pub const SYSZ_INS_LOCGRHE: Type = 69;
+    pub const SYSZ_INS_LOCRHE: Type = 70;
+    pub const SYSZ_INS_STOCHE: Type = 71;
+    pub const SYSZ_INS_STOCGHE: Type = 72;
+    pub const SYSZ_INS_JH: Type = 73;
+    pub const SYSZ_INS_JGH: Type = 74;
+    pub const SYSZ_INS_LOCH: Type = 75;
+    pub const SYSZ_INS_LOCGH: Type = 76;
+    pub const SYSZ_INS_LOCGRH: Type = 77;
+    pub const SYSZ_INS_LOCRH: Type = 78;
+    pub const SYSZ_INS_STOCH: Type = 79;
+    pub const SYSZ_INS_STOCGH: Type = 80;
+    pub const SYSZ_INS_CGIJNLH: Type = 81;
+    pub const SYSZ_INS_CGRJNLH: Type = 82;
+    pub const SYSZ_INS_CIJNLH: Type = 83;
+    pub const SYSZ_INS_CLGIJNLH: Type = 84;
+    pub const SYSZ_INS_CLGRJNLH: Type = 85;
+    pub const SYSZ_INS_CLIJNLH: Type = 86;
+    pub const SYSZ_INS_CLRJNLH: Type = 87;
+    pub const SYSZ_INS_CRJNLH: Type = 88;
+    pub const SYSZ_INS_CGIJE: Type = 89;
+    pub const SYSZ_INS_CGRJE: Type = 90;
+    pub const SYSZ_INS_CIJE: Type = 91;
+    pub const SYSZ_INS_CLGIJE: Type = 92;
+    pub const SYSZ_INS_CLGRJE: Type = 93;
+    pub const SYSZ_INS_CLIJE: Type = 94;
+    pub const SYSZ_INS_CLRJE: Type = 95;
+    pub const SYSZ_INS_CRJE: Type = 96;
+    pub const SYSZ_INS_CGIJNLE: Type = 97;
+    pub const SYSZ_INS_CGRJNLE: Type = 98;
+    pub const SYSZ_INS_CIJNLE: Type = 99;
+    pub const SYSZ_INS_CLGIJNLE: Type = 100;
+    pub const SYSZ_INS_CLGRJNLE: Type = 101;
+    pub const SYSZ_INS_CLIJNLE: Type = 102;
+    pub const SYSZ_INS_CLRJNLE: Type = 103;
+    pub const SYSZ_INS_CRJNLE: Type = 104;
+    pub const SYSZ_INS_CGIJH: Type = 105;
+    pub const SYSZ_INS_CGRJH: Type = 106;
+    pub const SYSZ_INS_CIJH: Type = 107;
+    pub const SYSZ_INS_CLGIJH: Type = 108;
+    pub const SYSZ_INS_CLGRJH: Type = 109;
+    pub const SYSZ_INS_CLIJH: Type = 110;
+    pub const SYSZ_INS_CLRJH: Type = 111;
+    pub const SYSZ_INS_CRJH: Type = 112;
+    pub const SYSZ_INS_CGIJNL: Type = 113;
+    pub const SYSZ_INS_CGRJNL: Type = 114;
+    pub const SYSZ_INS_CIJNL: Type = 115;
+    pub const SYSZ_INS_CLGIJNL: Type = 116;
+    pub const SYSZ_INS_CLGRJNL: Type = 117;
+    pub const SYSZ_INS_CLIJNL: Type = 118;
+    pub const SYSZ_INS_CLRJNL: Type = 119;
+    pub const SYSZ_INS_CRJNL: Type = 120;
+    pub const SYSZ_INS_CGIJHE: Type = 121;
+    pub const SYSZ_INS_CGRJHE: Type = 122;
+    pub const SYSZ_INS_CIJHE: Type = 123;
+    pub const SYSZ_INS_CLGIJHE: Type = 124;
+    pub const SYSZ_INS_CLGRJHE: Type = 125;
+    pub const SYSZ_INS_CLIJHE: Type = 126;
+    pub const SYSZ_INS_CLRJHE: Type = 127;
+    pub const SYSZ_INS_CRJHE: Type = 128;
+    pub const SYSZ_INS_CGIJNHE: Type = 129;
+    pub const SYSZ_INS_CGRJNHE: Type = 130;
+    pub const SYSZ_INS_CIJNHE: Type = 131;
+    pub const SYSZ_INS_CLGIJNHE: Type = 132;
+    pub const SYSZ_INS_CLGRJNHE: Type = 133;
+    pub const SYSZ_INS_CLIJNHE: Type = 134;
+    pub const SYSZ_INS_CLRJNHE: Type = 135;
+    pub const SYSZ_INS_CRJNHE: Type = 136;
+    pub const SYSZ_INS_CGIJL: Type = 137;
+    pub const SYSZ_INS_CGRJL: Type = 138;
+    pub const SYSZ_INS_CIJL: Type = 139;
+    pub const SYSZ_INS_CLGIJL: Type = 140;
+    pub const SYSZ_INS_CLGRJL: Type = 141;
+    pub const SYSZ_INS_CLIJL: Type = 142;
+    pub const SYSZ_INS_CLRJL: Type = 143;
+    pub const SYSZ_INS_CRJL: Type = 144;
+    pub const SYSZ_INS_CGIJNH: Type = 145;
+    pub const SYSZ_INS_CGRJNH: Type = 146;
+    pub const SYSZ_INS_CIJNH: Type = 147;
+    pub const SYSZ_INS_CLGIJNH: Type = 148;
+    pub const SYSZ_INS_CLGRJNH: Type = 149;
+    pub const SYSZ_INS_CLIJNH: Type = 150;
+    pub const SYSZ_INS_CLRJNH: Type = 151;
+    pub const SYSZ_INS_CRJNH: Type = 152;
+    pub const SYSZ_INS_CGIJLE: Type = 153;
+    pub const SYSZ_INS_CGRJLE: Type = 154;
+    pub const SYSZ_INS_CIJLE: Type = 155;
+    pub const SYSZ_INS_CLGIJLE: Type = 156;
+    pub const SYSZ_INS_CLGRJLE: Type = 157;
+    pub const SYSZ_INS_CLIJLE: Type = 158;
+    pub const SYSZ_INS_CLRJLE: Type = 159;
+    pub const SYSZ_INS_CRJLE: Type = 160;
+    pub const SYSZ_INS_CGIJNE: Type = 161;
+    pub const SYSZ_INS_CGRJNE: Type = 162;
+    pub const SYSZ_INS_CIJNE: Type = 163;
+    pub const SYSZ_INS_CLGIJNE: Type = 164;
+    pub const SYSZ_INS_CLGRJNE: Type = 165;
+    pub const SYSZ_INS_CLIJNE: Type = 166;
+    pub const SYSZ_INS_CLRJNE: Type = 167;
+    pub const SYSZ_INS_CRJNE: Type = 168;
+    pub const SYSZ_INS_CGIJLH: Type = 169;
+    pub const SYSZ_INS_CGRJLH: Type = 170;
+    pub const SYSZ_INS_CIJLH: Type = 171;
+    pub const SYSZ_INS_CLGIJLH: Type = 172;
+    pub const SYSZ_INS_CLGRJLH: Type = 173;
+    pub const SYSZ_INS_CLIJLH: Type = 174;
+    pub const SYSZ_INS_CLRJLH: Type = 175;
+    pub const SYSZ_INS_CRJLH: Type = 176;
+    pub const SYSZ_INS_BLR: Type = 177;
+    pub const SYSZ_INS_BLER: Type = 178;
+    pub const SYSZ_INS_JLE: Type = 179;
+    pub const SYSZ_INS_JGLE: Type = 180;
+    pub const SYSZ_INS_LOCLE: Type = 181;
+    pub const SYSZ_INS_LOCGLE: Type = 182;
+    pub const SYSZ_INS_LOCGRLE: Type = 183;
+    pub const SYSZ_INS_LOCRLE: Type = 184;
+    pub const SYSZ_INS_STOCLE: Type = 185;
+    pub const SYSZ_INS_STOCGLE: Type = 186;
+    pub const SYSZ_INS_BLHR: Type = 187;
+    pub const SYSZ_INS_JLH: Type = 188;
+    pub const SYSZ_INS_JGLH: Type = 189;
+    pub const SYSZ_INS_LOCLH: Type = 190;
+    pub const SYSZ_INS_LOCGLH: Type = 191;
+    pub const SYSZ_INS_LOCGRLH: Type = 192;
+    pub const SYSZ_INS_LOCRLH: Type = 193;
+    pub const SYSZ_INS_STOCLH: Type = 194;
+    pub const SYSZ_INS_STOCGLH: Type = 195;
+    pub const SYSZ_INS_JL: Type = 196;
+    pub const SYSZ_INS_JGL: Type = 197;
+    pub const SYSZ_INS_LOCL: Type = 198;
+    pub const SYSZ_INS_LOCGL: Type = 199;
+    pub const SYSZ_INS_LOCGRL: Type = 200;
+    pub const SYSZ_INS_LOCRL: Type = 201;
+    pub const SYSZ_INS_LOC: Type = 202;
+    pub const SYSZ_INS_LOCG: Type = 203;
+    pub const SYSZ_INS_LOCGR: Type = 204;
+    pub const SYSZ_INS_LOCR: Type = 205;
+    pub const SYSZ_INS_STOCL: Type = 206;
+    pub const SYSZ_INS_STOCGL: Type = 207;
+    pub const SYSZ_INS_BNER: Type = 208;
+    pub const SYSZ_INS_JNE: Type = 209;
+    pub const SYSZ_INS_JGNE: Type = 210;
+    pub const SYSZ_INS_LOCNE: Type = 211;
+    pub const SYSZ_INS_LOCGNE: Type = 212;
+    pub const SYSZ_INS_LOCGRNE: Type = 213;
+    pub const SYSZ_INS_LOCRNE: Type = 214;
+    pub const SYSZ_INS_STOCNE: Type = 215;
+    pub const SYSZ_INS_STOCGNE: Type = 216;
+    pub const SYSZ_INS_BNHR: Type = 217;
+    pub const SYSZ_INS_BNHER: Type = 218;
+    pub const SYSZ_INS_JNHE: Type = 219;
+    pub const SYSZ_INS_JGNHE: Type = 220;
+    pub const SYSZ_INS_LOCNHE: Type = 221;
+    pub const SYSZ_INS_LOCGNHE: Type = 222;
+    pub const SYSZ_INS_LOCGRNHE: Type = 223;
+    pub const SYSZ_INS_LOCRNHE: Type = 224;
+    pub const SYSZ_INS_STOCNHE: Type = 225;
+    pub const SYSZ_INS_STOCGNHE: Type = 226;
+    pub const SYSZ_INS_JNH: Type = 227;
+    pub const SYSZ_INS_JGNH: Type = 228;
+    pub const SYSZ_INS_LOCNH: Type = 229;
+    pub const SYSZ_INS_LOCGNH: Type = 230;
+    pub const SYSZ_INS_LOCGRNH: Type = 231;
+    pub const SYSZ_INS_LOCRNH: Type = 232;
+    pub const SYSZ_INS_STOCNH: Type = 233;
+    pub const SYSZ_INS_STOCGNH: Type = 234;
+    pub const SYSZ_INS_BNLR: Type = 235;
+    pub const SYSZ_INS_BNLER: Type = 236;
+    pub const SYSZ_INS_JNLE: Type = 237;
+    pub const SYSZ_INS_JGNLE: Type = 238;
+    pub const SYSZ_INS_LOCNLE: Type = 239;
+    pub const SYSZ_INS_LOCGNLE: Type = 240;
+    pub const SYSZ_INS_LOCGRNLE: Type = 241;
+    pub const SYSZ_INS_LOCRNLE: Type = 242;
+    pub const SYSZ_INS_STOCNLE: Type = 243;
+    pub const SYSZ_INS_STOCGNLE: Type = 244;
+    pub const SYSZ_INS_BNLHR: Type = 245;
+    pub const SYSZ_INS_JNLH: Type = 246;
+    pub const SYSZ_INS_JGNLH: Type = 247;
+    pub const SYSZ_INS_LOCNLH: Type = 248;
+    pub const SYSZ_INS_LOCGNLH: Type = 249;
+    pub const SYSZ_INS_LOCGRNLH: Type = 250;
+    pub const SYSZ_INS_LOCRNLH: Type = 251;
+    pub const SYSZ_INS_STOCNLH: Type = 252;
+    pub const SYSZ_INS_STOCGNLH: Type = 253;
+    pub const SYSZ_INS_JNL: Type = 254;
+    pub const SYSZ_INS_JGNL: Type = 255;
+    pub const SYSZ_INS_LOCNL: Type = 256;
+    pub const SYSZ_INS_LOCGNL: Type = 257;
+    pub const SYSZ_INS_LOCGRNL: Type = 258;
+    pub const SYSZ_INS_LOCRNL: Type = 259;
+    pub const SYSZ_INS_STOCNL: Type = 260;
+    pub const SYSZ_INS_STOCGNL: Type = 261;
+    pub const SYSZ_INS_BNOR: Type = 262;
+    pub const SYSZ_INS_JNO: Type = 263;
+    pub const SYSZ_INS_JGNO: Type = 264;
+    pub const SYSZ_INS_LOCNO: Type = 265;
+    pub const SYSZ_INS_LOCGNO: Type = 266;
+    pub const SYSZ_INS_LOCGRNO: Type = 267;
+    pub const SYSZ_INS_LOCRNO: Type = 268;
+    pub const SYSZ_INS_STOCNO: Type = 269;
+    pub const SYSZ_INS_STOCGNO: Type = 270;
+    pub const SYSZ_INS_BOR: Type = 271;
+    pub const SYSZ_INS_JO: Type = 272;
+    pub const SYSZ_INS_JGO: Type = 273;
+    pub const SYSZ_INS_LOCO: Type = 274;
+    pub const SYSZ_INS_LOCGO: Type = 275;
+    pub const SYSZ_INS_LOCGRO: Type = 276;
+    pub const SYSZ_INS_LOCRO: Type = 277;
+    pub const SYSZ_INS_STOCO: Type = 278;
+    pub const SYSZ_INS_STOCGO: Type = 279;
+    pub const SYSZ_INS_STOC: Type = 280;
+    pub const SYSZ_INS_STOCG: Type = 281;
+    pub const SYSZ_INS_BASR: Type = 282;
+    pub const SYSZ_INS_BR: Type = 283;
+    pub const SYSZ_INS_BRAS: Type = 284;
+    pub const SYSZ_INS_BRASL: Type = 285;
+    pub const SYSZ_INS_J: Type = 286;
+    pub const SYSZ_INS_JG: Type = 287;
+    pub const SYSZ_INS_BRCT: Type = 288;
+    pub const SYSZ_INS_BRCTG: Type = 289;
+    pub const SYSZ_INS_C: Type = 290;
+    pub const SYSZ_INS_CDB: Type = 291;
+    pub const SYSZ_INS_CDBR: Type = 292;
+    pub const SYSZ_INS_CDFBR: Type = 293;
+    pub const SYSZ_INS_CDGBR: Type = 294;
+    pub const SYSZ_INS_CDLFBR: Type = 295;
+    pub const SYSZ_INS_CDLGBR: Type = 296;
+    pub const SYSZ_INS_CEB: Type = 297;
+    pub const SYSZ_INS_CEBR: Type = 298;
+    pub const SYSZ_INS_CEFBR: Type = 299;
+    pub const SYSZ_INS_CEGBR: Type = 300;
+    pub const SYSZ_INS_CELFBR: Type = 301;
+    pub const SYSZ_INS_CELGBR: Type = 302;
+    pub const SYSZ_INS_CFDBR: Type = 303;
+    pub const SYSZ_INS_CFEBR: Type = 304;
+    pub const SYSZ_INS_CFI: Type = 305;
+    pub const SYSZ_INS_CFXBR: Type = 306;
+    pub const SYSZ_INS_CG: Type = 307;
+    pub const SYSZ_INS_CGDBR: Type = 308;
+    pub const SYSZ_INS_CGEBR: Type = 309;
+    pub const SYSZ_INS_CGF: Type = 310;
+    pub const SYSZ_INS_CGFI: Type = 311;
+    pub const SYSZ_INS_CGFR: Type = 312;
+    pub const SYSZ_INS_CGFRL: Type = 313;
+    pub const SYSZ_INS_CGH: Type = 314;
+    pub const SYSZ_INS_CGHI: Type = 315;
+    pub const SYSZ_INS_CGHRL: Type = 316;
+    pub const SYSZ_INS_CGHSI: Type = 317;
+    pub const SYSZ_INS_CGR: Type = 318;
+    pub const SYSZ_INS_CGRL: Type = 319;
+    pub const SYSZ_INS_CGXBR: Type = 320;
+    pub const SYSZ_INS_CH: Type = 321;
+    pub const SYSZ_INS_CHF: Type = 322;
+    pub const SYSZ_INS_CHHSI: Type = 323;
+    pub const SYSZ_INS_CHI: Type = 324;
+    pub const SYSZ_INS_CHRL: Type = 325;
+    pub const SYSZ_INS_CHSI: Type = 326;
+    pub const SYSZ_INS_CHY: Type = 327;
+    pub const SYSZ_INS_CIH: Type = 328;
+    pub const SYSZ_INS_CL: Type = 329;
+    pub const SYSZ_INS_CLC: Type = 330;
+    pub const SYSZ_INS_CLFDBR: Type = 331;
+    pub const SYSZ_INS_CLFEBR: Type = 332;
+    pub const SYSZ_INS_CLFHSI: Type = 333;
+    pub const SYSZ_INS_CLFI: Type = 334;
+    pub const SYSZ_INS_CLFXBR: Type = 335;
+    pub const SYSZ_INS_CLG: Type = 336;
+    pub const SYSZ_INS_CLGDBR: Type = 337;
+    pub const SYSZ_INS_CLGEBR: Type = 338;
+    pub const SYSZ_INS_CLGF: Type = 339;
+    pub const SYSZ_INS_CLGFI: Type = 340;
+    pub const SYSZ_INS_CLGFR: Type = 341;
+    pub const SYSZ_INS_CLGFRL: Type = 342;
+    pub const SYSZ_INS_CLGHRL: Type = 343;
+    pub const SYSZ_INS_CLGHSI: Type = 344;
+    pub const SYSZ_INS_CLGR: Type = 345;
+    pub const SYSZ_INS_CLGRL: Type = 346;
+    pub const SYSZ_INS_CLGXBR: Type = 347;
+    pub const SYSZ_INS_CLHF: Type = 348;
+    pub const SYSZ_INS_CLHHSI: Type = 349;
+    pub const SYSZ_INS_CLHRL: Type = 350;
+    pub const SYSZ_INS_CLI: Type = 351;
+    pub const SYSZ_INS_CLIH: Type = 352;
+    pub const SYSZ_INS_CLIY: Type = 353;
+    pub const SYSZ_INS_CLR: Type = 354;
+    pub const SYSZ_INS_CLRL: Type = 355;
+    pub const SYSZ_INS_CLST: Type = 356;
+    pub const SYSZ_INS_CLY: Type = 357;
+    pub const SYSZ_INS_CPSDR: Type = 358;
+    pub const SYSZ_INS_CR: Type = 359;
+    pub const SYSZ_INS_CRL: Type = 360;
+    pub const SYSZ_INS_CS: Type = 361;
+    pub const SYSZ_INS_CSG: Type = 362;
+    pub const SYSZ_INS_CSY: Type = 363;
+    pub const SYSZ_INS_CXBR: Type = 364;
+    pub const SYSZ_INS_CXFBR: Type = 365;
+    pub const SYSZ_INS_CXGBR: Type = 366;
+    pub const SYSZ_INS_CXLFBR: Type = 367;
+    pub const SYSZ_INS_CXLGBR: Type = 368;
+    pub const SYSZ_INS_CY: Type = 369;
+    pub const SYSZ_INS_DDB: Type = 370;
+    pub const SYSZ_INS_DDBR: Type = 371;
+    pub const SYSZ_INS_DEB: Type = 372;
+    pub const SYSZ_INS_DEBR: Type = 373;
+    pub const SYSZ_INS_DL: Type = 374;
+    pub const SYSZ_INS_DLG: Type = 375;
+    pub const SYSZ_INS_DLGR: Type = 376;
+    pub const SYSZ_INS_DLR: Type = 377;
+    pub const SYSZ_INS_DSG: Type = 378;
+    pub const SYSZ_INS_DSGF: Type = 379;
+    pub const SYSZ_INS_DSGFR: Type = 380;
+    pub const SYSZ_INS_DSGR: Type = 381;
+    pub const SYSZ_INS_DXBR: Type = 382;
+    pub const SYSZ_INS_EAR: Type = 383;
+    pub const SYSZ_INS_FIDBR: Type = 384;
+    pub const SYSZ_INS_FIDBRA: Type = 385;
+    pub const SYSZ_INS_FIEBR: Type = 386;
+    pub const SYSZ_INS_FIEBRA: Type = 387;
+    pub const SYSZ_INS_FIXBR: Type = 388;
+    pub const SYSZ_INS_FIXBRA: Type = 389;
+    pub const SYSZ_INS_FLOGR: Type = 390;
+    pub const SYSZ_INS_IC: Type = 391;
+    pub const SYSZ_INS_ICY: Type = 392;
+    pub const SYSZ_INS_IIHF: Type = 393;
+    pub const SYSZ_INS_IIHH: Type = 394;
+    pub const SYSZ_INS_IIHL: Type = 395;
+    pub const SYSZ_INS_IILF: Type = 396;
+    pub const SYSZ_INS_IILH: Type = 397;
+    pub const SYSZ_INS_IILL: Type = 398;
+    pub const SYSZ_INS_IPM: Type = 399;
+    pub const SYSZ_INS_L: Type = 400;
+    pub const SYSZ_INS_LA: Type = 401;
+    pub const SYSZ_INS_LAA: Type = 402;
+    pub const SYSZ_INS_LAAG: Type = 403;
+    pub const SYSZ_INS_LAAL: Type = 404;
+    pub const SYSZ_INS_LAALG: Type = 405;
+    pub const SYSZ_INS_LAN: Type = 406;
+    pub const SYSZ_INS_LANG: Type = 407;
+    pub const SYSZ_INS_LAO: Type = 408;
+    pub const SYSZ_INS_LAOG: Type = 409;
+    pub const SYSZ_INS_LARL: Type = 410;
+    pub const SYSZ_INS_LAX: Type = 411;
+    pub const SYSZ_INS_LAXG: Type = 412;
+    pub const SYSZ_INS_LAY: Type = 413;
+    pub const SYSZ_INS_LB: Type = 414;
+    pub const SYSZ_INS_LBH: Type = 415;
+    pub const SYSZ_INS_LBR: Type = 416;
+    pub const SYSZ_INS_LCDBR: Type = 417;
+    pub const SYSZ_INS_LCEBR: Type = 418;
+    pub const SYSZ_INS_LCGFR: Type = 419;
+    pub const SYSZ_INS_LCGR: Type = 420;
+    pub const SYSZ_INS_LCR: Type = 421;
+    pub const SYSZ_INS_LCXBR: Type = 422;
+    pub const SYSZ_INS_LD: Type = 423;
+    pub const SYSZ_INS_LDEB: Type = 424;
+    pub const SYSZ_INS_LDEBR: Type = 425;
+    pub const SYSZ_INS_LDGR: Type = 426;
+    pub const SYSZ_INS_LDR: Type = 427;
+    pub const SYSZ_INS_LDXBR: Type = 428;
+    pub const SYSZ_INS_LDXBRA: Type = 429;
+    pub const SYSZ_INS_LDY: Type = 430;
+    pub const SYSZ_INS_LE: Type = 431;
+    pub const SYSZ_INS_LEDBR: Type = 432;
+    pub const SYSZ_INS_LEDBRA: Type = 433;
+    pub const SYSZ_INS_LER: Type = 434;
+    pub const SYSZ_INS_LEXBR: Type = 435;
+    pub const SYSZ_INS_LEXBRA: Type = 436;
+    pub const SYSZ_INS_LEY: Type = 437;
+    pub const SYSZ_INS_LFH: Type = 438;
+    pub const SYSZ_INS_LG: Type = 439;
+    pub const SYSZ_INS_LGB: Type = 440;
+    pub const SYSZ_INS_LGBR: Type = 441;
+    pub const SYSZ_INS_LGDR: Type = 442;
+    pub const SYSZ_INS_LGF: Type = 443;
+    pub const SYSZ_INS_LGFI: Type = 444;
+    pub const SYSZ_INS_LGFR: Type = 445;
+    pub const SYSZ_INS_LGFRL: Type = 446;
+    pub const SYSZ_INS_LGH: Type = 447;
+    pub const SYSZ_INS_LGHI: Type = 448;
+    pub const SYSZ_INS_LGHR: Type = 449;
+    pub const SYSZ_INS_LGHRL: Type = 450;
+    pub const SYSZ_INS_LGR: Type = 451;
+    pub const SYSZ_INS_LGRL: Type = 452;
+    pub const SYSZ_INS_LH: Type = 453;
+    pub const SYSZ_INS_LHH: Type = 454;
+    pub const SYSZ_INS_LHI: Type = 455;
+    pub const SYSZ_INS_LHR: Type = 456;
+    pub const SYSZ_INS_LHRL: Type = 457;
+    pub const SYSZ_INS_LHY: Type = 458;
+    pub const SYSZ_INS_LLC: Type = 459;
+    pub const SYSZ_INS_LLCH: Type = 460;
+    pub const SYSZ_INS_LLCR: Type = 461;
+    pub const SYSZ_INS_LLGC: Type = 462;
+    pub const SYSZ_INS_LLGCR: Type = 463;
+    pub const SYSZ_INS_LLGF: Type = 464;
+    pub const SYSZ_INS_LLGFR: Type = 465;
+    pub const SYSZ_INS_LLGFRL: Type = 466;
+    pub const SYSZ_INS_LLGH: Type = 467;
+    pub const SYSZ_INS_LLGHR: Type = 468;
+    pub const SYSZ_INS_LLGHRL: Type = 469;
+    pub const SYSZ_INS_LLH: Type = 470;
+    pub const SYSZ_INS_LLHH: Type = 471;
+    pub const SYSZ_INS_LLHR: Type = 472;
+    pub const SYSZ_INS_LLHRL: Type = 473;
+    pub const SYSZ_INS_LLIHF: Type = 474;
+    pub const SYSZ_INS_LLIHH: Type = 475;
+    pub const SYSZ_INS_LLIHL: Type = 476;
+    pub const SYSZ_INS_LLILF: Type = 477;
+    pub const SYSZ_INS_LLILH: Type = 478;
+    pub const SYSZ_INS_LLILL: Type = 479;
+    pub const SYSZ_INS_LMG: Type = 480;
+    pub const SYSZ_INS_LNDBR: Type = 481;
+    pub const SYSZ_INS_LNEBR: Type = 482;
+    pub const SYSZ_INS_LNGFR: Type = 483;
+    pub const SYSZ_INS_LNGR: Type = 484;
+    pub const SYSZ_INS_LNR: Type = 485;
+    pub const SYSZ_INS_LNXBR: Type = 486;
+    pub const SYSZ_INS_LPDBR: Type = 487;
+    pub const SYSZ_INS_LPEBR: Type = 488;
+    pub const SYSZ_INS_LPGFR: Type = 489;
+    pub const SYSZ_INS_LPGR: Type = 490;
+    pub const SYSZ_INS_LPR: Type = 491;
+    pub const SYSZ_INS_LPXBR: Type = 492;
+    pub const SYSZ_INS_LR: Type = 493;
+    pub const SYSZ_INS_LRL: Type = 494;
+    pub const SYSZ_INS_LRV: Type = 495;
+    pub const SYSZ_INS_LRVG: Type = 496;
+    pub const SYSZ_INS_LRVGR: Type = 497;
+    pub const SYSZ_INS_LRVR: Type = 498;
+    pub const SYSZ_INS_LT: Type = 499;
+    pub const SYSZ_INS_LTDBR: Type = 500;
+    pub const SYSZ_INS_LTEBR: Type = 501;
+    pub const SYSZ_INS_LTG: Type = 502;
+    pub const SYSZ_INS_LTGF: Type = 503;
+    pub const SYSZ_INS_LTGFR: Type = 504;
+    pub const SYSZ_INS_LTGR: Type = 505;
+    pub const SYSZ_INS_LTR: Type = 506;
+    pub const SYSZ_INS_LTXBR: Type = 507;
+    pub const SYSZ_INS_LXDB: Type = 508;
+    pub const SYSZ_INS_LXDBR: Type = 509;
+    pub const SYSZ_INS_LXEB: Type = 510;
+    pub const SYSZ_INS_LXEBR: Type = 511;
+    pub const SYSZ_INS_LXR: Type = 512;
+    pub const SYSZ_INS_LY: Type = 513;
+    pub const SYSZ_INS_LZDR: Type = 514;
+    pub const SYSZ_INS_LZER: Type = 515;
+    pub const SYSZ_INS_LZXR: Type = 516;
+    pub const SYSZ_INS_MADB: Type = 517;
+    pub const SYSZ_INS_MADBR: Type = 518;
+    pub const SYSZ_INS_MAEB: Type = 519;
+    pub const SYSZ_INS_MAEBR: Type = 520;
+    pub const SYSZ_INS_MDB: Type = 521;
+    pub const SYSZ_INS_MDBR: Type = 522;
+    pub const SYSZ_INS_MDEB: Type = 523;
+    pub const SYSZ_INS_MDEBR: Type = 524;
+    pub const SYSZ_INS_MEEB: Type = 525;
+    pub const SYSZ_INS_MEEBR: Type = 526;
+    pub const SYSZ_INS_MGHI: Type = 527;
+    pub const SYSZ_INS_MH: Type = 528;
+    pub const SYSZ_INS_MHI: Type = 529;
+    pub const SYSZ_INS_MHY: Type = 530;
+    pub const SYSZ_INS_MLG: Type = 531;
+    pub const SYSZ_INS_MLGR: Type = 532;
+    pub const SYSZ_INS_MS: Type = 533;
+    pub const SYSZ_INS_MSDB: Type = 534;
+    pub const SYSZ_INS_MSDBR: Type = 535;
+    pub const SYSZ_INS_MSEB: Type = 536;
+    pub const SYSZ_INS_MSEBR: Type = 537;
+    pub const SYSZ_INS_MSFI: Type = 538;
+    pub const SYSZ_INS_MSG: Type = 539;
+    pub const SYSZ_INS_MSGF: Type = 540;
+    pub const SYSZ_INS_MSGFI: Type = 541;
+    pub const SYSZ_INS_MSGFR: Type = 542;
+    pub const SYSZ_INS_MSGR: Type = 543;
+    pub const SYSZ_INS_MSR: Type = 544;
+    pub const SYSZ_INS_MSY: Type = 545;
+    pub const SYSZ_INS_MVC: Type = 546;
+    pub const SYSZ_INS_MVGHI: Type = 547;
+    pub const SYSZ_INS_MVHHI: Type = 548;
+    pub const SYSZ_INS_MVHI: Type = 549;
+    pub const SYSZ_INS_MVI: Type = 550;
+    pub const SYSZ_INS_MVIY: Type = 551;
+    pub const SYSZ_INS_MVST: Type = 552;
+    pub const SYSZ_INS_MXBR: Type = 553;
+    pub const SYSZ_INS_MXDB: Type = 554;
+    pub const SYSZ_INS_MXDBR: Type = 555;
+    pub const SYSZ_INS_N: Type = 556;
+    pub const SYSZ_INS_NC: Type = 557;
+    pub const SYSZ_INS_NG: Type = 558;
+    pub const SYSZ_INS_NGR: Type = 559;
+    pub const SYSZ_INS_NGRK: Type = 560;
+    pub const SYSZ_INS_NI: Type = 561;
+    pub const SYSZ_INS_NIHF: Type = 562;
+    pub const SYSZ_INS_NIHH: Type = 563;
+    pub const SYSZ_INS_NIHL: Type = 564;
+    pub const SYSZ_INS_NILF: Type = 565;
+    pub const SYSZ_INS_NILH: Type = 566;
+    pub const SYSZ_INS_NILL: Type = 567;
+    pub const SYSZ_INS_NIY: Type = 568;
+    pub const SYSZ_INS_NR: Type = 569;
+    pub const SYSZ_INS_NRK: Type = 570;
+    pub const SYSZ_INS_NY: Type = 571;
+    pub const SYSZ_INS_O: Type = 572;
+    pub const SYSZ_INS_OC: Type = 573;
+    pub const SYSZ_INS_OG: Type = 574;
+    pub const SYSZ_INS_OGR: Type = 575;
+    pub const SYSZ_INS_OGRK: Type = 576;
+    pub const SYSZ_INS_OI: Type = 577;
+    pub const SYSZ_INS_OIHF: Type = 578;
+    pub const SYSZ_INS_OIHH: Type = 579;
+    pub const SYSZ_INS_OIHL: Type = 580;
+    pub const SYSZ_INS_OILF: Type = 581;
+    pub const SYSZ_INS_OILH: Type = 582;
+    pub const SYSZ_INS_OILL: Type = 583;
+    pub const SYSZ_INS_OIY: Type = 584;
+    pub const SYSZ_INS_OR: Type = 585;
+    pub const SYSZ_INS_ORK: Type = 586;
+    pub const SYSZ_INS_OY: Type = 587;
+    pub const SYSZ_INS_PFD: Type = 588;
+    pub const SYSZ_INS_PFDRL: Type = 589;
+    pub const SYSZ_INS_RISBG: Type = 590;
+    pub const SYSZ_INS_RISBHG: Type = 591;
+    pub const SYSZ_INS_RISBLG: Type = 592;
+    pub const SYSZ_INS_RLL: Type = 593;
+    pub const SYSZ_INS_RLLG: Type = 594;
+    pub const SYSZ_INS_RNSBG: Type = 595;
+    pub const SYSZ_INS_ROSBG: Type = 596;
+    pub const SYSZ_INS_RXSBG: Type = 597;
+    pub const SYSZ_INS_S: Type = 598;
+    pub const SYSZ_INS_SDB: Type = 599;
+    pub const SYSZ_INS_SDBR: Type = 600;
+    pub const SYSZ_INS_SEB: Type = 601;
+    pub const SYSZ_INS_SEBR: Type = 602;
+    pub const SYSZ_INS_SG: Type = 603;
+    pub const SYSZ_INS_SGF: Type = 604;
+    pub const SYSZ_INS_SGFR: Type = 605;
+    pub const SYSZ_INS_SGR: Type = 606;
+    pub const SYSZ_INS_SGRK: Type = 607;
+    pub const SYSZ_INS_SH: Type = 608;
+    pub const SYSZ_INS_SHY: Type = 609;
+    pub const SYSZ_INS_SL: Type = 610;
+    pub const SYSZ_INS_SLB: Type = 611;
+    pub const SYSZ_INS_SLBG: Type = 612;
+    pub const SYSZ_INS_SLBR: Type = 613;
+    pub const SYSZ_INS_SLFI: Type = 614;
+    pub const SYSZ_INS_SLG: Type = 615;
+    pub const SYSZ_INS_SLBGR: Type = 616;
+    pub const SYSZ_INS_SLGF: Type = 617;
+    pub const SYSZ_INS_SLGFI: Type = 618;
+    pub const SYSZ_INS_SLGFR: Type = 619;
+    pub const SYSZ_INS_SLGR: Type = 620;
+    pub const SYSZ_INS_SLGRK: Type = 621;
+    pub const SYSZ_INS_SLL: Type = 622;
+    pub const SYSZ_INS_SLLG: Type = 623;
+    pub const SYSZ_INS_SLLK: Type = 624;
+    pub const SYSZ_INS_SLR: Type = 625;
+    pub const SYSZ_INS_SLRK: Type = 626;
+    pub const SYSZ_INS_SLY: Type = 627;
+    pub const SYSZ_INS_SQDB: Type = 628;
+    pub const SYSZ_INS_SQDBR: Type = 629;
+    pub const SYSZ_INS_SQEB: Type = 630;
+    pub const SYSZ_INS_SQEBR: Type = 631;
+    pub const SYSZ_INS_SQXBR: Type = 632;
+    pub const SYSZ_INS_SR: Type = 633;
+    pub const SYSZ_INS_SRA: Type = 634;
+    pub const SYSZ_INS_SRAG: Type = 635;
+    pub const SYSZ_INS_SRAK: Type = 636;
+    pub const SYSZ_INS_SRK: Type = 637;
+    pub const SYSZ_INS_SRL: Type = 638;
+    pub const SYSZ_INS_SRLG: Type = 639;
+    pub const SYSZ_INS_SRLK: Type = 640;
+    pub const SYSZ_INS_SRST: Type = 641;
+    pub const SYSZ_INS_ST: Type = 642;
+    pub const SYSZ_INS_STC: Type = 643;
+    pub const SYSZ_INS_STCH: Type = 644;
+    pub const SYSZ_INS_STCY: Type = 645;
+    pub const SYSZ_INS_STD: Type = 646;
+    pub const SYSZ_INS_STDY: Type = 647;
+    pub const SYSZ_INS_STE: Type = 648;
+    pub const SYSZ_INS_STEY: Type = 649;
+    pub const SYSZ_INS_STFH: Type = 650;
+    pub const SYSZ_INS_STG: Type = 651;
+    pub const SYSZ_INS_STGRL: Type = 652;
+    pub const SYSZ_INS_STH: Type = 653;
+    pub const SYSZ_INS_STHH: Type = 654;
+    pub const SYSZ_INS_STHRL: Type = 655;
+    pub const SYSZ_INS_STHY: Type = 656;
+    pub const SYSZ_INS_STMG: Type = 657;
+    pub const SYSZ_INS_STRL: Type = 658;
+    pub const SYSZ_INS_STRV: Type = 659;
+    pub const SYSZ_INS_STRVG: Type = 660;
+    pub const SYSZ_INS_STY: Type = 661;
+    pub const SYSZ_INS_SXBR: Type = 662;
+    pub const SYSZ_INS_SY: Type = 663;
+    pub const SYSZ_INS_TM: Type = 664;
+    pub const SYSZ_INS_TMHH: Type = 665;
+    pub const SYSZ_INS_TMHL: Type = 666;
+    pub const SYSZ_INS_TMLH: Type = 667;
+    pub const SYSZ_INS_TMLL: Type = 668;
+    pub const SYSZ_INS_TMY: Type = 669;
+    pub const SYSZ_INS_X: Type = 670;
+    pub const SYSZ_INS_XC: Type = 671;
+    pub const SYSZ_INS_XG: Type = 672;
+    pub const SYSZ_INS_XGR: Type = 673;
+    pub const SYSZ_INS_XGRK: Type = 674;
+    pub const SYSZ_INS_XI: Type = 675;
+    pub const SYSZ_INS_XIHF: Type = 676;
+    pub const SYSZ_INS_XILF: Type = 677;
+    pub const SYSZ_INS_XIY: Type = 678;
+    pub const SYSZ_INS_XR: Type = 679;
+    pub const SYSZ_INS_XRK: Type = 680;
+    pub const SYSZ_INS_XY: Type = 681;
+    pub const SYSZ_INS_ENDING: Type = 682;
 }
-#[repr(u32)]
-#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
-pub enum sysz_insn_group {
-    SYSZ_GRP_INVALID = 0,
-    SYSZ_GRP_JUMP = 1,
-    SYSZ_GRP_DISTINCTOPS = 128,
-    SYSZ_GRP_FPEXTENSION = 129,
-    SYSZ_GRP_HIGHWORD = 130,
-    SYSZ_GRP_INTERLOCKEDACCESS1 = 131,
-    SYSZ_GRP_LOADSTOREONCOND = 132,
-    SYSZ_GRP_ENDING = 133,
+pub mod sysz_insn_group {
+    pub type Type = ::std::os::raw::c_uint;
+    pub const SYSZ_GRP_INVALID: Type = 0;
+    pub const SYSZ_GRP_JUMP: Type = 1;
+    pub const SYSZ_GRP_DISTINCTOPS: Type = 128;
+    pub const SYSZ_GRP_FPEXTENSION: Type = 129;
+    pub const SYSZ_GRP_HIGHWORD: Type = 130;
+    pub const SYSZ_GRP_INTERLOCKEDACCESS1: Type = 131;
+    pub const SYSZ_GRP_LOADSTOREONCOND: Type = 132;
+    pub const SYSZ_GRP_ENDING: Type = 133;
 }
 pub mod x86_reg {
     pub type Type = ::std::os::raw::c_uint;
@@ -6448,105 +7292,99 @@ pub mod x86_reg {
     pub const X86_REG_R15W: Type = 233;
     pub const X86_REG_ENDING: Type = 234;
 }
-#[repr(u32)]
-#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
-pub enum x86_op_type {
-    X86_OP_INVALID = 0,
-    X86_OP_REG = 1,
-    X86_OP_IMM = 2,
-    X86_OP_MEM = 3,
-    X86_OP_FP = 4,
+pub mod x86_op_type {
+    pub type Type = ::std::os::raw::c_uint;
+    pub const X86_OP_INVALID: Type = 0;
+    pub const X86_OP_REG: Type = 1;
+    pub const X86_OP_IMM: Type = 2;
+    pub const X86_OP_MEM: Type = 3;
+    pub const X86_OP_FP: Type = 4;
 }
-#[repr(u32)]
-#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
-pub enum x86_avx_bcast {
-    X86_AVX_BCAST_INVALID = 0,
-    X86_AVX_BCAST_2 = 1,
-    X86_AVX_BCAST_4 = 2,
-    X86_AVX_BCAST_8 = 3,
-    X86_AVX_BCAST_16 = 4,
+pub mod x86_avx_bcast {
+    pub type Type = ::std::os::raw::c_uint;
+    pub const X86_AVX_BCAST_INVALID: Type = 0;
+    pub const X86_AVX_BCAST_2: Type = 1;
+    pub const X86_AVX_BCAST_4: Type = 2;
+    pub const X86_AVX_BCAST_8: Type = 3;
+    pub const X86_AVX_BCAST_16: Type = 4;
 }
-#[repr(u32)]
-#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
-pub enum x86_sse_cc {
-    X86_SSE_CC_INVALID = 0,
-    X86_SSE_CC_EQ = 1,
-    X86_SSE_CC_LT = 2,
-    X86_SSE_CC_LE = 3,
-    X86_SSE_CC_UNORD = 4,
-    X86_SSE_CC_NEQ = 5,
-    X86_SSE_CC_NLT = 6,
-    X86_SSE_CC_NLE = 7,
-    X86_SSE_CC_ORD = 8,
-    X86_SSE_CC_EQ_UQ = 9,
-    X86_SSE_CC_NGE = 10,
-    X86_SSE_CC_NGT = 11,
-    X86_SSE_CC_FALSE = 12,
-    X86_SSE_CC_NEQ_OQ = 13,
-    X86_SSE_CC_GE = 14,
-    X86_SSE_CC_GT = 15,
-    X86_SSE_CC_TRUE = 16,
+pub mod x86_sse_cc {
+    pub type Type = ::std::os::raw::c_uint;
+    pub const X86_SSE_CC_INVALID: Type = 0;
+    pub const X86_SSE_CC_EQ: Type = 1;
+    pub const X86_SSE_CC_LT: Type = 2;
+    pub const X86_SSE_CC_LE: Type = 3;
+    pub const X86_SSE_CC_UNORD: Type = 4;
+    pub const X86_SSE_CC_NEQ: Type = 5;
+    pub const X86_SSE_CC_NLT: Type = 6;
+    pub const X86_SSE_CC_NLE: Type = 7;
+    pub const X86_SSE_CC_ORD: Type = 8;
+    pub const X86_SSE_CC_EQ_UQ: Type = 9;
+    pub const X86_SSE_CC_NGE: Type = 10;
+    pub const X86_SSE_CC_NGT: Type = 11;
+    pub const X86_SSE_CC_FALSE: Type = 12;
+    pub const X86_SSE_CC_NEQ_OQ: Type = 13;
+    pub const X86_SSE_CC_GE: Type = 14;
+    pub const X86_SSE_CC_GT: Type = 15;
+    pub const X86_SSE_CC_TRUE: Type = 16;
 }
-#[repr(u32)]
-#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
-pub enum x86_avx_cc {
-    X86_AVX_CC_INVALID = 0,
-    X86_AVX_CC_EQ = 1,
-    X86_AVX_CC_LT = 2,
-    X86_AVX_CC_LE = 3,
-    X86_AVX_CC_UNORD = 4,
-    X86_AVX_CC_NEQ = 5,
-    X86_AVX_CC_NLT = 6,
-    X86_AVX_CC_NLE = 7,
-    X86_AVX_CC_ORD = 8,
-    X86_AVX_CC_EQ_UQ = 9,
-    X86_AVX_CC_NGE = 10,
-    X86_AVX_CC_NGT = 11,
-    X86_AVX_CC_FALSE = 12,
-    X86_AVX_CC_NEQ_OQ = 13,
-    X86_AVX_CC_GE = 14,
-    X86_AVX_CC_GT = 15,
-    X86_AVX_CC_TRUE = 16,
-    X86_AVX_CC_EQ_OS = 17,
-    X86_AVX_CC_LT_OQ = 18,
-    X86_AVX_CC_LE_OQ = 19,
-    X86_AVX_CC_UNORD_S = 20,
-    X86_AVX_CC_NEQ_US = 21,
-    X86_AVX_CC_NLT_UQ = 22,
-    X86_AVX_CC_NLE_UQ = 23,
-    X86_AVX_CC_ORD_S = 24,
-    X86_AVX_CC_EQ_US = 25,
-    X86_AVX_CC_NGE_UQ = 26,
-    X86_AVX_CC_NGT_UQ = 27,
-    X86_AVX_CC_FALSE_OS = 28,
-    X86_AVX_CC_NEQ_OS = 29,
-    X86_AVX_CC_GE_OQ = 30,
-    X86_AVX_CC_GT_OQ = 31,
-    X86_AVX_CC_TRUE_US = 32,
+pub mod x86_avx_cc {
+    pub type Type = ::std::os::raw::c_uint;
+    pub const X86_AVX_CC_INVALID: Type = 0;
+    pub const X86_AVX_CC_EQ: Type = 1;
+    pub const X86_AVX_CC_LT: Type = 2;
+    pub const X86_AVX_CC_LE: Type = 3;
+    pub const X86_AVX_CC_UNORD: Type = 4;
+    pub const X86_AVX_CC_NEQ: Type = 5;
+    pub const X86_AVX_CC_NLT: Type = 6;
+    pub const X86_AVX_CC_NLE: Type = 7;
+    pub const X86_AVX_CC_ORD: Type = 8;
+    pub const X86_AVX_CC_EQ_UQ: Type = 9;
+    pub const X86_AVX_CC_NGE: Type = 10;
+    pub const X86_AVX_CC_NGT: Type = 11;
+    pub const X86_AVX_CC_FALSE: Type = 12;
+    pub const X86_AVX_CC_NEQ_OQ: Type = 13;
+    pub const X86_AVX_CC_GE: Type = 14;
+    pub const X86_AVX_CC_GT: Type = 15;
+    pub const X86_AVX_CC_TRUE: Type = 16;
+    pub const X86_AVX_CC_EQ_OS: Type = 17;
+    pub const X86_AVX_CC_LT_OQ: Type = 18;
+    pub const X86_AVX_CC_LE_OQ: Type = 19;
+    pub const X86_AVX_CC_UNORD_S: Type = 20;
+    pub const X86_AVX_CC_NEQ_US: Type = 21;
+    pub const X86_AVX_CC_NLT_UQ: Type = 22;
+    pub const X86_AVX_CC_NLE_UQ: Type = 23;
+    pub const X86_AVX_CC_ORD_S: Type = 24;
+    pub const X86_AVX_CC_EQ_US: Type = 25;
+    pub const X86_AVX_CC_NGE_UQ: Type = 26;
+    pub const X86_AVX_CC_NGT_UQ: Type = 27;
+    pub const X86_AVX_CC_FALSE_OS: Type = 28;
+    pub const X86_AVX_CC_NEQ_OS: Type = 29;
+    pub const X86_AVX_CC_GE_OQ: Type = 30;
+    pub const X86_AVX_CC_GT_OQ: Type = 31;
+    pub const X86_AVX_CC_TRUE_US: Type = 32;
 }
-#[repr(u32)]
-#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
-pub enum x86_avx_rm {
-    X86_AVX_RM_INVALID = 0,
-    X86_AVX_RM_RN = 1,
-    X86_AVX_RM_RD = 2,
-    X86_AVX_RM_RU = 3,
-    X86_AVX_RM_RZ = 4,
+pub mod x86_avx_rm {
+    pub type Type = ::std::os::raw::c_uint;
+    pub const X86_AVX_RM_INVALID: Type = 0;
+    pub const X86_AVX_RM_RN: Type = 1;
+    pub const X86_AVX_RM_RD: Type = 2;
+    pub const X86_AVX_RM_RU: Type = 3;
+    pub const X86_AVX_RM_RZ: Type = 4;
 }
-#[repr(u32)]
-#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
-pub enum x86_prefix {
-    X86_PREFIX_LOCK = 240,
-    X86_PREFIX_REP = 243,
-    X86_PREFIX_REPNE = 242,
-    X86_PREFIX_CS = 46,
-    X86_PREFIX_SS = 54,
-    X86_PREFIX_DS = 62,
-    X86_PREFIX_ES = 38,
-    X86_PREFIX_FS = 100,
-    X86_PREFIX_GS = 101,
-    X86_PREFIX_OPSIZE = 102,
-    X86_PREFIX_ADDRSIZE = 103,
+pub mod x86_prefix {
+    pub type Type = ::std::os::raw::c_uint;
+    pub const X86_PREFIX_LOCK: Type = 240;
+    pub const X86_PREFIX_REP: Type = 243;
+    pub const X86_PREFIX_REPNE: Type = 242;
+    pub const X86_PREFIX_CS: Type = 46;
+    pub const X86_PREFIX_SS: Type = 54;
+    pub const X86_PREFIX_DS: Type = 62;
+    pub const X86_PREFIX_ES: Type = 38;
+    pub const X86_PREFIX_FS: Type = 100;
+    pub const X86_PREFIX_GS: Type = 101;
+    pub const X86_PREFIX_OPSIZE: Type = 102;
+    pub const X86_PREFIX_ADDRSIZE: Type = 103;
 }
 #[repr(C)]
 #[derive(Debug, Copy)]
@@ -6559,46 +7397,79 @@ pub struct x86_op_mem {
 }
 #[test]
 fn bindgen_test_layout_x86_op_mem() {
-    assert_eq!(::std::mem::size_of::<x86_op_mem>() , 24usize , concat ! (
-               "Size of: " , stringify ! ( x86_op_mem ) ));
-    assert_eq! (::std::mem::align_of::<x86_op_mem>() , 8usize , concat ! (
-                "Alignment of " , stringify ! ( x86_op_mem ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const x86_op_mem ) ) . segment as * const _ as
-                usize } , 0usize , concat ! (
-                "Alignment of field: " , stringify ! ( x86_op_mem ) , "::" ,
-                stringify ! ( segment ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const x86_op_mem ) ) . base as * const _ as
-                usize } , 4usize , concat ! (
-                "Alignment of field: " , stringify ! ( x86_op_mem ) , "::" ,
-                stringify ! ( base ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const x86_op_mem ) ) . index as * const _ as
-                usize } , 8usize , concat ! (
-                "Alignment of field: " , stringify ! ( x86_op_mem ) , "::" ,
-                stringify ! ( index ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const x86_op_mem ) ) . scale as * const _ as
-                usize } , 12usize , concat ! (
-                "Alignment of field: " , stringify ! ( x86_op_mem ) , "::" ,
-                stringify ! ( scale ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const x86_op_mem ) ) . disp as * const _ as
-                usize } , 16usize , concat ! (
-                "Alignment of field: " , stringify ! ( x86_op_mem ) , "::" ,
-                stringify ! ( disp ) ));
+    assert_eq!(
+        ::std::mem::size_of::<x86_op_mem>(),
+        24usize,
+        concat!("Size of: ", stringify!(x86_op_mem))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<x86_op_mem>(),
+        8usize,
+        concat!("Alignment of ", stringify!(x86_op_mem))
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const x86_op_mem)).segment as *const _ as usize },
+        0usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(x86_op_mem),
+            "::",
+            stringify!(segment)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const x86_op_mem)).base as *const _ as usize },
+        4usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(x86_op_mem),
+            "::",
+            stringify!(base)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const x86_op_mem)).index as *const _ as usize },
+        8usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(x86_op_mem),
+            "::",
+            stringify!(index)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const x86_op_mem)).scale as *const _ as usize },
+        12usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(x86_op_mem),
+            "::",
+            stringify!(scale)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const x86_op_mem)).disp as *const _ as usize },
+        16usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(x86_op_mem),
+            "::",
+            stringify!(disp)
+        )
+    );
 }
 impl Clone for x86_op_mem {
-    fn clone(&self) -> Self { *self }
+    fn clone(&self) -> Self {
+        *self
+    }
 }
 #[repr(C)]
 #[derive(Copy)]
 pub struct cs_x86_op {
-    pub type_: x86_op_type,
+    pub type_: x86_op_type::Type,
     pub __bindgen_anon_1: cs_x86_op__bindgen_ty_1,
     pub size: u8,
-    pub avx_bcast: x86_avx_bcast,
+    pub avx_bcast: x86_avx_bcast::Type,
     pub avx_zero_opmask: bool,
 }
 #[repr(C)]
@@ -6612,65 +7483,129 @@ pub union cs_x86_op__bindgen_ty_1 {
 }
 #[test]
 fn bindgen_test_layout_cs_x86_op__bindgen_ty_1() {
-    assert_eq!(::std::mem::size_of::<cs_x86_op__bindgen_ty_1>() , 24usize ,
-               concat ! (
-               "Size of: " , stringify ! ( cs_x86_op__bindgen_ty_1 ) ));
-    assert_eq! (::std::mem::align_of::<cs_x86_op__bindgen_ty_1>() , 8usize ,
-                concat ! (
-                "Alignment of " , stringify ! ( cs_x86_op__bindgen_ty_1 ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const cs_x86_op__bindgen_ty_1 ) ) . reg as *
-                const _ as usize } , 0usize , concat ! (
-                "Alignment of field: " , stringify ! ( cs_x86_op__bindgen_ty_1
-                ) , "::" , stringify ! ( reg ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const cs_x86_op__bindgen_ty_1 ) ) . imm as *
-                const _ as usize } , 0usize , concat ! (
-                "Alignment of field: " , stringify ! ( cs_x86_op__bindgen_ty_1
-                ) , "::" , stringify ! ( imm ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const cs_x86_op__bindgen_ty_1 ) ) . fp as *
-                const _ as usize } , 0usize , concat ! (
-                "Alignment of field: " , stringify ! ( cs_x86_op__bindgen_ty_1
-                ) , "::" , stringify ! ( fp ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const cs_x86_op__bindgen_ty_1 ) ) . mem as *
-                const _ as usize } , 0usize , concat ! (
-                "Alignment of field: " , stringify ! ( cs_x86_op__bindgen_ty_1
-                ) , "::" , stringify ! ( mem ) ));
+    assert_eq!(
+        ::std::mem::size_of::<cs_x86_op__bindgen_ty_1>(),
+        24usize,
+        concat!("Size of: ", stringify!(cs_x86_op__bindgen_ty_1))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<cs_x86_op__bindgen_ty_1>(),
+        8usize,
+        concat!("Alignment of ", stringify!(cs_x86_op__bindgen_ty_1))
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const cs_x86_op__bindgen_ty_1)).reg as *const _ as usize },
+        0usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(cs_x86_op__bindgen_ty_1),
+            "::",
+            stringify!(reg)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const cs_x86_op__bindgen_ty_1)).imm as *const _ as usize },
+        0usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(cs_x86_op__bindgen_ty_1),
+            "::",
+            stringify!(imm)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const cs_x86_op__bindgen_ty_1)).fp as *const _ as usize },
+        0usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(cs_x86_op__bindgen_ty_1),
+            "::",
+            stringify!(fp)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const cs_x86_op__bindgen_ty_1)).mem as *const _ as usize },
+        0usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(cs_x86_op__bindgen_ty_1),
+            "::",
+            stringify!(mem)
+        )
+    );
 }
 impl Clone for cs_x86_op__bindgen_ty_1 {
-    fn clone(&self) -> Self { *self }
+    fn clone(&self) -> Self {
+        *self
+    }
+}
+impl ::std::fmt::Debug for cs_x86_op__bindgen_ty_1 {
+    fn fmt(&self, f: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
+        write!(f, "cs_x86_op__bindgen_ty_1 {{ union }}")
+    }
 }
 #[test]
 fn bindgen_test_layout_cs_x86_op() {
-    assert_eq!(::std::mem::size_of::<cs_x86_op>() , 48usize , concat ! (
-               "Size of: " , stringify ! ( cs_x86_op ) ));
-    assert_eq! (::std::mem::align_of::<cs_x86_op>() , 8usize , concat ! (
-                "Alignment of " , stringify ! ( cs_x86_op ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const cs_x86_op ) ) . type_ as * const _ as
-                usize } , 0usize , concat ! (
-                "Alignment of field: " , stringify ! ( cs_x86_op ) , "::" ,
-                stringify ! ( type_ ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const cs_x86_op ) ) . size as * const _ as
-                usize } , 32usize , concat ! (
-                "Alignment of field: " , stringify ! ( cs_x86_op ) , "::" ,
-                stringify ! ( size ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const cs_x86_op ) ) . avx_bcast as * const _ as
-                usize } , 36usize , concat ! (
-                "Alignment of field: " , stringify ! ( cs_x86_op ) , "::" ,
-                stringify ! ( avx_bcast ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const cs_x86_op ) ) . avx_zero_opmask as *
-                const _ as usize } , 40usize , concat ! (
-                "Alignment of field: " , stringify ! ( cs_x86_op ) , "::" ,
-                stringify ! ( avx_zero_opmask ) ));
+    assert_eq!(
+        ::std::mem::size_of::<cs_x86_op>(),
+        48usize,
+        concat!("Size of: ", stringify!(cs_x86_op))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<cs_x86_op>(),
+        8usize,
+        concat!("Alignment of ", stringify!(cs_x86_op))
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const cs_x86_op)).type_ as *const _ as usize },
+        0usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(cs_x86_op),
+            "::",
+            stringify!(type_)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const cs_x86_op)).size as *const _ as usize },
+        32usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(cs_x86_op),
+            "::",
+            stringify!(size)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const cs_x86_op)).avx_bcast as *const _ as usize },
+        36usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(cs_x86_op),
+            "::",
+            stringify!(avx_bcast)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const cs_x86_op)).avx_zero_opmask as *const _ as usize },
+        40usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(cs_x86_op),
+            "::",
+            stringify!(avx_zero_opmask)
+        )
+    );
 }
 impl Clone for cs_x86_op {
-    fn clone(&self) -> Self { *self }
+    fn clone(&self) -> Self {
+        *self
+    }
+}
+impl ::std::fmt::Debug for cs_x86_op {
+    fn fmt(&self, f: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
+        write ! ( f , "cs_x86_op {{ type: {:?}, __bindgen_anon_1: {:?}, size: {:?}, avx_bcast: {:?}, avx_zero_opmask: {:?} }}" , self . type_ , self . __bindgen_anon_1 , self . size , self . avx_bcast , self . avx_zero_opmask )
+    }
 }
 #[repr(C)]
 #[derive(Copy)]
@@ -6685,1462 +7620,1552 @@ pub struct cs_x86 {
     pub sib_index: x86_reg::Type,
     pub sib_scale: i8,
     pub sib_base: x86_reg::Type,
-    pub sse_cc: x86_sse_cc,
-    pub avx_cc: x86_avx_cc,
+    pub sse_cc: x86_sse_cc::Type,
+    pub avx_cc: x86_avx_cc::Type,
     pub avx_sae: bool,
-    pub avx_rm: x86_avx_rm,
+    pub avx_rm: x86_avx_rm::Type,
     pub op_count: u8,
     pub operands: [cs_x86_op; 8usize],
 }
 #[test]
 fn bindgen_test_layout_cs_x86() {
-    assert_eq!(::std::mem::size_of::<cs_x86>() , 432usize , concat ! (
-               "Size of: " , stringify ! ( cs_x86 ) ));
-    assert_eq! (::std::mem::align_of::<cs_x86>() , 8usize , concat ! (
-                "Alignment of " , stringify ! ( cs_x86 ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const cs_x86 ) ) . prefix as * const _ as usize
-                } , 0usize , concat ! (
-                "Alignment of field: " , stringify ! ( cs_x86 ) , "::" ,
-                stringify ! ( prefix ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const cs_x86 ) ) . opcode as * const _ as usize
-                } , 4usize , concat ! (
-                "Alignment of field: " , stringify ! ( cs_x86 ) , "::" ,
-                stringify ! ( opcode ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const cs_x86 ) ) . rex as * const _ as usize }
-                , 8usize , concat ! (
-                "Alignment of field: " , stringify ! ( cs_x86 ) , "::" ,
-                stringify ! ( rex ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const cs_x86 ) ) . addr_size as * const _ as
-                usize } , 9usize , concat ! (
-                "Alignment of field: " , stringify ! ( cs_x86 ) , "::" ,
-                stringify ! ( addr_size ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const cs_x86 ) ) . modrm as * const _ as usize
-                } , 10usize , concat ! (
-                "Alignment of field: " , stringify ! ( cs_x86 ) , "::" ,
-                stringify ! ( modrm ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const cs_x86 ) ) . sib as * const _ as usize }
-                , 11usize , concat ! (
-                "Alignment of field: " , stringify ! ( cs_x86 ) , "::" ,
-                stringify ! ( sib ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const cs_x86 ) ) . disp as * const _ as usize }
-                , 12usize , concat ! (
-                "Alignment of field: " , stringify ! ( cs_x86 ) , "::" ,
-                stringify ! ( disp ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const cs_x86 ) ) . sib_index as * const _ as
-                usize } , 16usize , concat ! (
-                "Alignment of field: " , stringify ! ( cs_x86 ) , "::" ,
-                stringify ! ( sib_index ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const cs_x86 ) ) . sib_scale as * const _ as
-                usize } , 20usize , concat ! (
-                "Alignment of field: " , stringify ! ( cs_x86 ) , "::" ,
-                stringify ! ( sib_scale ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const cs_x86 ) ) . sib_base as * const _ as
-                usize } , 24usize , concat ! (
-                "Alignment of field: " , stringify ! ( cs_x86 ) , "::" ,
-                stringify ! ( sib_base ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const cs_x86 ) ) . sse_cc as * const _ as usize
-                } , 28usize , concat ! (
-                "Alignment of field: " , stringify ! ( cs_x86 ) , "::" ,
-                stringify ! ( sse_cc ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const cs_x86 ) ) . avx_cc as * const _ as usize
-                } , 32usize , concat ! (
-                "Alignment of field: " , stringify ! ( cs_x86 ) , "::" ,
-                stringify ! ( avx_cc ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const cs_x86 ) ) . avx_sae as * const _ as
-                usize } , 36usize , concat ! (
-                "Alignment of field: " , stringify ! ( cs_x86 ) , "::" ,
-                stringify ! ( avx_sae ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const cs_x86 ) ) . avx_rm as * const _ as usize
-                } , 40usize , concat ! (
-                "Alignment of field: " , stringify ! ( cs_x86 ) , "::" ,
-                stringify ! ( avx_rm ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const cs_x86 ) ) . op_count as * const _ as
-                usize } , 44usize , concat ! (
-                "Alignment of field: " , stringify ! ( cs_x86 ) , "::" ,
-                stringify ! ( op_count ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const cs_x86 ) ) . operands as * const _ as
-                usize } , 48usize , concat ! (
-                "Alignment of field: " , stringify ! ( cs_x86 ) , "::" ,
-                stringify ! ( operands ) ));
+    assert_eq!(
+        ::std::mem::size_of::<cs_x86>(),
+        432usize,
+        concat!("Size of: ", stringify!(cs_x86))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<cs_x86>(),
+        8usize,
+        concat!("Alignment of ", stringify!(cs_x86))
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const cs_x86)).prefix as *const _ as usize },
+        0usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(cs_x86),
+            "::",
+            stringify!(prefix)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const cs_x86)).opcode as *const _ as usize },
+        4usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(cs_x86),
+            "::",
+            stringify!(opcode)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const cs_x86)).rex as *const _ as usize },
+        8usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(cs_x86),
+            "::",
+            stringify!(rex)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const cs_x86)).addr_size as *const _ as usize },
+        9usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(cs_x86),
+            "::",
+            stringify!(addr_size)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const cs_x86)).modrm as *const _ as usize },
+        10usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(cs_x86),
+            "::",
+            stringify!(modrm)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const cs_x86)).sib as *const _ as usize },
+        11usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(cs_x86),
+            "::",
+            stringify!(sib)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const cs_x86)).disp as *const _ as usize },
+        12usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(cs_x86),
+            "::",
+            stringify!(disp)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const cs_x86)).sib_index as *const _ as usize },
+        16usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(cs_x86),
+            "::",
+            stringify!(sib_index)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const cs_x86)).sib_scale as *const _ as usize },
+        20usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(cs_x86),
+            "::",
+            stringify!(sib_scale)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const cs_x86)).sib_base as *const _ as usize },
+        24usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(cs_x86),
+            "::",
+            stringify!(sib_base)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const cs_x86)).sse_cc as *const _ as usize },
+        28usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(cs_x86),
+            "::",
+            stringify!(sse_cc)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const cs_x86)).avx_cc as *const _ as usize },
+        32usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(cs_x86),
+            "::",
+            stringify!(avx_cc)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const cs_x86)).avx_sae as *const _ as usize },
+        36usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(cs_x86),
+            "::",
+            stringify!(avx_sae)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const cs_x86)).avx_rm as *const _ as usize },
+        40usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(cs_x86),
+            "::",
+            stringify!(avx_rm)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const cs_x86)).op_count as *const _ as usize },
+        44usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(cs_x86),
+            "::",
+            stringify!(op_count)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const cs_x86)).operands as *const _ as usize },
+        48usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(cs_x86),
+            "::",
+            stringify!(operands)
+        )
+    );
 }
 impl Clone for cs_x86 {
-    fn clone(&self) -> Self { *self }
+    fn clone(&self) -> Self {
+        *self
+    }
 }
-#[repr(u32)]
-#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
-pub enum x86_insn {
-    X86_INS_INVALID = 0,
-    X86_INS_AAA = 1,
-    X86_INS_AAD = 2,
-    X86_INS_AAM = 3,
-    X86_INS_AAS = 4,
-    X86_INS_FABS = 5,
-    X86_INS_ADC = 6,
-    X86_INS_ADCX = 7,
-    X86_INS_ADD = 8,
-    X86_INS_ADDPD = 9,
-    X86_INS_ADDPS = 10,
-    X86_INS_ADDSD = 11,
-    X86_INS_ADDSS = 12,
-    X86_INS_ADDSUBPD = 13,
-    X86_INS_ADDSUBPS = 14,
-    X86_INS_FADD = 15,
-    X86_INS_FIADD = 16,
-    X86_INS_FADDP = 17,
-    X86_INS_ADOX = 18,
-    X86_INS_AESDECLAST = 19,
-    X86_INS_AESDEC = 20,
-    X86_INS_AESENCLAST = 21,
-    X86_INS_AESENC = 22,
-    X86_INS_AESIMC = 23,
-    X86_INS_AESKEYGENASSIST = 24,
-    X86_INS_AND = 25,
-    X86_INS_ANDN = 26,
-    X86_INS_ANDNPD = 27,
-    X86_INS_ANDNPS = 28,
-    X86_INS_ANDPD = 29,
-    X86_INS_ANDPS = 30,
-    X86_INS_ARPL = 31,
-    X86_INS_BEXTR = 32,
-    X86_INS_BLCFILL = 33,
-    X86_INS_BLCI = 34,
-    X86_INS_BLCIC = 35,
-    X86_INS_BLCMSK = 36,
-    X86_INS_BLCS = 37,
-    X86_INS_BLENDPD = 38,
-    X86_INS_BLENDPS = 39,
-    X86_INS_BLENDVPD = 40,
-    X86_INS_BLENDVPS = 41,
-    X86_INS_BLSFILL = 42,
-    X86_INS_BLSI = 43,
-    X86_INS_BLSIC = 44,
-    X86_INS_BLSMSK = 45,
-    X86_INS_BLSR = 46,
-    X86_INS_BOUND = 47,
-    X86_INS_BSF = 48,
-    X86_INS_BSR = 49,
-    X86_INS_BSWAP = 50,
-    X86_INS_BT = 51,
-    X86_INS_BTC = 52,
-    X86_INS_BTR = 53,
-    X86_INS_BTS = 54,
-    X86_INS_BZHI = 55,
-    X86_INS_CALL = 56,
-    X86_INS_CBW = 57,
-    X86_INS_CDQ = 58,
-    X86_INS_CDQE = 59,
-    X86_INS_FCHS = 60,
-    X86_INS_CLAC = 61,
-    X86_INS_CLC = 62,
-    X86_INS_CLD = 63,
-    X86_INS_CLFLUSH = 64,
-    X86_INS_CLGI = 65,
-    X86_INS_CLI = 66,
-    X86_INS_CLTS = 67,
-    X86_INS_CMC = 68,
-    X86_INS_CMOVA = 69,
-    X86_INS_CMOVAE = 70,
-    X86_INS_CMOVB = 71,
-    X86_INS_CMOVBE = 72,
-    X86_INS_FCMOVBE = 73,
-    X86_INS_FCMOVB = 74,
-    X86_INS_CMOVE = 75,
-    X86_INS_FCMOVE = 76,
-    X86_INS_CMOVG = 77,
-    X86_INS_CMOVGE = 78,
-    X86_INS_CMOVL = 79,
-    X86_INS_CMOVLE = 80,
-    X86_INS_FCMOVNBE = 81,
-    X86_INS_FCMOVNB = 82,
-    X86_INS_CMOVNE = 83,
-    X86_INS_FCMOVNE = 84,
-    X86_INS_CMOVNO = 85,
-    X86_INS_CMOVNP = 86,
-    X86_INS_FCMOVNU = 87,
-    X86_INS_CMOVNS = 88,
-    X86_INS_CMOVO = 89,
-    X86_INS_CMOVP = 90,
-    X86_INS_FCMOVU = 91,
-    X86_INS_CMOVS = 92,
-    X86_INS_CMP = 93,
-    X86_INS_CMPPD = 94,
-    X86_INS_CMPPS = 95,
-    X86_INS_CMPSB = 96,
-    X86_INS_CMPSD = 97,
-    X86_INS_CMPSQ = 98,
-    X86_INS_CMPSS = 99,
-    X86_INS_CMPSW = 100,
-    X86_INS_CMPXCHG16B = 101,
-    X86_INS_CMPXCHG = 102,
-    X86_INS_CMPXCHG8B = 103,
-    X86_INS_COMISD = 104,
-    X86_INS_COMISS = 105,
-    X86_INS_FCOMP = 106,
-    X86_INS_FCOMPI = 107,
-    X86_INS_FCOMI = 108,
-    X86_INS_FCOM = 109,
-    X86_INS_FCOS = 110,
-    X86_INS_CPUID = 111,
-    X86_INS_CQO = 112,
-    X86_INS_CRC32 = 113,
-    X86_INS_CVTDQ2PD = 114,
-    X86_INS_CVTDQ2PS = 115,
-    X86_INS_CVTPD2DQ = 116,
-    X86_INS_CVTPD2PS = 117,
-    X86_INS_CVTPS2DQ = 118,
-    X86_INS_CVTPS2PD = 119,
-    X86_INS_CVTSD2SI = 120,
-    X86_INS_CVTSD2SS = 121,
-    X86_INS_CVTSI2SD = 122,
-    X86_INS_CVTSI2SS = 123,
-    X86_INS_CVTSS2SD = 124,
-    X86_INS_CVTSS2SI = 125,
-    X86_INS_CVTTPD2DQ = 126,
-    X86_INS_CVTTPS2DQ = 127,
-    X86_INS_CVTTSD2SI = 128,
-    X86_INS_CVTTSS2SI = 129,
-    X86_INS_CWD = 130,
-    X86_INS_CWDE = 131,
-    X86_INS_DAA = 132,
-    X86_INS_DAS = 133,
-    X86_INS_DATA16 = 134,
-    X86_INS_DEC = 135,
-    X86_INS_DIV = 136,
-    X86_INS_DIVPD = 137,
-    X86_INS_DIVPS = 138,
-    X86_INS_FDIVR = 139,
-    X86_INS_FIDIVR = 140,
-    X86_INS_FDIVRP = 141,
-    X86_INS_DIVSD = 142,
-    X86_INS_DIVSS = 143,
-    X86_INS_FDIV = 144,
-    X86_INS_FIDIV = 145,
-    X86_INS_FDIVP = 146,
-    X86_INS_DPPD = 147,
-    X86_INS_DPPS = 148,
-    X86_INS_RET = 149,
-    X86_INS_ENCLS = 150,
-    X86_INS_ENCLU = 151,
-    X86_INS_ENTER = 152,
-    X86_INS_EXTRACTPS = 153,
-    X86_INS_EXTRQ = 154,
-    X86_INS_F2XM1 = 155,
-    X86_INS_LCALL = 156,
-    X86_INS_LJMP = 157,
-    X86_INS_FBLD = 158,
-    X86_INS_FBSTP = 159,
-    X86_INS_FCOMPP = 160,
-    X86_INS_FDECSTP = 161,
-    X86_INS_FEMMS = 162,
-    X86_INS_FFREE = 163,
-    X86_INS_FICOM = 164,
-    X86_INS_FICOMP = 165,
-    X86_INS_FINCSTP = 166,
-    X86_INS_FLDCW = 167,
-    X86_INS_FLDENV = 168,
-    X86_INS_FLDL2E = 169,
-    X86_INS_FLDL2T = 170,
-    X86_INS_FLDLG2 = 171,
-    X86_INS_FLDLN2 = 172,
-    X86_INS_FLDPI = 173,
-    X86_INS_FNCLEX = 174,
-    X86_INS_FNINIT = 175,
-    X86_INS_FNOP = 176,
-    X86_INS_FNSTCW = 177,
-    X86_INS_FNSTSW = 178,
-    X86_INS_FPATAN = 179,
-    X86_INS_FPREM = 180,
-    X86_INS_FPREM1 = 181,
-    X86_INS_FPTAN = 182,
-    X86_INS_FRNDINT = 183,
-    X86_INS_FRSTOR = 184,
-    X86_INS_FNSAVE = 185,
-    X86_INS_FSCALE = 186,
-    X86_INS_FSETPM = 187,
-    X86_INS_FSINCOS = 188,
-    X86_INS_FNSTENV = 189,
-    X86_INS_FXAM = 190,
-    X86_INS_FXRSTOR = 191,
-    X86_INS_FXRSTOR64 = 192,
-    X86_INS_FXSAVE = 193,
-    X86_INS_FXSAVE64 = 194,
-    X86_INS_FXTRACT = 195,
-    X86_INS_FYL2X = 196,
-    X86_INS_FYL2XP1 = 197,
-    X86_INS_MOVAPD = 198,
-    X86_INS_MOVAPS = 199,
-    X86_INS_ORPD = 200,
-    X86_INS_ORPS = 201,
-    X86_INS_VMOVAPD = 202,
-    X86_INS_VMOVAPS = 203,
-    X86_INS_XORPD = 204,
-    X86_INS_XORPS = 205,
-    X86_INS_GETSEC = 206,
-    X86_INS_HADDPD = 207,
-    X86_INS_HADDPS = 208,
-    X86_INS_HLT = 209,
-    X86_INS_HSUBPD = 210,
-    X86_INS_HSUBPS = 211,
-    X86_INS_IDIV = 212,
-    X86_INS_FILD = 213,
-    X86_INS_IMUL = 214,
-    X86_INS_IN = 215,
-    X86_INS_INC = 216,
-    X86_INS_INSB = 217,
-    X86_INS_INSERTPS = 218,
-    X86_INS_INSERTQ = 219,
-    X86_INS_INSD = 220,
-    X86_INS_INSW = 221,
-    X86_INS_INT = 222,
-    X86_INS_INT1 = 223,
-    X86_INS_INT3 = 224,
-    X86_INS_INTO = 225,
-    X86_INS_INVD = 226,
-    X86_INS_INVEPT = 227,
-    X86_INS_INVLPG = 228,
-    X86_INS_INVLPGA = 229,
-    X86_INS_INVPCID = 230,
-    X86_INS_INVVPID = 231,
-    X86_INS_IRET = 232,
-    X86_INS_IRETD = 233,
-    X86_INS_IRETQ = 234,
-    X86_INS_FISTTP = 235,
-    X86_INS_FIST = 236,
-    X86_INS_FISTP = 237,
-    X86_INS_UCOMISD = 238,
-    X86_INS_UCOMISS = 239,
-    X86_INS_VCMP = 240,
-    X86_INS_VCOMISD = 241,
-    X86_INS_VCOMISS = 242,
-    X86_INS_VCVTSD2SS = 243,
-    X86_INS_VCVTSI2SD = 244,
-    X86_INS_VCVTSI2SS = 245,
-    X86_INS_VCVTSS2SD = 246,
-    X86_INS_VCVTTSD2SI = 247,
-    X86_INS_VCVTTSD2USI = 248,
-    X86_INS_VCVTTSS2SI = 249,
-    X86_INS_VCVTTSS2USI = 250,
-    X86_INS_VCVTUSI2SD = 251,
-    X86_INS_VCVTUSI2SS = 252,
-    X86_INS_VUCOMISD = 253,
-    X86_INS_VUCOMISS = 254,
-    X86_INS_JAE = 255,
-    X86_INS_JA = 256,
-    X86_INS_JBE = 257,
-    X86_INS_JB = 258,
-    X86_INS_JCXZ = 259,
-    X86_INS_JECXZ = 260,
-    X86_INS_JE = 261,
-    X86_INS_JGE = 262,
-    X86_INS_JG = 263,
-    X86_INS_JLE = 264,
-    X86_INS_JL = 265,
-    X86_INS_JMP = 266,
-    X86_INS_JNE = 267,
-    X86_INS_JNO = 268,
-    X86_INS_JNP = 269,
-    X86_INS_JNS = 270,
-    X86_INS_JO = 271,
-    X86_INS_JP = 272,
-    X86_INS_JRCXZ = 273,
-    X86_INS_JS = 274,
-    X86_INS_KANDB = 275,
-    X86_INS_KANDD = 276,
-    X86_INS_KANDNB = 277,
-    X86_INS_KANDND = 278,
-    X86_INS_KANDNQ = 279,
-    X86_INS_KANDNW = 280,
-    X86_INS_KANDQ = 281,
-    X86_INS_KANDW = 282,
-    X86_INS_KMOVB = 283,
-    X86_INS_KMOVD = 284,
-    X86_INS_KMOVQ = 285,
-    X86_INS_KMOVW = 286,
-    X86_INS_KNOTB = 287,
-    X86_INS_KNOTD = 288,
-    X86_INS_KNOTQ = 289,
-    X86_INS_KNOTW = 290,
-    X86_INS_KORB = 291,
-    X86_INS_KORD = 292,
-    X86_INS_KORQ = 293,
-    X86_INS_KORTESTW = 294,
-    X86_INS_KORW = 295,
-    X86_INS_KSHIFTLW = 296,
-    X86_INS_KSHIFTRW = 297,
-    X86_INS_KUNPCKBW = 298,
-    X86_INS_KXNORB = 299,
-    X86_INS_KXNORD = 300,
-    X86_INS_KXNORQ = 301,
-    X86_INS_KXNORW = 302,
-    X86_INS_KXORB = 303,
-    X86_INS_KXORD = 304,
-    X86_INS_KXORQ = 305,
-    X86_INS_KXORW = 306,
-    X86_INS_LAHF = 307,
-    X86_INS_LAR = 308,
-    X86_INS_LDDQU = 309,
-    X86_INS_LDMXCSR = 310,
-    X86_INS_LDS = 311,
-    X86_INS_FLDZ = 312,
-    X86_INS_FLD1 = 313,
-    X86_INS_FLD = 314,
-    X86_INS_LEA = 315,
-    X86_INS_LEAVE = 316,
-    X86_INS_LES = 317,
-    X86_INS_LFENCE = 318,
-    X86_INS_LFS = 319,
-    X86_INS_LGDT = 320,
-    X86_INS_LGS = 321,
-    X86_INS_LIDT = 322,
-    X86_INS_LLDT = 323,
-    X86_INS_LMSW = 324,
-    X86_INS_OR = 325,
-    X86_INS_SUB = 326,
-    X86_INS_XOR = 327,
-    X86_INS_LODSB = 328,
-    X86_INS_LODSD = 329,
-    X86_INS_LODSQ = 330,
-    X86_INS_LODSW = 331,
-    X86_INS_LOOP = 332,
-    X86_INS_LOOPE = 333,
-    X86_INS_LOOPNE = 334,
-    X86_INS_RETF = 335,
-    X86_INS_RETFQ = 336,
-    X86_INS_LSL = 337,
-    X86_INS_LSS = 338,
-    X86_INS_LTR = 339,
-    X86_INS_XADD = 340,
-    X86_INS_LZCNT = 341,
-    X86_INS_MASKMOVDQU = 342,
-    X86_INS_MAXPD = 343,
-    X86_INS_MAXPS = 344,
-    X86_INS_MAXSD = 345,
-    X86_INS_MAXSS = 346,
-    X86_INS_MFENCE = 347,
-    X86_INS_MINPD = 348,
-    X86_INS_MINPS = 349,
-    X86_INS_MINSD = 350,
-    X86_INS_MINSS = 351,
-    X86_INS_CVTPD2PI = 352,
-    X86_INS_CVTPI2PD = 353,
-    X86_INS_CVTPI2PS = 354,
-    X86_INS_CVTPS2PI = 355,
-    X86_INS_CVTTPD2PI = 356,
-    X86_INS_CVTTPS2PI = 357,
-    X86_INS_EMMS = 358,
-    X86_INS_MASKMOVQ = 359,
-    X86_INS_MOVD = 360,
-    X86_INS_MOVDQ2Q = 361,
-    X86_INS_MOVNTQ = 362,
-    X86_INS_MOVQ2DQ = 363,
-    X86_INS_MOVQ = 364,
-    X86_INS_PABSB = 365,
-    X86_INS_PABSD = 366,
-    X86_INS_PABSW = 367,
-    X86_INS_PACKSSDW = 368,
-    X86_INS_PACKSSWB = 369,
-    X86_INS_PACKUSWB = 370,
-    X86_INS_PADDB = 371,
-    X86_INS_PADDD = 372,
-    X86_INS_PADDQ = 373,
-    X86_INS_PADDSB = 374,
-    X86_INS_PADDSW = 375,
-    X86_INS_PADDUSB = 376,
-    X86_INS_PADDUSW = 377,
-    X86_INS_PADDW = 378,
-    X86_INS_PALIGNR = 379,
-    X86_INS_PANDN = 380,
-    X86_INS_PAND = 381,
-    X86_INS_PAVGB = 382,
-    X86_INS_PAVGW = 383,
-    X86_INS_PCMPEQB = 384,
-    X86_INS_PCMPEQD = 385,
-    X86_INS_PCMPEQW = 386,
-    X86_INS_PCMPGTB = 387,
-    X86_INS_PCMPGTD = 388,
-    X86_INS_PCMPGTW = 389,
-    X86_INS_PEXTRW = 390,
-    X86_INS_PHADDSW = 391,
-    X86_INS_PHADDW = 392,
-    X86_INS_PHADDD = 393,
-    X86_INS_PHSUBD = 394,
-    X86_INS_PHSUBSW = 395,
-    X86_INS_PHSUBW = 396,
-    X86_INS_PINSRW = 397,
-    X86_INS_PMADDUBSW = 398,
-    X86_INS_PMADDWD = 399,
-    X86_INS_PMAXSW = 400,
-    X86_INS_PMAXUB = 401,
-    X86_INS_PMINSW = 402,
-    X86_INS_PMINUB = 403,
-    X86_INS_PMOVMSKB = 404,
-    X86_INS_PMULHRSW = 405,
-    X86_INS_PMULHUW = 406,
-    X86_INS_PMULHW = 407,
-    X86_INS_PMULLW = 408,
-    X86_INS_PMULUDQ = 409,
-    X86_INS_POR = 410,
-    X86_INS_PSADBW = 411,
-    X86_INS_PSHUFB = 412,
-    X86_INS_PSHUFW = 413,
-    X86_INS_PSIGNB = 414,
-    X86_INS_PSIGND = 415,
-    X86_INS_PSIGNW = 416,
-    X86_INS_PSLLD = 417,
-    X86_INS_PSLLQ = 418,
-    X86_INS_PSLLW = 419,
-    X86_INS_PSRAD = 420,
-    X86_INS_PSRAW = 421,
-    X86_INS_PSRLD = 422,
-    X86_INS_PSRLQ = 423,
-    X86_INS_PSRLW = 424,
-    X86_INS_PSUBB = 425,
-    X86_INS_PSUBD = 426,
-    X86_INS_PSUBQ = 427,
-    X86_INS_PSUBSB = 428,
-    X86_INS_PSUBSW = 429,
-    X86_INS_PSUBUSB = 430,
-    X86_INS_PSUBUSW = 431,
-    X86_INS_PSUBW = 432,
-    X86_INS_PUNPCKHBW = 433,
-    X86_INS_PUNPCKHDQ = 434,
-    X86_INS_PUNPCKHWD = 435,
-    X86_INS_PUNPCKLBW = 436,
-    X86_INS_PUNPCKLDQ = 437,
-    X86_INS_PUNPCKLWD = 438,
-    X86_INS_PXOR = 439,
-    X86_INS_MONITOR = 440,
-    X86_INS_MONTMUL = 441,
-    X86_INS_MOV = 442,
-    X86_INS_MOVABS = 443,
-    X86_INS_MOVBE = 444,
-    X86_INS_MOVDDUP = 445,
-    X86_INS_MOVDQA = 446,
-    X86_INS_MOVDQU = 447,
-    X86_INS_MOVHLPS = 448,
-    X86_INS_MOVHPD = 449,
-    X86_INS_MOVHPS = 450,
-    X86_INS_MOVLHPS = 451,
-    X86_INS_MOVLPD = 452,
-    X86_INS_MOVLPS = 453,
-    X86_INS_MOVMSKPD = 454,
-    X86_INS_MOVMSKPS = 455,
-    X86_INS_MOVNTDQA = 456,
-    X86_INS_MOVNTDQ = 457,
-    X86_INS_MOVNTI = 458,
-    X86_INS_MOVNTPD = 459,
-    X86_INS_MOVNTPS = 460,
-    X86_INS_MOVNTSD = 461,
-    X86_INS_MOVNTSS = 462,
-    X86_INS_MOVSB = 463,
-    X86_INS_MOVSD = 464,
-    X86_INS_MOVSHDUP = 465,
-    X86_INS_MOVSLDUP = 466,
-    X86_INS_MOVSQ = 467,
-    X86_INS_MOVSS = 468,
-    X86_INS_MOVSW = 469,
-    X86_INS_MOVSX = 470,
-    X86_INS_MOVSXD = 471,
-    X86_INS_MOVUPD = 472,
-    X86_INS_MOVUPS = 473,
-    X86_INS_MOVZX = 474,
-    X86_INS_MPSADBW = 475,
-    X86_INS_MUL = 476,
-    X86_INS_MULPD = 477,
-    X86_INS_MULPS = 478,
-    X86_INS_MULSD = 479,
-    X86_INS_MULSS = 480,
-    X86_INS_MULX = 481,
-    X86_INS_FMUL = 482,
-    X86_INS_FIMUL = 483,
-    X86_INS_FMULP = 484,
-    X86_INS_MWAIT = 485,
-    X86_INS_NEG = 486,
-    X86_INS_NOP = 487,
-    X86_INS_NOT = 488,
-    X86_INS_OUT = 489,
-    X86_INS_OUTSB = 490,
-    X86_INS_OUTSD = 491,
-    X86_INS_OUTSW = 492,
-    X86_INS_PACKUSDW = 493,
-    X86_INS_PAUSE = 494,
-    X86_INS_PAVGUSB = 495,
-    X86_INS_PBLENDVB = 496,
-    X86_INS_PBLENDW = 497,
-    X86_INS_PCLMULQDQ = 498,
-    X86_INS_PCMPEQQ = 499,
-    X86_INS_PCMPESTRI = 500,
-    X86_INS_PCMPESTRM = 501,
-    X86_INS_PCMPGTQ = 502,
-    X86_INS_PCMPISTRI = 503,
-    X86_INS_PCMPISTRM = 504,
-    X86_INS_PDEP = 505,
-    X86_INS_PEXT = 506,
-    X86_INS_PEXTRB = 507,
-    X86_INS_PEXTRD = 508,
-    X86_INS_PEXTRQ = 509,
-    X86_INS_PF2ID = 510,
-    X86_INS_PF2IW = 511,
-    X86_INS_PFACC = 512,
-    X86_INS_PFADD = 513,
-    X86_INS_PFCMPEQ = 514,
-    X86_INS_PFCMPGE = 515,
-    X86_INS_PFCMPGT = 516,
-    X86_INS_PFMAX = 517,
-    X86_INS_PFMIN = 518,
-    X86_INS_PFMUL = 519,
-    X86_INS_PFNACC = 520,
-    X86_INS_PFPNACC = 521,
-    X86_INS_PFRCPIT1 = 522,
-    X86_INS_PFRCPIT2 = 523,
-    X86_INS_PFRCP = 524,
-    X86_INS_PFRSQIT1 = 525,
-    X86_INS_PFRSQRT = 526,
-    X86_INS_PFSUBR = 527,
-    X86_INS_PFSUB = 528,
-    X86_INS_PHMINPOSUW = 529,
-    X86_INS_PI2FD = 530,
-    X86_INS_PI2FW = 531,
-    X86_INS_PINSRB = 532,
-    X86_INS_PINSRD = 533,
-    X86_INS_PINSRQ = 534,
-    X86_INS_PMAXSB = 535,
-    X86_INS_PMAXSD = 536,
-    X86_INS_PMAXUD = 537,
-    X86_INS_PMAXUW = 538,
-    X86_INS_PMINSB = 539,
-    X86_INS_PMINSD = 540,
-    X86_INS_PMINUD = 541,
-    X86_INS_PMINUW = 542,
-    X86_INS_PMOVSXBD = 543,
-    X86_INS_PMOVSXBQ = 544,
-    X86_INS_PMOVSXBW = 545,
-    X86_INS_PMOVSXDQ = 546,
-    X86_INS_PMOVSXWD = 547,
-    X86_INS_PMOVSXWQ = 548,
-    X86_INS_PMOVZXBD = 549,
-    X86_INS_PMOVZXBQ = 550,
-    X86_INS_PMOVZXBW = 551,
-    X86_INS_PMOVZXDQ = 552,
-    X86_INS_PMOVZXWD = 553,
-    X86_INS_PMOVZXWQ = 554,
-    X86_INS_PMULDQ = 555,
-    X86_INS_PMULHRW = 556,
-    X86_INS_PMULLD = 557,
-    X86_INS_POP = 558,
-    X86_INS_POPAW = 559,
-    X86_INS_POPAL = 560,
-    X86_INS_POPCNT = 561,
-    X86_INS_POPF = 562,
-    X86_INS_POPFD = 563,
-    X86_INS_POPFQ = 564,
-    X86_INS_PREFETCH = 565,
-    X86_INS_PREFETCHNTA = 566,
-    X86_INS_PREFETCHT0 = 567,
-    X86_INS_PREFETCHT1 = 568,
-    X86_INS_PREFETCHT2 = 569,
-    X86_INS_PREFETCHW = 570,
-    X86_INS_PSHUFD = 571,
-    X86_INS_PSHUFHW = 572,
-    X86_INS_PSHUFLW = 573,
-    X86_INS_PSLLDQ = 574,
-    X86_INS_PSRLDQ = 575,
-    X86_INS_PSWAPD = 576,
-    X86_INS_PTEST = 577,
-    X86_INS_PUNPCKHQDQ = 578,
-    X86_INS_PUNPCKLQDQ = 579,
-    X86_INS_PUSH = 580,
-    X86_INS_PUSHAW = 581,
-    X86_INS_PUSHAL = 582,
-    X86_INS_PUSHF = 583,
-    X86_INS_PUSHFD = 584,
-    X86_INS_PUSHFQ = 585,
-    X86_INS_RCL = 586,
-    X86_INS_RCPPS = 587,
-    X86_INS_RCPSS = 588,
-    X86_INS_RCR = 589,
-    X86_INS_RDFSBASE = 590,
-    X86_INS_RDGSBASE = 591,
-    X86_INS_RDMSR = 592,
-    X86_INS_RDPMC = 593,
-    X86_INS_RDRAND = 594,
-    X86_INS_RDSEED = 595,
-    X86_INS_RDTSC = 596,
-    X86_INS_RDTSCP = 597,
-    X86_INS_ROL = 598,
-    X86_INS_ROR = 599,
-    X86_INS_RORX = 600,
-    X86_INS_ROUNDPD = 601,
-    X86_INS_ROUNDPS = 602,
-    X86_INS_ROUNDSD = 603,
-    X86_INS_ROUNDSS = 604,
-    X86_INS_RSM = 605,
-    X86_INS_RSQRTPS = 606,
-    X86_INS_RSQRTSS = 607,
-    X86_INS_SAHF = 608,
-    X86_INS_SAL = 609,
-    X86_INS_SALC = 610,
-    X86_INS_SAR = 611,
-    X86_INS_SARX = 612,
-    X86_INS_SBB = 613,
-    X86_INS_SCASB = 614,
-    X86_INS_SCASD = 615,
-    X86_INS_SCASQ = 616,
-    X86_INS_SCASW = 617,
-    X86_INS_SETAE = 618,
-    X86_INS_SETA = 619,
-    X86_INS_SETBE = 620,
-    X86_INS_SETB = 621,
-    X86_INS_SETE = 622,
-    X86_INS_SETGE = 623,
-    X86_INS_SETG = 624,
-    X86_INS_SETLE = 625,
-    X86_INS_SETL = 626,
-    X86_INS_SETNE = 627,
-    X86_INS_SETNO = 628,
-    X86_INS_SETNP = 629,
-    X86_INS_SETNS = 630,
-    X86_INS_SETO = 631,
-    X86_INS_SETP = 632,
-    X86_INS_SETS = 633,
-    X86_INS_SFENCE = 634,
-    X86_INS_SGDT = 635,
-    X86_INS_SHA1MSG1 = 636,
-    X86_INS_SHA1MSG2 = 637,
-    X86_INS_SHA1NEXTE = 638,
-    X86_INS_SHA1RNDS4 = 639,
-    X86_INS_SHA256MSG1 = 640,
-    X86_INS_SHA256MSG2 = 641,
-    X86_INS_SHA256RNDS2 = 642,
-    X86_INS_SHL = 643,
-    X86_INS_SHLD = 644,
-    X86_INS_SHLX = 645,
-    X86_INS_SHR = 646,
-    X86_INS_SHRD = 647,
-    X86_INS_SHRX = 648,
-    X86_INS_SHUFPD = 649,
-    X86_INS_SHUFPS = 650,
-    X86_INS_SIDT = 651,
-    X86_INS_FSIN = 652,
-    X86_INS_SKINIT = 653,
-    X86_INS_SLDT = 654,
-    X86_INS_SMSW = 655,
-    X86_INS_SQRTPD = 656,
-    X86_INS_SQRTPS = 657,
-    X86_INS_SQRTSD = 658,
-    X86_INS_SQRTSS = 659,
-    X86_INS_FSQRT = 660,
-    X86_INS_STAC = 661,
-    X86_INS_STC = 662,
-    X86_INS_STD = 663,
-    X86_INS_STGI = 664,
-    X86_INS_STI = 665,
-    X86_INS_STMXCSR = 666,
-    X86_INS_STOSB = 667,
-    X86_INS_STOSD = 668,
-    X86_INS_STOSQ = 669,
-    X86_INS_STOSW = 670,
-    X86_INS_STR = 671,
-    X86_INS_FST = 672,
-    X86_INS_FSTP = 673,
-    X86_INS_FSTPNCE = 674,
-    X86_INS_SUBPD = 675,
-    X86_INS_SUBPS = 676,
-    X86_INS_FSUBR = 677,
-    X86_INS_FISUBR = 678,
-    X86_INS_FSUBRP = 679,
-    X86_INS_SUBSD = 680,
-    X86_INS_SUBSS = 681,
-    X86_INS_FSUB = 682,
-    X86_INS_FISUB = 683,
-    X86_INS_FSUBP = 684,
-    X86_INS_SWAPGS = 685,
-    X86_INS_SYSCALL = 686,
-    X86_INS_SYSENTER = 687,
-    X86_INS_SYSEXIT = 688,
-    X86_INS_SYSRET = 689,
-    X86_INS_T1MSKC = 690,
-    X86_INS_TEST = 691,
-    X86_INS_UD2 = 692,
-    X86_INS_FTST = 693,
-    X86_INS_TZCNT = 694,
-    X86_INS_TZMSK = 695,
-    X86_INS_FUCOMPI = 696,
-    X86_INS_FUCOMI = 697,
-    X86_INS_FUCOMPP = 698,
-    X86_INS_FUCOMP = 699,
-    X86_INS_FUCOM = 700,
-    X86_INS_UD2B = 701,
-    X86_INS_UNPCKHPD = 702,
-    X86_INS_UNPCKHPS = 703,
-    X86_INS_UNPCKLPD = 704,
-    X86_INS_UNPCKLPS = 705,
-    X86_INS_VADDPD = 706,
-    X86_INS_VADDPS = 707,
-    X86_INS_VADDSD = 708,
-    X86_INS_VADDSS = 709,
-    X86_INS_VADDSUBPD = 710,
-    X86_INS_VADDSUBPS = 711,
-    X86_INS_VAESDECLAST = 712,
-    X86_INS_VAESDEC = 713,
-    X86_INS_VAESENCLAST = 714,
-    X86_INS_VAESENC = 715,
-    X86_INS_VAESIMC = 716,
-    X86_INS_VAESKEYGENASSIST = 717,
-    X86_INS_VALIGND = 718,
-    X86_INS_VALIGNQ = 719,
-    X86_INS_VANDNPD = 720,
-    X86_INS_VANDNPS = 721,
-    X86_INS_VANDPD = 722,
-    X86_INS_VANDPS = 723,
-    X86_INS_VBLENDMPD = 724,
-    X86_INS_VBLENDMPS = 725,
-    X86_INS_VBLENDPD = 726,
-    X86_INS_VBLENDPS = 727,
-    X86_INS_VBLENDVPD = 728,
-    X86_INS_VBLENDVPS = 729,
-    X86_INS_VBROADCASTF128 = 730,
-    X86_INS_VBROADCASTI128 = 731,
-    X86_INS_VBROADCASTI32X4 = 732,
-    X86_INS_VBROADCASTI64X4 = 733,
-    X86_INS_VBROADCASTSD = 734,
-    X86_INS_VBROADCASTSS = 735,
-    X86_INS_VCMPPD = 736,
-    X86_INS_VCMPPS = 737,
-    X86_INS_VCMPSD = 738,
-    X86_INS_VCMPSS = 739,
-    X86_INS_VCVTDQ2PD = 740,
-    X86_INS_VCVTDQ2PS = 741,
-    X86_INS_VCVTPD2DQX = 742,
-    X86_INS_VCVTPD2DQ = 743,
-    X86_INS_VCVTPD2PSX = 744,
-    X86_INS_VCVTPD2PS = 745,
-    X86_INS_VCVTPD2UDQ = 746,
-    X86_INS_VCVTPH2PS = 747,
-    X86_INS_VCVTPS2DQ = 748,
-    X86_INS_VCVTPS2PD = 749,
-    X86_INS_VCVTPS2PH = 750,
-    X86_INS_VCVTPS2UDQ = 751,
-    X86_INS_VCVTSD2SI = 752,
-    X86_INS_VCVTSD2USI = 753,
-    X86_INS_VCVTSS2SI = 754,
-    X86_INS_VCVTSS2USI = 755,
-    X86_INS_VCVTTPD2DQX = 756,
-    X86_INS_VCVTTPD2DQ = 757,
-    X86_INS_VCVTTPD2UDQ = 758,
-    X86_INS_VCVTTPS2DQ = 759,
-    X86_INS_VCVTTPS2UDQ = 760,
-    X86_INS_VCVTUDQ2PD = 761,
-    X86_INS_VCVTUDQ2PS = 762,
-    X86_INS_VDIVPD = 763,
-    X86_INS_VDIVPS = 764,
-    X86_INS_VDIVSD = 765,
-    X86_INS_VDIVSS = 766,
-    X86_INS_VDPPD = 767,
-    X86_INS_VDPPS = 768,
-    X86_INS_VERR = 769,
-    X86_INS_VERW = 770,
-    X86_INS_VEXTRACTF128 = 771,
-    X86_INS_VEXTRACTF32X4 = 772,
-    X86_INS_VEXTRACTF64X4 = 773,
-    X86_INS_VEXTRACTI128 = 774,
-    X86_INS_VEXTRACTI32X4 = 775,
-    X86_INS_VEXTRACTI64X4 = 776,
-    X86_INS_VEXTRACTPS = 777,
-    X86_INS_VFMADD132PD = 778,
-    X86_INS_VFMADD132PS = 779,
-    X86_INS_VFMADD213PD = 780,
-    X86_INS_VFMADD213PS = 781,
-    X86_INS_VFMADDPD = 782,
-    X86_INS_VFMADD231PD = 783,
-    X86_INS_VFMADDPS = 784,
-    X86_INS_VFMADD231PS = 785,
-    X86_INS_VFMADDSD = 786,
-    X86_INS_VFMADD213SD = 787,
-    X86_INS_VFMADD132SD = 788,
-    X86_INS_VFMADD231SD = 789,
-    X86_INS_VFMADDSS = 790,
-    X86_INS_VFMADD213SS = 791,
-    X86_INS_VFMADD132SS = 792,
-    X86_INS_VFMADD231SS = 793,
-    X86_INS_VFMADDSUB132PD = 794,
-    X86_INS_VFMADDSUB132PS = 795,
-    X86_INS_VFMADDSUB213PD = 796,
-    X86_INS_VFMADDSUB213PS = 797,
-    X86_INS_VFMADDSUBPD = 798,
-    X86_INS_VFMADDSUB231PD = 799,
-    X86_INS_VFMADDSUBPS = 800,
-    X86_INS_VFMADDSUB231PS = 801,
-    X86_INS_VFMSUB132PD = 802,
-    X86_INS_VFMSUB132PS = 803,
-    X86_INS_VFMSUB213PD = 804,
-    X86_INS_VFMSUB213PS = 805,
-    X86_INS_VFMSUBADD132PD = 806,
-    X86_INS_VFMSUBADD132PS = 807,
-    X86_INS_VFMSUBADD213PD = 808,
-    X86_INS_VFMSUBADD213PS = 809,
-    X86_INS_VFMSUBADDPD = 810,
-    X86_INS_VFMSUBADD231PD = 811,
-    X86_INS_VFMSUBADDPS = 812,
-    X86_INS_VFMSUBADD231PS = 813,
-    X86_INS_VFMSUBPD = 814,
-    X86_INS_VFMSUB231PD = 815,
-    X86_INS_VFMSUBPS = 816,
-    X86_INS_VFMSUB231PS = 817,
-    X86_INS_VFMSUBSD = 818,
-    X86_INS_VFMSUB213SD = 819,
-    X86_INS_VFMSUB132SD = 820,
-    X86_INS_VFMSUB231SD = 821,
-    X86_INS_VFMSUBSS = 822,
-    X86_INS_VFMSUB213SS = 823,
-    X86_INS_VFMSUB132SS = 824,
-    X86_INS_VFMSUB231SS = 825,
-    X86_INS_VFNMADD132PD = 826,
-    X86_INS_VFNMADD132PS = 827,
-    X86_INS_VFNMADD213PD = 828,
-    X86_INS_VFNMADD213PS = 829,
-    X86_INS_VFNMADDPD = 830,
-    X86_INS_VFNMADD231PD = 831,
-    X86_INS_VFNMADDPS = 832,
-    X86_INS_VFNMADD231PS = 833,
-    X86_INS_VFNMADDSD = 834,
-    X86_INS_VFNMADD213SD = 835,
-    X86_INS_VFNMADD132SD = 836,
-    X86_INS_VFNMADD231SD = 837,
-    X86_INS_VFNMADDSS = 838,
-    X86_INS_VFNMADD213SS = 839,
-    X86_INS_VFNMADD132SS = 840,
-    X86_INS_VFNMADD231SS = 841,
-    X86_INS_VFNMSUB132PD = 842,
-    X86_INS_VFNMSUB132PS = 843,
-    X86_INS_VFNMSUB213PD = 844,
-    X86_INS_VFNMSUB213PS = 845,
-    X86_INS_VFNMSUBPD = 846,
-    X86_INS_VFNMSUB231PD = 847,
-    X86_INS_VFNMSUBPS = 848,
-    X86_INS_VFNMSUB231PS = 849,
-    X86_INS_VFNMSUBSD = 850,
-    X86_INS_VFNMSUB213SD = 851,
-    X86_INS_VFNMSUB132SD = 852,
-    X86_INS_VFNMSUB231SD = 853,
-    X86_INS_VFNMSUBSS = 854,
-    X86_INS_VFNMSUB213SS = 855,
-    X86_INS_VFNMSUB132SS = 856,
-    X86_INS_VFNMSUB231SS = 857,
-    X86_INS_VFRCZPD = 858,
-    X86_INS_VFRCZPS = 859,
-    X86_INS_VFRCZSD = 860,
-    X86_INS_VFRCZSS = 861,
-    X86_INS_VORPD = 862,
-    X86_INS_VORPS = 863,
-    X86_INS_VXORPD = 864,
-    X86_INS_VXORPS = 865,
-    X86_INS_VGATHERDPD = 866,
-    X86_INS_VGATHERDPS = 867,
-    X86_INS_VGATHERPF0DPD = 868,
-    X86_INS_VGATHERPF0DPS = 869,
-    X86_INS_VGATHERPF0QPD = 870,
-    X86_INS_VGATHERPF0QPS = 871,
-    X86_INS_VGATHERPF1DPD = 872,
-    X86_INS_VGATHERPF1DPS = 873,
-    X86_INS_VGATHERPF1QPD = 874,
-    X86_INS_VGATHERPF1QPS = 875,
-    X86_INS_VGATHERQPD = 876,
-    X86_INS_VGATHERQPS = 877,
-    X86_INS_VHADDPD = 878,
-    X86_INS_VHADDPS = 879,
-    X86_INS_VHSUBPD = 880,
-    X86_INS_VHSUBPS = 881,
-    X86_INS_VINSERTF128 = 882,
-    X86_INS_VINSERTF32X4 = 883,
-    X86_INS_VINSERTF64X4 = 884,
-    X86_INS_VINSERTI128 = 885,
-    X86_INS_VINSERTI32X4 = 886,
-    X86_INS_VINSERTI64X4 = 887,
-    X86_INS_VINSERTPS = 888,
-    X86_INS_VLDDQU = 889,
-    X86_INS_VLDMXCSR = 890,
-    X86_INS_VMASKMOVDQU = 891,
-    X86_INS_VMASKMOVPD = 892,
-    X86_INS_VMASKMOVPS = 893,
-    X86_INS_VMAXPD = 894,
-    X86_INS_VMAXPS = 895,
-    X86_INS_VMAXSD = 896,
-    X86_INS_VMAXSS = 897,
-    X86_INS_VMCALL = 898,
-    X86_INS_VMCLEAR = 899,
-    X86_INS_VMFUNC = 900,
-    X86_INS_VMINPD = 901,
-    X86_INS_VMINPS = 902,
-    X86_INS_VMINSD = 903,
-    X86_INS_VMINSS = 904,
-    X86_INS_VMLAUNCH = 905,
-    X86_INS_VMLOAD = 906,
-    X86_INS_VMMCALL = 907,
-    X86_INS_VMOVQ = 908,
-    X86_INS_VMOVDDUP = 909,
-    X86_INS_VMOVD = 910,
-    X86_INS_VMOVDQA32 = 911,
-    X86_INS_VMOVDQA64 = 912,
-    X86_INS_VMOVDQA = 913,
-    X86_INS_VMOVDQU16 = 914,
-    X86_INS_VMOVDQU32 = 915,
-    X86_INS_VMOVDQU64 = 916,
-    X86_INS_VMOVDQU8 = 917,
-    X86_INS_VMOVDQU = 918,
-    X86_INS_VMOVHLPS = 919,
-    X86_INS_VMOVHPD = 920,
-    X86_INS_VMOVHPS = 921,
-    X86_INS_VMOVLHPS = 922,
-    X86_INS_VMOVLPD = 923,
-    X86_INS_VMOVLPS = 924,
-    X86_INS_VMOVMSKPD = 925,
-    X86_INS_VMOVMSKPS = 926,
-    X86_INS_VMOVNTDQA = 927,
-    X86_INS_VMOVNTDQ = 928,
-    X86_INS_VMOVNTPD = 929,
-    X86_INS_VMOVNTPS = 930,
-    X86_INS_VMOVSD = 931,
-    X86_INS_VMOVSHDUP = 932,
-    X86_INS_VMOVSLDUP = 933,
-    X86_INS_VMOVSS = 934,
-    X86_INS_VMOVUPD = 935,
-    X86_INS_VMOVUPS = 936,
-    X86_INS_VMPSADBW = 937,
-    X86_INS_VMPTRLD = 938,
-    X86_INS_VMPTRST = 939,
-    X86_INS_VMREAD = 940,
-    X86_INS_VMRESUME = 941,
-    X86_INS_VMRUN = 942,
-    X86_INS_VMSAVE = 943,
-    X86_INS_VMULPD = 944,
-    X86_INS_VMULPS = 945,
-    X86_INS_VMULSD = 946,
-    X86_INS_VMULSS = 947,
-    X86_INS_VMWRITE = 948,
-    X86_INS_VMXOFF = 949,
-    X86_INS_VMXON = 950,
-    X86_INS_VPABSB = 951,
-    X86_INS_VPABSD = 952,
-    X86_INS_VPABSQ = 953,
-    X86_INS_VPABSW = 954,
-    X86_INS_VPACKSSDW = 955,
-    X86_INS_VPACKSSWB = 956,
-    X86_INS_VPACKUSDW = 957,
-    X86_INS_VPACKUSWB = 958,
-    X86_INS_VPADDB = 959,
-    X86_INS_VPADDD = 960,
-    X86_INS_VPADDQ = 961,
-    X86_INS_VPADDSB = 962,
-    X86_INS_VPADDSW = 963,
-    X86_INS_VPADDUSB = 964,
-    X86_INS_VPADDUSW = 965,
-    X86_INS_VPADDW = 966,
-    X86_INS_VPALIGNR = 967,
-    X86_INS_VPANDD = 968,
-    X86_INS_VPANDND = 969,
-    X86_INS_VPANDNQ = 970,
-    X86_INS_VPANDN = 971,
-    X86_INS_VPANDQ = 972,
-    X86_INS_VPAND = 973,
-    X86_INS_VPAVGB = 974,
-    X86_INS_VPAVGW = 975,
-    X86_INS_VPBLENDD = 976,
-    X86_INS_VPBLENDMD = 977,
-    X86_INS_VPBLENDMQ = 978,
-    X86_INS_VPBLENDVB = 979,
-    X86_INS_VPBLENDW = 980,
-    X86_INS_VPBROADCASTB = 981,
-    X86_INS_VPBROADCASTD = 982,
-    X86_INS_VPBROADCASTMB2Q = 983,
-    X86_INS_VPBROADCASTMW2D = 984,
-    X86_INS_VPBROADCASTQ = 985,
-    X86_INS_VPBROADCASTW = 986,
-    X86_INS_VPCLMULQDQ = 987,
-    X86_INS_VPCMOV = 988,
-    X86_INS_VPCMP = 989,
-    X86_INS_VPCMPD = 990,
-    X86_INS_VPCMPEQB = 991,
-    X86_INS_VPCMPEQD = 992,
-    X86_INS_VPCMPEQQ = 993,
-    X86_INS_VPCMPEQW = 994,
-    X86_INS_VPCMPESTRI = 995,
-    X86_INS_VPCMPESTRM = 996,
-    X86_INS_VPCMPGTB = 997,
-    X86_INS_VPCMPGTD = 998,
-    X86_INS_VPCMPGTQ = 999,
-    X86_INS_VPCMPGTW = 1000,
-    X86_INS_VPCMPISTRI = 1001,
-    X86_INS_VPCMPISTRM = 1002,
-    X86_INS_VPCMPQ = 1003,
-    X86_INS_VPCMPUD = 1004,
-    X86_INS_VPCMPUQ = 1005,
-    X86_INS_VPCOMB = 1006,
-    X86_INS_VPCOMD = 1007,
-    X86_INS_VPCOMQ = 1008,
-    X86_INS_VPCOMUB = 1009,
-    X86_INS_VPCOMUD = 1010,
-    X86_INS_VPCOMUQ = 1011,
-    X86_INS_VPCOMUW = 1012,
-    X86_INS_VPCOMW = 1013,
-    X86_INS_VPCONFLICTD = 1014,
-    X86_INS_VPCONFLICTQ = 1015,
-    X86_INS_VPERM2F128 = 1016,
-    X86_INS_VPERM2I128 = 1017,
-    X86_INS_VPERMD = 1018,
-    X86_INS_VPERMI2D = 1019,
-    X86_INS_VPERMI2PD = 1020,
-    X86_INS_VPERMI2PS = 1021,
-    X86_INS_VPERMI2Q = 1022,
-    X86_INS_VPERMIL2PD = 1023,
-    X86_INS_VPERMIL2PS = 1024,
-    X86_INS_VPERMILPD = 1025,
-    X86_INS_VPERMILPS = 1026,
-    X86_INS_VPERMPD = 1027,
-    X86_INS_VPERMPS = 1028,
-    X86_INS_VPERMQ = 1029,
-    X86_INS_VPERMT2D = 1030,
-    X86_INS_VPERMT2PD = 1031,
-    X86_INS_VPERMT2PS = 1032,
-    X86_INS_VPERMT2Q = 1033,
-    X86_INS_VPEXTRB = 1034,
-    X86_INS_VPEXTRD = 1035,
-    X86_INS_VPEXTRQ = 1036,
-    X86_INS_VPEXTRW = 1037,
-    X86_INS_VPGATHERDD = 1038,
-    X86_INS_VPGATHERDQ = 1039,
-    X86_INS_VPGATHERQD = 1040,
-    X86_INS_VPGATHERQQ = 1041,
-    X86_INS_VPHADDBD = 1042,
-    X86_INS_VPHADDBQ = 1043,
-    X86_INS_VPHADDBW = 1044,
-    X86_INS_VPHADDDQ = 1045,
-    X86_INS_VPHADDD = 1046,
-    X86_INS_VPHADDSW = 1047,
-    X86_INS_VPHADDUBD = 1048,
-    X86_INS_VPHADDUBQ = 1049,
-    X86_INS_VPHADDUBW = 1050,
-    X86_INS_VPHADDUDQ = 1051,
-    X86_INS_VPHADDUWD = 1052,
-    X86_INS_VPHADDUWQ = 1053,
-    X86_INS_VPHADDWD = 1054,
-    X86_INS_VPHADDWQ = 1055,
-    X86_INS_VPHADDW = 1056,
-    X86_INS_VPHMINPOSUW = 1057,
-    X86_INS_VPHSUBBW = 1058,
-    X86_INS_VPHSUBDQ = 1059,
-    X86_INS_VPHSUBD = 1060,
-    X86_INS_VPHSUBSW = 1061,
-    X86_INS_VPHSUBWD = 1062,
-    X86_INS_VPHSUBW = 1063,
-    X86_INS_VPINSRB = 1064,
-    X86_INS_VPINSRD = 1065,
-    X86_INS_VPINSRQ = 1066,
-    X86_INS_VPINSRW = 1067,
-    X86_INS_VPLZCNTD = 1068,
-    X86_INS_VPLZCNTQ = 1069,
-    X86_INS_VPMACSDD = 1070,
-    X86_INS_VPMACSDQH = 1071,
-    X86_INS_VPMACSDQL = 1072,
-    X86_INS_VPMACSSDD = 1073,
-    X86_INS_VPMACSSDQH = 1074,
-    X86_INS_VPMACSSDQL = 1075,
-    X86_INS_VPMACSSWD = 1076,
-    X86_INS_VPMACSSWW = 1077,
-    X86_INS_VPMACSWD = 1078,
-    X86_INS_VPMACSWW = 1079,
-    X86_INS_VPMADCSSWD = 1080,
-    X86_INS_VPMADCSWD = 1081,
-    X86_INS_VPMADDUBSW = 1082,
-    X86_INS_VPMADDWD = 1083,
-    X86_INS_VPMASKMOVD = 1084,
-    X86_INS_VPMASKMOVQ = 1085,
-    X86_INS_VPMAXSB = 1086,
-    X86_INS_VPMAXSD = 1087,
-    X86_INS_VPMAXSQ = 1088,
-    X86_INS_VPMAXSW = 1089,
-    X86_INS_VPMAXUB = 1090,
-    X86_INS_VPMAXUD = 1091,
-    X86_INS_VPMAXUQ = 1092,
-    X86_INS_VPMAXUW = 1093,
-    X86_INS_VPMINSB = 1094,
-    X86_INS_VPMINSD = 1095,
-    X86_INS_VPMINSQ = 1096,
-    X86_INS_VPMINSW = 1097,
-    X86_INS_VPMINUB = 1098,
-    X86_INS_VPMINUD = 1099,
-    X86_INS_VPMINUQ = 1100,
-    X86_INS_VPMINUW = 1101,
-    X86_INS_VPMOVDB = 1102,
-    X86_INS_VPMOVDW = 1103,
-    X86_INS_VPMOVMSKB = 1104,
-    X86_INS_VPMOVQB = 1105,
-    X86_INS_VPMOVQD = 1106,
-    X86_INS_VPMOVQW = 1107,
-    X86_INS_VPMOVSDB = 1108,
-    X86_INS_VPMOVSDW = 1109,
-    X86_INS_VPMOVSQB = 1110,
-    X86_INS_VPMOVSQD = 1111,
-    X86_INS_VPMOVSQW = 1112,
-    X86_INS_VPMOVSXBD = 1113,
-    X86_INS_VPMOVSXBQ = 1114,
-    X86_INS_VPMOVSXBW = 1115,
-    X86_INS_VPMOVSXDQ = 1116,
-    X86_INS_VPMOVSXWD = 1117,
-    X86_INS_VPMOVSXWQ = 1118,
-    X86_INS_VPMOVUSDB = 1119,
-    X86_INS_VPMOVUSDW = 1120,
-    X86_INS_VPMOVUSQB = 1121,
-    X86_INS_VPMOVUSQD = 1122,
-    X86_INS_VPMOVUSQW = 1123,
-    X86_INS_VPMOVZXBD = 1124,
-    X86_INS_VPMOVZXBQ = 1125,
-    X86_INS_VPMOVZXBW = 1126,
-    X86_INS_VPMOVZXDQ = 1127,
-    X86_INS_VPMOVZXWD = 1128,
-    X86_INS_VPMOVZXWQ = 1129,
-    X86_INS_VPMULDQ = 1130,
-    X86_INS_VPMULHRSW = 1131,
-    X86_INS_VPMULHUW = 1132,
-    X86_INS_VPMULHW = 1133,
-    X86_INS_VPMULLD = 1134,
-    X86_INS_VPMULLW = 1135,
-    X86_INS_VPMULUDQ = 1136,
-    X86_INS_VPORD = 1137,
-    X86_INS_VPORQ = 1138,
-    X86_INS_VPOR = 1139,
-    X86_INS_VPPERM = 1140,
-    X86_INS_VPROTB = 1141,
-    X86_INS_VPROTD = 1142,
-    X86_INS_VPROTQ = 1143,
-    X86_INS_VPROTW = 1144,
-    X86_INS_VPSADBW = 1145,
-    X86_INS_VPSCATTERDD = 1146,
-    X86_INS_VPSCATTERDQ = 1147,
-    X86_INS_VPSCATTERQD = 1148,
-    X86_INS_VPSCATTERQQ = 1149,
-    X86_INS_VPSHAB = 1150,
-    X86_INS_VPSHAD = 1151,
-    X86_INS_VPSHAQ = 1152,
-    X86_INS_VPSHAW = 1153,
-    X86_INS_VPSHLB = 1154,
-    X86_INS_VPSHLD = 1155,
-    X86_INS_VPSHLQ = 1156,
-    X86_INS_VPSHLW = 1157,
-    X86_INS_VPSHUFB = 1158,
-    X86_INS_VPSHUFD = 1159,
-    X86_INS_VPSHUFHW = 1160,
-    X86_INS_VPSHUFLW = 1161,
-    X86_INS_VPSIGNB = 1162,
-    X86_INS_VPSIGND = 1163,
-    X86_INS_VPSIGNW = 1164,
-    X86_INS_VPSLLDQ = 1165,
-    X86_INS_VPSLLD = 1166,
-    X86_INS_VPSLLQ = 1167,
-    X86_INS_VPSLLVD = 1168,
-    X86_INS_VPSLLVQ = 1169,
-    X86_INS_VPSLLW = 1170,
-    X86_INS_VPSRAD = 1171,
-    X86_INS_VPSRAQ = 1172,
-    X86_INS_VPSRAVD = 1173,
-    X86_INS_VPSRAVQ = 1174,
-    X86_INS_VPSRAW = 1175,
-    X86_INS_VPSRLDQ = 1176,
-    X86_INS_VPSRLD = 1177,
-    X86_INS_VPSRLQ = 1178,
-    X86_INS_VPSRLVD = 1179,
-    X86_INS_VPSRLVQ = 1180,
-    X86_INS_VPSRLW = 1181,
-    X86_INS_VPSUBB = 1182,
-    X86_INS_VPSUBD = 1183,
-    X86_INS_VPSUBQ = 1184,
-    X86_INS_VPSUBSB = 1185,
-    X86_INS_VPSUBSW = 1186,
-    X86_INS_VPSUBUSB = 1187,
-    X86_INS_VPSUBUSW = 1188,
-    X86_INS_VPSUBW = 1189,
-    X86_INS_VPTESTMD = 1190,
-    X86_INS_VPTESTMQ = 1191,
-    X86_INS_VPTESTNMD = 1192,
-    X86_INS_VPTESTNMQ = 1193,
-    X86_INS_VPTEST = 1194,
-    X86_INS_VPUNPCKHBW = 1195,
-    X86_INS_VPUNPCKHDQ = 1196,
-    X86_INS_VPUNPCKHQDQ = 1197,
-    X86_INS_VPUNPCKHWD = 1198,
-    X86_INS_VPUNPCKLBW = 1199,
-    X86_INS_VPUNPCKLDQ = 1200,
-    X86_INS_VPUNPCKLQDQ = 1201,
-    X86_INS_VPUNPCKLWD = 1202,
-    X86_INS_VPXORD = 1203,
-    X86_INS_VPXORQ = 1204,
-    X86_INS_VPXOR = 1205,
-    X86_INS_VRCP14PD = 1206,
-    X86_INS_VRCP14PS = 1207,
-    X86_INS_VRCP14SD = 1208,
-    X86_INS_VRCP14SS = 1209,
-    X86_INS_VRCP28PD = 1210,
-    X86_INS_VRCP28PS = 1211,
-    X86_INS_VRCP28SD = 1212,
-    X86_INS_VRCP28SS = 1213,
-    X86_INS_VRCPPS = 1214,
-    X86_INS_VRCPSS = 1215,
-    X86_INS_VRNDSCALEPD = 1216,
-    X86_INS_VRNDSCALEPS = 1217,
-    X86_INS_VRNDSCALESD = 1218,
-    X86_INS_VRNDSCALESS = 1219,
-    X86_INS_VROUNDPD = 1220,
-    X86_INS_VROUNDPS = 1221,
-    X86_INS_VROUNDSD = 1222,
-    X86_INS_VROUNDSS = 1223,
-    X86_INS_VRSQRT14PD = 1224,
-    X86_INS_VRSQRT14PS = 1225,
-    X86_INS_VRSQRT14SD = 1226,
-    X86_INS_VRSQRT14SS = 1227,
-    X86_INS_VRSQRT28PD = 1228,
-    X86_INS_VRSQRT28PS = 1229,
-    X86_INS_VRSQRT28SD = 1230,
-    X86_INS_VRSQRT28SS = 1231,
-    X86_INS_VRSQRTPS = 1232,
-    X86_INS_VRSQRTSS = 1233,
-    X86_INS_VSCATTERDPD = 1234,
-    X86_INS_VSCATTERDPS = 1235,
-    X86_INS_VSCATTERPF0DPD = 1236,
-    X86_INS_VSCATTERPF0DPS = 1237,
-    X86_INS_VSCATTERPF0QPD = 1238,
-    X86_INS_VSCATTERPF0QPS = 1239,
-    X86_INS_VSCATTERPF1DPD = 1240,
-    X86_INS_VSCATTERPF1DPS = 1241,
-    X86_INS_VSCATTERPF1QPD = 1242,
-    X86_INS_VSCATTERPF1QPS = 1243,
-    X86_INS_VSCATTERQPD = 1244,
-    X86_INS_VSCATTERQPS = 1245,
-    X86_INS_VSHUFPD = 1246,
-    X86_INS_VSHUFPS = 1247,
-    X86_INS_VSQRTPD = 1248,
-    X86_INS_VSQRTPS = 1249,
-    X86_INS_VSQRTSD = 1250,
-    X86_INS_VSQRTSS = 1251,
-    X86_INS_VSTMXCSR = 1252,
-    X86_INS_VSUBPD = 1253,
-    X86_INS_VSUBPS = 1254,
-    X86_INS_VSUBSD = 1255,
-    X86_INS_VSUBSS = 1256,
-    X86_INS_VTESTPD = 1257,
-    X86_INS_VTESTPS = 1258,
-    X86_INS_VUNPCKHPD = 1259,
-    X86_INS_VUNPCKHPS = 1260,
-    X86_INS_VUNPCKLPD = 1261,
-    X86_INS_VUNPCKLPS = 1262,
-    X86_INS_VZEROALL = 1263,
-    X86_INS_VZEROUPPER = 1264,
-    X86_INS_WAIT = 1265,
-    X86_INS_WBINVD = 1266,
-    X86_INS_WRFSBASE = 1267,
-    X86_INS_WRGSBASE = 1268,
-    X86_INS_WRMSR = 1269,
-    X86_INS_XABORT = 1270,
-    X86_INS_XACQUIRE = 1271,
-    X86_INS_XBEGIN = 1272,
-    X86_INS_XCHG = 1273,
-    X86_INS_FXCH = 1274,
-    X86_INS_XCRYPTCBC = 1275,
-    X86_INS_XCRYPTCFB = 1276,
-    X86_INS_XCRYPTCTR = 1277,
-    X86_INS_XCRYPTECB = 1278,
-    X86_INS_XCRYPTOFB = 1279,
-    X86_INS_XEND = 1280,
-    X86_INS_XGETBV = 1281,
-    X86_INS_XLATB = 1282,
-    X86_INS_XRELEASE = 1283,
-    X86_INS_XRSTOR = 1284,
-    X86_INS_XRSTOR64 = 1285,
-    X86_INS_XSAVE = 1286,
-    X86_INS_XSAVE64 = 1287,
-    X86_INS_XSAVEOPT = 1288,
-    X86_INS_XSAVEOPT64 = 1289,
-    X86_INS_XSETBV = 1290,
-    X86_INS_XSHA1 = 1291,
-    X86_INS_XSHA256 = 1292,
-    X86_INS_XSTORE = 1293,
-    X86_INS_XTEST = 1294,
-    X86_INS_ENDING = 1295,
+impl ::std::fmt::Debug for cs_x86 {
+    fn fmt(&self, f: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
+        write ! ( f , "cs_x86 {{ prefix: {:?}, opcode: {:?}, rex: {:?}, addr_size: {:?}, modrm: {:?}, sib: {:?}, disp: {:?}, sib_index: {:?}, sib_scale: {:?}, sib_base: {:?}, sse_cc: {:?}, avx_cc: {:?}, avx_sae: {:?}, avx_rm: {:?}, op_count: {:?}, operands: {:?} }}" , self . prefix , self . opcode , self . rex , self . addr_size , self . modrm , self . sib , self . disp , self . sib_index , self . sib_scale , self . sib_base , self . sse_cc , self . avx_cc , self . avx_sae , self . avx_rm , self . op_count , self . operands )
+    }
 }
-#[repr(u32)]
-#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
-pub enum x86_insn_group {
-    X86_GRP_INVALID = 0,
-    X86_GRP_JUMP = 1,
-    X86_GRP_CALL = 2,
-    X86_GRP_RET = 3,
-    X86_GRP_INT = 4,
-    X86_GRP_IRET = 5,
-    X86_GRP_VM = 128,
-    X86_GRP_3DNOW = 129,
-    X86_GRP_AES = 130,
-    X86_GRP_ADX = 131,
-    X86_GRP_AVX = 132,
-    X86_GRP_AVX2 = 133,
-    X86_GRP_AVX512 = 134,
-    X86_GRP_BMI = 135,
-    X86_GRP_BMI2 = 136,
-    X86_GRP_CMOV = 137,
-    X86_GRP_F16C = 138,
-    X86_GRP_FMA = 139,
-    X86_GRP_FMA4 = 140,
-    X86_GRP_FSGSBASE = 141,
-    X86_GRP_HLE = 142,
-    X86_GRP_MMX = 143,
-    X86_GRP_MODE32 = 144,
-    X86_GRP_MODE64 = 145,
-    X86_GRP_RTM = 146,
-    X86_GRP_SHA = 147,
-    X86_GRP_SSE1 = 148,
-    X86_GRP_SSE2 = 149,
-    X86_GRP_SSE3 = 150,
-    X86_GRP_SSE41 = 151,
-    X86_GRP_SSE42 = 152,
-    X86_GRP_SSE4A = 153,
-    X86_GRP_SSSE3 = 154,
-    X86_GRP_PCLMUL = 155,
-    X86_GRP_XOP = 156,
-    X86_GRP_CDI = 157,
-    X86_GRP_ERI = 158,
-    X86_GRP_TBM = 159,
-    X86_GRP_16BITMODE = 160,
-    X86_GRP_NOT64BITMODE = 161,
-    X86_GRP_SGX = 162,
-    X86_GRP_DQI = 163,
-    X86_GRP_BWI = 164,
-    X86_GRP_PFI = 165,
-    X86_GRP_VLX = 166,
-    X86_GRP_SMAP = 167,
-    X86_GRP_NOVLX = 168,
-    X86_GRP_ENDING = 169,
+pub mod x86_insn {
+    pub type Type = ::std::os::raw::c_uint;
+    pub const X86_INS_INVALID: Type = 0;
+    pub const X86_INS_AAA: Type = 1;
+    pub const X86_INS_AAD: Type = 2;
+    pub const X86_INS_AAM: Type = 3;
+    pub const X86_INS_AAS: Type = 4;
+    pub const X86_INS_FABS: Type = 5;
+    pub const X86_INS_ADC: Type = 6;
+    pub const X86_INS_ADCX: Type = 7;
+    pub const X86_INS_ADD: Type = 8;
+    pub const X86_INS_ADDPD: Type = 9;
+    pub const X86_INS_ADDPS: Type = 10;
+    pub const X86_INS_ADDSD: Type = 11;
+    pub const X86_INS_ADDSS: Type = 12;
+    pub const X86_INS_ADDSUBPD: Type = 13;
+    pub const X86_INS_ADDSUBPS: Type = 14;
+    pub const X86_INS_FADD: Type = 15;
+    pub const X86_INS_FIADD: Type = 16;
+    pub const X86_INS_FADDP: Type = 17;
+    pub const X86_INS_ADOX: Type = 18;
+    pub const X86_INS_AESDECLAST: Type = 19;
+    pub const X86_INS_AESDEC: Type = 20;
+    pub const X86_INS_AESENCLAST: Type = 21;
+    pub const X86_INS_AESENC: Type = 22;
+    pub const X86_INS_AESIMC: Type = 23;
+    pub const X86_INS_AESKEYGENASSIST: Type = 24;
+    pub const X86_INS_AND: Type = 25;
+    pub const X86_INS_ANDN: Type = 26;
+    pub const X86_INS_ANDNPD: Type = 27;
+    pub const X86_INS_ANDNPS: Type = 28;
+    pub const X86_INS_ANDPD: Type = 29;
+    pub const X86_INS_ANDPS: Type = 30;
+    pub const X86_INS_ARPL: Type = 31;
+    pub const X86_INS_BEXTR: Type = 32;
+    pub const X86_INS_BLCFILL: Type = 33;
+    pub const X86_INS_BLCI: Type = 34;
+    pub const X86_INS_BLCIC: Type = 35;
+    pub const X86_INS_BLCMSK: Type = 36;
+    pub const X86_INS_BLCS: Type = 37;
+    pub const X86_INS_BLENDPD: Type = 38;
+    pub const X86_INS_BLENDPS: Type = 39;
+    pub const X86_INS_BLENDVPD: Type = 40;
+    pub const X86_INS_BLENDVPS: Type = 41;
+    pub const X86_INS_BLSFILL: Type = 42;
+    pub const X86_INS_BLSI: Type = 43;
+    pub const X86_INS_BLSIC: Type = 44;
+    pub const X86_INS_BLSMSK: Type = 45;
+    pub const X86_INS_BLSR: Type = 46;
+    pub const X86_INS_BOUND: Type = 47;
+    pub const X86_INS_BSF: Type = 48;
+    pub const X86_INS_BSR: Type = 49;
+    pub const X86_INS_BSWAP: Type = 50;
+    pub const X86_INS_BT: Type = 51;
+    pub const X86_INS_BTC: Type = 52;
+    pub const X86_INS_BTR: Type = 53;
+    pub const X86_INS_BTS: Type = 54;
+    pub const X86_INS_BZHI: Type = 55;
+    pub const X86_INS_CALL: Type = 56;
+    pub const X86_INS_CBW: Type = 57;
+    pub const X86_INS_CDQ: Type = 58;
+    pub const X86_INS_CDQE: Type = 59;
+    pub const X86_INS_FCHS: Type = 60;
+    pub const X86_INS_CLAC: Type = 61;
+    pub const X86_INS_CLC: Type = 62;
+    pub const X86_INS_CLD: Type = 63;
+    pub const X86_INS_CLFLUSH: Type = 64;
+    pub const X86_INS_CLGI: Type = 65;
+    pub const X86_INS_CLI: Type = 66;
+    pub const X86_INS_CLTS: Type = 67;
+    pub const X86_INS_CMC: Type = 68;
+    pub const X86_INS_CMOVA: Type = 69;
+    pub const X86_INS_CMOVAE: Type = 70;
+    pub const X86_INS_CMOVB: Type = 71;
+    pub const X86_INS_CMOVBE: Type = 72;
+    pub const X86_INS_FCMOVBE: Type = 73;
+    pub const X86_INS_FCMOVB: Type = 74;
+    pub const X86_INS_CMOVE: Type = 75;
+    pub const X86_INS_FCMOVE: Type = 76;
+    pub const X86_INS_CMOVG: Type = 77;
+    pub const X86_INS_CMOVGE: Type = 78;
+    pub const X86_INS_CMOVL: Type = 79;
+    pub const X86_INS_CMOVLE: Type = 80;
+    pub const X86_INS_FCMOVNBE: Type = 81;
+    pub const X86_INS_FCMOVNB: Type = 82;
+    pub const X86_INS_CMOVNE: Type = 83;
+    pub const X86_INS_FCMOVNE: Type = 84;
+    pub const X86_INS_CMOVNO: Type = 85;
+    pub const X86_INS_CMOVNP: Type = 86;
+    pub const X86_INS_FCMOVNU: Type = 87;
+    pub const X86_INS_CMOVNS: Type = 88;
+    pub const X86_INS_CMOVO: Type = 89;
+    pub const X86_INS_CMOVP: Type = 90;
+    pub const X86_INS_FCMOVU: Type = 91;
+    pub const X86_INS_CMOVS: Type = 92;
+    pub const X86_INS_CMP: Type = 93;
+    pub const X86_INS_CMPPD: Type = 94;
+    pub const X86_INS_CMPPS: Type = 95;
+    pub const X86_INS_CMPSB: Type = 96;
+    pub const X86_INS_CMPSD: Type = 97;
+    pub const X86_INS_CMPSQ: Type = 98;
+    pub const X86_INS_CMPSS: Type = 99;
+    pub const X86_INS_CMPSW: Type = 100;
+    pub const X86_INS_CMPXCHG16B: Type = 101;
+    pub const X86_INS_CMPXCHG: Type = 102;
+    pub const X86_INS_CMPXCHG8B: Type = 103;
+    pub const X86_INS_COMISD: Type = 104;
+    pub const X86_INS_COMISS: Type = 105;
+    pub const X86_INS_FCOMP: Type = 106;
+    pub const X86_INS_FCOMPI: Type = 107;
+    pub const X86_INS_FCOMI: Type = 108;
+    pub const X86_INS_FCOM: Type = 109;
+    pub const X86_INS_FCOS: Type = 110;
+    pub const X86_INS_CPUID: Type = 111;
+    pub const X86_INS_CQO: Type = 112;
+    pub const X86_INS_CRC32: Type = 113;
+    pub const X86_INS_CVTDQ2PD: Type = 114;
+    pub const X86_INS_CVTDQ2PS: Type = 115;
+    pub const X86_INS_CVTPD2DQ: Type = 116;
+    pub const X86_INS_CVTPD2PS: Type = 117;
+    pub const X86_INS_CVTPS2DQ: Type = 118;
+    pub const X86_INS_CVTPS2PD: Type = 119;
+    pub const X86_INS_CVTSD2SI: Type = 120;
+    pub const X86_INS_CVTSD2SS: Type = 121;
+    pub const X86_INS_CVTSI2SD: Type = 122;
+    pub const X86_INS_CVTSI2SS: Type = 123;
+    pub const X86_INS_CVTSS2SD: Type = 124;
+    pub const X86_INS_CVTSS2SI: Type = 125;
+    pub const X86_INS_CVTTPD2DQ: Type = 126;
+    pub const X86_INS_CVTTPS2DQ: Type = 127;
+    pub const X86_INS_CVTTSD2SI: Type = 128;
+    pub const X86_INS_CVTTSS2SI: Type = 129;
+    pub const X86_INS_CWD: Type = 130;
+    pub const X86_INS_CWDE: Type = 131;
+    pub const X86_INS_DAA: Type = 132;
+    pub const X86_INS_DAS: Type = 133;
+    pub const X86_INS_DATA16: Type = 134;
+    pub const X86_INS_DEC: Type = 135;
+    pub const X86_INS_DIV: Type = 136;
+    pub const X86_INS_DIVPD: Type = 137;
+    pub const X86_INS_DIVPS: Type = 138;
+    pub const X86_INS_FDIVR: Type = 139;
+    pub const X86_INS_FIDIVR: Type = 140;
+    pub const X86_INS_FDIVRP: Type = 141;
+    pub const X86_INS_DIVSD: Type = 142;
+    pub const X86_INS_DIVSS: Type = 143;
+    pub const X86_INS_FDIV: Type = 144;
+    pub const X86_INS_FIDIV: Type = 145;
+    pub const X86_INS_FDIVP: Type = 146;
+    pub const X86_INS_DPPD: Type = 147;
+    pub const X86_INS_DPPS: Type = 148;
+    pub const X86_INS_RET: Type = 149;
+    pub const X86_INS_ENCLS: Type = 150;
+    pub const X86_INS_ENCLU: Type = 151;
+    pub const X86_INS_ENTER: Type = 152;
+    pub const X86_INS_EXTRACTPS: Type = 153;
+    pub const X86_INS_EXTRQ: Type = 154;
+    pub const X86_INS_F2XM1: Type = 155;
+    pub const X86_INS_LCALL: Type = 156;
+    pub const X86_INS_LJMP: Type = 157;
+    pub const X86_INS_FBLD: Type = 158;
+    pub const X86_INS_FBSTP: Type = 159;
+    pub const X86_INS_FCOMPP: Type = 160;
+    pub const X86_INS_FDECSTP: Type = 161;
+    pub const X86_INS_FEMMS: Type = 162;
+    pub const X86_INS_FFREE: Type = 163;
+    pub const X86_INS_FICOM: Type = 164;
+    pub const X86_INS_FICOMP: Type = 165;
+    pub const X86_INS_FINCSTP: Type = 166;
+    pub const X86_INS_FLDCW: Type = 167;
+    pub const X86_INS_FLDENV: Type = 168;
+    pub const X86_INS_FLDL2E: Type = 169;
+    pub const X86_INS_FLDL2T: Type = 170;
+    pub const X86_INS_FLDLG2: Type = 171;
+    pub const X86_INS_FLDLN2: Type = 172;
+    pub const X86_INS_FLDPI: Type = 173;
+    pub const X86_INS_FNCLEX: Type = 174;
+    pub const X86_INS_FNINIT: Type = 175;
+    pub const X86_INS_FNOP: Type = 176;
+    pub const X86_INS_FNSTCW: Type = 177;
+    pub const X86_INS_FNSTSW: Type = 178;
+    pub const X86_INS_FPATAN: Type = 179;
+    pub const X86_INS_FPREM: Type = 180;
+    pub const X86_INS_FPREM1: Type = 181;
+    pub const X86_INS_FPTAN: Type = 182;
+    pub const X86_INS_FRNDINT: Type = 183;
+    pub const X86_INS_FRSTOR: Type = 184;
+    pub const X86_INS_FNSAVE: Type = 185;
+    pub const X86_INS_FSCALE: Type = 186;
+    pub const X86_INS_FSETPM: Type = 187;
+    pub const X86_INS_FSINCOS: Type = 188;
+    pub const X86_INS_FNSTENV: Type = 189;
+    pub const X86_INS_FXAM: Type = 190;
+    pub const X86_INS_FXRSTOR: Type = 191;
+    pub const X86_INS_FXRSTOR64: Type = 192;
+    pub const X86_INS_FXSAVE: Type = 193;
+    pub const X86_INS_FXSAVE64: Type = 194;
+    pub const X86_INS_FXTRACT: Type = 195;
+    pub const X86_INS_FYL2X: Type = 196;
+    pub const X86_INS_FYL2XP1: Type = 197;
+    pub const X86_INS_MOVAPD: Type = 198;
+    pub const X86_INS_MOVAPS: Type = 199;
+    pub const X86_INS_ORPD: Type = 200;
+    pub const X86_INS_ORPS: Type = 201;
+    pub const X86_INS_VMOVAPD: Type = 202;
+    pub const X86_INS_VMOVAPS: Type = 203;
+    pub const X86_INS_XORPD: Type = 204;
+    pub const X86_INS_XORPS: Type = 205;
+    pub const X86_INS_GETSEC: Type = 206;
+    pub const X86_INS_HADDPD: Type = 207;
+    pub const X86_INS_HADDPS: Type = 208;
+    pub const X86_INS_HLT: Type = 209;
+    pub const X86_INS_HSUBPD: Type = 210;
+    pub const X86_INS_HSUBPS: Type = 211;
+    pub const X86_INS_IDIV: Type = 212;
+    pub const X86_INS_FILD: Type = 213;
+    pub const X86_INS_IMUL: Type = 214;
+    pub const X86_INS_IN: Type = 215;
+    pub const X86_INS_INC: Type = 216;
+    pub const X86_INS_INSB: Type = 217;
+    pub const X86_INS_INSERTPS: Type = 218;
+    pub const X86_INS_INSERTQ: Type = 219;
+    pub const X86_INS_INSD: Type = 220;
+    pub const X86_INS_INSW: Type = 221;
+    pub const X86_INS_INT: Type = 222;
+    pub const X86_INS_INT1: Type = 223;
+    pub const X86_INS_INT3: Type = 224;
+    pub const X86_INS_INTO: Type = 225;
+    pub const X86_INS_INVD: Type = 226;
+    pub const X86_INS_INVEPT: Type = 227;
+    pub const X86_INS_INVLPG: Type = 228;
+    pub const X86_INS_INVLPGA: Type = 229;
+    pub const X86_INS_INVPCID: Type = 230;
+    pub const X86_INS_INVVPID: Type = 231;
+    pub const X86_INS_IRET: Type = 232;
+    pub const X86_INS_IRETD: Type = 233;
+    pub const X86_INS_IRETQ: Type = 234;
+    pub const X86_INS_FISTTP: Type = 235;
+    pub const X86_INS_FIST: Type = 236;
+    pub const X86_INS_FISTP: Type = 237;
+    pub const X86_INS_UCOMISD: Type = 238;
+    pub const X86_INS_UCOMISS: Type = 239;
+    pub const X86_INS_VCMP: Type = 240;
+    pub const X86_INS_VCOMISD: Type = 241;
+    pub const X86_INS_VCOMISS: Type = 242;
+    pub const X86_INS_VCVTSD2SS: Type = 243;
+    pub const X86_INS_VCVTSI2SD: Type = 244;
+    pub const X86_INS_VCVTSI2SS: Type = 245;
+    pub const X86_INS_VCVTSS2SD: Type = 246;
+    pub const X86_INS_VCVTTSD2SI: Type = 247;
+    pub const X86_INS_VCVTTSD2USI: Type = 248;
+    pub const X86_INS_VCVTTSS2SI: Type = 249;
+    pub const X86_INS_VCVTTSS2USI: Type = 250;
+    pub const X86_INS_VCVTUSI2SD: Type = 251;
+    pub const X86_INS_VCVTUSI2SS: Type = 252;
+    pub const X86_INS_VUCOMISD: Type = 253;
+    pub const X86_INS_VUCOMISS: Type = 254;
+    pub const X86_INS_JAE: Type = 255;
+    pub const X86_INS_JA: Type = 256;
+    pub const X86_INS_JBE: Type = 257;
+    pub const X86_INS_JB: Type = 258;
+    pub const X86_INS_JCXZ: Type = 259;
+    pub const X86_INS_JECXZ: Type = 260;
+    pub const X86_INS_JE: Type = 261;
+    pub const X86_INS_JGE: Type = 262;
+    pub const X86_INS_JG: Type = 263;
+    pub const X86_INS_JLE: Type = 264;
+    pub const X86_INS_JL: Type = 265;
+    pub const X86_INS_JMP: Type = 266;
+    pub const X86_INS_JNE: Type = 267;
+    pub const X86_INS_JNO: Type = 268;
+    pub const X86_INS_JNP: Type = 269;
+    pub const X86_INS_JNS: Type = 270;
+    pub const X86_INS_JO: Type = 271;
+    pub const X86_INS_JP: Type = 272;
+    pub const X86_INS_JRCXZ: Type = 273;
+    pub const X86_INS_JS: Type = 274;
+    pub const X86_INS_KANDB: Type = 275;
+    pub const X86_INS_KANDD: Type = 276;
+    pub const X86_INS_KANDNB: Type = 277;
+    pub const X86_INS_KANDND: Type = 278;
+    pub const X86_INS_KANDNQ: Type = 279;
+    pub const X86_INS_KANDNW: Type = 280;
+    pub const X86_INS_KANDQ: Type = 281;
+    pub const X86_INS_KANDW: Type = 282;
+    pub const X86_INS_KMOVB: Type = 283;
+    pub const X86_INS_KMOVD: Type = 284;
+    pub const X86_INS_KMOVQ: Type = 285;
+    pub const X86_INS_KMOVW: Type = 286;
+    pub const X86_INS_KNOTB: Type = 287;
+    pub const X86_INS_KNOTD: Type = 288;
+    pub const X86_INS_KNOTQ: Type = 289;
+    pub const X86_INS_KNOTW: Type = 290;
+    pub const X86_INS_KORB: Type = 291;
+    pub const X86_INS_KORD: Type = 292;
+    pub const X86_INS_KORQ: Type = 293;
+    pub const X86_INS_KORTESTW: Type = 294;
+    pub const X86_INS_KORW: Type = 295;
+    pub const X86_INS_KSHIFTLW: Type = 296;
+    pub const X86_INS_KSHIFTRW: Type = 297;
+    pub const X86_INS_KUNPCKBW: Type = 298;
+    pub const X86_INS_KXNORB: Type = 299;
+    pub const X86_INS_KXNORD: Type = 300;
+    pub const X86_INS_KXNORQ: Type = 301;
+    pub const X86_INS_KXNORW: Type = 302;
+    pub const X86_INS_KXORB: Type = 303;
+    pub const X86_INS_KXORD: Type = 304;
+    pub const X86_INS_KXORQ: Type = 305;
+    pub const X86_INS_KXORW: Type = 306;
+    pub const X86_INS_LAHF: Type = 307;
+    pub const X86_INS_LAR: Type = 308;
+    pub const X86_INS_LDDQU: Type = 309;
+    pub const X86_INS_LDMXCSR: Type = 310;
+    pub const X86_INS_LDS: Type = 311;
+    pub const X86_INS_FLDZ: Type = 312;
+    pub const X86_INS_FLD1: Type = 313;
+    pub const X86_INS_FLD: Type = 314;
+    pub const X86_INS_LEA: Type = 315;
+    pub const X86_INS_LEAVE: Type = 316;
+    pub const X86_INS_LES: Type = 317;
+    pub const X86_INS_LFENCE: Type = 318;
+    pub const X86_INS_LFS: Type = 319;
+    pub const X86_INS_LGDT: Type = 320;
+    pub const X86_INS_LGS: Type = 321;
+    pub const X86_INS_LIDT: Type = 322;
+    pub const X86_INS_LLDT: Type = 323;
+    pub const X86_INS_LMSW: Type = 324;
+    pub const X86_INS_OR: Type = 325;
+    pub const X86_INS_SUB: Type = 326;
+    pub const X86_INS_XOR: Type = 327;
+    pub const X86_INS_LODSB: Type = 328;
+    pub const X86_INS_LODSD: Type = 329;
+    pub const X86_INS_LODSQ: Type = 330;
+    pub const X86_INS_LODSW: Type = 331;
+    pub const X86_INS_LOOP: Type = 332;
+    pub const X86_INS_LOOPE: Type = 333;
+    pub const X86_INS_LOOPNE: Type = 334;
+    pub const X86_INS_RETF: Type = 335;
+    pub const X86_INS_RETFQ: Type = 336;
+    pub const X86_INS_LSL: Type = 337;
+    pub const X86_INS_LSS: Type = 338;
+    pub const X86_INS_LTR: Type = 339;
+    pub const X86_INS_XADD: Type = 340;
+    pub const X86_INS_LZCNT: Type = 341;
+    pub const X86_INS_MASKMOVDQU: Type = 342;
+    pub const X86_INS_MAXPD: Type = 343;
+    pub const X86_INS_MAXPS: Type = 344;
+    pub const X86_INS_MAXSD: Type = 345;
+    pub const X86_INS_MAXSS: Type = 346;
+    pub const X86_INS_MFENCE: Type = 347;
+    pub const X86_INS_MINPD: Type = 348;
+    pub const X86_INS_MINPS: Type = 349;
+    pub const X86_INS_MINSD: Type = 350;
+    pub const X86_INS_MINSS: Type = 351;
+    pub const X86_INS_CVTPD2PI: Type = 352;
+    pub const X86_INS_CVTPI2PD: Type = 353;
+    pub const X86_INS_CVTPI2PS: Type = 354;
+    pub const X86_INS_CVTPS2PI: Type = 355;
+    pub const X86_INS_CVTTPD2PI: Type = 356;
+    pub const X86_INS_CVTTPS2PI: Type = 357;
+    pub const X86_INS_EMMS: Type = 358;
+    pub const X86_INS_MASKMOVQ: Type = 359;
+    pub const X86_INS_MOVD: Type = 360;
+    pub const X86_INS_MOVDQ2Q: Type = 361;
+    pub const X86_INS_MOVNTQ: Type = 362;
+    pub const X86_INS_MOVQ2DQ: Type = 363;
+    pub const X86_INS_MOVQ: Type = 364;
+    pub const X86_INS_PABSB: Type = 365;
+    pub const X86_INS_PABSD: Type = 366;
+    pub const X86_INS_PABSW: Type = 367;
+    pub const X86_INS_PACKSSDW: Type = 368;
+    pub const X86_INS_PACKSSWB: Type = 369;
+    pub const X86_INS_PACKUSWB: Type = 370;
+    pub const X86_INS_PADDB: Type = 371;
+    pub const X86_INS_PADDD: Type = 372;
+    pub const X86_INS_PADDQ: Type = 373;
+    pub const X86_INS_PADDSB: Type = 374;
+    pub const X86_INS_PADDSW: Type = 375;
+    pub const X86_INS_PADDUSB: Type = 376;
+    pub const X86_INS_PADDUSW: Type = 377;
+    pub const X86_INS_PADDW: Type = 378;
+    pub const X86_INS_PALIGNR: Type = 379;
+    pub const X86_INS_PANDN: Type = 380;
+    pub const X86_INS_PAND: Type = 381;
+    pub const X86_INS_PAVGB: Type = 382;
+    pub const X86_INS_PAVGW: Type = 383;
+    pub const X86_INS_PCMPEQB: Type = 384;
+    pub const X86_INS_PCMPEQD: Type = 385;
+    pub const X86_INS_PCMPEQW: Type = 386;
+    pub const X86_INS_PCMPGTB: Type = 387;
+    pub const X86_INS_PCMPGTD: Type = 388;
+    pub const X86_INS_PCMPGTW: Type = 389;
+    pub const X86_INS_PEXTRW: Type = 390;
+    pub const X86_INS_PHADDSW: Type = 391;
+    pub const X86_INS_PHADDW: Type = 392;
+    pub const X86_INS_PHADDD: Type = 393;
+    pub const X86_INS_PHSUBD: Type = 394;
+    pub const X86_INS_PHSUBSW: Type = 395;
+    pub const X86_INS_PHSUBW: Type = 396;
+    pub const X86_INS_PINSRW: Type = 397;
+    pub const X86_INS_PMADDUBSW: Type = 398;
+    pub const X86_INS_PMADDWD: Type = 399;
+    pub const X86_INS_PMAXSW: Type = 400;
+    pub const X86_INS_PMAXUB: Type = 401;
+    pub const X86_INS_PMINSW: Type = 402;
+    pub const X86_INS_PMINUB: Type = 403;
+    pub const X86_INS_PMOVMSKB: Type = 404;
+    pub const X86_INS_PMULHRSW: Type = 405;
+    pub const X86_INS_PMULHUW: Type = 406;
+    pub const X86_INS_PMULHW: Type = 407;
+    pub const X86_INS_PMULLW: Type = 408;
+    pub const X86_INS_PMULUDQ: Type = 409;
+    pub const X86_INS_POR: Type = 410;
+    pub const X86_INS_PSADBW: Type = 411;
+    pub const X86_INS_PSHUFB: Type = 412;
+    pub const X86_INS_PSHUFW: Type = 413;
+    pub const X86_INS_PSIGNB: Type = 414;
+    pub const X86_INS_PSIGND: Type = 415;
+    pub const X86_INS_PSIGNW: Type = 416;
+    pub const X86_INS_PSLLD: Type = 417;
+    pub const X86_INS_PSLLQ: Type = 418;
+    pub const X86_INS_PSLLW: Type = 419;
+    pub const X86_INS_PSRAD: Type = 420;
+    pub const X86_INS_PSRAW: Type = 421;
+    pub const X86_INS_PSRLD: Type = 422;
+    pub const X86_INS_PSRLQ: Type = 423;
+    pub const X86_INS_PSRLW: Type = 424;
+    pub const X86_INS_PSUBB: Type = 425;
+    pub const X86_INS_PSUBD: Type = 426;
+    pub const X86_INS_PSUBQ: Type = 427;
+    pub const X86_INS_PSUBSB: Type = 428;
+    pub const X86_INS_PSUBSW: Type = 429;
+    pub const X86_INS_PSUBUSB: Type = 430;
+    pub const X86_INS_PSUBUSW: Type = 431;
+    pub const X86_INS_PSUBW: Type = 432;
+    pub const X86_INS_PUNPCKHBW: Type = 433;
+    pub const X86_INS_PUNPCKHDQ: Type = 434;
+    pub const X86_INS_PUNPCKHWD: Type = 435;
+    pub const X86_INS_PUNPCKLBW: Type = 436;
+    pub const X86_INS_PUNPCKLDQ: Type = 437;
+    pub const X86_INS_PUNPCKLWD: Type = 438;
+    pub const X86_INS_PXOR: Type = 439;
+    pub const X86_INS_MONITOR: Type = 440;
+    pub const X86_INS_MONTMUL: Type = 441;
+    pub const X86_INS_MOV: Type = 442;
+    pub const X86_INS_MOVABS: Type = 443;
+    pub const X86_INS_MOVBE: Type = 444;
+    pub const X86_INS_MOVDDUP: Type = 445;
+    pub const X86_INS_MOVDQA: Type = 446;
+    pub const X86_INS_MOVDQU: Type = 447;
+    pub const X86_INS_MOVHLPS: Type = 448;
+    pub const X86_INS_MOVHPD: Type = 449;
+    pub const X86_INS_MOVHPS: Type = 450;
+    pub const X86_INS_MOVLHPS: Type = 451;
+    pub const X86_INS_MOVLPD: Type = 452;
+    pub const X86_INS_MOVLPS: Type = 453;
+    pub const X86_INS_MOVMSKPD: Type = 454;
+    pub const X86_INS_MOVMSKPS: Type = 455;
+    pub const X86_INS_MOVNTDQA: Type = 456;
+    pub const X86_INS_MOVNTDQ: Type = 457;
+    pub const X86_INS_MOVNTI: Type = 458;
+    pub const X86_INS_MOVNTPD: Type = 459;
+    pub const X86_INS_MOVNTPS: Type = 460;
+    pub const X86_INS_MOVNTSD: Type = 461;
+    pub const X86_INS_MOVNTSS: Type = 462;
+    pub const X86_INS_MOVSB: Type = 463;
+    pub const X86_INS_MOVSD: Type = 464;
+    pub const X86_INS_MOVSHDUP: Type = 465;
+    pub const X86_INS_MOVSLDUP: Type = 466;
+    pub const X86_INS_MOVSQ: Type = 467;
+    pub const X86_INS_MOVSS: Type = 468;
+    pub const X86_INS_MOVSW: Type = 469;
+    pub const X86_INS_MOVSX: Type = 470;
+    pub const X86_INS_MOVSXD: Type = 471;
+    pub const X86_INS_MOVUPD: Type = 472;
+    pub const X86_INS_MOVUPS: Type = 473;
+    pub const X86_INS_MOVZX: Type = 474;
+    pub const X86_INS_MPSADBW: Type = 475;
+    pub const X86_INS_MUL: Type = 476;
+    pub const X86_INS_MULPD: Type = 477;
+    pub const X86_INS_MULPS: Type = 478;
+    pub const X86_INS_MULSD: Type = 479;
+    pub const X86_INS_MULSS: Type = 480;
+    pub const X86_INS_MULX: Type = 481;
+    pub const X86_INS_FMUL: Type = 482;
+    pub const X86_INS_FIMUL: Type = 483;
+    pub const X86_INS_FMULP: Type = 484;
+    pub const X86_INS_MWAIT: Type = 485;
+    pub const X86_INS_NEG: Type = 486;
+    pub const X86_INS_NOP: Type = 487;
+    pub const X86_INS_NOT: Type = 488;
+    pub const X86_INS_OUT: Type = 489;
+    pub const X86_INS_OUTSB: Type = 490;
+    pub const X86_INS_OUTSD: Type = 491;
+    pub const X86_INS_OUTSW: Type = 492;
+    pub const X86_INS_PACKUSDW: Type = 493;
+    pub const X86_INS_PAUSE: Type = 494;
+    pub const X86_INS_PAVGUSB: Type = 495;
+    pub const X86_INS_PBLENDVB: Type = 496;
+    pub const X86_INS_PBLENDW: Type = 497;
+    pub const X86_INS_PCLMULQDQ: Type = 498;
+    pub const X86_INS_PCMPEQQ: Type = 499;
+    pub const X86_INS_PCMPESTRI: Type = 500;
+    pub const X86_INS_PCMPESTRM: Type = 501;
+    pub const X86_INS_PCMPGTQ: Type = 502;
+    pub const X86_INS_PCMPISTRI: Type = 503;
+    pub const X86_INS_PCMPISTRM: Type = 504;
+    pub const X86_INS_PDEP: Type = 505;
+    pub const X86_INS_PEXT: Type = 506;
+    pub const X86_INS_PEXTRB: Type = 507;
+    pub const X86_INS_PEXTRD: Type = 508;
+    pub const X86_INS_PEXTRQ: Type = 509;
+    pub const X86_INS_PF2ID: Type = 510;
+    pub const X86_INS_PF2IW: Type = 511;
+    pub const X86_INS_PFACC: Type = 512;
+    pub const X86_INS_PFADD: Type = 513;
+    pub const X86_INS_PFCMPEQ: Type = 514;
+    pub const X86_INS_PFCMPGE: Type = 515;
+    pub const X86_INS_PFCMPGT: Type = 516;
+    pub const X86_INS_PFMAX: Type = 517;
+    pub const X86_INS_PFMIN: Type = 518;
+    pub const X86_INS_PFMUL: Type = 519;
+    pub const X86_INS_PFNACC: Type = 520;
+    pub const X86_INS_PFPNACC: Type = 521;
+    pub const X86_INS_PFRCPIT1: Type = 522;
+    pub const X86_INS_PFRCPIT2: Type = 523;
+    pub const X86_INS_PFRCP: Type = 524;
+    pub const X86_INS_PFRSQIT1: Type = 525;
+    pub const X86_INS_PFRSQRT: Type = 526;
+    pub const X86_INS_PFSUBR: Type = 527;
+    pub const X86_INS_PFSUB: Type = 528;
+    pub const X86_INS_PHMINPOSUW: Type = 529;
+    pub const X86_INS_PI2FD: Type = 530;
+    pub const X86_INS_PI2FW: Type = 531;
+    pub const X86_INS_PINSRB: Type = 532;
+    pub const X86_INS_PINSRD: Type = 533;
+    pub const X86_INS_PINSRQ: Type = 534;
+    pub const X86_INS_PMAXSB: Type = 535;
+    pub const X86_INS_PMAXSD: Type = 536;
+    pub const X86_INS_PMAXUD: Type = 537;
+    pub const X86_INS_PMAXUW: Type = 538;
+    pub const X86_INS_PMINSB: Type = 539;
+    pub const X86_INS_PMINSD: Type = 540;
+    pub const X86_INS_PMINUD: Type = 541;
+    pub const X86_INS_PMINUW: Type = 542;
+    pub const X86_INS_PMOVSXBD: Type = 543;
+    pub const X86_INS_PMOVSXBQ: Type = 544;
+    pub const X86_INS_PMOVSXBW: Type = 545;
+    pub const X86_INS_PMOVSXDQ: Type = 546;
+    pub const X86_INS_PMOVSXWD: Type = 547;
+    pub const X86_INS_PMOVSXWQ: Type = 548;
+    pub const X86_INS_PMOVZXBD: Type = 549;
+    pub const X86_INS_PMOVZXBQ: Type = 550;
+    pub const X86_INS_PMOVZXBW: Type = 551;
+    pub const X86_INS_PMOVZXDQ: Type = 552;
+    pub const X86_INS_PMOVZXWD: Type = 553;
+    pub const X86_INS_PMOVZXWQ: Type = 554;
+    pub const X86_INS_PMULDQ: Type = 555;
+    pub const X86_INS_PMULHRW: Type = 556;
+    pub const X86_INS_PMULLD: Type = 557;
+    pub const X86_INS_POP: Type = 558;
+    pub const X86_INS_POPAW: Type = 559;
+    pub const X86_INS_POPAL: Type = 560;
+    pub const X86_INS_POPCNT: Type = 561;
+    pub const X86_INS_POPF: Type = 562;
+    pub const X86_INS_POPFD: Type = 563;
+    pub const X86_INS_POPFQ: Type = 564;
+    pub const X86_INS_PREFETCH: Type = 565;
+    pub const X86_INS_PREFETCHNTA: Type = 566;
+    pub const X86_INS_PREFETCHT0: Type = 567;
+    pub const X86_INS_PREFETCHT1: Type = 568;
+    pub const X86_INS_PREFETCHT2: Type = 569;
+    pub const X86_INS_PREFETCHW: Type = 570;
+    pub const X86_INS_PSHUFD: Type = 571;
+    pub const X86_INS_PSHUFHW: Type = 572;
+    pub const X86_INS_PSHUFLW: Type = 573;
+    pub const X86_INS_PSLLDQ: Type = 574;
+    pub const X86_INS_PSRLDQ: Type = 575;
+    pub const X86_INS_PSWAPD: Type = 576;
+    pub const X86_INS_PTEST: Type = 577;
+    pub const X86_INS_PUNPCKHQDQ: Type = 578;
+    pub const X86_INS_PUNPCKLQDQ: Type = 579;
+    pub const X86_INS_PUSH: Type = 580;
+    pub const X86_INS_PUSHAW: Type = 581;
+    pub const X86_INS_PUSHAL: Type = 582;
+    pub const X86_INS_PUSHF: Type = 583;
+    pub const X86_INS_PUSHFD: Type = 584;
+    pub const X86_INS_PUSHFQ: Type = 585;
+    pub const X86_INS_RCL: Type = 586;
+    pub const X86_INS_RCPPS: Type = 587;
+    pub const X86_INS_RCPSS: Type = 588;
+    pub const X86_INS_RCR: Type = 589;
+    pub const X86_INS_RDFSBASE: Type = 590;
+    pub const X86_INS_RDGSBASE: Type = 591;
+    pub const X86_INS_RDMSR: Type = 592;
+    pub const X86_INS_RDPMC: Type = 593;
+    pub const X86_INS_RDRAND: Type = 594;
+    pub const X86_INS_RDSEED: Type = 595;
+    pub const X86_INS_RDTSC: Type = 596;
+    pub const X86_INS_RDTSCP: Type = 597;
+    pub const X86_INS_ROL: Type = 598;
+    pub const X86_INS_ROR: Type = 599;
+    pub const X86_INS_RORX: Type = 600;
+    pub const X86_INS_ROUNDPD: Type = 601;
+    pub const X86_INS_ROUNDPS: Type = 602;
+    pub const X86_INS_ROUNDSD: Type = 603;
+    pub const X86_INS_ROUNDSS: Type = 604;
+    pub const X86_INS_RSM: Type = 605;
+    pub const X86_INS_RSQRTPS: Type = 606;
+    pub const X86_INS_RSQRTSS: Type = 607;
+    pub const X86_INS_SAHF: Type = 608;
+    pub const X86_INS_SAL: Type = 609;
+    pub const X86_INS_SALC: Type = 610;
+    pub const X86_INS_SAR: Type = 611;
+    pub const X86_INS_SARX: Type = 612;
+    pub const X86_INS_SBB: Type = 613;
+    pub const X86_INS_SCASB: Type = 614;
+    pub const X86_INS_SCASD: Type = 615;
+    pub const X86_INS_SCASQ: Type = 616;
+    pub const X86_INS_SCASW: Type = 617;
+    pub const X86_INS_SETAE: Type = 618;
+    pub const X86_INS_SETA: Type = 619;
+    pub const X86_INS_SETBE: Type = 620;
+    pub const X86_INS_SETB: Type = 621;
+    pub const X86_INS_SETE: Type = 622;
+    pub const X86_INS_SETGE: Type = 623;
+    pub const X86_INS_SETG: Type = 624;
+    pub const X86_INS_SETLE: Type = 625;
+    pub const X86_INS_SETL: Type = 626;
+    pub const X86_INS_SETNE: Type = 627;
+    pub const X86_INS_SETNO: Type = 628;
+    pub const X86_INS_SETNP: Type = 629;
+    pub const X86_INS_SETNS: Type = 630;
+    pub const X86_INS_SETO: Type = 631;
+    pub const X86_INS_SETP: Type = 632;
+    pub const X86_INS_SETS: Type = 633;
+    pub const X86_INS_SFENCE: Type = 634;
+    pub const X86_INS_SGDT: Type = 635;
+    pub const X86_INS_SHA1MSG1: Type = 636;
+    pub const X86_INS_SHA1MSG2: Type = 637;
+    pub const X86_INS_SHA1NEXTE: Type = 638;
+    pub const X86_INS_SHA1RNDS4: Type = 639;
+    pub const X86_INS_SHA256MSG1: Type = 640;
+    pub const X86_INS_SHA256MSG2: Type = 641;
+    pub const X86_INS_SHA256RNDS2: Type = 642;
+    pub const X86_INS_SHL: Type = 643;
+    pub const X86_INS_SHLD: Type = 644;
+    pub const X86_INS_SHLX: Type = 645;
+    pub const X86_INS_SHR: Type = 646;
+    pub const X86_INS_SHRD: Type = 647;
+    pub const X86_INS_SHRX: Type = 648;
+    pub const X86_INS_SHUFPD: Type = 649;
+    pub const X86_INS_SHUFPS: Type = 650;
+    pub const X86_INS_SIDT: Type = 651;
+    pub const X86_INS_FSIN: Type = 652;
+    pub const X86_INS_SKINIT: Type = 653;
+    pub const X86_INS_SLDT: Type = 654;
+    pub const X86_INS_SMSW: Type = 655;
+    pub const X86_INS_SQRTPD: Type = 656;
+    pub const X86_INS_SQRTPS: Type = 657;
+    pub const X86_INS_SQRTSD: Type = 658;
+    pub const X86_INS_SQRTSS: Type = 659;
+    pub const X86_INS_FSQRT: Type = 660;
+    pub const X86_INS_STAC: Type = 661;
+    pub const X86_INS_STC: Type = 662;
+    pub const X86_INS_STD: Type = 663;
+    pub const X86_INS_STGI: Type = 664;
+    pub const X86_INS_STI: Type = 665;
+    pub const X86_INS_STMXCSR: Type = 666;
+    pub const X86_INS_STOSB: Type = 667;
+    pub const X86_INS_STOSD: Type = 668;
+    pub const X86_INS_STOSQ: Type = 669;
+    pub const X86_INS_STOSW: Type = 670;
+    pub const X86_INS_STR: Type = 671;
+    pub const X86_INS_FST: Type = 672;
+    pub const X86_INS_FSTP: Type = 673;
+    pub const X86_INS_FSTPNCE: Type = 674;
+    pub const X86_INS_SUBPD: Type = 675;
+    pub const X86_INS_SUBPS: Type = 676;
+    pub const X86_INS_FSUBR: Type = 677;
+    pub const X86_INS_FISUBR: Type = 678;
+    pub const X86_INS_FSUBRP: Type = 679;
+    pub const X86_INS_SUBSD: Type = 680;
+    pub const X86_INS_SUBSS: Type = 681;
+    pub const X86_INS_FSUB: Type = 682;
+    pub const X86_INS_FISUB: Type = 683;
+    pub const X86_INS_FSUBP: Type = 684;
+    pub const X86_INS_SWAPGS: Type = 685;
+    pub const X86_INS_SYSCALL: Type = 686;
+    pub const X86_INS_SYSENTER: Type = 687;
+    pub const X86_INS_SYSEXIT: Type = 688;
+    pub const X86_INS_SYSRET: Type = 689;
+    pub const X86_INS_T1MSKC: Type = 690;
+    pub const X86_INS_TEST: Type = 691;
+    pub const X86_INS_UD2: Type = 692;
+    pub const X86_INS_FTST: Type = 693;
+    pub const X86_INS_TZCNT: Type = 694;
+    pub const X86_INS_TZMSK: Type = 695;
+    pub const X86_INS_FUCOMPI: Type = 696;
+    pub const X86_INS_FUCOMI: Type = 697;
+    pub const X86_INS_FUCOMPP: Type = 698;
+    pub const X86_INS_FUCOMP: Type = 699;
+    pub const X86_INS_FUCOM: Type = 700;
+    pub const X86_INS_UD2B: Type = 701;
+    pub const X86_INS_UNPCKHPD: Type = 702;
+    pub const X86_INS_UNPCKHPS: Type = 703;
+    pub const X86_INS_UNPCKLPD: Type = 704;
+    pub const X86_INS_UNPCKLPS: Type = 705;
+    pub const X86_INS_VADDPD: Type = 706;
+    pub const X86_INS_VADDPS: Type = 707;
+    pub const X86_INS_VADDSD: Type = 708;
+    pub const X86_INS_VADDSS: Type = 709;
+    pub const X86_INS_VADDSUBPD: Type = 710;
+    pub const X86_INS_VADDSUBPS: Type = 711;
+    pub const X86_INS_VAESDECLAST: Type = 712;
+    pub const X86_INS_VAESDEC: Type = 713;
+    pub const X86_INS_VAESENCLAST: Type = 714;
+    pub const X86_INS_VAESENC: Type = 715;
+    pub const X86_INS_VAESIMC: Type = 716;
+    pub const X86_INS_VAESKEYGENASSIST: Type = 717;
+    pub const X86_INS_VALIGND: Type = 718;
+    pub const X86_INS_VALIGNQ: Type = 719;
+    pub const X86_INS_VANDNPD: Type = 720;
+    pub const X86_INS_VANDNPS: Type = 721;
+    pub const X86_INS_VANDPD: Type = 722;
+    pub const X86_INS_VANDPS: Type = 723;
+    pub const X86_INS_VBLENDMPD: Type = 724;
+    pub const X86_INS_VBLENDMPS: Type = 725;
+    pub const X86_INS_VBLENDPD: Type = 726;
+    pub const X86_INS_VBLENDPS: Type = 727;
+    pub const X86_INS_VBLENDVPD: Type = 728;
+    pub const X86_INS_VBLENDVPS: Type = 729;
+    pub const X86_INS_VBROADCASTF128: Type = 730;
+    pub const X86_INS_VBROADCASTI128: Type = 731;
+    pub const X86_INS_VBROADCASTI32X4: Type = 732;
+    pub const X86_INS_VBROADCASTI64X4: Type = 733;
+    pub const X86_INS_VBROADCASTSD: Type = 734;
+    pub const X86_INS_VBROADCASTSS: Type = 735;
+    pub const X86_INS_VCMPPD: Type = 736;
+    pub const X86_INS_VCMPPS: Type = 737;
+    pub const X86_INS_VCMPSD: Type = 738;
+    pub const X86_INS_VCMPSS: Type = 739;
+    pub const X86_INS_VCVTDQ2PD: Type = 740;
+    pub const X86_INS_VCVTDQ2PS: Type = 741;
+    pub const X86_INS_VCVTPD2DQX: Type = 742;
+    pub const X86_INS_VCVTPD2DQ: Type = 743;
+    pub const X86_INS_VCVTPD2PSX: Type = 744;
+    pub const X86_INS_VCVTPD2PS: Type = 745;
+    pub const X86_INS_VCVTPD2UDQ: Type = 746;
+    pub const X86_INS_VCVTPH2PS: Type = 747;
+    pub const X86_INS_VCVTPS2DQ: Type = 748;
+    pub const X86_INS_VCVTPS2PD: Type = 749;
+    pub const X86_INS_VCVTPS2PH: Type = 750;
+    pub const X86_INS_VCVTPS2UDQ: Type = 751;
+    pub const X86_INS_VCVTSD2SI: Type = 752;
+    pub const X86_INS_VCVTSD2USI: Type = 753;
+    pub const X86_INS_VCVTSS2SI: Type = 754;
+    pub const X86_INS_VCVTSS2USI: Type = 755;
+    pub const X86_INS_VCVTTPD2DQX: Type = 756;
+    pub const X86_INS_VCVTTPD2DQ: Type = 757;
+    pub const X86_INS_VCVTTPD2UDQ: Type = 758;
+    pub const X86_INS_VCVTTPS2DQ: Type = 759;
+    pub const X86_INS_VCVTTPS2UDQ: Type = 760;
+    pub const X86_INS_VCVTUDQ2PD: Type = 761;
+    pub const X86_INS_VCVTUDQ2PS: Type = 762;
+    pub const X86_INS_VDIVPD: Type = 763;
+    pub const X86_INS_VDIVPS: Type = 764;
+    pub const X86_INS_VDIVSD: Type = 765;
+    pub const X86_INS_VDIVSS: Type = 766;
+    pub const X86_INS_VDPPD: Type = 767;
+    pub const X86_INS_VDPPS: Type = 768;
+    pub const X86_INS_VERR: Type = 769;
+    pub const X86_INS_VERW: Type = 770;
+    pub const X86_INS_VEXTRACTF128: Type = 771;
+    pub const X86_INS_VEXTRACTF32X4: Type = 772;
+    pub const X86_INS_VEXTRACTF64X4: Type = 773;
+    pub const X86_INS_VEXTRACTI128: Type = 774;
+    pub const X86_INS_VEXTRACTI32X4: Type = 775;
+    pub const X86_INS_VEXTRACTI64X4: Type = 776;
+    pub const X86_INS_VEXTRACTPS: Type = 777;
+    pub const X86_INS_VFMADD132PD: Type = 778;
+    pub const X86_INS_VFMADD132PS: Type = 779;
+    pub const X86_INS_VFMADD213PD: Type = 780;
+    pub const X86_INS_VFMADD213PS: Type = 781;
+    pub const X86_INS_VFMADDPD: Type = 782;
+    pub const X86_INS_VFMADD231PD: Type = 783;
+    pub const X86_INS_VFMADDPS: Type = 784;
+    pub const X86_INS_VFMADD231PS: Type = 785;
+    pub const X86_INS_VFMADDSD: Type = 786;
+    pub const X86_INS_VFMADD213SD: Type = 787;
+    pub const X86_INS_VFMADD132SD: Type = 788;
+    pub const X86_INS_VFMADD231SD: Type = 789;
+    pub const X86_INS_VFMADDSS: Type = 790;
+    pub const X86_INS_VFMADD213SS: Type = 791;
+    pub const X86_INS_VFMADD132SS: Type = 792;
+    pub const X86_INS_VFMADD231SS: Type = 793;
+    pub const X86_INS_VFMADDSUB132PD: Type = 794;
+    pub const X86_INS_VFMADDSUB132PS: Type = 795;
+    pub const X86_INS_VFMADDSUB213PD: Type = 796;
+    pub const X86_INS_VFMADDSUB213PS: Type = 797;
+    pub const X86_INS_VFMADDSUBPD: Type = 798;
+    pub const X86_INS_VFMADDSUB231PD: Type = 799;
+    pub const X86_INS_VFMADDSUBPS: Type = 800;
+    pub const X86_INS_VFMADDSUB231PS: Type = 801;
+    pub const X86_INS_VFMSUB132PD: Type = 802;
+    pub const X86_INS_VFMSUB132PS: Type = 803;
+    pub const X86_INS_VFMSUB213PD: Type = 804;
+    pub const X86_INS_VFMSUB213PS: Type = 805;
+    pub const X86_INS_VFMSUBADD132PD: Type = 806;
+    pub const X86_INS_VFMSUBADD132PS: Type = 807;
+    pub const X86_INS_VFMSUBADD213PD: Type = 808;
+    pub const X86_INS_VFMSUBADD213PS: Type = 809;
+    pub const X86_INS_VFMSUBADDPD: Type = 810;
+    pub const X86_INS_VFMSUBADD231PD: Type = 811;
+    pub const X86_INS_VFMSUBADDPS: Type = 812;
+    pub const X86_INS_VFMSUBADD231PS: Type = 813;
+    pub const X86_INS_VFMSUBPD: Type = 814;
+    pub const X86_INS_VFMSUB231PD: Type = 815;
+    pub const X86_INS_VFMSUBPS: Type = 816;
+    pub const X86_INS_VFMSUB231PS: Type = 817;
+    pub const X86_INS_VFMSUBSD: Type = 818;
+    pub const X86_INS_VFMSUB213SD: Type = 819;
+    pub const X86_INS_VFMSUB132SD: Type = 820;
+    pub const X86_INS_VFMSUB231SD: Type = 821;
+    pub const X86_INS_VFMSUBSS: Type = 822;
+    pub const X86_INS_VFMSUB213SS: Type = 823;
+    pub const X86_INS_VFMSUB132SS: Type = 824;
+    pub const X86_INS_VFMSUB231SS: Type = 825;
+    pub const X86_INS_VFNMADD132PD: Type = 826;
+    pub const X86_INS_VFNMADD132PS: Type = 827;
+    pub const X86_INS_VFNMADD213PD: Type = 828;
+    pub const X86_INS_VFNMADD213PS: Type = 829;
+    pub const X86_INS_VFNMADDPD: Type = 830;
+    pub const X86_INS_VFNMADD231PD: Type = 831;
+    pub const X86_INS_VFNMADDPS: Type = 832;
+    pub const X86_INS_VFNMADD231PS: Type = 833;
+    pub const X86_INS_VFNMADDSD: Type = 834;
+    pub const X86_INS_VFNMADD213SD: Type = 835;
+    pub const X86_INS_VFNMADD132SD: Type = 836;
+    pub const X86_INS_VFNMADD231SD: Type = 837;
+    pub const X86_INS_VFNMADDSS: Type = 838;
+    pub const X86_INS_VFNMADD213SS: Type = 839;
+    pub const X86_INS_VFNMADD132SS: Type = 840;
+    pub const X86_INS_VFNMADD231SS: Type = 841;
+    pub const X86_INS_VFNMSUB132PD: Type = 842;
+    pub const X86_INS_VFNMSUB132PS: Type = 843;
+    pub const X86_INS_VFNMSUB213PD: Type = 844;
+    pub const X86_INS_VFNMSUB213PS: Type = 845;
+    pub const X86_INS_VFNMSUBPD: Type = 846;
+    pub const X86_INS_VFNMSUB231PD: Type = 847;
+    pub const X86_INS_VFNMSUBPS: Type = 848;
+    pub const X86_INS_VFNMSUB231PS: Type = 849;
+    pub const X86_INS_VFNMSUBSD: Type = 850;
+    pub const X86_INS_VFNMSUB213SD: Type = 851;
+    pub const X86_INS_VFNMSUB132SD: Type = 852;
+    pub const X86_INS_VFNMSUB231SD: Type = 853;
+    pub const X86_INS_VFNMSUBSS: Type = 854;
+    pub const X86_INS_VFNMSUB213SS: Type = 855;
+    pub const X86_INS_VFNMSUB132SS: Type = 856;
+    pub const X86_INS_VFNMSUB231SS: Type = 857;
+    pub const X86_INS_VFRCZPD: Type = 858;
+    pub const X86_INS_VFRCZPS: Type = 859;
+    pub const X86_INS_VFRCZSD: Type = 860;
+    pub const X86_INS_VFRCZSS: Type = 861;
+    pub const X86_INS_VORPD: Type = 862;
+    pub const X86_INS_VORPS: Type = 863;
+    pub const X86_INS_VXORPD: Type = 864;
+    pub const X86_INS_VXORPS: Type = 865;
+    pub const X86_INS_VGATHERDPD: Type = 866;
+    pub const X86_INS_VGATHERDPS: Type = 867;
+    pub const X86_INS_VGATHERPF0DPD: Type = 868;
+    pub const X86_INS_VGATHERPF0DPS: Type = 869;
+    pub const X86_INS_VGATHERPF0QPD: Type = 870;
+    pub const X86_INS_VGATHERPF0QPS: Type = 871;
+    pub const X86_INS_VGATHERPF1DPD: Type = 872;
+    pub const X86_INS_VGATHERPF1DPS: Type = 873;
+    pub const X86_INS_VGATHERPF1QPD: Type = 874;
+    pub const X86_INS_VGATHERPF1QPS: Type = 875;
+    pub const X86_INS_VGATHERQPD: Type = 876;
+    pub const X86_INS_VGATHERQPS: Type = 877;
+    pub const X86_INS_VHADDPD: Type = 878;
+    pub const X86_INS_VHADDPS: Type = 879;
+    pub const X86_INS_VHSUBPD: Type = 880;
+    pub const X86_INS_VHSUBPS: Type = 881;
+    pub const X86_INS_VINSERTF128: Type = 882;
+    pub const X86_INS_VINSERTF32X4: Type = 883;
+    pub const X86_INS_VINSERTF64X4: Type = 884;
+    pub const X86_INS_VINSERTI128: Type = 885;
+    pub const X86_INS_VINSERTI32X4: Type = 886;
+    pub const X86_INS_VINSERTI64X4: Type = 887;
+    pub const X86_INS_VINSERTPS: Type = 888;
+    pub const X86_INS_VLDDQU: Type = 889;
+    pub const X86_INS_VLDMXCSR: Type = 890;
+    pub const X86_INS_VMASKMOVDQU: Type = 891;
+    pub const X86_INS_VMASKMOVPD: Type = 892;
+    pub const X86_INS_VMASKMOVPS: Type = 893;
+    pub const X86_INS_VMAXPD: Type = 894;
+    pub const X86_INS_VMAXPS: Type = 895;
+    pub const X86_INS_VMAXSD: Type = 896;
+    pub const X86_INS_VMAXSS: Type = 897;
+    pub const X86_INS_VMCALL: Type = 898;
+    pub const X86_INS_VMCLEAR: Type = 899;
+    pub const X86_INS_VMFUNC: Type = 900;
+    pub const X86_INS_VMINPD: Type = 901;
+    pub const X86_INS_VMINPS: Type = 902;
+    pub const X86_INS_VMINSD: Type = 903;
+    pub const X86_INS_VMINSS: Type = 904;
+    pub const X86_INS_VMLAUNCH: Type = 905;
+    pub const X86_INS_VMLOAD: Type = 906;
+    pub const X86_INS_VMMCALL: Type = 907;
+    pub const X86_INS_VMOVQ: Type = 908;
+    pub const X86_INS_VMOVDDUP: Type = 909;
+    pub const X86_INS_VMOVD: Type = 910;
+    pub const X86_INS_VMOVDQA32: Type = 911;
+    pub const X86_INS_VMOVDQA64: Type = 912;
+    pub const X86_INS_VMOVDQA: Type = 913;
+    pub const X86_INS_VMOVDQU16: Type = 914;
+    pub const X86_INS_VMOVDQU32: Type = 915;
+    pub const X86_INS_VMOVDQU64: Type = 916;
+    pub const X86_INS_VMOVDQU8: Type = 917;
+    pub const X86_INS_VMOVDQU: Type = 918;
+    pub const X86_INS_VMOVHLPS: Type = 919;
+    pub const X86_INS_VMOVHPD: Type = 920;
+    pub const X86_INS_VMOVHPS: Type = 921;
+    pub const X86_INS_VMOVLHPS: Type = 922;
+    pub const X86_INS_VMOVLPD: Type = 923;
+    pub const X86_INS_VMOVLPS: Type = 924;
+    pub const X86_INS_VMOVMSKPD: Type = 925;
+    pub const X86_INS_VMOVMSKPS: Type = 926;
+    pub const X86_INS_VMOVNTDQA: Type = 927;
+    pub const X86_INS_VMOVNTDQ: Type = 928;
+    pub const X86_INS_VMOVNTPD: Type = 929;
+    pub const X86_INS_VMOVNTPS: Type = 930;
+    pub const X86_INS_VMOVSD: Type = 931;
+    pub const X86_INS_VMOVSHDUP: Type = 932;
+    pub const X86_INS_VMOVSLDUP: Type = 933;
+    pub const X86_INS_VMOVSS: Type = 934;
+    pub const X86_INS_VMOVUPD: Type = 935;
+    pub const X86_INS_VMOVUPS: Type = 936;
+    pub const X86_INS_VMPSADBW: Type = 937;
+    pub const X86_INS_VMPTRLD: Type = 938;
+    pub const X86_INS_VMPTRST: Type = 939;
+    pub const X86_INS_VMREAD: Type = 940;
+    pub const X86_INS_VMRESUME: Type = 941;
+    pub const X86_INS_VMRUN: Type = 942;
+    pub const X86_INS_VMSAVE: Type = 943;
+    pub const X86_INS_VMULPD: Type = 944;
+    pub const X86_INS_VMULPS: Type = 945;
+    pub const X86_INS_VMULSD: Type = 946;
+    pub const X86_INS_VMULSS: Type = 947;
+    pub const X86_INS_VMWRITE: Type = 948;
+    pub const X86_INS_VMXOFF: Type = 949;
+    pub const X86_INS_VMXON: Type = 950;
+    pub const X86_INS_VPABSB: Type = 951;
+    pub const X86_INS_VPABSD: Type = 952;
+    pub const X86_INS_VPABSQ: Type = 953;
+    pub const X86_INS_VPABSW: Type = 954;
+    pub const X86_INS_VPACKSSDW: Type = 955;
+    pub const X86_INS_VPACKSSWB: Type = 956;
+    pub const X86_INS_VPACKUSDW: Type = 957;
+    pub const X86_INS_VPACKUSWB: Type = 958;
+    pub const X86_INS_VPADDB: Type = 959;
+    pub const X86_INS_VPADDD: Type = 960;
+    pub const X86_INS_VPADDQ: Type = 961;
+    pub const X86_INS_VPADDSB: Type = 962;
+    pub const X86_INS_VPADDSW: Type = 963;
+    pub const X86_INS_VPADDUSB: Type = 964;
+    pub const X86_INS_VPADDUSW: Type = 965;
+    pub const X86_INS_VPADDW: Type = 966;
+    pub const X86_INS_VPALIGNR: Type = 967;
+    pub const X86_INS_VPANDD: Type = 968;
+    pub const X86_INS_VPANDND: Type = 969;
+    pub const X86_INS_VPANDNQ: Type = 970;
+    pub const X86_INS_VPANDN: Type = 971;
+    pub const X86_INS_VPANDQ: Type = 972;
+    pub const X86_INS_VPAND: Type = 973;
+    pub const X86_INS_VPAVGB: Type = 974;
+    pub const X86_INS_VPAVGW: Type = 975;
+    pub const X86_INS_VPBLENDD: Type = 976;
+    pub const X86_INS_VPBLENDMD: Type = 977;
+    pub const X86_INS_VPBLENDMQ: Type = 978;
+    pub const X86_INS_VPBLENDVB: Type = 979;
+    pub const X86_INS_VPBLENDW: Type = 980;
+    pub const X86_INS_VPBROADCASTB: Type = 981;
+    pub const X86_INS_VPBROADCASTD: Type = 982;
+    pub const X86_INS_VPBROADCASTMB2Q: Type = 983;
+    pub const X86_INS_VPBROADCASTMW2D: Type = 984;
+    pub const X86_INS_VPBROADCASTQ: Type = 985;
+    pub const X86_INS_VPBROADCASTW: Type = 986;
+    pub const X86_INS_VPCLMULQDQ: Type = 987;
+    pub const X86_INS_VPCMOV: Type = 988;
+    pub const X86_INS_VPCMP: Type = 989;
+    pub const X86_INS_VPCMPD: Type = 990;
+    pub const X86_INS_VPCMPEQB: Type = 991;
+    pub const X86_INS_VPCMPEQD: Type = 992;
+    pub const X86_INS_VPCMPEQQ: Type = 993;
+    pub const X86_INS_VPCMPEQW: Type = 994;
+    pub const X86_INS_VPCMPESTRI: Type = 995;
+    pub const X86_INS_VPCMPESTRM: Type = 996;
+    pub const X86_INS_VPCMPGTB: Type = 997;
+    pub const X86_INS_VPCMPGTD: Type = 998;
+    pub const X86_INS_VPCMPGTQ: Type = 999;
+    pub const X86_INS_VPCMPGTW: Type = 1000;
+    pub const X86_INS_VPCMPISTRI: Type = 1001;
+    pub const X86_INS_VPCMPISTRM: Type = 1002;
+    pub const X86_INS_VPCMPQ: Type = 1003;
+    pub const X86_INS_VPCMPUD: Type = 1004;
+    pub const X86_INS_VPCMPUQ: Type = 1005;
+    pub const X86_INS_VPCOMB: Type = 1006;
+    pub const X86_INS_VPCOMD: Type = 1007;
+    pub const X86_INS_VPCOMQ: Type = 1008;
+    pub const X86_INS_VPCOMUB: Type = 1009;
+    pub const X86_INS_VPCOMUD: Type = 1010;
+    pub const X86_INS_VPCOMUQ: Type = 1011;
+    pub const X86_INS_VPCOMUW: Type = 1012;
+    pub const X86_INS_VPCOMW: Type = 1013;
+    pub const X86_INS_VPCONFLICTD: Type = 1014;
+    pub const X86_INS_VPCONFLICTQ: Type = 1015;
+    pub const X86_INS_VPERM2F128: Type = 1016;
+    pub const X86_INS_VPERM2I128: Type = 1017;
+    pub const X86_INS_VPERMD: Type = 1018;
+    pub const X86_INS_VPERMI2D: Type = 1019;
+    pub const X86_INS_VPERMI2PD: Type = 1020;
+    pub const X86_INS_VPERMI2PS: Type = 1021;
+    pub const X86_INS_VPERMI2Q: Type = 1022;
+    pub const X86_INS_VPERMIL2PD: Type = 1023;
+    pub const X86_INS_VPERMIL2PS: Type = 1024;
+    pub const X86_INS_VPERMILPD: Type = 1025;
+    pub const X86_INS_VPERMILPS: Type = 1026;
+    pub const X86_INS_VPERMPD: Type = 1027;
+    pub const X86_INS_VPERMPS: Type = 1028;
+    pub const X86_INS_VPERMQ: Type = 1029;
+    pub const X86_INS_VPERMT2D: Type = 1030;
+    pub const X86_INS_VPERMT2PD: Type = 1031;
+    pub const X86_INS_VPERMT2PS: Type = 1032;
+    pub const X86_INS_VPERMT2Q: Type = 1033;
+    pub const X86_INS_VPEXTRB: Type = 1034;
+    pub const X86_INS_VPEXTRD: Type = 1035;
+    pub const X86_INS_VPEXTRQ: Type = 1036;
+    pub const X86_INS_VPEXTRW: Type = 1037;
+    pub const X86_INS_VPGATHERDD: Type = 1038;
+    pub const X86_INS_VPGATHERDQ: Type = 1039;
+    pub const X86_INS_VPGATHERQD: Type = 1040;
+    pub const X86_INS_VPGATHERQQ: Type = 1041;
+    pub const X86_INS_VPHADDBD: Type = 1042;
+    pub const X86_INS_VPHADDBQ: Type = 1043;
+    pub const X86_INS_VPHADDBW: Type = 1044;
+    pub const X86_INS_VPHADDDQ: Type = 1045;
+    pub const X86_INS_VPHADDD: Type = 1046;
+    pub const X86_INS_VPHADDSW: Type = 1047;
+    pub const X86_INS_VPHADDUBD: Type = 1048;
+    pub const X86_INS_VPHADDUBQ: Type = 1049;
+    pub const X86_INS_VPHADDUBW: Type = 1050;
+    pub const X86_INS_VPHADDUDQ: Type = 1051;
+    pub const X86_INS_VPHADDUWD: Type = 1052;
+    pub const X86_INS_VPHADDUWQ: Type = 1053;
+    pub const X86_INS_VPHADDWD: Type = 1054;
+    pub const X86_INS_VPHADDWQ: Type = 1055;
+    pub const X86_INS_VPHADDW: Type = 1056;
+    pub const X86_INS_VPHMINPOSUW: Type = 1057;
+    pub const X86_INS_VPHSUBBW: Type = 1058;
+    pub const X86_INS_VPHSUBDQ: Type = 1059;
+    pub const X86_INS_VPHSUBD: Type = 1060;
+    pub const X86_INS_VPHSUBSW: Type = 1061;
+    pub const X86_INS_VPHSUBWD: Type = 1062;
+    pub const X86_INS_VPHSUBW: Type = 1063;
+    pub const X86_INS_VPINSRB: Type = 1064;
+    pub const X86_INS_VPINSRD: Type = 1065;
+    pub const X86_INS_VPINSRQ: Type = 1066;
+    pub const X86_INS_VPINSRW: Type = 1067;
+    pub const X86_INS_VPLZCNTD: Type = 1068;
+    pub const X86_INS_VPLZCNTQ: Type = 1069;
+    pub const X86_INS_VPMACSDD: Type = 1070;
+    pub const X86_INS_VPMACSDQH: Type = 1071;
+    pub const X86_INS_VPMACSDQL: Type = 1072;
+    pub const X86_INS_VPMACSSDD: Type = 1073;
+    pub const X86_INS_VPMACSSDQH: Type = 1074;
+    pub const X86_INS_VPMACSSDQL: Type = 1075;
+    pub const X86_INS_VPMACSSWD: Type = 1076;
+    pub const X86_INS_VPMACSSWW: Type = 1077;
+    pub const X86_INS_VPMACSWD: Type = 1078;
+    pub const X86_INS_VPMACSWW: Type = 1079;
+    pub const X86_INS_VPMADCSSWD: Type = 1080;
+    pub const X86_INS_VPMADCSWD: Type = 1081;
+    pub const X86_INS_VPMADDUBSW: Type = 1082;
+    pub const X86_INS_VPMADDWD: Type = 1083;
+    pub const X86_INS_VPMASKMOVD: Type = 1084;
+    pub const X86_INS_VPMASKMOVQ: Type = 1085;
+    pub const X86_INS_VPMAXSB: Type = 1086;
+    pub const X86_INS_VPMAXSD: Type = 1087;
+    pub const X86_INS_VPMAXSQ: Type = 1088;
+    pub const X86_INS_VPMAXSW: Type = 1089;
+    pub const X86_INS_VPMAXUB: Type = 1090;
+    pub const X86_INS_VPMAXUD: Type = 1091;
+    pub const X86_INS_VPMAXUQ: Type = 1092;
+    pub const X86_INS_VPMAXUW: Type = 1093;
+    pub const X86_INS_VPMINSB: Type = 1094;
+    pub const X86_INS_VPMINSD: Type = 1095;
+    pub const X86_INS_VPMINSQ: Type = 1096;
+    pub const X86_INS_VPMINSW: Type = 1097;
+    pub const X86_INS_VPMINUB: Type = 1098;
+    pub const X86_INS_VPMINUD: Type = 1099;
+    pub const X86_INS_VPMINUQ: Type = 1100;
+    pub const X86_INS_VPMINUW: Type = 1101;
+    pub const X86_INS_VPMOVDB: Type = 1102;
+    pub const X86_INS_VPMOVDW: Type = 1103;
+    pub const X86_INS_VPMOVMSKB: Type = 1104;
+    pub const X86_INS_VPMOVQB: Type = 1105;
+    pub const X86_INS_VPMOVQD: Type = 1106;
+    pub const X86_INS_VPMOVQW: Type = 1107;
+    pub const X86_INS_VPMOVSDB: Type = 1108;
+    pub const X86_INS_VPMOVSDW: Type = 1109;
+    pub const X86_INS_VPMOVSQB: Type = 1110;
+    pub const X86_INS_VPMOVSQD: Type = 1111;
+    pub const X86_INS_VPMOVSQW: Type = 1112;
+    pub const X86_INS_VPMOVSXBD: Type = 1113;
+    pub const X86_INS_VPMOVSXBQ: Type = 1114;
+    pub const X86_INS_VPMOVSXBW: Type = 1115;
+    pub const X86_INS_VPMOVSXDQ: Type = 1116;
+    pub const X86_INS_VPMOVSXWD: Type = 1117;
+    pub const X86_INS_VPMOVSXWQ: Type = 1118;
+    pub const X86_INS_VPMOVUSDB: Type = 1119;
+    pub const X86_INS_VPMOVUSDW: Type = 1120;
+    pub const X86_INS_VPMOVUSQB: Type = 1121;
+    pub const X86_INS_VPMOVUSQD: Type = 1122;
+    pub const X86_INS_VPMOVUSQW: Type = 1123;
+    pub const X86_INS_VPMOVZXBD: Type = 1124;
+    pub const X86_INS_VPMOVZXBQ: Type = 1125;
+    pub const X86_INS_VPMOVZXBW: Type = 1126;
+    pub const X86_INS_VPMOVZXDQ: Type = 1127;
+    pub const X86_INS_VPMOVZXWD: Type = 1128;
+    pub const X86_INS_VPMOVZXWQ: Type = 1129;
+    pub const X86_INS_VPMULDQ: Type = 1130;
+    pub const X86_INS_VPMULHRSW: Type = 1131;
+    pub const X86_INS_VPMULHUW: Type = 1132;
+    pub const X86_INS_VPMULHW: Type = 1133;
+    pub const X86_INS_VPMULLD: Type = 1134;
+    pub const X86_INS_VPMULLW: Type = 1135;
+    pub const X86_INS_VPMULUDQ: Type = 1136;
+    pub const X86_INS_VPORD: Type = 1137;
+    pub const X86_INS_VPORQ: Type = 1138;
+    pub const X86_INS_VPOR: Type = 1139;
+    pub const X86_INS_VPPERM: Type = 1140;
+    pub const X86_INS_VPROTB: Type = 1141;
+    pub const X86_INS_VPROTD: Type = 1142;
+    pub const X86_INS_VPROTQ: Type = 1143;
+    pub const X86_INS_VPROTW: Type = 1144;
+    pub const X86_INS_VPSADBW: Type = 1145;
+    pub const X86_INS_VPSCATTERDD: Type = 1146;
+    pub const X86_INS_VPSCATTERDQ: Type = 1147;
+    pub const X86_INS_VPSCATTERQD: Type = 1148;
+    pub const X86_INS_VPSCATTERQQ: Type = 1149;
+    pub const X86_INS_VPSHAB: Type = 1150;
+    pub const X86_INS_VPSHAD: Type = 1151;
+    pub const X86_INS_VPSHAQ: Type = 1152;
+    pub const X86_INS_VPSHAW: Type = 1153;
+    pub const X86_INS_VPSHLB: Type = 1154;
+    pub const X86_INS_VPSHLD: Type = 1155;
+    pub const X86_INS_VPSHLQ: Type = 1156;
+    pub const X86_INS_VPSHLW: Type = 1157;
+    pub const X86_INS_VPSHUFB: Type = 1158;
+    pub const X86_INS_VPSHUFD: Type = 1159;
+    pub const X86_INS_VPSHUFHW: Type = 1160;
+    pub const X86_INS_VPSHUFLW: Type = 1161;
+    pub const X86_INS_VPSIGNB: Type = 1162;
+    pub const X86_INS_VPSIGND: Type = 1163;
+    pub const X86_INS_VPSIGNW: Type = 1164;
+    pub const X86_INS_VPSLLDQ: Type = 1165;
+    pub const X86_INS_VPSLLD: Type = 1166;
+    pub const X86_INS_VPSLLQ: Type = 1167;
+    pub const X86_INS_VPSLLVD: Type = 1168;
+    pub const X86_INS_VPSLLVQ: Type = 1169;
+    pub const X86_INS_VPSLLW: Type = 1170;
+    pub const X86_INS_VPSRAD: Type = 1171;
+    pub const X86_INS_VPSRAQ: Type = 1172;
+    pub const X86_INS_VPSRAVD: Type = 1173;
+    pub const X86_INS_VPSRAVQ: Type = 1174;
+    pub const X86_INS_VPSRAW: Type = 1175;
+    pub const X86_INS_VPSRLDQ: Type = 1176;
+    pub const X86_INS_VPSRLD: Type = 1177;
+    pub const X86_INS_VPSRLQ: Type = 1178;
+    pub const X86_INS_VPSRLVD: Type = 1179;
+    pub const X86_INS_VPSRLVQ: Type = 1180;
+    pub const X86_INS_VPSRLW: Type = 1181;
+    pub const X86_INS_VPSUBB: Type = 1182;
+    pub const X86_INS_VPSUBD: Type = 1183;
+    pub const X86_INS_VPSUBQ: Type = 1184;
+    pub const X86_INS_VPSUBSB: Type = 1185;
+    pub const X86_INS_VPSUBSW: Type = 1186;
+    pub const X86_INS_VPSUBUSB: Type = 1187;
+    pub const X86_INS_VPSUBUSW: Type = 1188;
+    pub const X86_INS_VPSUBW: Type = 1189;
+    pub const X86_INS_VPTESTMD: Type = 1190;
+    pub const X86_INS_VPTESTMQ: Type = 1191;
+    pub const X86_INS_VPTESTNMD: Type = 1192;
+    pub const X86_INS_VPTESTNMQ: Type = 1193;
+    pub const X86_INS_VPTEST: Type = 1194;
+    pub const X86_INS_VPUNPCKHBW: Type = 1195;
+    pub const X86_INS_VPUNPCKHDQ: Type = 1196;
+    pub const X86_INS_VPUNPCKHQDQ: Type = 1197;
+    pub const X86_INS_VPUNPCKHWD: Type = 1198;
+    pub const X86_INS_VPUNPCKLBW: Type = 1199;
+    pub const X86_INS_VPUNPCKLDQ: Type = 1200;
+    pub const X86_INS_VPUNPCKLQDQ: Type = 1201;
+    pub const X86_INS_VPUNPCKLWD: Type = 1202;
+    pub const X86_INS_VPXORD: Type = 1203;
+    pub const X86_INS_VPXORQ: Type = 1204;
+    pub const X86_INS_VPXOR: Type = 1205;
+    pub const X86_INS_VRCP14PD: Type = 1206;
+    pub const X86_INS_VRCP14PS: Type = 1207;
+    pub const X86_INS_VRCP14SD: Type = 1208;
+    pub const X86_INS_VRCP14SS: Type = 1209;
+    pub const X86_INS_VRCP28PD: Type = 1210;
+    pub const X86_INS_VRCP28PS: Type = 1211;
+    pub const X86_INS_VRCP28SD: Type = 1212;
+    pub const X86_INS_VRCP28SS: Type = 1213;
+    pub const X86_INS_VRCPPS: Type = 1214;
+    pub const X86_INS_VRCPSS: Type = 1215;
+    pub const X86_INS_VRNDSCALEPD: Type = 1216;
+    pub const X86_INS_VRNDSCALEPS: Type = 1217;
+    pub const X86_INS_VRNDSCALESD: Type = 1218;
+    pub const X86_INS_VRNDSCALESS: Type = 1219;
+    pub const X86_INS_VROUNDPD: Type = 1220;
+    pub const X86_INS_VROUNDPS: Type = 1221;
+    pub const X86_INS_VROUNDSD: Type = 1222;
+    pub const X86_INS_VROUNDSS: Type = 1223;
+    pub const X86_INS_VRSQRT14PD: Type = 1224;
+    pub const X86_INS_VRSQRT14PS: Type = 1225;
+    pub const X86_INS_VRSQRT14SD: Type = 1226;
+    pub const X86_INS_VRSQRT14SS: Type = 1227;
+    pub const X86_INS_VRSQRT28PD: Type = 1228;
+    pub const X86_INS_VRSQRT28PS: Type = 1229;
+    pub const X86_INS_VRSQRT28SD: Type = 1230;
+    pub const X86_INS_VRSQRT28SS: Type = 1231;
+    pub const X86_INS_VRSQRTPS: Type = 1232;
+    pub const X86_INS_VRSQRTSS: Type = 1233;
+    pub const X86_INS_VSCATTERDPD: Type = 1234;
+    pub const X86_INS_VSCATTERDPS: Type = 1235;
+    pub const X86_INS_VSCATTERPF0DPD: Type = 1236;
+    pub const X86_INS_VSCATTERPF0DPS: Type = 1237;
+    pub const X86_INS_VSCATTERPF0QPD: Type = 1238;
+    pub const X86_INS_VSCATTERPF0QPS: Type = 1239;
+    pub const X86_INS_VSCATTERPF1DPD: Type = 1240;
+    pub const X86_INS_VSCATTERPF1DPS: Type = 1241;
+    pub const X86_INS_VSCATTERPF1QPD: Type = 1242;
+    pub const X86_INS_VSCATTERPF1QPS: Type = 1243;
+    pub const X86_INS_VSCATTERQPD: Type = 1244;
+    pub const X86_INS_VSCATTERQPS: Type = 1245;
+    pub const X86_INS_VSHUFPD: Type = 1246;
+    pub const X86_INS_VSHUFPS: Type = 1247;
+    pub const X86_INS_VSQRTPD: Type = 1248;
+    pub const X86_INS_VSQRTPS: Type = 1249;
+    pub const X86_INS_VSQRTSD: Type = 1250;
+    pub const X86_INS_VSQRTSS: Type = 1251;
+    pub const X86_INS_VSTMXCSR: Type = 1252;
+    pub const X86_INS_VSUBPD: Type = 1253;
+    pub const X86_INS_VSUBPS: Type = 1254;
+    pub const X86_INS_VSUBSD: Type = 1255;
+    pub const X86_INS_VSUBSS: Type = 1256;
+    pub const X86_INS_VTESTPD: Type = 1257;
+    pub const X86_INS_VTESTPS: Type = 1258;
+    pub const X86_INS_VUNPCKHPD: Type = 1259;
+    pub const X86_INS_VUNPCKHPS: Type = 1260;
+    pub const X86_INS_VUNPCKLPD: Type = 1261;
+    pub const X86_INS_VUNPCKLPS: Type = 1262;
+    pub const X86_INS_VZEROALL: Type = 1263;
+    pub const X86_INS_VZEROUPPER: Type = 1264;
+    pub const X86_INS_WAIT: Type = 1265;
+    pub const X86_INS_WBINVD: Type = 1266;
+    pub const X86_INS_WRFSBASE: Type = 1267;
+    pub const X86_INS_WRGSBASE: Type = 1268;
+    pub const X86_INS_WRMSR: Type = 1269;
+    pub const X86_INS_XABORT: Type = 1270;
+    pub const X86_INS_XACQUIRE: Type = 1271;
+    pub const X86_INS_XBEGIN: Type = 1272;
+    pub const X86_INS_XCHG: Type = 1273;
+    pub const X86_INS_FXCH: Type = 1274;
+    pub const X86_INS_XCRYPTCBC: Type = 1275;
+    pub const X86_INS_XCRYPTCFB: Type = 1276;
+    pub const X86_INS_XCRYPTCTR: Type = 1277;
+    pub const X86_INS_XCRYPTECB: Type = 1278;
+    pub const X86_INS_XCRYPTOFB: Type = 1279;
+    pub const X86_INS_XEND: Type = 1280;
+    pub const X86_INS_XGETBV: Type = 1281;
+    pub const X86_INS_XLATB: Type = 1282;
+    pub const X86_INS_XRELEASE: Type = 1283;
+    pub const X86_INS_XRSTOR: Type = 1284;
+    pub const X86_INS_XRSTOR64: Type = 1285;
+    pub const X86_INS_XSAVE: Type = 1286;
+    pub const X86_INS_XSAVE64: Type = 1287;
+    pub const X86_INS_XSAVEOPT: Type = 1288;
+    pub const X86_INS_XSAVEOPT64: Type = 1289;
+    pub const X86_INS_XSETBV: Type = 1290;
+    pub const X86_INS_XSHA1: Type = 1291;
+    pub const X86_INS_XSHA256: Type = 1292;
+    pub const X86_INS_XSTORE: Type = 1293;
+    pub const X86_INS_XTEST: Type = 1294;
+    pub const X86_INS_ENDING: Type = 1295;
 }
-#[repr(u32)]
-#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
-pub enum xcore_op_type {
-    XCORE_OP_INVALID = 0,
-    XCORE_OP_REG = 1,
-    XCORE_OP_IMM = 2,
-    XCORE_OP_MEM = 3,
+pub mod x86_insn_group {
+    pub type Type = ::std::os::raw::c_uint;
+    pub const X86_GRP_INVALID: Type = 0;
+    pub const X86_GRP_JUMP: Type = 1;
+    pub const X86_GRP_CALL: Type = 2;
+    pub const X86_GRP_RET: Type = 3;
+    pub const X86_GRP_INT: Type = 4;
+    pub const X86_GRP_IRET: Type = 5;
+    pub const X86_GRP_VM: Type = 128;
+    pub const X86_GRP_3DNOW: Type = 129;
+    pub const X86_GRP_AES: Type = 130;
+    pub const X86_GRP_ADX: Type = 131;
+    pub const X86_GRP_AVX: Type = 132;
+    pub const X86_GRP_AVX2: Type = 133;
+    pub const X86_GRP_AVX512: Type = 134;
+    pub const X86_GRP_BMI: Type = 135;
+    pub const X86_GRP_BMI2: Type = 136;
+    pub const X86_GRP_CMOV: Type = 137;
+    pub const X86_GRP_F16C: Type = 138;
+    pub const X86_GRP_FMA: Type = 139;
+    pub const X86_GRP_FMA4: Type = 140;
+    pub const X86_GRP_FSGSBASE: Type = 141;
+    pub const X86_GRP_HLE: Type = 142;
+    pub const X86_GRP_MMX: Type = 143;
+    pub const X86_GRP_MODE32: Type = 144;
+    pub const X86_GRP_MODE64: Type = 145;
+    pub const X86_GRP_RTM: Type = 146;
+    pub const X86_GRP_SHA: Type = 147;
+    pub const X86_GRP_SSE1: Type = 148;
+    pub const X86_GRP_SSE2: Type = 149;
+    pub const X86_GRP_SSE3: Type = 150;
+    pub const X86_GRP_SSE41: Type = 151;
+    pub const X86_GRP_SSE42: Type = 152;
+    pub const X86_GRP_SSE4A: Type = 153;
+    pub const X86_GRP_SSSE3: Type = 154;
+    pub const X86_GRP_PCLMUL: Type = 155;
+    pub const X86_GRP_XOP: Type = 156;
+    pub const X86_GRP_CDI: Type = 157;
+    pub const X86_GRP_ERI: Type = 158;
+    pub const X86_GRP_TBM: Type = 159;
+    pub const X86_GRP_16BITMODE: Type = 160;
+    pub const X86_GRP_NOT64BITMODE: Type = 161;
+    pub const X86_GRP_SGX: Type = 162;
+    pub const X86_GRP_DQI: Type = 163;
+    pub const X86_GRP_BWI: Type = 164;
+    pub const X86_GRP_PFI: Type = 165;
+    pub const X86_GRP_VLX: Type = 166;
+    pub const X86_GRP_SMAP: Type = 167;
+    pub const X86_GRP_NOVLX: Type = 168;
+    pub const X86_GRP_ENDING: Type = 169;
+}
+pub mod xcore_op_type {
+    pub type Type = ::std::os::raw::c_uint;
+    pub const XCORE_OP_INVALID: Type = 0;
+    pub const XCORE_OP_REG: Type = 1;
+    pub const XCORE_OP_IMM: Type = 2;
+    pub const XCORE_OP_MEM: Type = 3;
 }
 #[repr(C)]
 #[derive(Debug, Copy)]
@@ -8152,38 +9177,66 @@ pub struct xcore_op_mem {
 }
 #[test]
 fn bindgen_test_layout_xcore_op_mem() {
-    assert_eq!(::std::mem::size_of::<xcore_op_mem>() , 12usize , concat ! (
-               "Size of: " , stringify ! ( xcore_op_mem ) ));
-    assert_eq! (::std::mem::align_of::<xcore_op_mem>() , 4usize , concat ! (
-                "Alignment of " , stringify ! ( xcore_op_mem ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const xcore_op_mem ) ) . base as * const _ as
-                usize } , 0usize , concat ! (
-                "Alignment of field: " , stringify ! ( xcore_op_mem ) , "::" ,
-                stringify ! ( base ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const xcore_op_mem ) ) . index as * const _ as
-                usize } , 1usize , concat ! (
-                "Alignment of field: " , stringify ! ( xcore_op_mem ) , "::" ,
-                stringify ! ( index ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const xcore_op_mem ) ) . disp as * const _ as
-                usize } , 4usize , concat ! (
-                "Alignment of field: " , stringify ! ( xcore_op_mem ) , "::" ,
-                stringify ! ( disp ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const xcore_op_mem ) ) . direct as * const _ as
-                usize } , 8usize , concat ! (
-                "Alignment of field: " , stringify ! ( xcore_op_mem ) , "::" ,
-                stringify ! ( direct ) ));
+    assert_eq!(
+        ::std::mem::size_of::<xcore_op_mem>(),
+        12usize,
+        concat!("Size of: ", stringify!(xcore_op_mem))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<xcore_op_mem>(),
+        4usize,
+        concat!("Alignment of ", stringify!(xcore_op_mem))
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const xcore_op_mem)).base as *const _ as usize },
+        0usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(xcore_op_mem),
+            "::",
+            stringify!(base)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const xcore_op_mem)).index as *const _ as usize },
+        1usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(xcore_op_mem),
+            "::",
+            stringify!(index)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const xcore_op_mem)).disp as *const _ as usize },
+        4usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(xcore_op_mem),
+            "::",
+            stringify!(disp)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const xcore_op_mem)).direct as *const _ as usize },
+        8usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(xcore_op_mem),
+            "::",
+            stringify!(direct)
+        )
+    );
 }
 impl Clone for xcore_op_mem {
-    fn clone(&self) -> Self { *self }
+    fn clone(&self) -> Self {
+        *self
+    }
 }
 #[repr(C)]
 #[derive(Copy)]
 pub struct cs_xcore_op {
-    pub type_: xcore_op_type,
+    pub type_: xcore_op_type::Type,
     pub __bindgen_anon_1: cs_xcore_op__bindgen_ty_1,
 }
 #[repr(C)]
@@ -8196,46 +9249,93 @@ pub union cs_xcore_op__bindgen_ty_1 {
 }
 #[test]
 fn bindgen_test_layout_cs_xcore_op__bindgen_ty_1() {
-    assert_eq!(::std::mem::size_of::<cs_xcore_op__bindgen_ty_1>() , 12usize ,
-               concat ! (
-               "Size of: " , stringify ! ( cs_xcore_op__bindgen_ty_1 ) ));
-    assert_eq! (::std::mem::align_of::<cs_xcore_op__bindgen_ty_1>() , 4usize ,
-                concat ! (
-                "Alignment of " , stringify ! ( cs_xcore_op__bindgen_ty_1 )
-                ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const cs_xcore_op__bindgen_ty_1 ) ) . reg as *
-                const _ as usize } , 0usize , concat ! (
-                "Alignment of field: " , stringify ! (
-                cs_xcore_op__bindgen_ty_1 ) , "::" , stringify ! ( reg ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const cs_xcore_op__bindgen_ty_1 ) ) . imm as *
-                const _ as usize } , 0usize , concat ! (
-                "Alignment of field: " , stringify ! (
-                cs_xcore_op__bindgen_ty_1 ) , "::" , stringify ! ( imm ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const cs_xcore_op__bindgen_ty_1 ) ) . mem as *
-                const _ as usize } , 0usize , concat ! (
-                "Alignment of field: " , stringify ! (
-                cs_xcore_op__bindgen_ty_1 ) , "::" , stringify ! ( mem ) ));
+    assert_eq!(
+        ::std::mem::size_of::<cs_xcore_op__bindgen_ty_1>(),
+        12usize,
+        concat!("Size of: ", stringify!(cs_xcore_op__bindgen_ty_1))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<cs_xcore_op__bindgen_ty_1>(),
+        4usize,
+        concat!("Alignment of ", stringify!(cs_xcore_op__bindgen_ty_1))
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const cs_xcore_op__bindgen_ty_1)).reg as *const _ as usize },
+        0usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(cs_xcore_op__bindgen_ty_1),
+            "::",
+            stringify!(reg)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const cs_xcore_op__bindgen_ty_1)).imm as *const _ as usize },
+        0usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(cs_xcore_op__bindgen_ty_1),
+            "::",
+            stringify!(imm)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const cs_xcore_op__bindgen_ty_1)).mem as *const _ as usize },
+        0usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(cs_xcore_op__bindgen_ty_1),
+            "::",
+            stringify!(mem)
+        )
+    );
 }
 impl Clone for cs_xcore_op__bindgen_ty_1 {
-    fn clone(&self) -> Self { *self }
+    fn clone(&self) -> Self {
+        *self
+    }
+}
+impl ::std::fmt::Debug for cs_xcore_op__bindgen_ty_1 {
+    fn fmt(&self, f: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
+        write!(f, "cs_xcore_op__bindgen_ty_1 {{ union }}")
+    }
 }
 #[test]
 fn bindgen_test_layout_cs_xcore_op() {
-    assert_eq!(::std::mem::size_of::<cs_xcore_op>() , 16usize , concat ! (
-               "Size of: " , stringify ! ( cs_xcore_op ) ));
-    assert_eq! (::std::mem::align_of::<cs_xcore_op>() , 4usize , concat ! (
-                "Alignment of " , stringify ! ( cs_xcore_op ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const cs_xcore_op ) ) . type_ as * const _ as
-                usize } , 0usize , concat ! (
-                "Alignment of field: " , stringify ! ( cs_xcore_op ) , "::" ,
-                stringify ! ( type_ ) ));
+    assert_eq!(
+        ::std::mem::size_of::<cs_xcore_op>(),
+        16usize,
+        concat!("Size of: ", stringify!(cs_xcore_op))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<cs_xcore_op>(),
+        4usize,
+        concat!("Alignment of ", stringify!(cs_xcore_op))
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const cs_xcore_op)).type_ as *const _ as usize },
+        0usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(cs_xcore_op),
+            "::",
+            stringify!(type_)
+        )
+    );
 }
 impl Clone for cs_xcore_op {
-    fn clone(&self) -> Self { *self }
+    fn clone(&self) -> Self {
+        *self
+    }
+}
+impl ::std::fmt::Debug for cs_xcore_op {
+    fn fmt(&self, f: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
+        write!(
+            f,
+            "cs_xcore_op {{ type: {:?}, __bindgen_anon_1: {:?} }}",
+            self.type_, self.__bindgen_anon_1
+        )
+    }
 }
 #[repr(C)]
 #[derive(Copy)]
@@ -8245,23 +9345,50 @@ pub struct cs_xcore {
 }
 #[test]
 fn bindgen_test_layout_cs_xcore() {
-    assert_eq!(::std::mem::size_of::<cs_xcore>() , 132usize , concat ! (
-               "Size of: " , stringify ! ( cs_xcore ) ));
-    assert_eq! (::std::mem::align_of::<cs_xcore>() , 4usize , concat ! (
-                "Alignment of " , stringify ! ( cs_xcore ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const cs_xcore ) ) . op_count as * const _ as
-                usize } , 0usize , concat ! (
-                "Alignment of field: " , stringify ! ( cs_xcore ) , "::" ,
-                stringify ! ( op_count ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const cs_xcore ) ) . operands as * const _ as
-                usize } , 4usize , concat ! (
-                "Alignment of field: " , stringify ! ( cs_xcore ) , "::" ,
-                stringify ! ( operands ) ));
+    assert_eq!(
+        ::std::mem::size_of::<cs_xcore>(),
+        132usize,
+        concat!("Size of: ", stringify!(cs_xcore))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<cs_xcore>(),
+        4usize,
+        concat!("Alignment of ", stringify!(cs_xcore))
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const cs_xcore)).op_count as *const _ as usize },
+        0usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(cs_xcore),
+            "::",
+            stringify!(op_count)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const cs_xcore)).operands as *const _ as usize },
+        4usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(cs_xcore),
+            "::",
+            stringify!(operands)
+        )
+    );
 }
 impl Clone for cs_xcore {
-    fn clone(&self) -> Self { *self }
+    fn clone(&self) -> Self {
+        *self
+    }
+}
+impl ::std::fmt::Debug for cs_xcore {
+    fn fmt(&self, f: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
+        write!(
+            f,
+            "cs_xcore {{ op_count: {:?}, operands: {:?} }}",
+            self.op_count, self.operands
+        )
+    }
 }
 pub mod xcore_reg {
     pub type Type = ::std::os::raw::c_uint;
@@ -8293,138 +9420,136 @@ pub mod xcore_reg {
     pub const XCORE_REG_ID: Type = 25;
     pub const XCORE_REG_ENDING: Type = 26;
 }
-#[repr(u32)]
-#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
-pub enum xcore_insn {
-    XCORE_INS_INVALID = 0,
-    XCORE_INS_ADD = 1,
-    XCORE_INS_ANDNOT = 2,
-    XCORE_INS_AND = 3,
-    XCORE_INS_ASHR = 4,
-    XCORE_INS_BAU = 5,
-    XCORE_INS_BITREV = 6,
-    XCORE_INS_BLA = 7,
-    XCORE_INS_BLAT = 8,
-    XCORE_INS_BL = 9,
-    XCORE_INS_BF = 10,
-    XCORE_INS_BT = 11,
-    XCORE_INS_BU = 12,
-    XCORE_INS_BRU = 13,
-    XCORE_INS_BYTEREV = 14,
-    XCORE_INS_CHKCT = 15,
-    XCORE_INS_CLRE = 16,
-    XCORE_INS_CLRPT = 17,
-    XCORE_INS_CLRSR = 18,
-    XCORE_INS_CLZ = 19,
-    XCORE_INS_CRC8 = 20,
-    XCORE_INS_CRC32 = 21,
-    XCORE_INS_DCALL = 22,
-    XCORE_INS_DENTSP = 23,
-    XCORE_INS_DGETREG = 24,
-    XCORE_INS_DIVS = 25,
-    XCORE_INS_DIVU = 26,
-    XCORE_INS_DRESTSP = 27,
-    XCORE_INS_DRET = 28,
-    XCORE_INS_ECALLF = 29,
-    XCORE_INS_ECALLT = 30,
-    XCORE_INS_EDU = 31,
-    XCORE_INS_EEF = 32,
-    XCORE_INS_EET = 33,
-    XCORE_INS_EEU = 34,
-    XCORE_INS_ENDIN = 35,
-    XCORE_INS_ENTSP = 36,
-    XCORE_INS_EQ = 37,
-    XCORE_INS_EXTDP = 38,
-    XCORE_INS_EXTSP = 39,
-    XCORE_INS_FREER = 40,
-    XCORE_INS_FREET = 41,
-    XCORE_INS_GETD = 42,
-    XCORE_INS_GET = 43,
-    XCORE_INS_GETN = 44,
-    XCORE_INS_GETR = 45,
-    XCORE_INS_GETSR = 46,
-    XCORE_INS_GETST = 47,
-    XCORE_INS_GETTS = 48,
-    XCORE_INS_INCT = 49,
-    XCORE_INS_INIT = 50,
-    XCORE_INS_INPW = 51,
-    XCORE_INS_INSHR = 52,
-    XCORE_INS_INT = 53,
-    XCORE_INS_IN = 54,
-    XCORE_INS_KCALL = 55,
-    XCORE_INS_KENTSP = 56,
-    XCORE_INS_KRESTSP = 57,
-    XCORE_INS_KRET = 58,
-    XCORE_INS_LADD = 59,
-    XCORE_INS_LD16S = 60,
-    XCORE_INS_LD8U = 61,
-    XCORE_INS_LDA16 = 62,
-    XCORE_INS_LDAP = 63,
-    XCORE_INS_LDAW = 64,
-    XCORE_INS_LDC = 65,
-    XCORE_INS_LDW = 66,
-    XCORE_INS_LDIVU = 67,
-    XCORE_INS_LMUL = 68,
-    XCORE_INS_LSS = 69,
-    XCORE_INS_LSUB = 70,
-    XCORE_INS_LSU = 71,
-    XCORE_INS_MACCS = 72,
-    XCORE_INS_MACCU = 73,
-    XCORE_INS_MJOIN = 74,
-    XCORE_INS_MKMSK = 75,
-    XCORE_INS_MSYNC = 76,
-    XCORE_INS_MUL = 77,
-    XCORE_INS_NEG = 78,
-    XCORE_INS_NOT = 79,
-    XCORE_INS_OR = 80,
-    XCORE_INS_OUTCT = 81,
-    XCORE_INS_OUTPW = 82,
-    XCORE_INS_OUTSHR = 83,
-    XCORE_INS_OUTT = 84,
-    XCORE_INS_OUT = 85,
-    XCORE_INS_PEEK = 86,
-    XCORE_INS_REMS = 87,
-    XCORE_INS_REMU = 88,
-    XCORE_INS_RETSP = 89,
-    XCORE_INS_SETCLK = 90,
-    XCORE_INS_SET = 91,
-    XCORE_INS_SETC = 92,
-    XCORE_INS_SETD = 93,
-    XCORE_INS_SETEV = 94,
-    XCORE_INS_SETN = 95,
-    XCORE_INS_SETPSC = 96,
-    XCORE_INS_SETPT = 97,
-    XCORE_INS_SETRDY = 98,
-    XCORE_INS_SETSR = 99,
-    XCORE_INS_SETTW = 100,
-    XCORE_INS_SETV = 101,
-    XCORE_INS_SEXT = 102,
-    XCORE_INS_SHL = 103,
-    XCORE_INS_SHR = 104,
-    XCORE_INS_SSYNC = 105,
-    XCORE_INS_ST16 = 106,
-    XCORE_INS_ST8 = 107,
-    XCORE_INS_STW = 108,
-    XCORE_INS_SUB = 109,
-    XCORE_INS_SYNCR = 110,
-    XCORE_INS_TESTCT = 111,
-    XCORE_INS_TESTLCL = 112,
-    XCORE_INS_TESTWCT = 113,
-    XCORE_INS_TSETMR = 114,
-    XCORE_INS_START = 115,
-    XCORE_INS_WAITEF = 116,
-    XCORE_INS_WAITET = 117,
-    XCORE_INS_WAITEU = 118,
-    XCORE_INS_XOR = 119,
-    XCORE_INS_ZEXT = 120,
-    XCORE_INS_ENDING = 121,
+pub mod xcore_insn {
+    pub type Type = ::std::os::raw::c_uint;
+    pub const XCORE_INS_INVALID: Type = 0;
+    pub const XCORE_INS_ADD: Type = 1;
+    pub const XCORE_INS_ANDNOT: Type = 2;
+    pub const XCORE_INS_AND: Type = 3;
+    pub const XCORE_INS_ASHR: Type = 4;
+    pub const XCORE_INS_BAU: Type = 5;
+    pub const XCORE_INS_BITREV: Type = 6;
+    pub const XCORE_INS_BLA: Type = 7;
+    pub const XCORE_INS_BLAT: Type = 8;
+    pub const XCORE_INS_BL: Type = 9;
+    pub const XCORE_INS_BF: Type = 10;
+    pub const XCORE_INS_BT: Type = 11;
+    pub const XCORE_INS_BU: Type = 12;
+    pub const XCORE_INS_BRU: Type = 13;
+    pub const XCORE_INS_BYTEREV: Type = 14;
+    pub const XCORE_INS_CHKCT: Type = 15;
+    pub const XCORE_INS_CLRE: Type = 16;
+    pub const XCORE_INS_CLRPT: Type = 17;
+    pub const XCORE_INS_CLRSR: Type = 18;
+    pub const XCORE_INS_CLZ: Type = 19;
+    pub const XCORE_INS_CRC8: Type = 20;
+    pub const XCORE_INS_CRC32: Type = 21;
+    pub const XCORE_INS_DCALL: Type = 22;
+    pub const XCORE_INS_DENTSP: Type = 23;
+    pub const XCORE_INS_DGETREG: Type = 24;
+    pub const XCORE_INS_DIVS: Type = 25;
+    pub const XCORE_INS_DIVU: Type = 26;
+    pub const XCORE_INS_DRESTSP: Type = 27;
+    pub const XCORE_INS_DRET: Type = 28;
+    pub const XCORE_INS_ECALLF: Type = 29;
+    pub const XCORE_INS_ECALLT: Type = 30;
+    pub const XCORE_INS_EDU: Type = 31;
+    pub const XCORE_INS_EEF: Type = 32;
+    pub const XCORE_INS_EET: Type = 33;
+    pub const XCORE_INS_EEU: Type = 34;
+    pub const XCORE_INS_ENDIN: Type = 35;
+    pub const XCORE_INS_ENTSP: Type = 36;
+    pub const XCORE_INS_EQ: Type = 37;
+    pub const XCORE_INS_EXTDP: Type = 38;
+    pub const XCORE_INS_EXTSP: Type = 39;
+    pub const XCORE_INS_FREER: Type = 40;
+    pub const XCORE_INS_FREET: Type = 41;
+    pub const XCORE_INS_GETD: Type = 42;
+    pub const XCORE_INS_GET: Type = 43;
+    pub const XCORE_INS_GETN: Type = 44;
+    pub const XCORE_INS_GETR: Type = 45;
+    pub const XCORE_INS_GETSR: Type = 46;
+    pub const XCORE_INS_GETST: Type = 47;
+    pub const XCORE_INS_GETTS: Type = 48;
+    pub const XCORE_INS_INCT: Type = 49;
+    pub const XCORE_INS_INIT: Type = 50;
+    pub const XCORE_INS_INPW: Type = 51;
+    pub const XCORE_INS_INSHR: Type = 52;
+    pub const XCORE_INS_INT: Type = 53;
+    pub const XCORE_INS_IN: Type = 54;
+    pub const XCORE_INS_KCALL: Type = 55;
+    pub const XCORE_INS_KENTSP: Type = 56;
+    pub const XCORE_INS_KRESTSP: Type = 57;
+    pub const XCORE_INS_KRET: Type = 58;
+    pub const XCORE_INS_LADD: Type = 59;
+    pub const XCORE_INS_LD16S: Type = 60;
+    pub const XCORE_INS_LD8U: Type = 61;
+    pub const XCORE_INS_LDA16: Type = 62;
+    pub const XCORE_INS_LDAP: Type = 63;
+    pub const XCORE_INS_LDAW: Type = 64;
+    pub const XCORE_INS_LDC: Type = 65;
+    pub const XCORE_INS_LDW: Type = 66;
+    pub const XCORE_INS_LDIVU: Type = 67;
+    pub const XCORE_INS_LMUL: Type = 68;
+    pub const XCORE_INS_LSS: Type = 69;
+    pub const XCORE_INS_LSUB: Type = 70;
+    pub const XCORE_INS_LSU: Type = 71;
+    pub const XCORE_INS_MACCS: Type = 72;
+    pub const XCORE_INS_MACCU: Type = 73;
+    pub const XCORE_INS_MJOIN: Type = 74;
+    pub const XCORE_INS_MKMSK: Type = 75;
+    pub const XCORE_INS_MSYNC: Type = 76;
+    pub const XCORE_INS_MUL: Type = 77;
+    pub const XCORE_INS_NEG: Type = 78;
+    pub const XCORE_INS_NOT: Type = 79;
+    pub const XCORE_INS_OR: Type = 80;
+    pub const XCORE_INS_OUTCT: Type = 81;
+    pub const XCORE_INS_OUTPW: Type = 82;
+    pub const XCORE_INS_OUTSHR: Type = 83;
+    pub const XCORE_INS_OUTT: Type = 84;
+    pub const XCORE_INS_OUT: Type = 85;
+    pub const XCORE_INS_PEEK: Type = 86;
+    pub const XCORE_INS_REMS: Type = 87;
+    pub const XCORE_INS_REMU: Type = 88;
+    pub const XCORE_INS_RETSP: Type = 89;
+    pub const XCORE_INS_SETCLK: Type = 90;
+    pub const XCORE_INS_SET: Type = 91;
+    pub const XCORE_INS_SETC: Type = 92;
+    pub const XCORE_INS_SETD: Type = 93;
+    pub const XCORE_INS_SETEV: Type = 94;
+    pub const XCORE_INS_SETN: Type = 95;
+    pub const XCORE_INS_SETPSC: Type = 96;
+    pub const XCORE_INS_SETPT: Type = 97;
+    pub const XCORE_INS_SETRDY: Type = 98;
+    pub const XCORE_INS_SETSR: Type = 99;
+    pub const XCORE_INS_SETTW: Type = 100;
+    pub const XCORE_INS_SETV: Type = 101;
+    pub const XCORE_INS_SEXT: Type = 102;
+    pub const XCORE_INS_SHL: Type = 103;
+    pub const XCORE_INS_SHR: Type = 104;
+    pub const XCORE_INS_SSYNC: Type = 105;
+    pub const XCORE_INS_ST16: Type = 106;
+    pub const XCORE_INS_ST8: Type = 107;
+    pub const XCORE_INS_STW: Type = 108;
+    pub const XCORE_INS_SUB: Type = 109;
+    pub const XCORE_INS_SYNCR: Type = 110;
+    pub const XCORE_INS_TESTCT: Type = 111;
+    pub const XCORE_INS_TESTLCL: Type = 112;
+    pub const XCORE_INS_TESTWCT: Type = 113;
+    pub const XCORE_INS_TSETMR: Type = 114;
+    pub const XCORE_INS_START: Type = 115;
+    pub const XCORE_INS_WAITEF: Type = 116;
+    pub const XCORE_INS_WAITET: Type = 117;
+    pub const XCORE_INS_WAITEU: Type = 118;
+    pub const XCORE_INS_XOR: Type = 119;
+    pub const XCORE_INS_ZEXT: Type = 120;
+    pub const XCORE_INS_ENDING: Type = 121;
 }
-#[repr(u32)]
-#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
-pub enum xcore_insn_group {
-    XCORE_GRP_INVALID = 0,
-    XCORE_GRP_JUMP = 1,
-    XCORE_GRP_ENDING = 2,
+pub mod xcore_insn_group {
+    pub type Type = ::std::os::raw::c_uint;
+    pub const XCORE_GRP_INVALID: Type = 0;
+    pub const XCORE_GRP_JUMP: Type = 1;
+    pub const XCORE_GRP_ENDING: Type = 2;
 }
 #[repr(C)]
 #[derive(Copy)]
@@ -8443,18 +9568,6 @@ pub struct cs_detail {
     /// number of groups this insn belongs to
     pub groups_count: u8,
     /// Architecture-specific instruction info
-    /// **NOTE** this is not implemented right now, because it's tedious, boring and very specific
-    /// size in bytes:
-    /// cs_detail: 1528
-    /// cs_detail_minus_arch_specific: 43
-    /// cs_x86: 432
-    /// cs_arm64: 392
-    /// cs_arm: 1480
-    /// cs_mips: 200
-    /// cs_ppc: 140
-    /// cs_sparc: 60
-    /// cs_sysz: 200
-    /// cs_xcore: 132
     pub __bindgen_anon_1: cs_detail__bindgen_ty_1,
 }
 #[repr(C)]
@@ -8472,126 +9585,229 @@ pub union cs_detail__bindgen_ty_1 {
 }
 #[test]
 fn bindgen_test_layout_cs_detail__bindgen_ty_1() {
-    assert_eq!(::std::mem::size_of::<cs_detail__bindgen_ty_1>() , 1480usize ,
-               concat ! (
-               "Size of: " , stringify ! ( cs_detail__bindgen_ty_1 ) ));
-    assert_eq! (::std::mem::align_of::<cs_detail__bindgen_ty_1>() , 8usize ,
-                concat ! (
-                "Alignment of " , stringify ! ( cs_detail__bindgen_ty_1 ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const cs_detail__bindgen_ty_1 ) ) . x86 as *
-                const _ as usize } , 0usize , concat ! (
-                "Alignment of field: " , stringify ! ( cs_detail__bindgen_ty_1
-                ) , "::" , stringify ! ( x86 ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const cs_detail__bindgen_ty_1 ) ) . arm64 as *
-                const _ as usize } , 0usize , concat ! (
-                "Alignment of field: " , stringify ! ( cs_detail__bindgen_ty_1
-                ) , "::" , stringify ! ( arm64 ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const cs_detail__bindgen_ty_1 ) ) . arm as *
-                const _ as usize } , 0usize , concat ! (
-                "Alignment of field: " , stringify ! ( cs_detail__bindgen_ty_1
-                ) , "::" , stringify ! ( arm ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const cs_detail__bindgen_ty_1 ) ) . mips as *
-                const _ as usize } , 0usize , concat ! (
-                "Alignment of field: " , stringify ! ( cs_detail__bindgen_ty_1
-                ) , "::" , stringify ! ( mips ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const cs_detail__bindgen_ty_1 ) ) . ppc as *
-                const _ as usize } , 0usize , concat ! (
-                "Alignment of field: " , stringify ! ( cs_detail__bindgen_ty_1
-                ) , "::" , stringify ! ( ppc ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const cs_detail__bindgen_ty_1 ) ) . sparc as *
-                const _ as usize } , 0usize , concat ! (
-                "Alignment of field: " , stringify ! ( cs_detail__bindgen_ty_1
-                ) , "::" , stringify ! ( sparc ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const cs_detail__bindgen_ty_1 ) ) . sysz as *
-                const _ as usize } , 0usize , concat ! (
-                "Alignment of field: " , stringify ! ( cs_detail__bindgen_ty_1
-                ) , "::" , stringify ! ( sysz ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const cs_detail__bindgen_ty_1 ) ) . xcore as *
-                const _ as usize } , 0usize , concat ! (
-                "Alignment of field: " , stringify ! ( cs_detail__bindgen_ty_1
-                ) , "::" , stringify ! ( xcore ) ));
+    assert_eq!(
+        ::std::mem::size_of::<cs_detail__bindgen_ty_1>(),
+        1480usize,
+        concat!("Size of: ", stringify!(cs_detail__bindgen_ty_1))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<cs_detail__bindgen_ty_1>(),
+        8usize,
+        concat!("Alignment of ", stringify!(cs_detail__bindgen_ty_1))
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const cs_detail__bindgen_ty_1)).x86 as *const _ as usize },
+        0usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(cs_detail__bindgen_ty_1),
+            "::",
+            stringify!(x86)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const cs_detail__bindgen_ty_1)).arm64 as *const _ as usize },
+        0usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(cs_detail__bindgen_ty_1),
+            "::",
+            stringify!(arm64)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const cs_detail__bindgen_ty_1)).arm as *const _ as usize },
+        0usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(cs_detail__bindgen_ty_1),
+            "::",
+            stringify!(arm)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const cs_detail__bindgen_ty_1)).mips as *const _ as usize },
+        0usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(cs_detail__bindgen_ty_1),
+            "::",
+            stringify!(mips)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const cs_detail__bindgen_ty_1)).ppc as *const _ as usize },
+        0usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(cs_detail__bindgen_ty_1),
+            "::",
+            stringify!(ppc)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const cs_detail__bindgen_ty_1)).sparc as *const _ as usize },
+        0usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(cs_detail__bindgen_ty_1),
+            "::",
+            stringify!(sparc)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const cs_detail__bindgen_ty_1)).sysz as *const _ as usize },
+        0usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(cs_detail__bindgen_ty_1),
+            "::",
+            stringify!(sysz)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const cs_detail__bindgen_ty_1)).xcore as *const _ as usize },
+        0usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(cs_detail__bindgen_ty_1),
+            "::",
+            stringify!(xcore)
+        )
+    );
 }
 impl Clone for cs_detail__bindgen_ty_1 {
-    fn clone(&self) -> Self { *self }
+    fn clone(&self) -> Self {
+        *self
+    }
+}
+impl ::std::fmt::Debug for cs_detail__bindgen_ty_1 {
+    fn fmt(&self, f: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
+        write!(f, "cs_detail__bindgen_ty_1 {{ union }}")
+    }
 }
 #[test]
 fn bindgen_test_layout_cs_detail() {
-    assert_eq!(::std::mem::size_of::<cs_detail>() , 1528usize , concat ! (
-               "Size of: " , stringify ! ( cs_detail ) ));
-    assert_eq! (::std::mem::align_of::<cs_detail>() , 8usize , concat ! (
-                "Alignment of " , stringify ! ( cs_detail ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const cs_detail ) ) . regs_read as * const _ as
-                usize } , 0usize , concat ! (
-                "Alignment of field: " , stringify ! ( cs_detail ) , "::" ,
-                stringify ! ( regs_read ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const cs_detail ) ) . regs_read_count as *
-                const _ as usize } , 12usize , concat ! (
-                "Alignment of field: " , stringify ! ( cs_detail ) , "::" ,
-                stringify ! ( regs_read_count ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const cs_detail ) ) . regs_write as * const _
-                as usize } , 13usize , concat ! (
-                "Alignment of field: " , stringify ! ( cs_detail ) , "::" ,
-                stringify ! ( regs_write ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const cs_detail ) ) . regs_write_count as *
-                const _ as usize } , 33usize , concat ! (
-                "Alignment of field: " , stringify ! ( cs_detail ) , "::" ,
-                stringify ! ( regs_write_count ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const cs_detail ) ) . groups as * const _ as
-                usize } , 34usize , concat ! (
-                "Alignment of field: " , stringify ! ( cs_detail ) , "::" ,
-                stringify ! ( groups ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const cs_detail ) ) . groups_count as * const _
-                as usize } , 42usize , concat ! (
-                "Alignment of field: " , stringify ! ( cs_detail ) , "::" ,
-                stringify ! ( groups_count ) ));
+    assert_eq!(
+        ::std::mem::size_of::<cs_detail>(),
+        1528usize,
+        concat!("Size of: ", stringify!(cs_detail))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<cs_detail>(),
+        8usize,
+        concat!("Alignment of ", stringify!(cs_detail))
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const cs_detail)).regs_read as *const _ as usize },
+        0usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(cs_detail),
+            "::",
+            stringify!(regs_read)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const cs_detail)).regs_read_count as *const _ as usize },
+        12usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(cs_detail),
+            "::",
+            stringify!(regs_read_count)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const cs_detail)).regs_write as *const _ as usize },
+        13usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(cs_detail),
+            "::",
+            stringify!(regs_write)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const cs_detail)).regs_write_count as *const _ as usize },
+        33usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(cs_detail),
+            "::",
+            stringify!(regs_write_count)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const cs_detail)).groups as *const _ as usize },
+        34usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(cs_detail),
+            "::",
+            stringify!(groups)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const cs_detail)).groups_count as *const _ as usize },
+        42usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(cs_detail),
+            "::",
+            stringify!(groups_count)
+        )
+    );
 }
 impl Clone for cs_detail {
-    fn clone(&self) -> Self { *self }
+    fn clone(&self) -> Self {
+        *self
+    }
+}
+impl ::std::fmt::Debug for cs_detail {
+    fn fmt(&self, f: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
+        write ! ( f , "cs_detail {{ regs_read: {:?}, regs_read_count: {:?}, regs_write: {:?}, regs_write_count: {:?}, groups: {:?}, groups_count: {:?}, __bindgen_anon_1: {:?} }}" , self . regs_read , self . regs_read_count , self . regs_write , self . regs_write_count , self . groups , self . groups_count , self . __bindgen_anon_1 )
+    }
 }
 #[repr(C)]
 #[derive(Copy)]
 /// Detail information of disassembled instruction
 pub struct cs_insn {
     /// Instruction ID (basically a numeric ID for the instruction mnemonic)
+    ///
     /// Find the instruction id in the '[ARCH]_insn' enum in the header file
     /// of corresponding architecture, such as 'arm_insn' in arm.h for ARM,
     /// 'x86_insn' in x86.h for X86, etc...
+    ///
     /// This information is available even when CS_OPT_DETAIL = CS_OPT_OFF
+    ///
     /// NOTE: in Skipdata mode, "data" instruction has 0 for this id field.
     pub id: ::std::os::raw::c_uint,
     /// Address (EIP) of this instruction
+    ///
     /// This information is available even when CS_OPT_DETAIL = CS_OPT_OFF
     pub address: u64,
     /// Size of this instruction
+    ///
     /// This information is available even when CS_OPT_DETAIL = CS_OPT_OFF
     pub size: u16,
     /// Machine bytes of this instruction, with number of bytes indicated by @size above
+    ///
     /// This information is available even when CS_OPT_DETAIL = CS_OPT_OFF
     pub bytes: [u8; 16usize],
     /// Ascii text of instruction mnemonic
+    ///
     /// This information is available even when CS_OPT_DETAIL = CS_OPT_OFF
     pub mnemonic: [::std::os::raw::c_char; 32usize],
     /// Ascii text of instruction operands
+    ///
     /// This information is available even when CS_OPT_DETAIL = CS_OPT_OFF
     pub op_str: [::std::os::raw::c_char; 160usize],
     /// Pointer to cs_detail.
     /// NOTE: detail pointer is only valid when both requirements below are met:
-    /// (1) CS_OP_DETAIL = CS_OPT_ON
-    /// (2) Engine is not in Skipdata mode (CS_OP_SKIPDATA option set to CS_OPT_ON)
+    ///
+    /// 1. CS_OP_DETAIL = CS_OPT_ON
+    /// 2. Engine is not in Skipdata mode (CS_OP_SKIPDATA option set to CS_OPT_ON)
     ///
     /// NOTE 2: when in Skipdata mode, or when detail mode is OFF, even if this pointer
     ///     is not NULL, its content is still irrelevant.
@@ -8599,66 +9815,113 @@ pub struct cs_insn {
 }
 #[test]
 fn bindgen_test_layout_cs_insn() {
-    assert_eq!(::std::mem::size_of::<cs_insn>() , 240usize , concat ! (
-               "Size of: " , stringify ! ( cs_insn ) ));
-    assert_eq! (::std::mem::align_of::<cs_insn>() , 8usize , concat ! (
-                "Alignment of " , stringify ! ( cs_insn ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const cs_insn ) ) . id as * const _ as usize }
-                , 0usize , concat ! (
-                "Alignment of field: " , stringify ! ( cs_insn ) , "::" ,
-                stringify ! ( id ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const cs_insn ) ) . address as * const _ as
-                usize } , 8usize , concat ! (
-                "Alignment of field: " , stringify ! ( cs_insn ) , "::" ,
-                stringify ! ( address ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const cs_insn ) ) . size as * const _ as usize
-                } , 16usize , concat ! (
-                "Alignment of field: " , stringify ! ( cs_insn ) , "::" ,
-                stringify ! ( size ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const cs_insn ) ) . bytes as * const _ as usize
-                } , 18usize , concat ! (
-                "Alignment of field: " , stringify ! ( cs_insn ) , "::" ,
-                stringify ! ( bytes ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const cs_insn ) ) . mnemonic as * const _ as
-                usize } , 34usize , concat ! (
-                "Alignment of field: " , stringify ! ( cs_insn ) , "::" ,
-                stringify ! ( mnemonic ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const cs_insn ) ) . op_str as * const _ as
-                usize } , 66usize , concat ! (
-                "Alignment of field: " , stringify ! ( cs_insn ) , "::" ,
-                stringify ! ( op_str ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const cs_insn ) ) . detail as * const _ as
-                usize } , 232usize , concat ! (
-                "Alignment of field: " , stringify ! ( cs_insn ) , "::" ,
-                stringify ! ( detail ) ));
+    assert_eq!(
+        ::std::mem::size_of::<cs_insn>(),
+        240usize,
+        concat!("Size of: ", stringify!(cs_insn))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<cs_insn>(),
+        8usize,
+        concat!("Alignment of ", stringify!(cs_insn))
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const cs_insn)).id as *const _ as usize },
+        0usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(cs_insn),
+            "::",
+            stringify!(id)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const cs_insn)).address as *const _ as usize },
+        8usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(cs_insn),
+            "::",
+            stringify!(address)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const cs_insn)).size as *const _ as usize },
+        16usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(cs_insn),
+            "::",
+            stringify!(size)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const cs_insn)).bytes as *const _ as usize },
+        18usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(cs_insn),
+            "::",
+            stringify!(bytes)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const cs_insn)).mnemonic as *const _ as usize },
+        34usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(cs_insn),
+            "::",
+            stringify!(mnemonic)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const cs_insn)).op_str as *const _ as usize },
+        66usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(cs_insn),
+            "::",
+            stringify!(op_str)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const cs_insn)).detail as *const _ as usize },
+        232usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(cs_insn),
+            "::",
+            stringify!(detail)
+        )
+    );
 }
 impl Clone for cs_insn {
-    fn clone(&self) -> Self { *self }
+    fn clone(&self) -> Self {
+        *self
+    }
 }
-#[repr(u32)]
-#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
-pub enum cs_err {
-    CS_ERR_OK = 0,
-    CS_ERR_MEM = 1,
-    CS_ERR_ARCH = 2,
-    CS_ERR_HANDLE = 3,
-    CS_ERR_CSH = 4,
-    CS_ERR_MODE = 5,
-    CS_ERR_OPTION = 6,
-    CS_ERR_DETAIL = 7,
-    CS_ERR_MEMSETUP = 8,
-    CS_ERR_VERSION = 9,
-    CS_ERR_DIET = 10,
-    CS_ERR_SKIPDATA = 11,
-    CS_ERR_X86_ATT = 12,
-    CS_ERR_X86_INTEL = 13,
+impl ::std::fmt::Debug for cs_insn {
+    fn fmt(&self, f: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
+        write ! ( f , "cs_insn {{ id: {:?}, address: {:?}, size: {:?}, bytes: {:?}, mnemonic: [{}], op_str: [{}], detail: {:?} }}" , self . id , self . address , self . size , self . bytes , self . mnemonic . iter ( ) . enumerate ( ) . map ( | ( i , v ) | format ! ( "{}{:?}" , if i > 0 { ", " } else { "" } , v ) ) . collect :: < String > ( ) , self . op_str . iter ( ) . enumerate ( ) . map ( | ( i , v ) | format ! ( "{}{:?}" , if i > 0 { ", " } else { "" } , v ) ) . collect :: < String > ( ) , self . detail )
+    }
+}
+pub mod cs_err {
+    pub type Type = ::std::os::raw::c_uint;
+    pub const CS_ERR_OK: Type = 0;
+    pub const CS_ERR_MEM: Type = 1;
+    pub const CS_ERR_ARCH: Type = 2;
+    pub const CS_ERR_HANDLE: Type = 3;
+    pub const CS_ERR_CSH: Type = 4;
+    pub const CS_ERR_MODE: Type = 5;
+    pub const CS_ERR_OPTION: Type = 6;
+    pub const CS_ERR_DETAIL: Type = 7;
+    pub const CS_ERR_MEMSETUP: Type = 8;
+    pub const CS_ERR_VERSION: Type = 9;
+    pub const CS_ERR_DIET: Type = 10;
+    pub const CS_ERR_SKIPDATA: Type = 11;
+    pub const CS_ERR_X86_ATT: Type = 12;
+    pub const CS_ERR_X86_INTEL: Type = 13;
 }
 extern "C" {
     /// Return combined API version & major and minor version numbers.
@@ -8668,6 +9931,7 @@ extern "C" {
     ///
     /// return hexical number as (major << 8 | minor), which encodes both
     /// major & minor versions.
+    ///
     /// NOTE: This returned value can be compared with version number made
     /// with macro CS_MAKE_VERSION
     ///
@@ -8677,9 +9941,10 @@ extern "C" {
     /// NOTE: if you only care about returned value, but not major and minor values,
     /// set both `major` & `minor` arguments to NULL.
     ///
-    pub fn cs_version(major: *mut ::std::os::raw::c_int,
-                      minor: *mut ::std::os::raw::c_int)
-     -> ::std::os::raw::c_uint;
+    pub fn cs_version(
+        major: *mut ::std::os::raw::c_int,
+        minor: *mut ::std::os::raw::c_int,
+    ) -> ::std::os::raw::c_uint;
 }
 extern "C" {
     /// This API can be used to either ask for archs supported by this library,
@@ -8699,14 +9964,14 @@ extern "C" {
 extern "C" {
     /// Initialize CS handle: this must be done before any usage of CS.
     ///
-    /// `arch`: architecture type (CS_ARCH_*)
-    /// `mode`: hardware mode. This is combined of CS_MODE_*
-    /// `handle`: pointer to handle, which will be updated at return time
+    /// * `arch`: architecture type (CS_ARCH_*)
+    /// * `mode`: hardware mode. This is combined of CS_MODE_*
+    /// * `handle`: pointer to handle, which will be updated at return time
     ///
     /// return CS_ERR_OK on success, or other value on failure (refer to cs_err enum
     /// for detailed error).
     ///
-    pub fn cs_open(arch: cs_arch, mode: cs_mode, handle: *mut csh) -> cs_err;
+    pub fn cs_open(arch: cs_arch, mode: cs_mode::Type, handle: *mut csh) -> cs_err::Type;
 }
 extern "C" {
     /// Close CS handle: MUST do to release the handle when it is not used anymore.
@@ -8722,14 +9987,14 @@ extern "C" {
     /// return CS_ERR_OK on success, or other value on failure (refer to cs_err enum
     /// for detailed error).
     ///
-    pub fn cs_close(handle: *mut csh) -> cs_err;
+    pub fn cs_close(handle: *mut csh) -> cs_err::Type;
 }
 extern "C" {
     /// Set option for disassembling engine at runtime
     ///
-    /// `handle`: handle returned by cs_open()
-    /// `type`: type of option to be set
-    /// `value`: option value corresponding with @type
+    /// * `handle`: handle returned by cs_open()
+    /// * `type`: type of option to be set
+    /// * `value`: option value corresponding with @type
     ///
     /// return: CS_ERR_OK on success, or other value on failure.
     /// Refer to cs_err enum for detailed error.
@@ -8738,7 +10003,7 @@ extern "C" {
     /// so that cs_option(handle, CS_OPT_MEM, value) can (i.e must) be called
     /// even before cs_open()
     ///
-    pub fn cs_option(handle: csh, type_: cs_opt_type, value: usize) -> cs_err;
+    pub fn cs_option(handle: csh, type_: cs_opt_type, value: usize) -> cs_err::Type;
 }
 extern "C" {
     /// Report the last error number when some API function fail.
@@ -8748,7 +10013,7 @@ extern "C" {
     ///
     /// return: error code of cs_err enum type (CS_ERR_*, see above)
     ///
-    pub fn cs_errno(handle: csh) -> cs_err;
+    pub fn cs_errno(handle: csh) -> cs_err::Type;
 }
 extern "C" {
     /// Return a string describing given error code.
@@ -8758,7 +10023,7 @@ extern "C" {
     /// return: returns a pointer to a string that describes the error code
     /// passed in the argument @code
     ///
-    pub fn cs_strerror(code: cs_err) -> *const ::std::os::raw::c_char;
+    pub fn cs_strerror(code: cs_err::Type) -> *const ::std::os::raw::c_char;
 }
 extern "C" {
     /// Disassemble binary code, given the code buffer, size, address and number
@@ -8796,15 +10061,28 @@ extern "C" {
     ///
     /// On failure, call cs_errno() for error code.
     ///
-    pub fn cs_disasm(handle: csh, code: *const u8, code_size: usize,
-                     address: u64, count: usize, insn: *mut *mut cs_insn)
-     -> usize;
+    pub fn cs_disasm(
+        handle: csh,
+        code: *const u8,
+        code_size: usize,
+        address: u64,
+        count: usize,
+        insn: *mut *mut cs_insn,
+    ) -> usize;
 }
 extern "C" {
 
-    pub fn cs_disasm_ex(handle: csh, code: *const u8, code_size: usize,
-                        address: u64, count: usize, insn: *mut *mut cs_insn)
-     -> usize;
+    /// Deprecated function - to be retired in the next version!
+    ///
+    /// Use cs_disasm() instead of cs_disasm_ex()
+    pub fn cs_disasm_ex(
+        handle: csh,
+        code: *const u8,
+        code_size: usize,
+        address: u64,
+        count: usize,
+        insn: *mut *mut cs_insn,
+    ) -> usize;
 }
 extern "C" {
     /// Free memory allocated by cs_malloc() or cs_disasm() (argument @insn)
@@ -8849,19 +10127,24 @@ extern "C" {
     /// `count`=0, when cs_disasm() runs uncontrollably (until either end of input
     /// buffer, or when it encounters an invalid instruction).
     ///
-    /// `handle`: handle returned by cs_open()
-    /// `code`: buffer containing raw binary code to be disassembled
-    /// `code_size`: size of above code
-    /// `address`: address of the first insn in given raw code buffer
-    /// `insn`: pointer to instruction to be filled in by this API.
+    /// * `handle`: handle returned by cs_open()
+    /// * `code`: buffer containing raw binary code to be disassembled
+    /// * `code_size`: size of above code
+    /// * `address`: address of the first insn in given raw code buffer
+    /// * `insn`: pointer to instruction to be filled in by this API.
     ///
     /// return: true if this API successfully decode 1 instruction,
     /// or false otherwise.
     ///
     /// On failure, call cs_errno() for error code.
     ///
-    pub fn cs_disasm_iter(handle: csh, code: *mut *const u8, size: *mut usize,
-                          address: *mut u64, insn: *mut cs_insn) -> bool;
+    pub fn cs_disasm_iter(
+        handle: csh,
+        code: *mut *const u8,
+        size: *mut usize,
+        address: *mut u64,
+        insn: *mut cs_insn,
+    ) -> bool;
 }
 extern "C" {
     /// Return friendly name of register in a string.
@@ -8871,13 +10154,15 @@ extern "C" {
     /// WARN: when in 'diet' mode, this API is irrelevant because engine does not
     /// store register name.
     ///
-    /// `handle`: handle returned by cs_open()
-    /// `reg_id`: register id
+    /// * `handle`: handle returned by cs_open()
+    /// * `reg_id`: register id
     ///
     /// return: string name of the register, or NULL if `reg_id` is invalid.
     ///
-    pub fn cs_reg_name(handle: csh, reg_id: ::std::os::raw::c_uint)
-     -> *const ::std::os::raw::c_char;
+    pub fn cs_reg_name(
+        handle: csh,
+        reg_id: ::std::os::raw::c_uint,
+    ) -> *const ::std::os::raw::c_char;
 }
 extern "C" {
     /// Return friendly name of an instruction in a string.
@@ -8886,13 +10171,15 @@ extern "C" {
     /// WARN: when in 'diet' mode, this API is irrelevant because the engine does not
     /// store instruction name.
     ///
-    /// `handle`: handle returned by cs_open()
-    /// `insn_id`: instruction id
+    /// * `handle`: handle returned by cs_open()
+    /// * `insn_id`: instruction id
     ///
     /// return: string name of the instruction, or NULL if `insn_id` is invalid.
     ///
-    pub fn cs_insn_name(handle: csh, insn_id: ::std::os::raw::c_uint)
-     -> *const ::std::os::raw::c_char;
+    pub fn cs_insn_name(
+        handle: csh,
+        insn_id: ::std::os::raw::c_uint,
+    ) -> *const ::std::os::raw::c_char;
 }
 extern "C" {
     /// Return friendly name of a group id (that an instruction can belong to)
@@ -8901,13 +10188,15 @@ extern "C" {
     /// WARN: when in 'diet' mode, this API is irrelevant because the engine does not
     /// store group name.
     ///
-    /// `handle`: handle returned by cs_open()
-    /// `group_id`: group id
+    /// * `handle`: handle returned by cs_open()
+    /// * `group_id`: group id
     ///
     /// return: string name of the group, or NULL if `group_id` is invalid.
     ///
-    pub fn cs_group_name(handle: csh, group_id: ::std::os::raw::c_uint)
-     -> *const ::std::os::raw::c_char;
+    pub fn cs_group_name(
+        handle: csh,
+        group_id: ::std::os::raw::c_uint,
+    ) -> *const ::std::os::raw::c_char;
 }
 extern "C" {
     /// Check if a disassembled instruction belong to a particular group.
@@ -8919,14 +10208,17 @@ extern "C" {
     /// WARN: when in 'diet' mode, this API is irrelevant because the engine does not
     /// update `groups` array.
     ///
-    /// `handle`: handle returned by cs_open()
-    /// `insn`: disassembled instruction structure received from cs_disasm() or cs_disasm_iter()
-    /// `group_id`: group that you want to check if this instruction belong to.
+    /// * `handle`: handle returned by cs_open()
+    /// * `insn`: disassembled instruction structure received from cs_disasm() or cs_disasm_iter()
+    /// * `group_id`: group that you want to check if this instruction belong to.
     ///
     /// return: true if this instruction indeed belongs to aboved group, or false otherwise.
     ///
-    pub fn cs_insn_group(handle: csh, insn: *const cs_insn,
-                         group_id: ::std::os::raw::c_uint) -> bool;
+    pub fn cs_insn_group(
+        handle: csh,
+        insn: *const cs_insn,
+        group_id: ::std::os::raw::c_uint,
+    ) -> bool;
 }
 extern "C" {
     /// Check if a disassembled instruction IMPLICITLY used a particular register.
@@ -8938,13 +10230,12 @@ extern "C" {
     /// WARN: when in 'diet' mode, this API is irrelevant because the engine does not
     /// update `regs_read` array.
     ///
-    /// `insn`: disassembled instruction structure received from cs_disasm() or cs_disasm_iter()
-    /// `reg_id`: register that you want to check if this instruction used it.
+    /// * `insn`: disassembled instruction structure received from cs_disasm() or cs_disasm_iter()
+    /// * `reg_id`: register that you want to check if this instruction used it.
     ///
     /// return: true if this instruction indeed implicitly used aboved register, or false otherwise.
     ///
-    pub fn cs_reg_read(handle: csh, insn: *const cs_insn,
-                       reg_id: ::std::os::raw::c_uint) -> bool;
+    pub fn cs_reg_read(handle: csh, insn: *const cs_insn, reg_id: ::std::os::raw::c_uint) -> bool;
 }
 extern "C" {
     /// Check if a disassembled instruction IMPLICITLY modified a particular register.
@@ -8956,13 +10247,12 @@ extern "C" {
     /// WARN: when in 'diet' mode, this API is irrelevant because the engine does not
     /// update @regs_write array.
     ///
-    /// `insn`: disassembled instruction structure received from cs_disasm() or cs_disasm_iter()
-    /// `reg_id`: register that you want to check if this instruction modified it.
+    /// * `insn`: disassembled instruction structure received from cs_disasm() or cs_disasm_iter()
+    /// * `reg_id`: register that you want to check if this instruction modified it.
     ///
     /// return: true if this instruction indeed implicitly modified aboved register, or false otherwise.
     ///
-    pub fn cs_reg_write(handle: csh, insn: *const cs_insn,
-                        reg_id: ::std::os::raw::c_uint) -> bool;
+    pub fn cs_reg_write(handle: csh, insn: *const cs_insn, reg_id: ::std::os::raw::c_uint) -> bool;
 }
 extern "C" {
     /// Count the number of operands of a given type.
@@ -8970,16 +10260,18 @@ extern "C" {
     ///
     /// NOTE: this API is only valid when detail option is ON (which is OFF by default)
     ///
-    /// `handle`: handle returned by cs_open()
-    /// `insn`: disassembled instruction structure received from cs_disasm() or cs_disasm_iter()
-    /// `op_type`: Operand type to be found.
+    /// * `handle`: handle returned by cs_open()
+    /// * `insn`: disassembled instruction structure received from cs_disasm() or cs_disasm_iter()
+    /// * `op_type`: Operand type to be found.
     ///
     /// return: number of operands of given type `op_type` in instruction `insn`,
     /// or -1 on failure.
     ///
-    pub fn cs_op_count(handle: csh, insn: *const cs_insn,
-                       op_type: ::std::os::raw::c_uint)
-     -> ::std::os::raw::c_int;
+    pub fn cs_op_count(
+        handle: csh,
+        insn: *const cs_insn,
+        op_type: ::std::os::raw::c_uint,
+    ) -> ::std::os::raw::c_int;
 }
 extern "C" {
     /// Retrieve the position of operand of given type in <arch>.operands[] array.
@@ -8988,19 +10280,21 @@ extern "C" {
     ///
     /// NOTE: this API is only valid when detail option is ON (which is OFF by default)
     ///
-    /// `handle`: handle returned by cs_open()
-    /// `insn`: disassembled instruction structure received from cs_disasm() or cs_disasm_iter()
-    /// `op_type`: Operand type to be found.
-    /// `position`: position of the operand to be found. This must be in the range
-    /// [1, cs_op_count(handle, insn, op_type)]
+    /// * `handle`: handle returned by cs_open()
+    /// * `insn`: disassembled instruction structure received from cs_disasm() or cs_disasm_iter()
+    /// * `op_type`: Operand type to be found.
+    /// * `position`: position of the operand to be found. This must be in the range
+    ///   [1, cs_op_count(handle, insn, op_type)]
     ///
     /// return: index of operand of given type `op_type` in <arch>.operands[] array
     /// in instruction `insn`, or -1 on failure.
     ///
-    pub fn cs_op_index(handle: csh, insn: *const cs_insn,
-                       op_type: ::std::os::raw::c_uint,
-                       position: ::std::os::raw::c_uint)
-     -> ::std::os::raw::c_int;
+    pub fn cs_op_index(
+        handle: csh,
+        insn: *const cs_insn,
+        op_type: ::std::os::raw::c_uint,
+        position: ::std::os::raw::c_uint,
+    ) -> ::std::os::raw::c_int;
 }
 pub type __builtin_va_list = [__va_list_tag; 1usize];
 #[repr(C)]
@@ -9013,31 +10307,59 @@ pub struct __va_list_tag {
 }
 #[test]
 fn bindgen_test_layout___va_list_tag() {
-    assert_eq!(::std::mem::size_of::<__va_list_tag>() , 24usize , concat ! (
-               "Size of: " , stringify ! ( __va_list_tag ) ));
-    assert_eq! (::std::mem::align_of::<__va_list_tag>() , 8usize , concat ! (
-                "Alignment of " , stringify ! ( __va_list_tag ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const __va_list_tag ) ) . gp_offset as * const
-                _ as usize } , 0usize , concat ! (
-                "Alignment of field: " , stringify ! ( __va_list_tag ) , "::"
-                , stringify ! ( gp_offset ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const __va_list_tag ) ) . fp_offset as * const
-                _ as usize } , 4usize , concat ! (
-                "Alignment of field: " , stringify ! ( __va_list_tag ) , "::"
-                , stringify ! ( fp_offset ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const __va_list_tag ) ) . overflow_arg_area as
-                * const _ as usize } , 8usize , concat ! (
-                "Alignment of field: " , stringify ! ( __va_list_tag ) , "::"
-                , stringify ! ( overflow_arg_area ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const __va_list_tag ) ) . reg_save_area as *
-                const _ as usize } , 16usize , concat ! (
-                "Alignment of field: " , stringify ! ( __va_list_tag ) , "::"
-                , stringify ! ( reg_save_area ) ));
+    assert_eq!(
+        ::std::mem::size_of::<__va_list_tag>(),
+        24usize,
+        concat!("Size of: ", stringify!(__va_list_tag))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<__va_list_tag>(),
+        8usize,
+        concat!("Alignment of ", stringify!(__va_list_tag))
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const __va_list_tag)).gp_offset as *const _ as usize },
+        0usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(__va_list_tag),
+            "::",
+            stringify!(gp_offset)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const __va_list_tag)).fp_offset as *const _ as usize },
+        4usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(__va_list_tag),
+            "::",
+            stringify!(fp_offset)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const __va_list_tag)).overflow_arg_area as *const _ as usize },
+        8usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(__va_list_tag),
+            "::",
+            stringify!(overflow_arg_area)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const __va_list_tag)).reg_save_area as *const _ as usize },
+        16usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(__va_list_tag),
+            "::",
+            stringify!(reg_save_area)
+        )
+    );
 }
 impl Clone for __va_list_tag {
-    fn clone(&self) -> Self { *self }
+    fn clone(&self) -> Self {
+        *self
+    }
 }

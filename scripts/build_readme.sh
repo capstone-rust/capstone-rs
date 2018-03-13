@@ -7,10 +7,14 @@ set -eux
 
 cd "$(dirname "$0")"
 
-BASE=../README
+build() {
+    base="$1"
+    pandoc \
+        -f gfm -t html5 \
+        --css github-md.css -Vpagetitle=capstone-sys \
+        --standalone --self-contained \
+        ${base}.md -o ${base}.html
+}
 
-pandoc \
-    -f gfm -t html5 \
-    --css github-md.css -Vpagetitle=capstone-sys \
-    --standalone --self-contained \
-    ${BASE}.md -o ${BASE}.html
+build ../README
+build ../CHANGELOG
