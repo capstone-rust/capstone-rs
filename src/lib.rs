@@ -419,7 +419,7 @@ mod test {
 
         // Constants
         cs_arch::CS_ARCH_ARM;
-        cs_mode::CS_MODE_LITTLE_ENDIAN;
+        CS_MODE_LITTLE_ENDIAN;
         cs_opt_type::CS_OPT_SYNTAX;
         cs_opt_value::CS_OPT_OFF;
         cs_op_type::CS_OP_REG;
@@ -460,7 +460,7 @@ mod test {
     }
 
     /// Verify capstone disassembles instructions correctly
-    fn test_disassembly_helper(arch: cs_arch, mode: cs_mode::Type, code: &[(&[u8], &str, u32)]) {
+    fn test_disassembly_helper(arch: cs_arch, mode: cs_mode, code: &[(&[u8], &str, u32)]) {
         // Create handle
         let mut handle: csh = 0;
         let result = unsafe { cs_open(arch, mode, &mut handle as *mut csh) };
@@ -518,6 +518,6 @@ mod test {
             (&[0xc3], "ret", x86_insn::X86_INS_RET as u32),
             (&[0x90], "nop", x86_insn::X86_INS_NOP as u32),
         ];
-        test_disassembly_helper(cs_arch::CS_ARCH_X86, cs_mode::CS_MODE_LITTLE_ENDIAN, code);
+        test_disassembly_helper(cs_arch::CS_ARCH_X86, CS_MODE_LITTLE_ENDIAN, code);
     }
 }

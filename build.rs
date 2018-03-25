@@ -26,10 +26,14 @@
 //!
 //! * `cs_err`: avoid undefined behavior in case an error is instantiated with an invalid value; the
 //!   compiler could make false assumptions that the value is only within a certain range.
-//! * `cs_group_type`: each architecture adds group types; avoids needing to transmute
+//! * `cs_group_type`/`ARCH_insn_group`: each architecture adds group types to the `cs_group_type`,
+//!   so we constify to avoid needing to transmute.
 //! * `cs_mode`: used as a bitmask; when values are OR'd together, they are not a valid discriminant
 //!   value
-//! * `cs_opt_value`: variant discriminants are not unique
+//! * `cs_opt_value`/`ARCH_reg`: variant discriminants are not unique
+//!
+//! Bitfield enum: fields are OR'd together to form new values
+//! * `cs_mode`
 
 #[cfg(feature = "use_bindgen")]
 extern crate bindgen;
@@ -200,8 +204,9 @@ fn write_bindgen_bindings(
         .impl_debug(true)
         // Avoid overlapping regex to work around rust-bindgen bug:
         // https://github.com/rust-lang-nursery/rust-bindgen/issues/1198
-        .rustified_enum("cs_arch|cs_op_type|cs_opt_type")
-        .constified_enum_module("cs_err|cs_group_type|cs_mode|cs_opt_value");
+        .constified_enum_module("cs_err|cs_group_type|cs_opt_value")
+        .bitfield_enum("cs_mode")
+        .rustified_enum(".*");
 
     // Whitelist cs_.* functions and types
     let pattern = String::from("cs_.*");
@@ -211,10 +216,12 @@ fn write_bindgen_bindings(
 
     // Whitelist types with architectures
     for arch in ARCH_INCLUDES {
-        let pattern = format!(".*(^|_){}(_|$).*", arch.cs_name);
+        // .*(^|_)ARCH(_|$).*
+        let arch_type_pattern = format!(".*(^|_){}(_|$).*", arch.cs_name);
+        let const_mod_pattern = format!("^{}_(reg|insn_group)$", arch.cs_name);
         builder = builder
-            .whitelist_type(&pattern)
-            .constified_enum_module(&pattern);
+            .whitelist_type(&arch_type_pattern)
+            .constified_enum_module(&const_mod_pattern);
     }
 
     let bindings = builder.generate().expect("Unable to generate bindings");
