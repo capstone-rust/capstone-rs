@@ -289,7 +289,11 @@ def rust_def_name(rust_expr):
             def_name = splits[2]
             logger.debug('Returning rust_def_name %s from %s',
                          def_name, repr(rust_expr))
-            return def_name
+            try:
+                select_idx = def_name.index('(')
+            except ValueError:
+                select_idx = len(def_name)
+            return def_name[:select_idx]
 
     def_with_trailing_args = [
         ([b'pub', b'fn'], extract_trailer(b'(')),
@@ -355,6 +359,11 @@ class TestRustDefName(unittest.TestCase):
             'pub fn cs_reg_name(handle: csh, reg_id: ::std::os::raw::c_uint)',
             'cs_reg_name')
 
+    def test_tuple_struct(self):
+        self.run_test(
+            'pub struct cs_mode(pub i32);',
+            'cs_mode')
+
 
 def _simplify(str_):
     """Simplify source line"""
@@ -414,14 +423,22 @@ class InsertLines(object):
 
     def __str__(self):
         indent_str = self.indent if self.indent else b''
-        return b''.join(b'%s%s\n' % (indent_str, bytes(x).lstrip())
-                        for x in self.inner)
+        return b''.join(
+            rstrip_line(b'%s%s\n' % (indent_str, bytes(x).lstrip()))
+            for x in self.inner)
 
     def __bytes__(self):
         return self.__str__()
 
     def __repr__(self):
         return 'InsertLines(%s)' % repr(self.inner)
+
+
+def rstrip_line(line):
+    """Removes trailing whitespace from a string (preserving any newline)"""
+    if line[-1] == '\n':
+        return line[:-1].rstrip() + '\n'
+    return line.rstrip()
 
 
 def add_doc_comments(doc_patch, fs_path, output_path):
@@ -491,7 +508,7 @@ def add_doc_comments(doc_patch, fs_path, output_path):
                     line.indent = indent_matches[0] if indent_matches else None
                 except IndexError:
                     pass
-            output_file.write(bytes(line))
+            output_file.write(rstrip_line(bytes(line)))
 
     logger.warning('Matched %d / %d patch parts', matched_parts, total_parts)
 

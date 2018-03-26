@@ -10,7 +10,13 @@ In order to update the pre-generated bindings:
 
 2. Commit bindings update.
 
-3. Re-apply documentation comments patch
+3. Find documentation comment commit.
+
+    ~~~
+    git log pre_generated/capstone.rs
+    ~~~
+
+4. Re-apply documentation comments patch
 
     ~~~
     git diff e67b72b8^ e67b72b8 | \
@@ -18,13 +24,23 @@ In order to update the pre-generated bindings:
         --fs-path pre_generated/capstone.rs -o pre_generated/capstone.doc.rs
     ~~~
 
-4. Fixup/add any more documentation comments.
+5. Fixup/add any more documentation comments.
 
-5. Commit documentation fixups.
+6. Overwrite pre-generated bindings with the fixed-up version.
+
+    ~~~
+    cp pre_generated/capstone.doc.rs pre_generated/capstone.rs
+    ~~~
+
+7. Commit documentation fixups.
+
+    ~~~
+    git commit pre_generated/capstone.rs
+    ~~~
 
 
 ## Notes
 
 * We want to keep the pre-generated bindings and documentation update in
   separate commits.
-    * Allows us to cherry-pick changes (such as the documentation)
+    * Allows us to more easily cherry-pick changes (such as the documentation)
