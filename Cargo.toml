@@ -9,7 +9,7 @@ license = "MIT"
 name = "capstone"
 repository = "https://github.com/capstone-rust/capstone-rs"
 readme = "README.md"
-version = "0.2.0"
+version = "0.3.0"
 
 [badges]
 travis-ci = { repository = "capstone-rust/capstone-rs" }
