@@ -8,7 +8,18 @@
 
 Bindings to the [capstone library][upstream] disassembly framework.
 
-There's an example in `demo.rs`, but as a sample:
+
+# Requirements
+
+`capstone-rs` uses the [`capstone-sys`](https://github.com/capstone-rust/capstone-sys) crate to provide the low-level bindings to the Capstone C library.
+
+See the [`capstone-sys`](https://github.com/capstone-rust/capstone-sys) GitHub page for the requirements and supported platforms.
+
+* Minimum Rust Version: `1.20.0` or later
+
+# Example
+
+The example from [`demo.rs`](examples/demo.rs):
 
 ```rust
 extern crate capstone;
@@ -111,21 +122,15 @@ Found 5 instructions
     insn groups:
 ```
 
-# Reporting Issues
-
-Please open a [Github issue](https://github.com/capstone-rust/capstone-rs/issues)
-
-# Demo
-
-You can run:
+You can the demo by running:
 
     cargo run --example=demo
 
 To produce a short demonstration. More complex demos welcome!
 
-# Minimum Rust Version
+# Reporting Issues
 
-`capstone-rs` requires Rust `1.20.0` or later.
+Please open a [Github issue](https://github.com/capstone-rust/capstone-rs/issues)
 
 # Author
 

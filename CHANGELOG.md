@@ -7,8 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 ### Added
-- Architecture-specific detail API
-- Detail API unit tests
+- Architecture-specific detail API with `InsnDetail::arch_detail()` method
+- README badges!
+
+### Change
+- `Capstone::disasm()` (and related methods) return empty `Instructions` instead of an error
+- Make `Instructions::from_raw_parts()` private
 
 ## [0.2.0] - 2017-11-01
 ### Added
@@ -20,6 +24,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Partition `Mode` enum into: `Mode`, `ExtraMode`, and `Endian`
 - Rename `Capstone` methods that return IDs to include `_ids` in name
     - Example: `read_registers()` renamed to `read_register_ids()`
+- Minimum Rust version is 1.20.0
+
+### Removed
+- `libc` dependency
 
 ## [0.1.0] - 2017-09-29
 ### Added
