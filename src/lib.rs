@@ -216,11 +216,11 @@ mod test {
     const ARM_CODE: &'static [u8] = b"\x55\x48\x8b\x05\xb8\x13\x00\x00";
 
     // Aliases for group types
-    const JUMP: cs_group_type = cs_group_type::CS_GRP_JUMP;
-    const CALL: cs_group_type = cs_group_type::CS_GRP_CALL;
-    const RET: cs_group_type = cs_group_type::CS_GRP_RET;
-    const INT: cs_group_type = cs_group_type::CS_GRP_INT;
-    const IRET: cs_group_type = cs_group_type::CS_GRP_IRET;
+    const JUMP: cs_group_type::Type = cs_group_type::CS_GRP_JUMP;
+    const CALL: cs_group_type::Type = cs_group_type::CS_GRP_CALL;
+    const RET: cs_group_type::Type = cs_group_type::CS_GRP_RET;
+    const INT: cs_group_type::Type = cs_group_type::CS_GRP_INT;
+    const IRET: cs_group_type::Type = cs_group_type::CS_GRP_IRET;
 
     #[test]
     fn test_x86_simple() {
@@ -442,7 +442,7 @@ mod test {
         insn: &Insn,
         mnemonic_name: &str,
         bytes: &[u8],
-        expected_groups: &[cs_group_type],
+        expected_groups: &[cs_group_type::Type],
         has_default_syntax: bool,
     ) {
         test_instruction_helper(&cs, insn, mnemonic_name, bytes, has_default_syntax);
@@ -478,7 +478,7 @@ mod test {
         );
 
         // Create sets of expected groups and unexpected groups
-        let instruction_types: HashSet<cs_group_type> = [
+        let instruction_types: HashSet<cs_group_type::Type> = [
             cs_group_type::CS_GRP_JUMP,
             cs_group_type::CS_GRP_CALL,
             cs_group_type::CS_GRP_RET,
@@ -487,7 +487,7 @@ mod test {
         ].iter()
             .cloned()
             .collect();
-        let expected_groups_set: HashSet<cs_group_type> =
+        let expected_groups_set: HashSet<cs_group_type::Type> =
             expected_groups.iter().map(|&x| x).collect();
         let not_belong_groups = instruction_types.difference(&expected_groups_set);
 
@@ -520,7 +520,7 @@ mod test {
 
     fn instructions_match_group(
         cs: &mut Capstone,
-        expected_insns: &[(&str, &[u8], &[cs_group_type])],
+        expected_insns: &[(&str, &[u8], &[cs_group_type::Type])],
         has_default_syntax: bool,
     ) {
         let insns_buf: Vec<u8> = expected_insns
@@ -628,7 +628,7 @@ mod test {
 
     #[test]
     fn test_instruction_group_ids() {
-        let expected_insns: &[(&str, &[u8], &[cs_group_type])] = &[
+        let expected_insns: &[(&str, &[u8], &[cs_group_type::Type])] = &[
             ("nop", b"\x90", &[]),
             ("je", b"\x74\x05", &[JUMP]),
             ("call", b"\xe8\x28\x07\x00\x00", &[CALL]),
@@ -756,7 +756,7 @@ mod test {
 
     #[test]
     fn test_syntax() {
-        let expected_insns: &[(&str, &str, &[u8], &[cs_group_type])] = &[
+        let expected_insns: &[(&str, &str, &[u8], &[cs_group_type::Type])] = &[
             ("nop", "nop", b"\x90", &[]),
             ("je", "je", b"\x74\x05", &[JUMP]),
             ("call", "callq", b"\xe8\x28\x07\x00\x00", &[CALL]),
@@ -769,11 +769,11 @@ mod test {
             ("mov", "movl", b"\xb9\x04\x02\x00\x00", &[]),
         ];
 
-        let expected_insns_intel: Vec<(&str, &[u8], &[cs_group_type])> = expected_insns
+        let expected_insns_intel: Vec<(&str, &[u8], &[cs_group_type::Type])> = expected_insns
             .iter()
             .map(|&(mnemonic, _, bytes, groups)| (mnemonic, bytes, groups))
             .collect();
-        let expected_insns_att: Vec<(&str, &[u8], &[cs_group_type])> = expected_insns
+        let expected_insns_att: Vec<(&str, &[u8], &[cs_group_type::Type])> = expected_insns
             .iter()
             .map(|&(_, mnemonic, bytes, groups)| (mnemonic, bytes, groups))
             .collect();
