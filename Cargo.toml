@@ -15,7 +15,7 @@ version = "0.2.0"
 travis-ci = { repository = "capstone-rust/capstone-rs" }
 
 [dependencies]
-capstone-sys = "0.6.0"
+capstone-sys = "0.7.0"
 
 # Not actually a dependency, but this makes the more complicated examples work
 [dev-dependencies]

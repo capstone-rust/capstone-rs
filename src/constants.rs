@@ -1,6 +1,5 @@
 use capstone_sys::*;
 use capstone_sys::cs_arch::*;
-use capstone_sys::cs_mode::*;
 use capstone_sys::cs_opt_value::*;
 use std::convert::From;
 
@@ -10,7 +9,7 @@ use std::convert::From;
 macro_rules! define_cs_enum_wrapper {
     ( [
         $( #[$enum_attr:meta] )*
-        => $rust_enum:ident = $cs_enum:ident
+        => $rust_enum:ident = $cs_enum:ty
       ]
       $( $( #[$attr:meta] )*
       => $rust_variant:ident = $cs_variant:tt; )* ) => {
@@ -113,7 +112,7 @@ define_cs_enum_wrapper!(
 define_cs_enum_wrapper!(
     [
         /// Disassembly syntax
-        => Syntax = cs_opt_value
+        => Syntax = cs_opt_value::Type
     ]
     /// Intel syntax
     => Intel = CS_OPT_SYNTAX_INTEL;
@@ -123,7 +122,7 @@ define_cs_enum_wrapper!(
     => NoRegName = CS_OPT_SYNTAX_NOREGNAME;
 );
 
-pub(crate) struct OptValue(pub cs_opt_value);
+pub(crate) struct OptValue(pub cs_opt_value::Type);
 
 impl From<bool> for OptValue {
     fn from(value: bool) -> Self {
@@ -132,21 +131,5 @@ impl From<bool> for OptValue {
         } else {
             OptValue(cs_opt_value::CS_OPT_OFF)
         }
-    }
-}
-
-/// Representation of `cs_mode`. We use this to have a type that we can transmute() to that has
-/// the same memory representation.
-pub(crate) type CsModeRepr = i32;
-
-#[cfg(test)]
-mod test {
-    use capstone_sys::cs_mode;
-    use std::mem;
-    use super::CsModeRepr;
-
-    #[test]
-    fn test_cs_mode_size() {
-        assert_eq!(mem::size_of::<cs_mode>(), mem::size_of::<CsModeRepr>());
     }
 }

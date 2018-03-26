@@ -33,8 +33,8 @@ macro_rules! capstone_error_def {
             CustomError(&'static str),
         }
 
-        impl From<capstone_sys::cs_err> for Error {
-            fn from(err: capstone_sys::cs_err) -> Self {
+        impl From<capstone_sys::cs_err::Type> for Error {
+            fn from(err: capstone_sys::cs_err::Type) -> Self {
                 use self::Error::*;
                 use self::CapstoneError::*;
                 match err {
@@ -46,7 +46,7 @@ macro_rules! capstone_error_def {
             }
         }
 
-        impl From<CapstoneError> for capstone_sys::cs_err {
+        impl From<CapstoneError> for capstone_sys::cs_err::Type {
             fn from(err: CapstoneError) -> Self {
                 match err {
                     $(

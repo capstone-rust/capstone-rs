@@ -6,7 +6,8 @@ use std::os::raw::{c_int, c_uint};
 use error::*;
 use arch::CapstoneBuilder;
 use capstone_sys::*;
-use constants::{Arch, CsModeRepr, Endian, ExtraMode, Mode, OptValue, Syntax};
+use capstone_sys::cs_opt_value::*;
+use constants::{Arch, Endian, ExtraMode, Mode, OptValue, Syntax};
 use instruction::{Insn, InsnDetail, InsnGroupId, InsnGroupIter, InsnId, Instructions, RegId,
                   RegsIter};
 
@@ -16,23 +17,33 @@ pub struct Capstone {
     /// Opaque handle to cs_engine
     csh: csh,
 
-    mode: usize,
-    endian: usize,
-    syntax: usize,
-    extra_mode: usize,
+    /// Internal mode bitfield
+    mode: cs_mode,
+
+    /// Internal endian bitfield
+    endian: cs_mode,
+
+    /// Syntax
+    syntax: cs_opt_value::Type,
+
+    /// Internal extra mode bitfield
+    extra_mode: cs_mode,
+
+    /// Whether to get extra details when disassembling
     detail_enabled: bool,
 
     /// We *must* set `mode`, `extra_mode`, and `endian` at once because `capstone`
     /// handles them inside the arch-specific handler. We store the bitwise OR of these flags that
     /// can be passed directly to `cs_option()`.
-    raw_mode: usize,
+    raw_mode: cs_mode,
 
     /// Architecture
     arch: Arch,
 }
 
 /// Defines a setter on `Capstone` that speculatively changes the arch-specific mode (which
-/// includes `mode`, `endian`, and `extra_mode`)
+/// includes `mode`, `endian`, and `extra_mode`). The setter takes a `capstone-rs` type and changes
+/// the internal `capstone-sys` type.
 macro_rules! define_set_mode {
     (
         $( #[$func_attr:meta] )*
@@ -43,19 +54,18 @@ macro_rules! define_set_mode {
         $( #[$func_attr] )*
         $($visibility)* fn $fn_name(&mut self, $param_name: $param_type) -> CsResult<()> {
             let old_val = self.$param_name;
-            self.$param_name = $cs_base_type::from($param_name) as usize;
+            self.$param_name = $cs_base_type::from($param_name);
 
             let old_raw_mode = self.raw_mode;
             let new_raw_mode = self.update_raw_mode();
 
             let result = self._set_cs_option(
                 cs_opt_type::$opt_type,
-                new_raw_mode,
+                new_raw_mode.0 as usize,
             );
 
             if result.is_err() {
                 // On error, restore old values
-                println!("self: {:?}", self);
                 self.raw_mode = old_raw_mode;
                 self.$param_name = old_val;
             }
@@ -112,27 +122,26 @@ impl Capstone {
         let csmode: cs_mode = mode.into();
 
         let endian = match endian {
-            Some(endian) => cs_mode::from(endian) as usize,
-            None => 0,
+            Some(endian) => cs_mode::from(endian),
+            None => cs_mode(0),
         };
         let extra_mode = Self::extra_mode_value(extra_mode);
 
+        let combined_mode = csmode | endian | extra_mode;
         let err = unsafe {
-            let combined_mode: usize = csmode as usize | endian | extra_mode;
-            let combined_mode: cs_mode = mem::transmute(combined_mode as CsModeRepr);
             cs_open(csarch, combined_mode, &mut handle)
         };
 
         if cs_err::CS_ERR_OK == err {
-            let syntax = CS_OPT_SYNTAX_DEFAULT as usize;
-            let raw_mode = 0usize;
+            let syntax = CS_OPT_SYNTAX_DEFAULT;
+            let raw_mode = cs_mode(0);
             let detail_enabled = false;
 
             let mut cs = Capstone {
                 csh: handle,
                 syntax,
                 endian,
-                mode: csmode as usize,
+                mode: csmode,
                 extra_mode,
                 detail_enabled,
                 raw_mode,
@@ -185,22 +194,22 @@ impl Capstone {
 
     /// Returns the raw mode value, which is useful for debugging
     #[allow(dead_code)]
-    pub(crate) fn raw_mode(&self) -> usize {
+    pub(crate) fn raw_mode(&self) -> cs_mode {
         self.raw_mode
     }
 
     /// Update `raw_mode` with the bitwise OR of `mode`, `extra_mode`, and `endian`.
     ///
     /// Returns the new `raw_mode`.
-    fn update_raw_mode(&mut self) -> usize {
+    fn update_raw_mode(&mut self) -> cs_mode {
         self.raw_mode = self.mode | self.extra_mode | self.endian;
         self.raw_mode
     }
 
     /// Return the integer value used by capstone to represent the set of extra modes
-    fn extra_mode_value<T: Iterator<Item = ExtraMode>>(extra_mode: T) -> usize {
+    fn extra_mode_value<T: Iterator<Item = ExtraMode>>(extra_mode: T) -> cs_mode {
         // Bitwise OR extra modes
-        extra_mode.fold(0usize, |acc, x| acc | cs_mode::from(x) as usize)
+        extra_mode.fold(cs_mode(0), |acc, x| acc | cs_mode::from(x))
     }
 
     /// Set extra modes in addition to normal `mode`
@@ -212,13 +221,13 @@ impl Capstone {
         // This is a workaround for capstone bug in `arch/Mips/MipsModule.c` where handle->disasm
         // is set to Mips64_getInstruction if CS_MODE_32 is not set. We need to set CS_MODE_32
         // ourselves.
-        if self.arch == Arch::MIPS && self.mode == CS_MODE_MIPS32R6 as usize {
-            self.extra_mode |= cs_mode::CS_MODE_32 as usize;
+        if self.arch == Arch::MIPS && self.mode == CS_MODE_MIPS32R6 {
+            self.extra_mode |= CS_MODE_32;
         }
 
         let old_mode = self.raw_mode;
         let new_mode = self.update_raw_mode();
-        let result = self._set_cs_option(cs_opt_type::CS_OPT_MODE, new_mode);
+        let result = self._set_cs_option(cs_opt_type::CS_OPT_MODE, new_mode.0 as usize);
 
         if result.is_err() {
             // On error, restore old values
@@ -232,11 +241,11 @@ impl Capstone {
     /// Set the assembly syntax (has no effect on some platforms)
     pub fn set_syntax(&mut self, syntax: Syntax) -> CsResult<()> {
         // Todo(tmfink) check for valid syntax
-        let syntax_usize = cs_opt_value::from(syntax) as usize;
-        let result = self._set_cs_option(cs_opt_type::CS_OPT_SYNTAX, syntax_usize);
+        let syntax_int = cs_opt_value::Type::from(syntax);
+        let result = self._set_cs_option(cs_opt_type::CS_OPT_SYNTAX, syntax_int as usize);
 
         if result.is_ok() {
-            self.syntax = syntax_usize;
+            self.syntax = syntax_int;
         }
 
         result
@@ -434,7 +443,7 @@ mod test {
         mode: Mode,
         endian: Endian,
         extra_modes: &[ExtraMode],
-        expected_raw_mode: usize,
+        expected_raw_mode: cs_mode,
     ) {
         let mut cs = Capstone::new_raw(arch, mode, NO_EXTRA_MODE, None).unwrap();
         cs.set_endian(endian).unwrap();
@@ -444,22 +453,21 @@ mod test {
             expected_raw_mode,
             actual_raw_mode,
             "Mismatched raw_mode: expected={:x}, actual={:x}",
-            expected_raw_mode,
-            actual_raw_mode
+            expected_raw_mode.0,
+            actual_raw_mode.0
         );
     }
 
     #[test]
     fn test_set_extra_mode() {
-        use capstone_sys::cs_mode::*;
+        use capstone_sys::*;
 
         test_set_extra_mode_helper(
             Arch::MIPS,
             Mode::Mips32R6,
             Endian::Big,
             &[ExtraMode::Micro],
-            (CS_MODE_BIG_ENDIAN as usize) | (CS_MODE_MIPS32R6 as usize) | (CS_MODE_32 as usize)
-                | (CS_MODE_MICRO as usize),
+            CS_MODE_BIG_ENDIAN | CS_MODE_MIPS32R6 | CS_MODE_32 | CS_MODE_MICRO,
         );
     }
 }
