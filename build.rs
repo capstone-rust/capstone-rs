@@ -202,8 +202,6 @@ fn write_bindgen_bindings(
         .prepend_enum_name(false)
         .generate_comments(true)
         .impl_debug(true)
-        // Avoid overlapping regex to work around rust-bindgen bug:
-        // https://github.com/rust-lang-nursery/rust-bindgen/issues/1198
         .constified_enum_module("cs_err|cs_group_type|cs_opt_value")
         .bitfield_enum("cs_mode")
         .rustified_enum(".*");
