@@ -3,7 +3,6 @@ authors = ["m4b <m4b.github.io@gmail.com>",
            "Richo Healey <richo@psych0tik.net>",
            "Travis Finkenauer <tmfinken@gmail.com>"]
 description = "High level bindings to capstone disassembly engine (http://capstone-engine.org/)"
-documentation = "http://richo.psych0tik.net/capstone-rs/capstone/index.html"
 keywords = ["disassemble"]
 license = "MIT"
 name = "capstone"
