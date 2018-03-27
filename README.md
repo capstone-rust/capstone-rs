@@ -32,6 +32,7 @@ Low-level, unsafe Rust bindings for the [`Capstone`][capstone] disassembly libra
 | `i686-pc-windows-gnu`      |               |       |       | X* |
 | `x86_64-unknown-linux-gnu` | X             | X     | X     | X  |
 | `i686-unknown-linux-gnu`   | X*            |       | X*    | X* |
+| `x86_64-unknown-freebsd`   | X             | X     |       | X  |
 
 | Symbol | Meaning |
 | ------ | ------- |
@@ -49,7 +50,8 @@ Low-level, unsafe Rust bindings for the [`Capstone`][capstone] disassembly libra
 
 These features affect how `capstone-sys` will use/build the [bundled Capstone](capstone) C library:
 
-* no feature or *gmake* (*default on non-Windows platforms*): build bundled Capstone with [GNU make](https://www.gnu.org/software/make/).
+* no feature or *gmake* (*default on non-Windows platforms*): build bundled Capstone with [GNU make](https://www.gnu.org/software/make/) (i.e. `gmake`).
+    - FreeBSD users can install GNU make with `pkg install gmake`
 * `use_system_capstone`: use the system Capstone instead of the bundled copy of the Capstone library.
     - Requires that Capstone is already manually installed on the system. We highly recommend that you supply the exact version bundled with `capstone-sys`.
         - See the `CAPSTONE_REVISION` variable in [`scripts/update_capstone.sh`](scripts/update_capstone.sh) to determine the exact Git commit of Capstone.
