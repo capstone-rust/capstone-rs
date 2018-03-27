@@ -22,23 +22,22 @@ Low-level, unsafe Rust bindings for the [`Capstone`][capstone] disassembly libra
 
 ### Supported Platforms
 
-| Platform                        | system capstone  | gmake | cmake | cc    |
-| ------------------------------- | ----- | --------------- | ----- | ----- |
-| `x86_64-apple-darwin`      | :heavy_check_mark:  | :heavy_check_mark: | :heavy_check_mark:  | :heavy_check_mark:  |
-| `i686-apple-darwin`        | :heavy_check_mark:* | :x:                | :heavy_check_mark:* | :heavy_check_mark:* |
-| `x86_64-pc-windows-msvc`   | :no_entry_sign:     | :no_entry_sign:    | :no_entry_sign:     | :heavy_check_mark:  |
-| `x86_64-pc-windows-gnu`    | :no_entry_sign:     | :no_entry_sign:    | :no_entry_sign:     | :heavy_check_mark:  |
-| `i686-pc-windows-msvc`     | :no_entry_sign:     | :no_entry_sign:    | :no_entry_sign:     | :heavy_check_mark:* |
-| `i686-pc-windows-gnu`      | :no_entry_sign:     | :no_entry_sign:    | :no_entry_sign:     | :heavy_check_mark:* |
-| `x86_64-unknown-linux-gnu` | :heavy_check_mark:  | :heavy_check_mark: | :heavy_check_mark:  | :heavy_check_mark:  |
-| `i686-unknown-linux-gnu`   | :heavy_check_mark:* | :x:                | :heavy_check_mark:* | :heavy_check_mark:* |
+| Platform                   | sys capstone  | gmake | cmake | cc    |
+| -------------------------- | ------------- | ----- | ----- | ----- |
+| `x86_64-apple-darwin`      | X             | X     | X     | X  |
+| `i686-apple-darwin`        | X*            |       | X*    | X* |
+| `x86_64-pc-windows-msvc`   |               |       |       | X  |
+| `x86_64-pc-windows-gnu`    |               |       |       | X  |
+| `i686-pc-windows-msvc`     |               |       |       | X* |
+| `i686-pc-windows-gnu`      |               |       |       | X* |
+| `x86_64-unknown-linux-gnu` | X             | X     | X     | X  |
+| `i686-unknown-linux-gnu`   | X*            |       | X*    | X* |
 
 | Symbol | Meaning |
 | ------ | ------- |
-| :heavy_check_mark:  | build succeeds, all tests pass |
-| :heavy_check_mark:* | build succeeds, some `bindgen` tests fail ([issue #18][issue18]) |
-| :no_entry_sign:     | build method is not supported/tested |
-| :x:                 | build fails |
+| X      | build succeeds, all tests pass |
+| X*     | build succeeds, some `bindgen` tests fail ([issue #18][issue18]) |
+|        | build method is not supported |
 
 [issue18]: https://github.com/capstone-rust/capstone-sys/issues/18
 
