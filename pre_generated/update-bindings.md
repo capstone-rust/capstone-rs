@@ -5,7 +5,7 @@ In order to update the pre-generated bindings:
 1. Update pre-generated bindings
 
     ~~~
-    UPDATE_CAPSTONE_BINDINGS=1 cargo build
+    UPDATE_CAPSTONE_BINDINGS=1 cargo build --features use_bindgen
     ~~~
 
 2. Commit bindings update.
@@ -19,7 +19,8 @@ In order to update the pre-generated bindings:
 4. Re-apply documentation comments patch
 
     ~~~
-    git diff e67b72b8^ e67b72b8 | \
+    commit=a9792c5ebeb6c857783a6695982f4882170a3c54; \
+        git diff ${commit}^ ${commit} | \
         ./scripts/add_doc_comments.py --doc-patch - \
         --fs-path pre_generated/capstone.rs -o pre_generated/capstone.doc.rs
     ~~~

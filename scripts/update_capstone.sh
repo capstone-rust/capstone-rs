@@ -3,15 +3,33 @@
 # Update the bundled capstone library
 
 # Modify value to update capstone
-CAPSTONE_REVISION="8308ace3a0393d9742515019d11ba4254b1d3951"
+CAPSTONE_REVISION="7e004bd4968766312568ef3fea6fca40b0ad1286"
 
-set -eu
+set -eux
+
+
+cd "$(dirname "$0")"/../
 
 CAPSTONE_DIR=capstone
-TEMP_DIR="$(mktemp -d)/$CAPSTONE_DIR"
+TEMP_DIR="$(mktemp -d /tmp/capstone-sys.XXXXXXXXXX)"
+ARCHIVE="$TEMP_DIR/archive.zip"
 
-git clone "https://github.com/aquynh/capstone" "$TEMP_DIR"
+URL="https://github.com/aquynh/capstone/archive/$CAPSTONE_REVISION.zip"
+wget "$URL" -O "$ARCHIVE"
 
-rsync \
-    -a --exclude='.git' --delete \
-    "$TEMP_DIR" "$(dirname "$0")"/../
+CS_TEMP_DIR="$TEMP_DIR/capstone"
+
+unzip "$ARCHIVE" -d "$CS_TEMP_DIR"
+
+CREATED_CS_DIR="$(find "$CS_TEMP_DIR" -mindepth 1 -maxdepth 1 -type d)"
+num_lines=$(echo "$CREATED_CS_DIR" | wc -l)
+if [ $num_lines -ne 1 ]; then
+    echo "Expected only 1 subdirectory, found $num_lines" 1>&2
+    exit 1
+fi
+
+rm -rf "$CAPSTONE_DIR"
+cp -r "$CREATED_CS_DIR" "$CAPSTONE_DIR"
+
+# cleanup temp dir
+rm -rf "$TEMP_DIR"
