@@ -27,6 +27,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <limits.h>
 
 #include "SparcInstPrinter.h"
 #include "../../MCInst.h"
@@ -38,8 +39,8 @@
 
 #include "Sparc.h"
 
-static char *getRegisterName(unsigned RegNo);
-static void printInstruction(MCInst *MI, SStream *O, MCRegisterInfo *MRI);
+static const char *getRegisterName(unsigned RegNo);
+static void printInstruction(MCInst *MI, SStream *O, const MCRegisterInfo *MRI);
 static void printMemOperand(MCInst *MI, int opNum, SStream *O, const char *Modifier);
 static void printOperand(MCInst *MI, int opNum, SStream *O);
 
@@ -261,6 +262,11 @@ static void printOperand(MCInst *MI, int opNum, SStream *O)
 				Imm = (uint32_t)MI->address + Imm * 4;
 				break;
 		}
+		
+		if (Imm == INT_MIN) {
+			// printf("ERROR: invalid Imm value\n");
+			return;
+		}
 
 		if (Imm >= 0) {
 			if (Imm > HEX_THRESHOLD)
@@ -269,7 +275,8 @@ static void printOperand(MCInst *MI, int opNum, SStream *O)
 				SStream_concat(O, "%u", Imm);
 		} else {
 			if (Imm < -HEX_THRESHOLD)
-				SStream_concat(O, "-0x%x", -Imm);
+				//cast first, then negate
+				SStream_concat(O, "-0x%x", -(uint32_t)Imm);
 			else
 				SStream_concat(O, "-%u", -Imm);
 		}

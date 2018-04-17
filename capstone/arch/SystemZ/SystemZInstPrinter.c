@@ -19,6 +19,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <limits.h>
 #include <platform.h>
 
 #include "SystemZInstPrinter.h"
@@ -295,6 +296,11 @@ static void printPCRelOperand(MCInst *MI, int OpNum, SStream *O)
 
 	if (MCOperand_isImm(MO)) {
 		imm = (int32_t)MCOperand_getImm(MO);
+		if (imm == INT_MIN) {
+			// printf("ERROR: invalid Imm value\n");
+			return;
+		}
+
 		if (imm >= 0) {
 			if (imm > HEX_THRESHOLD)
 				SStream_concat(O, "0x%x", imm);
@@ -302,7 +308,8 @@ static void printPCRelOperand(MCInst *MI, int OpNum, SStream *O)
 				SStream_concat(O, "%u", imm);
 		} else {
 			if (imm < -HEX_THRESHOLD)
-				SStream_concat(O, "-0x%x", -imm);
+				//cast first, then negate
+				SStream_concat(O, "-0x%x", -(uint32_t)imm);
 			else
 				SStream_concat(O, "-%u", -imm);
 		}
@@ -364,7 +371,7 @@ static void printBDLAddrOperand(MCInst *MI, int OpNum, SStream *O)
 
 static void printCond4Operand(MCInst *MI, int OpNum, SStream *O)
 {
-	static char *const CondNames[] = {
+	static const char *const CondNames[] = {
 		"o", "h", "nle", "l", "nhe", "lh", "ne",
 		"e", "nlh", "he", "nl", "le", "nh", "no"
 	};

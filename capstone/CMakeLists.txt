@@ -26,6 +26,11 @@ option(CAPSTONE_X86_REDUCE "x86 with reduce instruction sets to minimize library
 option(CAPSTONE_X86_ATT_DISABLE "Disable x86 AT&T syntax" OFF)
 option(CAPSTONE_OSXKERNEL_SUPPORT "Support to embed Capstone into OS X Kernel extensions" OFF)
 
+if (MSVC)
+    set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /MT")
+    set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /MTd")
+endif ()
+
 if (CAPSTONE_BUILD_DIET)
     add_definitions(-DCAPSTONE_DIET)
 endif ()
@@ -391,7 +396,7 @@ mark_as_advanced(INSTALL_LIB_DIR)
 
 ## installation
 install(FILES ${HEADERS_COMMON} DESTINATION include/capstone)
-configure_file(capstone.pc.in capstone.pc)
+configure_file(capstone.pc.in capstone.pc @ONLY)
 
 if (CAPSTONE_BUILD_STATIC)
     install(TARGETS capstone-static

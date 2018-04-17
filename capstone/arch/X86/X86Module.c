@@ -12,11 +12,6 @@
 static cs_err init(cs_struct *ud)
 {
 	MCRegisterInfo *mri;
-
-	// verify if requested mode is valid
-	if (ud->mode & ~(CS_MODE_LITTLE_ENDIAN | CS_MODE_32 | CS_MODE_64 | CS_MODE_16))
-		return CS_ERR_MODE;
-
 	mri = cs_mem_malloc(sizeof(*mri));
 
 	X86_init(mri);
@@ -93,9 +88,11 @@ static void destroy(cs_struct *handle)
 
 void X86_enable(void)
 {
-	arch_init[CS_ARCH_X86] = init;
-	arch_option[CS_ARCH_X86] = option;
-	arch_destroy[CS_ARCH_X86] = destroy;
+	cs_arch_init[CS_ARCH_X86] = init;
+	cs_arch_option[CS_ARCH_X86] = option;
+	cs_arch_destroy[CS_ARCH_X86] = destroy;
+	cs_arch_disallowed_mode_mask[CS_ARCH_X86] = ~(CS_MODE_LITTLE_ENDIAN |
+		CS_MODE_32 | CS_MODE_64 | CS_MODE_16);
 
 	// support this arch
 	all_arch |= (1 << CS_ARCH_X86);
