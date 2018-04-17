@@ -2487,8 +2487,8 @@ pub mod arm64_reg {
     pub const ARM64_REG_V30: Type = 258;
     pub const ARM64_REG_V31: Type = 259;
     pub const ARM64_REG_ENDING: Type = 260;
-    pub const ARM64_REG_IP1: Type = 215;
-    pub const ARM64_REG_IP0: Type = 216;
+    pub const ARM64_REG_IP0: Type = 215;
+    pub const ARM64_REG_IP1: Type = 216;
     pub const ARM64_REG_FP: Type = 1;
     pub const ARM64_REG_LR: Type = 2;
 }
