@@ -19,6 +19,9 @@ capstone-sys = "0.7.0"
 # Not actually a dependency, but this makes the more complicated examples work
 [dev-dependencies]
 macho = "0.*"
+clap = "2.31"
+stderrlog = "0.3.0"
+log = "0.4"
 
 [features]
 default = []
