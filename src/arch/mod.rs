@@ -38,8 +38,6 @@ macro_rules! define_arch_builder {
     ( @extra_modes ( $( $extra_mode:ident, )+ ) ) => {
         impl super::BuildsCapstoneExtraMode<ArchMode, ArchExtraMode> for ArchCapstoneBuilder {
             fn extra_mode<T: Iterator<Item=ArchExtraMode>>(&mut self, extra_mode: T) -> & mut Self {
-                // self.extra_mode = extra_mode.fold(0usize, |acc, x|
-                //     acc | cs_mode::from(x) as usize);
                 self.extra_mode.clear();
                 self.extra_mode.extend(extra_mode);
                 self
@@ -108,6 +106,7 @@ macro_rules! define_arch_builder {
                     $( $syntax, )*
                 );
 
+                #[derive(Clone)]
                 pub struct ArchCapstoneBuilder {
                     pub(crate) mode: Option<ArchMode>,
                     pub(crate) is_detail: bool,
