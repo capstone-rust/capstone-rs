@@ -54,26 +54,48 @@ expect_exit_status() {
     fi
 }
 
-cov() {
-    cargo test --no-run
+install_kcov() {
+    if [ -f ./kcov-install/usr/local/bin/kcov ]; then
+        echo "kcov already installed"
+        return
+    fi
 
-    wget https://github.com/SimonKagstrom/kcov/archive/master.tar.gz
-    tar xzf master.tar.gz
-    cd kcov-master
-    mkdir build
-    cd build
-    cmake ..
-    make
-    make install DESTDIR=../../kcov-build
-    cd ../..
-    rm -rf kcov-master
+    (
+        wget https://github.com/SimonKagstrom/kcov/archive/master.tar.gz
+        tar xzf master.tar.gz
+        cd kcov-master
+        rm -rf build
+        mkdir build
+        cd build
+        cmake ..
+        make -j
+        make install DESTDIR=../../kcov-install
+    )
+}
+
+# target/ dir is cached, so we need to remove old coverage files
+cleanup_cov() {
+    rm -rf target/cov
+}
+
+cov() {
+    echo "Running coverage"
+    cargo test --no-run -v
+
+    install_kcov
+    cleanup_cov
+
+    (
+    set -x
     for file in target/${PROFILE}/${PROJECT_NAME}-*[^\.d]; do
         mkdir -p "target/cov/$(basename $file)"
-        ./kcov-build/usr/local/bin/kcov \
+        ./kcov-install/usr/local/bin/kcov \
             --coveralls-id=$TRAVIS_JOB_ID \
             --exclude-pattern=/.cargo,/usr/lib \
             --verify "target/cov/$(basename $file)" "$file"
     done
+    )
+
     bash <(curl -s https://codecov.io/bash)
     echo "Uploaded code coverage"
 }

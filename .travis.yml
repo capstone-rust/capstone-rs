@@ -12,7 +12,12 @@ os:
 script:
   - ./ci/test.sh
 
-cache: cargo
+cache:
+  cargo: true
+  directories:
+    - kcov-install
+before_cache:
+  - rm -rf target/cov
 
 matrix:
   # Clear the whole matrix
@@ -32,6 +37,7 @@ matrix:
     - os: linux
       rust: stable
       env: JOB=cov
+      sudo: required
       addons:
         apt:
           packages:
