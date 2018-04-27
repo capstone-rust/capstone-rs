@@ -4,3 +4,46 @@ rust:
   - stable
   - beta
   - nightly
+
+os:
+  - linux
+  - osx
+
+script:
+  - ./ci/test.sh
+
+matrix:
+  # Clear the whole matrix
+  exclude:
+    - os: linux
+    - os: osx
+  # Add each target manually
+  include:
+    - os: linux
+      rust: 1.23.0
+    - os: linux
+      rust: stable
+    - os: linux
+      rust: beta
+    - os: linux
+      rust: nightly
+    - os: osx
+      rust: stable
+    - os: osx
+      rust: nightly
+    - os: linux
+      rust: stable
+      env: JOB=cov
+      addons:
+        apt:
+          packages:
+            - libcurl4-openssl-dev
+            - libelf-dev
+            - libdw-dev
+            - cmake
+            - gcc
+            - binutils-dev
+            - libiberty-dev
+
+notifications:
+  email: false
