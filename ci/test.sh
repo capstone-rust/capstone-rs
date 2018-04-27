@@ -69,7 +69,9 @@ cov() {
     rm -rf kcov-master
     for file in target/${PROFILE}/${PROJECT_NAME}-*[^\.d]; do
         mkdir -p "target/cov/$(basename $file)"
-        ./kcov-build/usr/local/bin/kcov --exclude-pattern=/.cargo,/usr/lib \
+        ./kcov-build/usr/local/bin/kcov \
+            --coveralls-id=$TRAVIS_JOB_ID \
+            --exclude-pattern=/.cargo,/usr/lib \
             --verify "target/cov/$(basename $file)" "$file"
     done
     bash <(curl -s https://codecov.io/bash)

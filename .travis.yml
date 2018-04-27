@@ -12,6 +12,8 @@ os:
 script:
   - ./ci/test.sh
 
+cache: cargo
+
 matrix:
   # Clear the whole matrix
   exclude:
@@ -26,10 +28,6 @@ matrix:
     - os: linux
       rust: beta
     - os: linux
-      rust: nightly
-    - os: osx
-      rust: stable
-    - os: osx
       rust: nightly
     - os: linux
       rust: stable
