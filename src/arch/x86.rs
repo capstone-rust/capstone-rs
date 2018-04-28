@@ -155,27 +155,27 @@ impl_PartialEq_repr_fields!(X86InsnDetail<'a> [ 'a ];
 
 impl X86OpMem {
     /// Segment
-    fn segment(&self) -> u32 {
+    pub fn segment(&self) -> u32 {
         self.0.segment as u32
     }
 
     /// Base register
-    fn base(&self) -> RegId {
+    pub fn base(&self) -> RegId {
         RegId(self.0.base as RegIdInt)
     }
 
     /// Index register
-    fn index(&self) -> RegId {
+    pub fn index(&self) -> RegId {
         RegId(self.0.index as RegIdInt)
     }
 
     /// Scale
-    fn scale(&self) -> i32 {
+    pub fn scale(&self) -> i32 {
         self.0.scale as i32
     }
 
     /// Display
-    fn disp(&self) -> i64 {
+    pub fn disp(&self) -> i64 {
         self.0.disp
     }
 }
