@@ -35,6 +35,18 @@ matrix:
     - os: linux
       rust: nightly
     - os: linux
+      rust: 1.23.0
+      env: PROFILE=release
+    - os: linux
+      rust: stable
+      env: PROFILE=release
+    - os: linux
+      rust: beta
+      env: PROFILE=release
+    - os: linux
+      rust: nightly
+      env: PROFILE=release
+    - os: linux
       rust: stable
       env: JOB=cov
       sudo: required
