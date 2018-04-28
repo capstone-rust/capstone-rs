@@ -4,3 +4,62 @@ rust:
   - stable
   - beta
   - nightly
+
+os:
+  - linux
+  - osx
+
+script:
+  - ./ci/test.sh
+
+cache:
+  cargo: true
+  directories:
+    - kcov-install
+before_cache:
+  - rm -rf target/cov
+
+matrix:
+  # Clear the whole matrix
+  exclude:
+    - os: linux
+    - os: osx
+  # Add each target manually
+  include:
+    - os: linux
+      rust: 1.23.0
+    - os: linux
+      rust: stable
+    - os: linux
+      rust: beta
+    - os: linux
+      rust: nightly
+    - os: linux
+      rust: 1.23.0
+      env: PROFILE=release
+    - os: linux
+      rust: stable
+      env: PROFILE=release
+    - os: linux
+      rust: beta
+      env: PROFILE=release
+    - os: linux
+      rust: nightly
+      env: PROFILE=release
+    - os: linux
+      rust: stable
+      env: JOB=cov
+      sudo: required
+      addons:
+        apt:
+          packages:
+            - libcurl4-openssl-dev
+            - libelf-dev
+            - libdw-dev
+            - cmake
+            - gcc
+            - binutils-dev
+            - libiberty-dev
+
+notifications:
+  email: false
