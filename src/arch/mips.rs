@@ -87,3 +87,18 @@ def_arch_details_struct!(
     cs_arch_op = cs_mips_op;
     cs_arch = cs_mips;
 );
+
+#[cfg(test)]
+mod test {
+    use super::*;
+    use capstone_sys::*;
+
+    #[test]
+    fn test_mips_op_from() {
+        let op = cs_mips_op {
+            type_: mips_op_type::MIPS_OP_INVALID,
+            __bindgen_anon_1: cs_mips_op__bindgen_ty_1 { reg: 0 },
+        };
+        assert_eq!(MipsOperand::from(&op), MipsOperand::Invalid);
+    }
+}

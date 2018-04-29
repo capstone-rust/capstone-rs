@@ -380,6 +380,8 @@ mod test {
         bytes: &[u8],
         has_default_syntax: bool,
     ) {
+        println!("{:?}", insn);
+
         // Check mnemonic
         if has_default_syntax {
             // insn_name() does not respect current syntax
@@ -2379,6 +2381,16 @@ mod test {
                         Reg(RegId(XCORE_REG_R1 as RegIdInt)),
                         Reg(RegId(XCORE_REG_R2 as RegIdInt)),
                         Reg(RegId(XCORE_REG_R3 as RegIdInt)),
+                    ],
+                ),
+                // add     r0, r8, 9
+                DII::new(
+                    "add",
+                    b"\x01\x96",
+                    &[
+                        Reg(RegId(XCORE_REG_R0 as RegIdInt)),
+                        Reg(RegId(XCORE_REG_R8 as RegIdInt)),
+                        Imm(9),
                     ],
                 ),
             ],

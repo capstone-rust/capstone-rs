@@ -284,6 +284,8 @@ mod test {
         use super::arm64_op_type::*;
         use super::Arm64OperandType::*;
         use super::Arm64Sysreg::*;
+        use capstone_sys::*;
+        use capstone_sys::arm64_prefetch_op::*;
         use capstone_sys::arm64_pstate::*;
 
         fn t(
@@ -314,6 +316,28 @@ mod test {
         t(
             (ARM64_OP_PSTATE, cs_arm64_op__bindgen_ty_2 { pstate: ARM64_PSTATE_SPSEL }),
             Pstate(Arm64Pstate::ARM64_PSTATE_SPSEL),
+        );
+        t(
+            (ARM64_OP_FP, cs_arm64_op__bindgen_ty_2 { fp: 0.0 }),
+            Fp(0.0),
+        );
+        t(
+            (ARM64_OP_CIMM, cs_arm64_op__bindgen_ty_2 { imm: 42 }),
+            Cimm(42),
+        );
+        t(
+            (ARM64_OP_REG_MSR, cs_arm64_op__bindgen_ty_2 {
+                reg: arm64_msr_reg::ARM64_SYSREG_ICC_EOIR1_EL1 as u32 }),
+            RegMsr(arm64_msr_reg::ARM64_SYSREG_ICC_EOIR1_EL1),
+        );
+        t(
+            (ARM64_OP_SYS, cs_arm64_op__bindgen_ty_2 { sys: 42 }),
+            Sys(42),
+        );
+        t(
+            (ARM64_OP_PREFETCH, cs_arm64_op__bindgen_ty_2 {
+                prefetch: ARM64_PRFM_PLDL2KEEP }),
+            Prefetch(ARM64_PRFM_PLDL2KEEP),
         );
     }
 }

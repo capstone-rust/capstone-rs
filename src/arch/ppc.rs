@@ -151,6 +151,7 @@ mod test {
     fn test_ppc_op_type() {
         use capstone_sys::*;
         use super::ppc_op_type::*;
+        use super::PpcBc::*;
         use super::PpcReg::*;
         use self::PpcOperand::*;
 
@@ -176,6 +177,12 @@ mod test {
         t(
             (PPC_OP_IMM, cs_ppc_op__bindgen_ty_1 { imm: 42 }),
             Imm(42),
+        );
+
+        let crx = ppc_op_crx { scale: 0, reg: PPC_REG_R0, cond: PPC_BC_LT };
+        t(
+            (PPC_OP_CRX, cs_ppc_op__bindgen_ty_1 { crx }),
+            Crx(PpcOpCrx(crx)),
         );
 
         let op_mem = PpcOperand::from(&cs_ppc_op {
