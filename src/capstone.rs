@@ -128,9 +128,7 @@ impl Capstone {
         let extra_mode = Self::extra_mode_value(extra_mode);
 
         let combined_mode = csmode | endian | extra_mode;
-        let err = unsafe {
-            cs_open(csarch, combined_mode, &mut handle)
-        };
+        let err = unsafe { cs_open(csarch, combined_mode, &mut handle) };
 
         if cs_err::CS_ERR_OK == err {
             let syntax = CS_OPT_SYNTAX_DEFAULT;
@@ -450,11 +448,9 @@ mod test {
         cs.set_extra_mode(extra_modes.iter().map(|x| *x)).unwrap();
         let actual_raw_mode = cs.raw_mode();
         assert_eq!(
-            expected_raw_mode,
-            actual_raw_mode,
+            expected_raw_mode, actual_raw_mode,
             "Mismatched raw_mode: expected={:x}, actual={:x}",
-            expected_raw_mode.0,
-            actual_raw_mode.0
+            expected_raw_mode.0, actual_raw_mode.0
         );
     }
 

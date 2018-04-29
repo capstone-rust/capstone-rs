@@ -17,8 +17,8 @@ fn arch_bench<T: Iterator<Item = ExtraMode>>(
     endian: Option<Endian>,
     detail: bool,
 ) {
-    let mut cs = Capstone::new_raw(arch, mode, extra_mode, endian)
-        .expect("failed to make capstone");
+    let mut cs =
+        Capstone::new_raw(arch, mode, extra_mode, endian).expect("failed to make capstone");
     cs.set_detail(detail).expect("failed to set detail");
 
     let insns = cs.disasm_all(code, 0x1000).expect("failed to disassemble");
