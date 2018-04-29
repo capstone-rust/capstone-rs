@@ -142,3 +142,24 @@ impl error::Error for Error {
         None
     }
 }
+
+#[cfg(test)]
+mod test {
+    use capstone_sys::cs_err;
+    use super::{CapstoneError, Error};
+
+    #[test]
+    fn test_error() {
+        let errors = [
+            Error::Capstone(CapstoneError::OutOfMemory),
+            Error::UnknownCapstoneError,
+            Error::CustomError("custom error"),
+            Error::from(cs_err::CS_ERR_ARCH),
+            Error::from(500 as cs_err::Type),
+        ];
+
+        for error in errors.iter() {
+            println!("{}", error);
+        }
+    }
+}

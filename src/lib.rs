@@ -2381,6 +2381,16 @@ mod test {
                         Reg(RegId(XCORE_REG_R3 as RegIdInt)),
                     ],
                 ),
+                // add     r0, r8, 9
+                DII::new(
+                    "add",
+                    b"\x01\x96",
+                    &[
+                        Reg(RegId(XCORE_REG_R0 as RegIdInt)),
+                        Reg(RegId(XCORE_REG_R8 as RegIdInt)),
+                        Imm(9),
+                    ],
+                ),
             ],
         );
     }
