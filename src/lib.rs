@@ -380,6 +380,8 @@ mod test {
         bytes: &[u8],
         has_default_syntax: bool,
     ) {
+        println!("{:?}", insn);
+
         // Check mnemonic
         if has_default_syntax {
             // insn_name() does not respect current syntax
