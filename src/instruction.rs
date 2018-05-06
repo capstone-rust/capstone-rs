@@ -77,8 +77,26 @@ pub struct InstructionIterator<'a>(slice::Iter<'a, cs_insn>);
 impl<'a> Iterator for InstructionIterator<'a> {
     type Item = Insn;
 
+    #[inline]
     fn next(&mut self) -> Option<Self::Item> {
         self.0.next().map(|x| Insn(*x))
+    }
+
+    #[inline]
+    fn size_hint(&self) -> (usize, Option<usize>) {
+        self.0.size_hint()
+    }
+
+    #[inline]
+    fn count(self) -> usize {
+        self.0.count()
+    }
+}
+
+impl<'a> DoubleEndedIterator for InstructionIterator<'a> {
+    #[inline]
+    fn next_back(&mut self) -> Option<Self::Item> {
+        self.0.next_back().map(|x| Insn(*x))
     }
 }
 
