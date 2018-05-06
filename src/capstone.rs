@@ -186,7 +186,7 @@ impl Capstone {
                 Err(err) => Err(err),
             }
         } else {
-            Ok(unsafe { Instructions::from_raw_parts(ptr, insn_count as isize) })
+            Ok(unsafe { Instructions::from_raw_parts(ptr, insn_count) })
         }
     }
 

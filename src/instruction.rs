@@ -1,6 +1,5 @@
 use arch::ArchDetail;
 use std::ffi::CStr;
-use std::ptr;
 use std::slice;
 use std::str;
 use std::fmt::{self, Debug, Display, Error, Formatter};
@@ -9,10 +8,7 @@ use constants::Arch;
 
 /// Representation of the array of instructions returned by disasm
 #[derive(Debug)]
-pub struct Instructions {
-    ptr: *mut cs_insn,
-    len: isize,
-}
+pub struct Instructions<'a>(&'a mut [cs_insn]);
 
 /// Integer type used in `InsnId`
 pub type InsnIdInt = u32;
@@ -35,40 +31,40 @@ pub type RegIdInt = u16;
 #[derive(Copy, Clone, Debug, Hash, PartialEq, Eq)]
 pub struct RegId(pub RegIdInt);
 
-impl Instructions {
-    pub(crate) unsafe fn from_raw_parts(ptr: *mut cs_insn, len: isize) -> Instructions {
-        Instructions { ptr: ptr, len: len }
+impl<'a> Instructions<'a> {
+    pub(crate) unsafe fn from_raw_parts(ptr: *mut cs_insn, len: usize) -> Instructions<'a> {
+        Instructions(slice::from_raw_parts_mut(ptr, len))
     }
 
-    pub(crate) fn new_empty() -> Instructions {
-        Instructions {
-            ptr: ptr::null_mut(),
-            len: 0,
-        }
+    pub(crate) fn new_empty() -> Instructions<'a> {
+        Instructions(&mut [])
     }
 
     /// Get number of instructions
-    pub fn len(&self) -> isize {
-        self.len
+    pub fn len(&self) -> usize {
+        self.0.len()
     }
 
     /// Iterator over instructions
-    pub fn iter(&self) -> InstructionIterator {
-        InstructionIterator {
-            insns: self,
-            cur: 0,
-        }
+    pub fn iter<'b>(&'a self) -> InstructionIterator<'b>
+    where
+        'a: 'b,
+    {
+        let iter = self.0.iter();
+        InstructionIterator(iter)
     }
 
     pub fn is_empty(&self) -> bool {
-        self.len == 0
+        self.len() == 0
     }
 }
 
-impl Drop for Instructions {
+impl<'a> Drop for Instructions<'a> {
     fn drop(&mut self) {
-        unsafe {
-            cs_free(self.ptr, self.len as usize);
+        if self.len() > 0 {
+            unsafe {
+                cs_free(self.0.as_mut_ptr(), self.len());
+            }
         }
     }
 }
@@ -76,22 +72,13 @@ impl Drop for Instructions {
 /// An iterator over the instructions returned by disasm
 ///
 /// This is currently the only supported interface for reading them.
-pub struct InstructionIterator<'a> {
-    insns: &'a Instructions,
-    cur: isize,
-}
+pub struct InstructionIterator<'a>(slice::Iter<'a, cs_insn>);
 
 impl<'a> Iterator for InstructionIterator<'a> {
     type Item = Insn;
 
-    fn next(&mut self) -> Option<Insn> {
-        if self.cur == self.insns.len {
-            None
-        } else {
-            let obj = unsafe { self.insns.ptr.offset(self.cur) };
-            self.cur += 1;
-            Some(unsafe { Insn(ptr::read(obj)) })
-        }
+    fn next(&mut self) -> Option<Self::Item> {
+        self.0.next().map(|x| Insn(*x))
     }
 }
 
@@ -274,7 +261,7 @@ impl<'a> Debug for InsnDetail<'a> {
     }
 }
 
-impl Display for Instructions {
+impl<'a> Display for Instructions<'a> {
     fn fmt(&self, fmt: &mut Formatter) -> fmt::Result {
         for instruction in self.iter() {
             write!(fmt, "{:x}:\t", instruction.address())?;
