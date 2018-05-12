@@ -5,6 +5,15 @@ Notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+### Added
+- [Criterion benchmark](benches)
+- [cstool example](examples/cstool.rs)
+- [Codecov](https://codecov.io/gh/capstone-rust/capstone-rs) code coverage integration
+
+### Changed
+- Minimum Rust version to 1.23.0
+
 ## [0.3.1] - 2018-03-26
 ### Fixed
 - Documentation URL
@@ -14,7 +23,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Architecture-specific detail API with `InsnDetail::arch_detail()` method
 - README badges!
 
-### Change
+### Changed
 - `Capstone::disasm()` (and related methods) return empty `Instructions` instead of an error
 - Make `Instructions::from_raw_parts()` private
 
@@ -46,6 +55,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Removed
 - Dependency
 
+[Unreleased]: https://github.com/capstone-rust/capstone-rs/compare/v0.3.1...master
 [0.3.1]: https://github.com/capstone-rust/capstone-rs/compare/v0.3.0...v0.3.1
 [0.3.0]: https://github.com/capstone-rust/capstone-rs/compare/v0.2.0...v0.3.0
 [0.2.0]: https://github.com/capstone-rust/capstone-rs/compare/v0.1.0...v0.2.0
