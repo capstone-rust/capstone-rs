@@ -225,7 +225,7 @@ mod test {
     #[test]
     fn test_x86_simple() {
         match Capstone::new().x86().mode(x86::ArchMode::Mode64).build() {
-            Ok(cs) => match cs.disasm_all(X86_CODE, 0x1000) {
+            Ok(mut cs) => match cs.disasm_all(X86_CODE, 0x1000) {
                 Ok(insns) => {
                     assert_eq!(insns.len(), 2);
                     let is: Vec<_> = insns.iter().collect();
@@ -249,7 +249,7 @@ mod test {
     #[test]
     fn test_arm_simple() {
         match Capstone::new().arm().mode(arm::ArchMode::Arm).build() {
-            Ok(cs) => match cs.disasm_all(ARM_CODE, 0x1000) {
+            Ok(mut cs) => match cs.disasm_all(ARM_CODE, 0x1000) {
                 Ok(insns) => {
                     assert_eq!(insns.len(), 2);
                     let is: Vec<_> = insns.iter().collect();
@@ -269,7 +269,7 @@ mod test {
 
     #[test]
     fn test_arm64_none() {
-        let cs = Capstone::new()
+        let mut cs = Capstone::new()
             .arm64()
             .mode(arm64::ArchMode::Arm)
             .build()

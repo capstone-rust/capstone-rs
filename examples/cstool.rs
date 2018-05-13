@@ -116,7 +116,7 @@ fn disasm<T: Iterator<Item = ExtraMode>>(
     code: &[u8],
     addr: u64,
 ) {
-    let cs = Capstone::new_raw(arch, mode, extra_mode, endian).expect_exit();
+    let mut cs = Capstone::new_raw(arch, mode, extra_mode, endian).expect_exit();
 
     for i in cs.disasm_all(code, addr).expect_exit().iter() {
         let bytes: Vec<_> = i.bytes().iter().map(|x| format!("{:02x}", x)).collect();

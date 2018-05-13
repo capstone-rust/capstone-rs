@@ -93,14 +93,29 @@ impl Iterator for EmptyExtraModeIter {
     }
 }
 
+/// Global indicating whether the Capstone initialization has happened
 static INIT: Once = ONCE_INIT;
+
+/// Initialize global Capstone state in C library
+///
+/// # CLAIMS
+///
+/// 1. Any function *F* (including methods) that calls a `capstone-sys` function *G* where *G*
+///    potentially mutates global state must ensure `init_global_state()` is called first.
+/// 2. Let *T* be a `struct`/`enum` with at least one non-public field and methods *M* defined. If
+///    all constructors *C* (functions that return type *C*) for *T* call `init_global_state()`,
+///    then methods *M* that take a `self` parameter do not need to call `init_global_state()`.
+///
+///    Any `self` instance should have been been created by a constructor *C* that already called
+///    `init_global_state()` because *T* has non-public fields. Hence, consumers of the library
+///    cannot construct a *T* manually.
 fn init_global_state() {
     INIT.call_once(|| {
         // We need to call archs_enable (a C Capstone function) in a thread-safe manner.
         // Capstone::lib_version calls cs_version which calls archs_enable.
         let mut a = 0;
         let mut b = 0;
-        unsafe { cs_version(&mut a, &mut b)};
+        unsafe { cs_version(&mut a, &mut b) };
     });
 }
 
@@ -113,6 +128,7 @@ impl Capstone {
     /// let cs = Capstone::new().x86().mode(arch::x86::ArchMode::Mode32).build();
     /// ```
     pub fn new() -> CapstoneBuilder {
+        // CLAIM: calls new_raw() which calls init_global_state()
         CapstoneBuilder::new()
     }
 
@@ -130,7 +146,9 @@ impl Capstone {
         extra_mode: T,
         endian: Option<Endian>,
     ) -> CsResult<Capstone> {
+        // Constructor needs call to ensure global state is initialized
         init_global_state();
+
         let mut handle: csh = 0;
         let csarch: cs_arch = arch.into();
         let csmode: cs_mode = mode.into();
@@ -167,12 +185,12 @@ impl Capstone {
     }
 
     /// Disassemble all instructions in buffer
-    pub fn disasm_all(&self, code: &[u8], addr: u64) -> CsResult<Instructions> {
+    pub fn disasm_all(&mut self, code: &[u8], addr: u64) -> CsResult<Instructions> {
         self.disasm(code, addr, 0)
     }
 
     /// Disassemble `count` instructions in `code`
-    pub fn disasm_count(&self, code: &[u8], addr: u64, count: usize) -> CsResult<Instructions> {
+    pub fn disasm_count(&mut self, code: &[u8], addr: u64, count: usize) -> CsResult<Instructions> {
         if count == 0 {
             return Err(Error::CustomError("Invalid dissasemble count; must be > 0"));
         }
@@ -182,7 +200,9 @@ impl Capstone {
     /// Disassembles a `&[u8]` full of instructions.
     ///
     /// Pass `count = 0` to disassemble all instructions in the buffer.
-    fn disasm(&self, code: &[u8], addr: u64, count: usize) -> CsResult<Instructions> {
+    fn disasm(&mut self, code: &[u8], addr: u64, count: usize) -> CsResult<Instructions> {
+        // CLAIM: Capstone::new_raw() already called init_global_state()
+
         let mut ptr: *mut cs_insn = unsafe { mem::zeroed() };
         let insn_count = unsafe {
             cs_disasm(
@@ -316,6 +336,7 @@ impl Capstone {
 
     /// Converts a register id `reg_id` to a `String` containing the register name.
     pub fn reg_name(&self, reg_id: RegId) -> Option<String> {
+        init_global_state();
         let reg_name = unsafe {
             let _reg_name = cs_reg_name(self.csh, reg_id.0 as c_uint);
             if _reg_name.is_null() {
@@ -378,6 +399,7 @@ impl Capstone {
 
     /// Returns whether the instruction `insn` belongs to the group with id `group_id`.
     pub fn insn_belongs_to_group(&self, insn: &Insn, group_id: InsnGroupId) -> CsResult<bool> {
+        // CLAIM: Capstone::new_raw() already called init_global_state()
         self.insn_detail(insn)?;
         Ok(unsafe { cs_insn_group(self.csh, &insn.0 as *const cs_insn, group_id.0 as c_uint) })
     }
@@ -417,7 +439,9 @@ impl Capstone {
 
     /// Returns a tuple (major, minor) indicating the version of the capstone C library.
     pub fn lib_version() -> (u32, u32) {
+        // Needs call to ensure global state is initialized
         init_global_state();
+
         let mut major: c_int = 0;
         let mut minor: c_int = 0;
         let major_ptr: *mut c_int = &mut major;
@@ -432,13 +456,17 @@ impl Capstone {
 
     /// Returns whether the capstone library supports a given architecture.
     pub fn supports_arch(arch: Arch) -> bool {
+        // Needs call to ensure global state is initialized
         init_global_state();
+
         unsafe { cs_support(arch as c_int) }
     }
 
     /// Returns whether the capstone library was compiled in diet mode.
     pub fn is_diet() -> bool {
+        // Needs call to ensure global state is initialized
         init_global_state();
+
         unsafe { cs_support(CS_SUPPORT_DIET as c_int) }
     }
 }

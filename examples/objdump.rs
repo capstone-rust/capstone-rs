@@ -8,7 +8,7 @@ use std::process;
 use capstone::prelude::*;
 
 fn main() {
-    let cs = Capstone::new()
+    let mut cs = Capstone::new()
         .x86()
         .mode(arch::x86::ArchMode::Mode64)
         .build()

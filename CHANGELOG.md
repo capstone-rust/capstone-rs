@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 - Minimum Rust version to 1.23.0
+- `Capstone::disasm()` methods take `&mut self` instead of `&self`
 
 ## [0.3.1] - 2018-03-26
 ### Fixed
