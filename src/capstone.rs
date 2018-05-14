@@ -8,8 +8,7 @@ use arch::CapstoneBuilder;
 use capstone_sys::*;
 use capstone_sys::cs_opt_value::*;
 use constants::{Arch, Endian, ExtraMode, Mode, OptValue, Syntax};
-use instruction::{Insn, InsnDetail, InsnGroupId, InsnGroupIter, InsnId, Instructions, RegId,
-                  RegsIter};
+use instruction::{Insn, InsnDetail, InsnGroupId, InsnId, Instructions, RegId};
 use std::sync::{Once, ONCE_INIT};
 
 
@@ -395,46 +394,6 @@ impl Capstone {
         } else {
             Ok(unsafe { insn.detail(self.arch) })
         }
-    }
-
-    /// Returns whether the instruction `insn` belongs to the group with id `group_id`.
-    pub fn insn_belongs_to_group(&self, insn: &Insn, group_id: InsnGroupId) -> CsResult<bool> {
-        // CLAIM: Capstone::new_raw() already called init_global_state()
-        self.insn_detail(insn)?;
-        Ok(unsafe { cs_insn_group(self.csh, &insn.0 as *const cs_insn, group_id.0 as c_uint) })
-    }
-
-    /// Returns groups ids to which an instruction belongs.
-    pub fn insn_group_ids<'i>(&self, insn: &'i Insn) -> CsResult<InsnGroupIter<'i>> {
-        let detail = self.insn_detail(insn)?;
-        let group_ids: InsnGroupIter<'i> = unsafe { mem::transmute(detail.groups()) };
-        Ok(group_ids)
-    }
-
-    /// Checks if an instruction implicitly reads a register with id `reg_id`.
-    pub fn register_id_is_read(&self, insn: &Insn, reg_id: RegId) -> CsResult<bool> {
-        self.insn_detail(insn)?;
-        Ok(unsafe { cs_reg_read(self.csh, &insn.0 as *const cs_insn, reg_id.0 as c_uint) })
-    }
-
-    /// Returns list of ids of registers that are implicitly read by instruction `insn`.
-    pub fn read_register_ids<'i>(&self, insn: &'i Insn) -> CsResult<RegsIter<'i, u8>> {
-        let detail = self.insn_detail(insn)?;
-        let reg_read_ids: RegsIter<'i, u8> = unsafe { mem::transmute(detail.regs_read()) };
-        Ok(reg_read_ids)
-    }
-
-    /// Checks if an instruction implicitly writes to a register with id `reg_id`.
-    pub fn register_id_is_written(&self, insn: &Insn, reg_id: RegId) -> CsResult<bool> {
-        self.insn_detail(insn)?;
-        Ok(unsafe { cs_reg_write(self.csh, &insn.0 as *const cs_insn, reg_id.0 as c_uint) })
-    }
-
-    /// Returns a list of ids of registers that are implicitly written to by the instruction `insn`.
-    pub fn write_register_ids<'i>(&self, insn: &'i Insn) -> CsResult<RegsIter<'i, u8>> {
-        let detail = self.insn_detail(insn)?;
-        let reg_write_ids: RegsIter<'i, u8> = unsafe { mem::transmute(detail.regs_write()) };
-        Ok(reg_write_ids)
     }
 
     /// Returns a tuple (major, minor) indicating the version of the capstone C library.
