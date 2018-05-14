@@ -184,12 +184,12 @@ impl Capstone {
     }
 
     /// Disassemble all instructions in buffer
-    pub fn disasm_all(&mut self, code: &[u8], addr: u64) -> CsResult<Instructions> {
+    pub fn disasm_all<'a>(&mut self, code: &[u8], addr: u64) -> CsResult<Instructions<'a>> {
         self.disasm(code, addr, 0)
     }
 
     /// Disassemble `count` instructions in `code`
-    pub fn disasm_count(&mut self, code: &[u8], addr: u64, count: usize) -> CsResult<Instructions> {
+    pub fn disasm_count<'a>(&mut self, code: &[u8], addr: u64, count: usize) -> CsResult<Instructions<'a>> {
         if count == 0 {
             return Err(Error::CustomError("Invalid dissasemble count; must be > 0"));
         }
@@ -199,7 +199,7 @@ impl Capstone {
     /// Disassembles a `&[u8]` full of instructions.
     ///
     /// Pass `count = 0` to disassemble all instructions in the buffer.
-    fn disasm(&mut self, code: &[u8], addr: u64, count: usize) -> CsResult<Instructions> {
+    fn disasm<'a>(&mut self, code: &[u8], addr: u64, count: usize) -> CsResult<Instructions<'a>> {
         // CLAIM: Capstone::new_raw() already called init_global_state()
 
         let mut ptr: *mut cs_insn = unsafe { mem::zeroed() };
