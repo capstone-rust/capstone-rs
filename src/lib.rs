@@ -51,9 +51,9 @@
 //!         let output: &[(&str, String)] = &[
 //!             ("insn id:", format!("{:?}", i.id().0)),
 //!             ("bytes:", format!("{:?}", i.bytes())),
-//!             ("read regs:", reg_names(&cs, cs.read_register_ids(&i)?)),
-//!             ("write regs:", reg_names(&cs, cs.write_register_ids(&i)?)),
-//!             ("insn groups:", group_names(&cs, cs.insn_group_ids(&i)?)),
+//!             ("read regs:", reg_names(&cs, detail.regs_read())),
+//!             ("write regs:", reg_names(&cs, detail.regs_write())),
+//!             ("insn groups:", group_names(&cs, detail.groups())),
 //!         ];
 //!
 //!         for &(ref name, ref message) in output.iter() {
@@ -324,13 +324,14 @@ mod test {
             .unwrap();
         cs.set_detail(false).unwrap();
         let insns: Vec<_> = cs.disasm_all(X86_CODE, 0x1000).unwrap().iter().collect();
+
         assert_eq!(
-            cs.insn_belongs_to_group(&insns[0], InsnGroupId(0)),
-            Err(Error::Capstone(CapstoneError::DetailOff))
+            cs.insn_detail(&insns[0]).unwrap_err(),
+            Error::Capstone(CapstoneError::DetailOff)
         );
         assert_eq!(
-            cs.insn_belongs_to_group(&insns[1], InsnGroupId(0)),
-            Err(Error::Capstone(CapstoneError::DetailOff))
+            cs.insn_detail(&insns[1]).unwrap_err(),
+            Error::Capstone(CapstoneError::DetailOff)
         );
     }
 
@@ -360,13 +361,13 @@ mod test {
                 cs_group_type::CS_GRP_IRET,
             ];
             for insn_idx in 0..1 + 1 {
+                let detail = cs.insn_detail(&insns[insn_idx]).expect("Unable to get detail");
+                let groups: Vec<_> = detail.groups().collect();
                 for insn_group_id in &insn_group_ids {
+                    let insn_group = InsnGroupId(*insn_group_id as InsnGroupIdInt);
                     assert_eq!(
-                        cs.insn_belongs_to_group(
-                            &insns[insn_idx],
-                            InsnGroupId(*insn_group_id as InsnGroupIdInt),
-                        ),
-                        Ok(false)
+                        groups.contains(&insn_group),
+                        false
                     );
                 }
             }
@@ -448,11 +449,10 @@ mod test {
         has_default_syntax: bool,
     ) {
         test_instruction_helper(&cs, insn, mnemonic_name, bytes, has_default_syntax);
+        let detail = cs.insn_detail(insn).expect("Unable to get detail");
 
         // Assert expected instruction groups is a subset of computed groups through ids
-        let instruction_group_ids: HashSet<InsnGroupId> = cs.insn_group_ids(&insn)
-            .expect("failed to get instruction groups")
-            .collect();
+        let instruction_group_ids: HashSet<InsnGroupId> = detail.groups().collect();
         let expected_groups_ids: HashSet<InsnGroupId> = expected_groups
             .iter()
             .map(|&x| InsnGroupId(x as u8))
@@ -465,55 +465,16 @@ mod test {
         );
 
         // Assert expected instruction groups is a subset of computed groups through enum
-        let instruction_groups_set: HashSet<InsnGroupId> = cs.insn_group_ids(&insn)
-            .expect("failed to get instruction groups")
-            .collect();
         let expected_groups_set: HashSet<InsnGroupId> = expected_groups
             .iter()
             .map(|&x| InsnGroupId(x as u8))
             .collect();
         assert!(
-            expected_groups_set.is_subset(&instruction_groups_set),
+            expected_groups_set.is_subset(&instruction_group_ids),
             "Expected groups {:?} does NOT match computed insn groups {:?}",
             expected_groups_set,
-            instruction_groups_set
+            instruction_group_ids
         );
-
-        // Create sets of expected groups and unexpected groups
-        let instruction_types: HashSet<cs_group_type::Type> = [
-            cs_group_type::CS_GRP_JUMP,
-            cs_group_type::CS_GRP_CALL,
-            cs_group_type::CS_GRP_RET,
-            cs_group_type::CS_GRP_INT,
-            cs_group_type::CS_GRP_IRET,
-        ].iter()
-            .cloned()
-            .collect();
-        let expected_groups_set: HashSet<cs_group_type::Type> =
-            expected_groups.iter().map(|&x| x).collect();
-        let not_belong_groups = instruction_types.difference(&expected_groups_set);
-
-        // Assert instruction belongs to belong_groups
-        for &belong_group in expected_groups {
-            assert_eq!(
-                Ok(true),
-                cs.insn_belongs_to_group(&insn, InsnGroupId(belong_group as InsnGroupIdInt)),
-                "{:?} does NOT BELONG to group {:?}, but the instruction SHOULD",
-                insn,
-                belong_group
-            );
-        }
-
-        // Assert instruction does not belong to not_belong_groups
-        for &not_belong_group in not_belong_groups {
-            assert_eq!(
-                Ok(false),
-                cs.insn_belongs_to_group(&insn, InsnGroupId(not_belong_group as InsnGroupIdInt)),
-                "{:?} BELONGS to group {:?}, but the instruction SHOULD NOT",
-                insn,
-                not_belong_group
-            );
-        }
 
         // @todo: check read_register_ids
 
@@ -533,11 +494,6 @@ mod test {
 
         // Details required to get groups information
         cs.set_detail(true).unwrap();
-
-        if expected_insns.len() == 0 {
-            // Input was empty, which will cause disasm_all() to fail
-            return;
-        }
 
         let insns: Vec<_> = cs.disasm_all(&insns_buf, 0x1000)
             .expect("Failed to disassemble")

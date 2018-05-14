@@ -42,9 +42,9 @@ fn arch_example(cs: &mut Capstone, code: &[u8]) -> CsResult<()> {
         let output: &[(&str, String)] = &[
             ("insn id:", format!("{:?}", i.id().0)),
             ("bytes:", format!("{:?}", i.bytes())),
-            ("read regs:", reg_names(&cs, cs.read_register_ids(&i)?)),
-            ("write regs:", reg_names(&cs, cs.write_register_ids(&i)?)),
-            ("insn groups:", group_names(&cs, cs.insn_group_ids(&i)?)),
+            ("read regs:", reg_names(&cs, detail.regs_read())),
+            ("write regs:", reg_names(&cs, detail.regs_write())),
+            ("insn groups:", group_names(&cs, detail.groups())),
         ];
 
         for &(ref name, ref message) in output.iter() {
