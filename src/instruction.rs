@@ -69,36 +69,64 @@ impl<'a> Drop for Instructions<'a> {
     }
 }
 
+/// impl Iterator (and variants) for a type that wraps slice::iterator
+///
+/// Implements Iterator, ExactSizeIterator, and DoubleEndedIterator
+macro_rules! impl_SliceIterator_wrapper {
+    (
+        impl <$( $lifetime:tt ),*> Iterator for $iterator:ty {
+            type Item = $item:ty;
+            [ $next:expr ]
+        }
+    ) => {
+        impl <$( $lifetime ),*> Iterator for $iterator {
+            type Item = $item;
+
+            #[inline]
+            fn next(&mut self) -> Option<Self::Item> {
+                self.0.next().map($next)
+            }
+
+            #[inline]
+            fn size_hint(&self) -> (usize, Option<usize>) {
+                self.0.size_hint()
+            }
+
+            #[inline]
+            fn count(self) -> usize {
+                self.0.count()
+            }
+        }
+
+        impl<'a> ExactSizeIterator for $iterator {
+            #[inline]
+            fn len(&self) -> usize {
+                self.0.len()
+            }
+        }
+
+        impl<'a> DoubleEndedIterator for $iterator {
+            #[inline]
+            fn next_back(&mut self) -> Option<Self::Item> {
+                self.0.next_back().map($next)
+            }
+        }
+    }
+}
+
 /// An iterator over the instructions returned by disasm
 ///
 /// This is currently the only supported interface for reading them.
 pub struct InstructionIterator<'a>(slice::Iter<'a, cs_insn>);
 
-impl<'a> Iterator for InstructionIterator<'a> {
-    type Item = Insn;
-
-    #[inline]
-    fn next(&mut self) -> Option<Self::Item> {
-        self.0.next().map(|x| Insn(*x))
+impl_SliceIterator_wrapper!(
+    impl<'a> Iterator for InstructionIterator<'a> {
+        type Item = Insn;
+        [
+            |x| Insn(*x)
+        ]
     }
-
-    #[inline]
-    fn size_hint(&self) -> (usize, Option<usize>) {
-        self.0.size_hint()
-    }
-
-    #[inline]
-    fn count(self) -> usize {
-        self.0.count()
-    }
-}
-
-impl<'a> DoubleEndedIterator for InstructionIterator<'a> {
-    #[inline]
-    fn next_back(&mut self) -> Option<Self::Item> {
-        self.0.next_back().map(|x| Insn(*x))
-    }
-}
+);
 
 /// A wrapper for the raw capstone-sys instruction
 pub struct Insn(pub(crate) cs_insn);
@@ -181,11 +209,33 @@ pub struct RegsIter<'a, T: 'a + Into<RegIdInt> + Copy>(slice::Iter<'a, T>);
 
 impl<'a, T: 'a + Into<RegIdInt> + Copy> Iterator for RegsIter<'a, T> {
     type Item = RegId;
+
     fn next(&mut self) -> Option<Self::Item> {
-        match self.0.next() {
-            Some(x) => Some(RegId((*x).into())),
-            None => None,
-        }
+        self.0.next().map(|x| RegId((*x).into()))
+    }
+
+    #[inline]
+    fn size_hint(&self) -> (usize, Option<usize>) {
+        self.0.size_hint()
+    }
+
+    #[inline]
+    fn count(self) -> usize {
+        self.0.count()
+    }
+}
+
+impl<'a, T: 'a + Into<RegIdInt> + Copy> ExactSizeIterator for RegsIter<'a, T> {
+    #[inline]
+    fn len(&self) -> usize {
+        self.0.len()
+    }
+}
+
+impl<'a, T: 'a + Into<RegIdInt> + Copy> DoubleEndedIterator for RegsIter<'a, T> {
+    #[inline]
+    fn next_back(&mut self) -> Option<Self::Item> {
+        self.0.next_back().map(|x| RegId((*x).into()))
     }
 }
 
@@ -193,15 +243,15 @@ impl<'a, T: 'a + Into<RegIdInt> + Copy> Iterator for RegsIter<'a, T> {
 #[derive(Debug, Clone)]
 pub struct InsnGroupIter<'a>(slice::Iter<'a, InsnGroupIdInt>);
 
-impl<'a> Iterator for InsnGroupIter<'a> {
-    type Item = InsnGroupId;
-    fn next(&mut self) -> Option<Self::Item> {
-        match self.0.next() {
-            Some(x) => Some(InsnGroupId(*x as InsnGroupIdInt)),
-            None => None,
-        }
+impl_SliceIterator_wrapper!(
+    impl<'a> Iterator for InsnGroupIter<'a> {
+        type Item = InsnGroupId;
+
+        [
+            |x| InsnGroupId(*x as InsnGroupIdInt)
+        ]
     }
-}
+);
 
 impl<'a> InsnDetail<'a> {
     /// Returns the implicit read registers
