@@ -8,7 +8,12 @@
 # SHOULD_FAIL: (disabled by default; set to non-empty string to enable)
 
 set -eu
-cd "$(dirname "$0")/.."
+
+if [ $(basename "$0") = "test.sh" ]; then
+    cd "$(dirname "$0")/.."
+else
+    echo "Script is sourced"
+fi
 
 RUST_BACKTRACE=1
 SHOULD_FAIL=${SHOULD_FAIL:-}  # Default to false
@@ -78,23 +83,39 @@ cleanup_cov() {
     rm -rf target/cov
 }
 
+
+run_kcov() {
+    KCOV="${KCOV:-kcov}"
+    COVERALLS_ARG="${TRAVIS_JOB_ID:+--coveralls-id=$TRAVIS_JOB_ID}"
+    EXAMPLES="${EXAMPLES:-demo}"
+
+    # Build binaries
+    cargo test --no-run -v
+    for example in $EXAMPLES; do
+        cargo build --example "$example"
+    done
+
+    EXAMPLE_BINS=$(echo "$EXAMPLES" | xargs -n1 | sed "s,^,target/${PROFILE}/examples/,")
+    mkdir -p "target/cov"
+
+    (
+    set -x
+    for file in target/${PROFILE}/${PROJECT_NAME}-*[^\.d] ${EXAMPLE_BINS} ; do
+        "$KCOV" \
+            $COVERALLS_ARG \
+            --exclude-pattern=/.cargo,/usr/lib,/out/capstone.rs \
+            --verify "target/cov" "$file"
+    done
+    )
+}
+
 cov() {
     echo "Running coverage"
-    cargo test --no-run -v
 
     install_kcov
     cleanup_cov
 
-    (
-    set -x
-    for file in target/${PROFILE}/${PROJECT_NAME}-*[^\.d]; do
-        mkdir -p "target/cov/$(basename $file)"
-        ./kcov-install/usr/local/bin/kcov \
-            --coveralls-id=$TRAVIS_JOB_ID \
-            --exclude-pattern=/.cargo,/usr/lib \
-            --verify "target/cov/$(basename $file)" "$file"
-    done
-    )
+    KCOV=./kcov-install/usr/local/bin/kcov run_kcov
 
     bash <(curl -s https://codecov.io/bash)
     echo "Uploaded code coverage"
@@ -115,16 +136,19 @@ esac
 # (not even an empty string argument) when the variable is empty. This is
 # necessary so we don't pass an unexpected flag to cargo.
 
-JOB="${JOB-test}"
-case "$JOB" in
-    test)
-        expect_exit_status "$SHOULD_FAIL" \
-            cargo test $PROFILE_ARGS --features "$FEATURES" --verbose
-        ;;
-    cov|bench)
-        $JOB
-        ;;
-    *)
-        echo "Error! Unknown \$JOB: '$JOB'"
-        exit 1
-esac
+
+if [ $(basename "$0") = "test.sh" ]; then
+    JOB="${JOB-test}"
+    case "$JOB" in
+        test)
+            expect_exit_status "$SHOULD_FAIL" \
+                cargo test $PROFILE_ARGS --features "$FEATURES" --verbose
+            ;;
+        cov|bench)
+            $JOB
+            ;;
+        *)
+            echo "Error! Unknown \$JOB: '$JOB'"
+            exit 1
+    esac
+fi
