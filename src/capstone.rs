@@ -11,7 +11,6 @@ use constants::{Arch, Endian, ExtraMode, Mode, OptValue, Syntax};
 use instruction::{Insn, InsnDetail, InsnGroupId, InsnId, Instructions, RegId};
 use std::sync::{Once, ONCE_INIT};
 
-
 /// An instance of the capstone disassembler
 #[derive(Debug)]
 pub struct Capstone {
@@ -189,7 +188,12 @@ impl Capstone {
     }
 
     /// Disassemble `count` instructions in `code`
-    pub fn disasm_count<'a>(&mut self, code: &[u8], addr: u64, count: usize) -> CsResult<Instructions<'a>> {
+    pub fn disasm_count<'a>(
+        &mut self,
+        code: &[u8],
+        addr: u64,
+        count: usize,
+    ) -> CsResult<Instructions<'a>> {
         if count == 0 {
             return Err(Error::CustomError("Invalid dissasemble count; must be > 0"));
         }
