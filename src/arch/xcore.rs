@@ -48,12 +48,12 @@ pub struct XcoreOpMem(pub(crate) xcore_op_mem);
 impl XcoreOpMem {
     /// Base register
     pub fn base(&self) -> RegId {
-        RegId(self.0.base as RegIdInt)
+        RegId(RegIdInt::from(self.0.base))
     }
 
     /// Index register
     pub fn index(&self) -> RegId {
-        RegId(self.0.index as RegIdInt)
+        RegId(RegIdInt::from(self.0.index))
     }
 
     /// Disp value
