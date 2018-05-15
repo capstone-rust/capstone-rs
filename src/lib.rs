@@ -361,14 +361,12 @@ mod test {
                 cs_group_type::CS_GRP_IRET,
             ];
             for insn_idx in 0..1 + 1 {
-                let detail = cs.insn_detail(&insns[insn_idx]).expect("Unable to get detail");
+                let detail = cs.insn_detail(&insns[insn_idx])
+                    .expect("Unable to get detail");
                 let groups: Vec<_> = detail.groups().collect();
                 for insn_group_id in &insn_group_ids {
                     let insn_group = InsnGroupId(*insn_group_id as InsnGroupIdInt);
-                    assert_eq!(
-                        groups.contains(&insn_group),
-                        false
-                    );
+                    assert_eq!(groups.contains(&insn_group), false);
                 }
             }
         }
