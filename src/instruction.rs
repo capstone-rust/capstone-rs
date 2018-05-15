@@ -61,7 +61,7 @@ impl<'a> Instructions<'a> {
 
 impl<'a> Drop for Instructions<'a> {
     fn drop(&mut self) {
-        if self.len() > 0 {
+        if !self.is_empty() {
             unsafe {
                 cs_free(self.0.as_mut_ptr(), self.len());
             }
@@ -336,7 +336,7 @@ impl<'a> Display for Instructions<'a> {
             for byte in instruction.bytes() {
                 write!(fmt, " {:02x}", byte)?;
             }
-            let remainder = 16 * 3 - (instruction.bytes().len()) * 3;
+            let remainder = 16 * 3 - instruction.bytes().len() * 3;
             for _ in 0..remainder {
                 write!(fmt, " ")?;
             }
@@ -346,7 +346,7 @@ impl<'a> Display for Instructions<'a> {
                     write!(fmt, " {}", op_str)?;
                 }
             }
-            write!(fmt, "\n")?;
+            writeln!(fmt)?;
         }
         Ok(())
     }

@@ -173,7 +173,7 @@ impl Capstone {
                 extra_mode,
                 detail_enabled,
                 raw_mode,
-                arch: arch,
+                arch,
             };
             cs.update_raw_mode();
             Ok(cs)
@@ -341,7 +341,7 @@ impl Capstone {
     pub fn reg_name(&self, reg_id: RegId) -> Option<String> {
         init_global_state();
         let reg_name = unsafe {
-            let _reg_name = cs_reg_name(self.csh, reg_id.0 as c_uint);
+            let _reg_name = cs_reg_name(self.csh, c_uint::from(reg_id.0));
             if _reg_name.is_null() {
                 return None;
             }
@@ -370,7 +370,7 @@ impl Capstone {
     /// Converts a group id `group_id` to a `String` containing the group name.
     pub fn group_name(&self, group_id: InsnGroupId) -> Option<String> {
         let group_name = unsafe {
-            let _group_name = cs_group_name(self.csh, group_id.0 as c_uint);
+            let _group_name = cs_group_name(self.csh, c_uint::from(group_id.0));
             if _group_name.is_null() {
                 return None;
             }

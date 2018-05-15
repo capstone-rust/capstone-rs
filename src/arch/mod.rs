@@ -457,7 +457,7 @@ macro_rules! detail_defs {
                     $(
                         ArchDetail::$Detail(ref detail) => {
                             let ops = detail.operands();
-                            let map = ops.map(|arch_op| ArchOperand::from(arch_op));
+                            let map = ops.map(ArchOperand::from);
                             let vec: Vec<ArchOperand> = map.collect();
                             vec
                         }
