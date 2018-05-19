@@ -8,14 +8,15 @@ use std::convert::From;
 use std::ffi::CStr;
 use std::marker::PhantomData;
 use std::mem;
-use std::os::raw::{c_int, c_uint};
+use std::os::raw::{c_int, c_uint, c_void};
 use std::sync::{Once, ONCE_INIT};
 
 /// An instance of the capstone disassembler
 #[derive(Debug)]
 pub struct Capstone {
     /// Opaque handle to cs_engine
-    csh: csh,
+    /// Stored as a pointer to ensure `Capstone` is `!Send`/`!Sync`
+    csh: *mut c_void,
 
     /// Internal mode bitfield
     mode: cs_mode,
@@ -166,7 +167,7 @@ impl Capstone {
             let detail_enabled = false;
 
             let mut cs = Capstone {
-                csh: handle,
+                csh: handle as *mut c_void,
                 syntax,
                 endian,
                 mode: csmode,
@@ -209,7 +210,7 @@ impl Capstone {
         let mut ptr: *mut cs_insn = unsafe { mem::zeroed() };
         let insn_count = unsafe {
             cs_disasm(
-                self.csh,
+                self.csh(),
                 code.as_ptr(),
                 code.len() as usize,
                 addr,
@@ -225,6 +226,12 @@ impl Capstone {
         } else {
             Ok(unsafe { Instructions::from_raw_parts(ptr, insn_count) })
         }
+    }
+
+    /// Returns csh handle
+    #[inline]
+    fn csh(&self) -> csh {
+        self.csh as csh
     }
 
     /// Returns the raw mode value, which is useful for debugging
@@ -301,7 +308,7 @@ impl Capstone {
     /// Returns a `CsResult` based on current errno.
     /// If the errno is CS_ERR_OK, then Ok(()) is returned. Otherwise, the error is returned.
     fn error_result(&self) -> CsResult<()> {
-        let errno = unsafe { cs_errno(self.csh) };
+        let errno = unsafe { cs_errno(self.csh()) };
         if errno == cs_err::CS_ERR_OK {
             Ok(())
         } else {
@@ -313,7 +320,7 @@ impl Capstone {
     ///
     /// Acts as a safe wrapper around capstone's `cs_option`.
     fn _set_cs_option(&mut self, option_type: cs_opt_type, option_value: usize) -> CsResult<()> {
-        let err = unsafe { cs_option(self.csh, option_type, option_value) };
+        let err = unsafe { cs_option(self.csh(), option_type, option_value) };
 
         if cs_err::CS_ERR_OK == err {
             Ok(())
@@ -341,7 +348,7 @@ impl Capstone {
     pub fn reg_name(&self, reg_id: RegId) -> Option<String> {
         init_global_state();
         let reg_name = unsafe {
-            let _reg_name = cs_reg_name(self.csh, c_uint::from(reg_id.0));
+            let _reg_name = cs_reg_name(self.csh(), c_uint::from(reg_id.0));
             if _reg_name.is_null() {
                 return None;
             }
@@ -357,7 +364,7 @@ impl Capstone {
     /// Note: This function ignores the current syntax and uses the default syntax.
     pub fn insn_name(&self, insn_id: InsnId) -> Option<String> {
         let insn_name = unsafe {
-            let _insn_name = cs_insn_name(self.csh, insn_id.0 as c_uint);
+            let _insn_name = cs_insn_name(self.csh(), insn_id.0 as c_uint);
             if _insn_name.is_null() {
                 return None;
             }
@@ -370,7 +377,7 @@ impl Capstone {
     /// Converts a group id `group_id` to a `String` containing the group name.
     pub fn group_name(&self, group_id: InsnGroupId) -> Option<String> {
         let group_name = unsafe {
-            let _group_name = cs_group_name(self.csh, c_uint::from(group_id.0));
+            let _group_name = cs_group_name(self.csh(), c_uint::from(group_id.0));
             if _group_name.is_null() {
                 return None;
             }
@@ -436,7 +443,7 @@ impl Capstone {
 
 impl Drop for Capstone {
     fn drop(&mut self) {
-        unsafe { cs_close(&mut self.csh) };
+        unsafe { cs_close(&mut self.csh()) };
     }
 }
 

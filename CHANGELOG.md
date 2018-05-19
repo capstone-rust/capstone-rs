@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - Minimum Rust version to 1.23.0
 - `Capstone::disasm()` methods take `&mut self` instead of `&self` and returns a new lifetime
+- `Capstone` is no longer `Send`/`Sync` (it was mistakenly auto-implemented)
 
 ### Removed
 - Duplicate/unneeded `Capstone` methods that have equivalents in `InsnDetail`
