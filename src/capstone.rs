@@ -1,14 +1,14 @@
+use arch::CapstoneBuilder;
+use capstone_sys::cs_opt_value::*;
+use capstone_sys::*;
+use constants::{Arch, Endian, ExtraMode, Mode, OptValue, Syntax};
+use error::*;
+use instruction::{Insn, InsnDetail, InsnGroupId, InsnId, Instructions, RegId};
 use std::convert::From;
 use std::ffi::CStr;
 use std::marker::PhantomData;
 use std::mem;
 use std::os::raw::{c_int, c_uint};
-use error::*;
-use arch::CapstoneBuilder;
-use capstone_sys::*;
-use capstone_sys::cs_opt_value::*;
-use constants::{Arch, Endian, ExtraMode, Mode, OptValue, Syntax};
-use instruction::{Insn, InsnDetail, InsnGroupId, InsnId, Instructions, RegId};
 use std::sync::{Once, ONCE_INIT};
 
 /// An instance of the capstone disassembler

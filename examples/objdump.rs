@@ -1,11 +1,11 @@
 extern crate capstone;
 extern crate macho;
 
+use capstone::prelude::*;
 use std::env;
 use std::fs;
 use std::io::Read;
 use std::process;
-use capstone::prelude::*;
 
 fn main() {
     let mut cs = Capstone::new()

@@ -1,6 +1,6 @@
-use capstone_sys::*;
 use capstone_sys::cs_arch::*;
 use capstone_sys::cs_opt_value::*;
+use capstone_sys::*;
 use std::convert::From;
 
 /// Define an `enum` that corresponds to a capstone enum

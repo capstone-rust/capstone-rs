@@ -1,11 +1,11 @@
 //! Capstone errors
 
-use capstone_sys::{self, cs_strerror};
 use capstone_sys::cs_err::*;
+use capstone_sys::{self, cs_strerror};
 
+use std::error;
 use std::ffi::CStr;
 use std::fmt;
-use std::error;
 use std::result;
 
 /// Create `RustFeatures` struct definition, `new()`, and a getter for each field
@@ -109,8 +109,8 @@ impl fmt::Display for Error {
 
 impl error::Error for Error {
     fn description(&self) -> &str {
-        use self::Error::*;
         use self::CapstoneError::*;
+        use self::Error::*;
         match *self {
             Capstone(OutOfMemory) => "Out-Of-Memory error",
             Capstone(UnsupportedArch) => "Unsupported architecture",
@@ -145,8 +145,8 @@ impl error::Error for Error {
 
 #[cfg(test)]
 mod test {
-    use capstone_sys::cs_err;
     use super::{CapstoneError, Error};
+    use capstone_sys::cs_err;
 
     #[test]
     fn test_error() {

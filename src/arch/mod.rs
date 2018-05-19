@@ -181,100 +181,102 @@ macro_rules! define_arch_builder {
 
 /// Base X macro with arch info
 macro_rules! arch_info_base {
-    ( $x_macro:ident ) => { $x_macro!(
-        [
-            ( arm, ARM )
-            ( mode:
-                Arm,
-                Thumb,
-                )
-            ( extra_modes:
-                MClass,
-                V8,
-                )
-            ( syntax:
-                NoRegName,
-                )
-            ( both_endian: true )
-        ]
-        [
-            ( arm64, ARM64 )
-            ( mode:
-                Arm,
-                )
-            ( extra_modes: )
-            ( syntax: )
-            ( both_endian: true )
-        ]
-        [
-            ( mips, MIPS )
-            ( mode:
-                Mode32,
-                Mode64,
-                Mips32R6,
-                MipsGP64,
-                )
-            ( extra_modes:
-                Micro,
-                )
-            ( syntax: )
-            ( both_endian: true )
-        ]
-        [
-            ( ppc, PPC )
-            ( mode:
-                Mode32,
-                Mode64,
-                )
-            ( extra_modes: )
-            ( syntax:
-                NoRegName,
-                )
-            ( both_endian: true )
-        ]
-        [
-            ( sparc, SPARC )
-            ( mode:
-                Default,
-                V9,
-                )
-            ( extra_modes: )
-            ( syntax: )
-            ( both_endian: false )
-        ]
-        [
-            ( sysz, SYSZ )
-            ( mode:
-                Default,
-                )
-            ( extra_modes: )
-            ( syntax: )
-            ( both_endian: false )
-        ]
-        [
-            ( x86, X86 )
-            ( mode:
-                Mode16,
-                Mode32,
-                Mode64,
-                )
-            ( extra_modes: )
-            ( syntax:
-                Intel,
-                Att,
-                )
-            ( both_endian: false )
-        ]
-        [
-            ( xcore, XCORE )
-            ( mode:
-                Default,
-                )
-            ( extra_modes: )
-            ( syntax: )
-            ( both_endian: false  )
-        ]
-    ); }
+    ($x_macro:ident) => {
+        $x_macro!(
+                [
+                    ( arm, ARM )
+                    ( mode:
+                        Arm,
+                        Thumb,
+                        )
+                    ( extra_modes:
+                        MClass,
+                        V8,
+                        )
+                    ( syntax:
+                        NoRegName,
+                        )
+                    ( both_endian: true )
+                ]
+                [
+                    ( arm64, ARM64 )
+                    ( mode:
+                        Arm,
+                        )
+                    ( extra_modes: )
+                    ( syntax: )
+                    ( both_endian: true )
+                ]
+                [
+                    ( mips, MIPS )
+                    ( mode:
+                        Mode32,
+                        Mode64,
+                        Mips32R6,
+                        MipsGP64,
+                        )
+                    ( extra_modes:
+                        Micro,
+                        )
+                    ( syntax: )
+                    ( both_endian: true )
+                ]
+                [
+                    ( ppc, PPC )
+                    ( mode:
+                        Mode32,
+                        Mode64,
+                        )
+                    ( extra_modes: )
+                    ( syntax:
+                        NoRegName,
+                        )
+                    ( both_endian: true )
+                ]
+                [
+                    ( sparc, SPARC )
+                    ( mode:
+                        Default,
+                        V9,
+                        )
+                    ( extra_modes: )
+                    ( syntax: )
+                    ( both_endian: false )
+                ]
+                [
+                    ( sysz, SYSZ )
+                    ( mode:
+                        Default,
+                        )
+                    ( extra_modes: )
+                    ( syntax: )
+                    ( both_endian: false )
+                ]
+                [
+                    ( x86, X86 )
+                    ( mode:
+                        Mode16,
+                        Mode32,
+                        Mode64,
+                        )
+                    ( extra_modes: )
+                    ( syntax:
+                        Intel,
+                        Att,
+                        )
+                    ( both_endian: false )
+                ]
+                [
+                    ( xcore, XCORE )
+                    ( mode:
+                        Default,
+                        )
+                    ( extra_modes: )
+                    ( syntax: )
+                    ( both_endian: false  )
+                ]
+            );
+    };
 }
 
 /// Builds a `Capstone` struct
@@ -290,8 +292,7 @@ pub trait BuildsCapstone<ArchMode> {
 }
 
 /// Implies that a `CapstoneBuilder` architecture has extra modes
-pub trait BuildsCapstoneExtraMode<ArchMode, ArchExtraMode>
-    : BuildsCapstone<ArchMode> {
+pub trait BuildsCapstoneExtraMode<ArchMode, ArchExtraMode>: BuildsCapstone<ArchMode> {
     /// Set architecture endianness
     fn extra_mode<T: Iterator<Item = ArchExtraMode>>(&mut self, extra_mode: T) -> &mut Self;
 }
@@ -370,57 +371,59 @@ macro_rules! impl_PartialEq_repr_fields {
 
 /// Base macro for defining arch details
 macro_rules! detail_arch_base {
-    ( $x_macro:ident ) => { $x_macro!(
-        [
-            detail = ArmDetail,
-            insn_detail = ArmInsnDetail<'a>,
-            op = ArmOperand,
-            /// Returns the ARM details, if any
-            => arch_name = arm,
-        ]
-        [
-            detail = Arm64Detail,
-            insn_detail = Arm64InsnDetail<'a>,
-            op = Arm64Operand,
-            /// Returns the ARM64 details, if any
-            => arch_name = arm64,
-        ]
-        [
-            detail = MipsDetail,
-            insn_detail = MipsInsnDetail<'a>,
-            op = MipsOperand,
-            /// Returns the MIPS details, if any
-            => arch_name = mips,
-        ]
-        [
-            detail = PpcDetail,
-            insn_detail = PpcInsnDetail<'a>,
-            op = PpcOperand,
-            /// Returns the PPC details, if any
-            => arch_name = ppc,
-        ]
-        [
-            detail = SparcDetail,
-            insn_detail = SparcInsnDetail<'a>,
-            op = SparcOperand,
-            /// Returns the SPARC details, if any
-            => arch_name = sparc,
-        ]
-        [
-            detail = X86Detail,
-            insn_detail = X86InsnDetail<'a>,
-            op = X86Operand,
-            /// Returns the X86 details, if any
-            => arch_name = x86,
-        ]
-        [
-            detail = XcoreDetail,
-            insn_detail = XcoreInsnDetail<'a>,
-            op = XcoreOperand,
-            /// Returns the XCore details, if any
-            => arch_name = xcore,
-        ]
-    ); }
+    ($x_macro:ident) => {
+        $x_macro!(
+                [
+                    detail = ArmDetail,
+                    insn_detail = ArmInsnDetail<'a>,
+                    op = ArmOperand,
+                    /// Returns the ARM details, if any
+                    => arch_name = arm,
+                ]
+                [
+                    detail = Arm64Detail,
+                    insn_detail = Arm64InsnDetail<'a>,
+                    op = Arm64Operand,
+                    /// Returns the ARM64 details, if any
+                    => arch_name = arm64,
+                ]
+                [
+                    detail = MipsDetail,
+                    insn_detail = MipsInsnDetail<'a>,
+                    op = MipsOperand,
+                    /// Returns the MIPS details, if any
+                    => arch_name = mips,
+                ]
+                [
+                    detail = PpcDetail,
+                    insn_detail = PpcInsnDetail<'a>,
+                    op = PpcOperand,
+                    /// Returns the PPC details, if any
+                    => arch_name = ppc,
+                ]
+                [
+                    detail = SparcDetail,
+                    insn_detail = SparcInsnDetail<'a>,
+                    op = SparcOperand,
+                    /// Returns the SPARC details, if any
+                    => arch_name = sparc,
+                ]
+                [
+                    detail = X86Detail,
+                    insn_detail = X86InsnDetail<'a>,
+                    op = X86Operand,
+                    /// Returns the X86 details, if any
+                    => arch_name = x86,
+                ]
+                [
+                    detail = XcoreDetail,
+                    insn_detail = XcoreInsnDetail<'a>,
+                    op = XcoreOperand,
+                    /// Returns the XCore details, if any
+                    => arch_name = xcore,
+                ]
+            );
+    };
 }
 
 /// Define ArchDetail enum, ArchOperand enum, and From<$Operand> for ArchOperand

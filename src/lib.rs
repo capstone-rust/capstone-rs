@@ -189,8 +189,8 @@ mod instruction;
 
 pub use capstone::*;
 pub use constants::*;
-pub use instruction::*;
 pub use error::*;
+pub use instruction::*;
 
 /// Contains items that you probably want to always import
 ///
@@ -200,17 +200,17 @@ pub use error::*;
 /// use capstone::prelude::*;
 /// ```
 pub mod prelude {
-    pub use {Capstone, CsResult, InsnGroupId, InsnGroupIdInt, InsnId, InsnIdInt, RegId, RegIdInt};
     pub use arch::{self, ArchDetail, BuildsCapstone, BuildsCapstoneEndian,
                    BuildsCapstoneExtraMode, BuildsCapstoneSyntax, DetailsArchInsn};
+    pub use {Capstone, CsResult, InsnGroupId, InsnGroupIdInt, InsnId, InsnIdInt, RegId, RegIdInt};
 }
 
 #[cfg(test)]
 mod test {
-    use std::collections::HashSet;
-    use capstone_sys::cs_group_type;
-    use super::*;
     use super::arch::*;
+    use super::*;
+    use capstone_sys::cs_group_type;
+    use std::collections::HashSet;
 
     const X86_CODE: &'static [u8] = b"\x55\x48\x8b\x05\xb8\x13\x00\x00";
     const ARM_CODE: &'static [u8] = b"\x55\x48\x8b\x05\xb8\x13\x00\x00";
@@ -488,7 +488,7 @@ mod test {
                 let mut regs: Vec<_> = $actual_regs.collect();
                 regs.sort_unstable();
                 assert_eq!(regs, expected_regs);
-            }}
+            }};
         }
 
         assert_regs_match!(expected_regs_read, detail.regs_read());
@@ -1021,8 +1021,8 @@ mod test {
 
     #[test]
     fn test_arch_arm_detail() {
-        use arch::arm::*;
         use arch::arm::ArmOperandType::*;
+        use arch::arm::*;
         use capstone_sys::arm_op_mem;
 
         let r0_op = ArmOperand {
@@ -1202,13 +1202,13 @@ mod test {
 
     #[test]
     fn test_arch_arm64_detail() {
-        use arch::arm64::*;
         use arch::arm64::Arm64OperandType::*;
         use arch::arm64::Arm64Pstate::*;
         use arch::arm64::Arm64Reg::*;
         use arch::arm64::Arm64Sysreg::*;
         use arch::arm64::Arm64Vas::*;
         use arch::arm64::Arm64Vess::*;
+        use arch::arm64::*;
         use capstone_sys::arm64_op_mem;
 
         let s0 = Arm64Operand {
@@ -1648,9 +1648,9 @@ mod test {
 
     #[test]
     fn test_arch_ppc_detail() {
-        use arch::ppc::*;
         use arch::ppc::PpcOperand::*;
         use arch::ppc::PpcReg::*;
+        use arch::ppc::*;
         use capstone_sys::ppc_op_mem;
 
         test_arch_mode_endian_insns_detail(
@@ -1813,9 +1813,9 @@ mod test {
 
     #[test]
     fn test_arch_sparc_detail() {
-        use arch::sparc::*;
         use arch::sparc::SparcOperand::*;
         use arch::sparc::SparcReg::*;
+        use arch::sparc::*;
         use capstone_sys::sparc_op_mem;
 
         test_arch_mode_endian_insns_detail(
@@ -2074,9 +2074,9 @@ mod test {
 
     #[test]
     fn test_arch_x86_detail() {
-        use arch::x86::*;
         use arch::x86::X86OperandType::*;
         use arch::x86::X86Reg::*;
+        use arch::x86::*;
         use capstone_sys::*;
 
         // X86 16bit (Intel syntax)
@@ -2334,9 +2334,9 @@ mod test {
     // XXX todo(tmfink) investigate upstream xcore operand bugs
     #[test]
     fn test_arch_xcore_detail() {
-        use arch::xcore::*;
         use arch::xcore::XcoreOperand::*;
         use arch::xcore::XcoreReg::*;
+        use arch::xcore::*;
         use capstone_sys::xcore_op_mem;
 
         test_arch_mode_endian_insns_detail(
