@@ -1,10 +1,10 @@
 use arch::ArchDetail;
-use std::ffi::CStr;
-use std::slice;
-use std::str;
-use std::fmt::{self, Debug, Display, Error, Formatter};
 use capstone_sys::*;
 use constants::Arch;
+use std::ffi::CStr;
+use std::fmt::{self, Debug, Display, Error, Formatter};
+use std::slice;
+use std::str;
 
 /// Representation of the array of instructions returned by disasm
 #[derive(Debug)]

@@ -1,7 +1,7 @@
 extern crate capstone;
 
-use capstone::prelude::*;
 use capstone::InsnDetail;
+use capstone::prelude::*;
 
 const MIPS_CODE: &'static [u8] = b"\x56\x34\x21\x34\xc2\x17\x01\x00";
 

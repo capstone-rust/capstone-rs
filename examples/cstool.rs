@@ -8,8 +8,8 @@ extern crate log;
 
 extern crate stderrlog;
 
-use capstone::{Arch, Endian, ExtraMode, Mode};
 use capstone::prelude::*;
+use capstone::{Arch, Endian, ExtraMode, Mode};
 use clap::{App, Arg, ArgGroup};
 use std::fs::File;
 use std::io::prelude::*;
@@ -140,8 +140,7 @@ fn unhexed_bytes(input: Vec<u8>) -> Vec<u8> {
 
         if curr_byte_str.len() == 2 {
             debug!("  curr_byte_str={:?}", curr_byte_str);
-            let byte = u8::from_str_radix(&curr_byte_str, 16)
-                .expect("Unexpect hex parse error");
+            let byte = u8::from_str_radix(&curr_byte_str, 16).expect("Unexpect hex parse error");
             output.push(byte);
             curr_byte_str.clear();
         }
@@ -180,7 +179,6 @@ fn disasm<T: Iterator<Item = ExtraMode>>(
             i.mnemonic().unwrap(),
             i.op_str().unwrap_or("")
         );
-
 
         if show_detail {
             let detail = cs.insn_detail(&i).expect("Failed to get insn detail");
@@ -256,14 +254,14 @@ fn main() {
                 .short("x")
                 .long("hex")
                 .help("Treat input has hex; only select characters that are [a-fA-F0-9]")
-                .takes_value(false)
+                .takes_value(false),
         )
         .arg(
             Arg::with_name("DETAIL")
                 .short("d")
                 .long("detail")
                 .help("Print details about instructions")
-                .takes_value(false)
+                .takes_value(false),
         )
         .arg(
             Arg::with_name("ARCH")
