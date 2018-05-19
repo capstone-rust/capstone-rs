@@ -108,6 +108,53 @@ arch_conversions!(
     ]
 );
 
+/// Print register names
+fn reg_names<T, I>(cs: &Capstone, regs: T) -> String
+where
+    T: Iterator<Item = I>,
+    I: Into<RegId>,
+{
+    let names: Vec<String> = regs.map(|x| cs.reg_name(x.into()).unwrap()).collect();
+    names.join(", ")
+}
+
+/// Print instruction group names
+fn group_names<T, I>(cs: &Capstone, regs: T) -> String
+where
+    T: Iterator<Item = I>,
+    I: Into<InsnGroupId>,
+{
+    let names: Vec<String> = regs.map(|x| cs.group_name(x.into()).unwrap()).collect();
+    names.join(", ")
+}
+
+/// Select only hex bytes from input
+fn unhexed_bytes(input: Vec<u8>) -> Vec<u8> {
+    let mut output: Vec<u8> = Vec::new();
+    let mut curr_byte_str = String::with_capacity(2);
+    for b_u8 in input {
+        let b = char::from(b_u8);
+        if ('0' <= b && b <= '9') || ('a' <= b && b <= 'f') || ('A' <= b && b <= 'F') {
+            curr_byte_str.push(b);
+        }
+
+        if curr_byte_str.len() == 2 {
+            debug!("  curr_byte_str={:?}", curr_byte_str);
+            let byte = u8::from_str_radix(&curr_byte_str, 16)
+                .expect("Unexpect hex parse error");
+            output.push(byte);
+            curr_byte_str.clear();
+        }
+    }
+
+    if log::max_level() >= log::LevelFilter::Info {
+        let output_hex: Vec<String> = output.iter().map(|x| format!("{:02x}", x)).collect();
+        info!("unhexed_output = {:?}", output_hex);
+    }
+
+    output
+}
+
 fn disasm<T: Iterator<Item = ExtraMode>>(
     arch: Arch,
     mode: Mode,
@@ -115,8 +162,13 @@ fn disasm<T: Iterator<Item = ExtraMode>>(
     endian: Option<Endian>,
     code: &[u8],
     addr: u64,
+    show_detail: bool,
 ) {
     let mut cs = Capstone::new_raw(arch, mode, extra_mode, endian).expect_exit();
+
+    if show_detail {
+        cs.set_detail(true).expect("Failed to set detail");
+    }
 
     for i in cs.disasm_all(code, addr).expect_exit().iter() {
         let bytes: Vec<_> = i.bytes().iter().map(|x| format!("{:02x}", x)).collect();
@@ -128,6 +180,23 @@ fn disasm<T: Iterator<Item = ExtraMode>>(
             i.mnemonic().unwrap(),
             i.op_str().unwrap_or("")
         );
+
+
+        if show_detail {
+            let detail = cs.insn_detail(&i).expect("Failed to get insn detail");
+            let arch_detail: ArchDetail = detail.arch_detail();
+
+            let output: &[(&str, String)] = &[
+                ("insn id:", format!("{:?}", i.id().0)),
+                ("read regs:", reg_names(&cs, detail.regs_read())),
+                ("write regs:", reg_names(&cs, detail.regs_write())),
+                ("insn groups:", group_names(&cs, detail.groups())),
+            ];
+
+            for &(ref name, ref message) in output.iter() {
+                println!("{:13}{:12} {}", "", name, message);
+            }
+        }
     }
 }
 
@@ -183,6 +252,20 @@ fn main() {
                 .help("Sets the level of verbosity"),
         )
         .arg(
+            Arg::with_name("hex")
+                .short("x")
+                .long("hex")
+                .help("Treat input has hex; only select characters that are [a-fA-F0-9]")
+                .takes_value(false)
+        )
+        .arg(
+            Arg::with_name("DETAIL")
+                .short("d")
+                .long("detail")
+                .help("Print details about instructions")
+                .takes_value(false)
+        )
+        .arg(
             Arg::with_name("ARCH")
                 .short("a")
                 .long("arch")
@@ -221,7 +304,7 @@ fn main() {
         )
         .get_matches();
 
-    let input_bytes: Vec<u8> = match matches.value_of("INPUT") {
+    let direct_input_bytes: Vec<u8> = match matches.value_of("INPUT") {
         Some(file_path) => {
             let mut file = File::open(file_path).expect_exit();
             let capacity = match file.metadata() {
@@ -246,6 +329,12 @@ fn main() {
         .init()
         .unwrap();
 
+    let is_hex = matches.is_present("hex");
+    info!("is_hex = {:?}", is_hex);
+
+    let show_detail = matches.is_present("DETAIL");
+    info!("show_detail = {:?}", show_detail);
+
     let arch: Arch = ArchArg::from_str(matches.value_of("ARCH").unwrap())
         .unwrap()
         .into();
@@ -267,6 +356,12 @@ fn main() {
         u64::from_str_radix(matches.value_of("address").unwrap_or("1000"), 16).expect_exit();
     info!("Address = 0x{:x}", address);
 
+    let input_bytes = if is_hex {
+        unhexed_bytes(direct_input_bytes)
+    } else {
+        direct_input_bytes
+    };
+
     disasm(
         arch,
         mode,
@@ -274,5 +369,6 @@ fn main() {
         None,
         input_bytes.as_slice(),
         address,
+        show_detail,
     );
 }
