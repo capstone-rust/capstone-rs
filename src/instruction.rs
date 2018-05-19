@@ -14,21 +14,21 @@ pub struct Instructions<'a>(&'a mut [cs_insn]);
 pub type InsnIdInt = u32;
 
 /// Represents an instruction id, which may architecture-specific.
-#[derive(Copy, Clone, Debug, Hash, PartialEq, Eq)]
+#[derive(Copy, Clone, Debug, Hash, PartialEq, Eq, PartialOrd, Ord)]
 pub struct InsnId(pub InsnIdInt);
 
 /// Integer type used in `InsnGroupId`
 pub type InsnGroupIdInt = u8;
 
 /// Represents the group an instruction belongs to, which may be architecture-specific.
-#[derive(Copy, Clone, Debug, Hash, PartialEq, Eq)]
+#[derive(Copy, Clone, Debug, Hash, PartialEq, Eq, PartialOrd, Ord)]
 pub struct InsnGroupId(pub InsnGroupIdInt);
 
 /// Integer type used in `RegId`
 pub type RegIdInt = u16;
 
 /// Represents an register id, which is architecture-specific.
-#[derive(Copy, Clone, Debug, Hash, PartialEq, Eq)]
+#[derive(Copy, Clone, Debug, Hash, PartialEq, Eq, PartialOrd, Ord)]
 pub struct RegId(pub RegIdInt);
 
 impl<'a> Instructions<'a> {
