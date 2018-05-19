@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [Criterion benchmark](benches)
 - [cstool example](examples/cstool.rs)
 - [Codecov](https://codecov.io/gh/capstone-rust/capstone-rs) code coverage integration
+- `PartialOrd`/`Ord` implementation for `InsnId`, `InsnGroupId`, `RegId`
 
 ### Changed
 - Minimum Rust version to 1.23.0

@@ -438,14 +438,18 @@ mod test {
 
     /// Assert instruction belongs or does not belong to groups, testing both insn_belongs_to_group
     /// and insn_group_ids
-    fn test_instruction_group_helper(
+    fn test_instruction_group_helper<R: Into<u32>>(
         cs: &Capstone,
         insn: &Insn,
         mnemonic_name: &str,
         bytes: &[u8],
         expected_groups: &[cs_group_type::Type],
+        expected_regs_read: &[R],
+        expected_regs_write: &[R],
         has_default_syntax: bool,
-    ) {
+    ) where
+        R: Into<u32> + Copy,
+    {
         test_instruction_helper(&cs, insn, mnemonic_name, bytes, has_default_syntax);
         let detail = cs.insn_detail(insn).expect("Unable to get detail");
 
@@ -474,19 +478,33 @@ mod test {
             instruction_group_ids
         );
 
-        // @todo: check read_register_ids
+        macro_rules! assert_regs_match {
+            ($expected:expr, $actual_regs:expr) => {{
+                let mut expected_regs: Vec<_> = $expected
+                    .iter()
+                    .map(|x| RegId(x.clone().into() as RegIdInt))
+                    .collect();
+                expected_regs.sort_unstable();
+                let mut regs: Vec<_> = $actual_regs.collect();
+                regs.sort_unstable();
+                assert_eq!(regs, expected_regs);
+            }}
+        }
 
-        // @todo: check write_register_ids
+        assert_regs_match!(expected_regs_read, detail.regs_read());
+        assert_regs_match!(expected_regs_write, detail.regs_write());
     }
 
-    fn instructions_match_group(
+    fn instructions_match_group<R>(
         cs: &mut Capstone,
-        expected_insns: &[(&str, &[u8], &[cs_group_type::Type])],
+        expected_insns: &[(&str, &[u8], &[cs_group_type::Type], &[R], &[R])],
         has_default_syntax: bool,
-    ) {
+    ) where
+        R: Into<u32> + Copy,
+    {
         let insns_buf: Vec<u8> = expected_insns
             .iter()
-            .flat_map(|&(_, bytes, _)| bytes)
+            .flat_map(|&(_, bytes, _, _, _)| bytes)
             .map(|x| *x)
             .collect();
 
@@ -501,8 +519,16 @@ mod test {
         // Check number of instructions
         assert_eq!(insns.len(), expected_insns.len());
 
-        for (insn, &(expected_mnemonic, expected_bytes, expected_groups)) in
-            insns.iter().zip(expected_insns)
+        for (
+            insn,
+            &(
+                expected_mnemonic,
+                expected_bytes,
+                expected_groups,
+                expected_regs_read,
+                expected_regs_write,
+            ),
+        ) in insns.iter().zip(expected_insns)
         {
             test_instruction_group_helper(
                 &cs,
@@ -510,6 +536,8 @@ mod test {
                 expected_mnemonic,
                 expected_bytes,
                 expected_groups,
+                expected_regs_read,
+                expected_regs_write,
                 has_default_syntax,
             )
         }
@@ -583,18 +611,33 @@ mod test {
     }
 
     #[test]
-    fn test_instruction_group_ids() {
-        let expected_insns: &[(&str, &[u8], &[cs_group_type::Type])] = &[
-            ("nop", b"\x90", &[]),
-            ("je", b"\x74\x05", &[JUMP]),
-            ("call", b"\xe8\x28\x07\x00\x00", &[CALL]),
-            ("ret", b"\xc3", &[RET]),
-            ("syscall", b"\x0f\x05", &[INT]),
-            ("iretd", b"\xcf", &[IRET]),
-            ("sub", b"\x48\x83\xec\x08", &[]),
-            ("test", b"\x48\x85\xc0", &[]),
-            ("mov", b"\x48\x8b\x05\x95\x4a\x4d\x00", &[]),
-            ("mov", b"\xb9\x04\x02\x00\x00", &[]),
+    fn test_instruction_details() {
+        use arch::x86::X86Reg;
+        use arch::x86::X86Reg::*;
+
+        let expected_insns: &[(
+            &str,
+            &[u8],
+            &[cs_group_type::Type],
+            &[X86Reg::Type],
+            &[X86Reg::Type],
+        )] = &[
+            ("nop", b"\x90", &[], &[], &[]),
+            ("je", b"\x74\x05", &[JUMP], &[X86_REG_EFLAGS], &[]),
+            (
+                "call",
+                b"\xe8\x28\x07\x00\x00",
+                &[CALL],
+                &[X86_REG_RSP],
+                &[],
+            ),
+            ("ret", b"\xc3", &[RET], &[], &[]),
+            ("syscall", b"\x0f\x05", &[INT], &[], &[]),
+            ("iretd", b"\xcf", &[IRET], &[], &[]),
+            ("sub", b"\x48\x83\xec\x08", &[], &[], &[X86_REG_EFLAGS]),
+            ("test", b"\x48\x85\xc0", &[], &[], &[X86_REG_EFLAGS]),
+            ("mov", b"\x48\x8b\x05\x95\x4a\x4d\x00", &[], &[], &[]),
+            ("mov", b"\xb9\x04\x02\x00\x00", &[], &[], &[]),
         ];
 
         let mut cs = Capstone::new()
@@ -712,26 +755,80 @@ mod test {
 
     #[test]
     fn test_syntax() {
-        let expected_insns: &[(&str, &str, &[u8], &[cs_group_type::Type])] = &[
-            ("nop", "nop", b"\x90", &[]),
-            ("je", "je", b"\x74\x05", &[JUMP]),
-            ("call", "callq", b"\xe8\x28\x07\x00\x00", &[CALL]),
-            ("ret", "retq", b"\xc3", &[RET]),
-            ("syscall", "syscall", b"\x0f\x05", &[INT]),
-            ("iretd", "iretl", b"\xcf", &[IRET]),
-            ("sub", "subq", b"\x48\x83\xec\x08", &[]),
-            ("test", "testq", b"\x48\x85\xc0", &[]),
-            ("mov", "movq", b"\x48\x8b\x05\x95\x4a\x4d\x00", &[]),
-            ("mov", "movl", b"\xb9\x04\x02\x00\x00", &[]),
+        use arch::x86::X86Reg;
+        use arch::x86::X86Reg::*;
+
+        let expected_insns: &[(
+            &str,
+            &str,
+            &[u8],
+            &[cs_group_type::Type],
+            &[X86Reg::Type],
+            &[X86Reg::Type],
+        )] = &[
+            ("nop", "nop", b"\x90", &[], &[], &[]),
+            ("je", "je", b"\x74\x05", &[JUMP], &[X86_REG_EFLAGS], &[]),
+            (
+                "call",
+                "callq",
+                b"\xe8\x28\x07\x00\x00",
+                &[CALL],
+                &[X86_REG_RSP],
+                &[],
+            ),
+            ("ret", "retq", b"\xc3", &[RET], &[], &[]),
+            ("syscall", "syscall", b"\x0f\x05", &[INT], &[], &[]),
+            ("iretd", "iretl", b"\xcf", &[IRET], &[], &[]),
+            (
+                "sub",
+                "subq",
+                b"\x48\x83\xec\x08",
+                &[],
+                &[],
+                &[X86_REG_EFLAGS],
+            ),
+            (
+                "test",
+                "testq",
+                b"\x48\x85\xc0",
+                &[],
+                &[],
+                &[X86_REG_EFLAGS],
+            ),
+            (
+                "mov",
+                "movq",
+                b"\x48\x8b\x05\x95\x4a\x4d\x00",
+                &[],
+                &[],
+                &[],
+            ),
+            ("mov", "movl", b"\xb9\x04\x02\x00\x00", &[], &[], &[]),
         ];
 
-        let expected_insns_intel: Vec<(&str, &[u8], &[cs_group_type::Type])> = expected_insns
+        let expected_insns_intel: Vec<(
+            &str,
+            &[u8],
+            &[cs_group_type::Type],
+            &[X86Reg::Type],
+            &[X86Reg::Type],
+        )> = expected_insns
             .iter()
-            .map(|&(mnemonic, _, bytes, groups)| (mnemonic, bytes, groups))
+            .map(|&(mnemonic, _, bytes, groups, reads, writes)| {
+                (mnemonic, bytes, groups, reads, writes)
+            })
             .collect();
-        let expected_insns_att: Vec<(&str, &[u8], &[cs_group_type::Type])> = expected_insns
+        let expected_insns_att: Vec<(
+            &str,
+            &[u8],
+            &[cs_group_type::Type],
+            &[X86Reg::Type],
+            &[X86Reg::Type],
+        )> = expected_insns
             .iter()
-            .map(|&(_, mnemonic, bytes, groups)| (mnemonic, bytes, groups))
+            .map(|&(_, mnemonic, bytes, groups, reads, writes)| {
+                (mnemonic, bytes, groups, reads, writes)
+            })
             .collect();
 
         let mut cs = Capstone::new()
