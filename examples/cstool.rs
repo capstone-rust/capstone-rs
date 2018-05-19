@@ -182,7 +182,6 @@ fn disasm<T: Iterator<Item = ExtraMode>>(
 
         if show_detail {
             let detail = cs.insn_detail(&i).expect("Failed to get insn detail");
-            let arch_detail: ArchDetail = detail.arch_detail();
 
             let output: &[(&str, String)] = &[
                 ("insn id:", format!("{:?}", i.id().0)),
