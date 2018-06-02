@@ -11,6 +11,7 @@ extern crate stderrlog;
 use capstone::prelude::*;
 use capstone::{Arch, Endian, ExtraMode, Mode};
 use clap::{App, Arg, ArgGroup};
+use std::fmt::Display;
 use std::fs::File;
 use std::io::prelude::*;
 use std::process::exit;
@@ -24,13 +25,13 @@ trait ExpectExit<T> {
 
 impl<T, E> ExpectExit<T> for Result<T, E>
 where
-    E: ::std::error::Error,
+    E: Display,
 {
     fn expect_exit(self) -> T {
         match self {
             Ok(t) => t,
             Err(e) => {
-                eprintln!("error: {}", e.description());
+                eprintln!("error: {}", e);
                 exit(1);
             }
         }
@@ -294,6 +295,16 @@ fn main() {
                 .case_insensitive(true)
                 .multiple(true),
         )
+        .arg(
+            Arg::with_name("ENDIAN")
+                .short("n")
+                .long("endian")
+                .help("Endianness")
+                .takes_value(true)
+                .required(false)
+                .possible_values(&["little", "big"])
+                .case_insensitive(true),
+        )
         .group(
             ArgGroup::with_name("INPUT")
                 .arg("file")
@@ -350,6 +361,10 @@ fn main() {
     };
     info!("ExtraMode = {:?}", extra_mode);
 
+    let endian: Option<Endian> = matches.value_of("ENDIAN")
+        .map(|x| Endian::from_str(x).expect_exit());
+    info!("Endian = {:?}", endian);
+
     let address =
         u64::from_str_radix(matches.value_of("address").unwrap_or("1000"), 16).expect_exit();
     info!("Address = 0x{:x}", address);
@@ -364,7 +379,7 @@ fn main() {
         arch,
         mode,
         extra_mode.iter().map(|x| *x),
-        None,
+        endian,
         input_bytes.as_slice(),
         address,
         show_detail,
