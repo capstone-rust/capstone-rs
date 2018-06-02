@@ -726,10 +726,9 @@ mod test {
             .map(|&(mnemonic, bytes)| (mnemonic, bytes))
             .collect();
 
-        let extra_mode = extra_mode.iter().map(|x| *x);
-        let mut cs_raw = Capstone::new_raw(arch, mode, extra_mode.clone(), endian).unwrap();
+        let mut cs_raw = Capstone::new_raw(arch, mode, extra_mode.iter().map(|x| *x), endian).unwrap();
         let mut cs_raw_endian_set =
-            Capstone::new_raw(arch, mode, extra_mode.clone(), None).unwrap();
+            Capstone::new_raw(arch, mode, extra_mode.iter().map(|x| *x), None).unwrap();
         if let Some(some_endian) = endian {
             cs_raw_endian_set
                 .set_endian(some_endian)
