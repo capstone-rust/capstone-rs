@@ -2,6 +2,7 @@ use capstone_sys::cs_arch::*;
 use capstone_sys::cs_opt_value::*;
 use capstone_sys::*;
 use std::convert::From;
+use std::str::FromStr;
 
 /// Define an `enum` that corresponds to a capstone enum
 ///
@@ -108,6 +109,17 @@ define_cs_enum_wrapper!(
     /// Big-endian mode
     => Big = CS_MODE_BIG_ENDIAN;
 );
+
+impl FromStr for Endian {
+    type Err = &'static str;
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "little" => Ok(Endian::Little),
+            "big" => Ok(Endian::Big),
+            _ => Err("Unable to convert to Endian"),
+        }
+    }
+}
 
 define_cs_enum_wrapper!(
     [
