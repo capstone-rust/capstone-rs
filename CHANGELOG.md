@@ -11,11 +11,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [cstool example](examples/cstool.rs)
 - [Codecov](https://codecov.io/gh/capstone-rust/capstone-rs) code coverage integration
 - `PartialOrd`/`Ord` implementation for `InsnId`, `InsnGroupId`, `RegId`
+- Lifetime to `Capstone`/`Insn` struct
+- Nightly-only feature `alloc_system` to use system allocator instead of the default allocator
 
 ### Changed
 - Minimum Rust version to 1.23.0
 - `Capstone::disasm()` methods take `&mut self` instead of `&self` and returns a new lifetime
 - `Capstone` is no longer `Send`/`Sync` (it was mistakenly auto-implemented)
+- `Capstone::new()` builder pattern methods take `self` instead of `&mut self`
 
 ### Removed
 - Duplicate/unneeded `Capstone` methods that have equivalents in `InsnDetail`

@@ -163,6 +163,7 @@ fn disasm<T: Iterator<Item = ExtraMode>>(
     addr: u64,
     show_detail: bool,
 ) {
+    info!("Got {} bytes", code.len());
     let mut cs = Capstone::new_raw(arch, mode, extra_mode, endian).expect_exit();
 
     if show_detail {
