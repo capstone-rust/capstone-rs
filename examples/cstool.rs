@@ -361,7 +361,8 @@ fn main() {
     };
     info!("ExtraMode = {:?}", extra_mode);
 
-    let endian: Option<Endian> = matches.value_of("ENDIAN")
+    let endian: Option<Endian> = matches
+        .value_of("ENDIAN")
         .map(|x| Endian::from_str(x).expect_exit());
     info!("Endian = {:?}", endian);
 

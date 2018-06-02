@@ -503,8 +503,16 @@ mod test {
             }};
         }
 
-        assert_regs_match!(expected_regs_read, detail.regs_read(), "read_regs did not match");
-        assert_regs_match!(expected_regs_write, detail.regs_write(), "write_regs did not match");
+        assert_regs_match!(
+            expected_regs_read,
+            detail.regs_read(),
+            "read_regs did not match"
+        );
+        assert_regs_match!(
+            expected_regs_write,
+            detail.regs_write(),
+            "write_regs did not match"
+        );
     }
 
     fn instructions_match_group<R>(
@@ -573,7 +581,11 @@ mod test {
         let insns: Vec<_> = insns.iter().collect();
 
         // Check number of instructions
-        assert_eq!(insns.len(), expected_insns.len(), "Wrong number of instructions");
+        assert_eq!(
+            insns.len(),
+            expected_insns.len(),
+            "Wrong number of instructions"
+        );
 
         for (insn, &(expected_mnemonic, expected_bytes)) in insns.iter().zip(expected_insns) {
             test_instruction_helper(
@@ -716,9 +728,12 @@ mod test {
 
         let extra_mode = extra_mode.iter().map(|x| *x);
         let mut cs_raw = Capstone::new_raw(arch, mode, extra_mode.clone(), endian).unwrap();
-        let mut cs_raw_endian_set = Capstone::new_raw(arch, mode, extra_mode.clone(), None).unwrap();
+        let mut cs_raw_endian_set =
+            Capstone::new_raw(arch, mode, extra_mode.clone(), None).unwrap();
         if let Some(some_endian) = endian {
-            cs_raw_endian_set.set_endian(some_endian).expect("Failed to set endianness");
+            cs_raw_endian_set
+                .set_endian(some_endian)
+                .expect("Failed to set endianness");
         }
 
         instructions_match(cs, expected_insns.as_slice(), true);
@@ -1059,12 +1074,10 @@ mod test {
                 DII::new(
                     "bl",
                     b"\xed\xff\xff\xeb",
-                    &[
-                        ArmOperand {
-                            op_type: Imm(0xfbc),
-                            ..Default::default()
-                        },
-                    ],
+                    &[ArmOperand {
+                        op_type: Imm(0xfbc),
+                        ..Default::default()
+                    }],
                 ),
                 // str     lr, [sp, #-4]!
                 DII::new(
@@ -1165,18 +1178,14 @@ mod test {
             Mode::Thumb,
             None,
             &[],
-            &[
-                DII::new(
-                    "bx",
-                    b"\x70\x47",
-                    &[
-                        ArmOperand {
-                            op_type: Reg(RegId(ArmReg::ARM_REG_LR as RegIdInt)),
-                            ..Default::default()
-                        },
-                    ],
-                ),
-            ],
+            &[DII::new(
+                "bx",
+                b"\x70\x47",
+                &[ArmOperand {
+                    op_type: Reg(RegId(ArmReg::ARM_REG_LR as RegIdInt)),
+                    ..Default::default()
+                }],
+            )],
         );
     }
 
@@ -1372,23 +1381,19 @@ mod test {
                 DII::new(
                     "dsb",
                     b"\x9f\x37\x03\xd5",
-                    &[
-                        Arm64Operand {
-                            op_type: Barrier(Arm64BarrierOp::ARM64_BARRIER_NSH),
-                            ..Default::default()
-                        },
-                    ],
+                    &[Arm64Operand {
+                        op_type: Barrier(Arm64BarrierOp::ARM64_BARRIER_NSH),
+                        ..Default::default()
+                    }],
                 ),
                 // dmb osh
                 DII::new(
                     "dmb",
                     b"\xbf\x33\x03\xd5",
-                    &[
-                        Arm64Operand {
-                            op_type: Barrier(Arm64BarrierOp::ARM64_BARRIER_OSH),
-                            ..Default::default()
-                        },
-                    ],
+                    &[Arm64Operand {
+                        op_type: Barrier(Arm64BarrierOp::ARM64_BARRIER_OSH),
+                        ..Default::default()
+                    }],
                 ),
                 // isb
                 DII::new("isb", b"\xdf\x3f\x03\xd5", &[]),
@@ -1595,19 +1600,17 @@ mod test {
             Mode::Mips32R6,
             Some(Endian::Big),
             &[],
-            &[
-                DII::new(
-                    "lw",
-                    b"\x8f\xa2\x00\x00",
-                    &[
-                        Reg(RegId(MipsReg::MIPS_REG_V0 as RegIdInt)),
-                        Mem(MipsOpMem(mips_op_mem {
-                            base: MipsReg::MIPS_REG_SP,
-                            disp: 0,
-                        })),
-                    ],
-                ),
-            ],
+            &[DII::new(
+                "lw",
+                b"\x8f\xa2\x00\x00",
+                &[
+                    Reg(RegId(MipsReg::MIPS_REG_V0 as RegIdInt)),
+                    Mem(MipsOpMem(mips_op_mem {
+                        base: MipsReg::MIPS_REG_SP,
+                        disp: 0,
+                    })),
+                ],
+            )],
         );
     }
 
@@ -2138,19 +2141,17 @@ mod test {
                 DII::new(
                     "fadd",
                     b"\xd8\x81\xc6\x34",
-                    &[
-                        X86Operand {
-                            size: 4,
-                            op_type: Mem(X86OpMem(x86_op_mem {
-                                segment: 0,
-                                base: X86_REG_BX,
-                                index: X86_REG_DI,
-                                scale: 1,
-                                disp: 0x34c6,
-                            })),
-                            ..Default::default()
-                        },
-                    ],
+                    &[X86Operand {
+                        size: 4,
+                        op_type: Mem(X86OpMem(x86_op_mem {
+                            segment: 0,
+                            base: X86_REG_BX,
+                            index: X86_REG_DI,
+                            scale: 1,
+                            disp: 0x34c6,
+                        })),
+                        ..Default::default()
+                    }],
                 ),
                 // adc     al, byte ptr [bx + si]
                 DII::new(
@@ -2266,13 +2267,11 @@ mod test {
                 DII::new(
                     "push",
                     b"\x55",
-                    &[
-                        X86Operand {
-                            size: 8,
-                            op_type: Reg(RegId(X86_REG_RBP as RegIdInt)),
-                            ..Default::default()
-                        },
-                    ],
+                    &[X86Operand {
+                        size: 8,
+                        op_type: Reg(RegId(X86_REG_RBP as RegIdInt)),
+                        ..Default::default()
+                    }],
                 ),
                 // mov     rax, qword ptr [rip + 0x13b8]
                 DII::new(

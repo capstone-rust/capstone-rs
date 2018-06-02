@@ -187,7 +187,11 @@ impl<'cs> Capstone<'cs> {
     }
 
     /// Disassemble all instructions in buffer
-    pub fn disasm_all<'s, 'c, 'a>(&'s mut self, code: &'c [u8], addr: u64) -> CsResult<Instructions<'a>> {
+    pub fn disasm_all<'s, 'c, 'a>(
+        &'s mut self,
+        code: &'c [u8],
+        addr: u64,
+    ) -> CsResult<Instructions<'a>> {
         self.disasm(code, addr, 0)
     }
 

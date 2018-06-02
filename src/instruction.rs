@@ -132,7 +132,7 @@ pub struct Insn<'a> {
     pub(crate) insn: cs_insn,
 
     /// Adds lifetime
-    pub(crate) _marker: PhantomData<&'a InsnDetail<'a>>
+    pub(crate) _marker: PhantomData<&'a InsnDetail<'a>>,
 }
 
 /// Contains extra information about an instruction such as register reads in
