@@ -179,6 +179,9 @@
 //! [upstream]: http://capstone-engine.org/
 //!
 
+#![cfg_attr(feature = "alloc_system", feature(global_allocator))]
+#![cfg_attr(feature = "alloc_system", feature(allocator_api))]
+
 extern crate capstone_sys;
 
 pub mod arch;
@@ -191,6 +194,13 @@ pub use capstone::*;
 pub use constants::*;
 pub use error::*;
 pub use instruction::*;
+
+#[cfg(feature = "alloc_system")]
+use std::heap::System;
+
+#[cfg(feature = "alloc_system")]
+#[global_allocator]
+static ALLOCATOR: System = System;
 
 /// Contains items that you probably want to always import
 ///
