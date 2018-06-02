@@ -4,6 +4,20 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.8.0] - 2018-06-02
+### Added
+- Documented FreeBSD support
+
+### Changed
+- Upgraded bundled capstone from
+  [8308ace3 to 7e004bd4](https://github.com/aquynh/capstone/compare/8308ace3...7e004bd4),
+  which incorporates upstream Capstone PRs
+  [#1022](https://github.com/aquynh/capstone/pull/1022) and
+  [#1029](https://github.com/aquynh/capstone/pull/1029)
+
+### Removed
+- Unicode characters from README
+
 ## [0.7.0] - 2018-03-25
 ### Added
 - Added support for Windows with `cc` crate
@@ -30,6 +44,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Removed
 - Dependency
 
+[0.8.0]: https://github.com/capstone-rust/capstone-sys/compare/v0.7.0...v0.8.0
 [0.7.0]: https://github.com/capstone-rust/capstone-sys/compare/v0.6.0...v0.7.0
 [0.6.0]: https://github.com/capstone-rust/capstone-sys/compare/v0.5.0...v0.6.0
 [0.5.0]: https://github.com/capstone-rust/capstone-sys/releases/tag/v0.5.0
