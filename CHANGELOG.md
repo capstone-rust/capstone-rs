@@ -19,6 +19,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `Capstone::disasm()` methods take `&mut self` instead of `&self` and returns a new lifetime
 - `Capstone` is no longer `Send`/`Sync` (it was mistakenly auto-implemented)
 - `Capstone::new()` builder pattern methods take `self` instead of `&mut self`
+- `Capstone::set_endian()` is now public (allowed since internal Capstone version was upgraded)
 
 ### Removed
 - Duplicate/unneeded `Capstone` methods that have equivalents in `InsnDetail`
