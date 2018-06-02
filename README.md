@@ -21,8 +21,6 @@ See the [`capstone-sys`](https://github.com/capstone-rust/capstone-sys) GitHub p
 
 # Example
 
-The example from [`demo.rs`](examples/demo.rs):
-
 ```rust
 extern crate capstone;
 
@@ -124,11 +122,8 @@ Found 5 instructions
     insn groups:
 ```
 
-You can the demo by running:
-
-    cargo run --example=demo
-
-To produce a short demonstration. More complex demos welcome!
+To see more demos, see the [`examples/`](examples) directory.
+More complex demos welcome!
 
 # Features
 
@@ -158,6 +153,6 @@ You may find a [full list of contributors on Github](https://github.com/capstone
 
 # License
 
-Mit.
+[MIT](LICENSE)
 
-[upstream]: http://capstone-engine.org/
+[upstream]: https://www.capstone-engine.org/
