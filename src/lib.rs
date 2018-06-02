@@ -323,7 +323,8 @@ mod test {
             .build()
             .unwrap();
         cs.set_detail(false).unwrap();
-        let insns: Vec<_> = cs.disasm_all(X86_CODE, 0x1000).unwrap().iter().collect();
+        let insns = cs.disasm_all(X86_CODE, 0x1000).unwrap();
+        let insns: Vec<_> = insns.iter().collect();
 
         assert_eq!(
             cs.insn_detail(&insns[0]).unwrap_err(),
@@ -352,7 +353,8 @@ mod test {
             .unwrap();
 
         for cs in [cs1, cs2].iter_mut() {
-            let insns: Vec<_> = cs.disasm_all(X86_CODE, 0x1000).unwrap().iter().collect();
+            let insns = cs.disasm_all(X86_CODE, 0x1000).unwrap();
+            let insns: Vec<_> = insns.iter().collect();
             let insn_group_ids = [
                 cs_group_type::CS_GRP_JUMP,
                 cs_group_type::CS_GRP_CALL,
@@ -479,7 +481,7 @@ mod test {
         );
 
         macro_rules! assert_regs_match {
-            ($expected:expr, $actual_regs:expr) => {{
+            ($expected:expr, $actual_regs:expr, $msg:expr) => {{
                 let mut expected_regs: Vec<_> = $expected
                     .iter()
                     .map(|x| RegId(x.clone().into() as RegIdInt))
@@ -487,12 +489,12 @@ mod test {
                 expected_regs.sort_unstable();
                 let mut regs: Vec<_> = $actual_regs.collect();
                 regs.sort_unstable();
-                assert_eq!(regs, expected_regs);
+                assert_eq!(expected_regs, regs, $msg);
             }};
         }
 
-        assert_regs_match!(expected_regs_read, detail.regs_read());
-        assert_regs_match!(expected_regs_write, detail.regs_write());
+        assert_regs_match!(expected_regs_read, detail.regs_read(), "read_regs did not match");
+        assert_regs_match!(expected_regs_write, detail.regs_write(), "write_regs did not match");
     }
 
     fn instructions_match_group<R>(
@@ -511,10 +513,9 @@ mod test {
         // Details required to get groups information
         cs.set_detail(true).unwrap();
 
-        let insns: Vec<_> = cs.disasm_all(&insns_buf, 0x1000)
-            .expect("Failed to disassemble")
-            .iter()
-            .collect();
+        let insns = cs.disasm_all(&insns_buf, 0x1000)
+            .expect("Failed to disassemble");
+        let insns: Vec<Insn> = insns.iter().collect();
 
         // Check number of instructions
         assert_eq!(insns.len(), expected_insns.len());
@@ -557,10 +558,9 @@ mod test {
         // Details required to get groups information
         cs.set_detail(true).unwrap();
 
-        let insns: Vec<_> = cs.disasm_all(&insns_buf, 0x1000)
-            .expect("Failed to disassemble")
-            .iter()
-            .collect();
+        let insns = cs.disasm_all(&insns_buf, 0x1000)
+            .expect("Failed to disassemble");
+        let insns: Vec<_> = insns.iter().collect();
 
         // Check number of instructions
         assert_eq!(insns.len(), expected_insns.len());
@@ -597,10 +597,9 @@ mod test {
             return;
         }
 
-        let insns: Vec<_> = cs.disasm_all(&insns_buf, 0x1000)
-            .expect("Failed to disassemble")
-            .iter()
-            .collect();
+        let insns = cs.disasm_all(&insns_buf, 0x1000)
+            .expect("Failed to disassemble");
+        let insns: Vec<_> = insns.iter().collect();
 
         // Check number of instructions
         assert_eq!(insns.len(), info.len());
