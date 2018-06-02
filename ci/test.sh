@@ -3,6 +3,7 @@
 # Modified `ci/test.sh` from capstone-sys
 # Environment variables:
 #
+# FEATURES: (none by default)
 # JOB: {*test,bench,cov}
 # PROFILE: {*debug,release}
 # SHOULD_FAIL: (disabled by default; set to non-empty string to enable)
