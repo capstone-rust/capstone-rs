@@ -13,7 +13,7 @@ use std::sync::{Once, ONCE_INIT};
 
 /// An instance of the capstone disassembler
 #[derive(Debug)]
-pub struct Capstone {
+pub struct Capstone<'cs> {
     /// Opaque handle to cs_engine
     /// Stored as a pointer to ensure `Capstone` is `!Send`/`!Sync`
     csh: *mut c_void,
@@ -40,6 +40,8 @@ pub struct Capstone {
 
     /// Architecture
     arch: Arch,
+
+    _marker: PhantomData<&'cs mut c_void>,
 }
 
 /// Defines a setter on `Capstone` that speculatively changes the arch-specific mode (which
@@ -118,7 +120,7 @@ fn init_global_state() {
     });
 }
 
-impl Capstone {
+impl<'cs> Capstone<'cs> {
     /// Create a new instance of the decompiler using the builder pattern interface.
     /// This is the recommended interface to `Capstone`.
     ///
@@ -144,7 +146,7 @@ impl Capstone {
         mode: Mode,
         extra_mode: T,
         endian: Option<Endian>,
-    ) -> CsResult<Capstone> {
+    ) -> CsResult<Capstone<'cs>> {
         // Constructor needs call to ensure global state is initialized
         init_global_state();
 
@@ -175,6 +177,7 @@ impl Capstone {
                 detail_enabled,
                 raw_mode,
                 arch,
+                _marker: PhantomData,
             };
             cs.update_raw_mode();
             Ok(cs)
@@ -184,14 +187,14 @@ impl Capstone {
     }
 
     /// Disassemble all instructions in buffer
-    pub fn disasm_all<'a>(&mut self, code: &[u8], addr: u64) -> CsResult<Instructions<'a>> {
+    pub fn disasm_all<'s, 'c, 'a>(&'s mut self, code: &'c [u8], addr: u64) -> CsResult<Instructions<'a>> {
         self.disasm(code, addr, 0)
     }
 
     /// Disassemble `count` instructions in `code`
-    pub fn disasm_count<'a>(
-        &mut self,
-        code: &[u8],
+    pub fn disasm_count<'s, 'c, 'a>(
+        &'s mut self,
+        code: &'c [u8],
         addr: u64,
         count: usize,
     ) -> CsResult<Instructions<'a>> {
@@ -441,7 +444,7 @@ impl Capstone {
     }
 }
 
-impl Drop for Capstone {
+impl<'cs> Drop for Capstone<'cs> {
     fn drop(&mut self) {
         unsafe { cs_close(&mut self.csh()) };
     }

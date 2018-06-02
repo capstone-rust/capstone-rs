@@ -3,6 +3,7 @@ use capstone_sys::*;
 use constants::Arch;
 use std::ffi::CStr;
 use std::fmt::{self, Debug, Display, Error, Formatter};
+use std::marker::PhantomData;
 use std::slice;
 use std::str;
 
@@ -46,10 +47,7 @@ impl<'a> Instructions<'a> {
     }
 
     /// Iterator over instructions
-    pub fn iter<'b>(&'a self) -> InstructionIterator<'b>
-    where
-        'a: 'b,
-    {
+    pub fn iter(&'a self) -> InstructionIterator<'a> {
         let iter = self.0.iter();
         InstructionIterator(iter)
     }
@@ -121,51 +119,57 @@ pub struct InstructionIterator<'a>(slice::Iter<'a, cs_insn>);
 
 impl_SliceIterator_wrapper!(
     impl<'a> Iterator for InstructionIterator<'a> {
-        type Item = Insn;
+        type Item = Insn<'a>;
         [
-            |x| Insn(*x)
+            |x| Insn { insn: *x, _marker: PhantomData }
         ]
     }
 );
 
 /// A wrapper for the raw capstone-sys instruction
-pub struct Insn(pub(crate) cs_insn);
+pub struct Insn<'a> {
+    /// Inner `cs_insn`
+    pub(crate) insn: cs_insn,
+
+    /// Adds lifetime
+    pub(crate) _marker: PhantomData<&'a InsnDetail<'a>>
+}
 
 /// Contains extra information about an instruction such as register reads in
 /// addition to architecture-specific information
 pub struct InsnDetail<'a>(pub(crate) &'a cs_detail, pub(crate) Arch);
 
-impl Insn {
+impl<'a> Insn<'a> {
     /// The mnemonic for the instruction
     pub fn mnemonic(&self) -> Option<&str> {
-        let cstr = unsafe { CStr::from_ptr(self.0.mnemonic.as_ptr()) };
+        let cstr = unsafe { CStr::from_ptr(self.insn.mnemonic.as_ptr()) };
         str::from_utf8(cstr.to_bytes()).ok()
     }
 
     /// The operand string associated with the instruction
     pub fn op_str(&self) -> Option<&str> {
-        let cstr = unsafe { CStr::from_ptr(self.0.op_str.as_ptr()) };
+        let cstr = unsafe { CStr::from_ptr(self.insn.op_str.as_ptr()) };
         str::from_utf8(cstr.to_bytes()).ok()
     }
 
     /// Access instruction id
     pub fn id(&self) -> InsnId {
-        InsnId(self.0.id)
+        InsnId(self.insn.id)
     }
 
     /// Size of instruction (in bytes)
     fn len(&self) -> usize {
-        self.0.size as usize
+        self.insn.size as usize
     }
 
     /// Instruction address
     pub fn address(&self) -> u64 {
-        self.0.address as u64
+        self.insn.address as u64
     }
 
     /// Byte-level representation of the instruction
     pub fn bytes(&self) -> &[u8] {
-        &self.0.bytes[..self.len()]
+        &self.insn.bytes[..self.len()]
     }
 
     /// Returns the `Detail` object, if there is one. It is up to the caller to determine
@@ -174,11 +178,11 @@ impl Insn {
     /// Be careful this is still in early stages and largely untested with various `cs_option` and
     /// architecture matrices
     pub(crate) unsafe fn detail(&self, arch: Arch) -> InsnDetail {
-        InsnDetail(&*self.0.detail, arch)
+        InsnDetail(&*self.insn.detail, arch)
     }
 }
 
-impl Debug for Insn {
+impl<'a> Debug for Insn<'a> {
     fn fmt(&self, fmt: &mut Formatter) -> Result<(), Error> {
         fmt.debug_struct("Insn")
             .field("address", &self.address())
@@ -190,7 +194,7 @@ impl Debug for Insn {
     }
 }
 
-impl Display for Insn {
+impl<'a> Display for Insn<'a> {
     fn fmt(&self, fmt: &mut Formatter) -> fmt::Result {
         write!(fmt, "{:#x}: ", self.address())?;
         if let Some(mnemonic) = self.mnemonic() {

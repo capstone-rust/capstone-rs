@@ -37,7 +37,7 @@ macro_rules! define_arch_builder {
     ( @extra_modes () ) => {};
     ( @extra_modes ( $( $extra_mode:ident, )+ ) ) => {
         impl super::BuildsCapstoneExtraMode<ArchMode, ArchExtraMode> for ArchCapstoneBuilder {
-            fn extra_mode<T: Iterator<Item=ArchExtraMode>>(&mut self, extra_mode: T) -> & mut Self {
+            fn extra_mode<T: Iterator<Item=ArchExtraMode>>(mut self, extra_mode: T) -> Self {
                 self.extra_mode.clear();
                 self.extra_mode.extend(extra_mode);
                 self
@@ -49,7 +49,7 @@ macro_rules! define_arch_builder {
     ( @syntax () ) => {};
     ( @syntax ( $( $syntax:ident, )+ ) ) => {
         impl super::BuildsCapstoneSyntax<ArchMode, ArchSyntax> for ArchCapstoneBuilder {
-            fn syntax(& mut self, syntax: ArchSyntax) -> &mut Self {
+            fn syntax(mut self, syntax: ArchSyntax) -> Self {
                 self.syntax = Some(syntax);
                 self
             }
@@ -60,7 +60,7 @@ macro_rules! define_arch_builder {
     ( @endian ( false) ) => {};
     ( @endian ( true ) ) => {
         impl super::BuildsCapstoneEndian<ArchMode> for ArchCapstoneBuilder {
-            fn endian(&mut self, endian: Endian) -> &mut Self {
+            fn endian(mut self, endian: Endian) -> Self {
                 self.endian = Some(endian);
                 self
             }
@@ -116,17 +116,17 @@ macro_rules! define_arch_builder {
                 }
 
                 impl super::BuildsCapstone<ArchMode> for ArchCapstoneBuilder {
-                    fn mode(&mut self, mode: ArchMode) -> &mut Self {
+                    fn mode(mut self, mode: ArchMode) -> Self {
                         self.mode = Some(mode);
                         self
                     }
 
-                    fn detail(&mut self, enable_detail: bool) -> &mut Self {
+                    fn detail(mut self, enable_detail: bool) -> Self {
                         self.is_detail = enable_detail;
                         self
                     }
 
-                    fn build(&mut self) -> CsResult<Capstone> {
+                    fn build<'a>(self) -> CsResult<Capstone<'a>> {
                         let mode = match self.mode {
                             Some(mode) => mode,
                             None => {
@@ -282,31 +282,31 @@ macro_rules! arch_info_base {
 /// Builds a `Capstone` struct
 pub trait BuildsCapstone<ArchMode> {
     /// Set the disassembly mode
-    fn mode(&mut self, mode: ArchMode) -> &mut Self;
+    fn mode(self, mode: ArchMode) -> Self;
 
     /// Enable detailed output
-    fn detail(&mut self, enable_detail: bool) -> &mut Self;
+    fn detail(self, enable_detail: bool) -> Self;
 
     /// Get final `Capstone`
-    fn build(&mut self) -> CsResult<Capstone>;
+    fn build<'a>(self) -> CsResult<Capstone<'a>>;
 }
 
 /// Implies that a `CapstoneBuilder` architecture has extra modes
 pub trait BuildsCapstoneExtraMode<ArchMode, ArchExtraMode>: BuildsCapstone<ArchMode> {
     /// Set architecture endianness
-    fn extra_mode<T: Iterator<Item = ArchExtraMode>>(&mut self, extra_mode: T) -> &mut Self;
+    fn extra_mode<T: Iterator<Item = ArchExtraMode>>(self, extra_mode: T) -> Self;
 }
 
 /// Implies that a `CapstoneBuilder` has different syntax options
 pub trait BuildsCapstoneSyntax<ArchMode, ArchSyntax>: BuildsCapstone<ArchMode> {
     /// Set the disassembly syntax
-    fn syntax(&mut self, syntax: ArchSyntax) -> &mut Self;
+    fn syntax(self, syntax: ArchSyntax) -> Self;
 }
 
 /// Implies that a `CapstoneBuilder` architecture has a configurable endianness
 pub trait BuildsCapstoneEndian<ArchMode>: BuildsCapstone<ArchMode> {
     /// Set architecture endianness
-    fn endian(&mut self, endian: Endian) -> &mut Self;
+    fn endian(self, endian: Endian) -> Self;
 }
 
 /// Contains builder-pattern implementations
