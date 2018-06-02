@@ -45,7 +45,11 @@ matrix:
       env: PROFILE=release
     - os: linux
       rust: nightly
-      env: PROFILE=release
+      env: PROFILE=release FEATURES=alloc_system
+    - os: osx
+      rust: stable
+    - os: osx
+      rust: nightly
     - os: linux
       rust: stable
       env: JOB=cov
