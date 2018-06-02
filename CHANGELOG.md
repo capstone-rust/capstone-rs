@@ -5,14 +5,14 @@ Notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [0.4.0]
 ### Added
-- [Criterion benchmark](benches)
+- [Criterion](https://github.com/japaric/criterion.rs) [benchmark](benches)
 - [cstool example](examples/cstool.rs)
 - [Codecov](https://codecov.io/gh/capstone-rust/capstone-rs) code coverage integration
 - `PartialOrd`/`Ord` implementation for `InsnId`, `InsnGroupId`, `RegId`
 - Lifetime to `Capstone`/`Insn` struct
-- Nightly-only feature `alloc_system` to use system allocator instead of the default allocator
+- `alloc_system` feature to use the system allocator instead of the default allocator (currently requires nightly)
 
 ### Changed
 - Minimum Rust version to 1.23.0
@@ -67,7 +67,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Removed
 - Dependency
 
-[Unreleased]: https://github.com/capstone-rust/capstone-rs/compare/v0.3.1...master
+[0.4.0]: https://github.com/capstone-rust/capstone-rs/compare/v0.3.1...0.4.0
 [0.3.1]: https://github.com/capstone-rust/capstone-rs/compare/v0.3.0...v0.3.1
 [0.3.0]: https://github.com/capstone-rust/capstone-rs/compare/v0.2.0...v0.3.0
 [0.2.0]: https://github.com/capstone-rust/capstone-rs/compare/v0.1.0...v0.2.0
