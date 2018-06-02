@@ -573,7 +573,7 @@ mod test {
         let insns: Vec<_> = insns.iter().collect();
 
         // Check number of instructions
-        assert_eq!(insns.len(), expected_insns.len());
+        assert_eq!(insns.len(), expected_insns.len(), "Wrong number of instructions");
 
         for (insn, &(expected_mnemonic, expected_bytes)) in insns.iter().zip(expected_insns) {
             test_instruction_helper(
@@ -715,10 +715,15 @@ mod test {
             .collect();
 
         let extra_mode = extra_mode.iter().map(|x| *x);
-        let mut cs_raw = Capstone::new_raw(arch, mode, extra_mode, endian).unwrap();
+        let mut cs_raw = Capstone::new_raw(arch, mode, extra_mode.clone(), endian).unwrap();
+        let mut cs_raw_endian_set = Capstone::new_raw(arch, mode, extra_mode.clone(), None).unwrap();
+        if let Some(some_endian) = endian {
+            cs_raw_endian_set.set_endian(some_endian).expect("Failed to set endianness");
+        }
 
-        instructions_match(&mut cs_raw, expected_insns.as_slice(), true);
         instructions_match(cs, expected_insns.as_slice(), true);
+        instructions_match(&mut cs_raw, expected_insns.as_slice(), true);
+        instructions_match(&mut cs_raw_endian_set, expected_insns.as_slice(), true);
     }
 
     #[derive(Copy, Clone, Debug)]
@@ -1544,23 +1549,6 @@ mod test {
                 ("wait", b"\x00\x11\x93\x7c"),
                 ("syscall", b"\x01\x8c\x8b\x7c"),
                 ("rotrv", b"\x00\xc7\x48\xd0"),
-            ],
-        );
-
-        test_arch_mode_endian_insns(
-            &mut Capstone::new()
-                .mips()
-                .mode(mips::ArchMode::Mips32R6)
-                .endian(Endian::Big)
-                .build()
-                .unwrap(),
-            Arch::MIPS,
-            Mode::Mips32R6,
-            Some(Endian::Big),
-            &[],
-            &[
-                ("addiupc", b"\xec\x80\x00\x19"),
-                ("align", b"\x7c\x43\x22\xa0"),
             ],
         );
     }

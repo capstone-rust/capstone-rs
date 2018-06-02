@@ -263,13 +263,6 @@ impl<'cs> Capstone<'cs> {
 
         self.extra_mode = Self::extra_mode_value(extra_mode);
 
-        // This is a workaround for capstone bug in `arch/Mips/MipsModule.c` where handle->disasm
-        // is set to Mips64_getInstruction if CS_MODE_32 is not set. We need to set CS_MODE_32
-        // ourselves.
-        if self.arch == Arch::MIPS && self.mode == CS_MODE_MIPS32R6 {
-            self.extra_mode |= CS_MODE_32;
-        }
-
         let old_mode = self.raw_mode;
         let new_mode = self.update_raw_mode();
         let result = self._set_cs_option(cs_opt_type::CS_OPT_MODE, new_mode.0 as usize);
@@ -298,10 +291,7 @@ impl<'cs> Capstone<'cs> {
 
     define_set_mode!(
     /// Set the endianness (has no effect on some platforms).
-    /// This is not public because capstone has some bugs where the endianness cannot be
-    /// changed dynamically.
-    #[allow(unused)]
-    => , set_endian, CS_OPT_MODE, endian : Endian; cs_mode);
+    => pub, set_endian, CS_OPT_MODE, endian : Endian; cs_mode);
     define_set_mode!(
     /// Sets the engine's disassembly mode.
     /// Be careful, various combinations of modes aren't supported
@@ -447,41 +437,5 @@ impl<'cs> Capstone<'cs> {
 impl<'cs> Drop for Capstone<'cs> {
     fn drop(&mut self) {
         unsafe { cs_close(&mut self.csh()) };
-    }
-}
-
-#[cfg(test)]
-mod test {
-    use super::*;
-
-    fn test_set_extra_mode_helper(
-        arch: Arch,
-        mode: Mode,
-        endian: Endian,
-        extra_modes: &[ExtraMode],
-        expected_raw_mode: cs_mode,
-    ) {
-        let mut cs = Capstone::new_raw(arch, mode, NO_EXTRA_MODE, None).unwrap();
-        cs.set_endian(endian).unwrap();
-        cs.set_extra_mode(extra_modes.iter().map(|x| *x)).unwrap();
-        let actual_raw_mode = cs.raw_mode();
-        assert_eq!(
-            expected_raw_mode, actual_raw_mode,
-            "Mismatched raw_mode: expected={:x}, actual={:x}",
-            expected_raw_mode.0, actual_raw_mode.0
-        );
-    }
-
-    #[test]
-    fn test_set_extra_mode() {
-        use capstone_sys::*;
-
-        test_set_extra_mode_helper(
-            Arch::MIPS,
-            Mode::Mips32R6,
-            Endian::Big,
-            &[ExtraMode::Micro],
-            CS_MODE_BIG_ENDIAN | CS_MODE_MIPS32R6 | CS_MODE_32 | CS_MODE_MICRO,
-        );
     }
 }
