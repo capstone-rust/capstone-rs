@@ -26,6 +26,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     - `insn_belongs_to_group()`, `insn_group_ids()`, `register_id_is_read()`, `read_register_ids()`,
       `register_id_is_written()`, `write_register_ids()`
 
+### Fixed
+- Race condition and memory unsafety in issue most easily observed on Mac OS (issue [#26](https://github.com/capstone-rust/capstone-rs/issues/26))
+
 ## [0.3.1] - 2018-03-26
 ### Fixed
 - Documentation URL
