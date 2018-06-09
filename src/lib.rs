@@ -281,11 +281,11 @@ mod test {
 
         assert_eq!(
             cs.insn_detail(&insns[0]).unwrap_err(),
-            Error::Capstone(CapstoneError::DetailOff)
+            Error::DetailOff
         );
         assert_eq!(
             cs.insn_detail(&insns[1]).unwrap_err(),
-            Error::Capstone(CapstoneError::DetailOff)
+            Error::DetailOff
         );
     }
 
@@ -840,7 +840,7 @@ mod test {
     #[test]
     fn test_invalid_mode() {
         if let Err(err) = Capstone::new_raw(Arch::PPC, Mode::Thumb, NO_EXTRA_MODE, None) {
-            assert_eq!(err, Error::Capstone(CapstoneError::InvalidMode));
+            assert_eq!(err, Error::InvalidMode);
         } else {
             panic!("Should fail to create given modes");
         }

@@ -394,11 +394,11 @@ impl<'cs> Capstone<'cs> {
     /// 3. Capstone was not compiled in diet mode
     pub fn insn_detail<'s, 'i: 's>(&'s self, insn: &'i Insn) -> CsResult<InsnDetail<'i>> {
         if !self.detail_enabled {
-            Err(Error::Capstone(CapstoneError::DetailOff))
+            Err(Error::DetailOff)
         } else if insn.id().0 == 0 {
-            Err(Error::Capstone(CapstoneError::IrrelevantDataInSkipData))
+            Err(Error::IrrelevantDataInSkipData)
         } else if Self::is_diet() {
-            Err(Error::Capstone(CapstoneError::IrrelevantDataInDiet))
+            Err(Error::IrrelevantDataInDiet)
         } else {
             Ok(unsafe { insn.detail(self.arch) })
         }
