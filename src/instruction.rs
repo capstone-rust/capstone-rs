@@ -135,8 +135,10 @@ pub struct Insn<'a> {
     pub(crate) _marker: PhantomData<&'a InsnDetail<'a>>,
 }
 
-/// Contains extra information about an instruction such as register reads in
-/// addition to architecture-specific information
+/// Contains architecture-independent details about an instruction, such as register reads.
+///
+/// To get additional architecture-specific information, use the `arch_detail()` method to get an
+/// `ArchDetail` enum.
 pub struct InsnDetail<'a>(pub(crate) &'a cs_detail, pub(crate) Arch);
 
 impl<'a> Insn<'a> {

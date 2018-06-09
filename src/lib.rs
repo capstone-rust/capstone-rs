@@ -10,9 +10,6 @@
 //! extern crate capstone;
 //!
 //! use capstone::prelude::*;
-//! use capstone::InsnDetail;
-//!
-//! const MIPS_CODE: &'static [u8] = b"\x56\x34\x21\x34\xc2\x17\x01\x00";
 //!
 //! const X86_CODE: &'static [u8] = b"\x55\x48\x8b\x05\xb8\x13\x00\x00\xe9\x14\x9e\x08\x00\x45\x31\xe4";
 //!
@@ -36,15 +33,23 @@
 //!     names.join(", ")
 //! }
 //!
-//! /// Disassemble code and print information
-//! fn arch_example(cs: &mut Capstone, code: &[u8]) -> CsResult<()> {
-//!     let insns = cs.disasm_all(code, 0x1000)?;
+//! fn main() {
+//!     let mut cs = Capstone::new()
+//!         .x86()
+//!         .mode(arch::x86::ArchMode::Mode64)
+//!         .syntax(arch::x86::ArchSyntax::Att)
+//!         .detail(true)
+//!         .build()
+//!         .expect("Failed to create Capstone object");
+//!
+//!     let insns = cs.disasm_all(X86_CODE, 0x1000)
+//!         .expect("Failed to disassemble");
 //!     println!("Found {} instructions", insns.len());
 //!     for i in insns.iter() {
 //!         println!();
 //!         println!("{}", i);
 //!
-//!         let detail: InsnDetail = cs.insn_detail(&i)?;
+//!         let detail: InsnDetail = cs.insn_detail(&i).expect("Failed to get insn detail");
 //!         let arch_detail: ArchDetail = detail.arch_detail();
 //!         let ops = arch_detail.operands();
 //!
@@ -65,76 +70,12 @@
 //!             println!("{:8}{:?}", "", op);
 //!         }
 //!     }
-//!     Ok(())
-//! }
-//!
-//! fn example() -> CsResult<()> {
-//!     let cs_mips: Capstone = Capstone::new()
-//!         .mips()
-//!         .mode(arch::mips::ArchMode::Mips32R6)
-//!         .detail(true)
-//!         .build()?;
-//!
-//!     let cs_x86 = Capstone::new()
-//!         .x86()
-//!         .mode(arch::x86::ArchMode::Mode64)
-//!         .syntax(arch::x86::ArchSyntax::Att)
-//!         .detail(true)
-//!         .build()?;
-//!
-//!     let mut examples = [
-//!         ("MIPS", cs_mips, MIPS_CODE),
-//!         ("X86", cs_x86, X86_CODE),
-//!     ];
-//!
-//!     for &mut (arch, ref mut cs, code) in examples.iter_mut() {
-//!         println!("\n*************************************");
-//!         println!("Architecture {}:", arch);
-//!         arch_example(cs, &code)?;
-//!     }
-//!
-//!     Ok(())
-//! }
-//!
-//! fn main() {
-//!     if let Err(err) = example() {
-//!         println!("Error: {}", err);
-//!     }
 //! }
 //! ```
 //!
 //! Produces:
 //!
-//! ```no_test
-//!
-//! *************************************
-//! Architecture MIPS:
-//! Found 2 instructions
-//!
-//! 0x1000: ori $at, $at, 0x3456
-//!     insn id:     445
-//!     bytes:       [86, 52, 33, 52]
-//!     read regs:
-//!     write regs:
-//!     insn groups: stdenc
-//!     operands: 3
-//!         MipsOperand(Reg(RegId(2)))
-//!         MipsOperand(Reg(RegId(2)))
-//!         MipsOperand(Imm(13398))
-//!
-//! 0x1004: srl $v0, $at, 0x1f
-//!     insn id:     525
-//!     bytes:       [194, 23, 1, 0]
-//!     read regs:
-//!     write regs:
-//!     insn groups: stdenc
-//!     operands: 3
-//!         MipsOperand(Reg(RegId(3)))
-//!         MipsOperand(Reg(RegId(2)))
-//!         MipsOperand(Imm(31))
-//!
-//! *************************************
-//! Architecture X86:
+//! ```txt
 //! Found 4 instructions
 //!
 //! 0x1000: pushq %rbp
@@ -174,6 +115,7 @@
 //!     operands: 2
 //!         X86Operand(X86Operand { size: 4, avx_bcast: X86_AVX_BCAST_INVALID, avx_zero_opmask: false, op_type: Reg(RegId(222)) })
 //!         X86Operand(X86Operand { size: 4, avx_bcast: X86_AVX_BCAST_INVALID, avx_zero_opmask: false, op_type: Reg(RegId(222)) })
+//!
 //! ```
 //!
 //! [upstream]: http://capstone-engine.org/

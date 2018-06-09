@@ -441,7 +441,11 @@ macro_rules! detail_defs {
             use self::$arch_name::*;
         )+
 
-        /// Architecture-independent enum of detail structures
+        /// Contains architecture-dependent detail structures.
+        ///
+        /// For convenience, there are methods for each architecture that return an `Option` of that
+        /// architecture's detail structure. This allows you to use an `if let Some(...) = { /* ... */ }`
+        /// instead of a match statement.
         #[derive(Debug)]
         pub enum ArchDetail<'a> {
             $( $Detail($InsnDetail), )+
