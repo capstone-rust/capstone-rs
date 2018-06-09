@@ -5,7 +5,27 @@ Notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [0.4.0]
+## [Unreleased] - YYYY-MM-DD
+### Added
+* `InsnDetail` to preamble
+
+### Changed
+* Flattened `Error` enum
+
+### Deprecated
+* TODO (or remove section if none)
+
+### Removed
+* TODO (or remove section if none)
+
+### Fixed
+* TODO (or remove section if none)
+
+### Security
+* TODO (or remove section if none)
+
+
+## [0.4.0] - 2018-06-02
 ### Added
 - [Criterion](https://github.com/japaric/criterion.rs) [benchmark](benches)
 - [cstool example](examples/cstool.rs)
@@ -70,7 +90,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Removed
 - Dependency
 
-[0.4.0]: https://github.com/capstone-rust/capstone-rs/compare/v0.3.1...0.4.0
+[Unreleased]: https://github.com/capstone-rust/capstone-rs/compare/v0.4.0...master
+[0.4.0]: https://github.com/capstone-rust/capstone-rs/compare/v0.3.1...v0.4.0
 [0.3.1]: https://github.com/capstone-rust/capstone-rs/compare/v0.3.0...v0.3.1
 [0.3.0]: https://github.com/capstone-rust/capstone-rs/compare/v0.2.0...v0.3.0
 [0.2.0]: https://github.com/capstone-rust/capstone-rs/compare/v0.1.0...v0.2.0
