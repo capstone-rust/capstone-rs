@@ -154,7 +154,8 @@ static ALLOCATOR: System = System;
 pub mod prelude {
     pub use arch::{self, ArchDetail, BuildsCapstone, BuildsCapstoneEndian,
                    BuildsCapstoneExtraMode, BuildsCapstoneSyntax, DetailsArchInsn};
-    pub use {Capstone, CsResult, InsnGroupId, InsnGroupIdInt, InsnId, InsnIdInt, RegId, RegIdInt};
+    pub use {Capstone, CsResult, InsnDetail, InsnGroupId, InsnGroupIdInt, InsnId, InsnIdInt,
+             RegId, RegIdInt};
 }
 
 #[cfg(test)]
