@@ -138,7 +138,7 @@ pub use error::*;
 pub use instruction::*;
 
 #[cfg(feature = "alloc_system")]
-use std::heap::System;
+use std::alloc::System;
 
 #[cfg(feature = "alloc_system")]
 #[global_allocator]
