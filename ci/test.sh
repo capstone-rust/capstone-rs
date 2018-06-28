@@ -5,7 +5,7 @@
 #
 # FEATURES: (none by default)
 # JOB: {*test,bench,cov}
-# PROFILE: {*debug,release}
+# PROFILES: list of {debug,release} [debug]
 # SHOULD_FAIL: (disabled by default; set to non-empty string to enable)
 
 set -eu
@@ -118,20 +118,30 @@ cov() {
 
     KCOV=./kcov-install/usr/local/bin/kcov run_kcov
 
-    bash <(curl -s https://codecov.io/bash)
-    echo "Uploaded code coverage"
+    if [[ "${TRAVIS_JOB_ID:+Z}" = Z ]]; then
+        bash <(curl -s https://codecov.io/bash)
+        echo "Uploaded code coverage"
+    else
+        echo "Not uploading coverage since we are not in a CI job"
+    fi
 }
 
 bench() {
     cargo bench
 }
 
-PROFILE="${PROFILE-debug}"
-case "$PROFILE" in
-debug) PROFILE_ARGS= ;;
-release) PROFILE_ARGS="--release" ;;
-*) Error "Unknown PROFILE $PROFILE" ;;
-esac
+profile_args() {
+    case "$PROFILE" in
+    debug) ;;
+    release) echo "--release" ;;
+    *) Error "Unknown PROFILE $PROFILE" ;;
+    esac
+}
+
+PROFILES="${PROFILES-debug release}"
+for PROFILE in $PROFILES; do
+    profile_args "$PROFILE"
+done
 
 # Note that `$PROFILE` is never in quotes so that it expands to nothing
 # (not even an empty string argument) when the variable is empty. This is
@@ -139,14 +149,20 @@ esac
 
 
 if [ $(basename "$0") = "test.sh" ]; then
-    JOB="${JOB-test}"
+    JOB="${JOB:-test}"
+
     case "$JOB" in
         test)
-            expect_exit_status "$SHOULD_FAIL" \
-                cargo test $PROFILE_ARGS --features "$FEATURES" --verbose
+            for PROFILE in $PROFILES; do
+                expect_exit_status "$SHOULD_FAIL" \
+                    cargo test $(profile_args) --features "$FEATURES" --verbose
+            done
             ;;
-        cov|bench)
-            $JOB
+        cov)
+            PROFILE=debug $JOB
+            ;;
+        bench)
+            PROFILE=release $JOB
             ;;
         *)
             echo "Error! Unknown \$JOB: '$JOB'"
