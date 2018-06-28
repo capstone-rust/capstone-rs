@@ -35,17 +35,8 @@ matrix:
     - os: linux
       rust: nightly
     - os: linux
-      rust: 1.23.0
-      env: PROFILE=release
-    - os: linux
-      rust: stable
-      env: PROFILE=release
-    - os: linux
-      rust: beta
-      env: PROFILE=release
-    - os: linux
       rust: nightly
-      env: PROFILE=release FEATURES=alloc_system
+      env: FEATURES=alloc_system
     - os: osx
       rust: stable
     - os: osx
