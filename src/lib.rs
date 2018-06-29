@@ -152,10 +152,14 @@ static ALLOCATOR: System = System;
 /// use capstone::prelude::*;
 /// ```
 pub mod prelude {
-    pub use arch::{self, ArchDetail, BuildsCapstone, BuildsCapstoneEndian,
-                   BuildsCapstoneExtraMode, BuildsCapstoneSyntax, DetailsArchInsn};
-    pub use {Capstone, CsResult, InsnDetail, InsnGroupId, InsnGroupIdInt, InsnId, InsnIdInt,
-             RegId, RegIdInt};
+    pub use arch::{
+        self, ArchDetail, BuildsCapstone, BuildsCapstoneEndian, BuildsCapstoneExtraMode,
+        BuildsCapstoneSyntax, DetailsArchInsn,
+    };
+    pub use {
+        Capstone, CsResult, InsnDetail, InsnGroupId, InsnGroupIdInt, InsnId, InsnIdInt, RegId,
+        RegIdInt,
+    };
 }
 
 #[cfg(test)]
@@ -279,14 +283,8 @@ mod test {
         let insns = cs.disasm_all(X86_CODE, 0x1000).unwrap();
         let insns: Vec<_> = insns.iter().collect();
 
-        assert_eq!(
-            cs.insn_detail(&insns[0]).unwrap_err(),
-            Error::DetailOff
-        );
-        assert_eq!(
-            cs.insn_detail(&insns[1]).unwrap_err(),
-            Error::DetailOff
-        );
+        assert_eq!(cs.insn_detail(&insns[0]).unwrap_err(), Error::DetailOff);
+        assert_eq!(cs.insn_detail(&insns[1]).unwrap_err(), Error::DetailOff);
     }
 
     #[test]
@@ -316,7 +314,8 @@ mod test {
                 cs_group_type::CS_GRP_IRET,
             ];
             for insn_idx in 0..1 + 1 {
-                let detail = cs.insn_detail(&insns[insn_idx])
+                let detail = cs
+                    .insn_detail(&insns[insn_idx])
                     .expect("Unable to get detail");
                 let groups: Vec<_> = detail.groups().collect();
                 for insn_group_id in &insn_group_ids {
@@ -381,7 +380,8 @@ mod test {
         let arch_detail = detail.arch_detail();
         let arch_ops = arch_detail.operands();
 
-        let expected_ops: Vec<_> = info.operands
+        let expected_ops: Vec<_> = info
+            .operands
             .iter()
             .map(|expected_op| {
                 let expected_op: ArchOperand = (*expected_op).clone().into();
@@ -474,7 +474,8 @@ mod test {
         // Details required to get groups information
         cs.set_detail(true).unwrap();
 
-        let insns = cs.disasm_all(&insns_buf, 0x1000)
+        let insns = cs
+            .disasm_all(&insns_buf, 0x1000)
             .expect("Failed to disassemble");
         let insns: Vec<Insn> = insns.iter().collect();
 
@@ -519,7 +520,8 @@ mod test {
         // Details required to get groups information
         cs.set_detail(true).unwrap();
 
-        let insns = cs.disasm_all(&insns_buf, 0x1000)
+        let insns = cs
+            .disasm_all(&insns_buf, 0x1000)
             .expect("Failed to disassemble");
         let insns: Vec<_> = insns.iter().collect();
 
@@ -548,7 +550,8 @@ mod test {
     ) where
         T: Into<ArchOperand> + Clone,
     {
-        let insns_buf: Vec<u8> = info.iter()
+        let insns_buf: Vec<u8> = info
+            .iter()
             .flat_map(|ref info| info.bytes)
             .map(|x| *x)
             .collect();
@@ -562,7 +565,8 @@ mod test {
             return;
         }
 
-        let insns = cs.disasm_all(&insns_buf, 0x1000)
+        let insns = cs
+            .disasm_all(&insns_buf, 0x1000)
             .expect("Failed to disassemble");
         let insns: Vec<_> = insns.iter().collect();
 
@@ -669,7 +673,8 @@ mod test {
             .map(|&(mnemonic, bytes)| (mnemonic, bytes))
             .collect();
 
-        let mut cs_raw = Capstone::new_raw(arch, mode, extra_mode.iter().map(|x| *x), endian).unwrap();
+        let mut cs_raw =
+            Capstone::new_raw(arch, mode, extra_mode.iter().map(|x| *x), endian).unwrap();
         let mut cs_raw_endian_set =
             Capstone::new_raw(arch, mode, extra_mode.iter().map(|x| *x), None).unwrap();
         if let Some(some_endian) = endian {
