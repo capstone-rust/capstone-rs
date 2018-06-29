@@ -20,7 +20,7 @@ capstone-sys = "0.8.0"
 macho = "0.*"
 criterion = "0.2"
 clap = "2.31"
-stderrlog = "0.3.0"
+stderrlog = "0.4"
 log = "0.4"
 
 [[bench]]
