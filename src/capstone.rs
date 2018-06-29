@@ -134,7 +134,7 @@ impl<'cs> Capstone<'cs> {
     }
 
     /// Create a new instance of the decompiler using the "raw" interface.
-    /// The user must ensure that only sensical `Arch`/`Mode` combinations are used.
+    /// The user must ensure that only sensible `Arch`/`Mode` combinations are used.
     ///
     /// ```
     /// use capstone::{Arch, Capstone, NO_EXTRA_MODE, Mode};
@@ -302,8 +302,8 @@ impl<'cs> Capstone<'cs> {
     /// See the capstone-sys documentation for more information.
     => pub, set_mode, CS_OPT_MODE, mode : Mode; cs_mode);
 
-    /// Returns a `CsResult` based on current errno.
-    /// If the errno is CS_ERR_OK, then Ok(()) is returned. Otherwise, the error is returned.
+    /// Returns a `CsResult` based on current `errno`.
+    /// If the `errno` is `CS_ERR_OK`, then `Ok(())` is returned. Otherwise, the error is returned.
     fn error_result(&self) -> CsResult<()> {
         let errno = unsafe { cs_errno(self.csh()) };
         if errno == cs_err::CS_ERR_OK {

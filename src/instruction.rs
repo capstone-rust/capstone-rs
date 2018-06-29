@@ -14,7 +14,7 @@ pub struct Instructions<'a>(&'a mut [cs_insn]);
 /// Integer type used in `InsnId`
 pub type InsnIdInt = u32;
 
-/// Represents an instruction id, which may architecture-specific.
+/// Represents an instruction id, which may be architecture-specific.
 #[derive(Copy, Clone, Debug, Hash, PartialEq, Eq, PartialOrd, Ord)]
 pub struct InsnId(pub InsnIdInt);
 
