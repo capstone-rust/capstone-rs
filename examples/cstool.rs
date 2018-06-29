@@ -356,7 +356,8 @@ fn main() {
 
     let extra_mode: Vec<_> = match matches.values_of("EXTRA_MODE") {
         None => Vec::with_capacity(0),
-        Some(x) => x.map(|x| ExtraMode::from(ExtraModeArg::from_str(x).unwrap()))
+        Some(x) => x
+            .map(|x| ExtraMode::from(ExtraModeArg::from_str(x).unwrap()))
             .collect(),
     };
     info!("ExtraMode = {:?}", extra_mode);
