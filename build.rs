@@ -38,13 +38,6 @@
 #[cfg(feature = "use_bindgen")]
 extern crate bindgen;
 
-#[cfg(feature = "use_system_capstone")]
-extern crate pkg_config;
-
-#[cfg(feature = "build_capstone_cmake")]
-extern crate cmake;
-
-#[cfg(any(windows, feature = "build_capstone_cc"))]
 extern crate cc;
 
 use std::fs::copy;
@@ -62,45 +55,7 @@ enum LinkType {
     Static,
 }
 
-/// Build capstone with cmake
-#[cfg(all(not(windows), feature = "build_capstone_cmake"))]
-fn build_capstone_cmake() {
-    let mut cfg = cmake::Config::new("capstone");
-    let dst = cfg.build();
-    println!("cargo:rustc-link-search=native={}/lib", dst.display());
-}
-
-/// Build capstone with gmake
-#[cfg(not(windows))]
-fn build_capstone_gmake() {
-    use std::process::Command;
-
-    // In BSDs, `make` does not refer to GNU make
-    let target_os = env_var("CARGO_CFG_TARGET_OS");
-    let make_cmd = if target_os.contains("bsd") || target_os == "dragonfly" {
-        "gmake"
-    } else {
-        "make"
-    };
-
-    let out_dir = env_var("OUT_DIR");
-    Command::new(make_cmd)
-        .current_dir(CAPSTONE_DIR)
-        .status()
-        .expect("Failed to build Capstone library");
-    let capstone = "libcapstone.a";
-    Command::new("cp")
-        .current_dir(CAPSTONE_DIR)
-        .arg(&capstone)
-        .arg(&out_dir)
-        .status()
-        .expect("Failed to copy capstone library to OUT_DIR");
-
-    println!("cargo:rustc-link-search=native={}", out_dir);
-}
-
 /// Build capstone using the cc crate
-#[cfg(any(windows, feature = "build_capstone_cc"))]
 fn build_capstone_cc() {
     use std::fs::DirEntry;
 
@@ -161,6 +116,7 @@ fn build_capstone_cc() {
         .flag_if_supported("-Wno-unknown-pragmas")
         .flag_if_supported("-Wno-sign-compare")
         .flag_if_supported("-Wno-return-type")
+        .flag_if_supported("-Wno-implicit-fallthrough")
         .static_crt(use_static_crt)
         .compile("capstone");
 }
@@ -235,20 +191,6 @@ fn write_bindgen_bindings(
     }
 }
 
-/// Find system capstone library and return link type
-#[cfg(all(not(windows), feature = "use_system_capstone"))]
-fn find_system_capstone(header_search_paths: &mut Vec<PathBuf>) -> Option<LinkType> {
-    assert!(
-        !cfg!(feature = "build_capstone_cmake"),
-        "build_capstone_cmake feature is only valid when using bundled cmake"
-    );
-
-    let capstone_lib =
-        pkg_config::find_library("capstone").expect("Could not find system capstone");
-    header_search_paths.append(&mut capstone_lib.include_paths.clone());
-    Some(LinkType::Dynamic)
-}
-
 fn main() {
     #[allow(unused_assignments)]
     let mut link_type: Option<LinkType> = None;
@@ -256,25 +198,10 @@ fn main() {
     // C header search paths
     let mut header_search_paths: Vec<PathBuf> = Vec::new();
 
-    if cfg!(feature = "use_system_capstone") {
-        #[cfg(windows)] panic!("Feature 'use_system_capstone' is not supported on Windows");
-        #[cfg(all(not(windows), feature = "use_system_capstone"))]
-        {
-            link_type = find_system_capstone(&mut header_search_paths);
-        }
-    } else {
-        if cfg!(feature = "build_capstone_cmake") {
-            #[cfg(windows)] panic!("Feature 'build_capstone_cmake' is not supported on Windows");
-            #[cfg(all(not(windows), feature = "build_capstone_cmake"))] build_capstone_cmake();
-        } else if cfg!(any(windows, feature = "build_capstone_cc")) {
-            #[cfg(any(windows, feature = "build_capstone_cc"))] build_capstone_cc();
-        } else {
-            #[cfg(not(windows))] build_capstone_gmake();
-        }
+    build_capstone_cc();
 
-        header_search_paths.push([CAPSTONE_DIR, "include"].iter().collect());
-        link_type = Some(LinkType::Static);
-    }
+    header_search_paths.push([CAPSTONE_DIR, "include"].iter().collect());
+    link_type = Some(LinkType::Static);
 
     match link_type.expect("Must specify link type") {
         LinkType::Dynamic => {

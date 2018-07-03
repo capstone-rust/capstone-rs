@@ -13,12 +13,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   [7e004bd4 to a31b5328](https://github.com/aquynh/capstone/compare/7e004bd4...a31b5328),
   which incorporates upstream Capstone PR
   [#1171](https://github.com/aquynh/capstone/pull/1171)
+- Always use `cc` crate to build Capstone
+    - The old build features were never used and complicated the code/documentation
 
 ### Deprecated
 - TODO (or remove section if none)
 
 ### Removed
-- TODO (or remove section if none)
+- Features affecting build: `use_system_capstone`, `build_capstone_cmake`, `build_capstone_cc`
 
 ### Fixed
 - TODO (or remove section if none)

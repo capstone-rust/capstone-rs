@@ -1,6 +1,7 @@
 language: rust
 rust:
   - stable
+  - beta
   - nightly
 
 matrix:
@@ -22,8 +23,4 @@ env:
     # Should pass
     - CAPSTONE_SYS_JOB="test"    RUST_PROFILE=debug      CAPSTONE_SYS_FEATURES=""
     - CAPSTONE_SYS_JOB="test"    RUST_PROFILE=release    CAPSTONE_SYS_FEATURES=""
-    - CAPSTONE_SYS_JOB="test"    RUST_PROFILE=debug      CAPSTONE_SYS_FEATURES="build_capstone_cmake"
     - CAPSTONE_SYS_JOB="test"    RUST_PROFILE=debug      CAPSTONE_SYS_FEATURES="use_bindgen"
-
-    # Should fail
-    - SHOULD_FAIL=1    CAPSTONE_SYS_JOB="test"    RUST_PROFILE=debug      CAPSTONE_SYS_FEATURES="build_capstone_cmake use_system_capstone"
