@@ -1,0 +1,34 @@
+environment:
+  global:
+    PROJECT_NAME: capstone-sys
+  matrix:
+    # Stable channel
+    - TARGET: i686-pc-windows-gnu
+      CHANNEL: stable
+    - TARGET: i686-pc-windows-msvc
+      CHANNEL: stable
+    - TARGET: x86_64-pc-windows-gnu
+      CHANNEL: stable
+    - TARGET: x86_64-pc-windows-msvc
+      CHANNEL: stable
+
+# Install Rust and Cargo
+# (Based on from https://github.com/rust-lang/libc/blob/master/appveyor.yml)
+install:
+  - curl -sSf -o rustup-init.exe https://win.rustup.rs
+  - rustup-init.exe --default-host %TARGET% --default-toolchain %CHANNEL% -y
+  - if "%TARGET%" == "i686-pc-windows-gnu" set PATH=%PATH%;C:\msys64\mingw32\bin
+  - if "%TARGET%" == "x86_64-pc-windows-gnu" set PATH=%PATH%;C:\msys64\mingw64\bin
+  - set PATH=%PATH%;C:\Users\appveyor\.cargo\bin
+  - rustc -Vv
+  - cargo -V
+
+# 'cargo test' takes care of building for us, so disable Appveyor's build stage. This prevents
+# the "directory does not contain a project or solution file" error.
+# source: https://github.com/starkat99/appveyor-rust/blob/master/appveyor.yml#L113
+build: false
+
+# Equivalent to Travis' `script` phase
+test_script:
+  - cargo build -v
+  - cargo test -v
