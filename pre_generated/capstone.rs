@@ -94,69 +94,6 @@ pub struct cs_opt_mem {
     pub free: cs_free_t,
     pub vsnprintf: cs_vsnprintf_t,
 }
-#[test]
-fn bindgen_test_layout_cs_opt_mem() {
-    assert_eq!(
-        ::std::mem::size_of::<cs_opt_mem>(),
-        40usize,
-        concat!("Size of: ", stringify!(cs_opt_mem))
-    );
-    assert_eq!(
-        ::std::mem::align_of::<cs_opt_mem>(),
-        8usize,
-        concat!("Alignment of ", stringify!(cs_opt_mem))
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<cs_opt_mem>())).malloc as *const _ as usize },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(cs_opt_mem),
-            "::",
-            stringify!(malloc)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<cs_opt_mem>())).calloc as *const _ as usize },
-        8usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(cs_opt_mem),
-            "::",
-            stringify!(calloc)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<cs_opt_mem>())).realloc as *const _ as usize },
-        16usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(cs_opt_mem),
-            "::",
-            stringify!(realloc)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<cs_opt_mem>())).free as *const _ as usize },
-        24usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(cs_opt_mem),
-            "::",
-            stringify!(free)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<cs_opt_mem>())).vsnprintf as *const _ as usize },
-        32usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(cs_opt_mem),
-            "::",
-            stringify!(vsnprintf)
-        )
-    );
-}
 impl Clone for cs_opt_mem {
     fn clone(&self) -> Self {
         *self
@@ -214,49 +151,6 @@ pub struct cs_opt_skipdata {
     pub mnemonic: *const ::std::os::raw::c_char,
     pub callback: cs_skipdata_cb_t,
     pub user_data: *mut ::std::os::raw::c_void,
-}
-#[test]
-fn bindgen_test_layout_cs_opt_skipdata() {
-    assert_eq!(
-        ::std::mem::size_of::<cs_opt_skipdata>(),
-        24usize,
-        concat!("Size of: ", stringify!(cs_opt_skipdata))
-    );
-    assert_eq!(
-        ::std::mem::align_of::<cs_opt_skipdata>(),
-        8usize,
-        concat!("Alignment of ", stringify!(cs_opt_skipdata))
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<cs_opt_skipdata>())).mnemonic as *const _ as usize },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(cs_opt_skipdata),
-            "::",
-            stringify!(mnemonic)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<cs_opt_skipdata>())).callback as *const _ as usize },
-        8usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(cs_opt_skipdata),
-            "::",
-            stringify!(callback)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<cs_opt_skipdata>())).user_data as *const _ as usize },
-        16usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(cs_opt_skipdata),
-            "::",
-            stringify!(user_data)
-        )
-    );
 }
 impl Clone for cs_opt_skipdata {
     fn clone(&self) -> Self {
@@ -441,59 +335,6 @@ pub struct arm_op_mem {
     pub scale: ::std::os::raw::c_int,
     pub disp: ::std::os::raw::c_int,
 }
-#[test]
-fn bindgen_test_layout_arm_op_mem() {
-    assert_eq!(
-        ::std::mem::size_of::<arm_op_mem>(),
-        16usize,
-        concat!("Size of: ", stringify!(arm_op_mem))
-    );
-    assert_eq!(
-        ::std::mem::align_of::<arm_op_mem>(),
-        4usize,
-        concat!("Alignment of ", stringify!(arm_op_mem))
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<arm_op_mem>())).base as *const _ as usize },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(arm_op_mem),
-            "::",
-            stringify!(base)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<arm_op_mem>())).index as *const _ as usize },
-        4usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(arm_op_mem),
-            "::",
-            stringify!(index)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<arm_op_mem>())).scale as *const _ as usize },
-        8usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(arm_op_mem),
-            "::",
-            stringify!(scale)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<arm_op_mem>())).disp as *const _ as usize },
-        12usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(arm_op_mem),
-            "::",
-            stringify!(disp)
-        )
-    );
-}
 impl Clone for arm_op_mem {
     fn clone(&self) -> Self {
         *self
@@ -514,39 +355,6 @@ pub struct cs_arm_op__bindgen_ty_1 {
     pub type_: arm_shifter,
     pub value: ::std::os::raw::c_uint,
 }
-#[test]
-fn bindgen_test_layout_cs_arm_op__bindgen_ty_1() {
-    assert_eq!(
-        ::std::mem::size_of::<cs_arm_op__bindgen_ty_1>(),
-        8usize,
-        concat!("Size of: ", stringify!(cs_arm_op__bindgen_ty_1))
-    );
-    assert_eq!(
-        ::std::mem::align_of::<cs_arm_op__bindgen_ty_1>(),
-        4usize,
-        concat!("Alignment of ", stringify!(cs_arm_op__bindgen_ty_1))
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<cs_arm_op__bindgen_ty_1>())).type_ as *const _ as usize },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(cs_arm_op__bindgen_ty_1),
-            "::",
-            stringify!(type_)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<cs_arm_op__bindgen_ty_1>())).value as *const _ as usize },
-        4usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(cs_arm_op__bindgen_ty_1),
-            "::",
-            stringify!(value)
-        )
-    );
-}
 impl Clone for cs_arm_op__bindgen_ty_1 {
     fn clone(&self) -> Self {
         *self
@@ -562,69 +370,6 @@ pub union cs_arm_op__bindgen_ty_2 {
     pub setend: arm_setend_type,
     _bindgen_union_align: [u64; 2usize],
 }
-#[test]
-fn bindgen_test_layout_cs_arm_op__bindgen_ty_2() {
-    assert_eq!(
-        ::std::mem::size_of::<cs_arm_op__bindgen_ty_2>(),
-        16usize,
-        concat!("Size of: ", stringify!(cs_arm_op__bindgen_ty_2))
-    );
-    assert_eq!(
-        ::std::mem::align_of::<cs_arm_op__bindgen_ty_2>(),
-        8usize,
-        concat!("Alignment of ", stringify!(cs_arm_op__bindgen_ty_2))
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<cs_arm_op__bindgen_ty_2>())).reg as *const _ as usize },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(cs_arm_op__bindgen_ty_2),
-            "::",
-            stringify!(reg)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<cs_arm_op__bindgen_ty_2>())).imm as *const _ as usize },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(cs_arm_op__bindgen_ty_2),
-            "::",
-            stringify!(imm)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<cs_arm_op__bindgen_ty_2>())).fp as *const _ as usize },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(cs_arm_op__bindgen_ty_2),
-            "::",
-            stringify!(fp)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<cs_arm_op__bindgen_ty_2>())).mem as *const _ as usize },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(cs_arm_op__bindgen_ty_2),
-            "::",
-            stringify!(mem)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<cs_arm_op__bindgen_ty_2>())).setend as *const _ as usize },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(cs_arm_op__bindgen_ty_2),
-            "::",
-            stringify!(setend)
-        )
-    );
-}
 impl Clone for cs_arm_op__bindgen_ty_2 {
     fn clone(&self) -> Self {
         *self
@@ -634,59 +379,6 @@ impl ::std::fmt::Debug for cs_arm_op__bindgen_ty_2 {
     fn fmt(&self, f: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
         write!(f, "cs_arm_op__bindgen_ty_2 {{ union }}")
     }
-}
-#[test]
-fn bindgen_test_layout_cs_arm_op() {
-    assert_eq!(
-        ::std::mem::size_of::<cs_arm_op>(),
-        40usize,
-        concat!("Size of: ", stringify!(cs_arm_op))
-    );
-    assert_eq!(
-        ::std::mem::align_of::<cs_arm_op>(),
-        8usize,
-        concat!("Alignment of ", stringify!(cs_arm_op))
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<cs_arm_op>())).vector_index as *const _ as usize },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(cs_arm_op),
-            "::",
-            stringify!(vector_index)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<cs_arm_op>())).shift as *const _ as usize },
-        4usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(cs_arm_op),
-            "::",
-            stringify!(shift)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<cs_arm_op>())).type_ as *const _ as usize },
-        12usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(cs_arm_op),
-            "::",
-            stringify!(type_)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<cs_arm_op>())).subtracted as *const _ as usize },
-        32usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(cs_arm_op),
-            "::",
-            stringify!(subtracted)
-        )
-    );
 }
 impl Clone for cs_arm_op {
     fn clone(&self) -> Self {
@@ -712,129 +404,6 @@ pub struct cs_arm {
     pub mem_barrier: arm_mem_barrier,
     pub op_count: u8,
     pub operands: [cs_arm_op; 36usize],
-}
-#[test]
-fn bindgen_test_layout_cs_arm() {
-    assert_eq!(
-        ::std::mem::size_of::<cs_arm>(),
-        1480usize,
-        concat!("Size of: ", stringify!(cs_arm))
-    );
-    assert_eq!(
-        ::std::mem::align_of::<cs_arm>(),
-        8usize,
-        concat!("Alignment of ", stringify!(cs_arm))
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<cs_arm>())).usermode as *const _ as usize },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(cs_arm),
-            "::",
-            stringify!(usermode)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<cs_arm>())).vector_size as *const _ as usize },
-        4usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(cs_arm),
-            "::",
-            stringify!(vector_size)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<cs_arm>())).vector_data as *const _ as usize },
-        8usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(cs_arm),
-            "::",
-            stringify!(vector_data)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<cs_arm>())).cps_mode as *const _ as usize },
-        12usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(cs_arm),
-            "::",
-            stringify!(cps_mode)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<cs_arm>())).cps_flag as *const _ as usize },
-        16usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(cs_arm),
-            "::",
-            stringify!(cps_flag)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<cs_arm>())).cc as *const _ as usize },
-        20usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(cs_arm),
-            "::",
-            stringify!(cc)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<cs_arm>())).update_flags as *const _ as usize },
-        24usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(cs_arm),
-            "::",
-            stringify!(update_flags)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<cs_arm>())).writeback as *const _ as usize },
-        25usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(cs_arm),
-            "::",
-            stringify!(writeback)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<cs_arm>())).mem_barrier as *const _ as usize },
-        28usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(cs_arm),
-            "::",
-            stringify!(mem_barrier)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<cs_arm>())).op_count as *const _ as usize },
-        32usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(cs_arm),
-            "::",
-            stringify!(op_count)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<cs_arm>())).operands as *const _ as usize },
-        40usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(cs_arm),
-            "::",
-            stringify!(operands)
-        )
-    );
 }
 impl Clone for cs_arm {
     fn clone(&self) -> Self {
@@ -1769,49 +1338,6 @@ pub struct arm64_op_mem {
     pub index: ::std::os::raw::c_uint,
     pub disp: i32,
 }
-#[test]
-fn bindgen_test_layout_arm64_op_mem() {
-    assert_eq!(
-        ::std::mem::size_of::<arm64_op_mem>(),
-        12usize,
-        concat!("Size of: ", stringify!(arm64_op_mem))
-    );
-    assert_eq!(
-        ::std::mem::align_of::<arm64_op_mem>(),
-        4usize,
-        concat!("Alignment of ", stringify!(arm64_op_mem))
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<arm64_op_mem>())).base as *const _ as usize },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(arm64_op_mem),
-            "::",
-            stringify!(base)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<arm64_op_mem>())).index as *const _ as usize },
-        4usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(arm64_op_mem),
-            "::",
-            stringify!(index)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<arm64_op_mem>())).disp as *const _ as usize },
-        8usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(arm64_op_mem),
-            "::",
-            stringify!(disp)
-        )
-    );
-}
 impl Clone for arm64_op_mem {
     fn clone(&self) -> Self {
         *self
@@ -1834,39 +1360,6 @@ pub struct cs_arm64_op__bindgen_ty_1 {
     pub type_: arm64_shifter,
     pub value: ::std::os::raw::c_uint,
 }
-#[test]
-fn bindgen_test_layout_cs_arm64_op__bindgen_ty_1() {
-    assert_eq!(
-        ::std::mem::size_of::<cs_arm64_op__bindgen_ty_1>(),
-        8usize,
-        concat!("Size of: ", stringify!(cs_arm64_op__bindgen_ty_1))
-    );
-    assert_eq!(
-        ::std::mem::align_of::<cs_arm64_op__bindgen_ty_1>(),
-        4usize,
-        concat!("Alignment of ", stringify!(cs_arm64_op__bindgen_ty_1))
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<cs_arm64_op__bindgen_ty_1>())).type_ as *const _ as usize },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(cs_arm64_op__bindgen_ty_1),
-            "::",
-            stringify!(type_)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<cs_arm64_op__bindgen_ty_1>())).value as *const _ as usize },
-        4usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(cs_arm64_op__bindgen_ty_1),
-            "::",
-            stringify!(value)
-        )
-    );
-}
 impl Clone for cs_arm64_op__bindgen_ty_1 {
     fn clone(&self) -> Self {
         *self
@@ -1885,105 +1378,6 @@ pub union cs_arm64_op__bindgen_ty_2 {
     pub barrier: arm64_barrier_op,
     _bindgen_union_align: [u64; 2usize],
 }
-#[test]
-fn bindgen_test_layout_cs_arm64_op__bindgen_ty_2() {
-    assert_eq!(
-        ::std::mem::size_of::<cs_arm64_op__bindgen_ty_2>(),
-        16usize,
-        concat!("Size of: ", stringify!(cs_arm64_op__bindgen_ty_2))
-    );
-    assert_eq!(
-        ::std::mem::align_of::<cs_arm64_op__bindgen_ty_2>(),
-        8usize,
-        concat!("Alignment of ", stringify!(cs_arm64_op__bindgen_ty_2))
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<cs_arm64_op__bindgen_ty_2>())).reg as *const _ as usize },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(cs_arm64_op__bindgen_ty_2),
-            "::",
-            stringify!(reg)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<cs_arm64_op__bindgen_ty_2>())).imm as *const _ as usize },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(cs_arm64_op__bindgen_ty_2),
-            "::",
-            stringify!(imm)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<cs_arm64_op__bindgen_ty_2>())).fp as *const _ as usize },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(cs_arm64_op__bindgen_ty_2),
-            "::",
-            stringify!(fp)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<cs_arm64_op__bindgen_ty_2>())).mem as *const _ as usize },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(cs_arm64_op__bindgen_ty_2),
-            "::",
-            stringify!(mem)
-        )
-    );
-    assert_eq!(
-        unsafe {
-            &(*(::std::ptr::null::<cs_arm64_op__bindgen_ty_2>())).pstate as *const _ as usize
-        },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(cs_arm64_op__bindgen_ty_2),
-            "::",
-            stringify!(pstate)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<cs_arm64_op__bindgen_ty_2>())).sys as *const _ as usize },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(cs_arm64_op__bindgen_ty_2),
-            "::",
-            stringify!(sys)
-        )
-    );
-    assert_eq!(
-        unsafe {
-            &(*(::std::ptr::null::<cs_arm64_op__bindgen_ty_2>())).prefetch as *const _ as usize
-        },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(cs_arm64_op__bindgen_ty_2),
-            "::",
-            stringify!(prefetch)
-        )
-    );
-    assert_eq!(
-        unsafe {
-            &(*(::std::ptr::null::<cs_arm64_op__bindgen_ty_2>())).barrier as *const _ as usize
-        },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(cs_arm64_op__bindgen_ty_2),
-            "::",
-            stringify!(barrier)
-        )
-    );
-}
 impl Clone for cs_arm64_op__bindgen_ty_2 {
     fn clone(&self) -> Self {
         *self
@@ -1993,79 +1387,6 @@ impl ::std::fmt::Debug for cs_arm64_op__bindgen_ty_2 {
     fn fmt(&self, f: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
         write!(f, "cs_arm64_op__bindgen_ty_2 {{ union }}")
     }
-}
-#[test]
-fn bindgen_test_layout_cs_arm64_op() {
-    assert_eq!(
-        ::std::mem::size_of::<cs_arm64_op>(),
-        48usize,
-        concat!("Size of: ", stringify!(cs_arm64_op))
-    );
-    assert_eq!(
-        ::std::mem::align_of::<cs_arm64_op>(),
-        8usize,
-        concat!("Alignment of ", stringify!(cs_arm64_op))
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<cs_arm64_op>())).vector_index as *const _ as usize },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(cs_arm64_op),
-            "::",
-            stringify!(vector_index)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<cs_arm64_op>())).vas as *const _ as usize },
-        4usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(cs_arm64_op),
-            "::",
-            stringify!(vas)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<cs_arm64_op>())).vess as *const _ as usize },
-        8usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(cs_arm64_op),
-            "::",
-            stringify!(vess)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<cs_arm64_op>())).shift as *const _ as usize },
-        12usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(cs_arm64_op),
-            "::",
-            stringify!(shift)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<cs_arm64_op>())).ext as *const _ as usize },
-        20usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(cs_arm64_op),
-            "::",
-            stringify!(ext)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<cs_arm64_op>())).type_ as *const _ as usize },
-        24usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(cs_arm64_op),
-            "::",
-            stringify!(type_)
-        )
-    );
 }
 impl Clone for cs_arm64_op {
     fn clone(&self) -> Self {
@@ -2085,69 +1406,6 @@ pub struct cs_arm64 {
     pub writeback: bool,
     pub op_count: u8,
     pub operands: [cs_arm64_op; 8usize],
-}
-#[test]
-fn bindgen_test_layout_cs_arm64() {
-    assert_eq!(
-        ::std::mem::size_of::<cs_arm64>(),
-        392usize,
-        concat!("Size of: ", stringify!(cs_arm64))
-    );
-    assert_eq!(
-        ::std::mem::align_of::<cs_arm64>(),
-        8usize,
-        concat!("Alignment of ", stringify!(cs_arm64))
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<cs_arm64>())).cc as *const _ as usize },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(cs_arm64),
-            "::",
-            stringify!(cc)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<cs_arm64>())).update_flags as *const _ as usize },
-        4usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(cs_arm64),
-            "::",
-            stringify!(update_flags)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<cs_arm64>())).writeback as *const _ as usize },
-        5usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(cs_arm64),
-            "::",
-            stringify!(writeback)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<cs_arm64>())).op_count as *const _ as usize },
-        6usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(cs_arm64),
-            "::",
-            stringify!(op_count)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<cs_arm64>())).operands as *const _ as usize },
-        8usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(cs_arm64),
-            "::",
-            stringify!(operands)
-        )
-    );
 }
 impl Clone for cs_arm64 {
     fn clone(&self) -> Self {
@@ -2908,39 +2166,6 @@ pub struct mips_op_mem {
     pub base: ::std::os::raw::c_uint,
     pub disp: i64,
 }
-#[test]
-fn bindgen_test_layout_mips_op_mem() {
-    assert_eq!(
-        ::std::mem::size_of::<mips_op_mem>(),
-        16usize,
-        concat!("Size of: ", stringify!(mips_op_mem))
-    );
-    assert_eq!(
-        ::std::mem::align_of::<mips_op_mem>(),
-        8usize,
-        concat!("Alignment of ", stringify!(mips_op_mem))
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<mips_op_mem>())).base as *const _ as usize },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(mips_op_mem),
-            "::",
-            stringify!(base)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<mips_op_mem>())).disp as *const _ as usize },
-        8usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(mips_op_mem),
-            "::",
-            stringify!(disp)
-        )
-    );
-}
 impl Clone for mips_op_mem {
     fn clone(&self) -> Self {
         *self
@@ -2960,49 +2185,6 @@ pub union cs_mips_op__bindgen_ty_1 {
     pub mem: mips_op_mem,
     _bindgen_union_align: [u64; 2usize],
 }
-#[test]
-fn bindgen_test_layout_cs_mips_op__bindgen_ty_1() {
-    assert_eq!(
-        ::std::mem::size_of::<cs_mips_op__bindgen_ty_1>(),
-        16usize,
-        concat!("Size of: ", stringify!(cs_mips_op__bindgen_ty_1))
-    );
-    assert_eq!(
-        ::std::mem::align_of::<cs_mips_op__bindgen_ty_1>(),
-        8usize,
-        concat!("Alignment of ", stringify!(cs_mips_op__bindgen_ty_1))
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<cs_mips_op__bindgen_ty_1>())).reg as *const _ as usize },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(cs_mips_op__bindgen_ty_1),
-            "::",
-            stringify!(reg)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<cs_mips_op__bindgen_ty_1>())).imm as *const _ as usize },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(cs_mips_op__bindgen_ty_1),
-            "::",
-            stringify!(imm)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<cs_mips_op__bindgen_ty_1>())).mem as *const _ as usize },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(cs_mips_op__bindgen_ty_1),
-            "::",
-            stringify!(mem)
-        )
-    );
-}
 impl Clone for cs_mips_op__bindgen_ty_1 {
     fn clone(&self) -> Self {
         *self
@@ -3012,29 +2194,6 @@ impl ::std::fmt::Debug for cs_mips_op__bindgen_ty_1 {
     fn fmt(&self, f: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
         write!(f, "cs_mips_op__bindgen_ty_1 {{ union }}")
     }
-}
-#[test]
-fn bindgen_test_layout_cs_mips_op() {
-    assert_eq!(
-        ::std::mem::size_of::<cs_mips_op>(),
-        24usize,
-        concat!("Size of: ", stringify!(cs_mips_op))
-    );
-    assert_eq!(
-        ::std::mem::align_of::<cs_mips_op>(),
-        8usize,
-        concat!("Alignment of ", stringify!(cs_mips_op))
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<cs_mips_op>())).type_ as *const _ as usize },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(cs_mips_op),
-            "::",
-            stringify!(type_)
-        )
-    );
 }
 impl Clone for cs_mips_op {
     fn clone(&self) -> Self {
@@ -3055,39 +2214,6 @@ impl ::std::fmt::Debug for cs_mips_op {
 pub struct cs_mips {
     pub op_count: u8,
     pub operands: [cs_mips_op; 8usize],
-}
-#[test]
-fn bindgen_test_layout_cs_mips() {
-    assert_eq!(
-        ::std::mem::size_of::<cs_mips>(),
-        200usize,
-        concat!("Size of: ", stringify!(cs_mips))
-    );
-    assert_eq!(
-        ::std::mem::align_of::<cs_mips>(),
-        8usize,
-        concat!("Alignment of ", stringify!(cs_mips))
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<cs_mips>())).op_count as *const _ as usize },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(cs_mips),
-            "::",
-            stringify!(op_count)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<cs_mips>())).operands as *const _ as usize },
-        8usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(cs_mips),
-            "::",
-            stringify!(operands)
-        )
-    );
 }
 impl Clone for cs_mips {
     fn clone(&self) -> Self {
@@ -4133,39 +3259,6 @@ pub struct ppc_op_mem {
     pub base: ppc_reg::Type,
     pub disp: i32,
 }
-#[test]
-fn bindgen_test_layout_ppc_op_mem() {
-    assert_eq!(
-        ::std::mem::size_of::<ppc_op_mem>(),
-        8usize,
-        concat!("Size of: ", stringify!(ppc_op_mem))
-    );
-    assert_eq!(
-        ::std::mem::align_of::<ppc_op_mem>(),
-        4usize,
-        concat!("Alignment of ", stringify!(ppc_op_mem))
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<ppc_op_mem>())).base as *const _ as usize },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(ppc_op_mem),
-            "::",
-            stringify!(base)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<ppc_op_mem>())).disp as *const _ as usize },
-        4usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(ppc_op_mem),
-            "::",
-            stringify!(disp)
-        )
-    );
-}
 impl Clone for ppc_op_mem {
     fn clone(&self) -> Self {
         *self
@@ -4177,49 +3270,6 @@ pub struct ppc_op_crx {
     pub scale: ::std::os::raw::c_uint,
     pub reg: ppc_reg::Type,
     pub cond: ppc_bc,
-}
-#[test]
-fn bindgen_test_layout_ppc_op_crx() {
-    assert_eq!(
-        ::std::mem::size_of::<ppc_op_crx>(),
-        12usize,
-        concat!("Size of: ", stringify!(ppc_op_crx))
-    );
-    assert_eq!(
-        ::std::mem::align_of::<ppc_op_crx>(),
-        4usize,
-        concat!("Alignment of ", stringify!(ppc_op_crx))
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<ppc_op_crx>())).scale as *const _ as usize },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(ppc_op_crx),
-            "::",
-            stringify!(scale)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<ppc_op_crx>())).reg as *const _ as usize },
-        4usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(ppc_op_crx),
-            "::",
-            stringify!(reg)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<ppc_op_crx>())).cond as *const _ as usize },
-        8usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(ppc_op_crx),
-            "::",
-            stringify!(cond)
-        )
-    );
 }
 impl Clone for ppc_op_crx {
     fn clone(&self) -> Self {
@@ -4241,59 +3291,6 @@ pub union cs_ppc_op__bindgen_ty_1 {
     pub crx: ppc_op_crx,
     _bindgen_union_align: [u32; 3usize],
 }
-#[test]
-fn bindgen_test_layout_cs_ppc_op__bindgen_ty_1() {
-    assert_eq!(
-        ::std::mem::size_of::<cs_ppc_op__bindgen_ty_1>(),
-        12usize,
-        concat!("Size of: ", stringify!(cs_ppc_op__bindgen_ty_1))
-    );
-    assert_eq!(
-        ::std::mem::align_of::<cs_ppc_op__bindgen_ty_1>(),
-        4usize,
-        concat!("Alignment of ", stringify!(cs_ppc_op__bindgen_ty_1))
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<cs_ppc_op__bindgen_ty_1>())).reg as *const _ as usize },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(cs_ppc_op__bindgen_ty_1),
-            "::",
-            stringify!(reg)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<cs_ppc_op__bindgen_ty_1>())).imm as *const _ as usize },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(cs_ppc_op__bindgen_ty_1),
-            "::",
-            stringify!(imm)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<cs_ppc_op__bindgen_ty_1>())).mem as *const _ as usize },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(cs_ppc_op__bindgen_ty_1),
-            "::",
-            stringify!(mem)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<cs_ppc_op__bindgen_ty_1>())).crx as *const _ as usize },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(cs_ppc_op__bindgen_ty_1),
-            "::",
-            stringify!(crx)
-        )
-    );
-}
 impl Clone for cs_ppc_op__bindgen_ty_1 {
     fn clone(&self) -> Self {
         *self
@@ -4303,29 +3300,6 @@ impl ::std::fmt::Debug for cs_ppc_op__bindgen_ty_1 {
     fn fmt(&self, f: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
         write!(f, "cs_ppc_op__bindgen_ty_1 {{ union }}")
     }
-}
-#[test]
-fn bindgen_test_layout_cs_ppc_op() {
-    assert_eq!(
-        ::std::mem::size_of::<cs_ppc_op>(),
-        16usize,
-        concat!("Size of: ", stringify!(cs_ppc_op))
-    );
-    assert_eq!(
-        ::std::mem::align_of::<cs_ppc_op>(),
-        4usize,
-        concat!("Alignment of ", stringify!(cs_ppc_op))
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<cs_ppc_op>())).type_ as *const _ as usize },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(cs_ppc_op),
-            "::",
-            stringify!(type_)
-        )
-    );
 }
 impl Clone for cs_ppc_op {
     fn clone(&self) -> Self {
@@ -4349,69 +3323,6 @@ pub struct cs_ppc {
     pub update_cr0: bool,
     pub op_count: u8,
     pub operands: [cs_ppc_op; 8usize],
-}
-#[test]
-fn bindgen_test_layout_cs_ppc() {
-    assert_eq!(
-        ::std::mem::size_of::<cs_ppc>(),
-        140usize,
-        concat!("Size of: ", stringify!(cs_ppc))
-    );
-    assert_eq!(
-        ::std::mem::align_of::<cs_ppc>(),
-        4usize,
-        concat!("Alignment of ", stringify!(cs_ppc))
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<cs_ppc>())).bc as *const _ as usize },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(cs_ppc),
-            "::",
-            stringify!(bc)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<cs_ppc>())).bh as *const _ as usize },
-        4usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(cs_ppc),
-            "::",
-            stringify!(bh)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<cs_ppc>())).update_cr0 as *const _ as usize },
-        8usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(cs_ppc),
-            "::",
-            stringify!(update_cr0)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<cs_ppc>())).op_count as *const _ as usize },
-        9usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(cs_ppc),
-            "::",
-            stringify!(op_count)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<cs_ppc>())).operands as *const _ as usize },
-        12usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(cs_ppc),
-            "::",
-            stringify!(operands)
-        )
-    );
 }
 impl Clone for cs_ppc {
     fn clone(&self) -> Self {
@@ -5442,49 +4353,6 @@ pub struct sparc_op_mem {
     pub index: u8,
     pub disp: i32,
 }
-#[test]
-fn bindgen_test_layout_sparc_op_mem() {
-    assert_eq!(
-        ::std::mem::size_of::<sparc_op_mem>(),
-        8usize,
-        concat!("Size of: ", stringify!(sparc_op_mem))
-    );
-    assert_eq!(
-        ::std::mem::align_of::<sparc_op_mem>(),
-        4usize,
-        concat!("Alignment of ", stringify!(sparc_op_mem))
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<sparc_op_mem>())).base as *const _ as usize },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(sparc_op_mem),
-            "::",
-            stringify!(base)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<sparc_op_mem>())).index as *const _ as usize },
-        1usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(sparc_op_mem),
-            "::",
-            stringify!(index)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<sparc_op_mem>())).disp as *const _ as usize },
-        4usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(sparc_op_mem),
-            "::",
-            stringify!(disp)
-        )
-    );
-}
 impl Clone for sparc_op_mem {
     fn clone(&self) -> Self {
         *self
@@ -5504,49 +4372,6 @@ pub union cs_sparc_op__bindgen_ty_1 {
     pub mem: sparc_op_mem,
     _bindgen_union_align: [u32; 2usize],
 }
-#[test]
-fn bindgen_test_layout_cs_sparc_op__bindgen_ty_1() {
-    assert_eq!(
-        ::std::mem::size_of::<cs_sparc_op__bindgen_ty_1>(),
-        8usize,
-        concat!("Size of: ", stringify!(cs_sparc_op__bindgen_ty_1))
-    );
-    assert_eq!(
-        ::std::mem::align_of::<cs_sparc_op__bindgen_ty_1>(),
-        4usize,
-        concat!("Alignment of ", stringify!(cs_sparc_op__bindgen_ty_1))
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<cs_sparc_op__bindgen_ty_1>())).reg as *const _ as usize },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(cs_sparc_op__bindgen_ty_1),
-            "::",
-            stringify!(reg)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<cs_sparc_op__bindgen_ty_1>())).imm as *const _ as usize },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(cs_sparc_op__bindgen_ty_1),
-            "::",
-            stringify!(imm)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<cs_sparc_op__bindgen_ty_1>())).mem as *const _ as usize },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(cs_sparc_op__bindgen_ty_1),
-            "::",
-            stringify!(mem)
-        )
-    );
-}
 impl Clone for cs_sparc_op__bindgen_ty_1 {
     fn clone(&self) -> Self {
         *self
@@ -5556,29 +4381,6 @@ impl ::std::fmt::Debug for cs_sparc_op__bindgen_ty_1 {
     fn fmt(&self, f: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
         write!(f, "cs_sparc_op__bindgen_ty_1 {{ union }}")
     }
-}
-#[test]
-fn bindgen_test_layout_cs_sparc_op() {
-    assert_eq!(
-        ::std::mem::size_of::<cs_sparc_op>(),
-        12usize,
-        concat!("Size of: ", stringify!(cs_sparc_op))
-    );
-    assert_eq!(
-        ::std::mem::align_of::<cs_sparc_op>(),
-        4usize,
-        concat!("Alignment of ", stringify!(cs_sparc_op))
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<cs_sparc_op>())).type_ as *const _ as usize },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(cs_sparc_op),
-            "::",
-            stringify!(type_)
-        )
-    );
 }
 impl Clone for cs_sparc_op {
     fn clone(&self) -> Self {
@@ -5601,59 +4403,6 @@ pub struct cs_sparc {
     pub hint: sparc_hint,
     pub op_count: u8,
     pub operands: [cs_sparc_op; 4usize],
-}
-#[test]
-fn bindgen_test_layout_cs_sparc() {
-    assert_eq!(
-        ::std::mem::size_of::<cs_sparc>(),
-        60usize,
-        concat!("Size of: ", stringify!(cs_sparc))
-    );
-    assert_eq!(
-        ::std::mem::align_of::<cs_sparc>(),
-        4usize,
-        concat!("Alignment of ", stringify!(cs_sparc))
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<cs_sparc>())).cc as *const _ as usize },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(cs_sparc),
-            "::",
-            stringify!(cc)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<cs_sparc>())).hint as *const _ as usize },
-        4usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(cs_sparc),
-            "::",
-            stringify!(hint)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<cs_sparc>())).op_count as *const _ as usize },
-        8usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(cs_sparc),
-            "::",
-            stringify!(op_count)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<cs_sparc>())).operands as *const _ as usize },
-        12usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(cs_sparc),
-            "::",
-            stringify!(operands)
-        )
-    );
 }
 impl Clone for cs_sparc {
     fn clone(&self) -> Self {
@@ -6096,59 +4845,6 @@ pub struct sysz_op_mem {
     pub length: u64,
     pub disp: i64,
 }
-#[test]
-fn bindgen_test_layout_sysz_op_mem() {
-    assert_eq!(
-        ::std::mem::size_of::<sysz_op_mem>(),
-        24usize,
-        concat!("Size of: ", stringify!(sysz_op_mem))
-    );
-    assert_eq!(
-        ::std::mem::align_of::<sysz_op_mem>(),
-        8usize,
-        concat!("Alignment of ", stringify!(sysz_op_mem))
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<sysz_op_mem>())).base as *const _ as usize },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(sysz_op_mem),
-            "::",
-            stringify!(base)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<sysz_op_mem>())).index as *const _ as usize },
-        1usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(sysz_op_mem),
-            "::",
-            stringify!(index)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<sysz_op_mem>())).length as *const _ as usize },
-        8usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(sysz_op_mem),
-            "::",
-            stringify!(length)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<sysz_op_mem>())).disp as *const _ as usize },
-        16usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(sysz_op_mem),
-            "::",
-            stringify!(disp)
-        )
-    );
-}
 impl Clone for sysz_op_mem {
     fn clone(&self) -> Self {
         *self
@@ -6168,49 +4864,6 @@ pub union cs_sysz_op__bindgen_ty_1 {
     pub mem: sysz_op_mem,
     _bindgen_union_align: [u64; 3usize],
 }
-#[test]
-fn bindgen_test_layout_cs_sysz_op__bindgen_ty_1() {
-    assert_eq!(
-        ::std::mem::size_of::<cs_sysz_op__bindgen_ty_1>(),
-        24usize,
-        concat!("Size of: ", stringify!(cs_sysz_op__bindgen_ty_1))
-    );
-    assert_eq!(
-        ::std::mem::align_of::<cs_sysz_op__bindgen_ty_1>(),
-        8usize,
-        concat!("Alignment of ", stringify!(cs_sysz_op__bindgen_ty_1))
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<cs_sysz_op__bindgen_ty_1>())).reg as *const _ as usize },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(cs_sysz_op__bindgen_ty_1),
-            "::",
-            stringify!(reg)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<cs_sysz_op__bindgen_ty_1>())).imm as *const _ as usize },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(cs_sysz_op__bindgen_ty_1),
-            "::",
-            stringify!(imm)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<cs_sysz_op__bindgen_ty_1>())).mem as *const _ as usize },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(cs_sysz_op__bindgen_ty_1),
-            "::",
-            stringify!(mem)
-        )
-    );
-}
 impl Clone for cs_sysz_op__bindgen_ty_1 {
     fn clone(&self) -> Self {
         *self
@@ -6220,29 +4873,6 @@ impl ::std::fmt::Debug for cs_sysz_op__bindgen_ty_1 {
     fn fmt(&self, f: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
         write!(f, "cs_sysz_op__bindgen_ty_1 {{ union }}")
     }
-}
-#[test]
-fn bindgen_test_layout_cs_sysz_op() {
-    assert_eq!(
-        ::std::mem::size_of::<cs_sysz_op>(),
-        32usize,
-        concat!("Size of: ", stringify!(cs_sysz_op))
-    );
-    assert_eq!(
-        ::std::mem::align_of::<cs_sysz_op>(),
-        8usize,
-        concat!("Alignment of ", stringify!(cs_sysz_op))
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<cs_sysz_op>())).type_ as *const _ as usize },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(cs_sysz_op),
-            "::",
-            stringify!(type_)
-        )
-    );
 }
 impl Clone for cs_sysz_op {
     fn clone(&self) -> Self {
@@ -6264,49 +4894,6 @@ pub struct cs_sysz {
     pub cc: sysz_cc,
     pub op_count: u8,
     pub operands: [cs_sysz_op; 6usize],
-}
-#[test]
-fn bindgen_test_layout_cs_sysz() {
-    assert_eq!(
-        ::std::mem::size_of::<cs_sysz>(),
-        200usize,
-        concat!("Size of: ", stringify!(cs_sysz))
-    );
-    assert_eq!(
-        ::std::mem::align_of::<cs_sysz>(),
-        8usize,
-        concat!("Alignment of ", stringify!(cs_sysz))
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<cs_sysz>())).cc as *const _ as usize },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(cs_sysz),
-            "::",
-            stringify!(cc)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<cs_sysz>())).op_count as *const _ as usize },
-        4usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(cs_sysz),
-            "::",
-            stringify!(op_count)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<cs_sysz>())).operands as *const _ as usize },
-        8usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(cs_sysz),
-            "::",
-            stringify!(operands)
-        )
-    );
 }
 impl Clone for cs_sysz {
     fn clone(&self) -> Self {
@@ -7406,69 +5993,6 @@ pub struct x86_op_mem {
     pub scale: ::std::os::raw::c_int,
     pub disp: i64,
 }
-#[test]
-fn bindgen_test_layout_x86_op_mem() {
-    assert_eq!(
-        ::std::mem::size_of::<x86_op_mem>(),
-        24usize,
-        concat!("Size of: ", stringify!(x86_op_mem))
-    );
-    assert_eq!(
-        ::std::mem::align_of::<x86_op_mem>(),
-        8usize,
-        concat!("Alignment of ", stringify!(x86_op_mem))
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<x86_op_mem>())).segment as *const _ as usize },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(x86_op_mem),
-            "::",
-            stringify!(segment)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<x86_op_mem>())).base as *const _ as usize },
-        4usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(x86_op_mem),
-            "::",
-            stringify!(base)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<x86_op_mem>())).index as *const _ as usize },
-        8usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(x86_op_mem),
-            "::",
-            stringify!(index)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<x86_op_mem>())).scale as *const _ as usize },
-        12usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(x86_op_mem),
-            "::",
-            stringify!(scale)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<x86_op_mem>())).disp as *const _ as usize },
-        16usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(x86_op_mem),
-            "::",
-            stringify!(disp)
-        )
-    );
-}
 impl Clone for x86_op_mem {
     fn clone(&self) -> Self {
         *self
@@ -7492,59 +6016,6 @@ pub union cs_x86_op__bindgen_ty_1 {
     pub mem: x86_op_mem,
     _bindgen_union_align: [u64; 3usize],
 }
-#[test]
-fn bindgen_test_layout_cs_x86_op__bindgen_ty_1() {
-    assert_eq!(
-        ::std::mem::size_of::<cs_x86_op__bindgen_ty_1>(),
-        24usize,
-        concat!("Size of: ", stringify!(cs_x86_op__bindgen_ty_1))
-    );
-    assert_eq!(
-        ::std::mem::align_of::<cs_x86_op__bindgen_ty_1>(),
-        8usize,
-        concat!("Alignment of ", stringify!(cs_x86_op__bindgen_ty_1))
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<cs_x86_op__bindgen_ty_1>())).reg as *const _ as usize },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(cs_x86_op__bindgen_ty_1),
-            "::",
-            stringify!(reg)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<cs_x86_op__bindgen_ty_1>())).imm as *const _ as usize },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(cs_x86_op__bindgen_ty_1),
-            "::",
-            stringify!(imm)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<cs_x86_op__bindgen_ty_1>())).fp as *const _ as usize },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(cs_x86_op__bindgen_ty_1),
-            "::",
-            stringify!(fp)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<cs_x86_op__bindgen_ty_1>())).mem as *const _ as usize },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(cs_x86_op__bindgen_ty_1),
-            "::",
-            stringify!(mem)
-        )
-    );
-}
 impl Clone for cs_x86_op__bindgen_ty_1 {
     fn clone(&self) -> Self {
         *self
@@ -7554,59 +6025,6 @@ impl ::std::fmt::Debug for cs_x86_op__bindgen_ty_1 {
     fn fmt(&self, f: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
         write!(f, "cs_x86_op__bindgen_ty_1 {{ union }}")
     }
-}
-#[test]
-fn bindgen_test_layout_cs_x86_op() {
-    assert_eq!(
-        ::std::mem::size_of::<cs_x86_op>(),
-        48usize,
-        concat!("Size of: ", stringify!(cs_x86_op))
-    );
-    assert_eq!(
-        ::std::mem::align_of::<cs_x86_op>(),
-        8usize,
-        concat!("Alignment of ", stringify!(cs_x86_op))
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<cs_x86_op>())).type_ as *const _ as usize },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(cs_x86_op),
-            "::",
-            stringify!(type_)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<cs_x86_op>())).size as *const _ as usize },
-        32usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(cs_x86_op),
-            "::",
-            stringify!(size)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<cs_x86_op>())).avx_bcast as *const _ as usize },
-        36usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(cs_x86_op),
-            "::",
-            stringify!(avx_bcast)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<cs_x86_op>())).avx_zero_opmask as *const _ as usize },
-        40usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(cs_x86_op),
-            "::",
-            stringify!(avx_zero_opmask)
-        )
-    );
 }
 impl Clone for cs_x86_op {
     fn clone(&self) -> Self {
@@ -7626,69 +6044,6 @@ pub struct cs_x86_encoding {
     pub disp_size: u8,
     pub imm_offset: u8,
     pub imm_size: u8,
-}
-#[test]
-fn bindgen_test_layout_cs_x86_encoding() {
-    assert_eq!(
-        ::std::mem::size_of::<cs_x86_encoding>(),
-        5usize,
-        concat!("Size of: ", stringify!(cs_x86_encoding))
-    );
-    assert_eq!(
-        ::std::mem::align_of::<cs_x86_encoding>(),
-        1usize,
-        concat!("Alignment of ", stringify!(cs_x86_encoding))
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<cs_x86_encoding>())).modrm_offset as *const _ as usize },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(cs_x86_encoding),
-            "::",
-            stringify!(modrm_offset)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<cs_x86_encoding>())).disp_offset as *const _ as usize },
-        1usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(cs_x86_encoding),
-            "::",
-            stringify!(disp_offset)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<cs_x86_encoding>())).disp_size as *const _ as usize },
-        2usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(cs_x86_encoding),
-            "::",
-            stringify!(disp_size)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<cs_x86_encoding>())).imm_offset as *const _ as usize },
-        3usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(cs_x86_encoding),
-            "::",
-            stringify!(imm_offset)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<cs_x86_encoding>())).imm_size as *const _ as usize },
-        4usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(cs_x86_encoding),
-            "::",
-            stringify!(imm_size)
-        )
-    );
 }
 impl Clone for cs_x86_encoding {
     fn clone(&self) -> Self {
@@ -7715,189 +6070,6 @@ pub struct cs_x86 {
     pub op_count: u8,
     pub operands: [cs_x86_op; 8usize],
     pub encoding: cs_x86_encoding,
-}
-#[test]
-fn bindgen_test_layout_cs_x86() {
-    assert_eq!(
-        ::std::mem::size_of::<cs_x86>(),
-        440usize,
-        concat!("Size of: ", stringify!(cs_x86))
-    );
-    assert_eq!(
-        ::std::mem::align_of::<cs_x86>(),
-        8usize,
-        concat!("Alignment of ", stringify!(cs_x86))
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<cs_x86>())).prefix as *const _ as usize },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(cs_x86),
-            "::",
-            stringify!(prefix)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<cs_x86>())).opcode as *const _ as usize },
-        4usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(cs_x86),
-            "::",
-            stringify!(opcode)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<cs_x86>())).rex as *const _ as usize },
-        8usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(cs_x86),
-            "::",
-            stringify!(rex)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<cs_x86>())).addr_size as *const _ as usize },
-        9usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(cs_x86),
-            "::",
-            stringify!(addr_size)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<cs_x86>())).modrm as *const _ as usize },
-        10usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(cs_x86),
-            "::",
-            stringify!(modrm)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<cs_x86>())).sib as *const _ as usize },
-        11usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(cs_x86),
-            "::",
-            stringify!(sib)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<cs_x86>())).disp as *const _ as usize },
-        12usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(cs_x86),
-            "::",
-            stringify!(disp)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<cs_x86>())).sib_index as *const _ as usize },
-        16usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(cs_x86),
-            "::",
-            stringify!(sib_index)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<cs_x86>())).sib_scale as *const _ as usize },
-        20usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(cs_x86),
-            "::",
-            stringify!(sib_scale)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<cs_x86>())).sib_base as *const _ as usize },
-        24usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(cs_x86),
-            "::",
-            stringify!(sib_base)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<cs_x86>())).sse_cc as *const _ as usize },
-        28usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(cs_x86),
-            "::",
-            stringify!(sse_cc)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<cs_x86>())).avx_cc as *const _ as usize },
-        32usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(cs_x86),
-            "::",
-            stringify!(avx_cc)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<cs_x86>())).avx_sae as *const _ as usize },
-        36usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(cs_x86),
-            "::",
-            stringify!(avx_sae)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<cs_x86>())).avx_rm as *const _ as usize },
-        40usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(cs_x86),
-            "::",
-            stringify!(avx_rm)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<cs_x86>())).op_count as *const _ as usize },
-        44usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(cs_x86),
-            "::",
-            stringify!(op_count)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<cs_x86>())).operands as *const _ as usize },
-        48usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(cs_x86),
-            "::",
-            stringify!(operands)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<cs_x86>())).encoding as *const _ as usize },
-        432usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(cs_x86),
-            "::",
-            stringify!(encoding)
-        )
-    );
 }
 impl Clone for cs_x86 {
     fn clone(&self) -> Self {
@@ -9276,59 +7448,6 @@ pub struct xcore_op_mem {
     pub disp: i32,
     pub direct: ::std::os::raw::c_int,
 }
-#[test]
-fn bindgen_test_layout_xcore_op_mem() {
-    assert_eq!(
-        ::std::mem::size_of::<xcore_op_mem>(),
-        12usize,
-        concat!("Size of: ", stringify!(xcore_op_mem))
-    );
-    assert_eq!(
-        ::std::mem::align_of::<xcore_op_mem>(),
-        4usize,
-        concat!("Alignment of ", stringify!(xcore_op_mem))
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<xcore_op_mem>())).base as *const _ as usize },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(xcore_op_mem),
-            "::",
-            stringify!(base)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<xcore_op_mem>())).index as *const _ as usize },
-        1usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(xcore_op_mem),
-            "::",
-            stringify!(index)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<xcore_op_mem>())).disp as *const _ as usize },
-        4usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(xcore_op_mem),
-            "::",
-            stringify!(disp)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<xcore_op_mem>())).direct as *const _ as usize },
-        8usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(xcore_op_mem),
-            "::",
-            stringify!(direct)
-        )
-    );
-}
 impl Clone for xcore_op_mem {
     fn clone(&self) -> Self {
         *self
@@ -9348,49 +7467,6 @@ pub union cs_xcore_op__bindgen_ty_1 {
     pub mem: xcore_op_mem,
     _bindgen_union_align: [u32; 3usize],
 }
-#[test]
-fn bindgen_test_layout_cs_xcore_op__bindgen_ty_1() {
-    assert_eq!(
-        ::std::mem::size_of::<cs_xcore_op__bindgen_ty_1>(),
-        12usize,
-        concat!("Size of: ", stringify!(cs_xcore_op__bindgen_ty_1))
-    );
-    assert_eq!(
-        ::std::mem::align_of::<cs_xcore_op__bindgen_ty_1>(),
-        4usize,
-        concat!("Alignment of ", stringify!(cs_xcore_op__bindgen_ty_1))
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<cs_xcore_op__bindgen_ty_1>())).reg as *const _ as usize },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(cs_xcore_op__bindgen_ty_1),
-            "::",
-            stringify!(reg)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<cs_xcore_op__bindgen_ty_1>())).imm as *const _ as usize },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(cs_xcore_op__bindgen_ty_1),
-            "::",
-            stringify!(imm)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<cs_xcore_op__bindgen_ty_1>())).mem as *const _ as usize },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(cs_xcore_op__bindgen_ty_1),
-            "::",
-            stringify!(mem)
-        )
-    );
-}
 impl Clone for cs_xcore_op__bindgen_ty_1 {
     fn clone(&self) -> Self {
         *self
@@ -9400,29 +7476,6 @@ impl ::std::fmt::Debug for cs_xcore_op__bindgen_ty_1 {
     fn fmt(&self, f: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
         write!(f, "cs_xcore_op__bindgen_ty_1 {{ union }}")
     }
-}
-#[test]
-fn bindgen_test_layout_cs_xcore_op() {
-    assert_eq!(
-        ::std::mem::size_of::<cs_xcore_op>(),
-        16usize,
-        concat!("Size of: ", stringify!(cs_xcore_op))
-    );
-    assert_eq!(
-        ::std::mem::align_of::<cs_xcore_op>(),
-        4usize,
-        concat!("Alignment of ", stringify!(cs_xcore_op))
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<cs_xcore_op>())).type_ as *const _ as usize },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(cs_xcore_op),
-            "::",
-            stringify!(type_)
-        )
-    );
 }
 impl Clone for cs_xcore_op {
     fn clone(&self) -> Self {
@@ -9443,39 +7496,6 @@ impl ::std::fmt::Debug for cs_xcore_op {
 pub struct cs_xcore {
     pub op_count: u8,
     pub operands: [cs_xcore_op; 8usize],
-}
-#[test]
-fn bindgen_test_layout_cs_xcore() {
-    assert_eq!(
-        ::std::mem::size_of::<cs_xcore>(),
-        132usize,
-        concat!("Size of: ", stringify!(cs_xcore))
-    );
-    assert_eq!(
-        ::std::mem::align_of::<cs_xcore>(),
-        4usize,
-        concat!("Alignment of ", stringify!(cs_xcore))
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<cs_xcore>())).op_count as *const _ as usize },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(cs_xcore),
-            "::",
-            stringify!(op_count)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<cs_xcore>())).operands as *const _ as usize },
-        4usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(cs_xcore),
-            "::",
-            stringify!(operands)
-        )
-    );
 }
 impl Clone for cs_xcore {
     fn clone(&self) -> Self {
@@ -9677,99 +7697,6 @@ pub union cs_detail__bindgen_ty_1 {
     pub xcore: cs_xcore,
     _bindgen_union_align: [u64; 185usize],
 }
-#[test]
-fn bindgen_test_layout_cs_detail__bindgen_ty_1() {
-    assert_eq!(
-        ::std::mem::size_of::<cs_detail__bindgen_ty_1>(),
-        1480usize,
-        concat!("Size of: ", stringify!(cs_detail__bindgen_ty_1))
-    );
-    assert_eq!(
-        ::std::mem::align_of::<cs_detail__bindgen_ty_1>(),
-        8usize,
-        concat!("Alignment of ", stringify!(cs_detail__bindgen_ty_1))
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<cs_detail__bindgen_ty_1>())).x86 as *const _ as usize },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(cs_detail__bindgen_ty_1),
-            "::",
-            stringify!(x86)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<cs_detail__bindgen_ty_1>())).arm64 as *const _ as usize },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(cs_detail__bindgen_ty_1),
-            "::",
-            stringify!(arm64)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<cs_detail__bindgen_ty_1>())).arm as *const _ as usize },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(cs_detail__bindgen_ty_1),
-            "::",
-            stringify!(arm)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<cs_detail__bindgen_ty_1>())).mips as *const _ as usize },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(cs_detail__bindgen_ty_1),
-            "::",
-            stringify!(mips)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<cs_detail__bindgen_ty_1>())).ppc as *const _ as usize },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(cs_detail__bindgen_ty_1),
-            "::",
-            stringify!(ppc)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<cs_detail__bindgen_ty_1>())).sparc as *const _ as usize },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(cs_detail__bindgen_ty_1),
-            "::",
-            stringify!(sparc)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<cs_detail__bindgen_ty_1>())).sysz as *const _ as usize },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(cs_detail__bindgen_ty_1),
-            "::",
-            stringify!(sysz)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<cs_detail__bindgen_ty_1>())).xcore as *const _ as usize },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(cs_detail__bindgen_ty_1),
-            "::",
-            stringify!(xcore)
-        )
-    );
-}
 impl Clone for cs_detail__bindgen_ty_1 {
     fn clone(&self) -> Self {
         *self
@@ -9779,79 +7706,6 @@ impl ::std::fmt::Debug for cs_detail__bindgen_ty_1 {
     fn fmt(&self, f: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
         write!(f, "cs_detail__bindgen_ty_1 {{ union }}")
     }
-}
-#[test]
-fn bindgen_test_layout_cs_detail() {
-    assert_eq!(
-        ::std::mem::size_of::<cs_detail>(),
-        1528usize,
-        concat!("Size of: ", stringify!(cs_detail))
-    );
-    assert_eq!(
-        ::std::mem::align_of::<cs_detail>(),
-        8usize,
-        concat!("Alignment of ", stringify!(cs_detail))
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<cs_detail>())).regs_read as *const _ as usize },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(cs_detail),
-            "::",
-            stringify!(regs_read)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<cs_detail>())).regs_read_count as *const _ as usize },
-        12usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(cs_detail),
-            "::",
-            stringify!(regs_read_count)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<cs_detail>())).regs_write as *const _ as usize },
-        13usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(cs_detail),
-            "::",
-            stringify!(regs_write)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<cs_detail>())).regs_write_count as *const _ as usize },
-        33usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(cs_detail),
-            "::",
-            stringify!(regs_write_count)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<cs_detail>())).groups as *const _ as usize },
-        34usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(cs_detail),
-            "::",
-            stringify!(groups)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<cs_detail>())).groups_count as *const _ as usize },
-        42usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(cs_detail),
-            "::",
-            stringify!(groups_count)
-        )
-    );
 }
 impl Clone for cs_detail {
     fn clone(&self) -> Self {
@@ -9873,89 +7727,6 @@ pub struct cs_insn {
     pub mnemonic: [::std::os::raw::c_char; 32usize],
     pub op_str: [::std::os::raw::c_char; 160usize],
     pub detail: *mut cs_detail,
-}
-#[test]
-fn bindgen_test_layout_cs_insn() {
-    assert_eq!(
-        ::std::mem::size_of::<cs_insn>(),
-        240usize,
-        concat!("Size of: ", stringify!(cs_insn))
-    );
-    assert_eq!(
-        ::std::mem::align_of::<cs_insn>(),
-        8usize,
-        concat!("Alignment of ", stringify!(cs_insn))
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<cs_insn>())).id as *const _ as usize },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(cs_insn),
-            "::",
-            stringify!(id)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<cs_insn>())).address as *const _ as usize },
-        8usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(cs_insn),
-            "::",
-            stringify!(address)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<cs_insn>())).size as *const _ as usize },
-        16usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(cs_insn),
-            "::",
-            stringify!(size)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<cs_insn>())).bytes as *const _ as usize },
-        18usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(cs_insn),
-            "::",
-            stringify!(bytes)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<cs_insn>())).mnemonic as *const _ as usize },
-        34usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(cs_insn),
-            "::",
-            stringify!(mnemonic)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<cs_insn>())).op_str as *const _ as usize },
-        66usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(cs_insn),
-            "::",
-            stringify!(op_str)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<cs_insn>())).detail as *const _ as usize },
-        232usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(cs_insn),
-            "::",
-            stringify!(detail)
-        )
-    );
 }
 impl Clone for cs_insn {
     fn clone(&self) -> Self {
@@ -10097,59 +7868,6 @@ pub struct __va_list_tag {
     pub fp_offset: ::std::os::raw::c_uint,
     pub overflow_arg_area: *mut ::std::os::raw::c_void,
     pub reg_save_area: *mut ::std::os::raw::c_void,
-}
-#[test]
-fn bindgen_test_layout___va_list_tag() {
-    assert_eq!(
-        ::std::mem::size_of::<__va_list_tag>(),
-        24usize,
-        concat!("Size of: ", stringify!(__va_list_tag))
-    );
-    assert_eq!(
-        ::std::mem::align_of::<__va_list_tag>(),
-        8usize,
-        concat!("Alignment of ", stringify!(__va_list_tag))
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<__va_list_tag>())).gp_offset as *const _ as usize },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(__va_list_tag),
-            "::",
-            stringify!(gp_offset)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<__va_list_tag>())).fp_offset as *const _ as usize },
-        4usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(__va_list_tag),
-            "::",
-            stringify!(fp_offset)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<__va_list_tag>())).overflow_arg_area as *const _ as usize },
-        8usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(__va_list_tag),
-            "::",
-            stringify!(overflow_arg_area)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<__va_list_tag>())).reg_save_area as *const _ as usize },
-        16usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(__va_list_tag),
-            "::",
-            stringify!(reg_save_area)
-        )
-    );
 }
 impl Clone for __va_list_tag {
     fn clone(&self) -> Self {

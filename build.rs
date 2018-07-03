@@ -201,6 +201,7 @@ fn write_bindgen_bindings(
         .disable_name_namespacing()
         .prepend_enum_name(false)
         .generate_comments(true)
+        .layout_tests(false) // eliminate test failures on platforms with different pointer sizes
         .impl_debug(true)
         .constified_enum_module("cs_err|cs_group_type|cs_opt_value")
         .bitfield_enum("cs_mode")

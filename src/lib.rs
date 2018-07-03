@@ -342,6 +342,13 @@ mod test {
             avx_rm: x86_avx_rm::X86_AVX_RM_RN,
             op_count: 0,
             operands: [op; 8],
+            encoding: cs_x86_encoding {
+                modrm_offset: 0,
+                disp_offset: 0,
+                disp_size: 0,
+                imm_offset: 0,
+                imm_size: 0
+            }
         };
 
         // x86-specific constants
