@@ -40,9 +40,9 @@ extern crate bindgen;
 
 extern crate cc;
 
+use std::env;
 use std::fs::copy;
 use std::path::PathBuf;
-use std::env;
 
 include!("common.rs");
 
@@ -67,13 +67,20 @@ fn build_capstone_cc() {
             .into_iter()
             .map(|e| e.expect("Failed to read capstone source directory"))
             .filter(|e| filter(e))
-            .map(|e| format!("{}/{}", dir, e.file_name().to_str().expect("Invalid filename")))
+            .map(|e| {
+                format!(
+                    "{}/{}",
+                    dir,
+                    e.file_name().to_str().expect("Invalid filename")
+                )
+            })
             .collect()
     }
 
     fn find_c_source_files(dir: &str) -> Vec<String> {
         read_dir_and_filter(dir, |e| {
-            let file_type = e.file_type().expect("Failed to read capstone source directory");
+            let file_type = e.file_type()
+                .expect("Failed to read capstone source directory");
             let file_name = e.file_name().into_string().expect("Invalid filename");
             file_type.is_file() && (file_name.ends_with(".c") || file_name.ends_with(".C"))
         })
@@ -81,7 +88,8 @@ fn build_capstone_cc() {
 
     fn find_arch_dirs() -> Vec<String> {
         read_dir_and_filter(&format!("{}/{}", CAPSTONE_DIR, "arch"), |e| {
-            let file_type = e.file_type().expect("Failed to read capstone source directory");
+            let file_type = e.file_type()
+                .expect("Failed to read capstone source directory");
             file_type.is_dir()
         })
     }
@@ -182,9 +190,9 @@ fn write_bindgen_bindings(
     let bindings = builder.generate().expect("Unable to generate bindings");
 
     // Write bindings to $OUT_DIR/bindings.rs
-    bindings.write_to_file(out_path.clone()).expect(
-        "Unable to write bindings",
-    );
+    bindings
+        .write_to_file(out_path.clone())
+        .expect("Unable to write bindings");
 
     if update_pregenerated_bindings {
         copy(out_path, pregenerated_bindgen_header).expect("Unable to update capstone bindings");

@@ -217,7 +217,9 @@ mod test {
         // Union structs
         let op = cs_ppc_op {
             type_: ppc_op_type::PPC_OP_REG,
-            __bindgen_anon_1: cs_ppc_op__bindgen_ty_1 { reg: ppc_reg::PPC_REG_CARRY },
+            __bindgen_anon_1: cs_ppc_op__bindgen_ty_1 {
+                reg: ppc_reg::PPC_REG_CARRY,
+            },
         };
         cs_ppc {
             bc: ppc_bc::PPC_BC_LT,
@@ -320,7 +322,9 @@ mod test {
         // Union types
         let op = cs_x86_op {
             type_: x86_op_type::X86_OP_REG,
-            __bindgen_anon_1: cs_x86_op__bindgen_ty_1 { reg: x86_reg::X86_REG_AH },
+            __bindgen_anon_1: cs_x86_op__bindgen_ty_1 {
+                reg: x86_reg::X86_REG_AH,
+            },
             size: 0,
             avx_bcast: x86_avx_bcast::X86_AVX_BCAST_2,
             avx_zero_opmask: false,
@@ -347,8 +351,8 @@ mod test {
                 disp_offset: 0,
                 disp_size: 0,
                 imm_offset: 0,
-                imm_size: 0
-            }
+                imm_size: 0,
+            },
         };
 
         // x86-specific constants
