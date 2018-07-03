@@ -7,36 +7,63 @@ pub type __int32_t = ::std::os::raw::c_int;
 pub type __int64_t = ::std::os::raw::c_long;
 pub type __uint64_t = ::std::os::raw::c_ulong;
 pub type va_list = __builtin_va_list;
+/// Handle using with all API
 pub type csh = usize;
 #[repr(u32)]
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
+/// Architecture type
 pub enum cs_arch {
+    /// ARM architecture (including Thumb, Thumb-2)
     CS_ARCH_ARM = 0,
+    /// ARM-64, also called AArch64
     CS_ARCH_ARM64 = 1,
+    /// Mips architecture
     CS_ARCH_MIPS = 2,
+    /// X86 architecture (including x86 & x86-64)
     CS_ARCH_X86 = 3,
+    /// PowerPC architecture
     CS_ARCH_PPC = 4,
+    /// Sparc architecture
     CS_ARCH_SPARC = 5,
+    /// SystemZ architecture
     CS_ARCH_SYSZ = 6,
+    /// XCore architecture
     CS_ARCH_XCORE = 7,
     CS_ARCH_MAX = 8,
+    /// All architectures - for cs_support()
     CS_ARCH_ALL = 65535,
 }
+/// little-endian mode (default mode)
 pub const CS_MODE_LITTLE_ENDIAN: cs_mode = cs_mode(0);
+/// 32-bit ARM
 pub const CS_MODE_ARM: cs_mode = cs_mode(0);
+/// 16-bit mode (X86)
 pub const CS_MODE_16: cs_mode = cs_mode(2);
+/// 32-bit mode (X86)
 pub const CS_MODE_32: cs_mode = cs_mode(4);
+/// 64-bit mode (X86, PPC)
 pub const CS_MODE_64: cs_mode = cs_mode(8);
+/// ARM's Thumb mode, including Thumb-2
 pub const CS_MODE_THUMB: cs_mode = cs_mode(16);
+/// ARM's Cortex-M series
 pub const CS_MODE_MCLASS: cs_mode = cs_mode(32);
+/// ARMv8 A32 encodings for ARM
 pub const CS_MODE_V8: cs_mode = cs_mode(64);
+/// MicroMips mode (MIPS)
 pub const CS_MODE_MICRO: cs_mode = cs_mode(16);
+/// Mips III ISA
 pub const CS_MODE_MIPS3: cs_mode = cs_mode(32);
+/// Mips32r6 ISA
 pub const CS_MODE_MIPS32R6: cs_mode = cs_mode(64);
+/// MicroMips mode (MIPS)
 pub const CS_MODE_MIPSGP64: cs_mode = cs_mode(128);
+/// SparcV9 mode (Sparc)
 pub const CS_MODE_V9: cs_mode = cs_mode(16);
+/// big-endian mode
 pub const CS_MODE_BIG_ENDIAN: cs_mode = cs_mode(-2147483648);
+/// Mips32 ISA (Mips)
 pub const CS_MODE_MIPS32: cs_mode = cs_mode(4);
+/// Mips64 ISA (Mips)
 pub const CS_MODE_MIPS64: cs_mode = cs_mode(8);
 impl ::std::ops::BitOr<cs_mode> for cs_mode {
     type Output = Self;
@@ -66,6 +93,7 @@ impl ::std::ops::BitAndAssign for cs_mode {
 }
 #[repr(C)]
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
+/// Mode type
 pub struct cs_mode(pub i32);
 pub type cs_malloc_t =
     ::std::option::Option<unsafe extern "C" fn(size: usize) -> *mut ::std::os::raw::c_void>;
@@ -87,6 +115,9 @@ pub type cs_vsnprintf_t = ::std::option::Option<
 >;
 #[repr(C)]
 #[derive(Debug, Copy)]
+/// User-defined dynamic memory related functions: malloc/calloc/realloc/free/vsnprintf()
+///
+/// By default, Capstone uses system's malloc(), calloc(), realloc(), free() & vsnprintf().
 pub struct cs_opt_mem {
     pub malloc: cs_malloc_t,
     pub calloc: cs_calloc_t,
@@ -101,6 +132,7 @@ impl Clone for cs_opt_mem {
 }
 #[repr(u32)]
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
+/// Runtime option for the disassembled engine
 pub enum cs_opt_type {
     CS_OPT_INVALID = 0,
     CS_OPT_SYNTAX = 1,
@@ -110,6 +142,7 @@ pub enum cs_opt_type {
     CS_OPT_SKIPDATA = 5,
     CS_OPT_SKIPDATA_SETUP = 6,
 }
+/// Runtime option value (associated with option type above)
 pub mod cs_opt_value {
     pub type Type = u32;
     pub const CS_OPT_OFF: Type = 0;
@@ -121,6 +154,7 @@ pub mod cs_opt_value {
 }
 #[repr(u32)]
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
+/// Common instruction operand types - to be consistent across all architectures.
 pub enum cs_op_type {
     CS_OP_INVALID = 0,
     CS_OP_REG = 1,
@@ -128,6 +162,7 @@ pub enum cs_op_type {
     CS_OP_MEM = 3,
     CS_OP_FP = 4,
 }
+/// Common instruction groups - to be consistent across all architectures.
 pub mod cs_group_type {
     pub type Type = u32;
     pub const CS_GRP_INVALID: Type = 0;
@@ -137,6 +172,18 @@ pub mod cs_group_type {
     pub const CS_GRP_INT: Type = 4;
     pub const CS_GRP_IRET: Type = 5;
 }
+/// User-defined callback function for SKIPDATA option.
+/// See tests/test_skipdata.c for sample code demonstrating this API.
+///
+/// * @code: the input buffer containing code to be disassembled.
+///        This is the same buffer passed to cs_disasm().
+/// * @code_size: size (in bytes) of the above @code buffer.
+/// * @offset: the position of the currently-examining byte in the input
+///      buffer @code mentioned above.
+/// * @user_data: user-data passed to cs_option() via @user_data field in
+///      cs_opt_skipdata struct below.
+///
+/// @return: return number of bytes to skip, or 0 to immediately stop disassembling.
 pub type cs_skipdata_cb_t = ::std::option::Option<
     unsafe extern "C" fn(
         code: *const u8,
@@ -147,9 +194,33 @@ pub type cs_skipdata_cb_t = ::std::option::Option<
 >;
 #[repr(C)]
 #[derive(Debug, Copy)]
+/// User-customized setup for SKIPDATA option
 pub struct cs_opt_skipdata {
+    /// Capstone considers data to skip as special "instructions".
+    /// User can specify the string for this instruction's "mnemonic" here.
+    /// By default (if @mnemonic is NULL), Capstone use ".byte".
     pub mnemonic: *const ::std::os::raw::c_char,
+
+    /// User-defined callback function to be called when Capstone hits data.
+    /// If the returned value from this callback is positive (>0), Capstone
+    /// will skip exactly that number of bytes & continue. Otherwise, if
+    /// the callback returns 0, Capstone stops disassembling and returns
+    /// immediately from cs_disasm()
+    ///
+    /// NOTE: if this callback pointer is NULL, Capstone would skip a number
+    /// of bytes depending on architectures, as following:
+    ///
+    /// * Arm:     2 bytes (Thumb mode) or 4 bytes.
+    /// * Arm64:   4 bytes.
+    /// * Mips:    4 bytes.
+    /// * PowerPC: 4 bytes.
+    /// * Sparc:   4 bytes.
+    /// * SystemZ: 2 bytes.
+    /// * X86:     1 bytes.
+    /// * XCore:   2 bytes.
     pub callback: cs_skipdata_cb_t,
+
+    /// User-defined data to be passed to @callback function pointer.
     pub user_data: *mut ::std::os::raw::c_void,
 }
 impl Clone for cs_opt_skipdata {
@@ -7675,13 +7746,21 @@ pub mod xcore_insn_group {
 }
 #[repr(C)]
 #[derive(Copy)]
+/// NOTE: All information in cs_detail is only available when CS_OPT_DETAIL = CS_OPT_ON
 pub struct cs_detail {
+    /// list of implicit registers read by this insn
     pub regs_read: [u8; 12usize],
+    /// number of implicit registers read by this insn
     pub regs_read_count: u8,
+    /// list of implicit registers modified by this insn
     pub regs_write: [u8; 20usize],
+    /// number of implicit registers modified by this insn
     pub regs_write_count: u8,
+    /// list of group this instruction belong to
     pub groups: [u8; 8usize],
+    /// number of groups this insn belongs to
     pub groups_count: u8,
+    /// Architecture-specific instruction info
     pub __bindgen_anon_1: cs_detail__bindgen_ty_1,
 }
 #[repr(C)]
@@ -7719,13 +7798,46 @@ impl ::std::fmt::Debug for cs_detail {
 }
 #[repr(C)]
 #[derive(Copy)]
+/// Detail information of disassembled instruction
 pub struct cs_insn {
+    /// Instruction ID (basically a numeric ID for the instruction mnemonic)
+    ///
+    /// Find the instruction id in the '[ARCH]_insn' enum in the header file
+    /// of corresponding architecture, such as 'arm_insn' in arm.h for ARM,
+    /// 'x86_insn' in x86.h for X86, etc...
+    ///
+    /// This information is available even when CS_OPT_DETAIL = CS_OPT_OFF
+    ///
+    /// NOTE: in Skipdata mode, "data" instruction has 0 for this id field.
     pub id: ::std::os::raw::c_uint,
+    /// Address (EIP) of this instruction
+    ///
+    /// This information is available even when CS_OPT_DETAIL = CS_OPT_OFF
     pub address: u64,
+    /// Size of this instruction
+    ///
+    /// This information is available even when CS_OPT_DETAIL = CS_OPT_OFF
     pub size: u16,
+    /// Machine bytes of this instruction, with number of bytes indicated by @size above
+    ///
+    /// This information is available even when CS_OPT_DETAIL = CS_OPT_OFF
     pub bytes: [u8; 16usize],
+    /// Ascii text of instruction mnemonic
+    ///
+    /// This information is available even when CS_OPT_DETAIL = CS_OPT_OFF
     pub mnemonic: [::std::os::raw::c_char; 32usize],
+    /// Ascii text of instruction operands
+    ///
+    /// This information is available even when CS_OPT_DETAIL = CS_OPT_OFF
     pub op_str: [::std::os::raw::c_char; 160usize],
+    /// Pointer to cs_detail.
+    /// NOTE: detail pointer is only valid when both requirements below are met:
+    ///
+    /// 1. CS_OP_DETAIL = CS_OPT_ON
+    /// 2. Engine is not in Skipdata mode (CS_OP_SKIPDATA option set to CS_OPT_ON)
+    ///
+    /// NOTE 2: when in Skipdata mode, or when detail mode is OFF, even if this pointer
+    ///     is not NULL, its content is still irrelevant.
     pub detail: *mut cs_detail,
 }
 impl Clone for cs_insn {
@@ -7756,30 +7868,143 @@ pub mod cs_err {
     pub const CS_ERR_X86_INTEL: Type = 13;
 }
 extern "C" {
+    /// Return combined API version & major and minor version numbers.
+    ///
+    /// `major`: major number of API version
+    /// `minor`: minor number of API version
+    ///
+    /// return hexical number as (major << 8 | minor), which encodes both
+    /// major & minor versions.
+    ///
+    /// NOTE: This returned value can be compared with version number made
+    /// with macro CS_MAKE_VERSION
+    ///
+    /// For example, second API version would return 1 in @major, and 1 in @minor
+    /// The return value would be 0x0101
+    ///
+    /// NOTE: if you only care about returned value, but not major and minor values,
+    /// set both `major` & `minor` arguments to NULL.
+    ///
     pub fn cs_version(
         major: *mut ::std::os::raw::c_int,
         minor: *mut ::std::os::raw::c_int,
     ) -> ::std::os::raw::c_uint;
 }
 extern "C" {
+    /// This API can be used to either ask for archs supported by this library,
+    /// or check to see if the library was compile with 'diet' option (or called
+    /// in 'diet' mode).
+    ///
+    /// To check if a particular arch is supported by this library, set @query to
+    /// arch mode (CS_ARCH_* value).
+    /// To verify if this library supports all the archs, use CS_ARCH_ALL.
+    ///
+    /// To check if this library is in 'diet' mode, set @query to CS_SUPPORT_DIET.
+    ///
+    /// return True if this library supports the given arch, or in 'diet' mode.
+    ///
     pub fn cs_support(query: ::std::os::raw::c_int) -> bool;
 }
 extern "C" {
+    /// Initialize CS handle: this must be done before any usage of CS.
+    ///
+    /// * `arch`: architecture type (CS_ARCH_*)
+    /// * `mode`: hardware mode. This is combined of CS_MODE_*
+    /// * `handle`: pointer to handle, which will be updated at return time
+    ///
+    /// return CS_ERR_OK on success, or other value on failure (refer to cs_err enum
+    /// for detailed error).
+    ///
     pub fn cs_open(arch: cs_arch, mode: cs_mode, handle: *mut csh) -> cs_err::Type;
 }
 extern "C" {
+    /// Close CS handle: MUST do to release the handle when it is not used anymore.
+    /// NOTE: this must be only called when there is no longer usage of Capstone,
+    /// not even access to cs_insn array. The reason is the this API releases some
+    /// cached memory, thus access to any Capstone API after cs_close() might crash
+    /// your application.
+    ///
+    /// In fact, this API invalidate `handle` by ZERO out its value (i.e *handle = 0).
+    ///
+    /// `handle`: pointer to a handle returned by cs_open()
+    ///
+    /// return CS_ERR_OK on success, or other value on failure (refer to cs_err enum
+    /// for detailed error).
+    ///
     pub fn cs_close(handle: *mut csh) -> cs_err::Type;
 }
 extern "C" {
+    /// Set option for disassembling engine at runtime
+    ///
+    /// * `handle`: handle returned by cs_open()
+    /// * `type`: type of option to be set
+    /// * `value`: option value corresponding with @type
+    ///
+    /// return: CS_ERR_OK on success, or other value on failure.
+    /// Refer to cs_err enum for detailed error.
+    ///
+    /// NOTE: in the case of CS_OPT_MEM, handle's value can be anything,
+    /// so that cs_option(handle, CS_OPT_MEM, value) can (i.e must) be called
+    /// even before cs_open()
+    ///
     pub fn cs_option(handle: csh, type_: cs_opt_type, value: usize) -> cs_err::Type;
 }
 extern "C" {
+    /// Report the last error number when some API function fail.
+    /// Like glibc's errno, cs_errno might not retain its old value once accessed.
+    ///
+    /// `handle`: handle returned by cs_open()
+    ///
+    /// return: error code of cs_err enum type (CS_ERR_*, see above)
+    ///
     pub fn cs_errno(handle: csh) -> cs_err::Type;
 }
 extern "C" {
+    /// Return a string describing given error code.
+    ///
+    /// `code`: error code (see CS_ERR_* above)
+    ///
+    /// return: returns a pointer to a string that describes the error code
+    /// passed in the argument @code
+    ///
     pub fn cs_strerror(code: cs_err::Type) -> *const ::std::os::raw::c_char;
 }
 extern "C" {
+    /// Disassemble binary code, given the code buffer, size, address and number
+    /// of instructions to be decoded.
+    /// This API dynamically allocate memory to contain disassembled instruction.
+    /// Resulted instructions will be put into *`insn`
+    ///
+    /// NOTE 1: this API will automatically determine memory needed to contain
+    /// output disassembled instructions in `insn`.
+    ///
+    /// NOTE 2: caller must free the allocated memory itself to avoid memory leaking.
+    ///
+    /// NOTE 3: for system with scarce memory to be dynamically allocated such as
+    /// OS kernel or firmware, the API cs_disasm_iter() might be a better choice than
+    /// cs_disasm(). The reason is that with cs_disasm(), based on limited available
+    /// memory, we have to calculate in advance how many instructions to be disassembled,
+    /// which complicates things. This is especially troublesome for the case `count`=0,
+    /// when cs_disasm() runs uncontrollably (until either end of input buffer, or
+    /// when it encounters an invalid instruction).
+    ///
+    /// `handle`: handle returned by cs_open()
+    ///
+    /// `code`: buffer containing raw binary code to be disassembled.
+    ///
+    /// `code_size`: size of the above code buffer.
+    ///
+    /// `address`: address of the first instruction in given raw code buffer.
+    ///
+    /// `insn`: array of instructions filled in by this API. NOTE: `insn` will be allocated by this function, and should be freed with cs_free() API.
+    ///
+    /// `count`: number of instructions to be disassembled, or 0 to get all of them
+    ///
+    /// return: the number of successfully disassembled instructions,
+    /// or 0 if this function failed to disassemble the given code
+    ///
+    /// On failure, call cs_errno() for error code.
+    ///
     pub fn cs_disasm(
         handle: csh,
         code: *const u8,
@@ -7790,6 +8015,10 @@ extern "C" {
     ) -> usize;
 }
 extern "C" {
+
+    /// Deprecated function - to be retired in the next version!
+    ///
+    /// Use cs_disasm() instead of cs_disasm_ex()
     pub fn cs_disasm_ex(
         handle: csh,
         code: *const u8,
@@ -7800,12 +8029,59 @@ extern "C" {
     ) -> usize;
 }
 extern "C" {
+    /// Free memory allocated by cs_malloc() or cs_disasm() (argument @insn)
+    ///
+    /// `insn`: pointer returned by @insn argument in cs_disasm() or cs_malloc()
+    /// `count`: number of cs_insn structures returned by cs_disasm(), or 1
+    /// to free memory allocated by cs_malloc().
+    ///
     pub fn cs_free(insn: *mut cs_insn, count: usize);
 }
 extern "C" {
+    /// Allocate memory for 1 instruction to be used by cs_disasm_iter().
+    ///
+    /// `handle`: handle returned by cs_open()
+    ///
+    /// NOTE: when no longer in use, you can reclaim the memory allocated for
+    /// this instruction with cs_free(insn, 1)
+    ///
     pub fn cs_malloc(handle: csh) -> *mut cs_insn;
 }
 extern "C" {
+    /// Fast API to disassemble binary code, given the code buffer, size, address
+    /// and number of instructions to be decoded.
+    /// This API put the resulted instruction into a given cache in @insn.
+    /// See tests/test_iter.c for sample code demonstrating this API.
+    ///
+    /// NOTE 1: this API will update `code`, `size` & `address` to point to the next
+    /// instruction in the input buffer. Therefore, it is convenient to use
+    /// cs_disasm_iter() inside a loop to quickly iterate all the instructions.
+    /// While decoding one instruction at a time can also be achieved with
+    /// cs_disasm(count=1), some benchmarks shown that cs_disasm_iter() can be 30%
+    /// faster on random input.
+    ///
+    /// NOTE 2: the cache in `insn` can be created with cs_malloc() API.
+    ///
+    /// NOTE 3: for system with scarce memory to be dynamically allocated such as
+    /// OS kernel or firmware, this API is recommended over cs_disasm(), which
+    /// allocates memory based on the number of instructions to be disassembled.
+    /// The reason is that with cs_disasm(), based on limited available memory,
+    /// we have to calculate in advance how many instructions to be disassembled,
+    /// which complicates things. This is especially troublesome for the case
+    /// `count`=0, when cs_disasm() runs uncontrollably (until either end of input
+    /// buffer, or when it encounters an invalid instruction).
+    ///
+    /// * `handle`: handle returned by cs_open()
+    /// * `code`: buffer containing raw binary code to be disassembled
+    /// * `code_size`: size of above code
+    /// * `address`: address of the first insn in given raw code buffer
+    /// * `insn`: pointer to instruction to be filled in by this API.
+    ///
+    /// return: true if this API successfully decode 1 instruction,
+    /// or false otherwise.
+    ///
+    /// On failure, call cs_errno() for error code.
+    ///
     pub fn cs_disasm_iter(
         handle: csh,
         code: *mut *const u8,
@@ -7815,24 +8091,73 @@ extern "C" {
     ) -> bool;
 }
 extern "C" {
+    /// Return friendly name of register in a string.
+    /// Find the instruction id from header file of corresponding architecture (arm.h for ARM,
+    /// x86.h for X86, ...)
+    ///
+    /// WARN: when in 'diet' mode, this API is irrelevant because engine does not
+    /// store register name.
+    ///
+    /// * `handle`: handle returned by cs_open()
+    /// * `reg_id`: register id
+    ///
+    /// return: string name of the register, or NULL if `reg_id` is invalid.
+    ///
     pub fn cs_reg_name(
         handle: csh,
         reg_id: ::std::os::raw::c_uint,
     ) -> *const ::std::os::raw::c_char;
 }
 extern "C" {
+    /// Return friendly name of an instruction in a string.
+    /// Find the instruction id from header file of corresponding architecture (arm.h for ARM, x86.h for X86, ...)
+    ///
+    /// WARN: when in 'diet' mode, this API is irrelevant because the engine does not
+    /// store instruction name.
+    ///
+    /// * `handle`: handle returned by cs_open()
+    /// * `insn_id`: instruction id
+    ///
+    /// return: string name of the instruction, or NULL if `insn_id` is invalid.
+    ///
     pub fn cs_insn_name(
         handle: csh,
         insn_id: ::std::os::raw::c_uint,
     ) -> *const ::std::os::raw::c_char;
 }
 extern "C" {
+    /// Return friendly name of a group id (that an instruction can belong to)
+    /// Find the group id from header file of corresponding architecture (arm.h for ARM, x86.h for X86, ...)
+    ///
+    /// WARN: when in 'diet' mode, this API is irrelevant because the engine does not
+    /// store group name.
+    ///
+    /// * `handle`: handle returned by cs_open()
+    /// * `group_id`: group id
+    ///
+    /// return: string name of the group, or NULL if `group_id` is invalid.
+    ///
     pub fn cs_group_name(
         handle: csh,
         group_id: ::std::os::raw::c_uint,
     ) -> *const ::std::os::raw::c_char;
 }
 extern "C" {
+    /// Check if a disassembled instruction belong to a particular group.
+    /// Find the group id from header file of corresponding architecture (arm.h for ARM, x86.h for X86, ...)
+    /// Internally, this simply verifies if `group_id` matches any member of insn->groups array.
+    ///
+    /// NOTE: this API is only valid when detail option is ON (which is OFF by default).
+    ///
+    /// WARN: when in 'diet' mode, this API is irrelevant because the engine does not
+    /// update `groups` array.
+    ///
+    /// * `handle`: handle returned by cs_open()
+    /// * `insn`: disassembled instruction structure received from cs_disasm() or cs_disasm_iter()
+    /// * `group_id`: group that you want to check if this instruction belong to.
+    ///
+    /// return: true if this instruction indeed belongs to aboved group, or false otherwise.
+    ///
     pub fn cs_insn_group(
         handle: csh,
         insn: *const cs_insn,
@@ -7840,12 +8165,52 @@ extern "C" {
     ) -> bool;
 }
 extern "C" {
+    /// Check if a disassembled instruction IMPLICITLY used a particular register.
+    /// Find the register id from header file of corresponding architecture (arm.h for ARM, x86.h for X86, ...)
+    /// Internally, this simply verifies if `reg_id` matches any member of insn->regs_read array.
+    ///
+    /// NOTE: this API is only valid when detail option is ON (which is OFF by default)
+    ///
+    /// WARN: when in 'diet' mode, this API is irrelevant because the engine does not
+    /// update `regs_read` array.
+    ///
+    /// * `insn`: disassembled instruction structure received from cs_disasm() or cs_disasm_iter()
+    /// * `reg_id`: register that you want to check if this instruction used it.
+    ///
+    /// return: true if this instruction indeed implicitly used aboved register, or false otherwise.
+    ///
     pub fn cs_reg_read(handle: csh, insn: *const cs_insn, reg_id: ::std::os::raw::c_uint) -> bool;
 }
 extern "C" {
+    /// Check if a disassembled instruction IMPLICITLY modified a particular register.
+    /// Find the register id from header file of corresponding architecture (arm.h for ARM, x86.h for X86, ...)
+    /// Internally, this simply verifies if @reg_id matches any member of insn->regs_write array.
+    ///
+    /// NOTE: this API is only valid when detail option is ON (which is OFF by default)
+    ///
+    /// WARN: when in 'diet' mode, this API is irrelevant because the engine does not
+    /// update @regs_write array.
+    ///
+    /// * `insn`: disassembled instruction structure received from cs_disasm() or cs_disasm_iter()
+    /// * `reg_id`: register that you want to check if this instruction modified it.
+    ///
+    /// return: true if this instruction indeed implicitly modified aboved register, or false otherwise.
+    ///
     pub fn cs_reg_write(handle: csh, insn: *const cs_insn, reg_id: ::std::os::raw::c_uint) -> bool;
 }
 extern "C" {
+    /// Count the number of operands of a given type.
+    /// Find the operand type in header file of corresponding architecture (arm.h for ARM, x86.h for X86, ...)
+    ///
+    /// NOTE: this API is only valid when detail option is ON (which is OFF by default)
+    ///
+    /// * `handle`: handle returned by cs_open()
+    /// * `insn`: disassembled instruction structure received from cs_disasm() or cs_disasm_iter()
+    /// * `op_type`: Operand type to be found.
+    ///
+    /// return: number of operands of given type `op_type` in instruction `insn`,
+    /// or -1 on failure.
+    ///
     pub fn cs_op_count(
         handle: csh,
         insn: *const cs_insn,
@@ -7853,6 +8218,21 @@ extern "C" {
     ) -> ::std::os::raw::c_int;
 }
 extern "C" {
+    /// Retrieve the position of operand of given type in <arch>.operands[] array.
+    /// Later, the operand can be accessed using the returned position.
+    /// Find the operand type in header file of corresponding architecture (arm.h for ARM, x86.h for X86, ...)
+    ///
+    /// NOTE: this API is only valid when detail option is ON (which is OFF by default)
+    ///
+    /// * `handle`: handle returned by cs_open()
+    /// * `insn`: disassembled instruction structure received from cs_disasm() or cs_disasm_iter()
+    /// * `op_type`: Operand type to be found.
+    /// * `position`: position of the operand to be found. This must be in the range
+    ///   [1, cs_op_count(handle, insn, op_type)]
+    ///
+    /// return: index of operand of given type `op_type` in <arch>.operands[] array
+    /// in instruction `insn`, or -1 on failure.
+    ///
     pub fn cs_op_index(
         handle: csh,
         insn: *const cs_insn,
