@@ -483,6 +483,8 @@ static int readPrefixes(struct InternalInstruction *insn)
 	bool hasAdSize = false;
 	bool hasOpSize = false;
 
+	//initialize to an impossible value
+	insn->necessaryPrefixLocation = insn->readerCursor - 1;
 	while (isPrefix) {
 		if (insn->mode == MODE_64BIT) {
 			// eliminate consecutive redundant REX bytes in front
@@ -543,9 +545,8 @@ static int readPrefixes(struct InternalInstruction *insn)
 			 * - it is followed by an xchg instruction
 			 * then it should be disassembled as a xacquire/xrelease not repne/rep.
 			 */
-			if ((byte == 0xf2 || byte == 0xf3) &&
-					((nextByte == 0xf0) |
-					 ((nextByte & 0xfe) == 0x86 || (nextByte & 0xf8) == 0x90)))
+			if (((nextByte == 0xf0) ||
+				((nextByte & 0xfe) == 0x86 || (nextByte & 0xf8) == 0x90)))
 				insn->xAcquireRelease = true;
 			/*
 			 * Also if the byte is 0xf3, and the following condition is met:
@@ -1536,6 +1537,8 @@ static int readModRM(struct InternalInstruction *insn)
 	if (insn->consumedModRM)
 		return 0;
 
+	insn->modRMLocation = insn->readerCursor;
+
 	if (consumeByte(insn, &insn->modRM))
 		return -1;
 
@@ -2043,7 +2046,7 @@ static int readOperands(struct InternalInstruction *insn)
 					return -1;
 				// Apply the AVX512 compressed displacement scaling factor.
 				if (x86OperandSets[insn->spec->operands][index].encoding != ENCODING_REG && insn->eaDisplacement == EA_DISP_8)
-					insn->displacement *= 1 << (x86OperandSets[insn->spec->operands][index].encoding - ENCODING_RM);
+					insn->displacement *= (int64_t)1 << (x86OperandSets[insn->spec->operands][index].encoding - ENCODING_RM);
 				break;
 			case ENCODING_CB:
 			case ENCODING_CW:
@@ -2087,6 +2090,14 @@ static int readOperands(struct InternalInstruction *insn)
 			case ENCODING_Ia:
 				if (readImmediate(insn, insn->addressSize))
 					return -1;
+				/* Direct memory-offset (moffset) immediate will get mapped
+				   to memory operand later. We want the encoding info to
+				   reflect that as well. */
+				insn->displacementOffset = insn->immediateOffset;
+				insn->displacementSize = insn->immediateSize;
+				insn->displacement = insn->immediates[insn->numImmediatesConsumed - 1];
+				insn->immediateOffset = 0;
+				insn->immediateSize = 0;
 				break;
 			case ENCODING_RB:
 				if (readOpcodeRegister(insn, 1))
@@ -2355,6 +2366,7 @@ int decodeInstruction(struct InternalInstruction *insn,
 	insn->reader = reader;
 	insn->readerArg = readerArg;
 	insn->startLocation = startLoc;
+	insn->modRMLocation = 0;
 	insn->readerCursor = startLoc;
 	insn->mode = mode;
 

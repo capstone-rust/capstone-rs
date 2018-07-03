@@ -18,7 +18,7 @@ travis-ci = { repository = "capstone-rust/capstone-sys" }
 [dependencies]
 
 [build-dependencies]
-bindgen = { optional = true, version = "0.35.0" }
+bindgen = { optional = true, version = "0.37.4" }
 pkg-config = { optional = true, version = "0.3" }
 cmake = { optional = true, version = "0.1.28" }
 cc = { optional = true, version = "1.0" }
