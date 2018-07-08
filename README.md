@@ -6,6 +6,7 @@ Low-level, unsafe Rust bindings for the [`Capstone`][capstone] disassembly libra
 
 [![Crates.io Badge](https://img.shields.io/crates/v/capstone-sys.svg)](https://crates.io/crates/capstone-sys)
 [![Travis CI Badge](https://travis-ci.org/capstone-rust/capstone-sys.svg?branch=master)](https://travis-ci.org/capstone-rust/capstone-sys)
+[![Appveyor CI Badge](https://ci.appveyor.com/api/projects/status/github/capstone-rust/capstone-sys?svg=true&branch=master)](https://ci.appveyor.com/project/tmfink/capstone-sys)
 
 **[API Documentation](https://docs.rs/capstone-sys/)**
 
