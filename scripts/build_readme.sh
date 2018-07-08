@@ -12,7 +12,7 @@ build() {
     pandoc \
         -f gfm -t html5 \
         --css github-md.css -Vpagetitle=capstone-sys \
-        --standalone --self-contained \
+        --standalone \
         ${base}.md -o ${base}.html
 }
 
