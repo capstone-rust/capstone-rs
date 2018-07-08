@@ -14,7 +14,7 @@ version = "0.4.0"
 travis-ci = { repository = "capstone-rust/capstone-rs" }
 
 [dependencies]
-capstone-sys = "0.8.0"
+capstone-sys = "0.9.0"
 
 [dev-dependencies]
 macho = "0.*"
@@ -30,8 +30,5 @@ harness = false
 [features]
 default = []
 
-use_system_capstone = ["capstone-sys/use_system_capstone"]
-build_capstone_cmake = ["capstone-sys/build_capstone_cmake"]
-build_capstone_cc = ["capstone-sys/build_capstone_cc"]
 use_bindgen = ["capstone-sys/use_bindgen"]
 alloc_system = []
