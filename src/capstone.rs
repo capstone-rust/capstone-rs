@@ -9,7 +9,6 @@ use std::ffi::CStr;
 use std::marker::PhantomData;
 use std::mem;
 use std::os::raw::{c_int, c_uint, c_void};
-use std::sync::{Once, ONCE_INIT};
 
 /// An instance of the capstone disassembler
 #[derive(Debug)]
@@ -94,32 +93,6 @@ impl Iterator for EmptyExtraModeIter {
     }
 }
 
-/// Global indicating whether the Capstone initialization has happened
-static INIT: Once = ONCE_INIT;
-
-/// Initialize global Capstone state in C library
-///
-/// # CLAIMS
-///
-/// 1. Any function *F* (including methods) that calls a `capstone-sys` function *G* where *G*
-///    potentially mutates global state must ensure `init_global_state()` is called first.
-/// 2. Let *T* be a `struct`/`enum` with at least one non-public field and methods *M* defined. If
-///    all constructors *C* (functions that return type *C*) for *T* call `init_global_state()`,
-///    then methods *M* that take a `self` parameter do not need to call `init_global_state()`.
-///
-///    Any `self` instance should have been been created by a constructor *C* that already called
-///    `init_global_state()` because *T* has non-public fields. Hence, consumers of the library
-///    cannot construct a *T* manually.
-fn init_global_state() {
-    INIT.call_once(|| {
-        // We need to call archs_enable (a C Capstone function) in a thread-safe manner.
-        // Capstone::lib_version calls cs_version which calls archs_enable.
-        let mut a = 0;
-        let mut b = 0;
-        unsafe { cs_version(&mut a, &mut b) };
-    });
-}
-
 impl<'cs> Capstone<'cs> {
     /// Create a new instance of the decompiler using the builder pattern interface.
     /// This is the recommended interface to `Capstone`.
@@ -129,7 +102,6 @@ impl<'cs> Capstone<'cs> {
     /// let cs = Capstone::new().x86().mode(arch::x86::ArchMode::Mode32).build();
     /// ```
     pub fn new() -> CapstoneBuilder {
-        // CLAIM: calls new_raw() which calls init_global_state()
         CapstoneBuilder::new()
     }
 
@@ -147,9 +119,6 @@ impl<'cs> Capstone<'cs> {
         extra_mode: T,
         endian: Option<Endian>,
     ) -> CsResult<Capstone<'cs>> {
-        // Constructor needs call to ensure global state is initialized
-        init_global_state();
-
         let mut handle: csh = 0;
         let csarch: cs_arch = arch.into();
         let csmode: cs_mode = mode.into();
@@ -212,8 +181,6 @@ impl<'cs> Capstone<'cs> {
     ///
     /// Pass `count = 0` to disassemble all instructions in the buffer.
     fn disasm<'a>(&mut self, code: &[u8], addr: u64, count: usize) -> CsResult<Instructions<'a>> {
-        // CLAIM: Capstone::new_raw() already called init_global_state()
-
         let mut ptr: *mut cs_insn = unsafe { mem::zeroed() };
         let insn_count = unsafe {
             cs_disasm(
@@ -343,7 +310,6 @@ impl<'cs> Capstone<'cs> {
 
     /// Converts a register id `reg_id` to a `String` containing the register name.
     pub fn reg_name(&self, reg_id: RegId) -> Option<String> {
-        init_global_state();
         let reg_name = unsafe {
             let _reg_name = cs_reg_name(self.csh(), c_uint::from(reg_id.0));
             if _reg_name.is_null() {
@@ -406,9 +372,6 @@ impl<'cs> Capstone<'cs> {
 
     /// Returns a tuple (major, minor) indicating the version of the capstone C library.
     pub fn lib_version() -> (u32, u32) {
-        // Needs call to ensure global state is initialized
-        init_global_state();
-
         let mut major: c_int = 0;
         let mut minor: c_int = 0;
         let major_ptr: *mut c_int = &mut major;
@@ -423,17 +386,11 @@ impl<'cs> Capstone<'cs> {
 
     /// Returns whether the capstone library supports a given architecture.
     pub fn supports_arch(arch: Arch) -> bool {
-        // Needs call to ensure global state is initialized
-        init_global_state();
-
         unsafe { cs_support(arch as c_int) }
     }
 
     /// Returns whether the capstone library was compiled in diet mode.
     pub fn is_diet() -> bool {
-        // Needs call to ensure global state is initialized
-        init_global_state();
-
         unsafe { cs_support(CS_SUPPORT_DIET as c_int) }
     }
 }
