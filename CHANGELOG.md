@@ -4,9 +4,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased] - YYYY-MM-DD
-### Added
-* TODO (or remove section if none)
+## [0.9.0] - 2018-07-08
 
 ### Changed
 - Upgraded bundled capstone from
@@ -14,20 +12,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   which incorporates upstream Capstone PR
   [#1171](https://github.com/aquynh/capstone/pull/1171)
 - Always use `cc` crate to build Capstone
-    - The old build features were never used and complicated the code/documentation
-
-### Deprecated
-- TODO (or remove section if none)
 
 ### Removed
 - Features affecting build: `use_system_capstone`, `build_capstone_cmake`, `build_capstone_cc`
-
-### Fixed
-- TODO (or remove section if none)
-
-### Security
-- TODO (or remove section if none)
-
+    - The old build features were never used and complicated the code/documentation
 
 ## [0.8.0] - 2018-06-02
 ### Added
@@ -69,6 +57,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Removed
 - Dependency
 
+[0.9.0]: https://github.com/capstone-rust/capstone-sys/compare/v0.8.0...v0.9.0
 [0.8.0]: https://github.com/capstone-rust/capstone-sys/compare/v0.7.0...v0.8.0
 [0.7.0]: https://github.com/capstone-rust/capstone-sys/compare/v0.6.0...v0.7.0
 [0.6.0]: https://github.com/capstone-rust/capstone-sys/compare/v0.5.0...v0.6.0
