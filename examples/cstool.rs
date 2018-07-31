@@ -238,6 +238,13 @@ fn main() {
                 .takes_value(false),
         )
         .arg(
+            Arg::with_name("code")
+                .short("c")
+                .long("code")
+                .help("instruction bytes (implies --hex)")
+                .takes_value(true),
+        )
+        .arg(
             Arg::with_name("address")
                 .short("r")
                 .long("addr")
@@ -309,28 +316,28 @@ fn main() {
             ArgGroup::with_name("INPUT")
                 .arg("file")
                 .arg("stdin")
+                .arg("code")
                 .required(true),
         )
         .get_matches();
 
-    let direct_input_bytes: Vec<u8> = match matches.value_of("INPUT") {
-        Some(file_path) => {
-            let mut file = File::open(file_path).expect_exit();
-            let capacity = match file.metadata() {
-                Err(_) => DEFAULT_CAPACITY,
-                Ok(metadata) => metadata.len() as usize,
-            };
-            let mut buf = Vec::with_capacity(capacity as usize);
-            file.read_to_end(&mut buf).expect_exit();
-            buf
-        }
-        None => {
-            let mut buf = Vec::with_capacity(DEFAULT_CAPACITY);
-            let mut stdin = std::io::stdin();
-            let mut stdin = stdin.lock();
-            stdin.read_to_end(&mut buf).expect_exit();
-            buf
-        }
+    let direct_input_bytes: Vec<u8> = if let Some(file_path) = matches.value_of("file") {
+        let mut file = File::open(file_path).expect_exit();
+        let capacity = match file.metadata() {
+            Err(_) => DEFAULT_CAPACITY,
+            Ok(metadata) => metadata.len() as usize,
+        };
+        let mut buf = Vec::with_capacity(capacity as usize);
+        file.read_to_end(&mut buf).expect_exit();
+        buf
+    } else if let Some(code) = matches.value_of("code") {
+        code.as_bytes().iter().map(|x| *x).collect()
+    } else {
+        let mut buf = Vec::with_capacity(DEFAULT_CAPACITY);
+        let mut stdin = std::io::stdin();
+        let mut stdin = stdin.lock();
+        stdin.read_to_end(&mut buf).expect_exit();
+        buf
     };
 
     stderrlog::new()
@@ -338,7 +345,7 @@ fn main() {
         .init()
         .unwrap();
 
-    let is_hex = matches.is_present("hex");
+    let is_hex = matches.is_present("hex") || matches.is_present("code");
     info!("is_hex = {:?}", is_hex);
 
     let show_detail = matches.is_present("DETAIL");
