@@ -334,9 +334,8 @@ fn main() {
         code.as_bytes().iter().map(|x| *x).collect()
     } else {
         let mut buf = Vec::with_capacity(DEFAULT_CAPACITY);
-        let mut stdin = std::io::stdin();
-        let mut stdin = stdin.lock();
-        stdin.read_to_end(&mut buf).expect_exit();
+        let stdin = std::io::stdin();
+        stdin.lock().read_to_end(&mut buf).expect_exit();
         buf
     };
 
