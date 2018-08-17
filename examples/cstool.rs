@@ -130,21 +130,19 @@ where
 }
 
 /// Select only hex bytes from input
-fn unhexed_bytes(input: Vec<u8>) -> Vec<u8> {
-    let mut output: Vec<u8> = Vec::new();
-    let mut curr_byte_str = String::with_capacity(2);
-    for b_u8 in input {
-        let b = char::from(b_u8);
-        if ('0' <= b && b <= '9') || ('a' <= b && b <= 'f') || ('A' <= b && b <= 'F') {
-            curr_byte_str.push(b);
+fn unhexed_bytes(input: &[u8]) -> Vec<u8> {
+    let mut hex_bytes_iter = input.iter().filter_map(|b| {
+        match b {
+            &b'0'...b'9' => Some(b - b'0'),
+            &b'a'...b'f' => Some(b - b'a' + 10),
+            &b'A'...b'F' => Some(b - b'A' + 10),
+            _ => None,
         }
+    }).fuse();
 
-        if curr_byte_str.len() == 2 {
-            debug!("  curr_byte_str={:?}", curr_byte_str);
-            let byte = u8::from_str_radix(&curr_byte_str, 16).expect("Unexpect hex parse error");
-            output.push(byte);
-            curr_byte_str.clear();
-        }
+    let mut output: Vec<u8> = Vec::new();
+    while let (Some(h), Some(l)) = (hex_bytes_iter.next(), hex_bytes_iter.next()) {
+        output.push(h << 4 | l)
     }
 
     if log::max_level() >= log::LevelFilter::Info {
@@ -378,7 +376,7 @@ fn main() {
     info!("Address = 0x{:x}", address);
 
     let input_bytes = if is_hex {
-        unhexed_bytes(direct_input_bytes)
+        unhexed_bytes(&direct_input_bytes)
     } else {
         direct_input_bytes
     };
