@@ -135,7 +135,7 @@ Supports features in [`capstone-sys`](https://crates.io/crates/capstone-sys) tha
 ## Original Features
 
 `alloc_system`: use the system allocator instead of the default Rust allocator.
-This feature is *only* available on Nightly rust.
+This feature is *only* available on Rust 1.28 and later.
 Useful for running valgrind.
 
 # Reporting Issues

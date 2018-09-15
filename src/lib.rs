@@ -121,9 +121,6 @@
 //! [upstream]: http://capstone-engine.org/
 //!
 
-#![cfg_attr(feature = "alloc_system", feature(global_allocator))]
-#![cfg_attr(feature = "alloc_system", feature(allocator_api))]
-
 extern crate capstone_sys;
 
 pub mod arch;
