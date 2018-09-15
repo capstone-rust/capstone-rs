@@ -128,12 +128,6 @@ More complex demos welcome!
 
 # Features
 
-## `capstone-sys` Features
-
-Supports features in [`capstone-sys`](https://crates.io/crates/capstone-sys) that affect how the Capstone C library is built.
-
-## Original Features
-
 `alloc_system`: use the system allocator instead of the default Rust allocator.
 This feature is *only* available on Nightly rust.
 Useful for running valgrind.
