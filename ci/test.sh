@@ -4,9 +4,10 @@
 # Environment variables:
 #
 # FEATURES: (none by default)
-# JOB: {*test,bench,cov}
+# JOB: {*test,valgrind-test,bench,cov}
 # PROFILES: list of {debug,release} [debug]
 # SHOULD_FAIL: (disabled by default; set to non-empty string to enable)
+# VALGRIND_TESTS: run tests under Valgrind
 
 set -eu
 
@@ -18,6 +19,7 @@ fi
 
 RUST_BACKTRACE=1
 SHOULD_FAIL=${SHOULD_FAIL:-}  # Default to false
+VALGRIND_TESTS=${VALGRIND_TESTS:-}
 FEATURES="${FEATURES-}"  # Default to no features
 PROJECT_NAME="$(grep ^name Cargo.toml | head -n1 | xargs -n1 | tail -n1)"
 
@@ -138,6 +140,30 @@ profile_args() {
     esac
 }
 
+run_tests() {
+    TMPFILE="$(mktemp /tmp/capstone-rs.XXXXXXXXXX)"
+    [ -f "$TMPFILE" ] || Error "Could not make temp file"
+    for PROFILE in $PROFILES; do
+        echo "Cargo tests without Valgrind"
+        expect_exit_status "$SHOULD_FAIL" \
+            cargo test $(profile_args) --features "$FEATURES" --verbose \
+            --color=always -- --color=always |& tee "$TMPFILE"
+
+        if [ ! "${VALGRIND_TESTS}" ]; then
+            continue
+        fi
+
+        test_binary="$(cat "$TMPFILE" |
+            grep -E 'Running[^`]*`'  |
+            grep -vE '`rustdoc[^`]*' |
+            sed 's/^.*Running[^`]*`\([^` ]*\).*$/\1/')"
+        [ -f "$test_binary" ] || Error "Unable to determine test binary (for Valgrind)"
+        echo "Cargo tests WITH Valgrind"
+        valgrind --error-exitcode=1 "$test_binary"
+    done
+    rm "$TMPFILE"
+}
+
 PROFILES="${PROFILES-debug release}"
 for PROFILE in $PROFILES; do
     profile_args "$PROFILE"
@@ -153,10 +179,10 @@ if [ $(basename "$0") = "test.sh" ]; then
 
     case "$JOB" in
         test)
-            for PROFILE in $PROFILES; do
-                expect_exit_status "$SHOULD_FAIL" \
-                    cargo test $(profile_args) --features "$FEATURES" --verbose
-            done
+            run_tests
+            ;;
+        valgrind-test)
+            VALGRIND_TESTS=: run_tests
             ;;
         cov)
             PROFILE=debug $JOB
