@@ -25,6 +25,8 @@ pub type InsnGroupIdInt = u8;
 #[derive(Copy, Clone, Debug, Hash, PartialEq, Eq, PartialOrd, Ord)]
 pub struct InsnGroupId(pub InsnGroupIdInt);
 
+pub use capstone_sys::cs_group_type as InsnGroupType;
+
 /// Integer type used in `RegId`
 pub type RegIdInt = u16;
 
