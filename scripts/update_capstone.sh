@@ -3,7 +3,7 @@
 # Update the bundled capstone library
 
 # Modify value to update capstone
-CAPSTONE_REVISION="a31b532864639e2456aa1301f7d7f82d0abe1df0"
+CAPSTONE_REVISION="db19431d4bb787019ca94d8f2a558f0ed46341a7"
 
 set -eux
 

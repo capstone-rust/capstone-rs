@@ -6108,20 +6108,6 @@ impl ::std::fmt::Debug for cs_x86_op {
     }
 }
 #[repr(C)]
-#[derive(Debug, Copy)]
-pub struct cs_x86_encoding {
-    pub modrm_offset: u8,
-    pub disp_offset: u8,
-    pub disp_size: u8,
-    pub imm_offset: u8,
-    pub imm_size: u8,
-}
-impl Clone for cs_x86_encoding {
-    fn clone(&self) -> Self {
-        *self
-    }
-}
-#[repr(C)]
 #[derive(Copy)]
 pub struct cs_x86 {
     pub prefix: [u8; 4usize],
@@ -6140,7 +6126,6 @@ pub struct cs_x86 {
     pub avx_rm: x86_avx_rm,
     pub op_count: u8,
     pub operands: [cs_x86_op; 8usize],
-    pub encoding: cs_x86_encoding,
 }
 impl Clone for cs_x86 {
     fn clone(&self) -> Self {
@@ -6149,7 +6134,7 @@ impl Clone for cs_x86 {
 }
 impl ::std::fmt::Debug for cs_x86 {
     fn fmt(&self, f: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
-        write ! ( f , "cs_x86 {{ prefix: {:?}, opcode: {:?}, rex: {:?}, addr_size: {:?}, modrm: {:?}, sib: {:?}, disp: {:?}, sib_index: {:?}, sib_scale: {:?}, sib_base: {:?}, sse_cc: {:?}, avx_cc: {:?}, avx_sae: {:?}, avx_rm: {:?}, op_count: {:?}, operands: {:?}, encoding: {:?} }}" , self . prefix , self . opcode , self . rex , self . addr_size , self . modrm , self . sib , self . disp , self . sib_index , self . sib_scale , self . sib_base , self . sse_cc , self . avx_cc , self . avx_sae , self . avx_rm , self . op_count , self . operands , self . encoding )
+        write ! ( f , "cs_x86 {{ prefix: {:?}, opcode: {:?}, rex: {:?}, addr_size: {:?}, modrm: {:?}, sib: {:?}, disp: {:?}, sib_index: {:?}, sib_scale: {:?}, sib_base: {:?}, sse_cc: {:?}, avx_cc: {:?}, avx_sae: {:?}, avx_rm: {:?}, op_count: {:?}, operands: {:?} }}" , self . prefix , self . opcode , self . rex , self . addr_size , self . modrm , self . sib , self . disp , self . sib_index , self . sib_scale , self . sib_base , self . sse_cc , self . avx_cc , self . avx_sae , self . avx_rm , self . op_count , self . operands )
     }
 }
 #[repr(u32)]
