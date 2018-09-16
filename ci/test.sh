@@ -144,10 +144,13 @@ run_tests() {
     TMPFILE="$(mktemp /tmp/capstone-rs.XXXXXXXXXX)"
     [ -f "$TMPFILE" ] || Error "Could not make temp file"
     for PROFILE in $PROFILES; do
+        cargo build $(profile_args) --features "$FEATURES" --verbose
+
         echo "Cargo tests without Valgrind"
         expect_exit_status "$SHOULD_FAIL" \
             cargo test $(profile_args) --features "$FEATURES" --verbose \
-            --color=always -- --color=always |& tee "$TMPFILE"
+            --color=always -- --color=always |&
+            tee "$TMPFILE"
 
         if [ ! "${VALGRIND_TESTS}" ]; then
             continue
