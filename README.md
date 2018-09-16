@@ -39,8 +39,6 @@ Instead, consider using [capstone-rs](https://github.com/capstone-rust/capstone-
 | `i686-unknown-linux-gnu`   | X  |
 | `x86_64-unknown-freebsd`   | X  |
 
-[issue18]: https://github.com/capstone-rust/capstone-sys/issues/18
-
 ## Features
 
 You can specify the following [features](https://doc.rust-lang.org/cargo/reference/manifest.html#the-features-section) in `Cargo.toml`:
