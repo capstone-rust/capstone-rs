@@ -149,7 +149,7 @@ run_tests() {
         echo "Cargo tests without Valgrind"
         expect_exit_status "$SHOULD_FAIL" \
             cargo test $(profile_args) --features "$FEATURES" --verbose \
-            --color=always -- --color=always |& tee "$TMPFILE"
+            |& tee "$TMPFILE"
 
         if [ ! "${VALGRIND_TESTS}" ]; then
             continue
