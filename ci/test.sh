@@ -149,8 +149,7 @@ run_tests() {
         echo "Cargo tests without Valgrind"
         expect_exit_status "$SHOULD_FAIL" \
             cargo test $(profile_args) --features "$FEATURES" --verbose \
-            --color=always -- --color=always |&
-            tee "$TMPFILE"
+            --color=always -- --color=always |& tee "$TMPFILE"
 
         if [ ! "${VALGRIND_TESTS}" ]; then
             continue
@@ -160,7 +159,8 @@ run_tests() {
             grep -E 'Running[^`]*`'  |
             grep -vE '`rustdoc[^`]*' |
             sed 's/^.*Running[^`]*`\([^` ]*\).*$/\1/')"
-        [ -f "$test_binary" ] || Error "Unable to determine test binary (for Valgrind)"
+        [ -f "$test_binary" ] ||
+            Error "Unable to determine test binary (for Valgrind); found '$test_binary'"
         echo "Cargo tests WITH Valgrind"
         valgrind --error-exitcode=1 "$test_binary"
     done
@@ -180,6 +180,7 @@ done
 if [ $(basename "$0") = "test.sh" ]; then
     JOB="${JOB:-test}"
 
+    set -x
     case "$JOB" in
         test)
             run_tests
