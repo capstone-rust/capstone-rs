@@ -34,7 +34,14 @@ fi
 
 echo "Test should $EXPECTED_RESULT"
 
-[ "${TRAVIS_OS_NAME-$(uname)}" = "linux" ] || :
+TRAVIS_OS_NAME="${TRAVIS_OS_NAME:-}"
+if [ TRAVIS_OS_NAME ]; then
+    case "$(uname)" in
+    Linux) TRAVIS_OS_NAME=linux ;;
+    Darwin) TRAVIS_OS_NAME=osx ;;
+    *) Error "Unknown OS" ;;
+    esac
+fi
 
 Error() {
     echo "Error:" "$@" 1>&2
@@ -79,6 +86,18 @@ install_kcov() {
         make -j
         make install DESTDIR=../../kcov-install
     )
+}
+
+install_valgrind() {
+    case "${TRAVIS_OS_NAME}" in
+    linux)
+        sudo apt-get install valgrind -y
+        ;;
+    osx)
+        sudo brew install valgrind
+        ;;
+    *) Error "Valgrind not supported on" ;;
+    esac
 }
 
 # target/ dir is cached, so we need to remove old coverage files
@@ -164,6 +183,8 @@ run_tests() {
             )"
         [ -f "$test_binary" ] ||
             Error "Unable to determine test binary (for Valgrind); found '$test_binary'"
+
+        install_valgrind
         echo "Cargo tests WITH Valgrind"
         valgrind --error-exitcode=1 "$test_binary"
     done
