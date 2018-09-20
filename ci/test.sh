@@ -184,7 +184,6 @@ run_tests() {
         [ -f "$test_binary" ] ||
             Error "Unable to determine test binary (for Valgrind); found '$test_binary'"
 
-        install_valgrind
         echo "Cargo tests WITH Valgrind"
         valgrind --error-exitcode=1 "$test_binary"
     done

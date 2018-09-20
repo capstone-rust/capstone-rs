@@ -33,12 +33,24 @@ matrix:
     - os: linux
       rust: stable
       env: JOB=valgrind-test FEATURES=alloc_system
+      addons:
+        apt:
+          packages:
+            - valgrind
     - os: linux
       rust: beta
       env: JOB=valgrind-test FEATURES=alloc_system
+      addons:
+        apt:
+          packages:
+            - valgrind
     - os: linux
       rust: nightly
       env: JOB=valgrind-test FEATURES=alloc_system
+      addons:
+        apt:
+          packages:
+            - valgrind
     - os: osx
       rust: stable
     - os: osx
