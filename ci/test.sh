@@ -4,9 +4,10 @@
 # Environment variables:
 #
 # FEATURES: (none by default)
-# JOB: {*test,bench,cov}
+# JOB: {*test,valgrind-test,bench,cov}
 # PROFILES: list of {debug,release} [debug]
 # SHOULD_FAIL: (disabled by default; set to non-empty string to enable)
+# VALGRIND_TESTS: run tests under Valgrind
 
 set -eu
 
@@ -18,6 +19,7 @@ fi
 
 RUST_BACKTRACE=1
 SHOULD_FAIL=${SHOULD_FAIL:-}  # Default to false
+VALGRIND_TESTS=${VALGRIND_TESTS:-}
 FEATURES="${FEATURES-}"  # Default to no features
 PROJECT_NAME="$(grep ^name Cargo.toml | head -n1 | xargs -n1 | tail -n1)"
 
@@ -32,7 +34,14 @@ fi
 
 echo "Test should $EXPECTED_RESULT"
 
-[ "${TRAVIS_OS_NAME-$(uname)}" = "linux" ] || :
+TRAVIS_OS_NAME="${TRAVIS_OS_NAME:-}"
+if [ TRAVIS_OS_NAME ]; then
+    case "$(uname)" in
+    Linux) TRAVIS_OS_NAME=linux ;;
+    Darwin) TRAVIS_OS_NAME=osx ;;
+    *) Error "Unknown OS" ;;
+    esac
+fi
 
 Error() {
     echo "Error:" "$@" 1>&2
@@ -77,6 +86,18 @@ install_kcov() {
         make -j
         make install DESTDIR=../../kcov-install
     )
+}
+
+install_valgrind() {
+    case "${TRAVIS_OS_NAME}" in
+    linux)
+        sudo apt-get install valgrind -y
+        ;;
+    osx)
+        sudo brew install valgrind
+        ;;
+    *) Error "Valgrind not supported on" ;;
+    esac
 }
 
 # target/ dir is cached, so we need to remove old coverage files
@@ -138,6 +159,37 @@ profile_args() {
     esac
 }
 
+run_tests() {
+    TMPFILE="$(mktemp /tmp/capstone-rs.XXXXXXXXXX)"
+    [ -f "$TMPFILE" ] || Error "Could not make temp file"
+    for PROFILE in $PROFILES; do
+        echo "Cargo tests without Valgrind"
+        expect_exit_status "$SHOULD_FAIL" \
+            cargo test $(profile_args) \
+            --features "$FEATURES" --verbose \
+            --color=always -- --color=always \
+            2>&1 | tee "$TMPFILE"
+        # Use 2>&1 above instead of '|&' because OS X uses Bash 3
+
+        if [ ! "${VALGRIND_TESTS}" ]; then
+            continue
+        fi
+
+        test_binary="$(cat "$TMPFILE" |
+            grep -E 'Running[^`]*`' |
+            sed 's/^.*Running[^`]*`\([^` ]*\).*$/\1/' |
+            grep -vE '^rustc|rustdoc$' |
+            grep -E '/capstone-[^ -]+$'
+            )"
+        [ -f "$test_binary" ] ||
+            Error "Unable to determine test binary (for Valgrind); found '$test_binary'"
+
+        echo "Cargo tests WITH Valgrind"
+        valgrind --error-exitcode=1 "$test_binary"
+    done
+    rm "$TMPFILE"
+}
+
 PROFILES="${PROFILES-debug release}"
 for PROFILE in $PROFILES; do
     profile_args "$PROFILE"
@@ -151,12 +203,13 @@ done
 if [ $(basename "$0") = "test.sh" ]; then
     JOB="${JOB:-test}"
 
+    set -x
     case "$JOB" in
         test)
-            for PROFILE in $PROFILES; do
-                expect_exit_status "$SHOULD_FAIL" \
-                    cargo test $(profile_args) --features "$FEATURES" --verbose
-            done
+            run_tests
+            ;;
+        valgrind-test)
+            VALGRIND_TESTS=: run_tests
             ;;
         cov)
             PROFILE=debug $JOB
