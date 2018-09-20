@@ -28,18 +28,17 @@ matrix:
   include:
     - os: linux
       rust: 1.23.0
-      env: JOB=valgrind-test
     - os: linux
       rust: stable
-      env: JOB=valgrind-test
+    - os: linux
+      rust: stable
+      env: JOB=valgrind-test FEATURES=alloc_system
     - os: linux
       rust: beta
-      env: JOB=valgrind-test
+      env: JOB=valgrind-test FEATURES=alloc_system
     - os: linux
       rust: nightly
-    - os: linux
-      rust: nightly
-      env: FEATURES=alloc_system
+      env: JOB=valgrind-test FEATURES=alloc_system
     - os: osx
       rust: stable
     - os: osx

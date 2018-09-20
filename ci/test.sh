@@ -144,21 +144,24 @@ run_tests() {
     TMPFILE="$(mktemp /tmp/capstone-rs.XXXXXXXXXX)"
     [ -f "$TMPFILE" ] || Error "Could not make temp file"
     for PROFILE in $PROFILES; do
-        cargo build $(profile_args) --features "$FEATURES" --verbose
-
         echo "Cargo tests without Valgrind"
         expect_exit_status "$SHOULD_FAIL" \
-            cargo test $(profile_args) --features "$FEATURES" --verbose \
-            |& tee "$TMPFILE"
+            cargo test $(profile_args) \
+            --features "$FEATURES" --verbose \
+            --color=always -- --color=always \
+            2>&1 | tee "$TMPFILE"
+        # Use 2>&1 above instead of '|&' because OS X uses Bash 3
 
         if [ ! "${VALGRIND_TESTS}" ]; then
             continue
         fi
 
         test_binary="$(cat "$TMPFILE" |
-            grep -E 'Running[^`]*`'  |
-            grep -vE '`rustdoc[^`]*' |
-            sed 's/^.*Running[^`]*`\([^` ]*\).*$/\1/')"
+            grep -E 'Running[^`]*`' |
+            sed 's/^.*Running[^`]*`\([^` ]*\).*$/\1/' |
+            grep -vE '^rustc|rustdoc$' |
+            grep -E '/capstone-[^ -]+$'
+            )"
         [ -f "$test_binary" ] ||
             Error "Unable to determine test binary (for Valgrind); found '$test_binary'"
         echo "Cargo tests WITH Valgrind"
