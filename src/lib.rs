@@ -1,15 +1,13 @@
-//! # libcapstone.so.3 bindings
+//! Low-level, unsafe Rust bindings for the [`Capstone`][capstone] disassembly library.
 //!
-//! If you want to compile this for another target,  `wasm32-unknown-emscripten`, for example,
-//! it is currently recommended to pass the feature flag `use_bundled_capstone_cmake` to
-//! build capstone using the cmake build system (which requires cmake to be installed).
 //!
-//! This has seen some (limited) testing and has been seen to work on the
-//! `wasm32-unknown-emscripten` target at least.
+//! We recommend against using this crate directly.
+//! Instead, consider using [capstone-rs], which provides a high-level, safe, "Rusty" interface.
 //!
-//! Compiling on windows has not been tested, although this should be easy to setup.
+//! [capstone]: https://github.com/aquynh/capstone
+//! [capstone-rs]: https://github.com/capstone-rust/capstone-rs
 //!
-//! The following architectures are supported:
+//! # Supported disassembly architectures
 //!
 //! * `arm`: ARM
 //! * `arm64`: ARM64 (also known as AArch64)
