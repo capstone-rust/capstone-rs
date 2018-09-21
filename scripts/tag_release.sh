@@ -6,7 +6,9 @@ set -eu
 
 cd "$(dirname $0)/.."
 
-PACKAGE_VERSION="$(grep version Cargo.toml | sed 's/^version.*=.*"\([^"]\+\)"$/\1/')"
+PACKAGE_VERSION="$(grep version Cargo.toml |
+    sed 's/^version.*=.*"\([^"]\+\)"$/\1/' |
+    head -n1)"
 DESCRIPTION="Version ${PACKAGE_VERSION}"
 TAG_NAME="v${PACKAGE_VERSION}"
 
