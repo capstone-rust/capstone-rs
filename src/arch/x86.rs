@@ -10,7 +10,6 @@ use std::{cmp, fmt, slice};
 pub use capstone_sys::x86_insn_group as X86InsnGroup;
 pub use capstone_sys::x86_insn as X86Insn;
 pub use capstone_sys::x86_reg as X86Reg;
-pub use capstone_sys::cs_x86_encoding as X86Encoding;
 
 pub use capstone_sys::x86_avx_bcast as X86AvxBcast;
 pub use capstone_sys::x86_sse_cc as X86SseCC;
@@ -146,11 +145,6 @@ impl<'a> X86InsnDetail<'a> {
     /// Advanced Vector Extensions (AVX) rm
     pub fn avx_rm(&self) -> X86AvxRm {
         self.0.avx_rm
-    }
-
-    /// Encoding of instruction
-    pub fn encoding(&self) -> X86Encoding {
-        self.0.encoding
     }
 }
 
@@ -304,13 +298,6 @@ mod test {
                 avx_zero_opmask: false,
             }
             ; 8],
-            encoding: cs_x86_encoding {
-                modrm_offset: 0,
-                disp_offset: 0,
-                disp_size: 0,
-                imm_offset: 0,
-                imm_size: 0
-            }
 
         };
         let mut a2 = a1.clone();
