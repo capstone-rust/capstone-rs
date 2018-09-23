@@ -156,18 +156,18 @@ impl<'cs> Capstone<'cs> {
     }
 
     /// Disassemble all instructions in buffer
-    pub fn disasm_all<'s, 'c, 'a>(
-        &'s mut self,
-        code: &'c [u8],
+    pub fn disasm_all<'a>(
+        &mut self,
+        code: &[u8],
         addr: u64,
     ) -> CsResult<Instructions<'a>> {
         self.disasm(code, addr, 0)
     }
 
     /// Disassemble `count` instructions in `code`
-    pub fn disasm_count<'s, 'c, 'a>(
-        &'s mut self,
-        code: &'c [u8],
+    pub fn disasm_count<'a>(
+        &mut self,
+        code: &[u8],
         addr: u64,
         count: usize,
     ) -> CsResult<Instructions<'a>> {
