@@ -85,6 +85,67 @@ pub static NO_EXTRA_MODE: EmptyExtraModeIter = EmptyExtraModeIter(PhantomData);
 #[derive(Copy, Clone, Debug, Eq, Hash, PartialEq)]
 pub struct EmptyExtraModeIter(PhantomData<()>);
 
+#[derive(Debug)]
+pub struct DisasmIter<'a, 'b> {
+    cs: &'a mut Capstone<'a>,
+    code_ptr: *const u8,
+    code_len: usize,
+    addr: u64,
+    insn: Box<cs_insn>,
+    detail: Box<cs_detail>,
+    _code_phantom: PhantomData<&'b [u8]>,
+}
+
+impl<'a, 'b> DisasmIter<'a, 'b> {
+    pub(crate) fn new(
+        cs: &'a mut Capstone<'a>,
+        code: &'b [u8],
+        addr: u64,
+    ) -> DisasmIter<'a, 'b> {
+        unsafe {
+            let mut detail: Box<cs_detail> = Box::new(mem::uninitialized());
+            let insn: Box<cs_insn> = Box::new(cs_insn {
+                detail: &mut *detail,
+                ..mem::uninitialized()
+            });
+
+            DisasmIter {
+                cs,
+                code_ptr: code.as_ptr(),
+                code_len: code.len(),
+                addr,
+                insn,
+                detail,
+                _code_phantom: PhantomData,
+            }
+        }
+    }
+}
+
+impl<'a, 'b> Iterator for DisasmIter<'a, 'b> {
+    type Item = Insn<'a>;
+
+    fn next(&mut self) -> Option<Self::Item> {
+        let found_insn: bool = unsafe {
+            cs_disasm_iter(
+                self.cs.csh(),
+                self.code_ptr as *mut *const u8,
+                &mut self.code_len,
+                &mut self.addr,
+                &mut *self.insn,
+            )
+        };
+        if found_insn {
+            Some(Insn {
+                insn: *self.insn,
+                _marker: PhantomData,
+            })
+        } else {
+            None
+        }
+    }
+}
+
 impl Iterator for EmptyExtraModeIter {
     type Item = ExtraMode;
 
@@ -175,6 +236,14 @@ impl<'cs> Capstone<'cs> {
             return Err(Error::CustomError("Invalid dissasemble count; must be > 0"));
         }
         self.disasm(code, addr, count)
+    }
+
+    pub fn disasm_iter<'b>(
+        &'cs mut self,
+        code: &'b [u8],
+        addr: u64,
+    ) -> DisasmIter<'cs, 'b> {
+        DisasmIter::new(self, code, addr)
     }
 
     /// Disassembles a `&[u8]` full of instructions.
