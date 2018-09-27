@@ -12,7 +12,7 @@ use std::os::raw::{c_int, c_uint, c_void};
 
 /// An instance of the capstone disassembler
 #[derive(Debug)]
-pub struct Capstone<'cs> {
+pub struct Capstone {
     /// Opaque handle to cs_engine
     /// Stored as a pointer to ensure `Capstone` is `!Send`/`!Sync`
     csh: *mut c_void,
@@ -39,8 +39,6 @@ pub struct Capstone<'cs> {
 
     /// Architecture
     arch: Arch,
-
-    _marker: PhantomData<&'cs mut c_void>,
 }
 
 /// Defines a setter on `Capstone` that speculatively changes the arch-specific mode (which
@@ -93,7 +91,7 @@ impl Iterator for EmptyExtraModeIter {
     }
 }
 
-impl<'cs> Capstone<'cs> {
+impl Capstone {
     /// Create a new instance of the decompiler using the builder pattern interface.
     /// This is the recommended interface to `Capstone`.
     ///
@@ -118,7 +116,7 @@ impl<'cs> Capstone<'cs> {
         mode: Mode,
         extra_mode: T,
         endian: Option<Endian>,
-    ) -> CsResult<Capstone<'cs>> {
+    ) -> CsResult<Capstone> {
         let mut handle: csh = 0;
         let csarch: cs_arch = arch.into();
         let csmode: cs_mode = mode.into();
@@ -146,7 +144,6 @@ impl<'cs> Capstone<'cs> {
                 detail_enabled,
                 raw_mode,
                 arch,
-                _marker: PhantomData,
             };
             cs.update_raw_mode();
             Ok(cs)
@@ -157,8 +154,8 @@ impl<'cs> Capstone<'cs> {
 
     /// Disassemble all instructions in buffer
     pub fn disasm_all<'a>(
-        &mut self,
-        code: &[u8],
+        &'a self,
+        code: &'a [u8],
         addr: u64,
     ) -> CsResult<Instructions<'a>> {
         self.disasm(code, addr, 0)
@@ -166,8 +163,8 @@ impl<'cs> Capstone<'cs> {
 
     /// Disassemble `count` instructions in `code`
     pub fn disasm_count<'a>(
-        &mut self,
-        code: &[u8],
+        &'a self,
+        code: &'a [u8],
         addr: u64,
         count: usize,
     ) -> CsResult<Instructions<'a>> {
@@ -180,7 +177,7 @@ impl<'cs> Capstone<'cs> {
     /// Disassembles a `&[u8]` full of instructions.
     ///
     /// Pass `count = 0` to disassemble all instructions in the buffer.
-    fn disasm<'a>(&mut self, code: &[u8], addr: u64, count: usize) -> CsResult<Instructions<'a>> {
+    fn disasm<'a>(&'a self, code: &'a [u8], addr: u64, count: usize) -> CsResult<Instructions<'a>> {
         let mut ptr: *mut cs_insn = unsafe { mem::zeroed() };
         let insn_count = unsafe {
             cs_disasm(
@@ -395,7 +392,7 @@ impl<'cs> Capstone<'cs> {
     }
 }
 
-impl<'cs> Drop for Capstone<'cs> {
+impl Drop for Capstone {
     fn drop(&mut self) {
         unsafe { cs_close(&mut self.csh()) };
     }
