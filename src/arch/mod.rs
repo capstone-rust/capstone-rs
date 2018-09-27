@@ -126,7 +126,7 @@ macro_rules! define_arch_builder {
                         self
                     }
 
-                    fn build<'a>(self) -> CsResult<Capstone<'a>> {
+                    fn build(self) -> CsResult<Capstone> {
                         let mode = match self.mode {
                             Some(mode) => mode,
                             None => {
@@ -288,7 +288,7 @@ pub trait BuildsCapstone<ArchMode> {
     fn detail(self, enable_detail: bool) -> Self;
 
     /// Get final `Capstone`
-    fn build<'a>(self) -> CsResult<Capstone<'a>>;
+    fn build<'a>(self) -> CsResult<Capstone>;
 }
 
 /// Implies that a `CapstoneBuilder` architecture has extra modes
