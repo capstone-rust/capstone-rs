@@ -155,7 +155,7 @@ impl Capstone {
     /// Disassemble all instructions in buffer
     pub fn disasm_all<'a>(
         &'a self,
-        code: &'a [u8],
+        code: &[u8],
         addr: u64,
     ) -> CsResult<Instructions<'a>> {
         self.disasm(code, addr, 0)
@@ -164,7 +164,7 @@ impl Capstone {
     /// Disassemble `count` instructions in `code`
     pub fn disasm_count<'a>(
         &'a self,
-        code: &'a [u8],
+        code: &[u8],
         addr: u64,
         count: usize,
     ) -> CsResult<Instructions<'a>> {
@@ -177,7 +177,7 @@ impl Capstone {
     /// Disassembles a `&[u8]` full of instructions.
     ///
     /// Pass `count = 0` to disassemble all instructions in the buffer.
-    fn disasm<'a>(&'a self, code: &'a [u8], addr: u64, count: usize) -> CsResult<Instructions<'a>> {
+    fn disasm<'a>(&'a self, code: &[u8], addr: u64, count: usize) -> CsResult<Instructions<'a>> {
         let mut ptr: *mut cs_insn = unsafe { mem::zeroed() };
         let insn_count = unsafe {
             cs_disasm(
