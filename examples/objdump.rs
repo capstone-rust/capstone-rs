@@ -8,7 +8,7 @@ use std::io::Read;
 use std::process;
 
 fn main() {
-    let mut cs = Capstone::new()
+    let cs = Capstone::new()
         .x86()
         .mode(arch::x86::ArchMode::Mode64)
         .build()

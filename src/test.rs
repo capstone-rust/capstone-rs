@@ -16,7 +16,7 @@ const IRET: cs_group_type::Type = cs_group_type::CS_GRP_IRET;
 #[test]
 fn test_x86_simple() {
     match Capstone::new().x86().mode(x86::ArchMode::Mode64).build() {
-        Ok(mut cs) => match cs.disasm_all(X86_CODE, 0x1000) {
+        Ok(cs) => match cs.disasm_all(X86_CODE, 0x1000) {
             Ok(insns) => {
                 assert_eq!(insns.len(), 2);
                 let is: Vec<_> = insns.iter().collect();
@@ -60,7 +60,7 @@ fn test_arm_simple() {
 
 #[test]
 fn test_arm64_none() {
-    let mut cs = Capstone::new()
+    let cs = Capstone::new()
         .arm64()
         .mode(arm64::ArchMode::Arm)
         .build()
