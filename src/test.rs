@@ -40,7 +40,7 @@ fn test_x86_simple() {
 #[test]
 fn test_arm_simple() {
     match Capstone::new().arm().mode(arm::ArchMode::Arm).build() {
-        Ok(mut cs) => match cs.disasm_all(ARM_CODE, 0x1000) {
+        Ok(cs) => match cs.disasm_all(ARM_CODE, 0x1000) {
             Ok(insns) => {
                 assert_eq!(insns.len(), 2);
                 let is: Vec<_> = insns.iter().collect();
