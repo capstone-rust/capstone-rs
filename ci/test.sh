@@ -9,7 +9,7 @@
 # SHOULD_FAIL: (disabled by default; set to non-empty string to enable)
 # VALGRIND_TESTS: run tests under Valgrind
 
-set -eu
+set -euo pipefail
 
 if [ $(basename "$0") = "test.sh" ]; then
     cd "$(dirname "$0")/.."
@@ -159,17 +159,51 @@ profile_args() {
     esac
 }
 
+# Test rust file by making a temporary project
+# Must have a main() function defined
+test_rust_file() {
+    (
+    tmp_dir="$(mktemp -d /tmp/rust.testdir.XXXXXXXXXX)"
+    [ -d "$tmp_dir" ] || Error "Could not make temp dir"
+
+    capstone_dir="$(pwd)"
+    cd "$tmp_dir"
+    cargo new --bin test_project -v
+    cd test_project
+    echo "capstone = { path = \"$capstone_dir\" }" >> Cargo.toml
+    cat Cargo.toml
+    cat > src/main.rs
+    cargo check "${cargo_cmd_args[@]}"
+
+    rm -rf "$tmp_dir"
+    ) || exit 1
+}
+
 run_tests() {
     TMPFILE="$(mktemp /tmp/capstone-rs.XXXXXXXXXX)"
     [ -f "$TMPFILE" ] || Error "Could not make temp file"
     for PROFILE in $PROFILES; do
         echo "Cargo tests without Valgrind"
+        cargo_cmd_args=(
+            $(profile_args)
+            --features "$FEATURES"
+            --verbose
+            )
         expect_exit_status "$SHOULD_FAIL" \
-            cargo test $(profile_args) \
-            --features "$FEATURES" --verbose \
+            cargo test "${cargo_cmd_args[@]}" \
             --color=always -- --color=always \
             2>&1 | tee "$TMPFILE"
         # Use 2>&1 above instead of '|&' because OS X uses Bash 3
+
+        cargo run "${cargo_cmd_args[@]}" --example demo
+        cargo run "${cargo_cmd_args[@]}" --example cstool -- \
+            --arch x86 --mode mode64 --file test-inputs/x86_64.bin_ls.bin |
+            head -n20
+
+        cat README.md | \
+            sed -n '/^```rust/,/^```/p' | grep -vE '^```' | \
+            test_rust_file
+
 
         if [ ! "${VALGRIND_TESTS}" ]; then
             continue
