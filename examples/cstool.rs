@@ -14,6 +14,7 @@ use clap::{App, Arg, ArgGroup};
 use std::fmt::Display;
 use std::fs::File;
 use std::io::prelude::*;
+use std::io;
 use std::process::exit;
 use std::str::FromStr;
 
@@ -171,10 +172,14 @@ fn disasm<T: Iterator<Item = ExtraMode>>(
         cs.set_detail(true).expect("Failed to set detail");
     }
 
+    let stdout = io::stdout();
+    let mut handle = stdout.lock();
+
     for i in cs.disasm_all(code, addr).expect_exit().iter() {
         let bytes: Vec<_> = i.bytes().iter().map(|x| format!("{:02x}", x)).collect();
         let bytes = bytes.join(" ");
-        println!(
+        writeln!(
+            &mut handle,
             "{:-10x}:  {:35} {:7} {}",
             i.address(),
             bytes,
@@ -193,7 +198,7 @@ fn disasm<T: Iterator<Item = ExtraMode>>(
             ];
 
             for &(ref name, ref message) in output.iter() {
-                println!("{:13}{:12} {}", "", name, message);
+                writeln!(&mut handle, "{:13}{:12} {}", "", name, message);
             }
         }
     }

@@ -27,14 +27,14 @@ extern crate capstone;
 
 use capstone::prelude::*;
 
-const CODE: &'static [u8] =
-    b"\x55\x48\x8b\x05\xb8\x13\x00\x00\xe8\x4a\xed\xff\xff\xe9\x14\x9e\x08\x00\x45\x31\xe4";
+const X86_CODE: &'static [u8] =
+    b"\x55\x48\x8b\x05\xb8\x13\x00\x00\xe9\x14\x9e\x08\x00\x45\x31\xe4";
 
 /// Print register names
 fn reg_names<T, I>(cs: &Capstone, regs: T) -> String
 where
     T: Iterator<Item = I>,
-    I: Into<u64>,
+    I: Into<RegId>,
 {
     let names: Vec<String> = regs.map(|x| cs.reg_name(x.into()).unwrap()).collect();
     names.join(", ")
@@ -44,7 +44,7 @@ where
 fn group_names<T, I>(cs: &Capstone, regs: T) -> String
 where
     T: Iterator<Item = I>,
-    I: Into<u64>,
+    I: Into<InsnGroupId>,
 {
     let names: Vec<String> = regs.map(|x| cs.group_name(x.into()).unwrap()).collect();
     names.join(", ")
@@ -58,26 +58,20 @@ fn example() -> CsResult<()> {
         .detail(true)
         .build()?;
 
-    let insns = cs.disasm_all(CODE, 0x1000)?;
+    let insns = cs.disasm_all(X86_CODE, 0x1000)?;
     println!("Found {} instructions", insns.len());
     for i in insns.iter() {
         println!("");
         println!("{}", i);
+
+        let detail: InsnDetail = cs.insn_detail(&i)?;
         let output: &[(&str, String)] =
             &[
-                (
-                    "read regs:",
-                    reg_names(&cs, cs.read_register_ids(&i)?.iter().map(|x| *x)),
-                ),
-                (
-                    "write regs:",
-                    reg_names(&cs, cs.write_register_ids(&i)?.iter().map(|x| *x)),
-                ),
-                (
-                    "insn groups:",
-                    group_names(&cs, cs.insn_group_ids(&i)?.iter().map(|x| *x)),
-                ),
+                ("read regs:", reg_names(&cs, detail.regs_read())),
+                ("write regs:", reg_names(&cs, detail.regs_write())),
+                ("insn groups:", group_names(&cs, detail.groups())),
             ];
+
         for &(ref name, ref message) in output.iter() {
             println!("    {:12} {}", name, message);
         }
@@ -95,7 +89,7 @@ fn main() {
 Produces:
 
 ```
-Found 5 instructions
+Found 4 instructions
 
 0x1000: pushq %rbp
     read regs:   rsp
@@ -107,17 +101,12 @@ Found 5 instructions
     write regs:
     insn groups:
 
-0x1008: callq 0xfffffffffffffd57
-    read regs:   rsp
-    write regs:
-    insn groups: call, mode64
-
-0x100d: jmp 0x8ae26
+0x1008: jmp 0x8ae21
     read regs:
     write regs:
     insn groups: jump
 
-0x1012: xorl %r12d, %r12d
+0x100d: xorl %r12d, %r12d
     read regs:
     write regs:  rflags
     insn groups:
