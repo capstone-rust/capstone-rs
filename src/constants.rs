@@ -2,7 +2,19 @@ use capstone_sys::cs_arch::*;
 use capstone_sys::cs_opt_value::*;
 use capstone_sys::*;
 use std::convert::From;
+use std::fmt::{self, Display};
 use std::str::FromStr;
+
+
+/// Extension trait for C-like enums (no variants have associated data).
+/// The string va
+pub trait CsEnumVariants: Display + FromStr {
+    /// Variants of the Enum
+    fn variants() -> &'static [Self];
+
+    /// String variants of enum that MUST translate to the corresponding
+    fn str_variants() -> &'static [&'static str];
+}
 
 /// Define an `enum` that corresponds to a capstone enum
 ///
@@ -13,7 +25,7 @@ macro_rules! define_cs_enum_wrapper {
         => $rust_enum:ident = $cs_enum:ty
       ]
       $( $( #[$attr:meta] )*
-      => $rust_variant:ident = $cs_variant:tt; )* ) => {
+      => $rust_variant:ident ($str_val:ident) = $cs_variant:tt; )* ) => {
 
         $( #[$enum_attr] )*
         #[derive(Copy, Clone, Debug, Eq, Hash, PartialEq)]
@@ -33,6 +45,45 @@ macro_rules! define_cs_enum_wrapper {
                 }
             }
         }
+
+        impl Display for $rust_enum {
+            fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+                let str_value: &str = match *self {
+                    $(
+                        $rust_enum::$rust_variant => stringify!($str_val),
+                    )*
+                };
+
+                write!(f, "{}", str_value)
+            }
+        }
+
+        impl FromStr for $rust_enum {
+            type Err = &'static str;
+
+            fn from_str(s: &str) -> Result<Self, Self::Err> {
+                match s {
+                    $(
+                        stringify!($str_val) => Ok($rust_enum::$rust_variant),
+                    )*
+                    _ => Err(concat!("Unable to parse ", stringify!($rust_enum))),
+                }
+            }
+        }
+
+        impl CsEnumVariants for $rust_enum {
+            fn variants() -> &'static [Self] {
+                &[
+                    $( $rust_enum::$rust_variant, )*
+                ]
+            }
+
+            fn str_variants() -> &'static [&'static str] {
+                &[
+                    $( stringify!($str_val), )*
+                ]
+            }
+        }
     }
 }
 
@@ -42,21 +93,21 @@ define_cs_enum_wrapper!(
         => Arch = cs_arch
     ]
     /// ARM (Advanced RISC Machine)
-    => ARM = CS_ARCH_ARM;
+    => ARM (arm) = CS_ARCH_ARM;
     /// ARM 64-bit (also known as AArch64)
-    => ARM64 = CS_ARCH_ARM64;
+    => ARM64 (arm64) = CS_ARCH_ARM64;
     /// MIPS
-    => MIPS = CS_ARCH_MIPS;
+    => MIPS (mips) = CS_ARCH_MIPS;
     /// x86 family (includes 16, 32, and 64 bit modes)
-    => X86 = CS_ARCH_X86;
+    => X86 (x86) = CS_ARCH_X86;
     /// PowerPC
-    => PPC = CS_ARCH_PPC;
+    => PPC (powerpc) = CS_ARCH_PPC;
     /// SPARC
-    => SPARC = CS_ARCH_SPARC;
+    => SPARC (sparc) = CS_ARCH_SPARC;
     /// System z
-    => SYSZ = CS_ARCH_SYSZ;
+    => SYSZ (systemz) = CS_ARCH_SYSZ;
     /// XCore
-    => XCORE = CS_ARCH_XCORE;
+    => XCORE (xcore) = CS_ARCH_XCORE;
 );
 
 define_cs_enum_wrapper!(
@@ -65,25 +116,25 @@ define_cs_enum_wrapper!(
         => Mode = cs_mode
     ]
     /// 32-bit ARM
-    => Arm = CS_MODE_ARM;
+    => Arm (arm) = CS_MODE_ARM;
     /// 16-bit mode (X86)
-    => Mode16 = CS_MODE_16;
+    => Mode16 (mode16) = CS_MODE_16;
     /// 32-bit mode (X86)
-    => Mode32 = CS_MODE_32;
+    => Mode32 (mode32) = CS_MODE_32;
     /// 64-bit mode (X86, PPC)
-    => Mode64 = CS_MODE_64;
+    => Mode64 (mode64) = CS_MODE_64;
     /// ARM's Thumb mode, including Thumb-2
-    => Thumb = CS_MODE_THUMB;
+    => Thumb (thumb) = CS_MODE_THUMB;
     /// Mips III ISA
-    => Mips3 = CS_MODE_MIPS3;
+    => Mips3 (mips3) = CS_MODE_MIPS3;
     /// Mips32r6 ISA
-    => Mips32R6 = CS_MODE_MIPS32R6;
+    => Mips32R6 (mips32r6) = CS_MODE_MIPS32R6;
     /// General Purpose Registers are 64-bit wide (MIPS)
-    => MipsGP64 = CS_MODE_MIPSGP64;
+    => MipsGP64 (mipsgp64) = CS_MODE_MIPSGP64;
     /// SparcV9 mode (Sparc)
-    => V9 = CS_MODE_V9;
+    => V9 (v9) = CS_MODE_V9;
     /// Default mode for little-endian
-    => Default = CS_MODE_LITTLE_ENDIAN;
+    => Default (default) = CS_MODE_LITTLE_ENDIAN;
 );
 
 define_cs_enum_wrapper!(
@@ -92,11 +143,11 @@ define_cs_enum_wrapper!(
         => ExtraMode = cs_mode
     ]
     /// ARM's Cortex-M series. Works with `Arm` mode.
-    => MClass = CS_MODE_MCLASS;
+    => MClass (mclass) = CS_MODE_MCLASS;
     /// ARMv8 A32 encodings for ARM. Works with `Arm` and `Thumb` modes.
-    => V8 = CS_MODE_V8;
+    => V8 (v8) = CS_MODE_V8;
     /// MicroMips mode. Works in `MIPS` mode.
-    => Micro = CS_MODE_MICRO;
+    => Micro (micro) = CS_MODE_MICRO;
 );
 
 define_cs_enum_wrapper!(
@@ -105,21 +156,10 @@ define_cs_enum_wrapper!(
         => Endian = cs_mode
     ]
     /// Little-endian mode
-    => Little = CS_MODE_LITTLE_ENDIAN;
+    => Little (little) = CS_MODE_LITTLE_ENDIAN;
     /// Big-endian mode
-    => Big = CS_MODE_BIG_ENDIAN;
+    => Big (big) = CS_MODE_BIG_ENDIAN;
 );
-
-impl FromStr for Endian {
-    type Err = &'static str;
-    fn from_str(s: &str) -> Result<Self, Self::Err> {
-        match s {
-            "little" => Ok(Endian::Little),
-            "big" => Ok(Endian::Big),
-            _ => Err("Unable to convert to Endian"),
-        }
-    }
-}
 
 define_cs_enum_wrapper!(
     [
@@ -127,11 +167,11 @@ define_cs_enum_wrapper!(
         => Syntax = cs_opt_value::Type
     ]
     /// Intel syntax
-    => Intel = CS_OPT_SYNTAX_INTEL;
+    => Intel (intel) = CS_OPT_SYNTAX_INTEL;
     /// AT&T syntax (also known as GNU assembler/GAS syntax)
-    => Att = CS_OPT_SYNTAX_ATT;
+    => Att (att) = CS_OPT_SYNTAX_ATT;
     /// No register name
-    => NoRegName = CS_OPT_SYNTAX_NOREGNAME;
+    => NoRegName (noregname) = CS_OPT_SYNTAX_NOREGNAME;
 );
 
 pub(crate) struct OptValue(pub cs_opt_value::Type);
@@ -144,4 +184,26 @@ impl From<bool> for OptValue {
             OptValue(cs_opt_value::CS_OPT_OFF)
         }
     }
+}
+
+#[cfg(test)]
+mod test {
+    use super::*;
+
+}
+#[test]
+fn constant_string() {
+    macro_rules! test_conversion {
+            ($mytype:ident) => {
+                for variant in $mytype::variants() {
+                    let formatted = format!("{}", variant);
+                    assert_eq!(formatted.parse::<$mytype>(), Ok(*variant));
+                }
+            }
+        }
+    test_conversion!(Arch);
+    test_conversion!(Mode);
+    test_conversion!(Syntax);
+    test_conversion!(ExtraMode);
+    assert!("X86089098".parse::<Arch>().is_err());
 }

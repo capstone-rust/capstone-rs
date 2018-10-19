@@ -157,7 +157,7 @@ pub mod prelude {
         BuildsCapstoneSyntax, DetailsArchInsn,
     };
     pub use {
-        Capstone, CsResult, InsnDetail, InsnGroupId, InsnGroupIdInt, InsnId, InsnIdInt, RegId,
-        RegIdInt,
+        Capstone, CsEnumVariants, CsResult, InsnDetail, InsnGroupId, InsnGroupIdInt, InsnId,
+        InsnIdInt, RegId, RegIdInt,
     };
 }

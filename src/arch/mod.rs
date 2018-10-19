@@ -1,7 +1,7 @@
 //! Contains architecture-specific types and modules
 
 use capstone::Capstone;
-use constants::Endian;
+use constants::*;
 use error::CsResult;
 use std::fmt::Debug;
 use std::marker::PhantomData;
@@ -74,7 +74,7 @@ macro_rules! define_arch_builder {
             ( mode: $( $mode:ident, )+ )
             ( extra_modes: $( $extra_mode:ident, )* )
             ( syntax: $( $syntax:ident, )* )
-            ( both_endian: $( $endian:ident )* )
+            ( both_endian: $endian:ident )
         ] )+
     ) => {
         // We put builders in `arch::arch_builder::$ARCH` so we can put manual arch-specific code
@@ -88,7 +88,7 @@ macro_rules! define_arch_builder {
                 use error::{CsResult, Error};
 
                 define_arch_builder!( @syntax ( $( $syntax, )* ) );
-                define_arch_builder!( @endian ( $( $endian )* ) );
+                define_arch_builder!( @endian ( $endian ) );
                 define_arch_builder!( @extra_modes ( $( $extra_mode, )* ) );
 
                 define_subset_enum!(
@@ -176,6 +176,40 @@ macro_rules! define_arch_builder {
                 }
             )*
         }
+    }
+}
+
+/// Describes the valid modes, extra modes, syntaxes, and endianness for an architecture.
+pub struct ArchDescription {
+    pub arch: Arch,
+    pub modes: &'static [Mode],
+    pub extra_modes: &'static [ExtraMode],
+    pub syntaxes: &'static [Syntax],
+    pub both_endian: bool,
+}
+
+macro_rules! define_arch_mod_constants {
+    (
+        $( [
+            ( $arch:ident, $arch_variant:ident )
+            ( mode: $( $mode:ident, )+ )
+            ( extra_modes: $( $extra_mode:ident, )* )
+            ( syntax: $( $syntax:ident, )* )
+            ( both_endian: $endian:ident )
+        ] )+
+    ) => {
+        /// Description of Architectures
+        pub const ARCH_DESCRIPTIONS: &[ArchDescription] = &[
+            $(
+                ArchDescription {
+                    arch: Arch::$arch_variant,
+                    modes: &[ $( Mode::$mode, )* ],
+                    extra_modes: &[ $( ExtraMode::$extra_mode, )* ],
+                    syntaxes: &[ $( Syntax::$syntax, )* ],
+                    both_endian: $endian,
+                },
+            )*
+        ];
     }
 }
 
@@ -278,6 +312,8 @@ macro_rules! arch_info_base {
         );
     };
 }
+
+arch_info_base!(define_arch_mod_constants);
 
 /// Builds a `Capstone` struct
 pub trait BuildsCapstone<ArchMode> {
