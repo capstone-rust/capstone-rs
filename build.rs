@@ -209,7 +209,7 @@ fn main() {
 
     build_capstone_cc();
 
-    header_search_paths.push([CAPSTONE_DIR, "include"].iter().collect());
+    header_search_paths.push([CAPSTONE_DIR, "include", "capstone"].iter().collect());
     link_type = Some(LinkType::Static);
 
     match link_type.expect("Must specify link type") {
