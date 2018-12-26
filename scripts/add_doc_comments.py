@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python2
 
 """
 Apply a patch that adds Rust doc comments to bindgen-generated Rust source.
