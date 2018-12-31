@@ -8,32 +8,17 @@ In order to update the pre-generated bindings:
     UPDATE_CAPSTONE_BINDINGS=1 cargo build --features use_bindgen
     ~~~
 
-2. Commit bindings update.
-
-3. Find documentation comment commit.
+2. Format the result (it comes out on one big line).
 
     ~~~
-    git log pre_generated/capstone.rs
+    rustfmt pre_generated/capstone.rs
     ~~~
 
-4. Re-apply documentation comments patch
+3. Commit bindings update.
 
-    ~~~
-    commit=a9792c5ebeb6c857783a6695982f4882170a3c54; \
-        git diff ${commit}^ ${commit} | \
-        ./scripts/add_doc_comments.py --doc-patch - \
-        --fs-path pre_generated/capstone.rs -o pre_generated/capstone.doc.rs
-    ~~~
+4. Fixup/add any more documentation comments.
 
-5. Fixup/add any more documentation comments.
-
-6. Overwrite pre-generated bindings with the fixed-up version.
-
-    ~~~
-    cp pre_generated/capstone.doc.rs pre_generated/capstone.rs
-    ~~~
-
-7. Commit documentation fixups.
+5. Commit documentation fixups.
 
     ~~~
     git commit pre_generated/capstone.rs
