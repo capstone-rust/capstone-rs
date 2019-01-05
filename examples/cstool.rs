@@ -185,7 +185,7 @@ fn disasm<T: Iterator<Item = ExtraMode>>(
             bytes,
             i.mnemonic().unwrap(),
             i.op_str().unwrap_or("")
-        );
+        ).is_ok();
 
         if show_detail {
             let detail = cs.insn_detail(&i).expect("Failed to get insn detail");
@@ -198,7 +198,7 @@ fn disasm<T: Iterator<Item = ExtraMode>>(
             ];
 
             for &(ref name, ref message) in output.iter() {
-                writeln!(&mut handle, "{:13}{:12} {}", "", name, message);
+                writeln!(&mut handle, "{:13}{:12} {}", "", name, message).is_ok();
             }
         }
     }
