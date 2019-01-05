@@ -223,8 +223,8 @@ impl ArmOpMem {
     }
 
     /// Index value
-    pub fn index(&self) -> u32 {
-        self.0.index as u32
+    pub fn index(&self) -> RegId {
+        RegId(self.0.index as RegIdInt)
     }
 
     /// Scale for index register (can be 1, or -1)
