@@ -126,6 +126,27 @@ fn test_detail_false_fail() {
 }
 
 #[test]
+fn test_skipdata() {
+    use capstone_sys::x86_insn;
+
+    let mut cs = Capstone::new()
+        .x86()
+        .mode(x86::ArchMode::Mode64)
+        .build()
+        .unwrap();
+    cs.set_detail(false).unwrap();
+    cs.set_skipdata(true).unwrap();
+
+    let x86_code_skip: &[u8] = b"\x2f\x6c";
+
+    let insns = cs.disasm_all(x86_code_skip, 0x1000).unwrap();
+    let insns: Vec<_> = insns.iter().collect();
+    assert_eq!(insns.len(), 2);
+    assert_eq!(insns[0].id().0, x86_insn::X86_INS_INVALID as u32);
+    assert_eq!(insns[1].id().0, x86_insn::X86_INS_INSB as u32);
+}
+
+#[test]
 fn test_detail_true() {
     let mut cs1 = Capstone::new()
         .x86()
