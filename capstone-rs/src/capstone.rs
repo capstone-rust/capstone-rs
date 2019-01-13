@@ -32,6 +32,9 @@ pub struct Capstone {
     /// Whether to get extra details when disassembling
     detail_enabled: bool,
 
+    /// Whether to skipdata when disassembling
+    skipdata_enabled: bool,
+
     /// We *must* set `mode`, `extra_mode`, and `endian` at once because `capstone`
     /// handles them inside the arch-specific handler. We store the bitwise OR of these flags that
     /// can be passed directly to `cs_option()`.
@@ -136,6 +139,7 @@ impl Capstone {
             let syntax = CS_OPT_SYNTAX_DEFAULT;
             let raw_mode = cs_mode(0);
             let detail_enabled = false;
+            let skipdata_enabled = detail_enabled;
 
             let mut cs = Capstone {
                 csh: handle as *mut c_void,
@@ -144,6 +148,7 @@ impl Capstone {
                 mode: csmode,
                 extra_mode,
                 detail_enabled,
+                skipdata_enabled,
                 raw_mode,
                 arch,
             };
@@ -298,6 +303,21 @@ impl Capstone {
         // Only update internal state on success
         if result.is_ok() {
             self.detail_enabled = enable_detail;
+        }
+
+        result
+    }
+
+    /// Controls whether capstone will skip over invalid or data instructions.
+    ///
+    /// Pass `true` to enable skipdata or `false` to disable skipdata.
+    pub fn set_skipdata(&mut self, enable_skipdata: bool) -> CsResult<()> {
+        let option_value: usize = OptValue::from(enable_skipdata).0 as usize;
+        let result = self._set_cs_option(cs_opt_type::CS_OPT_SKIPDATA, option_value);
+
+        // Only update internal state on success
+        if result.is_ok() {
+            self.skipdata_enabled = enable_skipdata;
         }
 
         result
