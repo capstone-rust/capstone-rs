@@ -430,10 +430,10 @@ fn test_instruction_details() {
             "call",
             b"\xe8\x28\x07\x00\x00",
             &[CALL],
+            &[X86_REG_RIP, X86_REG_RSP],
             &[X86_REG_RSP],
-            &[],
         ),
-        ("ret", b"\xc3", &[RET], &[], &[]),
+        ("ret", b"\xc3", &[RET], &[X86_REG_RSP], &[X86_REG_RSP]),
         ("syscall", b"\x0f\x05", &[INT], &[], &[]),
         ("iretd", b"\xcf", &[IRET], &[], &[]),
         ("sub", b"\x48\x83\xec\x08", &[], &[], &[X86_REG_EFLAGS]),
@@ -583,10 +583,10 @@ fn test_syntax() {
             "callq",
             b"\xe8\x28\x07\x00\x00",
             &[CALL],
+            &[X86_REG_RIP, X86_REG_RSP],
             &[X86_REG_RSP],
-            &[],
         ),
-        ("ret", "retq", b"\xc3", &[RET], &[], &[]),
+        ("ret", "retq", b"\xc3", &[RET], &[X86_REG_RSP], &[X86_REG_RSP]),
         ("syscall", "syscall", b"\x0f\x05", &[INT], &[], &[]),
         ("iretd", "iretl", b"\xcf", &[IRET], &[], &[]),
         (
@@ -676,7 +676,9 @@ fn test_invalid_syntax() {
     }
 }
 
+// todo(tmfink): enable test once we test for valid modes
 #[test]
+#[ignore]
 fn test_invalid_mode() {
     if let Err(err) = Capstone::new_raw(Arch::PPC, Mode::Thumb, NO_EXTRA_MODE, None) {
         assert_eq!(err, Error::InvalidMode);
@@ -875,6 +877,7 @@ fn test_arch_arm_detail() {
                             index: 0,
                             scale: 1,
                             disp: -4,
+                            lshift: 0,
                         })),
                         ..Default::default()
                     },
@@ -901,6 +904,7 @@ fn test_arch_arm_detail() {
                             index: 0,
                             scale: 1,
                             disp: -992,
+                            lshift: 0,
                         })),
                         ..Default::default()
                     },
@@ -1359,12 +1363,12 @@ fn test_arch_mips_detail() {
             DII::new(
                 "ori",
                 b"\x56\x34\x21\x34",
-                &[Reg(RegId(2)), Reg(RegId(2)), Imm(13398)],
+                &[Reg(RegId(3)), Reg(RegId(3)), Imm(13398)],
             ),
             DII::new(
                 "srl",
                 b"\xc2\x17\x01\x00",
-                &[Reg(RegId(3)), Reg(RegId(2)), Imm(31)],
+                &[Reg(RegId(4)), Reg(RegId(3)), Imm(31)],
             ),
             DII::new("syscall", b"\x0c\x00\x00\x00", &[]),
         ],
@@ -1452,7 +1456,7 @@ fn test_arch_ppc_detail() {
                 b"\x80\x20\x00\x00",
                 &[
                     Reg(RegId(PPC_REG_R1 as RegIdInt)),
-                    Mem(PpcOpMem(ppc_op_mem { base: 45, disp: 0 })),
+                    Mem(PpcOpMem(ppc_op_mem { base: 44, disp: 0 })),
                 ],
             ),
             // lwz     r1, 0(r31)

@@ -46,7 +46,7 @@ pub enum PpcOperand {
     Reg(RegId),
 
     /// Immediate
-    Imm(i32),
+    Imm(i64),
 
     /// Memory
     Mem(PpcOpMem),

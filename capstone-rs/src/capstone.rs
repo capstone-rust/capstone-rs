@@ -121,6 +121,8 @@ impl Capstone {
         let csarch: cs_arch = arch.into();
         let csmode: cs_mode = mode.into();
 
+        // todo(tmfink): test valid modes at run time (or modify upstream capstone)
+
         let endian = match endian {
             Some(endian) => cs_mode::from(endian),
             None => cs_mode(0),

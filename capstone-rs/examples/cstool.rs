@@ -1,6 +1,5 @@
 extern crate capstone;
 
-#[macro_use]
 extern crate clap;
 
 #[macro_use]
@@ -9,7 +8,7 @@ extern crate log;
 extern crate stderrlog;
 
 use capstone::prelude::*;
-use capstone::{Arch, Endian, ExtraMode, Mode};
+use capstone::{Arch, Endian, EnumList, ExtraMode, Mode};
 use clap::{App, Arg, ArgGroup};
 use std::fmt::Display;
 use std::fs::File;
@@ -38,77 +37,6 @@ where
         }
     }
 }
-
-/// We can't iterate over enums declared in another crate, so we declare a private enum that
-/// shadows the values
-macro_rules! arch_conversions {
-    (
-        $arg_struct:ident = $cs_struct:ident
-        [ $( $name:ident, )* ]
-    ) => {
-        arg_enum!{
-            #[derive(PartialEq, Debug)]
-            pub enum $arg_struct {
-                $( $name, )*
-            }
-        }
-
-        impl From<$arg_struct> for $cs_struct {
-            fn from(arch_arg: $arg_struct) -> $cs_struct {
-                match arch_arg {
-                    $( $arg_struct::$name => $cs_struct::$name, )*
-                }
-            }
-        }
-
-        impl From<$cs_struct> for $arg_struct {
-            fn from(arch_arg: $cs_struct) -> $arg_struct {
-                match arch_arg {
-                    $( $cs_struct::$name => $arg_struct::$name, )*
-                }
-            }
-        }
-    }
-}
-
-arch_conversions!(
-    ArchArg = Arch
-    [
-        ARM,
-        ARM64,
-        MIPS,
-        X86,
-        PPC,
-        SPARC,
-        SYSZ,
-        XCORE,
-    ]
-);
-
-arch_conversions!(
-    ModeArg = Mode
-    [
-        Arm,
-        Mode16,
-        Mode32,
-        Mode64,
-        Thumb,
-        Mips3,
-        Mips32R6,
-        MipsGP64,
-        V9,
-        Default,
-    ]
-);
-
-arch_conversions!(
-    ExtraModeArg = ExtraMode
-    [
-        MClass,
-        V8,
-        Micro,
-    ]
-);
 
 /// Print register names
 fn reg_names<T, I>(cs: &Capstone, regs: T) -> String
@@ -206,23 +134,23 @@ fn disasm<T: Iterator<Item = ExtraMode>>(
 
 fn main() {
     // Lowercase arches
-    let _arches: Vec<String> = ArchArg::variants()
+    let _arches: Vec<String> = Arch::variants()
         .iter()
-        .map(|x| x.to_lowercase())
+        .map(|x| format!("{}", x).to_lowercase())
         .collect();
     let arches: Vec<&str> = _arches.iter().map(|x| x.as_str()).collect();
 
     // Lowercase modes
-    let _modes: Vec<String> = ModeArg::variants()
+    let _modes: Vec<String> = Mode::variants()
         .iter()
-        .map(|x| x.to_lowercase())
+        .map(|x| format!("{}", x).to_lowercase())
         .collect();
     let modes: Vec<&str> = _modes.iter().map(|x| x.as_str()).collect();
 
     // Lowercase extra modes
-    let _extra_modes: Vec<String> = ExtraModeArg::variants()
+    let _extra_modes: Vec<String> = ExtraMode::variants()
         .iter()
-        .map(|x| x.to_lowercase())
+        .map(|x| format!("{}", x).to_lowercase())
         .collect();
     let extra_modes: Vec<&str> = _extra_modes.iter().map(|x| x.as_str()).collect();
 
@@ -355,12 +283,12 @@ fn main() {
     let show_detail = matches.is_present("DETAIL");
     info!("show_detail = {:?}", show_detail);
 
-    let arch: Arch = ArchArg::from_str(matches.value_of("ARCH").unwrap())
+    let arch: Arch = Arch::from_str(matches.value_of("ARCH").unwrap())
         .unwrap()
         .into();
     info!("Arch = {:?}", arch);
 
-    let mode: Mode = ModeArg::from_str(matches.value_of("MODE").unwrap())
+    let mode: Mode = Mode::from_str(matches.value_of("MODE").unwrap())
         .unwrap()
         .into();
     info!("Mode = {:?}", mode);
@@ -368,7 +296,7 @@ fn main() {
     let extra_mode: Vec<_> = match matches.values_of("EXTRA_MODE") {
         None => Vec::with_capacity(0),
         Some(x) => x
-            .map(|x| ExtraMode::from(ExtraModeArg::from_str(x).unwrap()))
+            .map(|x| ExtraMode::from(ExtraMode::from_str(x).unwrap()))
             .collect(),
     };
     info!("ExtraMode = {:?}", extra_mode);

@@ -14,7 +14,7 @@ version = "0.5.0"
 travis-ci = { repository = "capstone-rust/capstone-rs" }
 
 [dependencies]
-capstone-sys = "0.9.1"
+capstone-sys = { path = "../capstone-sys" }
 
 [dev-dependencies]
 macho = "0.*"

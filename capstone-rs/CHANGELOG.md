@@ -7,19 +7,32 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased] - YYYY-MM-DD
 
+### Added
+- Mips modes: `Mips2`, `Mips3`, `Mips32`, `Mips64`
+- Trait `EnumList` to allow you to enumerate enum variants
+
 ### Changed
 - Bump minimum Rust version to 1.24.1
+- Upgraded internal capstone C library to version 4.0
+- Moved `capstone-sys` repository into `capstone-rs` repository
+- Converted operand `Imm` variant from `i32` to `i64` for PPC, SPARC
+- `X86InsnDetail::disp()` returns `i64` instead of `i32`
+
+### Removed
+- Mips modes: `Mode32`, `Mode64`, `MipsGP64`
+- `X86OperandType` variant `Fp`
 
 
 ## [0.5.0] - 2018-09-21
 ### Added
-* `InsnDetail` to preamble
+- `InsnDetail` to preamble
 
 ### Changed
-* Flattened `Error` enum
+- Flattened `Error` enum
 
 ### Removed
-* `X86InsnDetail::avx_rm()`
+- `X86InsnDetail::avx_rm()`
+
 
 ## [0.4.0] - 2018-06-02
 ### Added
@@ -86,6 +99,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Removed
 - Dependency
 
+[Unreleased]: https://github.com/capstone-rust/capstone-rs/compare/v0.5.0...master
 [0.5.0]: https://github.com/capstone-rust/capstone-rs/compare/v0.4.0...v0.5.0
 [0.4.0]: https://github.com/capstone-rust/capstone-rs/compare/v0.3.1...v0.4.0
 [0.3.1]: https://github.com/capstone-rust/capstone-rs/compare/v0.3.0...v0.3.1

@@ -352,6 +352,8 @@ mod test {
                     type_: arm_op_type::ARM_OP_INVALID,
                     __bindgen_anon_1: cs_arm_op__bindgen_ty_2 { imm: 0 },
                     subtracted: false,
+                    access: 0,
+                    neon_lane: 0,
                 }
             ; 36]
         };

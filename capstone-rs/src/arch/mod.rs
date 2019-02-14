@@ -180,6 +180,11 @@ macro_rules! define_arch_builder {
 }
 
 /// Base X macro with arch info
+///
+/// Notes:
+/// - Even though [Capstone's documentation](https://www.capstone-engine.org/lang_c.html)
+///   classifies V9 as an extra mode, we classify it as a Mode since the only other mode is Default
+///   (which is treated as Big endian)
 macro_rules! arch_info_base {
     ($x_macro:ident) => {
         $x_macro!(
@@ -210,10 +215,11 @@ macro_rules! arch_info_base {
             [
                 ( mips, MIPS )
                 ( mode:
-                    Mode32,
-                    Mode64,
+                    Mips32,
+                    Mips64,
+                    Mips2,
+                    Mips3,
                     Mips32R6,
-                    MipsGP64,
                     )
                 ( extra_modes:
                     Micro,

@@ -2,7 +2,14 @@ use capstone_sys::cs_arch::*;
 use capstone_sys::cs_opt_value::*;
 use capstone_sys::*;
 use std::convert::From;
+use std::fmt::{self, Display};
 use std::str::FromStr;
+
+/// A C-like enum can list its variants
+pub trait EnumList where Self: Sized {
+    /// Slice of available variants
+    fn variants() -> &'static [Self];
+}
 
 /// Define an `enum` that corresponds to a capstone enum
 ///
@@ -31,6 +38,42 @@ macro_rules! define_cs_enum_wrapper {
                         $rust_enum::$rust_variant => $cs_variant,
                     )*
                 }
+            }
+        }
+
+        impl EnumList for $rust_enum {
+            fn variants() -> &'static [Self] {
+                &[
+                    $(
+                        $rust_enum::$rust_variant,
+                    )*
+                ]
+            }
+        }
+
+        impl FromStr for $rust_enum {
+            type Err = &'static str;
+
+            fn from_str(s: &str) -> Result<Self, Self::Err> {
+                let s = s.to_lowercase();
+
+                $(
+                    if s == stringify!($rust_variant).to_lowercase() {
+                        return Ok($rust_enum::$rust_variant);
+                    }
+                )*
+                Err(concat!("Failed to parse ", stringify!($rust_enum)))
+            }
+        }
+
+        impl Display for $rust_enum {
+            fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+                match *self {
+                    $(
+                        $rust_enum::$rust_variant => write!(f, "{}", stringify!($rust_variant)),
+                    )*
+                }
+
             }
         }
     }
@@ -74,14 +117,50 @@ define_cs_enum_wrapper!(
     => Mode64 = CS_MODE_64;
     /// ARM's Thumb mode, including Thumb-2
     => Thumb = CS_MODE_THUMB;
+    /// Mips II ISA
+    => Mips2 = CS_MODE_MIPS2;
     /// Mips III ISA
     => Mips3 = CS_MODE_MIPS3;
     /// Mips32r6 ISA
     => Mips32R6 = CS_MODE_MIPS32R6;
-    /// General Purpose Registers are 64-bit wide (MIPS)
-    => MipsGP64 = CS_MODE_MIPSGP64;
+    /// Mips32 ISA (Mips)
+    => Mips32 = CS_MODE_MIPS32;
+    /// Mips64 ISA (Mips)
+    => Mips64 = CS_MODE_MIPS64;
     /// SparcV9 mode (Sparc)
     => V9 = CS_MODE_V9;
+    /// Quad Processing eXtensions mode (PPC)
+    => Qpx = CS_MODE_QPX;
+    /// M68K 68000 mode
+    => M68k000 = CS_MODE_M68K_000;
+    /// M68K 68010 mode
+    => M68k010 = CS_MODE_M68K_010;
+    /// M68K 68020 mode
+    => M68k020 = CS_MODE_M68K_020;
+    /// M68K 68030 mode
+    => M68k030 = CS_MODE_M68K_030;
+    /// M68K 68040 mode
+    => M68k040 = CS_MODE_M68K_040;
+    /// M680X Hitachi 6301,6303 mode
+    => M680x6301 = CS_MODE_M680X_6301;
+    /// M680X Hitachi 6309 mode
+    => M680x6309 = CS_MODE_M680X_6309;
+    /// M680X Motorola 6800,6802 mode
+    => M680x6800 = CS_MODE_M680X_6800;
+    /// M680X Motorola 6801,6803 mode
+    => M680x6801 = CS_MODE_M680X_6801;
+    /// M680X Motorola/Freescale 6805 mode
+    => M680x6805 = CS_MODE_M680X_6805;
+    /// M680X Motorola/Freescale/NXP 68HC08 mode
+    => M680x6808 = CS_MODE_M680X_6808;
+    /// M680X Motorola 6809 mode
+    => M680x6809 = CS_MODE_M680X_6809;
+    /// M680X Motorola/Freescale/NXP 68HC11 mode
+    => M680x6811 = CS_MODE_M680X_6811;
+    /// M680X Motorola/Freescale/NXP CPU12
+    => M680xCpu12 = CS_MODE_M680X_CPU12;
+    /// M680X Freescale/NXP HCS08 mode
+    => M680xHcs08 = CS_MODE_M680X_HCS08;
     /// Default mode for little-endian
     => Default = CS_MODE_LITTLE_ENDIAN;
 );
@@ -110,17 +189,6 @@ define_cs_enum_wrapper!(
     => Big = CS_MODE_BIG_ENDIAN;
 );
 
-impl FromStr for Endian {
-    type Err = &'static str;
-    fn from_str(s: &str) -> Result<Self, Self::Err> {
-        match s {
-            "little" => Ok(Endian::Little),
-            "big" => Ok(Endian::Big),
-            _ => Err("Unable to convert to Endian"),
-        }
-    }
-}
-
 define_cs_enum_wrapper!(
     [
         /// Disassembly syntax
@@ -143,5 +211,16 @@ impl From<bool> for OptValue {
         } else {
             OptValue(cs_opt_value::CS_OPT_OFF)
         }
+    }
+}
+
+#[cfg(test)]
+mod test {
+    use super::*;
+
+    #[test]
+    fn parse_arch() {
+        assert_eq!(Arch::from_str("x86"), Ok(Arch::X86));
+        assert_eq!(Arch::from_str("X86"), Ok(Arch::X86));
     }
 }

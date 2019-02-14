@@ -21,6 +21,8 @@ use capstone_sys::cs_x86_op__bindgen_ty_1;
 /// Contains X86-specific details for an instruction
 pub struct X86InsnDetail<'a>(pub(crate) &'a cs_x86);
 
+// todo(tmfink): expose new types cs_x86__bindgen_ty_1, cs_x86_encoding, x86_xop_cc,
+// cs_x86_op::access
 
 impl X86OperandType {
     fn new(op_type: x86_op_type, value: cs_x86_op__bindgen_ty_1) -> X86OperandType {
@@ -31,7 +33,6 @@ impl X86OperandType {
             X86_OP_REG => Reg(RegId(unsafe { value.reg } as RegIdInt)),
             X86_OP_IMM => Imm(unsafe { value.imm }),
             X86_OP_MEM => Mem(X86OpMem(unsafe { value.mem })),
-            X86_OP_FP => Fp(unsafe { value.fp }),
             X86_OP_INVALID => Invalid,
         }
     }
@@ -64,9 +65,6 @@ pub enum X86OperandType {
 
     /// Memory
     Mem(X86OpMem),
-
-    /// Floating point
-    Fp(f64),
 
     /// Invalid
     Invalid,
@@ -108,7 +106,7 @@ impl<'a> X86InsnDetail<'a> {
     }
 
     /// Disp
-    pub fn disp(&self) -> i32 {
+    pub fn disp(&self) -> i64 {
         self.0.disp
     }
 
@@ -250,14 +248,12 @@ mod test {
 
     #[test]
     fn test_x86_op_eq() {
-        use std::f64;
-
         let a1 = X86Operand {
-            op_type: X86OperandType::Fp(1.0),
+            op_type: X86OperandType::Imm(0),
             ..Default::default()
         };
         let a2 = X86Operand {
-            op_type: X86OperandType::Fp(f64::NAN),
+            op_type: X86OperandType::Imm(-100),
             ..Default::default()
         };
 
@@ -290,12 +286,24 @@ mod test {
             avx_sae: false,
             avx_rm: x86_avx_rm::X86_AVX_RM_INVALID,
             op_count: 0,
+            __bindgen_anon_1: cs_x86__bindgen_ty_1 {
+                eflags: 0,
+            },
+            encoding: cs_x86_encoding {
+                modrm_offset: 0,
+                disp_offset: 0,
+                disp_size: 0,
+                imm_offset: 0,
+                imm_size: 0,
+            },
+            xop_cc: x86_xop_cc::X86_XOP_CC_INVALID,
             operands: [ cs_x86_op {
                 type_: x86_op_type::X86_OP_INVALID,
                 __bindgen_anon_1: cs_x86_op__bindgen_ty_1 { reg: x86_reg::X86_REG_INVALID },
                 size: 0,
                 avx_bcast: x86_avx_bcast::X86_AVX_BCAST_INVALID,
                 avx_zero_opmask: false,
+                access: 0,
             }
             ; 8],
 
