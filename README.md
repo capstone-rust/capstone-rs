@@ -1,8 +1,13 @@
 # capstone-rs
 
 [![Crates.io Badge](https://img.shields.io/crates/v/capstone.svg)](https://crates.io/crates/capstone)
-[![Travis CI Badge](https://travis-ci.org/capstone-rust/capstone-rs.svg?branch=master)](https://travis-ci.org/capstone-rust/capstone-rs)
-[![Appveyor CI Badge](https://ci.appveyor.com/api/projects/status/github/capstone-rust/capstone-rs?svg=true&branch=master)](https://ci.appveyor.com/project/tmfink/capstone-rs)
+
+Linux/MacOS [![Travis CI Badge](https://travis-ci.org/capstone-rust/capstone-rs.svg?branch=master)](https://travis-ci.org/capstone-rust/capstone-rs)
+|
+Windows [![Appveyor CI Badge](https://ci.appveyor.com/api/projects/status/github/capstone-rust/capstone-rs?svg=true&branch=master)](https://ci.appveyor.com/project/tmfink/capstone-rs)
+|
+FreeBSD [![Cirrus CI Badge](https://api.cirrus-ci.com/github/capstone-rust/capstone-rs.svg)](https://cirrus-ci.com/github/capstone-rust/capstone-rs)
+
 [![codecov](https://codecov.io/gh/capstone-rust/capstone-rs/branch/master/graph/badge.svg)](https://codecov.io/gh/capstone-rust/capstone-rs)
 
 
@@ -14,9 +19,9 @@ Bindings to the [capstone library][upstream] disassembly framework.
 
 # Requirements
 
-`capstone-rs` uses the [`capstone-sys`](https://github.com/capstone-rust/capstone-sys) crate to provide the low-level bindings to the Capstone C library.
+`capstone-rs` uses the [`capstone-sys`](capstone-sys) crate to provide the low-level bindings to the Capstone C library.
 
-See the [`capstone-sys`](https://github.com/capstone-rust/capstone-sys) GitHub page for the requirements and supported platforms.
+See the [`capstone-sys`](capstone-sys) page for the requirements and supported platforms.
 
 * Minimum Rust Version: `1.28.0` or later
 

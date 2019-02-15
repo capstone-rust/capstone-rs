@@ -1,0 +1,16 @@
+freebsd_instance:
+  image: freebsd-12-0-release-amd64
+
+test_task:
+  env:
+    matrix:
+      CHANNEL: stable
+      CHANNEL: beta
+      CHANNEL: nightly
+
+  install_rust_script:
+    - curl https://sh.rustup.rs -sSf | sh -s -- -y --default-toolchain $CHANNEL
+  install_packages_script:
+    - pkg install -y bash
+  test_script:
+    - bash -c 'source ~/.cargo/env; cargo -V; ./capstone-rs/ci/test.sh'
