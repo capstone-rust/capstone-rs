@@ -1,0 +1,28 @@
+[package]
+name = "capstone-sys"
+version = "0.9.1"
+authors = ["m4b <m4b.github.io@gmail.com>", "tmfink <tmfinken@gmail.com>"]
+description = "System bindings to the capstone disassembly library"
+build = "build.rs"
+keywords = ["disassemble"]
+categories = ["external-ffi-bindings"]
+links = "capstone"
+license = "MIT"
+readme = "README.md"
+repository = "https://github.com/capstone-rust/capstone-sys"
+
+[badges]
+travis-ci = { repository = "capstone-rust/capstone-sys" }
+
+
+[dependencies]
+
+[build-dependencies]
+bindgen = { optional = true, version = "0.46.0" }
+cc = "1.0"
+
+[features]
+# use pre-generated bindings instead of dynamically with bindgen
+default = []
+
+use_bindgen = ["bindgen"]  # Dynamically generate bindings with bindgen
