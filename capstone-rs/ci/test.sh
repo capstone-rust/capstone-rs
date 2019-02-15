@@ -36,20 +36,18 @@ fi
 
 echo "Test should $EXPECTED_RESULT"
 
-TRAVIS_OS_NAME="${TRAVIS_OS_NAME:-}"
-if [ TRAVIS_OS_NAME ]; then
-    case "$(uname)" in
-    Linux) TRAVIS_OS_NAME=linux ;;
-    Darwin) TRAVIS_OS_NAME=osx ;;
-    *) Error "Unknown OS" ;;
-    esac
-fi
-
 Error() {
-    echo "Error:" "$@" 1>&2
+    echo "Error:" "$@" >&2
     exit 1
 }
 
+if ! [ "${OS_NAME:-}" ]; then
+    case "$(uname)" in
+    Linux) OS_NAME=linux ;;
+    Darwin) OS_NAME=osx ;;
+    FreeBSD) OS_NAME=freebsd ;;
+    esac
+fi
 
 # Usage: SHOULD_FAIL [ARG1 [ARG2 [...]]]
 expect_exit_status() {
@@ -91,7 +89,7 @@ install_kcov() {
 }
 
 install_valgrind() {
-    case "${TRAVIS_OS_NAME}" in
+    case "${OS_NAME}" in
     linux)
         sudo apt-get install valgrind -y
         ;;
@@ -175,7 +173,14 @@ test_rust_file() {
     echo "capstone = { path = \"$capstone_dir\" }" >> Cargo.toml
     cat Cargo.toml
     cat > src/main.rs
-    cargo check "${cargo_cmd_args[@]}"
+    pwd
+
+    # Do not include features arguments
+    cargo_cmd_args=(
+        $(profile_args)
+        --verbose
+        )
+    cargo check "${cargo_cmd_args[@]}" || exit 1
 
     rm -rf "$tmp_dir"
     ) || exit 1
