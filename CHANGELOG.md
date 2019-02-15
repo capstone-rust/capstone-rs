@@ -12,7 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Trait `EnumList` to allow you to enumerate enum variants
 
 ### Changed
-- Bump minimum Rust version to 1.24.1
+- Bump minimum Rust version to 1.28.0
 - Upgraded internal capstone C library to version 4.0
 - Moved `capstone-sys` repository into `capstone-rs` repository
 - Converted operand `Imm` variant from `i32` to `i64` for PPC, SPARC

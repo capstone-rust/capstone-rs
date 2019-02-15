@@ -18,7 +18,7 @@ Bindings to the [capstone library][upstream] disassembly framework.
 
 See the [`capstone-sys`](https://github.com/capstone-rust/capstone-sys) GitHub page for the requirements and supported platforms.
 
-* Minimum Rust Version: `1.24.1` or later
+* Minimum Rust Version: `1.28.0` or later
 
 # Example
 
@@ -118,8 +118,7 @@ More complex demos welcome!
 # Features
 
 `alloc_system`: use the system allocator instead of the default Rust allocator.
-This feature is *only* available on Rust 1.28 and later.
-Useful for running valgrind.
+Useful for running [Valgrind](http://valgrind.org/).
 
 # Reporting Issues
 
