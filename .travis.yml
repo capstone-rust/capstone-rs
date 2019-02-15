@@ -10,7 +10,7 @@ os:
   - osx
 
 script:
-  - ./ci/test.sh
+  - ./capstone-rs/ci/test.sh
 
 cache:
   cargo: true

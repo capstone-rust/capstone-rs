@@ -31,5 +31,6 @@ build: false
 # Equivalent to Travis' `script` phase
 # TODO modify this phase as you see fit
 test_script:
+  - cd capstone-rs
   - cargo build -v
   - cargo test -v

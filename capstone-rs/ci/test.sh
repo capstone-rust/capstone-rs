@@ -22,6 +22,8 @@ SHOULD_FAIL=${SHOULD_FAIL:-}  # Default to false
 VALGRIND_TESTS=${VALGRIND_TESTS:-}
 FEATURES="${FEATURES-}"  # Default to no features
 PROJECT_NAME="$(grep ^name Cargo.toml | head -n1 | xargs -n1 | tail -n1)"
+TARGET="../target"
+TARGET_COV="${TARGET}/cov"
 
 PASS="PASS"
 FAIL="FAIL"
@@ -102,7 +104,7 @@ install_valgrind() {
 
 # target/ dir is cached, so we need to remove old coverage files
 cleanup_cov() {
-    rm -rf target/cov
+    rm -rf ${TARGET_COV}
 }
 
 
@@ -117,16 +119,16 @@ run_kcov() {
         cargo build --example "$example"
     done
 
-    EXAMPLE_BINS=$(echo "$EXAMPLES" | xargs -n1 | sed "s,^,target/${PROFILE}/examples/,")
-    mkdir -p "target/cov"
+    EXAMPLE_BINS=$(echo "$EXAMPLES" | xargs -n1 | sed "s,^,${TARGET}/${PROFILE}/examples/,")
+    mkdir -p "${TARGET_COV}"
 
     (
     set -x
-    for file in target/${PROFILE}/${PROJECT_NAME}-*[^\.d] ${EXAMPLE_BINS} ; do
+    for file in ${TARGET}/${PROFILE}/${PROJECT_NAME}-*[^\.d] ${EXAMPLE_BINS} ; do
         "$KCOV" \
             $COVERALLS_ARG \
             --exclude-pattern=/.cargo,/usr/lib,/out/capstone.rs \
-            --verify "target/cov" "$file"
+            --verify "${TARGET_COV}" "$file"
     done
     )
 }
