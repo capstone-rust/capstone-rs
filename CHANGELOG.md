@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased] - YYYY-MM-DD
 
 ### Added
+- Architectures: EVM
 - Mips modes: `Mips2`, `Mips3`, `Mips32`, `Mips64`
 - Trait `EnumList` to allow you to enumerate enum variants
 
