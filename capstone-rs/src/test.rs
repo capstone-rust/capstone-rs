@@ -1287,6 +1287,22 @@ fn test_arch_arm64_detail() {
 }
 
 #[test]
+fn test_arch_evm() {
+    test_arch_mode_endian_insns(
+        &mut Capstone::new()
+            .evm()
+            .mode(evm::ArchMode::Default)
+            .build()
+            .unwrap(),
+        Arch::EVM,
+        Mode::Default,
+        None,
+        &[],
+        &[("push1", b"\x60\x61"), ("pop", b"\x50")],
+    );
+}
+
+#[test]
 fn test_arch_mips() {
     test_arch_mode_endian_insns(
         &mut Capstone::new()

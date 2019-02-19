@@ -213,6 +213,15 @@ macro_rules! arch_info_base {
                 ( both_endian: true )
             ]
             [
+                ( evm, EVM )
+                ( mode:
+                    Default,
+                    )
+                ( extra_modes: )
+                ( syntax: )
+                ( both_endian: false )
+            ]
+            [
                 ( mips, MIPS )
                 ( mode:
                     Mips32,
@@ -392,6 +401,13 @@ macro_rules! detail_arch_base {
                 op = Arm64Operand,
                 /// Returns the ARM64 details, if any
                 => arch_name = arm64,
+            ]
+            [
+                detail = EvmDetail,
+                insn_detail = EvmInsnDetail<'a>,
+                op = EvmOperand,
+                /// Returns the EVM details, if any
+                => arch_name = evm,
             ]
             [
                 detail = MipsDetail,
