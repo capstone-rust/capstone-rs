@@ -2616,58 +2616,57 @@ pub mod arm64_insn_group {
     pub const ARM64_GRP_CRC: Type = 131;
     pub const ARM64_GRP_ENDING: Type = 132;
 }
-#[repr(u32)]
-#[doc = " M68K registers and special registers"]
-#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
-pub enum m68k_reg {
-    M68K_REG_INVALID = 0,
-    M68K_REG_D0 = 1,
-    M68K_REG_D1 = 2,
-    M68K_REG_D2 = 3,
-    M68K_REG_D3 = 4,
-    M68K_REG_D4 = 5,
-    M68K_REG_D5 = 6,
-    M68K_REG_D6 = 7,
-    M68K_REG_D7 = 8,
-    M68K_REG_A0 = 9,
-    M68K_REG_A1 = 10,
-    M68K_REG_A2 = 11,
-    M68K_REG_A3 = 12,
-    M68K_REG_A4 = 13,
-    M68K_REG_A5 = 14,
-    M68K_REG_A6 = 15,
-    M68K_REG_A7 = 16,
-    M68K_REG_FP0 = 17,
-    M68K_REG_FP1 = 18,
-    M68K_REG_FP2 = 19,
-    M68K_REG_FP3 = 20,
-    M68K_REG_FP4 = 21,
-    M68K_REG_FP5 = 22,
-    M68K_REG_FP6 = 23,
-    M68K_REG_FP7 = 24,
-    M68K_REG_PC = 25,
-    M68K_REG_SR = 26,
-    M68K_REG_CCR = 27,
-    M68K_REG_SFC = 28,
-    M68K_REG_DFC = 29,
-    M68K_REG_USP = 30,
-    M68K_REG_VBR = 31,
-    M68K_REG_CACR = 32,
-    M68K_REG_CAAR = 33,
-    M68K_REG_MSP = 34,
-    M68K_REG_ISP = 35,
-    M68K_REG_TC = 36,
-    M68K_REG_ITT0 = 37,
-    M68K_REG_ITT1 = 38,
-    M68K_REG_DTT0 = 39,
-    M68K_REG_DTT1 = 40,
-    M68K_REG_MMUSR = 41,
-    M68K_REG_URP = 42,
-    M68K_REG_SRP = 43,
-    M68K_REG_FPCR = 44,
-    M68K_REG_FPSR = 45,
-    M68K_REG_FPIAR = 46,
-    M68K_REG_ENDING = 47,
+pub mod m68k_reg {
+    #[doc = " M68K registers and special registers"]
+    pub type Type = u32;
+    pub const M68K_REG_INVALID: Type = 0;
+    pub const M68K_REG_D0: Type = 1;
+    pub const M68K_REG_D1: Type = 2;
+    pub const M68K_REG_D2: Type = 3;
+    pub const M68K_REG_D3: Type = 4;
+    pub const M68K_REG_D4: Type = 5;
+    pub const M68K_REG_D5: Type = 6;
+    pub const M68K_REG_D6: Type = 7;
+    pub const M68K_REG_D7: Type = 8;
+    pub const M68K_REG_A0: Type = 9;
+    pub const M68K_REG_A1: Type = 10;
+    pub const M68K_REG_A2: Type = 11;
+    pub const M68K_REG_A3: Type = 12;
+    pub const M68K_REG_A4: Type = 13;
+    pub const M68K_REG_A5: Type = 14;
+    pub const M68K_REG_A6: Type = 15;
+    pub const M68K_REG_A7: Type = 16;
+    pub const M68K_REG_FP0: Type = 17;
+    pub const M68K_REG_FP1: Type = 18;
+    pub const M68K_REG_FP2: Type = 19;
+    pub const M68K_REG_FP3: Type = 20;
+    pub const M68K_REG_FP4: Type = 21;
+    pub const M68K_REG_FP5: Type = 22;
+    pub const M68K_REG_FP6: Type = 23;
+    pub const M68K_REG_FP7: Type = 24;
+    pub const M68K_REG_PC: Type = 25;
+    pub const M68K_REG_SR: Type = 26;
+    pub const M68K_REG_CCR: Type = 27;
+    pub const M68K_REG_SFC: Type = 28;
+    pub const M68K_REG_DFC: Type = 29;
+    pub const M68K_REG_USP: Type = 30;
+    pub const M68K_REG_VBR: Type = 31;
+    pub const M68K_REG_CACR: Type = 32;
+    pub const M68K_REG_CAAR: Type = 33;
+    pub const M68K_REG_MSP: Type = 34;
+    pub const M68K_REG_ISP: Type = 35;
+    pub const M68K_REG_TC: Type = 36;
+    pub const M68K_REG_ITT0: Type = 37;
+    pub const M68K_REG_ITT1: Type = 38;
+    pub const M68K_REG_DTT0: Type = 39;
+    pub const M68K_REG_DTT1: Type = 40;
+    pub const M68K_REG_MMUSR: Type = 41;
+    pub const M68K_REG_URP: Type = 42;
+    pub const M68K_REG_SRP: Type = 43;
+    pub const M68K_REG_FPCR: Type = 44;
+    pub const M68K_REG_FPSR: Type = 45;
+    pub const M68K_REG_FPIAR: Type = 46;
+    pub const M68K_REG_ENDING: Type = 47;
 }
 #[repr(u32)]
 #[doc = " M68K Addressing Modes"]
@@ -2743,11 +2742,11 @@ pub enum m68k_op_type {
 #[derive(Debug, Copy)]
 pub struct m68k_op_mem {
     #[doc = "< base register (or M68K_REG_INVALID if irrelevant)"]
-    pub base_reg: m68k_reg,
+    pub base_reg: m68k_reg::Type,
     #[doc = "< index register (or M68K_REG_INVALID if irrelevant)"]
-    pub index_reg: m68k_reg,
+    pub index_reg: m68k_reg::Type,
     #[doc = "< indirect base register (or M68K_REG_INVALID if irrelevant)"]
-    pub in_base_reg: m68k_reg,
+    pub in_base_reg: m68k_reg::Type,
     #[doc = "< indirect displacement"]
     pub in_disp: u32,
     #[doc = "< other displacement"]
@@ -2769,6 +2768,19 @@ impl Clone for m68k_op_mem {
     fn clone(&self) -> Self {
         *self
     }
+}
+#[repr(u32)]
+#[doc = " Operand type for instruction\'s operands"]
+#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
+pub enum m68k_op_br_disp_size {
+    #[doc = "< = CS_OP_INVALID (Uninitialized)."]
+    M68K_OP_BR_DISP_SIZE_INVALID = 0,
+    #[doc = "< signed 8-bit displacement"]
+    M68K_OP_BR_DISP_SIZE_BYTE = 1,
+    #[doc = "< signed 16-bit displacement"]
+    M68K_OP_BR_DISP_SIZE_WORD = 2,
+    #[doc = "< signed 32-bit displacement"]
+    M68K_OP_BR_DISP_SIZE_LONG = 4,
 }
 #[repr(C)]
 #[derive(Debug, Copy)]
@@ -2808,15 +2820,15 @@ pub union cs_m68k_op__bindgen_ty_1 {
     #[doc = "< float imm"]
     pub simm: f32,
     #[doc = "< register value for REG operand"]
-    pub reg: m68k_reg,
+    pub reg: m68k_reg::Type,
     pub reg_pair: cs_m68k_op__bindgen_ty_1__bindgen_ty_1,
     _bindgen_union_align: u64,
 }
 #[repr(C)]
 #[derive(Debug, Copy)]
 pub struct cs_m68k_op__bindgen_ty_1__bindgen_ty_1 {
-    pub reg_0: m68k_reg,
-    pub reg_1: m68k_reg,
+    pub reg_0: m68k_reg::Type,
+    pub reg_1: m68k_reg::Type,
 }
 impl Clone for cs_m68k_op__bindgen_ty_1__bindgen_ty_1 {
     fn clone(&self) -> Self {
@@ -2939,6 +2951,403 @@ impl ::std::fmt::Debug for cs_m68k {
             self.operands, self.op_size, self.op_count
         )
     }
+}
+#[repr(u32)]
+#[doc = " M68K instruction"]
+#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
+pub enum m68k_insn {
+    M68K_INS_INVALID = 0,
+    M68K_INS_ABCD = 1,
+    M68K_INS_ADD = 2,
+    M68K_INS_ADDA = 3,
+    M68K_INS_ADDI = 4,
+    M68K_INS_ADDQ = 5,
+    M68K_INS_ADDX = 6,
+    M68K_INS_AND = 7,
+    M68K_INS_ANDI = 8,
+    M68K_INS_ASL = 9,
+    M68K_INS_ASR = 10,
+    M68K_INS_BHS = 11,
+    M68K_INS_BLO = 12,
+    M68K_INS_BHI = 13,
+    M68K_INS_BLS = 14,
+    M68K_INS_BCC = 15,
+    M68K_INS_BCS = 16,
+    M68K_INS_BNE = 17,
+    M68K_INS_BEQ = 18,
+    M68K_INS_BVC = 19,
+    M68K_INS_BVS = 20,
+    M68K_INS_BPL = 21,
+    M68K_INS_BMI = 22,
+    M68K_INS_BGE = 23,
+    M68K_INS_BLT = 24,
+    M68K_INS_BGT = 25,
+    M68K_INS_BLE = 26,
+    M68K_INS_BRA = 27,
+    M68K_INS_BSR = 28,
+    M68K_INS_BCHG = 29,
+    M68K_INS_BCLR = 30,
+    M68K_INS_BSET = 31,
+    M68K_INS_BTST = 32,
+    M68K_INS_BFCHG = 33,
+    M68K_INS_BFCLR = 34,
+    M68K_INS_BFEXTS = 35,
+    M68K_INS_BFEXTU = 36,
+    M68K_INS_BFFFO = 37,
+    M68K_INS_BFINS = 38,
+    M68K_INS_BFSET = 39,
+    M68K_INS_BFTST = 40,
+    M68K_INS_BKPT = 41,
+    M68K_INS_CALLM = 42,
+    M68K_INS_CAS = 43,
+    M68K_INS_CAS2 = 44,
+    M68K_INS_CHK = 45,
+    M68K_INS_CHK2 = 46,
+    M68K_INS_CLR = 47,
+    M68K_INS_CMP = 48,
+    M68K_INS_CMPA = 49,
+    M68K_INS_CMPI = 50,
+    M68K_INS_CMPM = 51,
+    M68K_INS_CMP2 = 52,
+    M68K_INS_CINVL = 53,
+    M68K_INS_CINVP = 54,
+    M68K_INS_CINVA = 55,
+    M68K_INS_CPUSHL = 56,
+    M68K_INS_CPUSHP = 57,
+    M68K_INS_CPUSHA = 58,
+    M68K_INS_DBT = 59,
+    M68K_INS_DBF = 60,
+    M68K_INS_DBHI = 61,
+    M68K_INS_DBLS = 62,
+    M68K_INS_DBCC = 63,
+    M68K_INS_DBCS = 64,
+    M68K_INS_DBNE = 65,
+    M68K_INS_DBEQ = 66,
+    M68K_INS_DBVC = 67,
+    M68K_INS_DBVS = 68,
+    M68K_INS_DBPL = 69,
+    M68K_INS_DBMI = 70,
+    M68K_INS_DBGE = 71,
+    M68K_INS_DBLT = 72,
+    M68K_INS_DBGT = 73,
+    M68K_INS_DBLE = 74,
+    M68K_INS_DBRA = 75,
+    M68K_INS_DIVS = 76,
+    M68K_INS_DIVSL = 77,
+    M68K_INS_DIVU = 78,
+    M68K_INS_DIVUL = 79,
+    M68K_INS_EOR = 80,
+    M68K_INS_EORI = 81,
+    M68K_INS_EXG = 82,
+    M68K_INS_EXT = 83,
+    M68K_INS_EXTB = 84,
+    M68K_INS_FABS = 85,
+    M68K_INS_FSABS = 86,
+    M68K_INS_FDABS = 87,
+    M68K_INS_FACOS = 88,
+    M68K_INS_FADD = 89,
+    M68K_INS_FSADD = 90,
+    M68K_INS_FDADD = 91,
+    M68K_INS_FASIN = 92,
+    M68K_INS_FATAN = 93,
+    M68K_INS_FATANH = 94,
+    M68K_INS_FBF = 95,
+    M68K_INS_FBEQ = 96,
+    M68K_INS_FBOGT = 97,
+    M68K_INS_FBOGE = 98,
+    M68K_INS_FBOLT = 99,
+    M68K_INS_FBOLE = 100,
+    M68K_INS_FBOGL = 101,
+    M68K_INS_FBOR = 102,
+    M68K_INS_FBUN = 103,
+    M68K_INS_FBUEQ = 104,
+    M68K_INS_FBUGT = 105,
+    M68K_INS_FBUGE = 106,
+    M68K_INS_FBULT = 107,
+    M68K_INS_FBULE = 108,
+    M68K_INS_FBNE = 109,
+    M68K_INS_FBT = 110,
+    M68K_INS_FBSF = 111,
+    M68K_INS_FBSEQ = 112,
+    M68K_INS_FBGT = 113,
+    M68K_INS_FBGE = 114,
+    M68K_INS_FBLT = 115,
+    M68K_INS_FBLE = 116,
+    M68K_INS_FBGL = 117,
+    M68K_INS_FBGLE = 118,
+    M68K_INS_FBNGLE = 119,
+    M68K_INS_FBNGL = 120,
+    M68K_INS_FBNLE = 121,
+    M68K_INS_FBNLT = 122,
+    M68K_INS_FBNGE = 123,
+    M68K_INS_FBNGT = 124,
+    M68K_INS_FBSNE = 125,
+    M68K_INS_FBST = 126,
+    M68K_INS_FCMP = 127,
+    M68K_INS_FCOS = 128,
+    M68K_INS_FCOSH = 129,
+    M68K_INS_FDBF = 130,
+    M68K_INS_FDBEQ = 131,
+    M68K_INS_FDBOGT = 132,
+    M68K_INS_FDBOGE = 133,
+    M68K_INS_FDBOLT = 134,
+    M68K_INS_FDBOLE = 135,
+    M68K_INS_FDBOGL = 136,
+    M68K_INS_FDBOR = 137,
+    M68K_INS_FDBUN = 138,
+    M68K_INS_FDBUEQ = 139,
+    M68K_INS_FDBUGT = 140,
+    M68K_INS_FDBUGE = 141,
+    M68K_INS_FDBULT = 142,
+    M68K_INS_FDBULE = 143,
+    M68K_INS_FDBNE = 144,
+    M68K_INS_FDBT = 145,
+    M68K_INS_FDBSF = 146,
+    M68K_INS_FDBSEQ = 147,
+    M68K_INS_FDBGT = 148,
+    M68K_INS_FDBGE = 149,
+    M68K_INS_FDBLT = 150,
+    M68K_INS_FDBLE = 151,
+    M68K_INS_FDBGL = 152,
+    M68K_INS_FDBGLE = 153,
+    M68K_INS_FDBNGLE = 154,
+    M68K_INS_FDBNGL = 155,
+    M68K_INS_FDBNLE = 156,
+    M68K_INS_FDBNLT = 157,
+    M68K_INS_FDBNGE = 158,
+    M68K_INS_FDBNGT = 159,
+    M68K_INS_FDBSNE = 160,
+    M68K_INS_FDBST = 161,
+    M68K_INS_FDIV = 162,
+    M68K_INS_FSDIV = 163,
+    M68K_INS_FDDIV = 164,
+    M68K_INS_FETOX = 165,
+    M68K_INS_FETOXM1 = 166,
+    M68K_INS_FGETEXP = 167,
+    M68K_INS_FGETMAN = 168,
+    M68K_INS_FINT = 169,
+    M68K_INS_FINTRZ = 170,
+    M68K_INS_FLOG10 = 171,
+    M68K_INS_FLOG2 = 172,
+    M68K_INS_FLOGN = 173,
+    M68K_INS_FLOGNP1 = 174,
+    M68K_INS_FMOD = 175,
+    M68K_INS_FMOVE = 176,
+    M68K_INS_FSMOVE = 177,
+    M68K_INS_FDMOVE = 178,
+    M68K_INS_FMOVECR = 179,
+    M68K_INS_FMOVEM = 180,
+    M68K_INS_FMUL = 181,
+    M68K_INS_FSMUL = 182,
+    M68K_INS_FDMUL = 183,
+    M68K_INS_FNEG = 184,
+    M68K_INS_FSNEG = 185,
+    M68K_INS_FDNEG = 186,
+    M68K_INS_FNOP = 187,
+    M68K_INS_FREM = 188,
+    M68K_INS_FRESTORE = 189,
+    M68K_INS_FSAVE = 190,
+    M68K_INS_FSCALE = 191,
+    M68K_INS_FSGLDIV = 192,
+    M68K_INS_FSGLMUL = 193,
+    M68K_INS_FSIN = 194,
+    M68K_INS_FSINCOS = 195,
+    M68K_INS_FSINH = 196,
+    M68K_INS_FSQRT = 197,
+    M68K_INS_FSSQRT = 198,
+    M68K_INS_FDSQRT = 199,
+    M68K_INS_FSF = 200,
+    M68K_INS_FSBEQ = 201,
+    M68K_INS_FSOGT = 202,
+    M68K_INS_FSOGE = 203,
+    M68K_INS_FSOLT = 204,
+    M68K_INS_FSOLE = 205,
+    M68K_INS_FSOGL = 206,
+    M68K_INS_FSOR = 207,
+    M68K_INS_FSUN = 208,
+    M68K_INS_FSUEQ = 209,
+    M68K_INS_FSUGT = 210,
+    M68K_INS_FSUGE = 211,
+    M68K_INS_FSULT = 212,
+    M68K_INS_FSULE = 213,
+    M68K_INS_FSNE = 214,
+    M68K_INS_FST = 215,
+    M68K_INS_FSSF = 216,
+    M68K_INS_FSSEQ = 217,
+    M68K_INS_FSGT = 218,
+    M68K_INS_FSGE = 219,
+    M68K_INS_FSLT = 220,
+    M68K_INS_FSLE = 221,
+    M68K_INS_FSGL = 222,
+    M68K_INS_FSGLE = 223,
+    M68K_INS_FSNGLE = 224,
+    M68K_INS_FSNGL = 225,
+    M68K_INS_FSNLE = 226,
+    M68K_INS_FSNLT = 227,
+    M68K_INS_FSNGE = 228,
+    M68K_INS_FSNGT = 229,
+    M68K_INS_FSSNE = 230,
+    M68K_INS_FSST = 231,
+    M68K_INS_FSUB = 232,
+    M68K_INS_FSSUB = 233,
+    M68K_INS_FDSUB = 234,
+    M68K_INS_FTAN = 235,
+    M68K_INS_FTANH = 236,
+    M68K_INS_FTENTOX = 237,
+    M68K_INS_FTRAPF = 238,
+    M68K_INS_FTRAPEQ = 239,
+    M68K_INS_FTRAPOGT = 240,
+    M68K_INS_FTRAPOGE = 241,
+    M68K_INS_FTRAPOLT = 242,
+    M68K_INS_FTRAPOLE = 243,
+    M68K_INS_FTRAPOGL = 244,
+    M68K_INS_FTRAPOR = 245,
+    M68K_INS_FTRAPUN = 246,
+    M68K_INS_FTRAPUEQ = 247,
+    M68K_INS_FTRAPUGT = 248,
+    M68K_INS_FTRAPUGE = 249,
+    M68K_INS_FTRAPULT = 250,
+    M68K_INS_FTRAPULE = 251,
+    M68K_INS_FTRAPNE = 252,
+    M68K_INS_FTRAPT = 253,
+    M68K_INS_FTRAPSF = 254,
+    M68K_INS_FTRAPSEQ = 255,
+    M68K_INS_FTRAPGT = 256,
+    M68K_INS_FTRAPGE = 257,
+    M68K_INS_FTRAPLT = 258,
+    M68K_INS_FTRAPLE = 259,
+    M68K_INS_FTRAPGL = 260,
+    M68K_INS_FTRAPGLE = 261,
+    M68K_INS_FTRAPNGLE = 262,
+    M68K_INS_FTRAPNGL = 263,
+    M68K_INS_FTRAPNLE = 264,
+    M68K_INS_FTRAPNLT = 265,
+    M68K_INS_FTRAPNGE = 266,
+    M68K_INS_FTRAPNGT = 267,
+    M68K_INS_FTRAPSNE = 268,
+    M68K_INS_FTRAPST = 269,
+    M68K_INS_FTST = 270,
+    M68K_INS_FTWOTOX = 271,
+    M68K_INS_HALT = 272,
+    M68K_INS_ILLEGAL = 273,
+    M68K_INS_JMP = 274,
+    M68K_INS_JSR = 275,
+    M68K_INS_LEA = 276,
+    M68K_INS_LINK = 277,
+    M68K_INS_LPSTOP = 278,
+    M68K_INS_LSL = 279,
+    M68K_INS_LSR = 280,
+    M68K_INS_MOVE = 281,
+    M68K_INS_MOVEA = 282,
+    M68K_INS_MOVEC = 283,
+    M68K_INS_MOVEM = 284,
+    M68K_INS_MOVEP = 285,
+    M68K_INS_MOVEQ = 286,
+    M68K_INS_MOVES = 287,
+    M68K_INS_MOVE16 = 288,
+    M68K_INS_MULS = 289,
+    M68K_INS_MULU = 290,
+    M68K_INS_NBCD = 291,
+    M68K_INS_NEG = 292,
+    M68K_INS_NEGX = 293,
+    M68K_INS_NOP = 294,
+    M68K_INS_NOT = 295,
+    M68K_INS_OR = 296,
+    M68K_INS_ORI = 297,
+    M68K_INS_PACK = 298,
+    M68K_INS_PEA = 299,
+    M68K_INS_PFLUSH = 300,
+    M68K_INS_PFLUSHA = 301,
+    M68K_INS_PFLUSHAN = 302,
+    M68K_INS_PFLUSHN = 303,
+    M68K_INS_PLOADR = 304,
+    M68K_INS_PLOADW = 305,
+    M68K_INS_PLPAR = 306,
+    M68K_INS_PLPAW = 307,
+    M68K_INS_PMOVE = 308,
+    M68K_INS_PMOVEFD = 309,
+    M68K_INS_PTESTR = 310,
+    M68K_INS_PTESTW = 311,
+    M68K_INS_PULSE = 312,
+    M68K_INS_REMS = 313,
+    M68K_INS_REMU = 314,
+    M68K_INS_RESET = 315,
+    M68K_INS_ROL = 316,
+    M68K_INS_ROR = 317,
+    M68K_INS_ROXL = 318,
+    M68K_INS_ROXR = 319,
+    M68K_INS_RTD = 320,
+    M68K_INS_RTE = 321,
+    M68K_INS_RTM = 322,
+    M68K_INS_RTR = 323,
+    M68K_INS_RTS = 324,
+    M68K_INS_SBCD = 325,
+    M68K_INS_ST = 326,
+    M68K_INS_SF = 327,
+    M68K_INS_SHI = 328,
+    M68K_INS_SLS = 329,
+    M68K_INS_SCC = 330,
+    M68K_INS_SHS = 331,
+    M68K_INS_SCS = 332,
+    M68K_INS_SLO = 333,
+    M68K_INS_SNE = 334,
+    M68K_INS_SEQ = 335,
+    M68K_INS_SVC = 336,
+    M68K_INS_SVS = 337,
+    M68K_INS_SPL = 338,
+    M68K_INS_SMI = 339,
+    M68K_INS_SGE = 340,
+    M68K_INS_SLT = 341,
+    M68K_INS_SGT = 342,
+    M68K_INS_SLE = 343,
+    M68K_INS_STOP = 344,
+    M68K_INS_SUB = 345,
+    M68K_INS_SUBA = 346,
+    M68K_INS_SUBI = 347,
+    M68K_INS_SUBQ = 348,
+    M68K_INS_SUBX = 349,
+    M68K_INS_SWAP = 350,
+    M68K_INS_TAS = 351,
+    M68K_INS_TRAP = 352,
+    M68K_INS_TRAPV = 353,
+    M68K_INS_TRAPT = 354,
+    M68K_INS_TRAPF = 355,
+    M68K_INS_TRAPHI = 356,
+    M68K_INS_TRAPLS = 357,
+    M68K_INS_TRAPCC = 358,
+    M68K_INS_TRAPHS = 359,
+    M68K_INS_TRAPCS = 360,
+    M68K_INS_TRAPLO = 361,
+    M68K_INS_TRAPNE = 362,
+    M68K_INS_TRAPEQ = 363,
+    M68K_INS_TRAPVC = 364,
+    M68K_INS_TRAPVS = 365,
+    M68K_INS_TRAPPL = 366,
+    M68K_INS_TRAPMI = 367,
+    M68K_INS_TRAPGE = 368,
+    M68K_INS_TRAPLT = 369,
+    M68K_INS_TRAPGT = 370,
+    M68K_INS_TRAPLE = 371,
+    M68K_INS_TST = 372,
+    M68K_INS_UNLK = 373,
+    M68K_INS_UNPK = 374,
+    M68K_INS_ENDING = 375,
+}
+#[repr(u32)]
+#[doc = " Group of M68K instructions"]
+#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
+pub enum m68k_group_type {
+    #[doc = "< CS_GRUP_INVALID"]
+    M68K_GRP_INVALID = 0,
+    #[doc = "< = CS_GRP_JUMP"]
+    M68K_GRP_JUMP = 1,
+    #[doc = "< = CS_GRP_RET"]
+    M68K_GRP_RET = 3,
+    #[doc = "< = CS_GRP_IRET"]
+    M68K_GRP_IRET = 5,
+    #[doc = "< = CS_GRP_BRANCH_RELATIVE"]
+    M68K_GRP_BRANCH_RELATIVE = 7,
+    M68K_GRP_ENDING = 8,
 }
 #[repr(u32)]
 #[doc = " Operand type for instruction\'s operands"]
@@ -9265,6 +9674,28 @@ pub enum tms320c64x_op_type {
     #[doc = "< Register pair for double word ops"]
     TMS320C64X_OP_REGPAIR = 64,
 }
+#[repr(u32)]
+#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
+pub enum tms320c64x_mem_disp {
+    TMS320C64X_MEM_DISP_INVALID = 0,
+    TMS320C64X_MEM_DISP_CONSTANT = 1,
+    TMS320C64X_MEM_DISP_REGISTER = 2,
+}
+#[repr(u32)]
+#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
+pub enum tms320c64x_mem_dir {
+    TMS320C64X_MEM_DIR_INVALID = 0,
+    TMS320C64X_MEM_DIR_FW = 1,
+    TMS320C64X_MEM_DIR_BW = 2,
+}
+#[repr(u32)]
+#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
+pub enum tms320c64x_mem_mod {
+    TMS320C64X_MEM_MOD_INVALID = 0,
+    TMS320C64X_MEM_MOD_NO = 1,
+    TMS320C64X_MEM_MOD_PRE = 2,
+    TMS320C64X_MEM_MOD_POST = 3,
+}
 #[repr(C)]
 #[derive(Debug, Copy)]
 pub struct tms320c64x_op_mem {
@@ -9373,55 +9804,323 @@ impl ::std::fmt::Debug for cs_tms320c64x {
         write ! ( f , "cs_tms320c64x {{ op_count: {:?}, operands: {:?}, condition: {:?}, funit: {:?}, parallel: {:?} }}" , self . op_count , self . operands , self . condition , self . funit , self . parallel )
     }
 }
+pub mod tms320c64x_reg {
+    pub type Type = u32;
+    pub const TMS320C64X_REG_INVALID: Type = 0;
+    pub const TMS320C64X_REG_AMR: Type = 1;
+    pub const TMS320C64X_REG_CSR: Type = 2;
+    pub const TMS320C64X_REG_DIER: Type = 3;
+    pub const TMS320C64X_REG_DNUM: Type = 4;
+    pub const TMS320C64X_REG_ECR: Type = 5;
+    pub const TMS320C64X_REG_GFPGFR: Type = 6;
+    pub const TMS320C64X_REG_GPLYA: Type = 7;
+    pub const TMS320C64X_REG_GPLYB: Type = 8;
+    pub const TMS320C64X_REG_ICR: Type = 9;
+    pub const TMS320C64X_REG_IER: Type = 10;
+    pub const TMS320C64X_REG_IERR: Type = 11;
+    pub const TMS320C64X_REG_ILC: Type = 12;
+    pub const TMS320C64X_REG_IRP: Type = 13;
+    pub const TMS320C64X_REG_ISR: Type = 14;
+    pub const TMS320C64X_REG_ISTP: Type = 15;
+    pub const TMS320C64X_REG_ITSR: Type = 16;
+    pub const TMS320C64X_REG_NRP: Type = 17;
+    pub const TMS320C64X_REG_NTSR: Type = 18;
+    pub const TMS320C64X_REG_REP: Type = 19;
+    pub const TMS320C64X_REG_RILC: Type = 20;
+    pub const TMS320C64X_REG_SSR: Type = 21;
+    pub const TMS320C64X_REG_TSCH: Type = 22;
+    pub const TMS320C64X_REG_TSCL: Type = 23;
+    pub const TMS320C64X_REG_TSR: Type = 24;
+    pub const TMS320C64X_REG_A0: Type = 25;
+    pub const TMS320C64X_REG_A1: Type = 26;
+    pub const TMS320C64X_REG_A2: Type = 27;
+    pub const TMS320C64X_REG_A3: Type = 28;
+    pub const TMS320C64X_REG_A4: Type = 29;
+    pub const TMS320C64X_REG_A5: Type = 30;
+    pub const TMS320C64X_REG_A6: Type = 31;
+    pub const TMS320C64X_REG_A7: Type = 32;
+    pub const TMS320C64X_REG_A8: Type = 33;
+    pub const TMS320C64X_REG_A9: Type = 34;
+    pub const TMS320C64X_REG_A10: Type = 35;
+    pub const TMS320C64X_REG_A11: Type = 36;
+    pub const TMS320C64X_REG_A12: Type = 37;
+    pub const TMS320C64X_REG_A13: Type = 38;
+    pub const TMS320C64X_REG_A14: Type = 39;
+    pub const TMS320C64X_REG_A15: Type = 40;
+    pub const TMS320C64X_REG_A16: Type = 41;
+    pub const TMS320C64X_REG_A17: Type = 42;
+    pub const TMS320C64X_REG_A18: Type = 43;
+    pub const TMS320C64X_REG_A19: Type = 44;
+    pub const TMS320C64X_REG_A20: Type = 45;
+    pub const TMS320C64X_REG_A21: Type = 46;
+    pub const TMS320C64X_REG_A22: Type = 47;
+    pub const TMS320C64X_REG_A23: Type = 48;
+    pub const TMS320C64X_REG_A24: Type = 49;
+    pub const TMS320C64X_REG_A25: Type = 50;
+    pub const TMS320C64X_REG_A26: Type = 51;
+    pub const TMS320C64X_REG_A27: Type = 52;
+    pub const TMS320C64X_REG_A28: Type = 53;
+    pub const TMS320C64X_REG_A29: Type = 54;
+    pub const TMS320C64X_REG_A30: Type = 55;
+    pub const TMS320C64X_REG_A31: Type = 56;
+    pub const TMS320C64X_REG_B0: Type = 57;
+    pub const TMS320C64X_REG_B1: Type = 58;
+    pub const TMS320C64X_REG_B2: Type = 59;
+    pub const TMS320C64X_REG_B3: Type = 60;
+    pub const TMS320C64X_REG_B4: Type = 61;
+    pub const TMS320C64X_REG_B5: Type = 62;
+    pub const TMS320C64X_REG_B6: Type = 63;
+    pub const TMS320C64X_REG_B7: Type = 64;
+    pub const TMS320C64X_REG_B8: Type = 65;
+    pub const TMS320C64X_REG_B9: Type = 66;
+    pub const TMS320C64X_REG_B10: Type = 67;
+    pub const TMS320C64X_REG_B11: Type = 68;
+    pub const TMS320C64X_REG_B12: Type = 69;
+    pub const TMS320C64X_REG_B13: Type = 70;
+    pub const TMS320C64X_REG_B14: Type = 71;
+    pub const TMS320C64X_REG_B15: Type = 72;
+    pub const TMS320C64X_REG_B16: Type = 73;
+    pub const TMS320C64X_REG_B17: Type = 74;
+    pub const TMS320C64X_REG_B18: Type = 75;
+    pub const TMS320C64X_REG_B19: Type = 76;
+    pub const TMS320C64X_REG_B20: Type = 77;
+    pub const TMS320C64X_REG_B21: Type = 78;
+    pub const TMS320C64X_REG_B22: Type = 79;
+    pub const TMS320C64X_REG_B23: Type = 80;
+    pub const TMS320C64X_REG_B24: Type = 81;
+    pub const TMS320C64X_REG_B25: Type = 82;
+    pub const TMS320C64X_REG_B26: Type = 83;
+    pub const TMS320C64X_REG_B27: Type = 84;
+    pub const TMS320C64X_REG_B28: Type = 85;
+    pub const TMS320C64X_REG_B29: Type = 86;
+    pub const TMS320C64X_REG_B30: Type = 87;
+    pub const TMS320C64X_REG_B31: Type = 88;
+    pub const TMS320C64X_REG_PCE1: Type = 89;
+    pub const TMS320C64X_REG_ENDING: Type = 90;
+    pub const TMS320C64X_REG_EFR: Type = 5;
+    pub const TMS320C64X_REG_IFR: Type = 14;
+}
 #[repr(u32)]
-#[doc = " M680X registers and special registers"]
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
-pub enum m680x_reg {
-    M680X_REG_INVALID = 0,
+pub enum tms320c64x_insn {
+    TMS320C64X_INS_INVALID = 0,
+    TMS320C64X_INS_ABS = 1,
+    TMS320C64X_INS_ABS2 = 2,
+    TMS320C64X_INS_ADD = 3,
+    TMS320C64X_INS_ADD2 = 4,
+    TMS320C64X_INS_ADD4 = 5,
+    TMS320C64X_INS_ADDAB = 6,
+    TMS320C64X_INS_ADDAD = 7,
+    TMS320C64X_INS_ADDAH = 8,
+    TMS320C64X_INS_ADDAW = 9,
+    TMS320C64X_INS_ADDK = 10,
+    TMS320C64X_INS_ADDKPC = 11,
+    TMS320C64X_INS_ADDU = 12,
+    TMS320C64X_INS_AND = 13,
+    TMS320C64X_INS_ANDN = 14,
+    TMS320C64X_INS_AVG2 = 15,
+    TMS320C64X_INS_AVGU4 = 16,
+    TMS320C64X_INS_B = 17,
+    TMS320C64X_INS_BDEC = 18,
+    TMS320C64X_INS_BITC4 = 19,
+    TMS320C64X_INS_BNOP = 20,
+    TMS320C64X_INS_BPOS = 21,
+    TMS320C64X_INS_CLR = 22,
+    TMS320C64X_INS_CMPEQ = 23,
+    TMS320C64X_INS_CMPEQ2 = 24,
+    TMS320C64X_INS_CMPEQ4 = 25,
+    TMS320C64X_INS_CMPGT = 26,
+    TMS320C64X_INS_CMPGT2 = 27,
+    TMS320C64X_INS_CMPGTU4 = 28,
+    TMS320C64X_INS_CMPLT = 29,
+    TMS320C64X_INS_CMPLTU = 30,
+    TMS320C64X_INS_DEAL = 31,
+    TMS320C64X_INS_DOTP2 = 32,
+    TMS320C64X_INS_DOTPN2 = 33,
+    TMS320C64X_INS_DOTPNRSU2 = 34,
+    TMS320C64X_INS_DOTPRSU2 = 35,
+    TMS320C64X_INS_DOTPSU4 = 36,
+    TMS320C64X_INS_DOTPU4 = 37,
+    TMS320C64X_INS_EXT = 38,
+    TMS320C64X_INS_EXTU = 39,
+    TMS320C64X_INS_GMPGTU = 40,
+    TMS320C64X_INS_GMPY4 = 41,
+    TMS320C64X_INS_LDB = 42,
+    TMS320C64X_INS_LDBU = 43,
+    TMS320C64X_INS_LDDW = 44,
+    TMS320C64X_INS_LDH = 45,
+    TMS320C64X_INS_LDHU = 46,
+    TMS320C64X_INS_LDNDW = 47,
+    TMS320C64X_INS_LDNW = 48,
+    TMS320C64X_INS_LDW = 49,
+    TMS320C64X_INS_LMBD = 50,
+    TMS320C64X_INS_MAX2 = 51,
+    TMS320C64X_INS_MAXU4 = 52,
+    TMS320C64X_INS_MIN2 = 53,
+    TMS320C64X_INS_MINU4 = 54,
+    TMS320C64X_INS_MPY = 55,
+    TMS320C64X_INS_MPY2 = 56,
+    TMS320C64X_INS_MPYH = 57,
+    TMS320C64X_INS_MPYHI = 58,
+    TMS320C64X_INS_MPYHIR = 59,
+    TMS320C64X_INS_MPYHL = 60,
+    TMS320C64X_INS_MPYHLU = 61,
+    TMS320C64X_INS_MPYHSLU = 62,
+    TMS320C64X_INS_MPYHSU = 63,
+    TMS320C64X_INS_MPYHU = 64,
+    TMS320C64X_INS_MPYHULS = 65,
+    TMS320C64X_INS_MPYHUS = 66,
+    TMS320C64X_INS_MPYLH = 67,
+    TMS320C64X_INS_MPYLHU = 68,
+    TMS320C64X_INS_MPYLI = 69,
+    TMS320C64X_INS_MPYLIR = 70,
+    TMS320C64X_INS_MPYLSHU = 71,
+    TMS320C64X_INS_MPYLUHS = 72,
+    TMS320C64X_INS_MPYSU = 73,
+    TMS320C64X_INS_MPYSU4 = 74,
+    TMS320C64X_INS_MPYU = 75,
+    TMS320C64X_INS_MPYU4 = 76,
+    TMS320C64X_INS_MPYUS = 77,
+    TMS320C64X_INS_MVC = 78,
+    TMS320C64X_INS_MVD = 79,
+    TMS320C64X_INS_MVK = 80,
+    TMS320C64X_INS_MVKL = 81,
+    TMS320C64X_INS_MVKLH = 82,
+    TMS320C64X_INS_NOP = 83,
+    TMS320C64X_INS_NORM = 84,
+    TMS320C64X_INS_OR = 85,
+    TMS320C64X_INS_PACK2 = 86,
+    TMS320C64X_INS_PACKH2 = 87,
+    TMS320C64X_INS_PACKH4 = 88,
+    TMS320C64X_INS_PACKHL2 = 89,
+    TMS320C64X_INS_PACKL4 = 90,
+    TMS320C64X_INS_PACKLH2 = 91,
+    TMS320C64X_INS_ROTL = 92,
+    TMS320C64X_INS_SADD = 93,
+    TMS320C64X_INS_SADD2 = 94,
+    TMS320C64X_INS_SADDU4 = 95,
+    TMS320C64X_INS_SADDUS2 = 96,
+    TMS320C64X_INS_SAT = 97,
+    TMS320C64X_INS_SET = 98,
+    TMS320C64X_INS_SHFL = 99,
+    TMS320C64X_INS_SHL = 100,
+    TMS320C64X_INS_SHLMB = 101,
+    TMS320C64X_INS_SHR = 102,
+    TMS320C64X_INS_SHR2 = 103,
+    TMS320C64X_INS_SHRMB = 104,
+    TMS320C64X_INS_SHRU = 105,
+    TMS320C64X_INS_SHRU2 = 106,
+    TMS320C64X_INS_SMPY = 107,
+    TMS320C64X_INS_SMPY2 = 108,
+    TMS320C64X_INS_SMPYH = 109,
+    TMS320C64X_INS_SMPYHL = 110,
+    TMS320C64X_INS_SMPYLH = 111,
+    TMS320C64X_INS_SPACK2 = 112,
+    TMS320C64X_INS_SPACKU4 = 113,
+    TMS320C64X_INS_SSHL = 114,
+    TMS320C64X_INS_SSHVL = 115,
+    TMS320C64X_INS_SSHVR = 116,
+    TMS320C64X_INS_SSUB = 117,
+    TMS320C64X_INS_STB = 118,
+    TMS320C64X_INS_STDW = 119,
+    TMS320C64X_INS_STH = 120,
+    TMS320C64X_INS_STNDW = 121,
+    TMS320C64X_INS_STNW = 122,
+    TMS320C64X_INS_STW = 123,
+    TMS320C64X_INS_SUB = 124,
+    TMS320C64X_INS_SUB2 = 125,
+    TMS320C64X_INS_SUB4 = 126,
+    TMS320C64X_INS_SUBAB = 127,
+    TMS320C64X_INS_SUBABS4 = 128,
+    TMS320C64X_INS_SUBAH = 129,
+    TMS320C64X_INS_SUBAW = 130,
+    TMS320C64X_INS_SUBC = 131,
+    TMS320C64X_INS_SUBU = 132,
+    TMS320C64X_INS_SWAP4 = 133,
+    TMS320C64X_INS_UNPKHU4 = 134,
+    TMS320C64X_INS_UNPKLU4 = 135,
+    TMS320C64X_INS_XOR = 136,
+    TMS320C64X_INS_XPND2 = 137,
+    TMS320C64X_INS_XPND4 = 138,
+    TMS320C64X_INS_IDLE = 139,
+    TMS320C64X_INS_MV = 140,
+    TMS320C64X_INS_NEG = 141,
+    TMS320C64X_INS_NOT = 142,
+    TMS320C64X_INS_SWAP2 = 143,
+    TMS320C64X_INS_ZERO = 144,
+    TMS320C64X_INS_ENDING = 145,
+}
+pub mod tms320c64x_insn_group {
+    pub type Type = u32;
+    #[doc = "< = CS_GRP_INVALID"]
+    pub const TMS320C64X_GRP_INVALID: Type = 0;
+    #[doc = "< = CS_GRP_JUMP"]
+    pub const TMS320C64X_GRP_JUMP: Type = 1;
+    pub const TMS320C64X_GRP_FUNIT_D: Type = 128;
+    pub const TMS320C64X_GRP_FUNIT_L: Type = 129;
+    pub const TMS320C64X_GRP_FUNIT_M: Type = 130;
+    pub const TMS320C64X_GRP_FUNIT_S: Type = 131;
+    pub const TMS320C64X_GRP_FUNIT_NO: Type = 132;
+    pub const TMS320C64X_GRP_ENDING: Type = 133;
+}
+#[repr(u32)]
+#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
+pub enum tms320c64x_funit {
+    TMS320C64X_FUNIT_INVALID = 0,
+    TMS320C64X_FUNIT_D = 1,
+    TMS320C64X_FUNIT_L = 2,
+    TMS320C64X_FUNIT_M = 3,
+    TMS320C64X_FUNIT_S = 4,
+    TMS320C64X_FUNIT_NO = 5,
+}
+pub mod m680x_reg {
+    #[doc = " M680X registers and special registers"]
+    pub type Type = u32;
+    pub const M680X_REG_INVALID: Type = 0;
     #[doc = "< M6800/1/2/3/9, HD6301/9"]
-    M680X_REG_A = 1,
+    pub const M680X_REG_A: Type = 1;
     #[doc = "< M6800/1/2/3/9, HD6301/9"]
-    M680X_REG_B = 2,
+    pub const M680X_REG_B: Type = 2;
     #[doc = "< HD6309"]
-    M680X_REG_E = 3,
+    pub const M680X_REG_E: Type = 3;
     #[doc = "< HD6309"]
-    M680X_REG_F = 4,
+    pub const M680X_REG_F: Type = 4;
     #[doc = "< HD6309"]
-    M680X_REG_0 = 5,
+    pub const M680X_REG_0: Type = 5;
     #[doc = "< M6801/3/9, HD6301/9"]
-    M680X_REG_D = 6,
+    pub const M680X_REG_D: Type = 6;
     #[doc = "< HD6309"]
-    M680X_REG_W = 7,
+    pub const M680X_REG_W: Type = 7;
     #[doc = "< M6800/1/2/3/9, M6301/9"]
-    M680X_REG_CC = 8,
+    pub const M680X_REG_CC: Type = 8;
     #[doc = "< M6809/M6309"]
-    M680X_REG_DP = 9,
+    pub const M680X_REG_DP: Type = 9;
     #[doc = "< M6309"]
-    M680X_REG_MD = 10,
+    pub const M680X_REG_MD: Type = 10;
     #[doc = "< M6808"]
-    M680X_REG_HX = 11,
+    pub const M680X_REG_HX: Type = 11;
     #[doc = "< M6808"]
-    M680X_REG_H = 12,
+    pub const M680X_REG_H: Type = 12;
     #[doc = "< M6800/1/2/3/9, M6301/9"]
-    M680X_REG_X = 13,
+    pub const M680X_REG_X: Type = 13;
     #[doc = "< M6809/M6309"]
-    M680X_REG_Y = 14,
+    pub const M680X_REG_Y: Type = 14;
     #[doc = "< M6809/M6309"]
-    M680X_REG_S = 15,
+    pub const M680X_REG_S: Type = 15;
     #[doc = "< M6809/M6309"]
-    M680X_REG_U = 16,
+    pub const M680X_REG_U: Type = 16;
     #[doc = "< M6309"]
-    M680X_REG_V = 17,
+    pub const M680X_REG_V: Type = 17;
     #[doc = "< M6309"]
-    M680X_REG_Q = 18,
+    pub const M680X_REG_Q: Type = 18;
     #[doc = "< M6800/1/2/3/9, M6301/9"]
-    M680X_REG_PC = 19,
+    pub const M680X_REG_PC: Type = 19;
     #[doc = "< CPU12"]
-    M680X_REG_TMP2 = 20,
+    pub const M680X_REG_TMP2: Type = 20;
     #[doc = "< CPU12"]
-    M680X_REG_TMP3 = 21,
+    pub const M680X_REG_TMP3: Type = 21;
     #[doc = "< <-- mark the end of the list of registers"]
-    M680X_REG_ENDING = 22,
+    pub const M680X_REG_ENDING: Type = 22;
 }
 #[repr(u32)]
 #[doc = " Operand type for instruction\'s operands"]
@@ -9451,10 +10150,10 @@ pub enum m680x_op_type {
 pub struct m680x_op_idx {
     #[doc = "< base register (or M680X_REG_INVALID if"]
     #[doc = "< irrelevant)"]
-    pub base_reg: m680x_reg,
+    pub base_reg: m680x_reg::Type,
     #[doc = "< offset register (or M680X_REG_INVALID if"]
     #[doc = "< irrelevant)"]
-    pub offset_reg: m680x_reg,
+    pub offset_reg: m680x_reg::Type,
     #[doc = "< 5-,8- or 16-bit offset. See also offset_bits."]
     pub offset: i16,
     #[doc = "< = offset addr. if base_reg == M680X_REG_PC."]
@@ -9526,7 +10225,7 @@ pub union cs_m680x_op__bindgen_ty_1 {
     #[doc = "< immediate value for IMM operand"]
     pub imm: i32,
     #[doc = "< register value for REG operand"]
-    pub reg: m680x_reg,
+    pub reg: m680x_reg::Type,
     #[doc = "< Indexed addressing operand"]
     pub idx: m680x_op_idx,
     #[doc = "< Relative address. operand (Bcc/LBcc)"]
@@ -9563,6 +10262,27 @@ impl ::std::fmt::Debug for cs_m680x_op {
         )
     }
 }
+#[repr(u32)]
+#[doc = " Group of M680X instructions"]
+#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
+pub enum m680x_group_type {
+    M680X_GRP_INVALID = 0,
+    #[doc = "< = CS_GRP_JUMP"]
+    M680X_GRP_JUMP = 1,
+    #[doc = "< = CS_GRP_CALL"]
+    M680X_GRP_CALL = 2,
+    #[doc = "< = CS_GRP_RET"]
+    M680X_GRP_RET = 3,
+    #[doc = "< = CS_GRP_INT"]
+    M680X_GRP_INT = 4,
+    #[doc = "< = CS_GRP_IRET"]
+    M680X_GRP_IRET = 5,
+    #[doc = "< = CS_GRP_PRIVILEDGE; not used"]
+    M680X_GRP_PRIV = 6,
+    #[doc = "< = CS_GRP_BRANCH_RELATIVE"]
+    M680X_GRP_BRAREL = 7,
+    M680X_GRP_ENDING = 8,
+}
 #[doc = " The M680X instruction and it\'s operands"]
 #[repr(C)]
 #[derive(Copy)]
@@ -9588,6 +10308,406 @@ impl ::std::fmt::Debug for cs_m680x {
         )
     }
 }
+#[repr(u32)]
+#[doc = " M680X instruction IDs"]
+#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
+pub enum m680x_insn {
+    M680X_INS_INVLD = 0,
+    #[doc = "< M6800/1/2/3"]
+    M680X_INS_ABA = 1,
+    M680X_INS_ABX = 2,
+    M680X_INS_ABY = 3,
+    M680X_INS_ADC = 4,
+    M680X_INS_ADCA = 5,
+    M680X_INS_ADCB = 6,
+    M680X_INS_ADCD = 7,
+    M680X_INS_ADCR = 8,
+    M680X_INS_ADD = 9,
+    M680X_INS_ADDA = 10,
+    M680X_INS_ADDB = 11,
+    M680X_INS_ADDD = 12,
+    M680X_INS_ADDE = 13,
+    M680X_INS_ADDF = 14,
+    M680X_INS_ADDR = 15,
+    M680X_INS_ADDW = 16,
+    M680X_INS_AIM = 17,
+    M680X_INS_AIS = 18,
+    M680X_INS_AIX = 19,
+    M680X_INS_AND = 20,
+    M680X_INS_ANDA = 21,
+    M680X_INS_ANDB = 22,
+    M680X_INS_ANDCC = 23,
+    M680X_INS_ANDD = 24,
+    M680X_INS_ANDR = 25,
+    M680X_INS_ASL = 26,
+    M680X_INS_ASLA = 27,
+    M680X_INS_ASLB = 28,
+    #[doc = "< or LSLD"]
+    M680X_INS_ASLD = 29,
+    M680X_INS_ASR = 30,
+    M680X_INS_ASRA = 31,
+    M680X_INS_ASRB = 32,
+    M680X_INS_ASRD = 33,
+    M680X_INS_ASRX = 34,
+    M680X_INS_BAND = 35,
+    #[doc = "< or BHS"]
+    M680X_INS_BCC = 36,
+    M680X_INS_BCLR = 37,
+    #[doc = "< or BLO"]
+    M680X_INS_BCS = 38,
+    M680X_INS_BEOR = 39,
+    M680X_INS_BEQ = 40,
+    M680X_INS_BGE = 41,
+    M680X_INS_BGND = 42,
+    M680X_INS_BGT = 43,
+    M680X_INS_BHCC = 44,
+    M680X_INS_BHCS = 45,
+    M680X_INS_BHI = 46,
+    M680X_INS_BIAND = 47,
+    M680X_INS_BIEOR = 48,
+    M680X_INS_BIH = 49,
+    M680X_INS_BIL = 50,
+    M680X_INS_BIOR = 51,
+    M680X_INS_BIT = 52,
+    M680X_INS_BITA = 53,
+    M680X_INS_BITB = 54,
+    M680X_INS_BITD = 55,
+    M680X_INS_BITMD = 56,
+    M680X_INS_BLE = 57,
+    M680X_INS_BLS = 58,
+    M680X_INS_BLT = 59,
+    M680X_INS_BMC = 60,
+    M680X_INS_BMI = 61,
+    M680X_INS_BMS = 62,
+    M680X_INS_BNE = 63,
+    M680X_INS_BOR = 64,
+    M680X_INS_BPL = 65,
+    M680X_INS_BRCLR = 66,
+    M680X_INS_BRSET = 67,
+    M680X_INS_BRA = 68,
+    M680X_INS_BRN = 69,
+    M680X_INS_BSET = 70,
+    M680X_INS_BSR = 71,
+    M680X_INS_BVC = 72,
+    M680X_INS_BVS = 73,
+    M680X_INS_CALL = 74,
+    #[doc = "< M6800/1/2/3"]
+    M680X_INS_CBA = 75,
+    M680X_INS_CBEQ = 76,
+    M680X_INS_CBEQA = 77,
+    M680X_INS_CBEQX = 78,
+    #[doc = "< M6800/1/2/3"]
+    M680X_INS_CLC = 79,
+    #[doc = "< M6800/1/2/3"]
+    M680X_INS_CLI = 80,
+    M680X_INS_CLR = 81,
+    M680X_INS_CLRA = 82,
+    M680X_INS_CLRB = 83,
+    M680X_INS_CLRD = 84,
+    M680X_INS_CLRE = 85,
+    M680X_INS_CLRF = 86,
+    M680X_INS_CLRH = 87,
+    M680X_INS_CLRW = 88,
+    M680X_INS_CLRX = 89,
+    #[doc = "< M6800/1/2/3"]
+    M680X_INS_CLV = 90,
+    M680X_INS_CMP = 91,
+    M680X_INS_CMPA = 92,
+    M680X_INS_CMPB = 93,
+    M680X_INS_CMPD = 94,
+    M680X_INS_CMPE = 95,
+    M680X_INS_CMPF = 96,
+    M680X_INS_CMPR = 97,
+    M680X_INS_CMPS = 98,
+    M680X_INS_CMPU = 99,
+    M680X_INS_CMPW = 100,
+    M680X_INS_CMPX = 101,
+    M680X_INS_CMPY = 102,
+    M680X_INS_COM = 103,
+    M680X_INS_COMA = 104,
+    M680X_INS_COMB = 105,
+    M680X_INS_COMD = 106,
+    M680X_INS_COME = 107,
+    M680X_INS_COMF = 108,
+    M680X_INS_COMW = 109,
+    M680X_INS_COMX = 110,
+    M680X_INS_CPD = 111,
+    M680X_INS_CPHX = 112,
+    M680X_INS_CPS = 113,
+    #[doc = "< M6800/1/2/3"]
+    M680X_INS_CPX = 114,
+    M680X_INS_CPY = 115,
+    M680X_INS_CWAI = 116,
+    M680X_INS_DAA = 117,
+    M680X_INS_DBEQ = 118,
+    M680X_INS_DBNE = 119,
+    M680X_INS_DBNZ = 120,
+    M680X_INS_DBNZA = 121,
+    M680X_INS_DBNZX = 122,
+    M680X_INS_DEC = 123,
+    M680X_INS_DECA = 124,
+    M680X_INS_DECB = 125,
+    M680X_INS_DECD = 126,
+    M680X_INS_DECE = 127,
+    M680X_INS_DECF = 128,
+    M680X_INS_DECW = 129,
+    M680X_INS_DECX = 130,
+    #[doc = "< M6800/1/2/3"]
+    M680X_INS_DES = 131,
+    #[doc = "< M6800/1/2/3"]
+    M680X_INS_DEX = 132,
+    M680X_INS_DEY = 133,
+    M680X_INS_DIV = 134,
+    M680X_INS_DIVD = 135,
+    M680X_INS_DIVQ = 136,
+    M680X_INS_EDIV = 137,
+    M680X_INS_EDIVS = 138,
+    M680X_INS_EIM = 139,
+    M680X_INS_EMACS = 140,
+    M680X_INS_EMAXD = 141,
+    M680X_INS_EMAXM = 142,
+    M680X_INS_EMIND = 143,
+    M680X_INS_EMINM = 144,
+    M680X_INS_EMUL = 145,
+    M680X_INS_EMULS = 146,
+    M680X_INS_EOR = 147,
+    M680X_INS_EORA = 148,
+    M680X_INS_EORB = 149,
+    M680X_INS_EORD = 150,
+    M680X_INS_EORR = 151,
+    M680X_INS_ETBL = 152,
+    M680X_INS_EXG = 153,
+    M680X_INS_FDIV = 154,
+    M680X_INS_IBEQ = 155,
+    M680X_INS_IBNE = 156,
+    M680X_INS_IDIV = 157,
+    M680X_INS_IDIVS = 158,
+    M680X_INS_ILLGL = 159,
+    M680X_INS_INC = 160,
+    M680X_INS_INCA = 161,
+    M680X_INS_INCB = 162,
+    M680X_INS_INCD = 163,
+    M680X_INS_INCE = 164,
+    M680X_INS_INCF = 165,
+    M680X_INS_INCW = 166,
+    M680X_INS_INCX = 167,
+    #[doc = "< M6800/1/2/3"]
+    M680X_INS_INS = 168,
+    #[doc = "< M6800/1/2/3"]
+    M680X_INS_INX = 169,
+    M680X_INS_INY = 170,
+    M680X_INS_JMP = 171,
+    M680X_INS_JSR = 172,
+    #[doc = "< or LBHS"]
+    M680X_INS_LBCC = 173,
+    #[doc = "< or LBLO"]
+    M680X_INS_LBCS = 174,
+    M680X_INS_LBEQ = 175,
+    M680X_INS_LBGE = 176,
+    M680X_INS_LBGT = 177,
+    M680X_INS_LBHI = 178,
+    M680X_INS_LBLE = 179,
+    M680X_INS_LBLS = 180,
+    M680X_INS_LBLT = 181,
+    M680X_INS_LBMI = 182,
+    M680X_INS_LBNE = 183,
+    M680X_INS_LBPL = 184,
+    M680X_INS_LBRA = 185,
+    M680X_INS_LBRN = 186,
+    M680X_INS_LBSR = 187,
+    M680X_INS_LBVC = 188,
+    M680X_INS_LBVS = 189,
+    M680X_INS_LDA = 190,
+    #[doc = "< M6800/1/2/3"]
+    M680X_INS_LDAA = 191,
+    #[doc = "< M6800/1/2/3"]
+    M680X_INS_LDAB = 192,
+    M680X_INS_LDB = 193,
+    M680X_INS_LDBT = 194,
+    M680X_INS_LDD = 195,
+    M680X_INS_LDE = 196,
+    M680X_INS_LDF = 197,
+    M680X_INS_LDHX = 198,
+    M680X_INS_LDMD = 199,
+    M680X_INS_LDQ = 200,
+    M680X_INS_LDS = 201,
+    M680X_INS_LDU = 202,
+    M680X_INS_LDW = 203,
+    M680X_INS_LDX = 204,
+    M680X_INS_LDY = 205,
+    M680X_INS_LEAS = 206,
+    M680X_INS_LEAU = 207,
+    M680X_INS_LEAX = 208,
+    M680X_INS_LEAY = 209,
+    M680X_INS_LSL = 210,
+    M680X_INS_LSLA = 211,
+    M680X_INS_LSLB = 212,
+    M680X_INS_LSLD = 213,
+    M680X_INS_LSLX = 214,
+    M680X_INS_LSR = 215,
+    M680X_INS_LSRA = 216,
+    M680X_INS_LSRB = 217,
+    #[doc = "< or ASRD"]
+    M680X_INS_LSRD = 218,
+    M680X_INS_LSRW = 219,
+    M680X_INS_LSRX = 220,
+    M680X_INS_MAXA = 221,
+    M680X_INS_MAXM = 222,
+    M680X_INS_MEM = 223,
+    M680X_INS_MINA = 224,
+    M680X_INS_MINM = 225,
+    M680X_INS_MOV = 226,
+    M680X_INS_MOVB = 227,
+    M680X_INS_MOVW = 228,
+    M680X_INS_MUL = 229,
+    M680X_INS_MULD = 230,
+    M680X_INS_NEG = 231,
+    M680X_INS_NEGA = 232,
+    M680X_INS_NEGB = 233,
+    M680X_INS_NEGD = 234,
+    M680X_INS_NEGX = 235,
+    M680X_INS_NOP = 236,
+    M680X_INS_NSA = 237,
+    M680X_INS_OIM = 238,
+    M680X_INS_ORA = 239,
+    #[doc = "< M6800/1/2/3"]
+    M680X_INS_ORAA = 240,
+    #[doc = "< M6800/1/2/3"]
+    M680X_INS_ORAB = 241,
+    M680X_INS_ORB = 242,
+    M680X_INS_ORCC = 243,
+    M680X_INS_ORD = 244,
+    M680X_INS_ORR = 245,
+    #[doc = "< M6800/1/2/3"]
+    M680X_INS_PSHA = 246,
+    #[doc = "< M6800/1/2/3"]
+    M680X_INS_PSHB = 247,
+    M680X_INS_PSHC = 248,
+    M680X_INS_PSHD = 249,
+    M680X_INS_PSHH = 250,
+    M680X_INS_PSHS = 251,
+    M680X_INS_PSHSW = 252,
+    M680X_INS_PSHU = 253,
+    M680X_INS_PSHUW = 254,
+    #[doc = "< M6800/1/2/3"]
+    M680X_INS_PSHX = 255,
+    M680X_INS_PSHY = 256,
+    #[doc = "< M6800/1/2/3"]
+    M680X_INS_PULA = 257,
+    #[doc = "< M6800/1/2/3"]
+    M680X_INS_PULB = 258,
+    M680X_INS_PULC = 259,
+    M680X_INS_PULD = 260,
+    M680X_INS_PULH = 261,
+    M680X_INS_PULS = 262,
+    M680X_INS_PULSW = 263,
+    M680X_INS_PULU = 264,
+    M680X_INS_PULUW = 265,
+    #[doc = "< M6800/1/2/3"]
+    M680X_INS_PULX = 266,
+    M680X_INS_PULY = 267,
+    M680X_INS_REV = 268,
+    M680X_INS_REVW = 269,
+    M680X_INS_ROL = 270,
+    M680X_INS_ROLA = 271,
+    M680X_INS_ROLB = 272,
+    M680X_INS_ROLD = 273,
+    M680X_INS_ROLW = 274,
+    M680X_INS_ROLX = 275,
+    M680X_INS_ROR = 276,
+    M680X_INS_RORA = 277,
+    M680X_INS_RORB = 278,
+    M680X_INS_RORD = 279,
+    M680X_INS_RORW = 280,
+    M680X_INS_RORX = 281,
+    M680X_INS_RSP = 282,
+    M680X_INS_RTC = 283,
+    M680X_INS_RTI = 284,
+    M680X_INS_RTS = 285,
+    #[doc = "< M6800/1/2/3"]
+    M680X_INS_SBA = 286,
+    M680X_INS_SBC = 287,
+    M680X_INS_SBCA = 288,
+    M680X_INS_SBCB = 289,
+    M680X_INS_SBCD = 290,
+    M680X_INS_SBCR = 291,
+    M680X_INS_SEC = 292,
+    M680X_INS_SEI = 293,
+    M680X_INS_SEV = 294,
+    M680X_INS_SEX = 295,
+    M680X_INS_SEXW = 296,
+    M680X_INS_SLP = 297,
+    M680X_INS_STA = 298,
+    #[doc = "< M6800/1/2/3"]
+    M680X_INS_STAA = 299,
+    #[doc = "< M6800/1/2/3"]
+    M680X_INS_STAB = 300,
+    M680X_INS_STB = 301,
+    M680X_INS_STBT = 302,
+    M680X_INS_STD = 303,
+    M680X_INS_STE = 304,
+    M680X_INS_STF = 305,
+    M680X_INS_STOP = 306,
+    M680X_INS_STHX = 307,
+    M680X_INS_STQ = 308,
+    M680X_INS_STS = 309,
+    M680X_INS_STU = 310,
+    M680X_INS_STW = 311,
+    M680X_INS_STX = 312,
+    M680X_INS_STY = 313,
+    M680X_INS_SUB = 314,
+    M680X_INS_SUBA = 315,
+    M680X_INS_SUBB = 316,
+    M680X_INS_SUBD = 317,
+    M680X_INS_SUBE = 318,
+    M680X_INS_SUBF = 319,
+    M680X_INS_SUBR = 320,
+    M680X_INS_SUBW = 321,
+    M680X_INS_SWI = 322,
+    M680X_INS_SWI2 = 323,
+    M680X_INS_SWI3 = 324,
+    M680X_INS_SYNC = 325,
+    #[doc = "< M6800/1/2/3"]
+    M680X_INS_TAB = 326,
+    #[doc = "< M6800/1/2/3"]
+    M680X_INS_TAP = 327,
+    M680X_INS_TAX = 328,
+    #[doc = "< M6800/1/2/3"]
+    M680X_INS_TBA = 329,
+    M680X_INS_TBEQ = 330,
+    M680X_INS_TBL = 331,
+    M680X_INS_TBNE = 332,
+    M680X_INS_TEST = 333,
+    M680X_INS_TFM = 334,
+    M680X_INS_TFR = 335,
+    M680X_INS_TIM = 336,
+    #[doc = "< M6800/1/2/3"]
+    M680X_INS_TPA = 337,
+    M680X_INS_TST = 338,
+    M680X_INS_TSTA = 339,
+    M680X_INS_TSTB = 340,
+    M680X_INS_TSTD = 341,
+    M680X_INS_TSTE = 342,
+    M680X_INS_TSTF = 343,
+    M680X_INS_TSTW = 344,
+    M680X_INS_TSTX = 345,
+    #[doc = "< M6800/1/2/3"]
+    M680X_INS_TSX = 346,
+    M680X_INS_TSY = 347,
+    M680X_INS_TXA = 348,
+    #[doc = "< M6800/1/2/3"]
+    M680X_INS_TXS = 349,
+    M680X_INS_TYS = 350,
+    #[doc = "< M6800/1/2/3"]
+    M680X_INS_WAI = 351,
+    M680X_INS_WAIT = 352,
+    M680X_INS_WAV = 353,
+    M680X_INS_WAVR = 354,
+    #[doc = "< HD6301"]
+    M680X_INS_XGDX = 355,
+    M680X_INS_XGDY = 356,
+    M680X_INS_ENDING = 357,
+}
 #[doc = " Instruction structure"]
 #[repr(C)]
 #[derive(Debug, Copy)]
@@ -9603,6 +10723,174 @@ impl Clone for cs_evm {
     fn clone(&self) -> Self {
         *self
     }
+}
+#[repr(u32)]
+#[doc = " EVM instruction"]
+#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
+pub enum evm_insn {
+    EVM_INS_STOP = 0,
+    EVM_INS_ADD = 1,
+    EVM_INS_MUL = 2,
+    EVM_INS_SUB = 3,
+    EVM_INS_DIV = 4,
+    EVM_INS_SDIV = 5,
+    EVM_INS_MOD = 6,
+    EVM_INS_SMOD = 7,
+    EVM_INS_ADDMOD = 8,
+    EVM_INS_MULMOD = 9,
+    EVM_INS_EXP = 10,
+    EVM_INS_SIGNEXTEND = 11,
+    EVM_INS_LT = 16,
+    EVM_INS_GT = 17,
+    EVM_INS_SLT = 18,
+    EVM_INS_SGT = 19,
+    EVM_INS_EQ = 20,
+    EVM_INS_ISZERO = 21,
+    EVM_INS_AND = 22,
+    EVM_INS_OR = 23,
+    EVM_INS_XOR = 24,
+    EVM_INS_NOT = 25,
+    EVM_INS_BYTE = 26,
+    EVM_INS_SHA3 = 32,
+    EVM_INS_ADDRESS = 48,
+    EVM_INS_BALANCE = 49,
+    EVM_INS_ORIGIN = 50,
+    EVM_INS_CALLER = 51,
+    EVM_INS_CALLVALUE = 52,
+    EVM_INS_CALLDATALOAD = 53,
+    EVM_INS_CALLDATASIZE = 54,
+    EVM_INS_CALLDATACOPY = 55,
+    EVM_INS_CODESIZE = 56,
+    EVM_INS_CODECOPY = 57,
+    EVM_INS_GASPRICE = 58,
+    EVM_INS_EXTCODESIZE = 59,
+    EVM_INS_EXTCODECOPY = 60,
+    EVM_INS_RETURNDATASIZE = 61,
+    EVM_INS_RETURNDATACOPY = 62,
+    EVM_INS_BLOCKHASH = 64,
+    EVM_INS_COINBASE = 65,
+    EVM_INS_TIMESTAMP = 66,
+    EVM_INS_NUMBER = 67,
+    EVM_INS_DIFFICULTY = 68,
+    EVM_INS_GASLIMIT = 69,
+    EVM_INS_POP = 80,
+    EVM_INS_MLOAD = 81,
+    EVM_INS_MSTORE = 82,
+    EVM_INS_MSTORE8 = 83,
+    EVM_INS_SLOAD = 84,
+    EVM_INS_SSTORE = 85,
+    EVM_INS_JUMP = 86,
+    EVM_INS_JUMPI = 87,
+    EVM_INS_PC = 88,
+    EVM_INS_MSIZE = 89,
+    EVM_INS_GAS = 90,
+    EVM_INS_JUMPDEST = 91,
+    EVM_INS_PUSH1 = 96,
+    EVM_INS_PUSH2 = 97,
+    EVM_INS_PUSH3 = 98,
+    EVM_INS_PUSH4 = 99,
+    EVM_INS_PUSH5 = 100,
+    EVM_INS_PUSH6 = 101,
+    EVM_INS_PUSH7 = 102,
+    EVM_INS_PUSH8 = 103,
+    EVM_INS_PUSH9 = 104,
+    EVM_INS_PUSH10 = 105,
+    EVM_INS_PUSH11 = 106,
+    EVM_INS_PUSH12 = 107,
+    EVM_INS_PUSH13 = 108,
+    EVM_INS_PUSH14 = 109,
+    EVM_INS_PUSH15 = 110,
+    EVM_INS_PUSH16 = 111,
+    EVM_INS_PUSH17 = 112,
+    EVM_INS_PUSH18 = 113,
+    EVM_INS_PUSH19 = 114,
+    EVM_INS_PUSH20 = 115,
+    EVM_INS_PUSH21 = 116,
+    EVM_INS_PUSH22 = 117,
+    EVM_INS_PUSH23 = 118,
+    EVM_INS_PUSH24 = 119,
+    EVM_INS_PUSH25 = 120,
+    EVM_INS_PUSH26 = 121,
+    EVM_INS_PUSH27 = 122,
+    EVM_INS_PUSH28 = 123,
+    EVM_INS_PUSH29 = 124,
+    EVM_INS_PUSH30 = 125,
+    EVM_INS_PUSH31 = 126,
+    EVM_INS_PUSH32 = 127,
+    EVM_INS_DUP1 = 128,
+    EVM_INS_DUP2 = 129,
+    EVM_INS_DUP3 = 130,
+    EVM_INS_DUP4 = 131,
+    EVM_INS_DUP5 = 132,
+    EVM_INS_DUP6 = 133,
+    EVM_INS_DUP7 = 134,
+    EVM_INS_DUP8 = 135,
+    EVM_INS_DUP9 = 136,
+    EVM_INS_DUP10 = 137,
+    EVM_INS_DUP11 = 138,
+    EVM_INS_DUP12 = 139,
+    EVM_INS_DUP13 = 140,
+    EVM_INS_DUP14 = 141,
+    EVM_INS_DUP15 = 142,
+    EVM_INS_DUP16 = 143,
+    EVM_INS_SWAP1 = 144,
+    EVM_INS_SWAP2 = 145,
+    EVM_INS_SWAP3 = 146,
+    EVM_INS_SWAP4 = 147,
+    EVM_INS_SWAP5 = 148,
+    EVM_INS_SWAP6 = 149,
+    EVM_INS_SWAP7 = 150,
+    EVM_INS_SWAP8 = 151,
+    EVM_INS_SWAP9 = 152,
+    EVM_INS_SWAP10 = 153,
+    EVM_INS_SWAP11 = 154,
+    EVM_INS_SWAP12 = 155,
+    EVM_INS_SWAP13 = 156,
+    EVM_INS_SWAP14 = 157,
+    EVM_INS_SWAP15 = 158,
+    EVM_INS_SWAP16 = 159,
+    EVM_INS_LOG0 = 160,
+    EVM_INS_LOG1 = 161,
+    EVM_INS_LOG2 = 162,
+    EVM_INS_LOG3 = 163,
+    EVM_INS_LOG4 = 164,
+    EVM_INS_CREATE = 240,
+    EVM_INS_CALL = 241,
+    EVM_INS_CALLCODE = 242,
+    EVM_INS_RETURN = 243,
+    EVM_INS_DELEGATECALL = 244,
+    EVM_INS_CALLBLACKBOX = 245,
+    EVM_INS_STATICCALL = 250,
+    EVM_INS_REVERT = 253,
+    EVM_INS_SUICIDE = 255,
+    EVM_INS_INVALID = 512,
+    EVM_INS_ENDING = 513,
+}
+pub mod evm_insn_group {
+    #[doc = " Group of EVM instructions"]
+    pub type Type = u32;
+    #[doc = "< = CS_GRP_INVALID"]
+    pub const EVM_GRP_INVALID: Type = 0;
+    #[doc = "< all jump instructions"]
+    pub const EVM_GRP_JUMP: Type = 1;
+    #[doc = "< math instructions"]
+    pub const EVM_GRP_MATH: Type = 8;
+    #[doc = "< instructions write to stack"]
+    pub const EVM_GRP_STACK_WRITE: Type = 9;
+    #[doc = "< instructions read from stack"]
+    pub const EVM_GRP_STACK_READ: Type = 10;
+    #[doc = "< instructions write to memory"]
+    pub const EVM_GRP_MEM_WRITE: Type = 11;
+    #[doc = "< instructions read from memory"]
+    pub const EVM_GRP_MEM_READ: Type = 12;
+    #[doc = "< instructions write to storage"]
+    pub const EVM_GRP_STORE_WRITE: Type = 13;
+    #[doc = "< instructions read from storage"]
+    pub const EVM_GRP_STORE_READ: Type = 14;
+    #[doc = "< instructions halt execution"]
+    pub const EVM_GRP_HALT: Type = 15;
+    #[doc = "< <-- mark the end of the list of groups"]
+    pub const EVM_GRP_ENDING: Type = 16;
 }
 #[doc = " NOTE: All information in cs_detail is only available when CS_OPT_DETAIL = CS_OPT_ON"]
 #[doc = " Initialized as memset(., 0, offsetof(cs_detail, ARCH)+sizeof(cs_ARCH))"]

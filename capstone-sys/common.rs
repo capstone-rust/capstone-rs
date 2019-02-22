@@ -34,6 +34,18 @@ pub static ARCH_INCLUDES: &'static [CapstoneArchInfo<'static>] = &[
         cs_name: "arm64",
     },
     CapstoneArchInfo {
+        header_name: "evm.h",
+        cs_name: "evm",
+    },
+    CapstoneArchInfo {
+        header_name: "m680x.h",
+        cs_name: "m680x",
+    },
+    CapstoneArchInfo {
+        header_name: "m68k.h",
+        cs_name: "m68k",
+    },
+    CapstoneArchInfo {
         header_name: "mips.h",
         cs_name: "mips",
     },
@@ -48,6 +60,10 @@ pub static ARCH_INCLUDES: &'static [CapstoneArchInfo<'static>] = &[
     CapstoneArchInfo {
         header_name: "systemz.h",
         cs_name: "sysz",
+    },
+    CapstoneArchInfo {
+        header_name: "tms320c64x.h",
+        cs_name: "tms320c64x",
     },
     CapstoneArchInfo {
         header_name: "x86.h",
