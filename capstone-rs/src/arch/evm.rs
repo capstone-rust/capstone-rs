@@ -5,6 +5,11 @@ use arch::DetailsArchInsn;
 use capstone_sys::cs_evm;
 use std::fmt;
 
+// XXX todo(tmfink): create rusty versions
+pub use capstone_sys::evm_insn_group as EvmInsnGroup;
+pub use capstone_sys::evm_insn as EvmInsn;
+// no register type since EVM has no operands
+
 /// Contains EVM-specific details for an instruction
 pub struct EvmInsnDetail<'a>(pub(crate) &'a cs_evm);
 
@@ -43,7 +48,6 @@ impl Default for EvmOperand {
 
 /// Iterates over instruction operands
 #[derive(Clone)]
-
 pub struct EvmOperandIterator(());
 
 impl EvmOperandIterator {
@@ -61,7 +65,9 @@ impl Iterator for EvmOperandIterator {
 }
 
 impl ExactSizeIterator for EvmOperandIterator {
-    fn len(&self) -> usize { 0 }
+    fn len(&self) -> usize {
+        0
+    }
 }
 
 impl PartialEq for EvmOperandIterator {
@@ -99,7 +105,11 @@ mod test {
 
     #[test]
     fn test_evm_detail() {
-        let cs_evm = cs_evm { pop: 1, push: 2, fee: 42 };
+        let cs_evm = cs_evm {
+            pop: 1,
+            push: 2,
+            fee: 42,
+        };
         let d = EvmInsnDetail(&cs_evm);
         assert_eq!(d.popped_items(), 1);
         assert_eq!(d.pushed_items(), 2);

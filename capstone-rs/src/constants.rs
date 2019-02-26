@@ -88,8 +88,6 @@ define_cs_enum_wrapper!(
     => ARM = CS_ARCH_ARM;
     /// ARM 64-bit (also known as AArch64)
     => ARM64 = CS_ARCH_ARM64;
-    /// EVM
-    => EVM = CS_ARCH_EVM;
     /// MIPS
     => MIPS = CS_ARCH_MIPS;
     /// x86 family (includes 16, 32, and 64 bit modes)
@@ -102,6 +100,8 @@ define_cs_enum_wrapper!(
     => SYSZ = CS_ARCH_SYSZ;
     /// XCore
     => XCORE = CS_ARCH_XCORE;
+    /// EVM
+    => EVM = CS_ARCH_EVM;
 );
 
 define_cs_enum_wrapper!(

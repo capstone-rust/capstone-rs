@@ -1303,6 +1303,29 @@ fn test_arch_evm() {
 }
 
 #[test]
+fn test_arch_evm_detail() {
+    let ops: &[arch::m68k::M68kOperand] = &[];
+    test_arch_mode_endian_insns_detail(
+        &mut Capstone::new()
+            .evm()
+            .mode(evm::ArchMode::Default)
+            .build()
+            .unwrap(),
+        Arch::EVM,
+        Mode::Default,
+        None,
+        &[],
+        &[
+            DII::new(
+                "push1",
+                b"\x60\x61",
+                ops,
+            ),
+        ],
+    );
+}
+
+#[test]
 fn test_arch_mips() {
     test_arch_mode_endian_insns(
         &mut Capstone::new()
