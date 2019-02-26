@@ -23,6 +23,9 @@ macro_rules! capstone_error_def {
             /// An unknown error not equal to a `CapstoneError`
             UnknownCapstoneError,
 
+            /// Invalid M68K bitfield register
+            InvalidM68kBitfieldRegister,
+
             /// Error with a custom message
             CustomError(&'static str),
         }
@@ -99,6 +102,7 @@ impl error::Error for Error {
             UnsupportedX86Att => "X86 AT&T syntax is unsupported (opt-out at compile time)",
             UnsupportedX86Intel => "X86 Intel syntax is unsupported (opt-out at compile time)",
             UnknownCapstoneError => "Encountered Unknown Capstone Return Error",
+            InvalidM68kBitfieldRegister => "Invalid M68K Register, must be in d0-d7, a0-a7, fp0-fp7",
             CustomError(msg) => msg,
         }
     }

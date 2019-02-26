@@ -100,6 +100,12 @@ define_cs_enum_wrapper!(
     => SYSZ = CS_ARCH_SYSZ;
     /// XCore
     => XCORE = CS_ARCH_XCORE;
+    /// Motorolla 68K
+    => M68K = CS_ARCH_M68K;
+    /// Texas Instruments TMS320C64x
+    => TMS320C64X = CS_ARCH_TMS320C64X;
+    /// Motorola 68000
+    => M680X = CS_ARCH_M680X;
     /// EVM
     => EVM = CS_ARCH_EVM;
 );
