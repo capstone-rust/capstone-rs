@@ -222,6 +222,19 @@ macro_rules! arch_info_base {
                 ( both_endian: false )
             ]
             [
+                ( m68k, M68K )
+                ( mode:
+                    M68k000,
+                    M68k010,
+                    M68k020,
+                    M68k030,
+                    M68k040,
+                    )
+                ( extra_modes: )
+                ( syntax: )
+                ( both_endian: false )
+            ]
+            [
                 ( mips, MIPS )
                 ( mode:
                     Mips32,
@@ -408,6 +421,13 @@ macro_rules! detail_arch_base {
                 op = EvmOperand,
                 /// Returns the EVM details, if any
                 => arch_name = evm,
+            ]
+            [
+                detail = M68kDetail,
+                insn_detail = M68kInsnDetail<'a>,
+                op = M68kOperand,
+                /// Returns the M68K details, if any
+                => arch_name = m68k,
             ]
             [
                 detail = MipsDetail,

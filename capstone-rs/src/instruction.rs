@@ -316,6 +316,7 @@ impl<'a> InsnDetail<'a> {
             [ARM, ArmDetail, ArmInsnDetail, arm]
             [ARM64, Arm64Detail, Arm64InsnDetail, arm64]
             [EVM, EvmDetail, EvmInsnDetail, evm]
+            [M68K, M68kDetail, M68kInsnDetail, m68k]
             [MIPS, MipsDetail, MipsInsnDetail, mips]
             [PPC, PpcDetail, PpcInsnDetail, ppc]
             [SPARC, SparcDetail, SparcInsnDetail, sparc]
