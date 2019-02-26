@@ -315,6 +315,7 @@ impl<'a> InsnDetail<'a> {
         def_arch_detail_match!(
             [ARM, ArmDetail, ArmInsnDetail, arm]
             [ARM64, Arm64Detail, Arm64InsnDetail, arm64]
+            [EVM, EvmDetail, EvmInsnDetail, evm]
             [MIPS, MipsDetail, MipsInsnDetail, mips]
             [PPC, PpcDetail, PpcInsnDetail, ppc]
             [SPARC, SparcDetail, SparcInsnDetail, sparc]
