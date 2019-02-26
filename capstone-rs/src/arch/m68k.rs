@@ -493,8 +493,6 @@ def_arch_details_struct!(
 #[cfg(test)]
 mod test {
     use super::*;
-    use crate::prelude::*;
-    use arch::DetailsArchInsn;
     use capstone_sys::m68k_address_mode::*;
     use capstone_sys::m68k_op_type::*;
     use capstone_sys::m68k_reg::*;
