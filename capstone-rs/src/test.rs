@@ -13,18 +13,21 @@ const RET: cs_group_type::Type = cs_group_type::CS_GRP_RET;
 const INT: cs_group_type::Type = cs_group_type::CS_GRP_INT;
 const IRET: cs_group_type::Type = cs_group_type::CS_GRP_IRET;
 
+/// Used as start address for testing
+const START_TEST_ADDR: u64 = 0x1000;
+
 #[test]
 fn test_x86_simple() {
     match Capstone::new().x86().mode(x86::ArchMode::Mode64).build() {
-        Ok(cs) => match cs.disasm_all(X86_CODE, 0x1000) {
+        Ok(cs) => match cs.disasm_all(X86_CODE, START_TEST_ADDR) {
             Ok(insns) => {
                 assert_eq!(insns.len(), 2);
                 let is: Vec<_> = insns.iter().collect();
                 assert_eq!(is[0].mnemonic().unwrap(), "push");
                 assert_eq!(is[1].mnemonic().unwrap(), "mov");
 
-                assert_eq!(is[0].address(), 0x1000);
-                assert_eq!(is[1].address(), 0x1001);
+                assert_eq!(is[0].address(), START_TEST_ADDR);
+                assert_eq!(is[1].address(), START_TEST_ADDR + 1);
 
                 assert_eq!(is[0].bytes(), b"\x55");
                 assert_eq!(is[1].bytes(), b"\x48\x8b\x05\xb8\x13\x00\x00");
@@ -40,15 +43,15 @@ fn test_x86_simple() {
 #[test]
 fn test_arm_simple() {
     match Capstone::new().arm().mode(arm::ArchMode::Arm).build() {
-        Ok(cs) => match cs.disasm_all(ARM_CODE, 0x1000) {
+        Ok(cs) => match cs.disasm_all(ARM_CODE, START_TEST_ADDR) {
             Ok(insns) => {
                 assert_eq!(insns.len(), 2);
                 let is: Vec<_> = insns.iter().collect();
                 assert_eq!(is[0].mnemonic().unwrap(), "streq");
                 assert_eq!(is[1].mnemonic().unwrap(), "strheq");
 
-                assert_eq!(is[0].address(), 0x1000);
-                assert_eq!(is[1].address(), 0x1004);
+                assert_eq!(is[0].address(), START_TEST_ADDR);
+                assert_eq!(is[1].address(), START_TEST_ADDR + 4);
             }
             Err(err) => assert!(false, "Couldn't disasm instructions: {}", err),
         },
@@ -65,7 +68,7 @@ fn test_arm64_none() {
         .mode(arm64::ArchMode::Arm)
         .build()
         .unwrap();
-    assert!(cs.disasm_all(ARM_CODE, 0x1000).unwrap().is_empty());
+    assert!(cs.disasm_all(ARM_CODE, START_TEST_ADDR).unwrap().is_empty());
 }
 
 #[test]
@@ -114,7 +117,7 @@ fn test_detail_false_fail() {
         .build()
         .unwrap();
     cs.set_detail(false).unwrap();
-    let insns = cs.disasm_all(X86_CODE, 0x1000).unwrap();
+    let insns = cs.disasm_all(X86_CODE, START_TEST_ADDR).unwrap();
     let insns: Vec<_> = insns.iter().collect();
 
     assert_eq!(cs.insn_detail(&insns[0]).unwrap_err(), Error::DetailOff);
@@ -138,7 +141,7 @@ fn test_detail_true() {
         .unwrap();
 
     for cs in [cs1, cs2].iter_mut() {
-        let insns = cs.disasm_all(X86_CODE, 0x1000).unwrap();
+        let insns = cs.disasm_all(X86_CODE, START_TEST_ADDR).unwrap();
         let insns: Vec<_> = insns.iter().collect();
         let insn_group_ids = [
             cs_group_type::CS_GRP_JUMP,
@@ -309,7 +312,7 @@ fn instructions_match_group<R>(
     cs.set_detail(true).unwrap();
 
     let insns = cs
-        .disasm_all(&insns_buf, 0x1000)
+        .disasm_all(&insns_buf, START_TEST_ADDR)
         .expect("Failed to disassemble");
     let insns: Vec<Insn> = insns.iter().collect();
 
@@ -355,7 +358,7 @@ fn instructions_match(
     cs.set_detail(true).unwrap();
 
     let insns = cs
-        .disasm_all(&insns_buf, 0x1000)
+        .disasm_all(&insns_buf, START_TEST_ADDR)
         .expect("Failed to disassemble");
     let insns: Vec<_> = insns.iter().collect();
 
@@ -400,7 +403,7 @@ fn instructions_match_detail<T>(
     }
 
     let insns = cs
-        .disasm_all(&insns_buf, 0x1000)
+        .disasm_all(&insns_buf, START_TEST_ADDR)
         .expect("Failed to disassemble");
     let insns: Vec<_> = insns.iter().collect();
 
@@ -452,7 +455,7 @@ fn test_instruction_details() {
 
 fn test_insns_match(cs: &mut Capstone, insns: &[(&str, &[u8])]) {
     for &(mnemonic, bytes) in insns.iter() {
-        let insns = cs.disasm_all(bytes, 0x1000).unwrap();
+        let insns = cs.disasm_all(bytes, START_TEST_ADDR).unwrap();
         assert_eq!(insns.len(), 1);
         let insn = insns.iter().next().unwrap();
         assert_eq!(insn.mnemonic(), Some(mnemonic));
@@ -474,7 +477,7 @@ fn test_extra_mode_helper(
     for &(_, _) in valid_extra_mode.iter() {
         // Capstone will disassemble instructions not allowed by the current mode
         // assert!(
-        //     cs.disasm_all(bytes, 0x1000).is_err(),
+        //     cs.disasm_all(bytes, START_TEST_ADDR).is_err(),
         //     "Disassembly succeeded when on instruction when it should not have for {:?}",
         //     bytes);
     }
@@ -1322,6 +1325,443 @@ fn test_arch_evm_detail() {
                 ops,
             ),
         ],
+    );
+}
+
+#[test]
+fn test_arch_m680x_detail() {
+    use arch::m680x::M680xOperandType::*;
+    use arch::m680x::M680xReg::*;
+    use arch::m680x::*;
+    use capstone_sys::m680x_op_idx;
+
+    let op_idx_zero = m680x_op_idx {
+        base_reg: M680X_REG_INVALID,
+        offset_reg: M680X_REG_INVALID,
+        offset: 0,
+        offset_addr: 0,
+        offset_bits: 0,
+        inc_dec: 0,
+        flags: 0,
+    };
+
+    test_arch_mode_endian_insns_detail(
+        &mut Capstone::new()
+            .m680x()
+            .mode(m680x::ArchMode::M680x6301)
+            .build()
+            .unwrap(),
+        Arch::M680X,
+        Mode::M680x6301,
+        None,
+        &[],
+        &[
+            // tim     #16;0,x
+            DII::new(
+                "tim",
+                b"\x6b\x10\x00",
+                &[
+                    M680xOperand {
+                        op_type: Imm(16),
+                        size: 1,
+                    },
+                    M680xOperand {
+                        op_type: Indexed(M680xOpIdx(m680x_op_idx {
+                            base_reg: M680X_REG_X,
+                            offset_bits: 8,
+                            ..op_idx_zero
+                        })),
+                        size: 1,
+                    },
+                ],
+            ),
+
+            // aim     #16,$00
+            DII::new(
+                "aim",
+                b"\x71\x10\x00",
+                &[
+                    M680xOperand {
+                        op_type: Imm(16),
+                        size: 1,
+                    },
+                    M680xOperand {
+                        op_type: Direct { direct_addr: 0 },
+                        size: 1,
+                    },
+                ],
+            ),
+
+            // oim     #16,$10
+            DII::new(
+                "oim",
+                b"\x72\x10\x10",
+                &[
+                    M680xOperand {
+                        op_type: Imm(16),
+                        size: 1,
+                    },
+                    M680xOperand {
+                        op_type: Direct { direct_addr: 0x10 },
+                        size: 1,
+                    },
+                ],
+            ),
+
+            // rts
+            DII::new(
+                "rts",
+                b"\x39",
+                &[],
+            ),
+        ]
+    );
+
+    test_arch_mode_endian_insns_detail(
+        &mut Capstone::new()
+            .m680x()
+            .mode(m680x::ArchMode::M680x6309)
+            .build()
+            .unwrap(),
+        Arch::M680X,
+        Mode::M680x6309,
+        None,
+        &[],
+        &[
+            // oim     #16,$10
+            DII::new(
+                "oim",
+                b"\x01\x10\x10",
+                &[
+                    M680xOperand {
+                        op_type: Imm(16),
+                        size: 1,
+                    },
+                    M680xOperand {
+                        op_type: Direct { direct_addr: 0x10 },
+                        size: 1,
+                    },
+                ],
+            ),
+
+            // aim     #16;-16,x
+            DII::new(
+                "aim",
+                b"\x62\x10\x10",
+                &[
+                    M680xOperand {
+                        op_type: Imm(16),
+                        size: 1,
+                    },
+                    M680xOperand {
+                        op_type: Indexed(M680xOpIdx(m680x_op_idx {
+                            base_reg: M680X_REG_X,
+                            offset: -16,
+                            offset_bits: 5,
+                            offset_addr: START_TEST_ADDR as u16 - 10,
+                            ..op_idx_zero
+                        })),
+                        size: 1,
+                    },
+                ],
+            ),
+
+            // tim     #16,$1000
+            DII::new(
+                "tim",
+                b"\x7b\x10\x10\x00",
+                &[
+                    M680xOperand {
+                        op_type: Imm(16),
+                        size: 1,
+                    },
+                    M680xOperand {
+                        op_type: Extended {
+                            address: 0x1000,
+                            indirect: false,
+                        },
+                        size: 1,
+                    },
+                ],
+            ),
+
+            // ldq     #1234567890
+            DII::new(
+                "ldq",
+                b"\xcd\x49\x96\x02\xd2",
+                &[
+                    M680xOperand {
+                        op_type: Reg(RegId(M680X_REG_Q as RegIdInt)),
+                        size: 4,
+                    },
+                    M680xOperand {
+                        op_type: Imm(1234567890),
+                        size: 4,
+                    },
+                ],
+            ),
+
+            // addr    y,u
+            DII::new(
+                "addr",
+                b"\x10\x30\x23",
+                &[
+                    M680xOperand {
+                        op_type: Reg(RegId(M680X_REG_Y as RegIdInt)),
+                        size: 2,
+                    },
+                    M680xOperand {
+                        op_type: Reg(RegId(M680X_REG_U as RegIdInt)),
+                        size: 2,
+                    },
+                ],
+            ),
+
+            // pshsw
+            DII::new(
+                "pshsw",
+                b"\x10\x38",
+                &[
+                    M680xOperand {
+                        op_type: Reg(RegId(M680X_REG_S as RegIdInt)),
+                        size: 2,
+                    },
+                    M680xOperand {
+                        op_type: Reg(RegId(M680X_REG_W as RegIdInt)),
+                        size: 2,
+                    },
+                ],
+            ),
+
+            // puluw
+            DII::new(
+                "puluw",
+                b"\x10\x3b",
+                &[
+                    M680xOperand {
+                        op_type: Reg(RegId(M680X_REG_U as RegIdInt)),
+                        size: 2,
+                    },
+                    M680xOperand {
+                        op_type: Reg(RegId(M680X_REG_W as RegIdInt)),
+                        size: 2,
+                    },
+                ],
+            ),
+
+            // comw
+            DII::new(
+                "comw",
+                b"\x10\x53",
+                &[
+                    M680xOperand {
+                        op_type: Reg(RegId(M680X_REG_W as RegIdInt)),
+                        size: 2,
+                    },
+                ],
+            ),
+
+            // tstw
+            DII::new(
+                "tstw",
+                b"\x10\x5d",
+                &[
+                    M680xOperand {
+                        op_type: Reg(RegId(M680X_REG_W as RegIdInt)),
+                        size: 2,
+                    },
+                ],
+            ),
+
+            // band    a,0,3,$10
+            DII::new(
+                "band",
+                b"\x11\x30\x43\x10",
+                &[
+                    M680xOperand {
+                        op_type: Reg(RegId(M680X_REG_A as RegIdInt)),
+                        size: 1,
+                    },
+                    M680xOperand {
+                        op_type: Constant(0),
+                        size: 0,
+                    },
+                    M680xOperand {
+                        op_type: Constant(3),
+                        size: 0,
+                    },
+                    M680xOperand {
+                        op_type: Direct { direct_addr: 0x10 },
+                        size: 1,
+                    },
+                ],
+            ),
+
+            // stbt    cc,4,5,$10
+            DII::new(
+                "stbt",
+                b"\x11\x37\x25\x10",
+                &[
+                    M680xOperand {
+                        op_type: Reg(RegId(M680X_REG_CC as RegIdInt)),
+                        size: 1,
+                    },
+                    M680xOperand {
+                        op_type: Constant(4),
+                        size: 0,
+                    },
+                    M680xOperand {
+                        op_type: Constant(5),
+                        size: 0,
+                    },
+                    M680xOperand {
+                        op_type: Direct { direct_addr: 0x10 },
+                        size: 1,
+                    },
+                ],
+            ),
+
+            // tfm     x+,y+
+            DII::new(
+                "tfm",
+                b"\x11\x38\x12",
+                &[
+                    M680xOperand {
+                        op_type: Indexed(M680xOpIdx(m680x_op_idx {
+                            base_reg: M680X_REG_X,
+                            inc_dec: 1,
+                            flags: 6,
+                            ..op_idx_zero
+                        })),
+                        size: 1,
+                    },
+                    M680xOperand {
+                        op_type: Indexed(M680xOpIdx(m680x_op_idx {
+                            base_reg: M680X_REG_Y,
+                            inc_dec: 1,
+                            flags: 6,
+                            ..op_idx_zero
+                        })),
+                        size: 1,
+                    },
+                ],
+            ),
+        ]
+    );
+
+    let empty_ops: &[M680xOperand] = &[];
+
+    test_arch_mode_endian_insns_detail(
+        &mut Capstone::new()
+            .m680x()
+            .mode(m680x::ArchMode::M680x6800)
+            .build()
+            .unwrap(),
+        Arch::M680X,
+        Mode::M680x6800,
+        None,
+        &[],
+        &[
+            // nop
+            DII::new(
+                "nop",
+                b"\x01",
+                empty_ops,
+            ),
+
+            // dex
+            DII::new(
+                "dex",
+                b"\x09",
+                &[
+                    M680xOperand {
+                        op_type: Reg(RegId(M680X_REG_X as RegIdInt)),
+                        size: 2,
+                    },
+                ],
+            ),
+
+            // psha
+            DII::new(
+                "psha",
+                b"\x36",
+                &[
+                    M680xOperand {
+                        op_type: Reg(RegId(M680X_REG_A as RegIdInt)),
+                        size: 1,
+                    },
+                ],
+            ),
+
+            // lsr     127,x
+            DII::new(
+                "lsr",
+                b"\x64\x7f",
+                &[
+                    M680xOperand {
+                        op_type: Indexed(M680xOpIdx(m680x_op_idx {
+                            base_reg: M680X_REG_X,
+                            offset: 127,
+                            offset_bits: 8,
+                            ..op_idx_zero
+                        })),
+                        size: 1,
+                    },
+                ],
+            ),
+
+            // lsr     $1000
+            DII::new(
+                "lsr",
+                b"\x74\x10\x00",
+                &[
+                    M680xOperand {
+                        op_type: Extended {
+                            address: 0x1000,
+                            indirect: false,
+                        },
+                        size: 1,
+                    },
+                ],
+            ),
+        ]
+    );
+
+    test_arch_mode_endian_insns_detail(
+        &mut Capstone::new()
+            .m680x()
+            .mode(m680x::ArchMode::M680x6801)
+            .build()
+            .unwrap(),
+        Arch::M680X,
+        Mode::M680x6801,
+        None,
+        &[],
+        &[
+            // lsrd
+            DII::new(
+                "lsrd",
+                b"\x04",
+                &[
+                    M680xOperand {
+                        op_type: Reg(RegId(M680X_REG_D as RegIdInt)),
+                        size: 2,
+                    },
+                ],
+            ),
+
+            // asld
+            DII::new(
+                "asld",
+                b"\x05",
+                &[
+                    M680xOperand {
+                        op_type: Reg(RegId(M680X_REG_D as RegIdInt)),
+                        size: 2,
+                    },
+                ],
+            ),
+        ]
     );
 }
 
