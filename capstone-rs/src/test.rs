@@ -510,8 +510,7 @@ fn test_arch_mode_endian_insns(
         .map(|&(mnemonic, bytes)| (mnemonic, bytes))
         .collect();
 
-    let mut cs_raw =
-        Capstone::new_raw(arch, mode, extra_mode.iter().map(|x| *x), endian).unwrap();
+    let mut cs_raw = Capstone::new_raw(arch, mode, extra_mode.iter().map(|x| *x), endian).unwrap();
     let mut cs_raw_endian_set =
         Capstone::new_raw(arch, mode, extra_mode.iter().map(|x| *x), None).unwrap();
     if let Some(some_endian) = endian {
@@ -589,7 +588,14 @@ fn test_syntax() {
             &[X86_REG_RIP, X86_REG_RSP],
             &[X86_REG_RSP],
         ),
-        ("ret", "retq", b"\xc3", &[RET], &[X86_REG_RSP], &[X86_REG_RSP]),
+        (
+            "ret",
+            "retq",
+            b"\xc3",
+            &[RET],
+            &[X86_REG_RSP],
+            &[X86_REG_RSP],
+        ),
         ("syscall", "syscall", b"\x0f\x05", &[INT], &[], &[]),
         ("iretd", "iretl", b"\xcf", &[IRET], &[], &[]),
         (
@@ -1318,13 +1324,7 @@ fn test_arch_evm_detail() {
         Mode::Default,
         None,
         &[],
-        &[
-            DII::new(
-                "push1",
-                b"\x60\x61",
-                ops,
-            ),
-        ],
+        &[DII::new("push1", b"\x60\x61", ops)],
     );
 }
 
@@ -1375,7 +1375,6 @@ fn test_arch_m680x_detail() {
                     },
                 ],
             ),
-
             // aim     #16,$00
             DII::new(
                 "aim",
@@ -1391,7 +1390,6 @@ fn test_arch_m680x_detail() {
                     },
                 ],
             ),
-
             // oim     #16,$10
             DII::new(
                 "oim",
@@ -1407,14 +1405,9 @@ fn test_arch_m680x_detail() {
                     },
                 ],
             ),
-
             // rts
-            DII::new(
-                "rts",
-                b"\x39",
-                &[],
-            ),
-        ]
+            DII::new("rts", b"\x39", &[]),
+        ],
     );
 
     test_arch_mode_endian_insns_detail(
@@ -1443,7 +1436,6 @@ fn test_arch_m680x_detail() {
                     },
                 ],
             ),
-
             // aim     #16;-16,x
             DII::new(
                 "aim",
@@ -1465,7 +1457,6 @@ fn test_arch_m680x_detail() {
                     },
                 ],
             ),
-
             // tim     #16,$1000
             DII::new(
                 "tim",
@@ -1484,7 +1475,6 @@ fn test_arch_m680x_detail() {
                     },
                 ],
             ),
-
             // ldq     #1234567890
             DII::new(
                 "ldq",
@@ -1500,7 +1490,6 @@ fn test_arch_m680x_detail() {
                     },
                 ],
             ),
-
             // addr    y,u
             DII::new(
                 "addr",
@@ -1516,7 +1505,6 @@ fn test_arch_m680x_detail() {
                     },
                 ],
             ),
-
             // pshsw
             DII::new(
                 "pshsw",
@@ -1532,7 +1520,6 @@ fn test_arch_m680x_detail() {
                     },
                 ],
             ),
-
             // puluw
             DII::new(
                 "puluw",
@@ -1548,31 +1535,24 @@ fn test_arch_m680x_detail() {
                     },
                 ],
             ),
-
             // comw
             DII::new(
                 "comw",
                 b"\x10\x53",
-                &[
-                    M680xOperand {
-                        op_type: Reg(RegId(M680X_REG_W as RegIdInt)),
-                        size: 2,
-                    },
-                ],
+                &[M680xOperand {
+                    op_type: Reg(RegId(M680X_REG_W as RegIdInt)),
+                    size: 2,
+                }],
             ),
-
             // tstw
             DII::new(
                 "tstw",
                 b"\x10\x5d",
-                &[
-                    M680xOperand {
-                        op_type: Reg(RegId(M680X_REG_W as RegIdInt)),
-                        size: 2,
-                    },
-                ],
+                &[M680xOperand {
+                    op_type: Reg(RegId(M680X_REG_W as RegIdInt)),
+                    size: 2,
+                }],
             ),
-
             // band    a,0,3,$10
             DII::new(
                 "band",
@@ -1596,7 +1576,6 @@ fn test_arch_m680x_detail() {
                     },
                 ],
             ),
-
             // stbt    cc,4,5,$10
             DII::new(
                 "stbt",
@@ -1620,7 +1599,6 @@ fn test_arch_m680x_detail() {
                     },
                 ],
             ),
-
             // tfm     x+,y+
             DII::new(
                 "tfm",
@@ -1646,7 +1624,7 @@ fn test_arch_m680x_detail() {
                     },
                 ],
             ),
-        ]
+        ],
     );
 
     let empty_ops: &[M680xOperand] = &[];
@@ -1663,68 +1641,52 @@ fn test_arch_m680x_detail() {
         &[],
         &[
             // nop
-            DII::new(
-                "nop",
-                b"\x01",
-                empty_ops,
-            ),
-
+            DII::new("nop", b"\x01", empty_ops),
             // dex
             DII::new(
                 "dex",
                 b"\x09",
-                &[
-                    M680xOperand {
-                        op_type: Reg(RegId(M680X_REG_X as RegIdInt)),
-                        size: 2,
-                    },
-                ],
+                &[M680xOperand {
+                    op_type: Reg(RegId(M680X_REG_X as RegIdInt)),
+                    size: 2,
+                }],
             ),
-
             // psha
             DII::new(
                 "psha",
                 b"\x36",
-                &[
-                    M680xOperand {
-                        op_type: Reg(RegId(M680X_REG_A as RegIdInt)),
-                        size: 1,
-                    },
-                ],
+                &[M680xOperand {
+                    op_type: Reg(RegId(M680X_REG_A as RegIdInt)),
+                    size: 1,
+                }],
             ),
-
             // lsr     127,x
             DII::new(
                 "lsr",
                 b"\x64\x7f",
-                &[
-                    M680xOperand {
-                        op_type: Indexed(M680xOpIdx(m680x_op_idx {
-                            base_reg: M680X_REG_X,
-                            offset: 127,
-                            offset_bits: 8,
-                            ..op_idx_zero
-                        })),
-                        size: 1,
-                    },
-                ],
+                &[M680xOperand {
+                    op_type: Indexed(M680xOpIdx(m680x_op_idx {
+                        base_reg: M680X_REG_X,
+                        offset: 127,
+                        offset_bits: 8,
+                        ..op_idx_zero
+                    })),
+                    size: 1,
+                }],
             ),
-
             // lsr     $1000
             DII::new(
                 "lsr",
                 b"\x74\x10\x00",
-                &[
-                    M680xOperand {
-                        op_type: Extended {
-                            address: 0x1000,
-                            indirect: false,
-                        },
-                        size: 1,
+                &[M680xOperand {
+                    op_type: Extended {
+                        address: 0x1000,
+                        indirect: false,
                     },
-                ],
+                    size: 1,
+                }],
             ),
-        ]
+        ],
     );
 
     test_arch_mode_endian_insns_detail(
@@ -1742,36 +1704,31 @@ fn test_arch_m680x_detail() {
             DII::new(
                 "lsrd",
                 b"\x04",
-                &[
-                    M680xOperand {
-                        op_type: Reg(RegId(M680X_REG_D as RegIdInt)),
-                        size: 2,
-                    },
-                ],
+                &[M680xOperand {
+                    op_type: Reg(RegId(M680X_REG_D as RegIdInt)),
+                    size: 2,
+                }],
             ),
-
             // asld
             DII::new(
                 "asld",
                 b"\x05",
-                &[
-                    M680xOperand {
-                        op_type: Reg(RegId(M680X_REG_D as RegIdInt)),
-                        size: 2,
-                    },
-                ],
+                &[M680xOperand {
+                    op_type: Reg(RegId(M680X_REG_D as RegIdInt)),
+                    size: 2,
+                }],
             ),
-        ]
+        ],
     );
 }
 
 #[test]
 fn test_arch_m68k_detail() {
-    use arch::m68k::*;
     use arch::m68k::M68kOperand::*;
     use arch::m68k::M68kReg::*;
-    use capstone_sys::m68k_op_mem;
+    use arch::m68k::*;
     use capstone_sys::m68k_address_mode::*;
+    use capstone_sys::m68k_op_mem;
 
     let mem_zero = m68k_op_mem {
         base_reg: M68K_REG_INVALID,
@@ -1804,22 +1761,33 @@ fn test_arch_m68k_detail() {
                 b"\x4c\x00\x54\x04",
                 &[
                     Reg(RegId(M68K_REG_D0 as RegIdInt)),
-
                     // BUG in capstone: should be:
                     // RegPair(RegId(M68K_REG_D4 as RegIdInt), RegId(M68K_REG_D5 as RegIdInt)),
-                    RegPair(RegId(M68K_REG_D3 as RegIdInt), RegId(M68K_REG_D4 as RegIdInt)),
+                    RegPair(
+                        RegId(M68K_REG_D3 as RegIdInt),
+                        RegId(M68K_REG_D4 as RegIdInt),
+                    ),
                 ],
             ),
-
             // movem.l d0-d2/a2-a3, -(a7)
             DII::new(
                 "movem.l",
                 b"\x48\xe7\xe0\x30",
                 &[
-                    RegBits(M68kRegisterBits::from_register_iter(
-                        [M68K_REG_D0, M68K_REG_D1, M68K_REG_D2, M68K_REG_A2, M68K_REG_A3].iter()
-                            .map(|x| *x)
-                    ).unwrap()),
+                    RegBits(
+                        M68kRegisterBits::from_register_iter(
+                            [
+                                M68K_REG_D0,
+                                M68K_REG_D1,
+                                M68K_REG_D2,
+                                M68K_REG_A2,
+                                M68K_REG_A3,
+                            ]
+                            .iter()
+                            .map(|x| *x),
+                        )
+                        .unwrap(),
+                    ),
                     Mem(M68kOpMem {
                         op_mem: mem_zero,
                         address_mode: M68K_AM_REGI_ADDR_PRE_DEC,
@@ -1827,7 +1795,6 @@ fn test_arch_m68k_detail() {
                     }),
                 ],
             ),
-
             // movem.l (a7)+, d0-d2/a2-a3
             DII::new(
                 "movem.l",
@@ -1838,13 +1805,22 @@ fn test_arch_m68k_detail() {
                         address_mode: M68K_AM_REGI_ADDR_POST_INC,
                         extra_info: M68kOpMemExtraInfo::Reg(RegId(M68K_REG_A7 as RegIdInt)),
                     }),
-                    RegBits(M68kRegisterBits::from_register_iter(
-                        [M68K_REG_D0, M68K_REG_D1, M68K_REG_D2, M68K_REG_A2, M68K_REG_A3].iter()
-                            .map(|x| *x)
-                    ).unwrap()),
+                    RegBits(
+                        M68kRegisterBits::from_register_iter(
+                            [
+                                M68K_REG_D0,
+                                M68K_REG_D1,
+                                M68K_REG_D2,
+                                M68K_REG_A2,
+                                M68K_REG_A3,
+                            ]
+                            .iter()
+                            .map(|x| *x),
+                        )
+                        .unwrap(),
+                    ),
                 ],
             ),
-
             // add.w   d0, d2
             DII::new(
                 "add.w",
@@ -1854,7 +1830,6 @@ fn test_arch_m68k_detail() {
                     Reg(RegId(M68K_REG_D2 as RegIdInt)),
                 ],
             ),
-
             // or.w    d3, (a2)+
             DII::new(
                 "or.w",
@@ -1868,14 +1843,8 @@ fn test_arch_m68k_detail() {
                     }),
                 ],
             ),
-
             // nop
-            DII::new(
-                "nop",
-                b"\x4e\x71",
-                &[],
-            ),
-
+            DII::new("nop", b"\x4e\x71", &[]),
             // andi.l  #$c0dec0de, (a4, d5.l * 4)
             DII::new(
                 "andi.l",
@@ -1895,7 +1864,6 @@ fn test_arch_m68k_detail() {
                     }),
                 ],
             ),
-
             // move.b  d0, ([a6, d7.w], $123)
             DII::new(
                 "move.b",
@@ -1907,7 +1875,7 @@ fn test_arch_m68k_detail() {
                             base_reg: M68K_REG_A6,
                             index_reg: M68K_REG_D7,
                             out_disp: 0x123, // $123 treated as hex
-                            index_size: 0, // w
+                            index_size: 0,   // w
                             ..mem_zero
                         },
                         address_mode: M68K_AM_MEMI_PRE_INDEX,
@@ -1915,36 +1883,20 @@ fn test_arch_m68k_detail() {
                     }),
                 ],
             ),
-
             // fadd.s  #3.141500, fp0
             DII::new(
                 "fadd.s",
                 b"\xf2\x3c\x44\x22\x40\x49\x0e\x56",
-                &[
-                    FpSingle(3.1415),
-                    Reg(RegId(M68K_REG_FP0 as RegIdInt)),
-                ],
+                &[FpSingle(3.1415), Reg(RegId(M68K_REG_FP0 as RegIdInt))],
             ),
-
             // scc.b   d5
-            DII::new(
-                "scc.b",
-                b"\x54\xc5",
-                &[
-                    Reg(RegId(M68K_REG_D5 as RegIdInt)),
-                ],
-            ),
-
+            DII::new("scc.b", b"\x54\xc5", &[Reg(RegId(M68K_REG_D5 as RegIdInt))]),
             // fmove.s #1000.000000, fp0
             DII::new(
                 "fmove.s",
                 b"\xf2\x3c\x44\x00\x44\x7a\x00\x00",
-                &[
-                    FpSingle(1000.000000),
-                    Reg(RegId(M68K_REG_FP0 as RegIdInt)),
-                ],
+                &[FpSingle(1000.000000), Reg(RegId(M68K_REG_FP0 as RegIdInt))],
             ),
-
             // fsub    fp2, fp4
             DII::new(
                 "fsub",
@@ -1954,28 +1906,18 @@ fn test_arch_m68k_detail() {
                     Reg(RegId(M68K_REG_FP4 as RegIdInt)),
                 ],
             ),
-
             // jsr     $12.l
             DII::new(
                 "jsr",
                 b"\x4e\xb9\x00\x00\x00\x12",
-                &[
-                    Mem(M68kOpMem {
-                        op_mem: m68k_op_mem {
-                            ..mem_zero
-                        },
-                        address_mode: M68K_AM_ABSOLUTE_DATA_LONG,
-                        extra_info: M68kOpMemExtraInfo::Imm(0x12),
-                    }),
-                ],
+                &[Mem(M68kOpMem {
+                    op_mem: m68k_op_mem { ..mem_zero },
+                    address_mode: M68K_AM_ABSOLUTE_DATA_LONG,
+                    extra_info: M68kOpMemExtraInfo::Imm(0x12),
+                })],
             ),
-
             // rts
-            DII::new(
-                "rts",
-                b"\x4e\x75",
-                &[],
-            ),
+            DII::new("rts", b"\x4e\x75", &[]),
         ],
     );
 }

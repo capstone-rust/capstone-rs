@@ -12,8 +12,8 @@ use capstone::{Arch, Endian, EnumList, ExtraMode, Mode};
 use clap::{App, Arg, ArgGroup};
 use std::fmt::Display;
 use std::fs::File;
-use std::io::prelude::*;
 use std::io;
+use std::io::prelude::*;
 use std::process::exit;
 use std::str::FromStr;
 
@@ -113,7 +113,8 @@ fn disasm<T: Iterator<Item = ExtraMode>>(
             bytes,
             i.mnemonic().unwrap(),
             i.op_str().unwrap_or("")
-        ).is_ok();
+        )
+        .is_ok();
 
         if show_detail {
             let detail = cs.insn_detail(&i).expect("Failed to get insn detail");
