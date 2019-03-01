@@ -6,7 +6,9 @@ use capstone_sys::{
     cs_m68k, cs_m68k_op, cs_m68k_op__bindgen_ty_1, m68k_address_mode, m68k_cpu_size, m68k_fpu_size,
     m68k_op_br_disp, m68k_op_mem, m68k_op_size, m68k_op_type, m68k_reg, m68k_size_type,
 };
+use Error;
 use instruction::{RegId, RegIdInt};
+use prelude::*;
 use std::convert::From;
 use std::{cmp, fmt, slice};
 
@@ -17,8 +19,6 @@ pub use capstone_sys::m68k_address_mode as M68kAddressMode;
 pub use capstone_sys::m68k_insn as M68kInsn;
 pub use capstone_sys::m68k_reg as M68kReg;
 
-use crate::prelude::*;
-use crate::Error;
 
 /// Contains M68K-specific details for an instruction
 pub struct M68kInsnDetail<'a>(pub(crate) &'a cs_m68k);
@@ -669,7 +669,7 @@ mod test {
 
         let cs = Capstone::new()
             .m68k()
-            .mode(crate::arch::m68k::ArchMode::M68k040)
+            .mode(arch::m68k::ArchMode::M68k040)
             .detail(true)
             .build()
             .expect("Failed to create Capstone");
