@@ -6,7 +6,10 @@ use std::fmt::{self, Display};
 use std::str::FromStr;
 
 /// A C-like enum can list its variants
-pub trait EnumList where Self: Sized {
+pub trait EnumList
+where
+    Self: Sized,
+{
     /// Slice of available variants
     fn variants() -> &'static [Self];
 }

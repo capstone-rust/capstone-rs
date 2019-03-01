@@ -102,7 +102,9 @@ impl error::Error for Error {
             UnsupportedX86Att => "X86 AT&T syntax is unsupported (opt-out at compile time)",
             UnsupportedX86Intel => "X86 Intel syntax is unsupported (opt-out at compile time)",
             UnknownCapstoneError => "Encountered Unknown Capstone Return Error",
-            InvalidM68kBitfieldRegister => "Invalid M68K Register, must be in d0-d7, a0-a7, fp0-fp7",
+            InvalidM68kBitfieldRegister => {
+                "Invalid M68K Register, must be in d0-d7, a0-a7, fp0-fp7"
+            }
             CustomError(msg) => msg,
         }
     }
