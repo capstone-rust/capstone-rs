@@ -10,10 +10,12 @@ use std::{cmp, fmt, slice};
 pub use capstone_sys::x86_insn_group as X86InsnGroup;
 pub use capstone_sys::x86_insn as X86Insn;
 pub use capstone_sys::x86_reg as X86Reg;
+pub use capstone_sys::x86_prefix as X86Prefix;
 
 pub use capstone_sys::x86_avx_bcast as X86AvxBcast;
 pub use capstone_sys::x86_sse_cc as X86SseCC;
 pub use capstone_sys::x86_avx_cc as X86AvxCC;
+pub use capstone_sys::x86_xop_cc as X86XopCC;
 pub use capstone_sys::x86_avx_rm as X86AvxRm;
 
 use capstone_sys::cs_x86_op__bindgen_ty_1;
@@ -75,17 +77,30 @@ pub enum X86OperandType {
 pub struct X86OpMem(pub(crate) x86_op_mem);
 
 impl<'a> X86InsnDetail<'a> {
-    /// Instruction prefix bytes
+    /// Instruction prefix, which can be up to 4 bytes.
+    /// A prefix byte gets value 0 when irrelevant.
+    /// See `X86Prefix` for details.
+    ///
+    /// prefix[0] indicates REP/REPNE/LOCK prefix (See `X86_PREFIX_REP`/`REPNE`/`LOCK`)
+    ///
+    /// prefix[1] indicates segment override (irrelevant for x86_64):
+    /// See `X86_PREFIX_CS`/`SS`/`DS`/`ES`/`FS`/`GS`.
+    ///
+    /// prefix[2] indicates operand-size override (`X86_PREFIX_OPSIZE`)
+    ///
+    /// prefix[3] indicates address-size override (`X86_PREFIX_ADDRSIZE`)
     pub fn prefix(&self) -> &[u8; 4] {
         &self.0.prefix
     }
 
-    /// Opcode bytes
+    /// Instruction opcode, which can be from 1 to 4 bytes in size.
+    /// This contains VEX opcode as well.
+    /// A trailing opcode byte gets value 0 when irrelevant.
     pub fn opcode(&self) -> &[u8; 4] {
         &self.0.opcode
     }
 
-    /// REX
+    /// REX prefix: only a non-zero value is relevant for x86_64
     pub fn rex(&self) -> u8 {
         self.0.rex
     }
@@ -95,34 +110,39 @@ impl<'a> X86InsnDetail<'a> {
         self.0.addr_size
     }
 
-    /// MODRM
+    /// ModR/M byte
     pub fn modrm(&self) -> u8 {
         self.0.modrm
     }
 
-    /// SIB (Scaled Index Byte)
+    /// SIB (Scaled Index Byte) value, or 0 when irrelevant
     pub fn sib(&self) -> u8 {
         self.0.sib
     }
 
-    /// Disp
+    /// Displacement value, valid if encoding.disp_offset != 0
     pub fn disp(&self) -> i64 {
         self.0.disp
     }
 
-    /// Scaled Index Byte (SIB) index
+    /// Scaled Index Byte (SIB) index, or X86_REG_INVALID when irrelevant
     pub fn sib_index(&self) -> RegId {
         RegId(self.0.sib_index as RegIdInt)
     }
 
-    /// Scaled Index Byte (SIB) scale
+    /// Scaled Index Byte (SIB) scale, or X86_REG_INVALID when irrelevant
     pub fn sib_scale(&self) -> i8 {
         self.0.sib_scale
     }
 
-    /// Scaled Index Byte (SIB) scale
+    /// Scaled Index Byte (SIB) base register, or X86_REG_INVALID when irrelevant
     pub fn sib_base(&self) -> RegId {
         RegId(self.0.sib_base as RegIdInt)
+    }
+
+    /// eXtended Operations (XOP) Code Condition
+    pub fn xop_cc(&self) -> X86XopCC {
+        self.0.xop_cc
     }
 
     /// Streaming SIMD Extensions (SSE) condition  codes
