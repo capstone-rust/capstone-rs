@@ -222,6 +222,24 @@ macro_rules! arch_info_base {
                 ( both_endian: false )
             ]
             [
+                ( m680x, M680X )
+                ( mode:
+                    M680x6301,
+                    M680x6309,
+                    M680x6800,
+                    M680x6801,
+                    M680x6805,
+                    M680x6808,
+                    M680x6809,
+                    M680x6811,
+                    M680xCpu12,
+                    M680xHcs08,
+                    )
+                ( extra_modes: )
+                ( syntax: )
+                ( both_endian: false )
+            ]
+            [
                 ( m68k, M68K )
                 ( mode:
                     M68k000,
@@ -254,6 +272,7 @@ macro_rules! arch_info_base {
                 ( mode:
                     Mode32,
                     Mode64,
+                    Qpx,
                     )
                 ( extra_modes: )
                 ( syntax:
@@ -421,6 +440,13 @@ macro_rules! detail_arch_base {
                 op = EvmOperand,
                 /// Returns the EVM details, if any
                 => arch_name = evm,
+            ]
+            [
+                detail = M680xDetail,
+                insn_detail = M680xInsnDetail<'a>,
+                op = M680xOperand,
+                /// Returns the M680X details, if any
+                => arch_name = m680x,
             ]
             [
                 detail = M68kDetail,
