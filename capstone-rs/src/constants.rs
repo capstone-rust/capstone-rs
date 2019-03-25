@@ -14,6 +14,25 @@ where
     fn variants() -> &'static [Self];
 }
 
+/// Define the rust enum
+macro_rules! define_cs_rust_enum {
+    ( [
+        $( #[$enum_attr:meta] )*
+        => $rust_enum:ident = $cs_enum:ty
+      ]
+      $( $( #[$attr:meta] )*
+      => $rust_variant:ident = $cs_variant:tt; )* ) => {
+        $( #[$enum_attr] )*
+        #[derive(Copy, Clone, Debug, Eq, Hash, PartialEq)]
+        pub enum $rust_enum {
+            $(
+                $( #[$attr] )*
+                $rust_variant,
+            )*
+        }
+    }
+}
+
 /// Define an `enum` that corresponds to a capstone enum
 ///
 /// The different `From` implementations can be disabled by using the cfg attribute
@@ -25,14 +44,14 @@ macro_rules! define_cs_enum_wrapper {
       $( $( #[$attr:meta] )*
       => $rust_variant:ident = $cs_variant:tt; )* ) => {
 
-        $( #[$enum_attr] )*
-        #[derive(Copy, Clone, Debug, Eq, Hash, PartialEq)]
-        pub enum $rust_enum {
-            $(
-                $( #[$attr] )*
-                $rust_variant,
-            )*
-        }
+        define_cs_rust_enum!(
+            [
+                $( #[$enum_attr] )*
+                => $rust_enum = $cs_enum
+            ]
+            $( $( #[$attr] )*
+            => $rust_variant = $cs_variant; )*
+        );
 
         impl ::std::convert::From<$rust_enum> for $cs_enum {
             fn from(other: $rust_enum) -> Self {
@@ -77,6 +96,51 @@ macro_rules! define_cs_enum_wrapper {
                     )*
                 }
 
+            }
+        }
+    }
+}
+
+/// Define Rust enum that is created from C enum
+#[macro_export]
+macro_rules! define_cs_enum_wrapper_reverse {
+    ( [
+        $( #[$enum_attr:meta] )*
+        => $rust_enum:ident = $cs_enum:ident,
+        $( from_u32 = $gen_from_u32:ident,)*
+      ]
+      $( $( #[$attr:meta] )*
+      => $rust_variant:ident = $cs_variant:tt; )* ) => {
+
+        define_cs_rust_enum!(
+            [
+                $( #[$enum_attr] )*
+                => $rust_enum = $cs_enum
+            ]
+            $( $( #[$attr] )*
+            => $rust_variant = $cs_variant; )*
+        );
+
+        impl ::std::convert::From<$cs_enum> for $rust_enum {
+            fn from(other: $cs_enum) -> Self {
+                match other {
+                    $(
+                        $cs_enum::$cs_variant => $rust_enum::$rust_variant,
+                    )*
+                }
+            }
+        }
+
+        impl $rust_enum {
+            /// Construct from a `u32`
+            #[allow(dead_code)]
+            pub(crate) fn from_u32(other: u32) -> Option<$rust_enum> {
+                match other {
+                    $(
+                        x if x == ($cs_enum::$cs_variant as u32) => Some($rust_enum::$rust_variant),
+                    )*
+                    _ => None,
+                }
             }
         }
     }

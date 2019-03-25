@@ -300,6 +300,15 @@ macro_rules! arch_info_base {
                 ( both_endian: false )
             ]
             [
+                ( tms320c64x, TMS320C64X )
+                ( mode:
+                    Default,
+                    )
+                ( extra_modes: )
+                ( syntax: )
+                ( both_endian: false )
+            ]
+            [
                 ( x86, X86 )
                 ( mode:
                     Mode16,
@@ -475,6 +484,13 @@ macro_rules! detail_arch_base {
                 op = SparcOperand,
                 /// Returns the SPARC details, if any
                 => arch_name = sparc,
+            ]
+            [
+                detail = Tms320c64xDetail,
+                insn_detail = Tms320c64xInsnDetail<'a>,
+                op = Tms320c64xOperand,
+                /// Returns the Tms320c64x details, if any
+                => arch_name = tms320c64x,
             ]
             [
                 detail = X86Detail,
