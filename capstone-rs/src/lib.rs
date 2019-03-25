@@ -123,9 +123,12 @@
 
 extern crate capstone_sys;
 
+// Define first so macros are available
+#[macro_use]
+mod constants;
+
 pub mod arch;
 mod capstone;
-mod constants;
 mod error;
 mod instruction;
 

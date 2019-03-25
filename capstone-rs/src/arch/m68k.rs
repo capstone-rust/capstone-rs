@@ -23,40 +23,10 @@ pub use capstone_sys::m68k_reg as M68kReg;
 /// Contains M68K-specific details for an instruction
 pub struct M68kInsnDetail<'a>(pub(crate) &'a cs_m68k);
 
-/// Define Rust enum that is created from C enum
-macro_rules! define_cs_enum_wrapper_reverse {
-    ( [
-        $( #[$enum_attr:meta] )*
-        => $rust_enum:ident = $cs_enum:ident
-      ]
-      $( $( #[$attr:meta] )*
-      => $rust_variant:ident = $cs_variant:tt; )* ) => {
-
-        $( #[$enum_attr] )*
-        #[derive(Copy, Clone, Debug, Eq, Hash, PartialEq)]
-        pub enum $rust_enum {
-            $(
-                $( #[$attr] )*
-                $rust_variant,
-            )*
-        }
-
-        impl ::std::convert::From<$cs_enum> for $rust_enum {
-            fn from(other: $cs_enum) -> Self {
-                match other {
-                    $(
-                        $cs_enum::$cs_variant => $rust_enum::$rust_variant,
-                    )*
-                }
-            }
-        }
-    }
-}
-
 define_cs_enum_wrapper_reverse!(
     [
         /// Operation size of the CPU instructions
-        => M68kCpuSize = m68k_cpu_size
+        => M68kCpuSize = m68k_cpu_size,
     ]
     /// Unsized or unspecified
     => None = M68K_CPU_SIZE_NONE;
@@ -72,7 +42,7 @@ define_cs_enum_wrapper_reverse!(
     [
         /// Operation size of the FPU instructions (notice that FPU instruction can also use CPU
         /// sizes if needed)
-        => M68kFpuSize = m68k_fpu_size
+        => M68kFpuSize = m68k_fpu_size,
     ]
     /// Unsized or unspecified
     => None = M68K_FPU_SIZE_NONE;

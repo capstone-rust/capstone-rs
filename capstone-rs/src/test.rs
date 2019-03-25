@@ -2426,6 +2426,40 @@ fn test_arch_systemz() {
 }
 
 #[test]
+#[ignore]
+fn test_arch_tms320c64x_detail() {
+    use arch::tms320c64x::Tms320c64xOperand::*;
+    use arch::tms320c64x::Tms320c64xReg::*;
+    use arch::tms320c64x::*;
+    use capstone_sys::tms320c64x_op_mem;
+
+    test_arch_mode_endian_insns_detail(
+        &mut Capstone::new()
+            .tms320c64x()
+            .mode(tms320c64x::ArchMode::Default)
+            .build()
+            .unwrap(),
+        Arch::TMS320C64X,
+        Mode::Default,
+        None,
+        &[],
+        &[
+            // add.D1    a11, a4, a3
+            DII::new(
+                "      add.D1",
+                b"\x01\xac\x88\x40",
+                &[
+                    Reg(RegId(TMS320C64X_REG_A11 as RegIdInt)),
+                    Reg(RegId(TMS320C64X_REG_A4 as RegIdInt)),
+                    Reg(RegId(TMS320C64X_REG_A3 as RegIdInt)),
+                ],
+            ),
+            // todo(tmfink): add more instructions
+        ],
+    );
+}
+
+#[test]
 fn test_arch_x86() {
     test_arch_mode_endian_insns(
         &mut Capstone::new()
