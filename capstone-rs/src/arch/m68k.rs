@@ -23,6 +23,13 @@ pub use capstone_sys::m68k_reg as M68kReg;
 /// Contains M68K-specific details for an instruction
 pub struct M68kInsnDetail<'a>(pub(crate) &'a cs_m68k);
 
+impl<'a> M68kInsnDetail<'a> {
+    /// size of data operand works on in bytes (.b, .w, .l, etc)
+    pub fn op_size(&self) -> Option<M68kOpSize> {
+        M68kOpSize::new(&self.0.op_size)
+    }
+}
+
 define_cs_enum_wrapper_reverse!(
     [
         /// Operation size of the CPU instructions
@@ -91,13 +98,6 @@ impl M68kOpSize {
                 unsafe { op.__bindgen_anon_1.fpu_size }.into(),
             )),
         }
-    }
-}
-
-impl<'a> M68kInsnDetail<'a> {
-    /// size of data operand works on in bytes (.b, .w, .l, etc)
-    pub fn op_size(&self) -> Option<M68kOpSize> {
-        M68kOpSize::new(&self.0.op_size)
     }
 }
 
