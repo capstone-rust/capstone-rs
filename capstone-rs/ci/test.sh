@@ -123,12 +123,7 @@ run_kcov() {
     (
     set -x
     for file in ${TARGET}/${PROFILE}/${PROJECT_NAME}-*[^\.d] ${EXAMPLE_BINS} ; do
-        # XXX todo(tmfink): remove `--test-threads=1` once aquynh/capstone#1397 is fixed
-        if [[ ${TARGET}/${PROFILE}/${PROJECT_NAME}-* ]]; then
-            extra_exe_args=(--test-threads=1)
-        else
-            extra_exe_args=()
-        fi
+        extra_exe_args=()
         "$KCOV" \
             $COVERALLS_ARG \
             --include-pattern=capstone-rs \
