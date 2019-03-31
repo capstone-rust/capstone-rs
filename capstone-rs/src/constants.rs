@@ -175,6 +175,7 @@ macro_rules! define_impl_bitmask {
         }
 
         /// Test that masks have exactly one 1 bit set
+        #[allow(non_snake_case)]
         #[cfg(test)]
         mod $test_mod {
             use super::*;

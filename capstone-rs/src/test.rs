@@ -1761,11 +1761,9 @@ fn test_arch_m68k_detail() {
                 b"\x4c\x00\x54\x04",
                 &[
                     Reg(RegId(M68K_REG_D0 as RegIdInt)),
-                    // BUG in capstone: should be:
-                    // RegPair(RegId(M68K_REG_D4 as RegIdInt), RegId(M68K_REG_D5 as RegIdInt)),
                     RegPair(
-                        RegId(M68K_REG_D3 as RegIdInt),
                         RegId(M68K_REG_D4 as RegIdInt),
+                        RegId(M68K_REG_D5 as RegIdInt),
                     ),
                 ],
             ),
