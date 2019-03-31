@@ -10,7 +10,7 @@ V ?= 0
 
 OS := $(shell uname)
 ifeq ($(OS),Darwin)
-LIBARCHS = x86_64
+LIBARCHS ?= x86_64
 PREFIX ?= /usr/local
 endif
 
@@ -40,7 +40,7 @@ ifneq (,$(findstring yes,$(CAPSTONE_X86_ATT_DISABLE)))
 CFLAGS += -DCAPSTONE_X86_ATT_DISABLE
 endif
 
-CFLAGS += -fPIC -Wall -Wwrite-strings -Iinclude
+CFLAGS += -fPIC -Wall -Wwrite-strings -Wmissing-prototypes -Iinclude
 
 ifeq ($(CAPSTONE_USE_SYS_DYN_MEM),yes)
 CFLAGS += -DCAPSTONE_USE_SYS_DYN_MEM
@@ -119,6 +119,7 @@ endif
 
 
 DEP_M68K =
+DEP_M68K += $(wildcard arch/M68K/M68K*.inc)
 DEP_M68K += $(wildcard arch/M68K/M68K*.h)
 
 LIBOBJ_M68K =
@@ -402,23 +403,23 @@ else
 endif
 
 install: $(PKGCFGF) $(ARCHIVE) $(LIBRARY)
-	mkdir -p $(DESTDIR)$(LIBDIR)
-	$(call install-library,$(DESTDIR)$(LIBDIR))
+	mkdir -p $(LIBDIR)
+	$(call install-library,$(LIBDIR))
 ifeq ($(CAPSTONE_STATIC),yes)
-	$(INSTALL_DATA) $(ARCHIVE) $(DESTDIR)$(LIBDIR)
+	$(INSTALL_DATA) $(ARCHIVE) $(LIBDIR)
 endif
 	mkdir -p $(DESTDIR)$(INCDIR)/$(LIBNAME)
 	$(INSTALL_DATA) include/capstone/*.h $(DESTDIR)$(INCDIR)/$(LIBNAME)
-	mkdir -p $(DESTDIR)$(PKGCFGDIR)
-	$(INSTALL_DATA) $(PKGCFGF) $(DESTDIR)$(PKGCFGDIR)
-	mkdir -p $(DESTDIR)$(BINDIR)
-	$(INSTALL_LIB) cstool/cstool $(DESTDIR)$(BINDIR)
+	mkdir -p $(PKGCFGDIR)
+	$(INSTALL_DATA) $(PKGCFGF) $(PKGCFGDIR)
+	mkdir -p $(BINDIR)
+	$(INSTALL_LIB) cstool/cstool $(BINDIR)
 
 uninstall:
 	rm -rf $(DESTDIR)$(INCDIR)/$(LIBNAME)
-	rm -f $(DESTDIR)$(LIBDIR)/lib$(LIBNAME).*
-	rm -f $(DESTDIR)$(PKGCFGDIR)/$(LIBNAME).pc
-	rm -f $(DESTDIR)$(BINDIR)/cstool
+	rm -f $(LIBDIR)/lib$(LIBNAME).*
+	rm -f $(PKGCFGDIR)/$(LIBNAME).pc
+	rm -f $(BINDIR)/cstool
 
 clean:
 	rm -f $(LIBOBJ)
@@ -471,7 +472,11 @@ fuzztest:
 	./suite/fuzz/fuzz_disasm $(FUZZ_INPUTS)
 
 fuzzallcorp:
-	./suite/fuzz/fuzz_bindisasm suite/fuzz/corpus-libFuzzer-capstone_fuzz_disasmnext-latest/
+ifneq ($(wildcard suite/fuzz/corpus-libFuzzer-capstone_fuzz_disasmnext-latest),)
+	./suite/fuzz/fuzz_bindisasm suite/fuzz/corpus-libFuzzer-capstone_fuzz_disasmnext-latest/ > fuzz_bindisasm.log || (tail -1 fuzz_bindisasm.log; false)
+else
+	@echo "Skipping tests on whole corpus"
+endif
 
 $(OBJDIR)/%.o: %.c
 	@mkdir -p $(@D)
@@ -514,7 +519,7 @@ define generate-pkgcfg
 	echo 'Description: Capstone disassembly engine' >> $(PKGCFGF)
 	echo 'Version: $(PKG_VERSION)' >> $(PKGCFGF)
 	echo 'libdir=$(LIBDIR)' >> $(PKGCFGF)
-	echo 'includedir=$(INCDIR)' >> $(PKGCFGF)
+	echo 'includedir=$(INCDIR)/capstone' >> $(PKGCFGF)
 	echo 'archive=$${libdir}/libcapstone.a' >> $(PKGCFGF)
 	echo 'Libs: -L$${libdir} -lcapstone' >> $(PKGCFGF)
 	echo 'Cflags: -I$${includedir}' >> $(PKGCFGF)

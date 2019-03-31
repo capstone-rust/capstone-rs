@@ -3,7 +3,7 @@ project(capstone)
 
 set(VERSION_MAJOR 4)
 set(VERSION_MINOR 0)
-set(VERSION_PATCH 0)
+set(VERSION_PATCH 2)
 
 if(POLICY CMP0042)
   # http://www.cmake.org/cmake/help/v3.0/policy/CMP0042.html
@@ -49,6 +49,7 @@ foreach(supported_architecture ${SUPPORTED_ARCHITECTURES})
   endif()
 endforeach(supported_architecture)
 
+option(CAPSTONE_X86_ONLY "Enable just x86, and disable building every other architectures" OFF)
 option(CAPSTONE_X86_REDUCE "x86 with reduce instruction sets to minimize library" OFF)
 option(CAPSTONE_X86_ATT_DISABLE "Disable x86 AT&T syntax" OFF)
 option(CAPSTONE_OSXKERNEL_SUPPORT "Support to embed Capstone into OS X Kernel extensions" OFF)
@@ -118,7 +119,7 @@ set(HEADERS_COMMON
 set(TEST_SOURCES test_basic.c test_detail.c test_skipdata.c test_iter.c)
 
 ## architecture support
-if (CAPSTONE_ARM_SUPPORT)
+if (NOT CAPSTONE_X86_ONLY AND CAPSTONE_ARM_SUPPORT)
     add_definitions(-DCAPSTONE_HAS_ARM)
     set(SOURCES_ARM
         arch/ARM/ARMDisassembler.c
@@ -155,7 +156,7 @@ if (CAPSTONE_ARM_SUPPORT)
     set(TEST_SOURCES ${TEST_SOURCES} test_arm.c)
 endif ()
 
-if (CAPSTONE_ARM64_SUPPORT)
+if (NOT CAPSTONE_X86_ONLY AND CAPSTONE_ARM64_SUPPORT)
     add_definitions(-DCAPSTONE_HAS_ARM64)
     set(SOURCES_ARM64
         arch/AArch64/AArch64BaseInfo.c
@@ -192,7 +193,7 @@ if (CAPSTONE_ARM64_SUPPORT)
     set(TEST_SOURCES ${TEST_SOURCES} test_arm64.c)
 endif ()
 
-if (CAPSTONE_MIPS_SUPPORT)
+if (NOT CAPSTONE_X86_ONLY AND CAPSTONE_MIPS_SUPPORT)
     add_definitions(-DCAPSTONE_HAS_MIPS)
     set(SOURCES_MIPS
         arch/Mips/MipsDisassembler.c
@@ -224,7 +225,7 @@ if (CAPSTONE_MIPS_SUPPORT)
     set(TEST_SOURCES ${TEST_SOURCES} test_mips.c)
 endif ()
 
-if (CAPSTONE_PPC_SUPPORT)
+if (NOT CAPSTONE_X86_ONLY AND CAPSTONE_PPC_SUPPORT)
     add_definitions(-DCAPSTONE_HAS_POWERPC)
     set(SOURCES_PPC
         arch/PowerPC/PPCDisassembler.c
@@ -272,38 +273,21 @@ if (CAPSTONE_X86_SUPPORT)
         arch/X86/X86Disassembler.h
         arch/X86/X86DisassemblerDecoder.h
         arch/X86/X86DisassemblerDecoderCommon.h
+        arch/X86/X86InstPrinter.h
+        arch/X86/X86Mapping.h
         arch/X86/X86GenAsmWriter.inc
+        arch/X86/X86GenAsmWriter_reduce.inc
         arch/X86/X86GenAsmWriter1.inc
         arch/X86/X86GenAsmWriter1_reduce.inc
-        arch/X86/X86GenAsmWriter_reduce.inc
         arch/X86/X86GenDisassemblerTables.inc
         arch/X86/X86GenDisassemblerTables_reduce.inc
         arch/X86/X86GenInstrInfo.inc
         arch/X86/X86GenInstrInfo_reduce.inc
         arch/X86/X86GenRegisterInfo.inc
-        arch/X86/X86InstPrinter.h
-        arch/X86/X86Mapping.h
         arch/X86/X86MappingInsn.inc
+        arch/X86/X86MappingInsn_reduce.inc
         arch/X86/X86MappingInsnOp.inc
         arch/X86/X86MappingInsnOp_reduce.inc
-        arch/X86/X86MappingInsn_reduce.inc
-        )
-    set(HEADERS_X86
-        arch/X86/X86BaseInfo.h
-        arch/X86/X86Disassembler.h
-        arch/X86/X86DisassemblerDecoder.h
-        arch/X86/X86DisassemblerDecoderCommon.h
-        arch/X86/X86GenAsmWriter.inc
-        arch/X86/X86GenAsmWriter1.inc
-        arch/X86/X86GenAsmWriter1_reduce.inc
-        arch/X86/X86GenAsmWriter_reduce.inc
-        arch/X86/X86GenDisassemblerTables.inc
-        arch/X86/X86GenDisassemblerTables_reduce.inc
-        arch/X86/X86GenInstrInfo.inc
-        arch/X86/X86GenInstrInfo_reduce.inc
-        arch/X86/X86GenRegisterInfo.inc
-        arch/X86/X86InstPrinter.h
-        arch/X86/X86Mapping.h
         )
     if (NOT CAPSTONE_BUILD_DIET)
         set(SOURCES_X86 ${SOURCES_X86} arch/X86/X86ATTInstPrinter.c)
@@ -311,7 +295,7 @@ if (CAPSTONE_X86_SUPPORT)
     set(TEST_SOURCES ${TEST_SOURCES} test_x86.c test_customized_mnem.c)
 endif ()
 
-if (CAPSTONE_SPARC_SUPPORT)
+if (NOT CAPSTONE_X86_ONLY AND CAPSTONE_SPARC_SUPPORT)
     add_definitions(-DCAPSTONE_HAS_SPARC)
     set(SOURCES_SPARC
         arch/Sparc/SparcDisassembler.c
@@ -334,7 +318,7 @@ if (CAPSTONE_SPARC_SUPPORT)
     set(TEST_SOURCES ${TEST_SOURCES} test_sparc.c)
 endif ()
 
-if (CAPSTONE_SYSZ_SUPPORT)
+if (NOT CAPSTONE_X86_ONLY AND CAPSTONE_SYSZ_SUPPORT)
     add_definitions(-DCAPSTONE_HAS_SYSZ)
     set(SOURCES_SYSZ
         arch/SystemZ/SystemZDisassembler.c
@@ -358,7 +342,7 @@ if (CAPSTONE_SYSZ_SUPPORT)
     set(TEST_SOURCES ${TEST_SOURCES} test_systemz.c)
 endif ()
 
-if (CAPSTONE_XCORE_SUPPORT)
+if (NOT CAPSTONE_X86_ONLY AND CAPSTONE_XCORE_SUPPORT)
     add_definitions(-DCAPSTONE_HAS_XCORE)
     set(SOURCES_XCORE
         arch/XCore/XCoreDisassembler.c
@@ -379,7 +363,7 @@ if (CAPSTONE_XCORE_SUPPORT)
     set(TEST_SOURCES ${TEST_SOURCES} test_xcore.c)
 endif ()
 
-if (CAPSTONE_M68K_SUPPORT)
+if (NOT CAPSTONE_X86_ONLY AND CAPSTONE_M68K_SUPPORT)
     add_definitions(-DCAPSTONE_HAS_M68K)
     set(SOURCES_M68K
 		arch/M68K/M68KDisassembler.c
@@ -392,7 +376,7 @@ if (CAPSTONE_M68K_SUPPORT)
     set(TEST_SOURCES ${TEST_SOURCES} test_m68k.c)
 endif ()
 
-if (CAPSTONE_TMS320C64X_SUPPORT)
+if (NOT CAPSTONE_X86_ONLY AND CAPSTONE_TMS320C64X_SUPPORT)
     add_definitions(-DCAPSTONE_HAS_TMS320C64X)
     set(SOURCES_TMS320C64X
         arch/TMS320C64x/TMS320C64xDisassembler.c
@@ -412,7 +396,7 @@ if (CAPSTONE_TMS320C64X_SUPPORT)
     set(TEST_SOURCES ${TEST_SOURCES} test_tms320c64x.c)
 endif ()
 
-if (CAPSTONE_M680X_SUPPORT)
+if (NOT CAPSTONE_X86_ONLY AND CAPSTONE_M680X_SUPPORT)
     add_definitions(-DCAPSTONE_HAS_M680X)
     set(SOURCES_M680X
 		arch/M680X/M680XDisassembler.c
@@ -427,7 +411,7 @@ if (CAPSTONE_M680X_SUPPORT)
     set(TEST_SOURCES ${TEST_SOURCES} test_m680x.c)
 endif ()
 
-if (CAPSTONE_EVM_SUPPORT)
+if (NOT CAPSTONE_X86_ONLY AND CAPSTONE_EVM_SUPPORT)
     add_definitions(-DCAPSTONE_HAS_EVM)
     set(SOURCES_EVM
         arch/EVM/EVMDisassembler.c
@@ -576,16 +560,7 @@ source_group("Include\\M680X" FILES ${HEADERS_MC680X})
 source_group("Include\\EVM" FILES ${HEADERS_EVM})
 
 ### test library 64bit routine:
-get_property(LIB64 GLOBAL PROPERTY FIND_LIBRARY_USE_LIB64_PATHS)
-
-if (NOT APPLE AND "${LIB64}" STREQUAL "TRUE")
-    set(LIBSUFFIX 64)
-else()
-    set(LIBSUFFIX "")
-endif()
-
-set(INSTALL_LIB_DIR     lib${LIBSUFFIX} CACHE PATH "Installation directory for libraries")
-mark_as_advanced(INSTALL_LIB_DIR)
+include("GNUInstallDirs")
 
 ## installation
 install(FILES ${HEADERS_COMMON} DESTINATION include/capstone)
@@ -594,15 +569,15 @@ configure_file(capstone.pc.in ${CMAKE_BINARY_DIR}/capstone.pc @ONLY)
 if (CAPSTONE_BUILD_STATIC)
     install(TARGETS capstone-static
             RUNTIME DESTINATION bin
-            LIBRARY DESTINATION ${INSTALL_LIB_DIR}
-            ARCHIVE DESTINATION ${INSTALL_LIB_DIR})
+            LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+            ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR})
 endif ()
 
 if (CAPSTONE_BUILD_SHARED)
     install(TARGETS capstone-shared
             RUNTIME DESTINATION bin
-            LIBRARY DESTINATION ${INSTALL_LIB_DIR}
-            ARCHIVE DESTINATION ${INSTALL_LIB_DIR})
+            LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+            ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR})
 endif ()
 
 if (CAPSTONE_BUILD_SHARED AND CAPSTONE_BUILD_CSTOOL)
@@ -611,5 +586,5 @@ add_executable(cstool ${CSTOOL_SRC})
 target_link_libraries(cstool ${default-target})
 
 install(TARGETS cstool DESTINATION bin)
-install(FILES ${CMAKE_BINARY_DIR}/capstone.pc DESTINATION lib/pkgconfig)
+install(FILES ${CMAKE_BINARY_DIR}/capstone.pc DESTINATION ${CMAKE_INSTALL_LIBDIR}/pkgconfig)
 endif ()
