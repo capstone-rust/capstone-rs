@@ -18,6 +18,8 @@ static struct {
 	{ "armbe", CS_ARCH_ARM, CS_MODE_ARM | CS_MODE_BIG_ENDIAN },
 	{ "arml", CS_ARCH_ARM, CS_MODE_ARM | CS_MODE_LITTLE_ENDIAN },
 	{ "armle", CS_ARCH_ARM, CS_MODE_ARM | CS_MODE_LITTLE_ENDIAN },
+	{ "armv8", CS_ARCH_ARM, CS_MODE_ARM | CS_MODE_V8 },
+	{ "thumbv8", CS_ARCH_ARM, CS_MODE_ARM | CS_MODE_THUMB | CS_MODE_V8 },
 	{ "cortexm", CS_ARCH_ARM, CS_MODE_ARM | CS_MODE_THUMB | CS_MODE_MCLASS },
 	{ "thumb", CS_ARCH_ARM, CS_MODE_ARM | CS_MODE_THUMB },
 	{ "thumbbe", CS_ARCH_ARM, CS_MODE_ARM | CS_MODE_THUMB | CS_MODE_BIG_ENDIAN },
@@ -25,6 +27,12 @@ static struct {
 	{ "arm64", CS_ARCH_ARM64, CS_MODE_LITTLE_ENDIAN },
 	{ "arm64be", CS_ARCH_ARM64, CS_MODE_BIG_ENDIAN },
 	{ "mips", CS_ARCH_MIPS, CS_MODE_MIPS32 | CS_MODE_LITTLE_ENDIAN },
+	{ "mipsmicro", CS_ARCH_MIPS, CS_MODE_MIPS32 | CS_MODE_MICRO },
+	{ "mipsbemicro", CS_ARCH_MIPS, CS_MODE_MIPS32 | CS_MODE_MICRO | CS_MODE_BIG_ENDIAN },
+	{ "mipsbe32r6", CS_ARCH_MIPS, CS_MODE_MIPS32R6 | CS_MODE_BIG_ENDIAN},
+	{ "mipsbe32r6micro", CS_ARCH_MIPS, CS_MODE_MIPS32R6 | CS_MODE_BIG_ENDIAN | CS_MODE_MICRO },
+	{ "mips32r6", CS_ARCH_MIPS, CS_MODE_MIPS32R6 },
+	{ "mips32r6micro", CS_ARCH_MIPS, CS_MODE_MIPS32R6 | CS_MODE_MICRO },
 	{ "mipsbe", CS_ARCH_MIPS, CS_MODE_MIPS32 | CS_MODE_BIG_ENDIAN },
 	{ "mips64", CS_ARCH_MIPS, CS_MODE_MIPS64 | CS_MODE_LITTLE_ENDIAN },
 	{ "mips64be", CS_ARCH_MIPS, CS_MODE_MIPS64 | CS_MODE_BIG_ENDIAN },
@@ -37,13 +45,13 @@ static struct {
 	{ "ppc64", CS_ARCH_PPC, CS_MODE_64 | CS_MODE_LITTLE_ENDIAN },
 	{ "ppc64be", CS_ARCH_PPC, CS_MODE_64 | CS_MODE_BIG_ENDIAN },
 	{ "sparc", CS_ARCH_SPARC, CS_MODE_BIG_ENDIAN },
+	{ "sparcv9", CS_ARCH_SPARC, CS_MODE_BIG_ENDIAN | CS_MODE_V9 },
 	{ "systemz", CS_ARCH_SYSZ, CS_MODE_BIG_ENDIAN },
 	{ "sysz", CS_ARCH_SYSZ, CS_MODE_BIG_ENDIAN },
 	{ "s390x", CS_ARCH_SYSZ, CS_MODE_BIG_ENDIAN },
 	{ "xcore", CS_ARCH_XCORE, CS_MODE_BIG_ENDIAN },
 	{ "m68k", CS_ARCH_M68K, CS_MODE_BIG_ENDIAN },
 	{ "m68k40", CS_ARCH_M68K, CS_MODE_M68K_040 },
-	{ "tms320c64x", CS_ARCH_TMS320C64X, CS_MODE_BIG_ENDIAN },
 	{ "tms320c64x", CS_ARCH_TMS320C64X, CS_MODE_BIG_ENDIAN },
 	{ "m6800", CS_ARCH_M680X, CS_MODE_M680X_6800 },
 	{ "m6801", CS_ARCH_M680X, CS_MODE_M680X_6801 },
@@ -133,7 +141,7 @@ static uint8_t *preprocess(char *code, size_t *size)
 static void usage(char *prog)
 {
 	printf("Cstool for Capstone Disassembler Engine v%u.%u.%u\n\n", CS_VERSION_MAJOR, CS_VERSION_MINOR, CS_VERSION_EXTRA);
-	printf("Syntax: %s [-u|-d] <arch+mode> <assembly-hexstring> [start-address-in-hex-format]\n", prog);
+	printf("Syntax: %s [-u|-d|-s|-v] <arch+mode> <assembly-hexstring> [start-address-in-hex-format]\n", prog);
 	printf("\nThe following <arch+mode> options are supported:\n");
 
 	if (cs_support(CS_ARCH_X86)) {
@@ -151,6 +159,8 @@ static void usage(char *prog)
 		printf("        thumb:     thumb mode\n");
 		printf("        thumbbe:   thumb + big endian\n");
 		printf("        cortexm:   thumb + cortex-m extensions\n");
+		printf("        armv8:     arm v8\n");
+		printf("        thumbv8:   thumb v8\n");
 	}
 
 	if (cs_support(CS_ARCH_ARM64)) {
@@ -210,7 +220,9 @@ static void usage(char *prog)
 
 	printf("\nExtra options:\n");
 	printf("        -d show detailed information of the instructions\n");
-	printf("        -u show immediates as unsigned\n\n");
+	printf("        -u show immediates as unsigned\n");
+	printf("        -s decode in SKIPDATA mode\n");
+	printf("        -v show version & Capstone core build info\n\n");
 }
 
 static void print_details(csh handle, cs_arch arch, cs_mode md, cs_insn *ins)
@@ -282,10 +294,14 @@ int main(int argc, char **argv)
 	cs_arch arch = CS_ARCH_ALL;
 	bool detail_flag = false;
 	bool unsigned_flag = false;
+	bool skipdata = false;
 	int args_left;
 
-	while ((c = getopt (argc, argv, "udhv")) != -1) {
+	while ((c = getopt (argc, argv, "sudhv")) != -1) {
 		switch (c) {
+			case 's':
+				skipdata = true;
+				break;
 			case 'u':
 				unsigned_flag = true;
 				break;
@@ -293,7 +309,66 @@ int main(int argc, char **argv)
 				detail_flag = true;
 				break;
 			case 'v':
-				printf("%u.%u.%u\n", CS_VERSION_MAJOR, CS_VERSION_MINOR, CS_VERSION_EXTRA);
+				printf("Cstool for Capstone Disassembler Engine v%u.%u.%u\n", CS_VERSION_MAJOR, CS_VERSION_MINOR, CS_VERSION_EXTRA);
+
+				printf("Capstone build: ");
+				if (cs_support(CS_ARCH_X86)) {
+					printf("x86=1 ");
+				}
+
+				if (cs_support(CS_ARCH_ARM)) {
+					printf("arm=1 ");
+				}
+
+				if (cs_support(CS_ARCH_ARM64)) {
+					printf("arm64=1 ");
+				}
+
+				if (cs_support(CS_ARCH_MIPS)) {
+					printf("mips=1 ");
+				}
+
+				if (cs_support(CS_ARCH_PPC)) {
+					printf("ppc=1 ");
+				}
+
+				if (cs_support(CS_ARCH_SPARC)) {
+					printf("sparc=1 ");
+				}
+
+				if (cs_support(CS_ARCH_SYSZ)) {
+					printf("sysz=1 ");
+				}
+
+				if (cs_support(CS_ARCH_XCORE)) {
+					printf("xcore=1 ");
+				}
+
+				if (cs_support(CS_ARCH_M68K)) {
+					printf("m68k=1 ");
+				}
+
+				if (cs_support(CS_ARCH_TMS320C64X)) {
+					printf("tms320c64x=1 ");
+				}
+
+				if (cs_support(CS_ARCH_M680X)) {
+					printf("m680x=1 ");
+				}
+
+				if (cs_support(CS_ARCH_EVM)) {
+					printf("evm=1 ");
+				}
+
+				if (cs_support(CS_SUPPORT_DIET)) {
+					printf("diet=1 ");
+				}
+
+				if (cs_support(CS_SUPPORT_X86_REDUCE)) {
+					printf("x86_reduce=1 ");
+				}
+
+				printf("\n");
 				return 0;
 			case 'h':
 				usage(argv[0]);
@@ -335,6 +410,10 @@ int main(int argc, char **argv)
 				if (strstr (mode, "att")) {
 					cs_option(handle, CS_OPT_SYNTAX, CS_OPT_SYNTAX_ATT);
 				}
+
+				// turn on SKIPDATA mode
+				if (skipdata)
+					cs_option(handle, CS_OPT_SKIPDATA, CS_OPT_ON);
 			}
 			break;
 		}

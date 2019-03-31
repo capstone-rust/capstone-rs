@@ -16,8 +16,7 @@ Get CMake for free from http://www.cmake.org.
 
 (0) Tailor Capstone to your need.
 
-  Out of 12 archtitectures supported by Capstone (Arm, Arm64, M68K, Mips, PPC,
-  Sparc, SystemZ, X86, XCore, M680X, TMS320C64x & EVM), if you just need several selected archs,
+  Out of archtitectures supported by Capstone, if you just need several selected archs,
   run "cmake" with the unwanted archs disabled (set to 0) as followings.
 
   - CAPSTONE_ARM_SUPPORT: support ARM. Run cmake with -DCAPSTONE_ARM_SUPPORT=0 to remove ARM.
@@ -34,7 +33,7 @@ Get CMake for free from http://www.cmake.org.
   - CAPSTONE_X86_M680X: support M680X. Run cmake with -DCAPSTONE_M680X_SUPPORT=0 to remove M680X.
   - CAPSTONE_X86_EVM: support EVM. Run cmake with -DCAPSTONE_EVM_SUPPORT=0 to remove EVM.
 
-  By default, all 10 architectures are compiled in.
+  By default, all architectures are compiled in.
 
 
   Besides, Capstone also allows some more customization via following macros.

@@ -378,7 +378,9 @@ void ARM_post_printer(csh ud, cs_insn *insn, char *insn_asm, MCInst *mci)
 			case ARM_LDR_POST_IMM:
 			case ARM_LDR_POST_REG:
 			case ARM_STRB_POST_IMM:
+
 			case ARM_STR_POST_IMM:
+			case ARM_STR_POST_REG:
 
 				insn->detail->arm.writeback = true;
 				break;
@@ -1077,6 +1079,8 @@ static void printAddrModeTBH(MCInst *MI, unsigned Op, SStream *O)
 		MI->flat_insn->detail->arm.operands[MI->flat_insn->detail->arm.op_count].mem.index = MCOperand_getReg(MO2);
 	SStream_concat0(O, ", lsl #1]");
 	if (MI->csh->detail) {
+		MI->flat_insn->detail->arm.operands[MI->flat_insn->detail->arm.op_count].shift.type = ARM_SFT_LSL;
+		MI->flat_insn->detail->arm.operands[MI->flat_insn->detail->arm.op_count].shift.value = 1;
 		MI->flat_insn->detail->arm.operands[MI->flat_insn->detail->arm.op_count].mem.lshift = 1;
 	}
 	set_mem_access(MI, false);
