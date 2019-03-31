@@ -789,7 +789,8 @@ pub struct arm_op_mem {
     pub scale: ::std::os::raw::c_int,
     #[doc = "< displacement/offset value"]
     pub disp: ::std::os::raw::c_int,
-    #[doc = "< left-shift on index register, or 0 if irrelevant."]
+    #[doc = " left-shift on index register, or 0 if irrelevant"]
+    #[doc = " NOTE: this value can also be fetched via operand.shift.value"]
     pub lshift: ::std::os::raw::c_int,
 }
 impl Clone for arm_op_mem {
