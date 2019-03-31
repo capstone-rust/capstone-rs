@@ -123,12 +123,11 @@ run_kcov() {
     (
     set -x
     for file in ${TARGET}/${PROFILE}/${PROJECT_NAME}-*[^\.d] ${EXAMPLE_BINS} ; do
-        extra_exe_args=()
         "$KCOV" \
             $COVERALLS_ARG \
             --include-pattern=capstone-rs \
             --exclude-pattern=/.cargo,/usr/lib,/out/capstone.rs,capstone-sys \
-            --verify "${TARGET_COV}" "$file" "${extra_exe_args[@]}"
+            --verify "${TARGET_COV}" "$file"
     done
     )
 }
