@@ -1,7 +1,6 @@
 //! Contains tms320c64x-specific types
 
 pub use arch::arch_builder::tms320c64x::*;
-use arch::DetailsArchInsn;
 use capstone_sys::{
     cs_tms320c64x, cs_tms320c64x_op, tms320c64x_funit, tms320c64x_mem_dir, tms320c64x_mem_disp,
     tms320c64x_mem_mod, tms320c64x_op_mem, tms320c64x_op_type,

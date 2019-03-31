@@ -2,6 +2,7 @@ use super::arch::*;
 use super::*;
 use capstone_sys::cs_group_type;
 use std::collections::HashSet;
+use std::os::raw::c_uint;
 
 const X86_CODE: &'static [u8] = b"\x55\x48\x8b\x05\xb8\x13\x00\x00";
 const ARM_CODE: &'static [u8] = b"\x55\x48\x8b\x05\xb8\x13\x00\x00";
@@ -408,7 +409,13 @@ fn instructions_match_detail<T>(
     let insns: Vec<_> = insns.iter().collect();
 
     // Check number of instructions
-    assert_eq!(insns.len(), info.len());
+    assert_eq!(
+        insns.len(),
+        info.len(),
+        "Number of instructions {} does not match number of provided instruction info structs {}",
+        insns.len(),
+        info.len(),
+    );
 
     for (insn, info) in insns.iter().zip(info) {
         test_instruction_detail_helper(&cs, insn, info, has_default_syntax)
@@ -2424,11 +2431,14 @@ fn test_arch_systemz() {
 }
 
 #[test]
-#[ignore]
 fn test_arch_tms320c64x_detail() {
     use arch::tms320c64x::Tms320c64xOperand::*;
     use arch::tms320c64x::Tms320c64xReg::*;
     use arch::tms320c64x::*;
+    use capstone_sys::tms320c64x_funit::*;
+    use capstone_sys::tms320c64x_mem_dir::*;
+    use capstone_sys::tms320c64x_mem_disp::*;
+    use capstone_sys::tms320c64x_mem_mod::*;
     use capstone_sys::tms320c64x_op_mem;
 
     test_arch_mode_endian_insns_detail(
@@ -2452,7 +2462,109 @@ fn test_arch_tms320c64x_detail() {
                     Reg(RegId(TMS320C64X_REG_A3 as RegIdInt)),
                 ],
             ),
-            // todo(tmfink): add more instructions
+            // [ a1] add.D2    b11, b4, b3     ||
+            DII::new(
+                "[ a1] add.D2",
+                b"\x81\xac\x88\x43",
+                &[
+                    Reg(RegId(TMS320C64X_REG_B11 as RegIdInt)),
+                    Reg(RegId(TMS320C64X_REG_B4 as RegIdInt)),
+                    Reg(RegId(TMS320C64X_REG_B3 as RegIdInt)),
+                ],
+            ),
+            // ldbu.D2T2 *+b15[0x46], b5
+            DII::new(
+                "      ldbu.D2T2",
+                b"\x02\x80\x46\x9e",
+                &[
+                    Mem(Tms320c64xOpMem(tms320c64x_op_mem {
+                        base: TMS320C64X_REG_B15,
+                        disp: 0x46,
+                        unit: TMS320C64X_FUNIT_L as c_uint,
+                        scaled: false as c_uint,
+                        disptype: TMS320C64X_MEM_DISP_CONSTANT as c_uint,
+                        direction: TMS320C64X_MEM_DIR_FW as c_uint,
+                        modify: TMS320C64X_MEM_MOD_NO as c_uint,
+                    })),
+                    Reg(RegId(TMS320C64X_REG_B5 as RegIdInt)),
+                ],
+            ),
+            // NOP
+            DII::new("      NOP", b"\x00\x00\x00\x00", &[]),
+            // ldbu.D1T2 *++a4[1], b5
+            DII::new(
+                "      ldbu.D1T2",
+                b"\x02\x90\x32\x96",
+                &[
+                    Mem(Tms320c64xOpMem(tms320c64x_op_mem {
+                        base: TMS320C64X_REG_A4,
+                        disp: 0x1,
+                        unit: TMS320C64X_FUNIT_L as c_uint,
+                        scaled: true as c_uint,
+                        disptype: TMS320C64X_MEM_DISP_CONSTANT as c_uint,
+                        direction: TMS320C64X_MEM_DIR_FW as c_uint,
+                        modify: TMS320C64X_MEM_MOD_PRE as c_uint,
+                    })),
+                    Reg(RegId(TMS320C64X_REG_B5 as RegIdInt)),
+                ],
+            ),
+            // ldbu.D2T2 *+b15[0x46], b5
+            DII::new(
+                "      ldbu.D2T2",
+                b"\x02\x80\x46\x9e",
+                &[
+                    Mem(Tms320c64xOpMem(tms320c64x_op_mem {
+                        base: TMS320C64X_REG_B15,
+                        disp: 0x46,
+                        unit: TMS320C64X_FUNIT_L as c_uint,
+                        scaled: false as c_uint,
+                        disptype: TMS320C64X_MEM_DISP_CONSTANT as c_uint,
+                        direction: TMS320C64X_MEM_DIR_FW as c_uint,
+                        modify: TMS320C64X_MEM_MOD_NO as c_uint,
+                    })),
+                    Reg(RegId(TMS320C64X_REG_B5 as RegIdInt)),
+                ],
+            ),
+            // lddw.D1T2 *+a15[4], b11:b10
+            DII::new(
+                "      lddw.D1T2",
+                b"\x05\x3c\x83\xe6",
+                &[
+                    Mem(Tms320c64xOpMem(tms320c64x_op_mem {
+                        base: TMS320C64X_REG_A15,
+                        disp: 0x4,
+                        unit: TMS320C64X_FUNIT_L as c_uint,
+                        scaled: true as c_uint,
+                        disptype: TMS320C64X_MEM_DISP_CONSTANT as c_uint,
+                        direction: TMS320C64X_MEM_DIR_FW as c_uint,
+                        modify: TMS320C64X_MEM_MOD_NO as c_uint,
+                    })),
+                    RegPair(
+                        RegId(TMS320C64X_REG_B11 as RegIdInt),
+                        RegId(TMS320C64X_REG_B10 as RegIdInt),
+                    ),
+                ],
+            ),
+            // ldndw.D1T1        *+a3(a4), a23:a22
+            DII::new(
+                "      ldndw.D1T1",
+                b"\x0b\x0c\x8b\x24",
+                &[
+                    Mem(Tms320c64xOpMem(tms320c64x_op_mem {
+                        base: TMS320C64X_REG_A3,
+                        disp: TMS320C64X_REG_A4 as c_uint,
+                        unit: TMS320C64X_FUNIT_D as c_uint,
+                        scaled: false as c_uint,
+                        disptype: TMS320C64X_MEM_DISP_REGISTER as c_uint,
+                        direction: TMS320C64X_MEM_DIR_FW as c_uint,
+                        modify: TMS320C64X_MEM_MOD_NO as c_uint,
+                    })),
+                    RegPair(
+                        RegId(TMS320C64X_REG_A23 as RegIdInt),
+                        RegId(TMS320C64X_REG_A22 as RegIdInt),
+                    ),
+                ],
+            ),
         ],
     );
 }
