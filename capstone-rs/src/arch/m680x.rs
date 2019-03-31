@@ -17,7 +17,23 @@ pub use capstone_sys::m680x_reg as M680xReg;
 pub struct M680xInsnDetail<'a>(pub(crate) &'a cs_m680x);
 
 impl_PartialEq_repr_fields!(M680xInsnDetail<'a> [ 'a ];
-    operands
+    operands, flags
+);
+
+// M680X instruction flags
+const M680X_FIRST_OP_IN_MNEM: u8 = 1;
+const M680X_SECOND_OP_IN_MNEM: u8 = 2;
+
+define_impl_bitmask!(
+    impl M680xInsnDetail<'a>;
+    flags: u8 = { |self_: &M680xInsnDetail| self_.0.flags }
+    test_mod = test_M680xInsnDetail;
+
+    /// The first (register) operand is part of the instruction mnemonic
+    => is_first_op_in_mnem = M680X_FIRST_OP_IN_MNEM;
+
+    /// The second (register) operand is part of the instruction mnemonic
+    => is_second_op_in_mnem = M680X_SECOND_OP_IN_MNEM;
 );
 
 /// Instruction's operand referring to indexed addressing
@@ -45,12 +61,6 @@ macro_rules! define_m680x_register_option_getter {
         }
     }
 }
-
-// Comes from M680X_IDX_* #defines
-
-const M680X_IDX_INDIRECT: u8 = 1;
-const M680X_IDX_NO_COMMA: u8 = 2;
-const M680X_IDX_POST_INC_DEC: u8 = 4;
 
 impl M680xOpIdx {
     fn new(op_idx: &m680x_op_idx) -> Self {
@@ -95,34 +105,27 @@ impl M680xOpIdx {
     pub fn inc_dec(&self) -> i8 {
         self.0.inc_dec
     }
-
-    /// Flags
-    #[inline]
-    fn flags(&self) -> u8 {
-        self.0.flags
-    }
-
-    /// Determine if flag is set
-    #[inline]
-    fn flag_get(&self, flag_mask: u8) -> bool {
-        (self.flags() & flag_mask) != 0
-    }
-
-    /// Is index indirect?
-    pub fn is_indirect(&self) -> bool {
-        self.flag_get(M680X_IDX_INDIRECT)
-    }
-
-    /// Is index indirect?
-    pub fn is_no_comma(&self) -> bool {
-        self.flag_get(M680X_IDX_NO_COMMA)
-    }
-
-    /// Is index indirect?
-    pub fn is_post_inc_dec(&self) -> bool {
-        self.flag_get(M680X_IDX_POST_INC_DEC)
-    }
 }
+
+// Comes from M680X_IDX_* #defines
+const M680X_IDX_INDIRECT: u8 = 1;
+const M680X_IDX_NO_COMMA: u8 = 2;
+const M680X_IDX_POST_INC_DEC: u8 = 4;
+
+define_impl_bitmask!(
+    impl M680xOpIdx<>;
+    flags: u8 = { |self_: &M680xOpIdx| self_.0.flags }
+    test_mod = test_M680xOpIdx;
+
+    /// Is index indirect?
+    => is_indirect = M680X_IDX_INDIRECT;
+
+    /// Is there no comma?
+    => is_no_comma = M680X_IDX_NO_COMMA;
+
+    /// Is index indirect?
+    => is_post_inc_dec = M680X_IDX_POST_INC_DEC;
+);
 
 /// M680X operand
 #[derive(Clone, Debug, Eq, PartialEq)]

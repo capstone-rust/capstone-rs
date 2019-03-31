@@ -146,6 +146,49 @@ macro_rules! define_cs_enum_wrapper_reverse {
     }
 }
 
+/// Defines getters for a bitmask
+///
+/// mask_constants must be unsigned integers with exactly one bit set to 1
+#[macro_export]
+macro_rules! define_impl_bitmask {
+    (
+        impl $struct:ident < $($impl_lifetime:lifetime),* > ;
+        $mask_getter:ident : $mask_getter_ty:ty = { $get_mask:expr }
+        test_mod = $test_mod:ident;
+        $(
+            $( #[$attr:meta] )*
+            => $getter:ident = $mask_constant:ident;
+        )*
+    ) => {
+        impl < $($impl_lifetime),* > $struct < $($impl_lifetime),* > {
+            /// Raw mask from Capstone
+            pub(crate) fn $mask_getter(&self) -> $mask_getter_ty {
+                $get_mask(self)
+            }
+
+            $(
+                $( #[$attr] )*
+                pub fn $getter(&self) -> bool {
+                    ($get_mask(self) & $mask_constant) != 0
+                }
+            )*
+        }
+
+        /// Test that masks have exactly one 1 bit set
+        #[cfg(test)]
+        mod $test_mod {
+            use super::*;
+
+            $(
+                #[test]
+                fn $getter() {
+                    assert_eq!($mask_constant.count_ones(), 1);
+                }
+            )*
+        }
+    }
+}
+
 define_cs_enum_wrapper!(
     [
         /// Architectures for the disassembler
