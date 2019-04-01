@@ -317,6 +317,8 @@ define_cs_enum_wrapper!(
     => Intel = CS_OPT_SYNTAX_INTEL;
     /// AT&T syntax (also known as GNU assembler/GAS syntax)
     => Att = CS_OPT_SYNTAX_ATT;
+    /// MASM syntax
+    => Masm = CS_OPT_SYNTAX_MASM;
     /// No register name
     => NoRegName = CS_OPT_SYNTAX_NOREGNAME;
 );
