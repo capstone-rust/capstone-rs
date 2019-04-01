@@ -670,6 +670,10 @@ fn test_syntax() {
 
     cs.set_syntax(Syntax::Att).unwrap();
     instructions_match_group(&mut cs, &expected_insns_att, false);
+
+    // In this case, MASM and Intel syntaxes match
+    cs.set_syntax(Syntax::Masm).unwrap();
+    instructions_match_group(&mut cs, &expected_insns_intel, false);
 }
 
 // @todo(tmfink) test invalid syntax once we check for invalid options
@@ -680,6 +684,7 @@ fn test_invalid_syntax() {
     let syntaxes = [
         // Syntax::Intel,
         // Syntax::Att,
+        // Syntax::Masm,
         // Syntax::NoRegName,
     ];
 

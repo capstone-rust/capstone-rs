@@ -319,6 +319,7 @@ macro_rules! arch_info_base {
                 ( syntax:
                     Intel,
                     Att,
+                    Masm,
                     )
                 ( both_endian: false )
             ]

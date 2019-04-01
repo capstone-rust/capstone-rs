@@ -70,6 +70,8 @@ capstone_error_def!(
     => UnsupportedX86Att = CS_ERR_X86_ATT;
     /// X86 Intel syntax is unsupported (opt-out at compile time)
     => UnsupportedX86Intel = CS_ERR_X86_INTEL;
+    /// X86 MASM syntax is unsupported (opt-out at compile time)
+    => UnsupportedX86Masm = CS_ERR_X86_MASM;
 );
 
 #[must_use]
@@ -101,6 +103,7 @@ impl error::Error for Error {
             }
             UnsupportedX86Att => "X86 AT&T syntax is unsupported (opt-out at compile time)",
             UnsupportedX86Intel => "X86 Intel syntax is unsupported (opt-out at compile time)",
+            UnsupportedX86Masm => "X86 MASM syntax is unsupported (opt-out at compile time)",
             UnknownCapstoneError => "Encountered Unknown Capstone Return Error",
             InvalidM68kBitfieldRegister => {
                 "Invalid M68K Register, must be in d0-d7, a0-a7, fp0-fp7"
