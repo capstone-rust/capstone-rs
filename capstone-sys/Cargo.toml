@@ -11,7 +11,7 @@ license = "MIT"
 readme = "README.md"
 repository = "https://github.com/capstone-rust/capstone-sys"
 
-exclude = [ "capstone/docs/**", "capstone/xcode/**" ]
+exclude = [ "capstone/docs/**", "capstone/xcode/**", "capstone/msvc/**" ]
 
 [badges]
 travis-ci = { repository = "capstone-rust/capstone-sys" }
