@@ -11,15 +11,16 @@ extract_toml_value() {
 }
 
 PACKAGE_NAME="$(extract_toml_value name)"
-PACKAGE_VERSION="$(extract_toml_value version)"
+PACKAGE_VERSION="${PACKAGE_VERSION:-$(extract_toml_value version)}"
 DESCRIPTION="${PACKAGE_NAME} v${PACKAGE_VERSION}"
 TAG_NAME="${PACKAGE_NAME}-v${PACKAGE_VERSION}"
+GIT_COMMIT="${GIT_COMMIT:-$(git rev-parse HEAD)}"
 
-echo "Last commit:"
-git log -n1 | cat
+echo "Commit log:"
+git log -1 $GIT_COMMIT | cat
 
 echo
-echo -n "Create git tag: TAG_NAME=\"$TAG_NAME\" DESCRIPTION=\"$DESCRIPTION\"? (y/N) "
+echo -n "Create git tag: TAG_NAME=\"$TAG_NAME\" DESCRIPTION=\"$DESCRIPTION\" at $GIT_COMMIT? (y/N) "
 
 read -r answer
 case "$answer" in
@@ -31,7 +32,7 @@ case "$answer" in
 esac
 
 set -x
-git tag -s -m "${DESCRIPTION}" "${TAG_NAME}"
+git tag -s -m "${DESCRIPTION}" "${TAG_NAME}" "${GIT_COMMIT}"
 set +x
 
 echo
