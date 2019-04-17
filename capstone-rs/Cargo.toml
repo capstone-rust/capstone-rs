@@ -2,19 +2,19 @@
 authors = ["m4b <m4b.github.io@gmail.com>",
            "Richo Healey <richo@psych0tik.net>",
            "Travis Finkenauer <tmfinken@gmail.com>"]
-description = "High level bindings to capstone disassembly engine (http://capstone-engine.org/)"
+description = "High level bindings to capstone disassembly engine (https://capstone-engine.org/)"
 keywords = ["disassemble"]
 license = "MIT"
 name = "capstone"
 repository = "https://github.com/capstone-rust/capstone-rs"
 readme = "README.md"
-version = "0.5.0"
+version = "0.6.0"
 
 [badges]
 travis-ci = { repository = "capstone-rust/capstone-rs" }
 
 [dependencies]
-capstone-sys = { path = "../capstone-sys" }
+capstone-sys = { path = "../capstone-sys", version = "0.10.0" }
 
 [dev-dependencies]
 macho = "0.*"
