@@ -158,6 +158,8 @@ fn write_bindgen_bindings(
 ) {
     let mut builder = bindgen::Builder::default()
         .rust_target(bindgen::RustTarget::Stable_1_19)
+        .use_core()
+        .ctypes_prefix("libc")
         .header(
             find_capstone_header(header_search_paths, "capstone.h")
                 .expect("Could not find header")
