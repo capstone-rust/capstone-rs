@@ -4,8 +4,8 @@ pub use arch::arch_builder::x86::*;
 use arch::DetailsArchInsn;
 use capstone_sys::{x86_op_mem, x86_op_type, cs_x86, cs_x86_op};
 use instruction::{RegId, RegIdInt};
-use std::convert::From;
-use std::{cmp, fmt, slice};
+use core::convert::From;
+use core::{cmp, fmt, slice};
 
 pub use capstone_sys::x86_insn_group as X86InsnGroup;
 pub use capstone_sys::x86_insn as X86Insn;

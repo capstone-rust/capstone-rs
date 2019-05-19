@@ -4,9 +4,9 @@ pub use arch::arch_builder::arm::*;
 use arch::DetailsArchInsn;
 use capstone_sys::{arm_op_mem, arm_op_type, cs_arm, cs_arm_op};
 use instruction::{RegId, RegIdInt};
-use std::convert::From;
-use std::os::raw::c_uint;
-use std::{cmp, fmt, slice};
+use core::convert::From;
+use core::{cmp, fmt, slice};
+use libc::c_uint;
 
 pub use capstone_sys::arm_insn_group as ArmInsnGroup;
 pub use capstone_sys::arm_insn as ArmInsn;
@@ -292,7 +292,7 @@ mod test {
     fn test_armshift() {
         use super::arm_shifter::*;
         use super::ArmShift::*;
-        use std::os::raw::c_uint;
+        use libc::c_uint;
 
         fn t(shift_type_value: (arm_shifter, c_uint), arm_shift: ArmShift) {
             let (shift_type, value) = shift_type_value;

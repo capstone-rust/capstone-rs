@@ -4,8 +4,8 @@ pub use arch::arch_builder::sparc::*;
 use arch::DetailsArchInsn;
 use capstone_sys::{cs_sparc, cs_sparc_op, sparc_op_mem, sparc_op_type};
 use instruction::{RegId, RegIdInt};
-use std::convert::From;
-use std::{cmp, fmt, slice};
+use core::convert::From;
+use core::{cmp, fmt, slice};
 
 // XXX todo(tmfink): create rusty versions
 pub use capstone_sys::sparc_insn_group as SparcInsnGroup;

@@ -3,7 +3,7 @@
 pub use arch::arch_builder::evm::*;
 use arch::DetailsArchInsn;
 use capstone_sys::cs_evm;
-use std::fmt;
+use core::fmt;
 
 // XXX todo(tmfink): create rusty versions
 pub use capstone_sys::evm_insn_group as EvmInsnGroup;
@@ -77,13 +77,13 @@ impl PartialEq for EvmOperandIterator {
 }
 
 impl fmt::Debug for EvmOperandIterator {
-    fn fmt(&self, fmt: &mut fmt::Formatter) -> ::std::fmt::Result {
+    fn fmt(&self, fmt: &mut fmt::Formatter) -> ::core::fmt::Result {
         fmt.debug_struct("EvmOperandIterator").finish()
     }
 }
 
 impl<'a> fmt::Debug for EvmInsnDetail<'a> {
-    fn fmt(&self, fmt: &mut fmt::Formatter) -> ::std::fmt::Result {
+    fn fmt(&self, fmt: &mut fmt::Formatter) -> ::core::fmt::Result {
         fmt.debug_struct("EvmInsnDetail")
             .field("cs_evm", &(self.0 as *const cs_evm))
             .finish()

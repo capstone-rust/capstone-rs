@@ -1,11 +1,12 @@
 //! Contains mips-specific types
 
+use core::convert::From;
+use core::{cmp, fmt, slice};
+
 pub use arch::arch_builder::mips::*;
 use arch::DetailsArchInsn;
 use capstone_sys::{cs_mips, cs_mips_op, mips_op_mem, mips_op_type};
 use instruction::{RegId, RegIdInt};
-use std::convert::From;
-use std::{cmp, fmt, slice};
 
 // XXX todo(tmfink): create rusty versions
 pub use capstone_sys::mips_insn_group as MipsInsnGroup;

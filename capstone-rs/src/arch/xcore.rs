@@ -4,8 +4,8 @@ pub use arch::arch_builder::xcore::*;
 use arch::DetailsArchInsn;
 use capstone_sys::{cs_xcore, cs_xcore_op, xcore_op_mem, xcore_op_type};
 use instruction::{RegId, RegIdInt};
-use std::convert::From;
-use std::{cmp, fmt, slice};
+use core::convert::From;
+use core::{cmp, fmt, slice};
 
 // XXX todo(tmfink): create rusty versions
 pub use capstone_sys::xcore_insn_group as XcoreInsnGroup;

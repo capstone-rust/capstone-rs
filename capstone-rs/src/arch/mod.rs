@@ -2,9 +2,9 @@
 
 use capstone::Capstone;
 use constants::Endian;
+use core::fmt::Debug;
+use core::marker::PhantomData;
 use error::CsResult;
-use std::fmt::Debug;
-use std::marker::PhantomData;
 
 macro_rules! define_subset_enum {
     ( [
@@ -402,7 +402,7 @@ macro_rules! impl_PartialEq_repr_fields {
         $name:ty [ $( $lifetime:tt ),* ];
         $( $field:ident),*
     ) => {
-        impl<$( $lifetime ),*> ::std::cmp::PartialEq for $name {
+        impl<$( $lifetime ),*> ::core::cmp::PartialEq for $name {
             fn eq(&self, other: &Self) -> bool {
                 $(
                     if self.$field() != other.$field() {
@@ -625,14 +625,14 @@ macro_rules! def_arch_details_struct {
             }
         }
 
-        impl<'a> ::std::fmt::Debug for $OperandIteratorLife {
-            fn fmt(&self, fmt: &mut fmt::Formatter) -> ::std::fmt::Result {
+        impl<'a> ::core::fmt::Debug for $OperandIteratorLife {
+            fn fmt(&self, fmt: &mut fmt::Formatter) -> ::core::fmt::Result {
                 fmt.debug_struct(stringify!($OperandIterator)).finish()
             }
         }
 
-        impl<'a> ::std::fmt::Debug for $InsnDetail<'a> {
-            fn fmt(&self, fmt: &mut fmt::Formatter) -> ::std::fmt::Result {
+        impl<'a> ::core::fmt::Debug for $InsnDetail<'a> {
+            fn fmt(&self, fmt: &mut fmt::Formatter) -> ::core::fmt::Result {
                 fmt.debug_struct(stringify!($InsnDetail))
                     .field(stringify!($cs_arch), &(self.0 as *const $cs_arch))
                     .finish()

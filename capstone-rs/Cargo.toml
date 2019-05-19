@@ -15,6 +15,7 @@ travis-ci = { repository = "capstone-rust/capstone-rs" }
 
 [dependencies]
 capstone-sys = { path = "../capstone-sys", version = "0.10.0" }
+libc = { version = "0.2", default-features = false }
 
 [dev-dependencies]
 macho = "0.*"
@@ -34,5 +35,5 @@ harness = false
 [features]
 default = []
 
-use_bindgen = ["capstone-sys/use_bindgen"]
 alloc_system = []
+use_bindgen = ["capstone-sys/use_bindgen"]

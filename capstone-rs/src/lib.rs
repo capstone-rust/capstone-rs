@@ -122,6 +122,8 @@
 //!
 
 extern crate capstone_sys;
+extern crate core;
+extern crate libc;
 
 // Define first so macros are available
 #[macro_use]
