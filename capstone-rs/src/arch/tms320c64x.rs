@@ -6,9 +6,9 @@ use capstone_sys::{
     tms320c64x_mem_mod, tms320c64x_op_mem, tms320c64x_op_type,
 };
 use instruction::{RegId, RegIdInt};
-use std::convert::From;
-use std::{cmp, fmt, slice};
-use std::os::raw::c_int;
+use libc::c_int;
+use core::convert::From;
+use core::{cmp, fmt, slice};
 
 // XXX todo(tmfink): create rusty versions
 pub use capstone_sys::tms320c64x_insn as Tms320c64xInsn;
@@ -253,7 +253,7 @@ def_arch_details_struct!(
 mod test {
     use super::*;
     use capstone_sys::*;
-    use std::os::raw::{c_int, c_uint};
+    use libc::{c_int, c_uint};
 
     const OP_MEM_ZERO: tms320c64x_op_mem = tms320c64x_op_mem {
         base: 0,

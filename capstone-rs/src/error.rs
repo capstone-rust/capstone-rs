@@ -3,9 +3,9 @@
 use capstone_sys;
 use capstone_sys::cs_err::*;
 
+use core::fmt;
+use core::result;
 use std::error;
-use std::fmt;
-use std::result;
 
 /// Create `RustFeatures` struct definition, `new()`, and a getter for each field
 macro_rules! capstone_error_def {

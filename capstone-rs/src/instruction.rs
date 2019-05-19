@@ -1,11 +1,12 @@
+use core::fmt::{self, Debug, Display, Error, Formatter};
+use core::marker::PhantomData;
+use core::slice;
+use core::str;
+use std::ffi::CStr;
+
 use arch::ArchDetail;
 use capstone_sys::*;
 use constants::Arch;
-use std::ffi::CStr;
-use std::fmt::{self, Debug, Display, Error, Formatter};
-use std::marker::PhantomData;
-use std::slice;
-use std::str;
 
 /// Representation of the array of instructions returned by disasm
 #[derive(Debug)]

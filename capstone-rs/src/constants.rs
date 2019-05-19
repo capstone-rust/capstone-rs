@@ -1,9 +1,9 @@
 use capstone_sys::cs_arch::*;
 use capstone_sys::cs_opt_value::*;
 use capstone_sys::*;
-use std::convert::From;
-use std::fmt::{self, Display};
-use std::str::FromStr;
+use core::convert::From;
+use core::fmt::{self, Display};
+use core::str::FromStr;
 
 /// A C-like enum can list its variants
 pub trait EnumList
@@ -53,7 +53,7 @@ macro_rules! define_cs_enum_wrapper {
             => $rust_variant = $cs_variant; )*
         );
 
-        impl ::std::convert::From<$rust_enum> for $cs_enum {
+        impl ::core::convert::From<$rust_enum> for $cs_enum {
             fn from(other: $rust_enum) -> Self {
                 match other {
                     $(
@@ -121,7 +121,7 @@ macro_rules! define_cs_enum_wrapper_reverse {
             => $rust_variant = $cs_variant; )*
         );
 
-        impl ::std::convert::From<$cs_enum> for $rust_enum {
+        impl ::core::convert::From<$cs_enum> for $rust_enum {
             fn from(other: $cs_enum) -> Self {
                 match other {
                     $(

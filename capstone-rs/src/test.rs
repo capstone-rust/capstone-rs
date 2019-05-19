@@ -1,8 +1,10 @@
+use std::collections::HashSet;
+
+use capstone_sys::cs_group_type;
+use libc::c_uint;
+
 use super::arch::*;
 use super::*;
-use capstone_sys::cs_group_type;
-use std::collections::HashSet;
-use std::os::raw::c_uint;
 
 const X86_CODE: &'static [u8] = b"\x55\x48\x8b\x05\xb8\x13\x00\x00";
 const ARM_CODE: &'static [u8] = b"\x55\x48\x8b\x05\xb8\x13\x00\x00";

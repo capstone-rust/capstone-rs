@@ -2,13 +2,13 @@ use arch::CapstoneBuilder;
 use capstone_sys::cs_opt_value::*;
 use capstone_sys::*;
 use constants::{Arch, Endian, ExtraMode, Mode, OptValue, Syntax};
+use core::convert::From;
+use core::marker::PhantomData;
+use core::mem;
 use error::*;
 use instruction::{Insn, InsnDetail, InsnGroupId, InsnId, Instructions, RegId};
-use std::convert::From;
+use libc::{c_int, c_uint, c_void};
 use std::ffi::CStr;
-use std::marker::PhantomData;
-use std::mem;
-use std::os::raw::{c_int, c_uint, c_void};
 
 /// An instance of the capstone disassembler
 #[derive(Debug)]

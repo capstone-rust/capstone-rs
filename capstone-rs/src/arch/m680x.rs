@@ -6,8 +6,8 @@ use capstone_sys::{
     cs_m680x, cs_m680x_op, m680x_op_ext, m680x_op_idx, m680x_op_rel, m680x_op_type,
 };
 use instruction::{RegId, RegIdInt};
-use std::convert::From;
-use std::{fmt, slice};
+use core::convert::From;
+use core::{fmt, slice};
 
 // XXX todo(tmfink): create rusty versions
 pub use capstone_sys::m680x_insn as M680xInsn;

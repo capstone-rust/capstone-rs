@@ -4,9 +4,9 @@ pub use arch::arch_builder::arm64::*;
 use arch::DetailsArchInsn;
 use capstone_sys::{arm64_op_mem, arm64_op_type, cs_arm64, cs_arm64_op};
 use instruction::{RegId, RegIdInt};
-use std::convert::From;
-use std::os::raw::c_uint;
-use std::{cmp, fmt, mem, slice};
+use core::convert::From;
+use core::{cmp, fmt, mem, slice};
+use libc::c_uint;
 
 // Re-exports
 pub use capstone_sys::arm64_insn_group as Arm64InsnGroup;
@@ -268,7 +268,7 @@ mod test {
     fn test_arm64shift() {
         use super::arm64_shifter::*;
         use super::Arm64Shift::*;
-        use std::os::raw::c_uint;
+        use libc::c_uint;
 
         fn t(shift_type_value: (arm64_shifter, c_uint), arm64_shift: Arm64Shift) {
             let (shift_type, value) = shift_type_value;

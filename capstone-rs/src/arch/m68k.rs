@@ -1,5 +1,8 @@
 //! Contains m68k-specific types
 
+use core::convert::From;
+use core::{cmp, fmt, slice};
+
 pub use arch::arch_builder::m68k::*;
 use arch::DetailsArchInsn;
 use capstone_sys::{
@@ -9,8 +12,6 @@ use capstone_sys::{
 use Error;
 use instruction::{RegId, RegIdInt};
 use prelude::*;
-use std::convert::From;
-use std::{cmp, fmt, slice};
 
 // XXX todo(tmfink): fix racy initialization in Castone C library M68k
 
