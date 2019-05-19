@@ -41,8 +41,11 @@
 #![allow(non_camel_case_types)]
 #![allow(non_snake_case)]
 #![allow(improper_ctypes)]
+#![no_std]
 
-use std::os::raw::c_int;
+extern crate libc;
+
+use libc::c_int;
 
 // Bindings should be copied here
 include!(concat!(env!("OUT_DIR"), "/capstone.rs"));
