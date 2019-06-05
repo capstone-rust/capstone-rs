@@ -121,8 +121,34 @@
 //! [upstream]: http://capstone-engine.org/
 //!
 
+#![cfg_attr(not(feature = "std"), feature(alloc), no_std)]
+
+#[macro_use]
+extern crate cfg_if;
+
+cfg_if! {
+    if #[cfg(feature = "std")] {
+        // core crate is auto-imported given no_std
+        extern crate core;
+    } else {
+        #[macro_use] extern crate alloc;
+
+        /// Do nothing for println when no_std
+        #[cfg(test)]
+        macro_rules! println {
+            ( $( $ignore:expr ),* ) => {
+                $({
+                    let _ = $ignore;
+                })*
+            }
+        }
+    }
+}
+
+#[cfg(all(not(feature = "std"), test))]
+extern crate std;
+
 extern crate capstone_sys;
-extern crate core;
 extern crate libc;
 
 // Define first so macros are available
@@ -132,6 +158,7 @@ mod constants;
 pub mod arch;
 mod capstone;
 mod error;
+mod ffi;
 mod instruction;
 
 #[cfg(test)]

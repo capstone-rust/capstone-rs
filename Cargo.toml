@@ -3,4 +3,5 @@
 members = [
     "capstone-rs",
     "capstone-sys",
+    "cstool",
 ]

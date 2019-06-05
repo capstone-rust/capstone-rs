@@ -1,3 +1,14 @@
+cfg_if! {
+    if #[cfg(not(feature = "std"))] {
+        extern crate std;
+
+        use alloc::vec::Vec;
+        use alloc::string::String;
+        use std::prelude::v1::*;
+
+    }
+}
+
 use std::collections::HashSet;
 
 use capstone_sys::cs_group_type;

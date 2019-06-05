@@ -2,6 +2,10 @@ extern crate capstone;
 
 extern crate clap;
 
+#[cfg(feature = "std")]
+#[macro_use]
+extern crate std;
+
 #[macro_use]
 extern crate log;
 
@@ -106,7 +110,7 @@ fn disasm<T: Iterator<Item = ExtraMode>>(
     for i in cs.disasm_all(code, addr).expect_exit().iter() {
         let bytes: Vec<_> = i.bytes().iter().map(|x| format!("{:02x}", x)).collect();
         let bytes = bytes.join(" ");
-        writeln!(
+        let _ = writeln!(
             &mut handle,
             "{:-10x}:  {:35} {:7} {}",
             i.address(),
@@ -127,7 +131,7 @@ fn disasm<T: Iterator<Item = ExtraMode>>(
             ];
 
             for &(ref name, ref message) in output.iter() {
-                writeln!(&mut handle, "{:13}{:12} {}", "", name, message).is_ok();
+                let _ = writeln!(&mut handle, "{:13}{:12} {}", "", name, message).is_ok();
             }
         }
     }

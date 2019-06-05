@@ -5,7 +5,6 @@ use capstone_sys::cs_err::*;
 
 use core::fmt;
 use core::result;
-use std::error;
 
 /// Create `RustFeatures` struct definition, `new()`, and a getter for each field
 macro_rules! capstone_error_def {
@@ -79,12 +78,11 @@ pub type CsResult<T> = result::Result<T, Error>;
 
 impl fmt::Display for Error {
     fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result {
-        use std::error::Error;
         write!(fmt, "{}", self.description())
     }
 }
 
-impl error::Error for Error {
+impl Error {
     fn description(&self) -> &str {
         use self::Error::*;
         match *self {
@@ -110,10 +108,6 @@ impl error::Error for Error {
             }
             CustomError(msg) => msg,
         }
-    }
-
-    fn cause(&self) -> Option<&error::Error> {
-        None
     }
 }
 

@@ -6,6 +6,9 @@ use core::fmt::Debug;
 use core::marker::PhantomData;
 use error::CsResult;
 
+#[cfg(not(feature = "std"))]
+use alloc::vec::Vec;
+
 macro_rules! define_subset_enum {
     ( [
         $subset_enum:ident = $base_enum:ident
@@ -86,6 +89,9 @@ macro_rules! define_arch_builder {
                 use capstone::Capstone;
                 use constants::{Arch, Endian, ExtraMode, Mode, Syntax};
                 use error::{CsResult, Error};
+
+                #[cfg(not(feature = "std"))]
+                use alloc::vec::Vec;
 
                 define_arch_builder!( @syntax ( $( $syntax, )* ) );
                 define_arch_builder!( @endian ( $( $endian )* ) );
