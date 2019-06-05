@@ -1,3 +1,6 @@
+#[cfg(not(feature = "std"))]
+extern crate alloc;
+
 use arch::CapstoneBuilder;
 use capstone_sys::cs_opt_value::*;
 use capstone_sys::*;
@@ -6,9 +9,12 @@ use core::convert::From;
 use core::marker::PhantomData;
 use core::mem;
 use error::*;
+use ffi::str_from_cstr_ptr;
 use instruction::{Insn, InsnDetail, InsnGroupId, InsnId, Instructions, RegId};
 use libc::{c_int, c_uint, c_void};
-use std::ffi::CStr;
+
+#[cfg(not(feature = "std"))]
+use alloc::string::{String, ToString};
 
 /// An instance of the capstone disassembler
 #[derive(Debug)]
@@ -327,11 +333,7 @@ impl Capstone {
     pub fn reg_name(&self, reg_id: RegId) -> Option<String> {
         let reg_name = unsafe {
             let _reg_name = cs_reg_name(self.csh(), c_uint::from(reg_id.0));
-            if _reg_name.is_null() {
-                return None;
-            }
-
-            CStr::from_ptr(_reg_name).to_string_lossy().into_owned()
+            str_from_cstr_ptr(_reg_name)?.to_string()
         };
 
         Some(reg_name)
@@ -343,10 +345,7 @@ impl Capstone {
     pub fn insn_name(&self, insn_id: InsnId) -> Option<String> {
         let insn_name = unsafe {
             let _insn_name = cs_insn_name(self.csh(), insn_id.0 as c_uint);
-            if _insn_name.is_null() {
-                return None;
-            }
-            CStr::from_ptr(_insn_name).to_string_lossy().into_owned()
+            str_from_cstr_ptr(_insn_name)?.to_string()
         };
 
         Some(insn_name)
@@ -356,11 +355,7 @@ impl Capstone {
     pub fn group_name(&self, group_id: InsnGroupId) -> Option<String> {
         let group_name = unsafe {
             let _group_name = cs_group_name(self.csh(), c_uint::from(group_id.0));
-            if _group_name.is_null() {
-                return None;
-            }
-
-            CStr::from_ptr(_group_name).to_string_lossy().into_owned()
+            str_from_cstr_ptr(_group_name)?.to_string()
         };
 
         Some(group_name)

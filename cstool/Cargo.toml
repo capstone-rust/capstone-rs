@@ -1,0 +1,15 @@
+[package]
+name = "cstool"
+version = "0.1.0"
+authors = ["Travis Finkenauer <tmfinken@gmail.com>"]
+license = "MIT"
+
+[dependencies]
+capstone = { path = "../capstone-rs", version = "0.6.0" }
+log = "0.4"
+stderrlog = "0.4"
+
+[dependencies.clap]
+version = "~2.32"
+default-features = false
+features = []

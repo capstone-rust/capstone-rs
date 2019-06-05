@@ -2,11 +2,11 @@ use core::fmt::{self, Debug, Display, Error, Formatter};
 use core::marker::PhantomData;
 use core::slice;
 use core::str;
-use std::ffi::CStr;
 
 use arch::ArchDetail;
 use capstone_sys::*;
 use constants::Arch;
+use ffi::str_from_cstr_ptr;
 
 /// Representation of the array of instructions returned by disasm
 #[derive(Debug)]
@@ -147,14 +147,12 @@ pub struct InsnDetail<'a>(pub(crate) &'a cs_detail, pub(crate) Arch);
 impl<'a> Insn<'a> {
     /// The mnemonic for the instruction
     pub fn mnemonic(&self) -> Option<&str> {
-        let cstr = unsafe { CStr::from_ptr(self.insn.mnemonic.as_ptr()) };
-        str::from_utf8(cstr.to_bytes()).ok()
+        unsafe { str_from_cstr_ptr(self.insn.mnemonic.as_ptr()) }
     }
 
     /// The operand string associated with the instruction
     pub fn op_str(&self) -> Option<&str> {
-        let cstr = unsafe { CStr::from_ptr(self.insn.op_str.as_ptr()) };
-        str::from_utf8(cstr.to_bytes()).ok()
+        unsafe { str_from_cstr_ptr(self.insn.op_str.as_ptr()) }
     }
 
     /// Access instruction id

@@ -469,6 +469,15 @@ mod test {
     use capstone_sys::m68k_reg::*;
     use instruction::*;
 
+    cfg_if! {
+        if #[cfg(not(feature = "std"))] {
+            extern crate std;
+
+            use alloc::vec::Vec;
+            use std::prelude::v1::*;
+        }
+    }
+
     const MEM_ZERO: m68k_op_mem = m68k_op_mem {
         base_reg: M68K_REG_INVALID,
         index_reg: M68K_REG_INVALID,
