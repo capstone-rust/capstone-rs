@@ -4,8 +4,9 @@
 # Environment variables:
 #
 # FEATURES: (none by default)
+# NO_DEFAULT_FEATURES: enables --no-default-features
 # JOB: {*test,valgrind-test,bench,cov}
-# PROFILES: list of {debug,release} [debug]
+# PROFILES: list of {debug,release} [debug release]
 # SHOULD_FAIL: (disabled by default; set to non-empty string to enable)
 # VALGRIND_TESTS: run tests under Valgrind
 
@@ -21,6 +22,7 @@ RUST_BACKTRACE=1
 SHOULD_FAIL=${SHOULD_FAIL:-}  # Default to false
 VALGRIND_TESTS=${VALGRIND_TESTS:-}
 FEATURES="${FEATURES-}"  # Default to no features
+NO_DEFAULT_FEATURES="${NO_DEFAULT_FEATURES:+--no-default-features}"
 PROJECT_NAME="$(grep ^name Cargo.toml | head -n1 | xargs -n1 | tail -n1)"
 TARGET="../target"
 TARGET_COV="${TARGET}/cov"
@@ -194,6 +196,7 @@ run_tests() {
         echo "Cargo tests without Valgrind"
         cargo_cmd_args=(
             $(profile_args)
+            $NO_DEFAULT_FEATURES
             --features "$FEATURES"
             --verbose
             )
@@ -204,9 +207,12 @@ run_tests() {
         # Use 2>&1 above instead of '|&' because OS X uses Bash 3
 
         cargo run "${cargo_cmd_args[@]}" --example demo
-        cargo run "${cargo_cmd_args[@]}" --example cstool -- \
-            --arch x86 --mode mode64 --file test-inputs/x86_64.bin_ls.bin |
-            head -n20
+        (
+            cd ../cstool
+            cargo run "${cargo_cmd_args[@]}" -- \
+                --arch x86 --mode mode64 --file ../capstone-rs/test-inputs/x86_64.bin_ls.bin |
+                head -n20
+        )
 
         cat README.md | \
             sed -n '/^```rust/,/^```/p' | grep -vE '^```' | \
