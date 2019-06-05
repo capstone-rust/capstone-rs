@@ -46,7 +46,7 @@ matrix:
             - valgrind
     - os: linux
       rust: nightly
-      env: JOB=valgrind-test FEATURES=alloc_system
+      env: JOB=valgrind-test FEATURES=alloc_system NO_DEFAULT_FEATURES=1
       addons:
         apt:
           packages:
@@ -55,6 +55,7 @@ matrix:
       rust: stable
     - os: osx
       rust: nightly
+      env: NO_DEFAULT_FEATURES=1
     - os: linux
       rust: stable
       env: JOB=cov
