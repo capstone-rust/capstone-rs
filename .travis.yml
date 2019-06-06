@@ -28,25 +28,26 @@ matrix:
   include:
     - os: linux
       rust: 1.29.2
+      env: FEATURES=alloc_system
     - os: linux
       rust: stable
     - os: linux
       rust: stable
-      env: JOB=valgrind-test FEATURES=alloc_system
+      env: JOB=valgrind-test
       addons:
         apt:
           packages:
             - valgrind
     - os: linux
       rust: beta
-      env: JOB=valgrind-test FEATURES=alloc_system
+      env: JOB=valgrind-test
       addons:
         apt:
           packages:
             - valgrind
     - os: linux
       rust: nightly
-      env: JOB=valgrind-test FEATURES=alloc_system NO_DEFAULT_FEATURES=1
+      env: JOB=valgrind-test NO_DEFAULT_FEATURES=1
       addons:
         apt:
           packages:

@@ -209,7 +209,7 @@ run_tests() {
         cargo run "${cargo_cmd_args[@]}" --example demo
         (
             cd ../cstool
-            cargo run "${cargo_cmd_args[@]}" -- \
+            cargo run $(profile_args) -- \
                 --arch x86 --mode mode64 --file ../capstone-rs/test-inputs/x86_64.bin_ls.bin |
                 head -n20
         )
