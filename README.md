@@ -122,8 +122,11 @@ More complex demos welcome!
 
 # Features
 
-`alloc_system`: use the system allocator instead of the default Rust allocator.
-Useful for running [Valgrind](http://valgrind.org/).
+- `alloc_system`: use the system allocator instead of the default Rust allocator.
+  Useful for running [Valgrind](http://valgrind.org/).
+  This is already the default behavior in >= 1.32.0.
+- `std`: use the standard library (enabled by default).
+  Set `no-default-features` to use `no_std`.
 
 # Reporting Issues
 
