@@ -26,6 +26,7 @@ NO_DEFAULT_FEATURES="${NO_DEFAULT_FEATURES:+--no-default-features}"
 PROJECT_NAME="$(grep ^name Cargo.toml | head -n1 | xargs -n1 | tail -n1)"
 TARGET="../target"
 TARGET_COV="${TARGET}/cov"
+export USER="${USER:-$(id -u -n)}"
 
 PASS="PASS"
 FAIL="FAIL"
@@ -36,6 +37,7 @@ else
     EXPECTED_RESULT="$PASS"
 fi
 
+echo "Running as USER=$USER"
 echo "Test should $EXPECTED_RESULT"
 
 Error() {
