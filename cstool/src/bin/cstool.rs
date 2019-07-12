@@ -1,13 +1,5 @@
 //! Disassembles machine code
 
-extern crate capstone;
-extern crate clap;
-
-#[macro_use]
-extern crate log;
-
-extern crate stderrlog;
-
 use std::fmt::Display;
 use std::fs::File;
 use std::io;
@@ -15,9 +7,10 @@ use std::io::prelude::*;
 use std::process::exit;
 use std::str::FromStr;
 
-use capstone::prelude::*;
-use capstone::{Arch, Endian, EnumList, ExtraMode, Mode};
+use capstone::{self, prelude::*, Arch, Endian, EnumList, ExtraMode, Mode};
 use clap::{App, Arg, ArgGroup};
+use log::{debug, info};
+use stderrlog;
 
 const DEFAULT_CAPACITY: usize = 1024;
 
