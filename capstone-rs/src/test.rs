@@ -1,13 +1,5 @@
-cfg_if! {
-    if #[cfg(not(feature = "std"))] {
-        extern crate std;
-
-        use alloc::vec::Vec;
-        use alloc::string::String;
-        use std::prelude::v1::*;
-
-    }
-}
+use alloc::vec::Vec;
+use alloc::string::String;
 
 use std::collections::HashSet;
 

@@ -1,6 +1,6 @@
 language: rust
 rust:
-  - 1.29.2
+  - 1.36.0
   - stable
   - beta
   - nightly
@@ -27,10 +27,7 @@ matrix:
   # Add each target manually
   include:
     - os: linux
-      rust: 1.29.2
-      env: FEATURES=alloc_system
-    - os: linux
-      rust: stable
+      rust: 1.36.0
     - os: linux
       rust: stable
       env: JOB=valgrind-test
@@ -47,7 +44,7 @@ matrix:
             - valgrind
     - os: linux
       rust: nightly
-      env: JOB=valgrind-test NO_DEFAULT_FEATURES=1
+      env: JOB=valgrind-test
       addons:
         apt:
           packages:
@@ -56,7 +53,6 @@ matrix:
       rust: stable
     - os: osx
       rust: nightly
-      env: NO_DEFAULT_FEATURES=1
     - os: linux
       rust: stable
       env: JOB=cov

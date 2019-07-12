@@ -8,7 +8,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased] - YYYY-MM-DD
 
 ### Added
-- `no_std` compatibility (disable default features)
+- `no_std` compatibility
+
+### Changed
+- Bump minimum Rust version to 1.36.0
 
 ## [0.6.0] - 2019-04-17
 

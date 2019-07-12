@@ -23,7 +23,7 @@ Bindings to the [capstone library][upstream] disassembly framework.
 
 See the [`capstone-sys`](capstone-sys) page for the requirements and supported platforms.
 
-* Minimum Rust Version: `1.29.2` or later
+* Minimum Rust Version: `1.36.0`
 
 # Example
 
@@ -122,11 +122,8 @@ More complex demos welcome!
 
 # Features
 
-- `alloc_system`: use the system allocator instead of the default Rust allocator.
-  Useful for running [Valgrind](http://valgrind.org/).
-  This is already the default behavior in >= 1.32.0.
-- `std`: use the standard library (enabled by default).
-  Set `no-default-features` to use `no_std`.
+- `use_bindgen`: run `bindgen` to generate Rust bindings to Capstone C library
+  instead of using pre-generated bindings (not recommended).
 
 # Reporting Issues
 

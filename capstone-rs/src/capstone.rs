@@ -1,20 +1,17 @@
-#[cfg(not(feature = "std"))]
-extern crate alloc;
+use alloc::string::{String, ToString};
+use core::convert::From;
+use core::marker::PhantomData;
+use core::mem;
+use libc::{c_int, c_uint, c_void};
 
 use arch::CapstoneBuilder;
 use capstone_sys::cs_opt_value::*;
 use capstone_sys::*;
 use constants::{Arch, Endian, ExtraMode, Mode, OptValue, Syntax};
-use core::convert::From;
-use core::marker::PhantomData;
-use core::mem;
 use error::*;
 use ffi::str_from_cstr_ptr;
 use instruction::{Insn, InsnDetail, InsnGroupId, InsnId, Instructions, RegId};
-use libc::{c_int, c_uint, c_void};
 
-#[cfg(not(feature = "std"))]
-use alloc::string::{String, ToString};
 
 /// An instance of the capstone disassembler
 #[derive(Debug)]

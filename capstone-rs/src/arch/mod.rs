@@ -1,13 +1,12 @@
 //! Contains architecture-specific types and modules
 
-use capstone::Capstone;
-use constants::Endian;
+use alloc::vec::Vec;
 use core::fmt::Debug;
 use core::marker::PhantomData;
-use error::CsResult;
 
-#[cfg(not(feature = "std"))]
-use alloc::vec::Vec;
+use capstone::Capstone;
+use constants::Endian;
+use error::CsResult;
 
 macro_rules! define_subset_enum {
     ( [
@@ -86,12 +85,11 @@ macro_rules! define_arch_builder {
         $(
             /// Architecture-specific build code
             pub mod $arch {
+                use alloc::vec::Vec;
+
                 use capstone::Capstone;
                 use constants::{Arch, Endian, ExtraMode, Mode, Syntax};
                 use error::{CsResult, Error};
-
-                #[cfg(not(feature = "std"))]
-                use alloc::vec::Vec;
 
                 define_arch_builder!( @syntax ( $( $syntax, )* ) );
                 define_arch_builder!( @endian ( $( $endian )* ) );

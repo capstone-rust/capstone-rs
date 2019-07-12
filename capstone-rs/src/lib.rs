@@ -121,32 +121,19 @@
 //! [upstream]: http://capstone-engine.org/
 //!
 
-#![cfg_attr(not(feature = "std"), feature(alloc), no_std)]
+#![no_std]
 
 #[macro_use]
-extern crate cfg_if;
+extern crate alloc;
 
-cfg_if! {
-    if #[cfg(feature = "std")] {
-        // core crate is auto-imported given no_std
-        extern crate core;
-    } else {
-        #[macro_use] extern crate alloc;
-
-        /// Do nothing for println when no_std
-        #[cfg(test)]
-        macro_rules! println {
-            ( $( $ignore:expr ),* ) => {
-                $({
-                    let _ = $ignore;
-                })*
-            }
-        }
-    }
-}
-
-#[cfg(all(not(feature = "std"), test))]
+#[cfg(test)]
+#[macro_use]
 extern crate std;
+
+#[cfg(test)]
+#[global_allocator]
+static ALLOCATOR: std::alloc::System = std::alloc::System;
+
 
 extern crate capstone_sys;
 extern crate libc;
@@ -168,13 +155,6 @@ pub use capstone::*;
 pub use constants::*;
 pub use error::*;
 pub use instruction::*;
-
-#[cfg(feature = "alloc_system")]
-use std::alloc::System;
-
-#[cfg(feature = "alloc_system")]
-#[global_allocator]
-static ALLOCATOR: System = System;
 
 /// Contains items that you probably want to always import
 ///
