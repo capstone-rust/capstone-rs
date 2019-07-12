@@ -11,14 +11,22 @@ build() {
     dir="$1"; shift
     base="$1"; shift
 
+    INPUT_MD="${dir}/${base}.md"
+    OUTPUT_HTML="${dir}/${base}.html"
+
+    if [ ! -f "$INPUT_MD" ]; then
+        echo "No '$INPUT_MD', skipping"
+        return
+    fi
+
     pandoc \
         -f gfm -t html5 \
         --css scripts/github-md.css -Vpagetitle="${dir}" \
         --standalone \
-        "${dir}/${base}.md" -o "${dir}/${base}.html"
+        "$INPUT_MD" -o "$OUTPUT_HTML"
 }
 
-for dir in capstone-rs capstone-sys; do
+for dir in capstone-rs capstone-sys cstool; do
     build $dir README
     build $dir CHANGELOG
 done
