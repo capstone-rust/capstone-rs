@@ -3,6 +3,7 @@ name = "cstool"
 version = "0.1.0"
 authors = ["Travis Finkenauer <tmfinken@gmail.com>"]
 license = "MIT"
+edition = "2018"
 
 [dependencies]
 capstone = { path = "../capstone-rs", version = "0.6.0" }
