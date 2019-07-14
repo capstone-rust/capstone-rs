@@ -3,10 +3,11 @@ use core::marker::PhantomData;
 use core::slice;
 use core::str;
 
-use arch::ArchDetail;
 use capstone_sys::*;
-use constants::Arch;
-use ffi::str_from_cstr_ptr;
+
+use crate::arch::ArchDetail;
+use crate::constants::Arch;
+use crate::ffi::str_from_cstr_ptr;
 
 /// Representation of the array of instructions returned by disasm
 #[derive(Debug)]
@@ -298,8 +299,8 @@ impl<'a> InsnDetail<'a> {
                 $( [ $ARCH:ident, $detail:ident, $insn_detail:ident, $arch:ident ] )*
             ) => {
                 use self::ArchDetail::*;
-                use Arch::*;
-                $( use arch::$arch::$insn_detail; )*
+                use crate::Arch::*;
+                $( use crate::arch::$arch::$insn_detail; )*
 
                 return match self.1 {
                     $(

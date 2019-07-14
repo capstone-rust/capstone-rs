@@ -3,22 +3,21 @@
 use core::convert::From;
 use core::{cmp, fmt, slice};
 
-pub use arch::arch_builder::m68k::*;
-use arch::DetailsArchInsn;
 use capstone_sys::{
     cs_m68k, cs_m68k_op, cs_m68k_op__bindgen_ty_1, m68k_address_mode, m68k_cpu_size, m68k_fpu_size,
     m68k_op_br_disp, m68k_op_mem, m68k_op_size, m68k_op_type, m68k_reg, m68k_size_type,
 };
-use Error;
-use instruction::{RegId, RegIdInt};
-use prelude::*;
-
-// XXX todo(tmfink): fix racy initialization in Castone C library M68k
 
 // XXX todo(tmfink): create rusty versions
 pub use capstone_sys::m68k_address_mode as M68kAddressMode;
 pub use capstone_sys::m68k_insn as M68kInsn;
 pub use capstone_sys::m68k_reg as M68kReg;
+
+pub use crate::arch::arch_builder::m68k::*;
+use crate::arch::DetailsArchInsn;
+use crate::Error;
+use crate::instruction::{RegId, RegIdInt};
+use crate::prelude::*;
 
 
 /// Contains M68K-specific details for an instruction
@@ -468,7 +467,7 @@ mod test {
     use capstone_sys::m68k_address_mode::*;
     use capstone_sys::m68k_op_type::*;
     use capstone_sys::m68k_reg::*;
-    use instruction::*;
+    use crate::instruction::*;
 
     const MEM_ZERO: m68k_op_mem = m68k_op_mem {
         base_reg: M68K_REG_INVALID,
@@ -600,9 +599,9 @@ mod test {
 
     #[test]
     fn op_eq() {
-        use arch::m68k::M68kOperand::*;
-        use arch::m68k::M68kReg::*;
-        use arch::m68k::*;
+        use crate::arch::m68k::M68kOperand::*;
+        use crate::arch::m68k::M68kReg::*;
+        use crate::arch::m68k::*;
         use capstone_sys::m68k_address_mode::*;
 
         assert_ne!(
@@ -637,7 +636,7 @@ mod test {
 
     #[test]
     fn extra_info() {
-        use arch::DetailsArchInsn;
+        use crate::arch::DetailsArchInsn;
 
         let cs = Capstone::new()
             .m68k()

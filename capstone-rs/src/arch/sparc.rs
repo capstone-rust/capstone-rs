@@ -1,9 +1,5 @@
 //! Contains sparc-specific types
 
-pub use arch::arch_builder::sparc::*;
-use arch::DetailsArchInsn;
-use capstone_sys::{cs_sparc, cs_sparc_op, sparc_op_mem, sparc_op_type};
-use instruction::{RegId, RegIdInt};
 use core::convert::From;
 use core::{cmp, fmt, slice};
 
@@ -13,6 +9,12 @@ pub use capstone_sys::sparc_insn as SparcInsn;
 pub use capstone_sys::sparc_reg as SparcReg;
 pub use capstone_sys::sparc_cc as SparcCC;
 pub use capstone_sys::sparc_hint as SparcHint;
+use capstone_sys::{cs_sparc, cs_sparc_op, sparc_op_mem, sparc_op_type};
+
+pub use crate::arch::arch_builder::sparc::*;
+use crate::arch::DetailsArchInsn;
+use crate::instruction::{RegId, RegIdInt};
+
 
 /// Contains SPARC-specific details for an instruction
 pub struct SparcInsnDetail<'a>(pub(crate) &'a cs_sparc);

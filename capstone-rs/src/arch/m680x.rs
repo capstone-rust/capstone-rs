@@ -1,17 +1,20 @@
 //! Contains m680x-specific types
 
-pub use arch::arch_builder::m680x::*;
-use arch::DetailsArchInsn;
+use core::convert::From;
+use core::{fmt, slice};
+
 use capstone_sys::{
     cs_m680x, cs_m680x_op, m680x_op_ext, m680x_op_idx, m680x_op_rel, m680x_op_type,
 };
-use instruction::{RegId, RegIdInt};
-use core::convert::From;
-use core::{fmt, slice};
 
 // XXX todo(tmfink): create rusty versions
 pub use capstone_sys::m680x_insn as M680xInsn;
 pub use capstone_sys::m680x_reg as M680xReg;
+
+pub use crate::arch::arch_builder::m680x::*;
+use crate::arch::DetailsArchInsn;
+use crate::instruction::{RegId, RegIdInt};
+
 
 /// Contains M680X-specific details for an instruction
 pub struct M680xInsnDetail<'a>(pub(crate) &'a cs_m680x);

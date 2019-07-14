@@ -1,19 +1,22 @@
 //! Contains tms320c64x-specific types
 
-pub use arch::arch_builder::tms320c64x::*;
+use core::convert::From;
+use core::{cmp, fmt, slice};
+
+use libc::c_int;
 use capstone_sys::{
     cs_tms320c64x, cs_tms320c64x_op, tms320c64x_funit, tms320c64x_mem_dir, tms320c64x_mem_disp,
     tms320c64x_mem_mod, tms320c64x_op_mem, tms320c64x_op_type,
 };
-use instruction::{RegId, RegIdInt};
-use libc::c_int;
-use core::convert::From;
-use core::{cmp, fmt, slice};
 
 // XXX todo(tmfink): create rusty versions
 pub use capstone_sys::tms320c64x_insn as Tms320c64xInsn;
 pub use capstone_sys::tms320c64x_insn_group as Tms320c64xInsnGroup;
 pub use capstone_sys::tms320c64x_reg as Tms320c64xReg;
+
+pub use crate::arch::arch_builder::tms320c64x::*;
+use crate::instruction::{RegId, RegIdInt};
+
 
 /// Contains TMS320C64X-specific details for an instruction
 pub struct Tms320c64xInsnDetail<'a>(pub(crate) &'a cs_tms320c64x);

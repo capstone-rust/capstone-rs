@@ -1,24 +1,24 @@
 //! Contains x86-specific types
 
-pub use arch::arch_builder::x86::*;
-use arch::DetailsArchInsn;
-use capstone_sys::{x86_op_mem, x86_op_type, cs_x86, cs_x86_op};
-use instruction::{RegId, RegIdInt};
 use core::convert::From;
 use core::{cmp, fmt, slice};
 
+use capstone_sys::{
+    cs_x86_op__bindgen_ty_1, x86_op_mem, x86_op_type, cs_x86, cs_x86_op};
 pub use capstone_sys::x86_insn_group as X86InsnGroup;
 pub use capstone_sys::x86_insn as X86Insn;
 pub use capstone_sys::x86_reg as X86Reg;
 pub use capstone_sys::x86_prefix as X86Prefix;
-
 pub use capstone_sys::x86_avx_bcast as X86AvxBcast;
 pub use capstone_sys::x86_sse_cc as X86SseCC;
 pub use capstone_sys::x86_avx_cc as X86AvxCC;
 pub use capstone_sys::x86_xop_cc as X86XopCC;
 pub use capstone_sys::x86_avx_rm as X86AvxRm;
 
-use capstone_sys::cs_x86_op__bindgen_ty_1;
+pub use crate::arch::arch_builder::x86::*;
+use crate::arch::DetailsArchInsn;
+use crate::instruction::{RegId, RegIdInt};
+
 
 /// Contains X86-specific details for an instruction
 pub struct X86InsnDetail<'a>(pub(crate) &'a cs_x86);

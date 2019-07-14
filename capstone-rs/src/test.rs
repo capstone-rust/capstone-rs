@@ -1,6 +1,5 @@
-use alloc::vec::Vec;
 use alloc::string::String;
-
+use alloc::vec::Vec;
 use std::collections::HashSet;
 
 use capstone_sys::cs_group_type;
@@ -450,8 +449,8 @@ fn instructions_match_detail<T>(
 
 #[test]
 fn test_instruction_details() {
-    use arch::x86::X86Reg;
-    use arch::x86::X86Reg::*;
+    use crate::arch::x86::X86Reg;
+    use crate::arch::x86::X86Reg::*;
 
     let expected_insns: &[(
         &str,
@@ -600,8 +599,8 @@ fn test_arch_mode_endian_insns_detail<T>(
 
 #[test]
 fn test_syntax() {
-    use arch::x86::X86Reg;
-    use arch::x86::X86Reg::*;
+    use crate::arch::x86::X86Reg;
+    use crate::arch::x86::X86Reg::*;
 
     let expected_insns: &[(
         &str,
@@ -880,8 +879,8 @@ fn test_arch_arm() {
 
 #[test]
 fn test_arch_arm_detail() {
-    use arch::arm::ArmOperandType::*;
-    use arch::arm::*;
+    use crate::arch::arm::ArmOperandType::*;
+    use crate::arch::arm::*;
     use capstone_sys::arm_op_mem;
 
     let r0_op = ArmOperand {
@@ -1057,13 +1056,13 @@ fn test_arch_arm64() {
 
 #[test]
 fn test_arch_arm64_detail() {
-    use arch::arm64::Arm64OperandType::*;
-    use arch::arm64::Arm64Pstate::*;
-    use arch::arm64::Arm64Reg::*;
-    use arch::arm64::Arm64Sysreg::*;
-    use arch::arm64::Arm64Vas::*;
-    use arch::arm64::Arm64Vess::*;
-    use arch::arm64::*;
+    use crate::arch::arm64::Arm64OperandType::*;
+    use crate::arch::arm64::Arm64Pstate::*;
+    use crate::arch::arm64::Arm64Reg::*;
+    use crate::arch::arm64::Arm64Sysreg::*;
+    use crate::arch::arm64::Arm64Vas::*;
+    use crate::arch::arm64::Arm64Vess::*;
+    use crate::arch::arm64::*;
     use capstone_sys::arm64_op_mem;
 
     let s0 = Arm64Operand {
@@ -1368,9 +1367,9 @@ fn test_arch_evm_detail() {
 
 #[test]
 fn test_arch_m680x_detail() {
-    use arch::m680x::M680xOperandType::*;
-    use arch::m680x::M680xReg::*;
-    use arch::m680x::*;
+    use crate::arch::m680x::M680xOperandType::*;
+    use crate::arch::m680x::M680xReg::*;
+    use crate::arch::m680x::*;
     use capstone_sys::m680x_op_idx;
 
     let op_idx_zero = m680x_op_idx {
@@ -1762,9 +1761,9 @@ fn test_arch_m680x_detail() {
 
 #[test]
 fn test_arch_m68k_detail() {
-    use arch::m68k::M68kOperand::*;
-    use arch::m68k::M68kReg::*;
-    use arch::m68k::*;
+    use crate::arch::m68k::M68kOperand::*;
+    use crate::arch::m68k::M68kReg::*;
+    use crate::arch::m68k::*;
     use capstone_sys::m68k_address_mode::*;
     use capstone_sys::m68k_op_mem;
 
@@ -2017,8 +2016,8 @@ fn test_arch_mips() {
 
 #[test]
 fn test_arch_mips_detail() {
-    use arch::mips::MipsOperand::*;
-    use arch::mips::*;
+    use crate::arch::mips::MipsOperand::*;
+    use crate::arch::mips::*;
     use capstone_sys::mips_op_mem;
 
     test_arch_mode_endian_insns_detail(
@@ -2105,9 +2104,9 @@ fn test_arch_ppc() {
 
 #[test]
 fn test_arch_ppc_detail() {
-    use arch::ppc::PpcOperand::*;
-    use arch::ppc::PpcReg::*;
-    use arch::ppc::*;
+    use crate::arch::ppc::PpcOperand::*;
+    use crate::arch::ppc::PpcReg::*;
+    use crate::arch::ppc::*;
     use capstone_sys::ppc_op_mem;
 
     test_arch_mode_endian_insns_detail(
@@ -2270,9 +2269,9 @@ fn test_arch_sparc() {
 
 #[test]
 fn test_arch_sparc_detail() {
-    use arch::sparc::SparcOperand::*;
-    use arch::sparc::SparcReg::*;
-    use arch::sparc::*;
+    use crate::arch::sparc::SparcOperand::*;
+    use crate::arch::sparc::SparcReg::*;
+    use crate::arch::sparc::*;
     use capstone_sys::sparc_op_mem;
 
     test_arch_mode_endian_insns_detail(
@@ -2463,9 +2462,9 @@ fn test_arch_systemz() {
 
 #[test]
 fn test_arch_tms320c64x_detail() {
-    use arch::tms320c64x::Tms320c64xOperand::*;
-    use arch::tms320c64x::Tms320c64xReg::*;
-    use arch::tms320c64x::*;
+    use crate::arch::tms320c64x::Tms320c64xOperand::*;
+    use crate::arch::tms320c64x::Tms320c64xReg::*;
+    use crate::arch::tms320c64x::*;
     use capstone_sys::tms320c64x_funit::*;
     use capstone_sys::tms320c64x_mem_dir::*;
     use capstone_sys::tms320c64x_mem_disp::*;
@@ -2670,9 +2669,9 @@ fn test_arch_x86() {
 
 #[test]
 fn test_arch_x86_detail() {
-    use arch::x86::X86OperandType::*;
-    use arch::x86::X86Reg::*;
-    use arch::x86::*;
+    use crate::arch::x86::X86OperandType::*;
+    use crate::arch::x86::X86Reg::*;
+    use crate::arch::x86::*;
     use capstone_sys::*;
 
     // X86 16bit (Intel syntax)
@@ -2926,9 +2925,9 @@ fn test_arch_xcore() {
 // XXX todo(tmfink) investigate upstream xcore operand bugs
 #[test]
 fn test_arch_xcore_detail() {
-    use arch::xcore::XcoreOperand::*;
-    use arch::xcore::XcoreReg::*;
-    use arch::xcore::*;
+    use crate::arch::xcore::XcoreOperand::*;
+    use crate::arch::xcore::XcoreReg::*;
+    use crate::arch::xcore::*;
     use capstone_sys::xcore_op_mem;
 
     test_arch_mode_endian_insns_detail(

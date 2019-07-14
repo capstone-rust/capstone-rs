@@ -1,12 +1,13 @@
 //! Contains arm64-specific types
 
-pub use arch::arch_builder::arm64::*;
-use arch::DetailsArchInsn;
+use libc::c_uint;
+
+pub use crate::arch::arch_builder::arm64::*;
+use crate::arch::DetailsArchInsn;
 use capstone_sys::{arm64_op_mem, arm64_op_type, cs_arm64, cs_arm64_op};
-use instruction::{RegId, RegIdInt};
+use crate::instruction::{RegId, RegIdInt};
 use core::convert::From;
 use core::{cmp, fmt, mem, slice};
-use libc::c_uint;
 
 // Re-exports
 pub use capstone_sys::arm64_insn_group as Arm64InsnGroup;

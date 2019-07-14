@@ -2,15 +2,16 @@ use alloc::string::{String, ToString};
 use core::convert::From;
 use core::marker::PhantomData;
 use core::mem;
+
 use libc::{c_int, c_uint, c_void};
 
-use arch::CapstoneBuilder;
+use crate::arch::CapstoneBuilder;
 use capstone_sys::cs_opt_value::*;
 use capstone_sys::*;
-use constants::{Arch, Endian, ExtraMode, Mode, OptValue, Syntax};
-use error::*;
-use ffi::str_from_cstr_ptr;
-use instruction::{Insn, InsnDetail, InsnGroupId, InsnId, Instructions, RegId};
+use crate::constants::{Arch, Endian, ExtraMode, Mode, OptValue, Syntax};
+use crate::error::*;
+use crate::ffi::str_from_cstr_ptr;
+use crate::instruction::{Insn, InsnDetail, InsnGroupId, InsnId, Instructions, RegId};
 
 
 /// An instance of the capstone disassembler
