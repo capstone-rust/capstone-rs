@@ -3,18 +3,17 @@
 use core::convert::From;
 use core::{cmp, fmt, slice};
 
-pub use arch::arch_builder::ppc::*;
-use arch::DetailsArchInsn;
-use capstone_sys::{cs_ppc, cs_ppc_op, ppc_op_mem, ppc_op_type};
-use instruction::{RegId, RegIdInt};
-
 // XXX todo(tmfink): create rusty versions
 pub use capstone_sys::ppc_insn_group as PpcInsnGroup;
 pub use capstone_sys::ppc_insn as PpcInsn;
 pub use capstone_sys::ppc_reg as PpcReg;
 pub use capstone_sys::ppc_bc as PpcBc;
 pub use capstone_sys::ppc_bh as PpcBh;
-use capstone_sys::ppc_op_crx;
+use capstone_sys::{cs_ppc, cs_ppc_op, ppc_op_mem, ppc_op_crx, ppc_op_type};
+
+pub use crate::arch::arch_builder::ppc::*;
+use crate::arch::DetailsArchInsn;
+use crate::instruction::{RegId, RegIdInt};
 
 /// Contains PPC-specific details for an instruction
 pub struct PpcInsnDetail<'a>(pub(crate) &'a cs_ppc);

@@ -134,10 +134,6 @@ extern crate std;
 #[global_allocator]
 static ALLOCATOR: std::alloc::System = std::alloc::System;
 
-
-extern crate capstone_sys;
-extern crate libc;
-
 // Define first so macros are available
 #[macro_use]
 mod constants;
@@ -151,10 +147,10 @@ mod instruction;
 #[cfg(test)]
 mod test;
 
-pub use capstone::*;
-pub use constants::*;
-pub use error::*;
-pub use instruction::*;
+pub use crate::capstone::*;
+pub use crate::constants::*;
+pub use crate::error::*;
+pub use crate::instruction::*;
 
 /// Contains items that you probably want to always import
 ///
@@ -164,11 +160,11 @@ pub use instruction::*;
 /// use capstone::prelude::*;
 /// ```
 pub mod prelude {
-    pub use arch::{
+    pub use crate::arch::{
         self, ArchDetail, BuildsCapstone, BuildsCapstoneEndian, BuildsCapstoneExtraMode,
         BuildsCapstoneSyntax, DetailsArchInsn,
     };
-    pub use {
+    pub use crate::{
         Capstone, CsResult, InsnDetail, InsnGroupId, InsnGroupIdInt, InsnId, InsnIdInt, RegId,
         RegIdInt,
     };

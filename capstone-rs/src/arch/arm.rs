@@ -1,24 +1,26 @@
 //! Contains arm-specific types
 
-pub use arch::arch_builder::arm::*;
-use arch::DetailsArchInsn;
-use capstone_sys::{arm_op_mem, arm_op_type, cs_arm, cs_arm_op};
-use instruction::{RegId, RegIdInt};
 use core::convert::From;
 use core::{cmp, fmt, slice};
+
+use capstone_sys::{
+    arm_op_mem, arm_op_type, cs_arm, cs_arm_op, arm_shifter,
+    cs_arm_op__bindgen_ty_2};
 use libc::c_uint;
+
+pub use crate::arch::arch_builder::arm::*;
+use crate::arch::DetailsArchInsn;
+use crate::instruction::{RegId, RegIdInt};
 
 pub use capstone_sys::arm_insn_group as ArmInsnGroup;
 pub use capstone_sys::arm_insn as ArmInsn;
 pub use capstone_sys::arm_reg as ArmReg;
-
 pub use capstone_sys::arm_vectordata_type as ArmVectorData;
 pub use capstone_sys::arm_cpsmode_type as ArmCPSMode;
 pub use capstone_sys::arm_cpsflag_type as ArmCPSFlag;
 pub use capstone_sys::arm_cc as ArmCC;
 pub use capstone_sys::arm_mem_barrier as ArmMemBarrier;
 pub use capstone_sys::arm_setend_type as ArmSetendType;
-use capstone_sys::{arm_shifter, cs_arm_op__bindgen_ty_2};
 
 /// Contains ARM-specific details for an instruction
 pub struct ArmInsnDetail<'a>(pub(crate) &'a cs_arm);

@@ -23,8 +23,8 @@ pub(crate) unsafe fn str_from_cstr_ptr<'a>(ptr: *const c_char) -> Option<&'a str
 
 #[cfg(test)]
 mod test {
-    use core;
     use super::*;
+    use core;
 
     #[test]
     fn cstr_convert() {

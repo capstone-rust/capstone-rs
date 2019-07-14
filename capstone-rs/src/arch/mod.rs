@@ -4,9 +4,9 @@ use alloc::vec::Vec;
 use core::fmt::Debug;
 use core::marker::PhantomData;
 
-use capstone::Capstone;
-use constants::Endian;
-use error::CsResult;
+use crate::capstone::Capstone;
+use crate::constants::Endian;
+use crate::error::CsResult;
 
 macro_rules! define_subset_enum {
     ( [
@@ -87,9 +87,9 @@ macro_rules! define_arch_builder {
             pub mod $arch {
                 use alloc::vec::Vec;
 
-                use capstone::Capstone;
-                use constants::{Arch, Endian, ExtraMode, Mode, Syntax};
-                use error::{CsResult, Error};
+                use crate::capstone::Capstone;
+                use crate::constants::{Arch, Endian, ExtraMode, Mode, Syntax};
+                use crate::error::{CsResult, Error};
 
                 define_arch_builder!( @syntax ( $( $syntax, )* ) );
                 define_arch_builder!( @endian ( $( $endian )* ) );
@@ -643,7 +643,7 @@ macro_rules! def_arch_details_struct {
             }
         }
 
-        impl<'a> ::arch::DetailsArchInsn for $InsnDetail<'a> {
+        impl<'a> crate::arch::DetailsArchInsn for $InsnDetail<'a> {
             type OperandIterator = $OperandIteratorLife;
             type Operand = $Operand;
 

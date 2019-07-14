@@ -1,14 +1,15 @@
 //! Contains EVM-specific types
 
-pub use arch::arch_builder::evm::*;
-use arch::DetailsArchInsn;
-use capstone_sys::cs_evm;
 use core::fmt;
+
+use capstone_sys::cs_evm;
 
 // XXX todo(tmfink): create rusty versions
 pub use capstone_sys::evm_insn_group as EvmInsnGroup;
 pub use capstone_sys::evm_insn as EvmInsn;
-// no register type since EVM has no operands
+
+pub use crate::arch::arch_builder::evm::*;
+use crate::arch::DetailsArchInsn;
 
 /// Contains EVM-specific details for an instruction
 pub struct EvmInsnDetail<'a>(pub(crate) &'a cs_evm);
