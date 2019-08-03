@@ -21,6 +21,7 @@ libc = { version = "0.2", default-features = false }
 [dev-dependencies]
 macho = "0.*"
 criterion = "0.2"
+rayon = "1.1"
 
 [[bench]]
 name = "my_benchmark"
