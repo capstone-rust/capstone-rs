@@ -26,6 +26,7 @@ NO_DEFAULT_FEATURES="${NO_DEFAULT_FEATURES:+--no-default-features}"
 PROJECT_NAME="$(grep ^name Cargo.toml | head -n1 | xargs -n1 | tail -n1)"
 TARGET="../target"
 TARGET_COV="${TARGET}/cov"
+SIMPLE_RUN_EXAMPLES="${SIMPLE_RUN_EXAMPLES:-demo parallel}"
 export USER="${USER:-$(id -u -n)}"
 
 PASS="PASS"
@@ -113,15 +114,14 @@ cleanup_cov() {
 run_kcov() {
     KCOV="${KCOV:-kcov}"
     COVERALLS_ARG="${TRAVIS_JOB_ID:+--coveralls-id=$TRAVIS_JOB_ID}"
-    EXAMPLES="${EXAMPLES:-demo}"
 
     # Build binaries
     cargo test --no-run -v
-    for example in $EXAMPLES; do
+    for example in $SIMPLE_RUN_EXAMPLES; do
         cargo build --example "$example"
     done
 
-    EXAMPLE_BINS=$(echo "$EXAMPLES" | xargs -n1 | sed "s,^,${TARGET}/${PROFILE}/examples/,")
+    EXAMPLE_BINS=$(echo "$SIMPLE_RUN_EXAMPLES" | xargs -n1 | sed "s,^,${TARGET}/${PROFILE}/examples/,")
     mkdir -p "${TARGET_COV}"
 
     (
@@ -207,8 +207,9 @@ run_tests() {
             --color=always -- --color=always \
             2>&1 | tee "$TMPFILE"
         # Use 2>&1 above instead of '|&' because OS X uses Bash 3
-
-        cargo run "${cargo_cmd_args[@]}" --example demo
+        for example in $SIMPLE_RUN_EXAMPLES; do
+            cargo run "${cargo_cmd_args[@]}" --example "$example"
+        done
         (
             cd ../cstool
             cargo run $(profile_args) -- \
@@ -240,7 +241,7 @@ run_tests() {
     rm "$TMPFILE"
 }
 
-PROFILES="${PROFILES-debug release}"
+PROFILES="${PROFILES-debug}"
 for PROFILE in $PROFILES; do
     profile_args "$PROFILE"
 done
