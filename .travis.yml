@@ -12,12 +12,15 @@ os:
 script:
   - ./capstone-rs/ci/test.sh
 
+before_script:
+  - rustup update "$TRAVIS_RUST_VERSION"
+
 cache:
   cargo: true
   directories:
     - kcov-install
 before_cache:
-  - rm -rf target/cov
+  - rm -rf target/cov "$TRAVIS_HOME/.cargo/registry/src"
 
 matrix:
   # Clear the whole matrix
