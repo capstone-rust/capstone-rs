@@ -127,6 +127,8 @@ fn test_detail_false_fail() {
 
     assert_eq!(cs.insn_detail(&insns[0]).unwrap_err(), Error::DetailOff);
     assert_eq!(cs.insn_detail(&insns[1]).unwrap_err(), Error::DetailOff);
+    assert_eq!(cs.insn_regs_access(&insns[0]).unwrap_err(), Error::DetailOff);
+    assert_eq!(cs.insn_regs_access(&insns[1]).unwrap_err(), Error::DetailOff);
 }
 
 #[test]
