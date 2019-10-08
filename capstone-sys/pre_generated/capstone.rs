@@ -243,18 +243,43 @@ pub enum cs_op_type {
     #[doc = "< Floating-Point operand."]
     CS_OP_FP = 4,
 }
-#[repr(u32)]
+#[doc = "< Uninitialized/invalid access type."]
+pub const CS_AC_INVALID: cs_ac_type = cs_ac_type(0);
+#[doc = "< Operand read from memory or register."]
+pub const CS_AC_READ: cs_ac_type = cs_ac_type(1);
+#[doc = "< Operand write to memory or register."]
+pub const CS_AC_WRITE: cs_ac_type = cs_ac_type(2);
+impl ::core::ops::BitOr<cs_ac_type> for cs_ac_type {
+    type Output = Self;
+    #[inline]
+    fn bitor(self, other: Self) -> Self {
+        cs_ac_type(self.0 | other.0)
+    }
+}
+impl ::core::ops::BitOrAssign for cs_ac_type {
+    #[inline]
+    fn bitor_assign(&mut self, rhs: cs_ac_type) {
+        self.0 |= rhs.0;
+    }
+}
+impl ::core::ops::BitAnd<cs_ac_type> for cs_ac_type {
+    type Output = Self;
+    #[inline]
+    fn bitand(self, other: Self) -> Self {
+        cs_ac_type(self.0 & other.0)
+    }
+}
+impl ::core::ops::BitAndAssign for cs_ac_type {
+    #[inline]
+    fn bitand_assign(&mut self, rhs: cs_ac_type) {
+        self.0 &= rhs.0;
+    }
+}
+#[repr(C)]
 #[doc = " Common instruction operand access types - to be consistent across all architectures."]
 #[doc = " It is possible to combine access types, for example: CS_AC_READ | CS_AC_WRITE"]
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
-pub enum cs_ac_type {
-    #[doc = "< Uninitialized/invalid access type."]
-    CS_AC_INVALID = 0,
-    #[doc = "< Operand read from memory or register."]
-    CS_AC_READ = 1,
-    #[doc = "< Operand write to memory or register."]
-    CS_AC_WRITE = 2,
-}
+pub struct cs_ac_type(pub u32);
 pub mod cs_group_type {
     #[doc = " Common instruction groups - to be consistent across all architectures."]
     pub type Type = u32;
