@@ -2693,11 +2693,13 @@ fn test_arch_x86_detail() {
                 &[
                     X86Operand {
                         size: 2,
+                        access: Some(RegAccessType::WriteOnly),
                         op_type: Reg(RegId(X86_REG_CX as RegIdInt)),
                         ..Default::default()
                     },
                     X86Operand {
                         size: 2,
+                        access: Some(RegAccessType::ReadOnly),
                         op_type: Mem(X86OpMem(x86_op_mem {
                             segment: 0,
                             base: X86_REG_SI,
@@ -2716,6 +2718,7 @@ fn test_arch_x86_detail() {
                 &[
                     X86Operand {
                         size: 1,
+                        access: Some(RegAccessType::ReadWrite),
                         op_type: Mem(X86OpMem(x86_op_mem {
                             segment: 0,
                             base: X86_REG_BX,
@@ -2727,6 +2730,7 @@ fn test_arch_x86_detail() {
                     },
                     X86Operand {
                         size: 1,
+                        access: Some(RegAccessType::ReadOnly),
                         op_type: Reg(RegId(X86_REG_AL as RegIdInt)),
                         ..Default::default()
                     },
@@ -2738,6 +2742,7 @@ fn test_arch_x86_detail() {
                 b"\xd8\x81\xc6\x34",
                 &[X86Operand {
                     size: 4,
+                    access: Some(RegAccessType::ReadOnly),
                     op_type: Mem(X86OpMem(x86_op_mem {
                         segment: 0,
                         base: X86_REG_BX,
@@ -2755,11 +2760,13 @@ fn test_arch_x86_detail() {
                 &[
                     X86Operand {
                         size: 1,
+                        access: Some(RegAccessType::ReadWrite),
                         op_type: Reg(RegId(X86_REG_AL as RegIdInt)),
                         ..Default::default()
                     },
                     X86Operand {
                         size: 1,
+                        access: Some(RegAccessType::ReadOnly),
                         op_type: Mem(X86OpMem(x86_op_mem {
                             segment: 0,
                             base: X86_REG_BX,
@@ -2793,11 +2800,13 @@ fn test_arch_x86_detail() {
                 &[
                     X86Operand {
                         size: 4,
+                        access: Some(RegAccessType::WriteOnly),
                         op_type: Reg(RegId(X86_REG_ECX as RegIdInt)),
                         ..Default::default()
                     },
                     X86Operand {
                         size: 4,
+                        access: Some(RegAccessType::ReadOnly),
                         op_type: Mem(X86OpMem(x86_op_mem {
                             segment: 0,
                             base: X86_REG_EDX,
@@ -2816,11 +2825,13 @@ fn test_arch_x86_detail() {
                 &[
                     X86Operand {
                         size: 4,
+                        access: Some(RegAccessType::ReadWrite),
                         op_type: Reg(RegId(X86_REG_EAX as RegIdInt)),
                         ..Default::default()
                     },
                     X86Operand {
                         size: 4,
+                        access: Some(RegAccessType::ReadOnly),
                         op_type: Reg(RegId(X86_REG_EBX as RegIdInt)),
                         ..Default::default()
                     },
@@ -2833,11 +2844,13 @@ fn test_arch_x86_detail() {
                 &[
                     X86Operand {
                         size: 4,
+                        access: Some(RegAccessType::ReadWrite),
                         op_type: Reg(RegId(X86_REG_ESI as RegIdInt)),
                         ..Default::default()
                     },
                     X86Operand {
                         size: 4,
+                        access: None,
                         op_type: Imm(0x1234),
                         ..Default::default()
                     },
@@ -2864,6 +2877,7 @@ fn test_arch_x86_detail() {
                 b"\x55",
                 &[X86Operand {
                     size: 8,
+                    access: Some(RegAccessType::ReadOnly),
                     op_type: Reg(RegId(X86_REG_RBP as RegIdInt)),
                     ..Default::default()
                 }],
@@ -2875,11 +2889,13 @@ fn test_arch_x86_detail() {
                 &[
                     X86Operand {
                         size: 8,
+                        access: Some(RegAccessType::WriteOnly),
                         op_type: Reg(RegId(X86_REG_RAX as RegIdInt)),
                         ..Default::default()
                     },
                     X86Operand {
                         size: 8,
+                        access: Some(RegAccessType::ReadOnly),
                         op_type: Mem(X86OpMem(x86_op_mem {
                             segment: 0,
                             base: X86_REG_RIP,
