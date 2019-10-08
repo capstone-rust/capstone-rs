@@ -1,3 +1,4 @@
+use core::convert::TryFrom;
 use core::fmt::{self, Debug, Display, Error, Formatter};
 use core::marker::PhantomData;
 use core::slice;
@@ -35,6 +36,58 @@ pub type RegIdInt = u16;
 /// Represents an register id, which is architecture-specific.
 #[derive(Copy, Clone, Debug, Hash, PartialEq, Eq, PartialOrd, Ord)]
 pub struct RegId(pub RegIdInt);
+
+/// Represents how the register is accessed.
+#[derive(Copy, Clone, Debug, Hash, PartialEq, Eq)]
+pub enum RegAccessType {
+    /// Operand read from memory or register.
+    ReadOnly,
+    /// Operand write from memory or register.
+    WriteOnly,
+    /// Operand read and write from memory or register.
+    ReadWrite,
+}
+
+impl RegAccessType {
+    /// Returns whether the instruction reads from the operand.
+    ///
+    /// Note that an instruction may read and write to the register
+    /// simultaneously. In this case, the operand is also considered as
+    /// readable.
+    pub fn is_readable(self) -> bool {
+        self == RegAccessType::ReadOnly || self == RegAccessType::ReadWrite
+    }
+
+    /// Returns whether the instruction writes from the operand.
+    ///
+    /// Note that an instruction may read and write to the register
+    /// simultaneously. In this case, the operand is also considered as
+    /// writable.
+    pub fn is_writable(self) -> bool {
+        self == RegAccessType::WriteOnly || self == RegAccessType::ReadWrite
+    }
+}
+
+impl TryFrom<cs_ac_type> for RegAccessType {
+    type Error = ();
+
+    fn try_from(access: cs_ac_type) -> Result<Self, Self::Error> {
+        // Check for flags other than CS_AC_READ or CS_AC_WRITE.
+        let unknown_flag_mask = !(CS_AC_READ | CS_AC_WRITE).0;
+        if (access.0 & unknown_flag_mask) != 0 {
+            return Err(());
+        }
+
+        let is_readable = (access & CS_AC_READ).0 != 0;
+        let is_writable = (access & CS_AC_WRITE).0 != 0;
+        match (is_readable, is_writable) {
+            (true, false) => Ok(RegAccessType::ReadOnly),
+            (false, true) => Ok(RegAccessType::WriteOnly),
+            (true, true) => Ok(RegAccessType::ReadWrite),
+            _ => Err(()),
+        }
+    }
+}
 
 impl<'a> Instructions<'a> {
     pub(crate) unsafe fn from_raw_parts(ptr: *mut cs_insn, len: usize) -> Instructions<'a> {
@@ -361,5 +414,15 @@ impl<'a> Display for Instructions<'a> {
             writeln!(fmt)?;
         }
         Ok(())
+    }
+}
+
+#[cfg(test)]
+mod test {
+    use super::*;
+
+    #[test]
+    fn test_invalid_reg_access() {
+        assert_eq!(RegAccessType::try_from(cs_ac_type(1337)), Err(()));
     }
 }
