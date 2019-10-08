@@ -1,10 +1,12 @@
 //! Contains x86-specific types
 
 use core::convert::From;
+use core::convert::TryInto;
 use core::{cmp, fmt, slice};
 
 use capstone_sys::{
-    cs_x86_op__bindgen_ty_1, x86_op_mem, x86_op_type, cs_x86, cs_x86_op};
+    cs_ac_type, cs_x86, cs_x86_op, cs_x86_op__bindgen_ty_1, x86_op_mem, x86_op_type,
+};
 pub use capstone_sys::x86_insn_group as X86InsnGroup;
 pub use capstone_sys::x86_insn as X86Insn;
 pub use capstone_sys::x86_reg as X86Reg;
@@ -17,8 +19,7 @@ pub use capstone_sys::x86_avx_rm as X86AvxRm;
 
 pub use crate::arch::arch_builder::x86::*;
 use crate::arch::DetailsArchInsn;
-use crate::instruction::{RegId, RegIdInt};
-
+use crate::instruction::{RegAccessType, RegId, RegIdInt};
 
 /// Contains X86-specific details for an instruction
 pub struct X86InsnDetail<'a>(pub(crate) &'a cs_x86);
@@ -45,6 +46,10 @@ impl X86OperandType {
 pub struct X86Operand {
     /// Operand size
     pub size: u8,
+
+    /// How is this operand accessed? NOTE: this field is irrelevant if engine
+    /// is compiled in DIET mode.
+    pub access: Option<RegAccessType>,
 
     /// AVX broadcast
     pub avx_bcast: X86AvxBcast,
@@ -208,9 +213,10 @@ impl Default for X86Operand {
     fn default() -> Self {
         X86Operand {
             size: 0,
+            access: None,
             avx_bcast: X86AvxBcast::X86_AVX_BCAST_INVALID,
             avx_zero_opmask: false,
-            op_type: X86OperandType::Invalid
+            op_type: X86OperandType::Invalid,
         }
     }
 }
@@ -220,6 +226,7 @@ impl<'a> From<&'a cs_x86_op> for X86Operand {
         let op_type = X86OperandType::new(op.type_, op.__bindgen_anon_1);
         X86Operand {
             size: op.size,
+            access: cs_ac_type(op.access as _).try_into().ok(),
             avx_bcast: op.avx_bcast,
             avx_zero_opmask: op.avx_zero_opmask,
             op_type,
