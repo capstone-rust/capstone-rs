@@ -11,7 +11,9 @@ use capstone_sys::*;
 use crate::constants::{Arch, Endian, ExtraMode, Mode, OptValue, Syntax};
 use crate::error::*;
 use crate::ffi::str_from_cstr_ptr;
-use crate::instruction::{Insn, InsnDetail, InsnGroupId, InsnId, Instructions, RegId};
+use crate::instruction::{
+    Insn, InsnDetail, InsnGroupId, InsnId, InsnRegsAccess, Instructions, RegId,
+};
 
 
 /// An instance of the capstone disassembler
@@ -375,6 +377,25 @@ impl Capstone {
             Err(Error::IrrelevantDataInDiet)
         } else {
             Ok(unsafe { insn.detail(self.arch) })
+        }
+    }
+
+    /// Returns `RegsAccess` structure for a given instruction
+    ///
+    /// Requires:
+    ///
+    /// 1. Instruction was created with detail enabled
+    /// 2. Skipdata is disabled
+    /// 3. Capstone was not compiled in diet mode
+    pub fn insn_regs_access<'s, 'i: 's>(&'s self, insn: &'i Insn) -> CsResult<InsnRegsAccess> {
+        if !self.detail_enabled && false {
+            Err(Error::DetailOff)
+        } else if insn.id().0 == 0 {
+            Err(Error::IrrelevantDataInSkipData)
+        } else if Self::is_diet() {
+            Err(Error::IrrelevantDataInDiet)
+        } else {
+            Ok(unsafe { insn.regs_access(self.csh()) })
         }
     }
 

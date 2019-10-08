@@ -145,6 +145,14 @@ pub struct Insn<'a> {
 /// `ArchDetail` enum.
 pub struct InsnDetail<'a>(pub(crate) &'a cs_detail, pub(crate) Arch);
 
+/// Contains information about registers accessed by an instruction, either explicitly or implicitly
+pub struct InsnRegsAccess {
+    pub(crate) regs_read: cs_regs,
+    pub(crate) regs_read_count: u8,
+    pub(crate) regs_write: cs_regs,
+    pub(crate) regs_write_count: u8,
+}
+
 impl<'a> Insn<'a> {
     /// The mnemonic for the instruction
     pub fn mnemonic(&self) -> Option<&str> {
@@ -183,6 +191,15 @@ impl<'a> Insn<'a> {
     /// architecture matrices
     pub(crate) unsafe fn detail(&self, arch: Arch) -> InsnDetail {
         InsnDetail(&*self.insn.detail, arch)
+    }
+
+    /// Returns the `RegsAccess` object, if there is one. It is up to the caller to determine
+    /// the pre-conditions are satisfied.
+    ///
+    /// Be careful this is still in early stages and largely untested with various `cs_option` and
+    /// architecture matrices
+    pub(crate) unsafe fn regs_access(&self, cs: csh) -> InsnRegsAccess {
+        InsnRegsAccess::new(cs, &self.insn)
     }
 }
 
@@ -325,6 +342,64 @@ impl<'a> InsnDetail<'a> {
             [X86, X86Detail, X86InsnDetail, x86]
             [XCORE, XcoreDetail, XcoreInsnDetail, xcore]
         );
+    }
+}
+
+impl<'a> InsnRegsAccess {
+    fn new(cs: csh, ins: &cs_insn) -> Self {
+        let mut regs_read = [0u16; 64];
+        let mut regs_read_count = 0u8;
+        let mut regs_write = [0u16; 64];
+        let mut regs_write_count = 0u8;
+
+        unsafe {
+            cs_regs_access(
+                cs,
+                ins,
+                regs_read.as_mut_ptr(),
+                &mut regs_read_count,
+                regs_write.as_mut_ptr(),
+                &mut regs_write_count,
+            );
+        }
+
+        Self {
+            regs_read,
+            regs_read_count,
+            regs_write,
+            regs_write_count,
+        }
+    }
+
+    /// Returns the explicit and implicit accessed registers
+    pub fn regs_read(&self) -> RegsIter<RegIdInt> {
+        RegsIter(self.regs_read[..self.regs_read_count as usize].iter())
+    }
+
+    /// Returns the number of explicit and implicit read registers
+    pub fn regs_read_count(&self) -> u8 {
+        self.regs_read_count
+    }
+
+    /// Returns the explicit and implicit write registers
+    pub fn regs_write(&self) -> RegsIter<RegIdInt> {
+        RegsIter(self.regs_write[..self.regs_write_count as usize].iter())
+    }
+
+    /// Returns the number of explicit and implicit write registers
+    pub fn regs_write_count(&self) -> u8 {
+        self.regs_write_count
+    }
+}
+
+impl Debug for InsnRegsAccess {
+    fn fmt(&self, fmt: &mut Formatter) -> fmt::Result {
+        fmt.debug_struct("RegsAccess")
+            .field("regs_read", &self.regs_read())
+            .field("regs_read_count", &self.regs_read_count())
+            .field("regs_write", &self.regs_write())
+            .field("regs_write_count", &self.regs_write_count())
+            .finish()
     }
 }
 
