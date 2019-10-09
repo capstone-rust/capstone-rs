@@ -560,7 +560,10 @@ fn test_instruction_register_access() {
         let insn = insns.iter().next().unwrap();
         let access = cs.insn_regs_access(&insn).unwrap();
 
+        assert_eq!(regs_read.len(), access.regs_read_count() as usize, "regs_read_count did not match");
         assert_regs_match!(regs_read, access.regs_read(), "read_regs did not match");
+
+        assert_eq!(regs_write.len(), access.regs_write_count() as usize, "regs_write_count did not match");
         assert_regs_match!(regs_write, access.regs_write(), "regs_write did not match");
     }
 }
