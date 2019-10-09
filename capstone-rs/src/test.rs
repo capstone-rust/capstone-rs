@@ -127,8 +127,14 @@ fn test_detail_false_fail() {
 
     assert_eq!(cs.insn_detail(&insns[0]).unwrap_err(), Error::DetailOff);
     assert_eq!(cs.insn_detail(&insns[1]).unwrap_err(), Error::DetailOff);
-    assert_eq!(cs.insn_regs_access(&insns[0]).unwrap_err(), Error::DetailOff);
-    assert_eq!(cs.insn_regs_access(&insns[1]).unwrap_err(), Error::DetailOff);
+    assert_eq!(
+        cs.insn_regs_access(&insns[0]).unwrap_err(),
+        Error::DetailOff
+    );
+    assert_eq!(
+        cs.insn_regs_access(&insns[1]).unwrap_err(),
+        Error::DetailOff
+    );
 }
 
 #[test]
@@ -502,13 +508,29 @@ fn test_instruction_register_access() {
 
     let expected: &[(&[u8], &[_], &[_])] = &[
         // add rax, rax
-        (b"\x48\x01\xc0", &[X86_REG_RAX], &[X86_REG_EFLAGS, X86_REG_RAX]),
+        (
+            b"\x48\x01\xc0",
+            &[X86_REG_RAX],
+            &[X86_REG_EFLAGS, X86_REG_RAX],
+        ),
         // mov rax, 0x1234567812345678
-        (b"\x48\xb8\x78\x56\x34\x12\x78\x56\x34\x12", &[], &[X86_REG_RAX]),
+        (
+            b"\x48\xb8\x78\x56\x34\x12\x78\x56\x34\x12",
+            &[],
+            &[X86_REG_RAX],
+        ),
         // mov DWORD PTR [rbp+rbx*8-0x4], eax
-        (b"\x89\x44\xdd\xfc", &[X86_REG_RBP, X86_REG_RBX, X86_REG_EAX], &[]),
+        (
+            b"\x89\x44\xdd\xfc",
+            &[X86_REG_RBP, X86_REG_RBX, X86_REG_EAX],
+            &[],
+        ),
         // mov rax, QWORD PTR [rbp+rbx*8-0x4]
-        (b"\x48\x8b\x44\xdd\xfc", &[X86_REG_RBP, X86_REG_RBX], &[X86_REG_RAX]),
+        (
+            b"\x48\x8b\x44\xdd\xfc",
+            &[X86_REG_RBP, X86_REG_RBX],
+            &[X86_REG_RAX],
+        ),
     ];
 
     let cs = Capstone::new()
@@ -523,7 +545,11 @@ fn test_instruction_register_access() {
             assert_eq!($expected.len(), $actual_regs.len(), $msg);
 
             for (expected, actual) in $expected.iter().zip($actual_regs) {
-                println!("expected = {:?}, actual = {:?}", cs.reg_name(RegId(*expected as u16)), cs.reg_name(actual));
+                println!(
+                    "expected = {:?}, actual = {:?}",
+                    cs.reg_name(RegId(*expected as u16)),
+                    cs.reg_name(actual)
+                );
                 assert_eq!(*expected, actual.0 as u32, $msg);
             }
         }};
