@@ -388,15 +388,7 @@ impl Capstone {
     /// 2. Skipdata is disabled
     /// 3. Capstone was not compiled in diet mode
     pub fn insn_regs_access<'s, 'i: 's>(&'s self, insn: &'i Insn) -> CsResult<InsnRegsAccess> {
-        if !self.detail_enabled {
-            Err(Error::DetailOff)
-        } else if insn.id().0 == 0 {
-            Err(Error::IrrelevantDataInSkipData)
-        } else if Self::is_diet() {
-            Err(Error::IrrelevantDataInDiet)
-        } else {
-            Ok(unsafe { insn.regs_access(self.csh()) })
-        }
+        insn.regs_access(self.csh())
     }
 
     /// Returns a tuple (major, minor) indicating the version of the capstone C library.

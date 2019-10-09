@@ -496,6 +496,49 @@ fn test_insns_match(cs: &mut Capstone, insns: &[(&str, &[u8])]) {
     }
 }
 
+#[test]
+fn test_instruction_register_access() {
+    use crate::arch::x86::X86Reg::*;
+
+    let expected: &[(&[u8], &[_], &[_])] = &[
+        // add rax, rax
+        (b"\x48\x01\xc0", &[X86_REG_RAX], &[X86_REG_EFLAGS, X86_REG_RAX]),
+        // mov rax, 0x1234567812345678
+        (b"\x48\xb8\x78\x56\x34\x12\x78\x56\x34\x12", &[], &[X86_REG_RAX]),
+        // mov DWORD PTR [rbp+rbx*8-0x4], eax
+        (b"\x89\x44\xdd\xfc", &[X86_REG_RBP, X86_REG_RBX, X86_REG_EAX], &[]),
+        // mov rax, QWORD PTR [rbp+rbx*8-0x4]
+        (b"\x48\x8b\x44\xdd\xfc", &[X86_REG_RBP, X86_REG_RBX], &[X86_REG_RAX]),
+    ];
+
+    let cs = Capstone::new()
+        .x86()
+        .mode(x86::ArchMode::Mode64)
+        .detail(true)
+        .build()
+        .unwrap();
+
+    macro_rules! assert_regs_match {
+        ($expected:expr, $actual_regs:expr, $msg:expr) => {{
+            assert_eq!($expected.len(), $actual_regs.len(), $msg);
+
+            for (expected, actual) in $expected.iter().zip($actual_regs) {
+                println!("expected = {:?}, actual = {:?}", cs.reg_name(RegId(*expected as u16)), cs.reg_name(actual));
+                assert_eq!(*expected, actual.0 as u32, $msg);
+            }
+        }};
+    }
+
+    for (code, regs_read, regs_write) in expected {
+        let insns = cs.disasm_count(code, START_TEST_ADDR, 1).unwrap();
+        let insn = insns.iter().next().unwrap();
+        let access = cs.insn_regs_access(&insn).unwrap();
+
+        assert_regs_match!(regs_read, access.regs_read(), "read_regs did not match");
+        assert_regs_match!(regs_write, access.regs_write(), "regs_write did not match");
+    }
+}
+
 fn test_extra_mode_helper(
     arch: Arch,
     mode: Mode,
