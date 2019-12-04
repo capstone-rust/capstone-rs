@@ -11,13 +11,13 @@ In order to update the pre-generated bindings:
 2. If needed, format the result (might be necessary; sometimes the source has been one big line).
 
     ~~~
-    rustfmt pre_generated/capstone.rs
+    rustfmt pre_generated/*.rs
     ~~~
 
 3. Commit bindings update.
 
     ~~~
-    git commit pre_generated/capstone.rs
+    git commit "pre_generated/*.rs"
     ~~~
 
 

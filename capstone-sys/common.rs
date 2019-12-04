@@ -76,3 +76,4 @@ pub static ARCH_INCLUDES: &'static [CapstoneArchInfo<'static>] = &[
 ];
 
 pub static BINDINGS_FILE: &'static str = "capstone.rs";
+pub static BINDINGS_IMPL_FILE: &'static str = "capstone_archs_impl.rs";
