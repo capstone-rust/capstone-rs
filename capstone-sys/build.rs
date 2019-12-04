@@ -40,8 +40,12 @@ extern crate bindgen;
 
 extern crate cc;
 
+extern crate regex;
+
+use regex::Regex;
 use std::env;
-use std::fs::copy;
+use std::fs::{copy, OpenOptions};
+use std::io::Write;
 use std::path::PathBuf;
 
 include!("common.rs");
@@ -148,6 +152,62 @@ fn env_var(var: &str) -> String {
     env::var(var).expect(&format!("Environment variable {} is not set", var))
 }
 
+/// Parse generated bindings and impl from_insn_id() for all architectures
+/// instructions enum declaration.
+#[cfg(feature = "use_bindgen")]
+fn impl_insid_to_insenum(bindings: &str) -> String {
+
+    let mut impl_arch_enum = String::new();
+
+    // find all architectures instructions enum declaration
+    let re = Regex::new(r"pub enum (?P<arch>.*)_insn (?s)\{.*?\}")
+        .expect("Unable to compile regex");
+
+    for cap in re.captures_iter(&bindings) {
+        impl_arch_enum.push_str(
+            &format!("impl {}_insn {{\n
+            pub fn from_insn_id(id: u32) -> {}_insn {{\n
+            match id {{\n",
+            &cap["arch"], &cap["arch"]));
+
+        // find instructions and their id
+        let re2 = Regex::new(
+            &format!("{}_INS_(?P<ins>[A-Z]+) = (?P<id>\\d+)",
+            &cap["arch"].to_uppercase())
+        ).expect("Unable to compile regex");
+
+        // fill match expression
+        for cap2 in re2.captures_iter(&cap[0]) {
+            impl_arch_enum.push_str(
+                &format!("{} => {}_insn::{}_INS_{},\n",
+                    &cap2["id"],
+                    &cap["arch"],
+                    &cap["arch"].to_uppercase(),
+                    &cap2["ins"])
+            );
+        }
+
+        // if id didn't match, return [arch]_INS_INVALID.
+        // special case for m680x which has 'INVLD' variant instead of 'INVALID'
+        match &cap["arch"] {
+            "m680x" => {
+                impl_arch_enum.push_str(
+                    &format!("_ => {}_insn::{}_INS_INVLD,",
+                        &cap["arch"], &cap["arch"].to_uppercase()));
+            },
+            _ => {
+                impl_arch_enum.push_str(
+                    &format!("_ => {}_insn::{}_INS_INVALID,",
+                        &cap["arch"], &cap["arch"].to_uppercase()));
+            }
+        }
+
+        impl_arch_enum.push_str("}\n}\n}\n");
+    }
+
+    impl_arch_enum
+}
+
 /// Create bindings using bindgen
 #[cfg(feature = "use_bindgen")]
 fn write_bindgen_bindings(
@@ -197,6 +257,13 @@ fn write_bindgen_bindings(
     bindings
         .write_to_file(out_path.clone())
         .expect("Unable to write bindings");
+
+    let impl_arch_enum = impl_insid_to_insenum(&bindings.to_string());
+    let mut out_bindings = OpenOptions::new()
+        .append(true)
+        .open(out_path.clone())
+        .expect("Unable to open bindings");
+    out_bindings.write_all(impl_arch_enum.as_bytes()).expect("Unable to write bindings");
 
     if update_pregenerated_bindings {
         copy(out_path, pregenerated_bindgen_header).expect("Unable to update capstone bindings");
