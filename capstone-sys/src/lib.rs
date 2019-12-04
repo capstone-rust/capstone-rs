@@ -49,6 +49,7 @@ use libc::c_int;
 
 // Bindings should be copied here
 include!(concat!(env!("OUT_DIR"), "/capstone.rs"));
+include!(concat!(env!("OUT_DIR"), "/capstone_archs_impl.rs"));
 
 pub const CS_SUPPORT_DIET: c_int = (cs_arch::CS_ARCH_ALL as c_int) + 1;
 pub const CS_SUPPORT_X86_REDUCE: c_int = (cs_arch::CS_ARCH_ALL as c_int) + 2;
