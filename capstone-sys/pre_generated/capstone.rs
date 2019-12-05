@@ -51,9 +51,9 @@ pub const CS_MODE_16: cs_mode = cs_mode(2);
 pub const CS_MODE_32: cs_mode = cs_mode(4);
 #[doc = "< 64-bit mode (X86, PPC)"]
 pub const CS_MODE_64: cs_mode = cs_mode(8);
-#[doc = "< ARM\'s Thumb mode, including Thumb-2"]
+#[doc = "< ARM's Thumb mode, including Thumb-2"]
 pub const CS_MODE_THUMB: cs_mode = cs_mode(16);
-#[doc = "< ARM\'s Cortex-M series"]
+#[doc = "< ARM's Cortex-M series"]
 pub const CS_MODE_MCLASS: cs_mode = cs_mode(32);
 #[doc = "< ARMv8 A32 encodings for ARM"]
 pub const CS_MODE_V8: cs_mode = cs_mode(64);
@@ -155,7 +155,7 @@ pub type cs_vsnprintf_t = ::core::option::Option<
     ) -> libc::c_int,
 >;
 #[doc = " User-defined dynamic memory related functions: malloc/calloc/realloc/free/vsnprintf()"]
-#[doc = " By default, Capstone uses system\'s malloc(), calloc(), realloc(), free() & vsnprintf()."]
+#[doc = " By default, Capstone uses system's malloc(), calloc(), realloc(), free() & vsnprintf()."]
 #[repr(C)]
 #[derive(Debug, Copy)]
 pub struct cs_opt_mem {
@@ -197,7 +197,7 @@ pub enum cs_opt_type {
     CS_OPT_SYNTAX = 1,
     #[doc = "< Break down instruction structure into details"]
     CS_OPT_DETAIL = 2,
-    #[doc = "< Change engine\'s mode at run-time"]
+    #[doc = "< Change engine's mode at run-time"]
     CS_OPT_MODE = 3,
     #[doc = "< User-defined dynamic memory related functions"]
     CS_OPT_MEM = 4,
@@ -300,7 +300,7 @@ pub type cs_skipdata_cb_t = ::core::option::Option<
 #[derive(Debug, Copy)]
 pub struct cs_opt_skipdata {
     #[doc = " Capstone considers data to skip as special \"instructions\"."]
-    #[doc = " User can specify the string for this instruction\'s \"mnemonic\" here."]
+    #[doc = " User can specify the string for this instruction's \"mnemonic\" here."]
     #[doc = " By default (if @mnemonic is NULL), Capstone use \".byte\"."]
     pub mnemonic: *const libc::c_char,
     #[doc = " User-defined callback function to be called when Capstone hits data."]
@@ -555,7 +555,7 @@ pub enum arm_mem_barrier {
     ARM_MB_SY = 16,
 }
 #[repr(u32)]
-#[doc = " Operand type for instruction\'s operands"]
+#[doc = " Operand type for instruction's operands"]
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
 pub enum arm_op_type {
     #[doc = "< = CS_OP_INVALID (Uninitialized)."]
@@ -772,7 +772,7 @@ pub mod arm_reg {
     pub const ARM_REG_FP: Type = 77;
     pub const ARM_REG_IP: Type = 78;
 }
-#[doc = " Instruction\'s operand referring to memory"]
+#[doc = " Instruction's operand referring to memory"]
 #[doc = " This is associated with ARM_OP_MEM operand type above"]
 #[repr(C)]
 #[derive(Debug, Copy)]
@@ -837,7 +837,7 @@ pub union cs_arm_op__bindgen_ty_2 {
     pub fp: f64,
     #[doc = "< base/index/scale/disp value for MEM operand"]
     pub mem: arm_op_mem,
-    #[doc = "< SETEND instruction\'s operand type"]
+    #[doc = "< SETEND instruction's operand type"]
     pub setend: arm_setend_type,
     _bindgen_union_align: [u64; 3usize],
 }
@@ -1616,7 +1616,7 @@ pub enum arm64_barrier_op {
     ARM64_BARRIER_SY = 15,
 }
 #[repr(u32)]
-#[doc = " Operand type for instruction\'s operands"]
+#[doc = " Operand type for instruction's operands"]
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
 pub enum arm64_op_type {
     #[doc = "< = CS_OP_INVALID (Uninitialized)."]
@@ -2015,7 +2015,7 @@ pub mod arm64_reg {
     pub const ARM64_REG_FP: Type = 1;
     pub const ARM64_REG_LR: Type = 2;
 }
-#[doc = " Instruction\'s operand referring to memory"]
+#[doc = " Instruction's operand referring to memory"]
 #[doc = " This is associated with ARM64_OP_MEM operand type above"]
 #[repr(C)]
 #[derive(Debug, Copy)]
@@ -2115,7 +2115,7 @@ pub struct cs_arm64 {
     pub cc: arm64_cc,
     #[doc = "< does this insn update flags?"]
     pub update_flags: bool,
-    #[doc = "< does this insn request writeback? \'True\' means \'yes\'"]
+    #[doc = "< does this insn request writeback? 'True' means 'yes'"]
     pub writeback: bool,
     #[doc = " Number of operands of this instruction,"]
     #[doc = " or 0 when instruction has no operand."]
@@ -2711,7 +2711,7 @@ pub enum m68k_address_mode {
     M68K_AM_BRANCH_DISPLACEMENT = 19,
 }
 #[repr(u32)]
-#[doc = " Operand type for instruction\'s operands"]
+#[doc = " Operand type for instruction's operands"]
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
 pub enum m68k_op_type {
     #[doc = "< = CS_OP_INVALID (Uninitialized)."]
@@ -2733,7 +2733,7 @@ pub enum m68k_op_type {
     #[doc = "< Branch displacement"]
     M68K_OP_BR_DISP = 8,
 }
-#[doc = " Instruction\'s operand referring to memory"]
+#[doc = " Instruction's operand referring to memory"]
 #[doc = " This is associated with M68K_OP_MEM operand type above"]
 #[repr(C)]
 #[derive(Debug, Copy)]
@@ -2767,7 +2767,7 @@ impl Clone for m68k_op_mem {
     }
 }
 #[repr(u32)]
-#[doc = " Operand type for instruction\'s operands"]
+#[doc = " Operand type for instruction's operands"]
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
 pub enum m68k_op_br_disp_size {
     #[doc = "< = CS_OP_INVALID (Uninitialized)."]
@@ -2924,7 +2924,7 @@ impl ::core::fmt::Debug for m68k_op_size {
         )
     }
 }
-#[doc = " The M68K instruction and it\'s operands"]
+#[doc = " The M68K instruction and it's operands"]
 #[repr(C)]
 #[derive(Copy)]
 pub struct cs_m68k {
@@ -3347,7 +3347,7 @@ pub enum m68k_group_type {
     M68K_GRP_ENDING = 8,
 }
 #[repr(u32)]
-#[doc = " Operand type for instruction\'s operands"]
+#[doc = " Operand type for instruction's operands"]
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
 pub enum mips_op_type {
     #[doc = "< = CS_OP_INVALID (Uninitialized)."]
@@ -3542,7 +3542,7 @@ pub mod mips_reg {
     pub const MIPS_REG_LO2: Type = 47;
     pub const MIPS_REG_LO3: Type = 48;
 }
-#[doc = " Instruction\'s operand referring to memory"]
+#[doc = " Instruction's operand referring to memory"]
 #[doc = " This is associated with MIPS_OP_MEM operand type above"]
 #[repr(C)]
 #[derive(Debug, Copy)]
@@ -4340,7 +4340,7 @@ pub enum ppc_bh {
     PPC_BH_MINUS = 2,
 }
 #[repr(u32)]
-#[doc = " Operand type for instruction\'s operands"]
+#[doc = " Operand type for instruction's operands"]
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
 pub enum ppc_op_type {
     #[doc = "< = CS_OP_INVALID (Uninitialized)."]
@@ -4569,7 +4569,7 @@ pub mod ppc_reg {
     pub const PPC_REG_X2: Type = 209;
     pub const PPC_REG_ENDING: Type = 210;
 }
-#[doc = " Instruction\'s operand referring to memory"]
+#[doc = " Instruction's operand referring to memory"]
 #[doc = " This is associated with PPC_OP_MEM operand type above"]
 #[repr(C)]
 #[derive(Debug, Copy)]
@@ -4649,7 +4649,7 @@ pub struct cs_ppc {
     pub bc: ppc_bc,
     #[doc = " branch hint for branch instructions"]
     pub bh: ppc_bh,
-    #[doc = " if update_cr0 = True, then this \'dot\' insn updates CR0"]
+    #[doc = " if update_cr0 = True, then this 'dot' insn updates CR0"]
     pub update_cr0: bool,
     #[doc = " Number of operands of this instruction,"]
     #[doc = " or 0 when instruction has no operand."]
@@ -5811,7 +5811,7 @@ pub mod ppc_insn_group {
     pub const PPC_GRP_ENDING: Type = 142;
 }
 #[repr(u32)]
-#[doc = " Enums corresponding to Sparc condition codes, both icc\'s and fcc\'s."]
+#[doc = " Enums corresponding to Sparc condition codes, both icc's and fcc's."]
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
 pub enum sparc_cc {
     #[doc = "< invalid CC (default)"]
@@ -5895,7 +5895,7 @@ pub enum sparc_hint {
     SPARC_HINT_PN = 4,
 }
 #[repr(u32)]
-#[doc = " Operand type for instruction\'s operands"]
+#[doc = " Operand type for instruction's operands"]
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
 pub enum sparc_op_type {
     #[doc = "< = CS_OP_INVALID (Uninitialized)."]
@@ -6002,7 +6002,7 @@ pub mod sparc_reg {
     pub const SPARC_REG_O6: Type = 85;
     pub const SPARC_REG_I6: Type = 53;
 }
-#[doc = " Instruction\'s operand referring to memory"]
+#[doc = " Instruction's operand referring to memory"]
 #[doc = " This is associated with SPARC_OP_MEM operand type above"]
 #[repr(C)]
 #[derive(Debug, Copy)]
@@ -6415,7 +6415,7 @@ pub enum sysz_cc {
     SYSZ_CC_NO = 14,
 }
 #[repr(u32)]
-#[doc = " Operand type for instruction\'s operands"]
+#[doc = " Operand type for instruction's operands"]
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
 pub enum sysz_op_type {
     #[doc = "< = CS_OP_INVALID (Uninitialized)."]
@@ -6469,7 +6469,7 @@ pub mod sysz_reg {
     pub const SYSZ_REG_R0L: Type = 34;
     pub const SYSZ_REG_ENDING: Type = 35;
 }
-#[doc = " Instruction\'s operand referring to memory"]
+#[doc = " Instruction's operand referring to memory"]
 #[doc = " This is associated with SYSZ_OP_MEM operand type above"]
 #[repr(C)]
 #[derive(Debug, Copy)]
@@ -7508,7 +7508,7 @@ pub mod x86_reg {
     pub const X86_REG_ENDING: Type = 242;
 }
 #[repr(u32)]
-#[doc = " Operand type for instruction\'s operands"]
+#[doc = " Operand type for instruction's operands"]
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
 pub enum x86_op_type {
     #[doc = "< = CS_OP_INVALID (Uninitialized)."]
@@ -7647,7 +7647,7 @@ pub enum x86_prefix {
     #[doc = "< address-size override (cs_x86.prefix[3]"]
     X86_PREFIX_ADDRSIZE = 103,
 }
-#[doc = " Instruction\'s operand referring to memory"]
+#[doc = " Instruction's operand referring to memory"]
 #[doc = " This is associated with X86_OP_MEM operand type above"]
 #[repr(C)]
 #[derive(Debug, Copy)]
@@ -9388,7 +9388,7 @@ pub mod x86_insn_group {
     pub const X86_GRP_ENDING: Type = 170;
 }
 #[repr(u32)]
-#[doc = " Operand type for instruction\'s operands"]
+#[doc = " Operand type for instruction's operands"]
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
 pub enum xcore_op_type {
     #[doc = "< = CS_OP_INVALID (Uninitialized)."]
@@ -9433,7 +9433,7 @@ pub mod xcore_reg {
     pub const XCORE_REG_ID: Type = 25;
     pub const XCORE_REG_ENDING: Type = 26;
 }
-#[doc = " Instruction\'s operand referring to memory"]
+#[doc = " Instruction's operand referring to memory"]
 #[doc = " This is associated with XCORE_OP_MEM operand type above"]
 #[repr(C)]
 #[derive(Debug, Copy)]
@@ -10120,7 +10120,7 @@ pub mod m680x_reg {
     pub const M680X_REG_ENDING: Type = 22;
 }
 #[repr(u32)]
-#[doc = " Operand type for instruction\'s operands"]
+#[doc = " Operand type for instruction's operands"]
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
 pub enum m680x_op_type {
     #[doc = "< = CS_OP_INVALID (Uninitialized)."]
@@ -10141,7 +10141,7 @@ pub enum m680x_op_type {
     #[doc = "< Used e.g. for a bit index or page number."]
     M680X_OP_CONSTANT = 7,
 }
-#[doc = " Instruction\'s operand referring to indexed addressing"]
+#[doc = " Instruction's operand referring to indexed addressing"]
 #[repr(C)]
 #[derive(Debug, Copy)]
 pub struct m680x_op_idx {
@@ -10173,7 +10173,7 @@ impl Clone for m680x_op_idx {
         *self
     }
 }
-#[doc = " Instruction\'s memory operand referring to relative addressing (Bcc/LBcc)"]
+#[doc = " Instruction's memory operand referring to relative addressing (Bcc/LBcc)"]
 #[repr(C)]
 #[derive(Debug, Copy)]
 pub struct m680x_op_rel {
@@ -10189,7 +10189,7 @@ impl Clone for m680x_op_rel {
         *self
     }
 }
-#[doc = " Instruction\'s operand referring to extended addressing"]
+#[doc = " Instruction's operand referring to extended addressing"]
 #[repr(C)]
 #[derive(Debug, Copy)]
 pub struct m680x_op_ext {
@@ -10280,7 +10280,7 @@ pub enum m680x_group_type {
     M680X_GRP_BRAREL = 7,
     M680X_GRP_ENDING = 8,
 }
-#[doc = " The M680X instruction and it\'s operands"]
+#[doc = " The M680X instruction and it's operands"]
 #[repr(C)]
 #[derive(Copy)]
 pub struct cs_m680x {
@@ -10966,9 +10966,9 @@ impl ::core::fmt::Debug for cs_detail {
 #[derive(Copy)]
 pub struct cs_insn {
     #[doc = " Instruction ID (basically a numeric ID for the instruction mnemonic)"]
-    #[doc = " Find the instruction id in the \'[ARCH]_insn\' enum in the header file"]
-    #[doc = " of corresponding architecture, such as \'arm_insn\' in arm.h for ARM,"]
-    #[doc = " \'x86_insn\' in x86.h for X86, etc..."]
+    #[doc = " Find the instruction id in the '[ARCH]_insn' enum in the header file"]
+    #[doc = " of corresponding architecture, such as 'arm_insn' in arm.h for ARM,"]
+    #[doc = " 'x86_insn' in x86.h for X86, etc..."]
     #[doc = " This information is available even when CS_OPT_DETAIL = CS_OPT_OFF"]
     #[doc = " NOTE: in Skipdata mode, \"data\" instruction has 0 for this id field."]
     pub id: libc::c_uint,
@@ -11061,16 +11061,16 @@ extern "C" {
 }
 extern "C" {
     #[doc = "This API can be used to either ask for archs supported by this library,"]
-    #[doc = "or check to see if the library was compile with \'diet\' option (or called"]
-    #[doc = "in \'diet\' mode)."]
+    #[doc = "or check to see if the library was compile with 'diet' option (or called"]
+    #[doc = "in 'diet' mode)."]
     #[doc = ""]
     #[doc = "To check if a particular arch is supported by this library, set @query to"]
     #[doc = "arch mode (CS_ARCH_* value)."]
     #[doc = "To verify if this library supports all the archs, use CS_ARCH_ALL."]
     #[doc = ""]
-    #[doc = "To check if this library is in \'diet\' mode, set @query to CS_SUPPORT_DIET."]
+    #[doc = "To check if this library is in 'diet' mode, set @query to CS_SUPPORT_DIET."]
     #[doc = ""]
-    #[doc = "@return True if this library supports the given arch, or in \'diet\' mode."]
+    #[doc = "@return True if this library supports the given arch, or in 'diet' mode."]
     pub fn cs_support(query: libc::c_int) -> bool;
 }
 extern "C" {
@@ -11109,14 +11109,14 @@ extern "C" {
     #[doc = "@return: CS_ERR_OK on success, or other value on failure."]
     #[doc = "Refer to cs_err enum for detailed error."]
     #[doc = ""]
-    #[doc = "NOTE: in the case of CS_OPT_MEM, handle\'s value can be anything,"]
+    #[doc = "NOTE: in the case of CS_OPT_MEM, handle's value can be anything,"]
     #[doc = "so that cs_option(handle, CS_OPT_MEM, value) can (i.e must) be called"]
     #[doc = "even before cs_open()"]
     pub fn cs_option(handle: csh, type_: cs_opt_type, value: usize) -> cs_err::Type;
 }
 extern "C" {
     #[doc = "Report the last error number when some API function fail."]
-    #[doc = "Like glibc\'s errno, cs_errno might not retain its old value once accessed."]
+    #[doc = "Like glibc's errno, cs_errno might not retain its old value once accessed."]
     #[doc = ""]
     #[doc = "@handle: handle returned by cs_open()"]
     #[doc = ""]
@@ -11249,7 +11249,7 @@ extern "C" {
     #[doc = "Find the instruction id from header file of corresponding architecture (arm.h for ARM,"]
     #[doc = "x86.h for X86, ...)"]
     #[doc = ""]
-    #[doc = "WARN: when in \'diet\' mode, this API is irrelevant because engine does not"]
+    #[doc = "WARN: when in 'diet' mode, this API is irrelevant because engine does not"]
     #[doc = "store register name."]
     #[doc = ""]
     #[doc = "@handle: handle returned by cs_open()"]
@@ -11262,7 +11262,7 @@ extern "C" {
     #[doc = "Return friendly name of an instruction in a string."]
     #[doc = "Find the instruction id from header file of corresponding architecture (arm.h for ARM, x86.h for X86, ...)"]
     #[doc = ""]
-    #[doc = "WARN: when in \'diet\' mode, this API is irrelevant because the engine does not"]
+    #[doc = "WARN: when in 'diet' mode, this API is irrelevant because the engine does not"]
     #[doc = "store instruction name."]
     #[doc = ""]
     #[doc = "@handle: handle returned by cs_open()"]
@@ -11275,7 +11275,7 @@ extern "C" {
     #[doc = "Return friendly name of a group id (that an instruction can belong to)"]
     #[doc = "Find the group id from header file of corresponding architecture (arm.h for ARM, x86.h for X86, ...)"]
     #[doc = ""]
-    #[doc = "WARN: when in \'diet\' mode, this API is irrelevant because the engine does not"]
+    #[doc = "WARN: when in 'diet' mode, this API is irrelevant because the engine does not"]
     #[doc = "store group name."]
     #[doc = ""]
     #[doc = "@handle: handle returned by cs_open()"]
@@ -11291,7 +11291,7 @@ extern "C" {
     #[doc = ""]
     #[doc = "NOTE: this API is only valid when detail option is ON (which is OFF by default)."]
     #[doc = ""]
-    #[doc = "WARN: when in \'diet\' mode, this API is irrelevant because the engine does not"]
+    #[doc = "WARN: when in 'diet' mode, this API is irrelevant because the engine does not"]
     #[doc = "update @groups array."]
     #[doc = ""]
     #[doc = "@handle: handle returned by cs_open()"]
@@ -11308,7 +11308,7 @@ extern "C" {
     #[doc = ""]
     #[doc = "NOTE: this API is only valid when detail option is ON (which is OFF by default)"]
     #[doc = ""]
-    #[doc = "WARN: when in \'diet\' mode, this API is irrelevant because the engine does not"]
+    #[doc = "WARN: when in 'diet' mode, this API is irrelevant because the engine does not"]
     #[doc = "update @regs_read array."]
     #[doc = ""]
     #[doc = "@insn: disassembled instruction structure received from cs_disasm() or cs_disasm_iter()"]
@@ -11324,7 +11324,7 @@ extern "C" {
     #[doc = ""]
     #[doc = "NOTE: this API is only valid when detail option is ON (which is OFF by default)"]
     #[doc = ""]
-    #[doc = "WARN: when in \'diet\' mode, this API is irrelevant because the engine does not"]
+    #[doc = "WARN: when in 'diet' mode, this API is irrelevant because the engine does not"]
     #[doc = "update @regs_write array."]
     #[doc = ""]
     #[doc = "@insn: disassembled instruction structure received from cs_disasm() or cs_disasm_iter()"]
@@ -11375,7 +11375,7 @@ extern "C" {
     #[doc = "Retrieve all the registers accessed by an instruction, either explicitly or"]
     #[doc = "implicitly."]
     #[doc = ""]
-    #[doc = "WARN: when in \'diet\' mode, this API is irrelevant because engine does not"]
+    #[doc = "WARN: when in 'diet' mode, this API is irrelevant because engine does not"]
     #[doc = "store registers."]
     #[doc = ""]
     #[doc = "@handle: handle returned by cs_open()"]
