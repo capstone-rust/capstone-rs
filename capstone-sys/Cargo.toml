@@ -1,6 +1,6 @@
 [package]
 name = "capstone-sys"
-version = "0.10.0"
+version = "0.11.0"
 authors = ["m4b <m4b.github.io@gmail.com>", "tmfink <tmfinken@gmail.com>"]
 description = "System bindings to the capstone disassembly library"
 build = "build.rs"
@@ -10,6 +10,7 @@ links = "capstone"
 license = "MIT"
 readme = "README.md"
 repository = "https://github.com/capstone-rust/capstone-rs/tree/master/capstone-sys"
+edition = "2018"
 
 exclude = [
     "/capstone/docs/**",

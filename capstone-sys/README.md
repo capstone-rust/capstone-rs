@@ -18,8 +18,7 @@ Instead, consider using [capstone-rs](https://github.com/capstone-rust/capstone-
 
 ## Requirements
 
-* Rust version >= 1.19
-    - We export [Rust unions], which were first stabilized with release 1.19
+* Rust version >= 1.36.0
 * A toolchain capable of compiling Capstone
     - We build the bundled Capstone with the [`cc` crate](https://github.com/alexcrichton/cc-rs)
 
@@ -45,16 +44,3 @@ You can specify the following [features](https://doc.rust-lang.org/cargo/referen
 * `use_bindgen`: instead of using the pre-generated Capstone bindings, dynamically generate bindings with [`bindgen`][bindgen].
 
 [bindgen]: https://github.com/rust-lang-nursery/rust-bindgen
-
-
-## Tested Platforms
-
-The following platforms have automated testing:
-
-* Travis CI
-    - `x86_64-unknown-linux-gnu`
-* AppVeyor
-    - `x86_64-pc-windows-msvc`
-    - `x86_64-pc-windows-gnu`
-    - `i686-pc-windows-msvc`
-    - `i686-pc-windows-gnu`

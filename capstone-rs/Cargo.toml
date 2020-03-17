@@ -15,7 +15,7 @@ version = "0.6.0"
 travis-ci = { repository = "capstone-rust/capstone-rs" }
 
 [dependencies]
-capstone-sys = { path = "../capstone-sys", version = "0.10.0" }
+capstone-sys = { path = "../capstone-sys", version = "0.11.0" }
 libc = { version = "0.2", default-features = false }
 
 [dev-dependencies]
