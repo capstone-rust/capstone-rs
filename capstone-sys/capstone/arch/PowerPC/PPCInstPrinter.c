@@ -177,11 +177,10 @@ void PPC_printInst(MCInst *MI, SStream *O, void *Info)
 	}
 
 	if (isBOCTRBranch(MCInst_getOpcode(MI))) {
-		if (MCOperand_isImm(MCInst_getOperand(MI,0)))
-		{
+		if (MCOperand_isImm(MCInst_getOperand(MI,0))) {
 			int64_t bd = MCOperand_getImm(MCInst_getOperand(MI, 0));
 			bd = SignExtend64(bd, 14);
-			MCOperand_setImm(MCInst_getOperand(MI, 0),bd);
+			MCOperand_setImm(MCInst_getOperand(MI, 0), bd);
 		}
 	}
 
@@ -199,14 +198,16 @@ void PPC_printInst(MCInst *MI, SStream *O, void *Info)
 
 	if (mnem != NULL) {
 		if (strlen(mnem) > 0) {
-			struct ppc_alias alias;
 			// check to remove the last letter of ('.', '-', '+')
 			if (mnem[strlen(mnem) - 1] == '-' || mnem[strlen(mnem) - 1] == '+' || mnem[strlen(mnem) - 1] == '.')
 				mnem[strlen(mnem) - 1] = '\0';
 
-			if (PPC_alias_insn(mnem, &alias)) {
-				MCInst_setOpcodePub(MI, alias.id);
-				if (MI->csh->detail) {
+			MCInst_setOpcodePub(MI, PPC_map_insn(mnem));
+
+			if (MI->csh->detail) {
+				struct ppc_alias alias;
+
+				if (PPC_alias_insn(mnem, &alias)) {
 					MI->flat_insn->detail->ppc.bc = (ppc_bc)alias.cc;
 				}
 			}

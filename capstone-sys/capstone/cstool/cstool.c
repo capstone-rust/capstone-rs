@@ -42,8 +42,14 @@ static struct {
 	{ "x32att", CS_ARCH_X86, CS_MODE_32 }, // CS_MODE_32, CS_OPT_SYNTAX_ATT
 	{ "x64", CS_ARCH_X86, CS_MODE_64 }, // CS_MODE_64
 	{ "x64att", CS_ARCH_X86, CS_MODE_64 }, // CS_MODE_64, CS_OPT_SYNTAX_ATT
+	{ "ppc32", CS_ARCH_PPC, CS_MODE_32 | CS_MODE_LITTLE_ENDIAN },
+	{ "ppc32be", CS_ARCH_PPC, CS_MODE_32 | CS_MODE_BIG_ENDIAN },
+	{ "ppc32qpx", CS_ARCH_PPC, CS_MODE_32 | CS_MODE_QPX | CS_MODE_LITTLE_ENDIAN },
+	{ "ppc32beqpx", CS_ARCH_PPC, CS_MODE_32 | CS_MODE_QPX | CS_MODE_BIG_ENDIAN },
 	{ "ppc64", CS_ARCH_PPC, CS_MODE_64 | CS_MODE_LITTLE_ENDIAN },
 	{ "ppc64be", CS_ARCH_PPC, CS_MODE_64 | CS_MODE_BIG_ENDIAN },
+	{ "ppc64qpx", CS_ARCH_PPC, CS_MODE_64 | CS_MODE_QPX | CS_MODE_LITTLE_ENDIAN },
+	{ "ppc64beqpx", CS_ARCH_PPC, CS_MODE_64 | CS_MODE_QPX | CS_MODE_BIG_ENDIAN },
 	{ "sparc", CS_ARCH_SPARC, CS_MODE_BIG_ENDIAN },
 	{ "sparcv9", CS_ARCH_SPARC, CS_MODE_BIG_ENDIAN | CS_MODE_V9 },
 	{ "systemz", CS_ARCH_SYSZ, CS_MODE_BIG_ENDIAN },
@@ -141,92 +147,100 @@ static uint8_t *preprocess(char *code, size_t *size)
 static void usage(char *prog)
 {
 	printf("Cstool for Capstone Disassembler Engine v%u.%u.%u\n\n", CS_VERSION_MAJOR, CS_VERSION_MINOR, CS_VERSION_EXTRA);
-	printf("Syntax: %s [-u|-d|-s|-v] <arch+mode> <assembly-hexstring> [start-address-in-hex-format]\n", prog);
+	printf("Syntax: %s [-d|-s|-u|-v] <arch+mode> <assembly-hexstring> [start-address-in-hex-format]\n", prog);
 	printf("\nThe following <arch+mode> options are supported:\n");
 
 	if (cs_support(CS_ARCH_X86)) {
-		printf("        x16:       16-bit mode (X86)\n");
-		printf("        x32:       32-bit mode (X86)\n");
-		printf("        x64:       64-bit mode (X86)\n");
-		printf("        x16att:    16-bit mode (X86) syntax-att\n");
-		printf("        x32att:    32-bit mode (X86) syntax-att\n");
-		printf("        x64att:    64-bit mode (X86) syntax-att\n");
+		printf("        x16:        16-bit mode (X86)\n");
+		printf("        x32:        32-bit mode (X86)\n");
+		printf("        x64:        64-bit mode (X86)\n");
+		printf("        x16att:     16-bit mode (X86) syntax-att\n");
+		printf("        x32att:     32-bit mode (X86) syntax-att\n");
+		printf("        x64att:     64-bit mode (X86) syntax-att\n");
 	}
 
 	if (cs_support(CS_ARCH_ARM)) {
-		printf("        arm:       arm\n");
-		printf("        armbe:     arm + big endian\n");
-		printf("        thumb:     thumb mode\n");
-		printf("        thumbbe:   thumb + big endian\n");
-		printf("        cortexm:   thumb + cortex-m extensions\n");
-		printf("        armv8:     arm v8\n");
-		printf("        thumbv8:   thumb v8\n");
+		printf("        arm:        arm\n");
+		printf("        armbe:      arm + big endian\n");
+		printf("        thumb:      thumb mode\n");
+		printf("        thumbbe:    thumb + big endian\n");
+		printf("        cortexm:    thumb + cortex-m extensions\n");
+		printf("        armv8:      arm v8\n");
+		printf("        thumbv8:    thumb v8\n");
 	}
 
 	if (cs_support(CS_ARCH_ARM64)) {
-		printf("        arm64:     aarch64 mode\n");
-		printf("        arm64be:   aarch64 + big endian\n");
+		printf("        arm64:      aarch64 mode\n");
+		printf("        arm64be:    aarch64 + big endian\n");
 	}
 
 	if (cs_support(CS_ARCH_MIPS)) {
-		printf("        mips:      mips32 + little endian\n");
-		printf("        mipsbe:    mips32 + big endian\n");
-		printf("        mips64:    mips64 + little endian\n");
-		printf("        mips64be:  mips64 + big endian\n");
+		printf("        mips:       mips32 + little endian\n");
+		printf("        mipsbe:     mips32 + big endian\n");
+		printf("        mips64:     mips64 + little endian\n");
+		printf("        mips64be:   mips64 + big endian\n");
 	}
 
 	if (cs_support(CS_ARCH_PPC)) {
-		printf("        ppc64:     ppc64 + little endian\n");
-		printf("        ppc64be:   ppc64 + big endian\n");
+		printf("        ppc32:      ppc32 + little endian\n");
+		printf("        ppc32be:    ppc32 + big endian\n");
+		printf("        ppc32qpx:   ppc32 + qpx + little endian\n");
+		printf("        ppc32beqpx: ppc32 + qpx + big endian\n");
+		printf("        ppc64:      ppc64 + little endian\n");
+		printf("        ppc64be:    ppc64 + big endian\n");
+		printf("        ppc64qpx:   ppc64 + qpx + little endian\n");
+		printf("        ppc64beqpx: ppc64 + qpx + big endian\n");
 	}
 
 	if (cs_support(CS_ARCH_SPARC)) {
-		printf("        sparc:     sparc\n");
+		printf("        sparc:      sparc\n");
 	}
 
 	if (cs_support(CS_ARCH_SYSZ)) {
-		printf("        systemz:   systemz (s390x)\n");
+		printf("        systemz:    systemz (s390x)\n");
 	}
 
 	if (cs_support(CS_ARCH_XCORE)) {
-		printf("        xcore:     xcore\n");
+		printf("        xcore:      xcore\n");
 	}
 
 	if (cs_support(CS_ARCH_M68K)) {
-		printf("        m68k:      m68k + big endian\n");
-		printf("        m68k40:    m68k_040\n");
+		printf("        m68k:       m68k + big endian\n");
+		printf("        m68k40:     m68k_040\n");
 	}
 
 	if (cs_support(CS_ARCH_TMS320C64X)) {
-		printf("        tms320c64x:TMS320C64x\n");
+		printf("        tms320c64x: TMS320C64x\n");
 	}
 
 	if (cs_support(CS_ARCH_M680X)) {
-		printf("        m6800:     M6800/2\n");
-		printf("        m6801:     M6801/3\n");
-		printf("        m6805:     M6805\n");
-		printf("        m6808:     M68HC08\n");
-		printf("        m6809:     M6809\n");
-		printf("        m6811:     M68HC11\n");
-		printf("        cpu12:     M68HC12/HCS12\n");
-		printf("        hd6301:    HD6301/3\n");
-		printf("        hd6309:    HD6309\n");
-		printf("        hcs08:     HCS08\n");
+		printf("        m6800:      M6800/2\n");
+		printf("        m6801:      M6801/3\n");
+		printf("        m6805:      M6805\n");
+		printf("        m6808:      M68HC08\n");
+		printf("        m6809:      M6809\n");
+		printf("        m6811:      M68HC11\n");
+		printf("        cpu12:      M68HC12/HCS12\n");
+		printf("        hd6301:     HD6301/3\n");
+		printf("        hd6309:     HD6309\n");
+		printf("        hcs08:      HCS08\n");
 	}
 
 	if (cs_support(CS_ARCH_EVM)) {
-		printf("        evm:       Ethereum Virtual Machine\n");
+		printf("        evm:        Ethereum Virtual Machine\n");
 	}
 
 	printf("\nExtra options:\n");
 	printf("        -d show detailed information of the instructions\n");
-	printf("        -u show immediates as unsigned\n");
 	printf("        -s decode in SKIPDATA mode\n");
+	printf("        -u show immediates as unsigned\n");
 	printf("        -v show version & Capstone core build info\n\n");
 }
 
 static void print_details(csh handle, cs_arch arch, cs_mode md, cs_insn *ins)
 {
+	printf("\tID: %u (%s)\n", ins->id, cs_insn_name(handle, ins->id));
+
 	switch(arch) {
 		case CS_ARCH_X86:
 			print_insn_detail_x86(handle, md, ins);
