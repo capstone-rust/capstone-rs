@@ -11063,7 +11063,7 @@ pub mod cs_err {
     pub const CS_ERR_X86_ATT: Type = 12;
     #[doc = "< X86 Intel syntax is unsupported (opt-out at compile time)"]
     pub const CS_ERR_X86_INTEL: Type = 13;
-    #[doc = "< X86 Intel syntax is unsupported (opt-out at compile time)"]
+    #[doc = "< X86 Masm syntax is unsupported (opt-out at compile time)"]
     pub const CS_ERR_X86_MASM: Type = 14;
 }
 extern "C" {
