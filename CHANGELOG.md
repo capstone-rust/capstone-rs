@@ -5,10 +5,13 @@ Notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased] - YYYY-MM-DD
+## [0.7.0] - 2020-03-16
 
 ### Added
 - `no_std` compatibility
+- Parallel disassemble example
+- X86: add `X86Operand.access` field
+- Implement `From<u32>` for *_ins enums
 
 ### Changed
 - Bump minimum Rust version to 1.36.0
@@ -109,7 +112,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Removed
 - Dependency
 
-[Unreleased]: https://github.com/capstone-rust/capstone-rs/compare/capstone-v0.6.0...master
+[0.7.0]: https://github.com/capstone-rust/capstone-rs/compare/capstone-v0.6.0...capstone-v0.7.0
 [0.6.0]: https://github.com/capstone-rust/capstone-rs/compare/v0.5.0...capstone-v0.6.0
 [0.5.0]: https://github.com/capstone-rust/capstone-rs/compare/v0.4.0...v0.5.0
 [0.4.0]: https://github.com/capstone-rust/capstone-rs/compare/v0.3.1...v0.4.0
