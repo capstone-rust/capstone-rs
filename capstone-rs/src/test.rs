@@ -2484,7 +2484,7 @@ fn test_arch_tms320c64x_detail() {
         &[
             // add.D1    a11, a4, a3
             DII::new(
-                "      add.D1",
+                "add.D1",
                 b"\x01\xac\x88\x40",
                 &[
                     Reg(RegId(TMS320C64X_REG_A11 as RegIdInt)),
@@ -2504,7 +2504,7 @@ fn test_arch_tms320c64x_detail() {
             ),
             // ldbu.D2T2 *+b15[0x46], b5
             DII::new(
-                "      ldbu.D2T2",
+                "ldbu.D2T2",
                 b"\x02\x80\x46\x9e",
                 &[
                     Mem(Tms320c64xOpMem(tms320c64x_op_mem {
@@ -2520,10 +2520,10 @@ fn test_arch_tms320c64x_detail() {
                 ],
             ),
             // NOP
-            DII::new("      NOP", b"\x00\x00\x00\x00", &[]),
+            DII::new("NOP", b"\x00\x00\x00\x00", &[]),
             // ldbu.D1T2 *++a4[1], b5
             DII::new(
-                "      ldbu.D1T2",
+                "ldbu.D1T2",
                 b"\x02\x90\x32\x96",
                 &[
                     Mem(Tms320c64xOpMem(tms320c64x_op_mem {
@@ -2540,7 +2540,7 @@ fn test_arch_tms320c64x_detail() {
             ),
             // ldbu.D2T2 *+b15[0x46], b5
             DII::new(
-                "      ldbu.D2T2",
+                "ldbu.D2T2",
                 b"\x02\x80\x46\x9e",
                 &[
                     Mem(Tms320c64xOpMem(tms320c64x_op_mem {
@@ -2557,7 +2557,7 @@ fn test_arch_tms320c64x_detail() {
             ),
             // lddw.D1T2 *+a15[4], b11:b10
             DII::new(
-                "      lddw.D1T2",
+                "lddw.D1T2",
                 b"\x05\x3c\x83\xe6",
                 &[
                     Mem(Tms320c64xOpMem(tms320c64x_op_mem {
@@ -2577,7 +2577,7 @@ fn test_arch_tms320c64x_detail() {
             ),
             // ldndw.D1T1        *+a3(a4), a23:a22
             DII::new(
-                "      ldndw.D1T1",
+                "ldndw.D1T1",
                 b"\x0b\x0c\x8b\x24",
                 &[
                     Mem(Tms320c64xOpMem(tms320c64x_op_mem {
