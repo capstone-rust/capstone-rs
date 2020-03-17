@@ -16,7 +16,7 @@ before_script:
   - rustup update "$TRAVIS_RUST_VERSION"
 
 cache:
-  cargo: true
+  cargo: false
   directories:
     - kcov-install
 before_cache:
