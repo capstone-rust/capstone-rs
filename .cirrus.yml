@@ -10,7 +10,13 @@ test_task:
 
   install_rust_script:
     - curl https://sh.rustup.rs -sSf | sh -s -- -y --default-toolchain $CHANNEL
+
   install_packages_script:
+    # Work around https://bugs.freebsd.org/bugzilla/show_bug.cgi?id=244549
+    - pkg update -f
+    - pkg clean
+
     - pkg install -y bash
+
   test_script:
     - bash -c 'source ~/.cargo/env; cargo -V; ./capstone-rs/ci/test.sh'
