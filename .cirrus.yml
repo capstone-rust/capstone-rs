@@ -13,7 +13,7 @@ test_task:
 
   install_packages_script:
     # Work around https://bugs.freebsd.org/bugzilla/show_bug.cgi?id=244549
-    - pkg bootstrap -f
+    - ASSUME_ALWAYS_YES=yes pkg bootstrap -f
 
     - pkg install -y bash
 
