@@ -114,6 +114,15 @@ impl<'a> Instructions<'a> {
     }
 }
 
+impl<'a> core::ops::Deref for Instructions<'a> {
+    type Target = [Insn<'a>];
+
+    fn deref(&self) -> &[Insn<'a>] {
+        // SAFETY: `cs_insn` has the same memory layout as `Insn`
+        unsafe { &*(self.0 as *const [cs_insn] as *const [Insn]) }
+    }
+}
+
 impl<'a> Drop for Instructions<'a> {
     fn drop(&mut self) {
         if !self.is_empty() {
@@ -184,6 +193,7 @@ impl_SliceIterator_wrapper!(
 );
 
 /// A wrapper for the raw capstone-sys instruction
+#[repr(transparent)]
 pub struct Insn<'a> {
     /// Inner `cs_insn`
     pub(crate) insn: cs_insn,

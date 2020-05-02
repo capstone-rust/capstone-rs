@@ -3054,3 +3054,41 @@ fn test_arch_xcore_detail() {
         ],
     );
 }
+
+#[test]
+fn test_insn_size_and_alignment() {
+    use capstone_sys::cs_insn;
+
+    // Ensure that Insn and cs_insn have the same size
+    // and alignment so that they can be safely transmuted
+    // from and to each other:
+
+    assert_eq!(
+        core::mem::size_of::<Insn>(),
+        core::mem::size_of::<cs_insn>(),
+        "sizeof(Insn) == sizeof(cs_insn)"
+    );
+
+    assert_eq!(
+        core::mem::align_of::<Insn>(),
+        core::mem::align_of::<cs_insn>(),
+        "alignof(Insn) == alignof(cs_insn)"
+    );
+
+    // Make sure that conversion is valid:
+
+    let mut cs = Capstone::new()
+        .x86()
+        .mode(x86::ArchMode::Mode64)
+        .build()
+        .unwrap();
+    cs.set_detail(false).unwrap();
+    let insns = cs.disasm_all(X86_CODE, START_TEST_ADDR).unwrap();
+    let insns_slice: &[Insn] = &insns;
+
+    assert_eq!(insns.len(), insns_slice.len());
+
+    for (original, transmuted) in insns.iter().zip(insns_slice.iter()) {
+        assert_eq!(original.id(), transmuted.id());
+    }
+}
