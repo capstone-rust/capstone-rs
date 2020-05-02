@@ -114,6 +114,14 @@ impl<'a> Instructions<'a> {
     }
 }
 
+impl<'a> core::ops::Deref for Instructions<'a> {
+    type Target = [Insn<'a>];
+
+    fn deref(&self) -> &[Insn<'a>] {
+        unsafe { core::slice::from_raw_parts(self.0.as_ptr() as *const Insn, self.0.len()) }
+    }
+}
+
 impl<'a> Drop for Instructions<'a> {
     fn drop(&mut self) {
         if !self.is_empty() {
@@ -184,6 +192,7 @@ impl_SliceIterator_wrapper!(
 );
 
 /// A wrapper for the raw capstone-sys instruction
+#[repr(transparent)]
 pub struct Insn<'a> {
     /// Inner `cs_insn`
     pub(crate) insn: cs_insn,
