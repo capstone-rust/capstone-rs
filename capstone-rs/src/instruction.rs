@@ -118,7 +118,8 @@ impl<'a> core::ops::Deref for Instructions<'a> {
     type Target = [Insn<'a>];
 
     fn deref(&self) -> &[Insn<'a>] {
-        unsafe { core::slice::from_raw_parts(self.0.as_ptr() as *const Insn, self.0.len()) }
+        // SAFETY: `cs_insn` has the same memory layout as `Insn`
+        unsafe { &*(self.0 as *const [cs_insn] as *const [Insn]) }
     }
 }
 
