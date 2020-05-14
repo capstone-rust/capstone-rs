@@ -340,7 +340,7 @@ fn instructions_match_group<R>(
     let insns = cs
         .disasm_all(&insns_buf, START_TEST_ADDR)
         .expect("Failed to disassemble");
-    let insns: Vec<Insn> = insns.iter().collect();
+    let insns: Vec<&Insn> = insns.iter().collect();
 
     // Check number of instructions
     assert_eq!(insns.len(), expected_insns.len());
