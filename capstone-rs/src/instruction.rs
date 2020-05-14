@@ -103,12 +103,6 @@ impl<'a> Instructions<'a> {
         self.0.len()
     }
 
-    /// Iterator over instructions
-    pub fn iter(&'a self) -> InstructionIterator<'a> {
-        let iter = self.0.iter();
-        InstructionIterator(iter)
-    }
-
     pub fn is_empty(&self) -> bool {
         self.len() == 0
     }
@@ -177,20 +171,6 @@ macro_rules! impl_SliceIterator_wrapper {
         }
     }
 }
-
-/// An iterator over the instructions returned by disasm
-///
-/// This is currently the only supported interface for reading them.
-pub struct InstructionIterator<'a>(slice::Iter<'a, cs_insn>);
-
-impl_SliceIterator_wrapper!(
-    impl<'a> Iterator for InstructionIterator<'a> {
-        type Item = Insn<'a>;
-        [
-            |x| Insn { insn: *x, _marker: PhantomData }
-        ]
-    }
-);
 
 /// A wrapper for the raw capstone-sys instruction
 #[repr(transparent)]
