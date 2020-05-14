@@ -173,6 +173,7 @@ macro_rules! impl_SliceIterator_wrapper {
 }
 
 /// A wrapper for the raw capstone-sys instruction
+#[derive(Clone)]
 #[repr(transparent)]
 pub struct Insn<'a> {
     /// Inner `cs_insn`
