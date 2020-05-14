@@ -659,7 +659,7 @@ mod test {
         let mut insns_iter = insns.iter();
 
         // jsr
-        let insn_jsr: Insn = insns_iter.next().unwrap();
+        let insn_jsr: &Insn = insns_iter.next().unwrap();
         let detail = cs.insn_detail(&insn_jsr).unwrap();
         let _arch_detail = detail.arch_detail();
         let arch_detail = _arch_detail.m68k().unwrap();
