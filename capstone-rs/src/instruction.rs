@@ -35,6 +35,7 @@ pub type RegIdInt = u16;
 
 /// Represents an register id, which is architecture-specific.
 #[derive(Copy, Clone, Debug, Hash, PartialEq, Eq, PartialOrd, Ord)]
+#[repr(transparent)]
 pub struct RegId(pub RegIdInt);
 
 /// Represents how the register is accessed.
@@ -271,42 +272,6 @@ impl<'a> Display for Insn<'a> {
     }
 }
 
-/// Iterator over registers ids
-#[derive(Debug, Clone)]
-pub struct RegsIter<'a, T: 'a + Into<RegIdInt> + Copy>(slice::Iter<'a, T>);
-
-impl<'a, T: 'a + Into<RegIdInt> + Copy> Iterator for RegsIter<'a, T> {
-    type Item = RegId;
-
-    fn next(&mut self) -> Option<Self::Item> {
-        self.0.next().map(|x| RegId((*x).into()))
-    }
-
-    #[inline]
-    fn size_hint(&self) -> (usize, Option<usize>) {
-        self.0.size_hint()
-    }
-
-    #[inline]
-    fn count(self) -> usize {
-        self.0.count()
-    }
-}
-
-impl<'a, T: 'a + Into<RegIdInt> + Copy> ExactSizeIterator for RegsIter<'a, T> {
-    #[inline]
-    fn len(&self) -> usize {
-        self.0.len()
-    }
-}
-
-impl<'a, T: 'a + Into<RegIdInt> + Copy> DoubleEndedIterator for RegsIter<'a, T> {
-    #[inline]
-    fn next_back(&mut self) -> Option<Self::Item> {
-        self.0.next_back().map(|x| RegId((*x).into()))
-    }
-}
-
 /// Iterator over instruction group ids
 #[derive(Debug, Clone)]
 pub struct InsnGroupIter<'a>(slice::Iter<'a, InsnGroupIdInt>);
@@ -323,23 +288,19 @@ impl_SliceIterator_wrapper!(
 
 impl<'a> InsnDetail<'a> {
     /// Returns the implicit read registers
-    pub fn regs_read(&self) -> RegsIter<RegIdInt> {
-        RegsIter((*self.0).regs_read[..self.regs_read_count() as usize].iter())
-    }
-
-    /// Returns the number of implicit read registers
-    pub fn regs_read_count(&self) -> u8 {
-        (*self.0).regs_read_count
+    pub fn regs_read(&self) -> &[RegId] {
+        unsafe {
+            &*(&self.0.regs_read[..self.0.regs_read_count as usize] as *const [RegIdInt]
+                as *const [RegId])
+        }
     }
 
     /// Returns the implicit write registers
-    pub fn regs_write(&self) -> RegsIter<RegIdInt> {
-        RegsIter((*self.0).regs_write[..self.regs_write_count() as usize].iter())
-    }
-
-    /// Returns the number of implicit write registers
-    pub fn regs_write_count(&self) -> u8 {
-        (*self.0).regs_write_count
+    pub fn regs_write(&self) -> &[RegId] {
+        unsafe {
+            &*(&self.0.regs_write[..self.0.regs_write_count as usize] as *const [RegIdInt]
+                as *const [RegId])
+        }
     }
 
     /// Returns the groups to which this instruction belongs
@@ -393,9 +354,7 @@ impl<'a> Debug for InsnDetail<'a> {
     fn fmt(&self, fmt: &mut Formatter) -> fmt::Result {
         fmt.debug_struct("Detail")
             .field("regs_read", &self.regs_read())
-            .field("regs_read_count", &self.regs_read_count())
             .field("regs_write", &self.regs_write())
-            .field("regs_write_count", &self.regs_write_count())
             .field("groups", &self.groups())
             .field("groups_count", &self.groups_count())
             .finish()
