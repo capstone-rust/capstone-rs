@@ -34,12 +34,8 @@ where
 }
 
 /// Print register names
-fn reg_names<T, I>(cs: &Capstone, regs: T) -> String
-where
-    T: Iterator<Item = I>,
-    I: Into<RegId>,
-{
-    let names: Vec<String> = regs.map(|x| cs.reg_name(x.into()).unwrap()).collect();
+fn reg_names(cs: &Capstone, regs: &[RegId]) -> String {
+    let names: Vec<String> = regs.iter().map(|&x| cs.reg_name(x).unwrap()).collect();
     names.join(", ")
 }
 
