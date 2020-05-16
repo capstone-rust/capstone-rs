@@ -38,6 +38,16 @@ pub type RegIdInt = u16;
 #[repr(transparent)]
 pub struct RegId(pub RegIdInt);
 
+impl core::convert::From<u32> for RegId {
+    fn from(v: u32) -> RegId {
+        if v <= core::u16::MAX as u32 {
+            RegId(v as u16)
+        } else {
+            RegId(0)
+        }
+    }
+}
+
 /// Represents how the register is accessed.
 #[derive(Copy, Clone, Debug, Hash, PartialEq, Eq)]
 pub enum RegAccessType {

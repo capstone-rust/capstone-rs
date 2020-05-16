@@ -256,7 +256,7 @@ fn test_instruction_detail_helper<T>(
 
 /// Assert instruction belongs or does not belong to groups, testing both insn_belongs_to_group
 /// and insn_group_ids
-fn test_instruction_group_helper<R: Into<u32>>(
+fn test_instruction_group_helper<R: Copy + Into<RegId>>(
     cs: &Capstone,
     insn: &Insn,
     mnemonic_name: &str,
@@ -265,9 +265,7 @@ fn test_instruction_group_helper<R: Into<u32>>(
     expected_regs_read: &[R],
     expected_regs_write: &[R],
     has_default_syntax: bool,
-) where
-    R: Into<u32> + Copy,
-{
+) {
     test_instruction_helper(&cs, insn, mnemonic_name, bytes, has_default_syntax);
     let detail = cs.insn_detail(insn).expect("Unable to get detail");
 
@@ -298,12 +296,9 @@ fn test_instruction_group_helper<R: Into<u32>>(
 
     macro_rules! assert_regs_match {
         ($expected:expr, $actual_regs:expr, $msg:expr) => {{
-            let mut expected_regs: Vec<_> = $expected
-                .iter()
-                .map(|x| RegId(x.clone().into() as RegIdInt))
-                .collect();
+            let mut expected_regs: Vec<RegId> = $expected.iter().map(|&x| x.into()).collect();
             expected_regs.sort_unstable();
-            let mut regs: Vec<_> = $actual_regs.collect();
+            let mut regs: Vec<RegId> = $actual_regs.iter().map(|&x| x.into()).collect();
             regs.sort_unstable();
             assert_eq!(expected_regs, regs, $msg);
         }};
@@ -321,13 +316,11 @@ fn test_instruction_group_helper<R: Into<u32>>(
     );
 }
 
-fn instructions_match_group<R>(
+fn instructions_match_group<R: Copy + Into<RegId>>(
     cs: &mut Capstone,
     expected_insns: &[(&str, &[u8], &[cs_group_type::Type], &[R], &[R])],
     has_default_syntax: bool,
-) where
-    R: Into<u32> + Copy,
-{
+) {
     let insns_buf: Vec<u8> = expected_insns
         .iter()
         .flat_map(|&(_, bytes, _, _, _)| bytes)
