@@ -145,7 +145,11 @@ cov() {
     KCOV=./kcov-install/usr/local/bin/kcov run_kcov
 
     if [[ "${TRAVIS_JOB_ID:+Z}" = Z ]]; then
-        bash <(curl -s https://codecov.io/bash)
+        codecov_script="$(mktemp)"
+        curl --silent --show-error "https://codecov.io/bash" \
+            > "${codecov_script}" \
+            || Error "Failed to download codecov script"
+        bash "${codecov_script}" || Error "Codecov script execution failed"
         echo "Uploaded code coverage"
     else
         echo "Not uploading coverage since we are not in a CI job"
