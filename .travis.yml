@@ -23,10 +23,6 @@ before_cache:
   - rm -rf target/cov "$TRAVIS_HOME/.cargo/registry/src"
 
 matrix:
-  # Clear the whole matrix
-  exclude:
-    - os: linux
-    - os: osx
   # Add each target manually
   include:
     - os: linux
