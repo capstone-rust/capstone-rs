@@ -16,11 +16,9 @@ pub use capstone_sys::arm64_reg as Arm64Reg;
 pub use capstone_sys::arm64_cc as Arm64CC;
 pub use capstone_sys::arm64_extender as Arm64Extender;
 pub use capstone_sys::arm64_vas as Arm64Vas;
-pub use capstone_sys::arm64_vess as Arm64Vess;
 pub use capstone_sys::arm64_pstate as Arm64Pstate;
 pub use capstone_sys::arm64_prefetch_op as ArmPrefetchOp;
 pub use capstone_sys::arm64_barrier_op as ArmBarrierOp;
-pub use capstone_sys::arm64_msr_reg as Arm64MsrReg;
 pub use capstone_sys::arm64_sysreg as Arm64Sysreg;
 pub use capstone_sys::arm64_ic_op as Arm64IcOp;
 pub use capstone_sys::arm64_dc_op as Arm64DcOp;
@@ -87,9 +85,6 @@ pub struct Arm64Operand {
     /// Vector arrangement specifier (for FloatingPoint/Advanced SIMD insn)
     pub vas: Arm64Vas,
 
-    /// Vector element size specifier
-    pub vess: Arm64Vess,
-
     /// Shifter of this operand
     pub shift: Arm64Shift,
 
@@ -118,11 +113,11 @@ pub enum Arm64OperandType {
     /// C-IMM
     Cimm(i64),
 
-    /// System registers
+    /// System register MRS (move the contents of a PSR to a general-purpose register)
     RegMrs(Arm64Sysreg),
 
-    /// MSR registers
-    RegMsr(Arm64MsrReg),
+    /// System register MSR (move to system coprocessor register from ARM register)
+    RegMsr(Arm64Sysreg),
 
     /// System PState Field (MSR instruction)
     Pstate(Arm64Pstate),
@@ -194,7 +189,6 @@ impl Default for Arm64Operand {
         Arm64Operand {
             vector_index: None,
             vas: Arm64Vas::ARM64_VAS_INVALID,
-            vess: Arm64Vess::ARM64_VESS_INVALID,
             shift: Arm64Shift::Invalid,
             ext: Arm64Extender::ARM64_EXT_INVALID,
             op_type: Arm64OperandType::Invalid
@@ -243,7 +237,6 @@ impl<'a> From<&'a cs_arm64_op> for Arm64Operand {
         Arm64Operand {
             vector_index,
             vas: op.vas,
-            vess: op.vess,
             shift,
             ext: op.ext,
             op_type,
@@ -328,8 +321,8 @@ mod test {
         );
         t(
             (ARM64_OP_REG_MSR, cs_arm64_op__bindgen_ty_2 {
-                reg: arm64_msr_reg::ARM64_SYSREG_ICC_EOIR1_EL1 as u32 }),
-            RegMsr(arm64_msr_reg::ARM64_SYSREG_ICC_EOIR1_EL1),
+                reg: arm64_sysreg::ARM64_SYSREG_ICC_EOIR1_EL1 as u32 }),
+            RegMsr(arm64_sysreg::ARM64_SYSREG_ICC_EOIR1_EL1),
         );
         t(
             (ARM64_OP_SYS, cs_arm64_op__bindgen_ty_2 { sys: 42 }),

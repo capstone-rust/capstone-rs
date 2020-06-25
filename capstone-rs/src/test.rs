@@ -251,7 +251,7 @@ fn test_instruction_detail_helper<T>(
             expected_op
         })
         .collect();
-    assert_eq!(expected_ops, arch_ops, "operands do not match");
+    assert_eq!(expected_ops, arch_ops, "operands do not match for \"{}\" (bytes={:02x?})", insn, insn.bytes());
 }
 
 /// Assert instruction belongs or does not belong to groups, testing both insn_belongs_to_group
@@ -1061,7 +1061,6 @@ fn test_arch_arm64_detail() {
     use crate::arch::arm64::Arm64Reg::*;
     use crate::arch::arm64::Arm64Sysreg::*;
     use crate::arch::arm64::Arm64Vas::*;
-    use crate::arch::arm64::Arm64Vess::*;
     use crate::arch::arm64::*;
     use capstone_sys::arm64_op_mem;
 
@@ -1103,7 +1102,7 @@ fn test_arch_arm64_detail() {
                         ..Default::default()
                     },
                     Arm64Operand {
-                        op_type: RegMrs(ARM64_SYSREG_MIDR_EL1),
+                        op_type: Sys(ARM64_SYSREG_MIDR_EL1 as u32),
                         ..Default::default()
                     },
                 ],
@@ -1185,8 +1184,8 @@ fn test_arch_arm64_detail() {
                     s0.clone(),
                     Arm64Operand {
                         vector_index: Some(3),
-                        vess: ARM64_VESS_S,
                         op_type: Reg(RegId(ARM64_REG_V0 as RegIdInt)),
+                        vas: ARM64_VAS_1S,
                         ..Default::default()
                     },
                 ],
@@ -1202,7 +1201,6 @@ fn test_arch_arm64_detail() {
                     },
                     Arm64Operand {
                         vector_index: Some(1),
-                        vess: ARM64_VESS_D,
                         op_type: Reg(RegId(ARM64_REG_V5 as RegIdInt)),
                         ..Default::default()
                     },
@@ -2127,7 +2125,7 @@ fn test_arch_ppc_detail() {
                 b"\x80\x20\x00\x00",
                 &[
                     Reg(RegId(PPC_REG_R1 as RegIdInt)),
-                    Mem(PpcOpMem(ppc_op_mem { base: 44, disp: 0 })),
+                    Mem(PpcOpMem(ppc_op_mem { base: 0, disp: 0 })),
                 ],
             ),
             // lwz     r1, 0(r31)
@@ -2169,9 +2167,9 @@ fn test_arch_ppc_detail() {
                 "crand",
                 b"\x4c\x43\x22\x02",
                 &[
-                    Reg(RegId(PPC_REG_R2 as RegIdInt)),
-                    Reg(RegId(PPC_REG_R3 as RegIdInt)),
-                    Reg(RegId(PPC_REG_R4 as RegIdInt)),
+                    Reg(RegId(PPC_REG_CR0EQ as RegIdInt)),
+                    Reg(RegId(PPC_REG_CR0UN as RegIdInt)),
+                    Reg(RegId(PPC_REG_CR1LT as RegIdInt)),
                 ],
             ),
             // cmpwi   cr2, r3, 0x80
