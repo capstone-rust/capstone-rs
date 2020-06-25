@@ -11,12 +11,15 @@
 # VALGRIND_TESTS: run tests under Valgrind
 
 set -euo pipefail
+set -x
 
 if [ $(basename "$0") = "test.sh" ]; then
     cd "$(dirname "$0")/.."
 else
     echo "Script is sourced"
 fi
+
+pwd
 
 RUST_BACKTRACE=1
 SHOULD_FAIL=${SHOULD_FAIL:-}  # Default to false
