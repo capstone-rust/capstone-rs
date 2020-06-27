@@ -129,6 +129,11 @@ run_kcov() {
 
     (
     set -x
+
+    pwd
+    ls -l ${TARGET}
+    ls -l ${TARGET}/${PROFILE}
+
     for file in ${TARGET}/${PROFILE}/${PROJECT_NAME}-*[^\.d] ${EXAMPLE_BINS} ; do
         "$KCOV" \
             $COVERALLS_ARG \
