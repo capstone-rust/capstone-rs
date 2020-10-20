@@ -664,7 +664,7 @@ macro_rules! define_arch_mods {
             ( mode: $( $mode:ident, )+ )
             ( extra_modes: $( $extra_mode:ident, )* )
             ( syntax: $( $syntax:ident, )* )
-            ( both_endian: $( $endian:ident )* )
+            ( both_endian: $( $endian:expr )* )
         ] )+
     ) => {
         $( pub mod $arch; )+
