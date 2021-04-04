@@ -1061,7 +1061,6 @@ fn test_arch_arm64_detail() {
     use crate::arch::arm64::Arm64Reg::*;
     use crate::arch::arm64::Arm64Sysreg::*;
     use crate::arch::arm64::Arm64Vas::*;
-    use crate::arch::arm64::Arm64Vess::*;
     use crate::arch::arm64::*;
     use capstone_sys::arm64_op_mem;
 
@@ -1185,7 +1184,6 @@ fn test_arch_arm64_detail() {
                     s0.clone(),
                     Arm64Operand {
                         vector_index: Some(3),
-                        vess: ARM64_VESS_S,
                         op_type: Reg(RegId(ARM64_REG_V0 as RegIdInt)),
                         ..Default::default()
                     },
@@ -1202,7 +1200,6 @@ fn test_arch_arm64_detail() {
                     },
                     Arm64Operand {
                         vector_index: Some(1),
-                        vess: ARM64_VESS_D,
                         op_type: Reg(RegId(ARM64_REG_V5 as RegIdInt)),
                         ..Default::default()
                     },

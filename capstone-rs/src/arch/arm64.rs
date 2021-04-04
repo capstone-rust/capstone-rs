@@ -16,7 +16,6 @@ pub use capstone_sys::arm64_reg as Arm64Reg;
 pub use capstone_sys::arm64_cc as Arm64CC;
 pub use capstone_sys::arm64_extender as Arm64Extender;
 pub use capstone_sys::arm64_vas as Arm64Vas;
-pub use capstone_sys::arm64_vess as Arm64Vess;
 pub use capstone_sys::arm64_pstate as Arm64Pstate;
 pub use capstone_sys::arm64_prefetch_op as ArmPrefetchOp;
 pub use capstone_sys::arm64_barrier_op as ArmBarrierOp;
@@ -86,9 +85,6 @@ pub struct Arm64Operand {
 
     /// Vector arrangement specifier (for FloatingPoint/Advanced SIMD insn)
     pub vas: Arm64Vas,
-
-    /// Vector element size specifier
-    pub vess: Arm64Vess,
 
     /// Shifter of this operand
     pub shift: Arm64Shift,
@@ -194,7 +190,6 @@ impl Default for Arm64Operand {
         Arm64Operand {
             vector_index: None,
             vas: Arm64Vas::ARM64_VAS_INVALID,
-            vess: Arm64Vess::ARM64_VESS_INVALID,
             shift: Arm64Shift::Invalid,
             ext: Arm64Extender::ARM64_EXT_INVALID,
             op_type: Arm64OperandType::Invalid
@@ -243,7 +238,6 @@ impl<'a> From<&'a cs_arm64_op> for Arm64Operand {
         Arm64Operand {
             vector_index,
             vas: op.vas,
-            vess: op.vess,
             shift,
             ext: op.ext,
             op_type,
