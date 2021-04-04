@@ -88,7 +88,8 @@ fn build_capstone_cc() {
 
     fn find_c_source_files(dir: &str) -> Vec<String> {
         read_dir_and_filter(dir, |e| {
-            let file_type = e.file_type()
+            let file_type = e
+                .file_type()
                 .expect("Failed to read capstone source directory");
             let file_name = e.file_name().into_string().expect("Invalid filename");
             file_type.is_file() && (file_name.ends_with(".c") || file_name.ends_with(".C"))
@@ -97,7 +98,8 @@ fn build_capstone_cc() {
 
     fn find_arch_dirs() -> Vec<String> {
         read_dir_and_filter(&format!("{}/{}", CAPSTONE_DIR, "arch"), |e| {
-            let file_type = e.file_type()
+            let file_type = e
+                .file_type()
                 .expect("Failed to read capstone source directory");
             file_type.is_dir()
         })
@@ -268,6 +270,15 @@ fn write_bindgen_bindings(
         builder = builder
             .whitelist_type(&arch_type_pattern)
             .constified_enum_module(&const_mod_pattern);
+    }
+
+    {
+        let flags = builder.command_line_flags();
+        let flags_quoted: Vec<String> = flags.iter().map(|x| format!("'{}'", x)).collect();
+        let flags_str = flags_quoted.join(" ");
+        let flags_path = PathBuf::from(env_var("OUT_DIR")).join("cmd.txt");
+        let mut flags_file = File::create(&flags_path).expect("failed to create cmd.txt");
+        flags_file.write(format!("bindgen {}\n", flags_str).as_bytes());
     }
 
     let bindings = builder.generate().expect("Unable to generate bindings");

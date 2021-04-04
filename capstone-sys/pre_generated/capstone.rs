@@ -148,7 +148,7 @@ pub type cs_realloc_t = ::core::option::Option<
 pub type cs_free_t = ::core::option::Option<unsafe extern "C" fn(ptr: *mut libc::c_void)>;
 pub type cs_vsnprintf_t = ::core::option::Option<
     unsafe extern "C" fn(
-        str: *mut libc::c_char,
+        str_: *mut libc::c_char,
         size: usize,
         format: *const libc::c_char,
         ap: *mut __va_list_tag,
