@@ -82,7 +82,7 @@ impl ArmShift {
                     )*
                 }
             }
-        };
+        }
 
         arm_shift_match!(
             imm = [

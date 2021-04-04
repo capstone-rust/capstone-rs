@@ -123,6 +123,8 @@
 
 #![no_std]
 
+// The `vec` macro cannot be imported directly since it conflicts with the `vec` module
+#[allow(unused_imports)]
 #[macro_use]
 extern crate alloc;
 
