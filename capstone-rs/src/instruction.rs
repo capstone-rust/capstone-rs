@@ -249,6 +249,16 @@ impl<'a> Insn<'a> {
     }
 }
 
+impl<'a> TryFrom<*const cs_insn> for Insn<'a> {
+    type Error = ();
+
+    fn try_from(insn: *const cs_insn) -> Result<Self, Self::Error> {
+        Ok(Self {
+            insn: unsafe { *insn },
+            _marker: PhantomData,
+        })
+    }
+}
 impl<'a> Debug for Insn<'a> {
     fn fmt(&self, fmt: &mut Formatter) -> Result<(), Error> {
         fmt.debug_struct("Insn")
