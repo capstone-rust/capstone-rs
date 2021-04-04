@@ -209,6 +209,22 @@ pub struct Insn<'a> {
 pub struct InsnDetail<'a>(pub(crate) &'a cs_detail, pub(crate) Arch);
 
 impl<'a> Insn<'a> {
+    /// Create an Insn from a raw pointer to a capstone cs_insn.
+    ///
+    /// This function serves to allow integration with libraries which generate cs_insn's internally.
+    ///
+    /// Note that this function is unsafe, and assumes that you know what you are doing. In
+    /// particular, it generates a lifetime for the Insn from nothing, and that lifetime is in
+    /// no-way actually tied to the cs_insn itself. It is the responsibility of the caller to
+    /// ensure that the resulting Insn lives only as long as the cs_insn. This function
+    /// assumes that the pointer passed is non-null and a valid cs_insn pointer.
+    pub unsafe fn from_raw(insn: *const cs_insn) -> Self {
+        Self {
+            insn: *insn,
+            _marker: PhantomData,
+        }
+    }
+
     /// The mnemonic for the instruction
     pub fn mnemonic(&self) -> Option<&str> {
         unsafe { str_from_cstr_ptr(self.insn.mnemonic.as_ptr()) }
@@ -249,16 +265,6 @@ impl<'a> Insn<'a> {
     }
 }
 
-impl<'a> TryFrom<*const cs_insn> for Insn<'a> {
-    type Error = ();
-
-    fn try_from(insn: *const cs_insn) -> Result<Self, Self::Error> {
-        Ok(Self {
-            insn: unsafe { *insn },
-            _marker: PhantomData,
-        })
-    }
-}
 impl<'a> Debug for Insn<'a> {
     fn fmt(&self, fmt: &mut Formatter) -> Result<(), Error> {
         fmt.debug_struct("Insn")
@@ -365,7 +371,7 @@ impl<'a> InsnDetail<'a> {
         (*self.0).groups_count
     }
 
-    /// Architecture-specific detail
+    /// Architectore-specific detail
     pub fn arch_detail(&self) -> ArchDetail {
         macro_rules! def_arch_detail_match {
             (
