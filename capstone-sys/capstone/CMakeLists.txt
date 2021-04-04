@@ -1,9 +1,9 @@
 cmake_minimum_required(VERSION 2.6)
 project(capstone)
 
-set(VERSION_MAJOR 4)
+set(VERSION_MAJOR 5)
 set(VERSION_MINOR 0)
-set(VERSION_PATCH 2)
+set(VERSION_PATCH 0)
 
 if(POLICY CMP0042)
   # http://www.cmake.org/cmake/help/v3.0/policy/CMP0042.html
@@ -28,9 +28,11 @@ option(CAPSTONE_BUILD_TESTS "Build tests" ON)
 option(CAPSTONE_BUILD_CSTOOL "Build cstool" ON)
 option(CAPSTONE_USE_DEFAULT_ALLOC "Use default memory allocation functions" ON)
 option(CAPSTONE_ARCHITECTURE_DEFAULT "Whether architectures are enabled by default" ON)
+option(CAPSTONE_DEBUG "Whether to enable extra debug assertions" OFF)
+option(CAPSTONE_INSTALL "Generate install target" OFF)
 
-set(SUPPORTED_ARCHITECTURES ARM ARM64 M68K MIPS PPC SPARC SYSZ XCORE X86 TMS320C64X M680X EVM)
-set(SUPPORTED_ARCHITECTURE_LABELS ARM ARM64 M68K MIPS PowerPC Sparc SystemZ XCore x86 TMS320C64x M680x EVM)
+set(SUPPORTED_ARCHITECTURES ARM ARM64 M68K MIPS PPC SPARC SYSZ XCORE X86 TMS320C64X M680X EVM MOS65XX WASM BPF RISCV)
+set(SUPPORTED_ARCHITECTURE_LABELS ARM ARM64 M68K MIPS PowerPC Sparc SystemZ XCore x86 TMS320C64x M680x EVM MOS65XX WASM BPF RISCV)
 
 list(LENGTH SUPPORTED_ARCHITECTURES count)
 math(EXPR count "${count}-1")
@@ -77,6 +79,10 @@ if (CAPSTONE_X86_ATT_DISABLE)
     add_definitions(-DCAPSTONE_X86_ATT_DISABLE)
 endif ()
 
+if (CAPSTONE_DEBUG)
+    add_definitions(-DCAPSTONE_DEBUG)
+endif ()
+
 ## sources
 set(SOURCES_ENGINE
     cs.c
@@ -104,6 +110,7 @@ set(HEADERS_COMMON
     include/capstone/arm.h
     include/capstone/capstone.h
     include/capstone/evm.h
+    include/capstone/wasm.h
     include/capstone/mips.h
     include/capstone/ppc.h
     include/capstone/x86.h
@@ -113,6 +120,9 @@ set(HEADERS_COMMON
     include/capstone/m68k.h
     include/capstone/tms320c64x.h
     include/capstone/m680x.h
+    include/capstone/mos65xx.h
+    include/capstone/bpf.h
+    include/capstone/riscv.h
     include/capstone/platform.h
     )
 
@@ -131,27 +141,19 @@ if (CAPSTONE_ARM_SUPPORT)
         arch/ARM/ARMAddressingModes.h
         arch/ARM/ARMBaseInfo.h
         arch/ARM/ARMDisassembler.h
+        arch/ARM/ARMInstPrinter.h
+        arch/ARM/ARMMapping.h
         arch/ARM/ARMGenAsmWriter.inc
         arch/ARM/ARMGenDisassemblerTables.inc
         arch/ARM/ARMGenInstrInfo.inc
         arch/ARM/ARMGenRegisterInfo.inc
         arch/ARM/ARMGenSubtargetInfo.inc
-        arch/ARM/ARMInstPrinter.h
-        arch/ARM/ARMMapping.h
         arch/ARM/ARMMappingInsn.inc
         arch/ARM/ARMMappingInsnOp.inc
-        )
-    set(HEADERS_ARM
-        arch/ARM/ARMAddressingModes.h
-        arch/ARM/ARMBaseInfo.h
-        arch/ARM/ARMDisassembler.h
-        arch/ARM/ARMGenAsmWriter.inc
-        arch/ARM/ARMGenDisassemblerTables.inc
-        arch/ARM/ARMGenInstrInfo.inc
-        arch/ARM/ARMGenRegisterInfo.inc
-        arch/ARM/ARMGenSubtargetInfo.inc
-        arch/ARM/ARMInstPrinter.h
-        arch/ARM/ARMMapping.h
+        arch/ARM/ARMGenRegisterName.inc
+        arch/ARM/ARMGenRegisterName_digit.inc
+        arch/ARM/ARMGenSystemRegister.inc
+        arch/ARM/ARMMappingInsnName.inc
         )
     set(TEST_SOURCES ${TEST_SOURCES} test_arm.c)
 endif ()
@@ -169,27 +171,21 @@ if (CAPSTONE_ARM64_SUPPORT)
         arch/AArch64/AArch64AddressingModes.h
         arch/AArch64/AArch64BaseInfo.h
         arch/AArch64/AArch64Disassembler.h
+        arch/AArch64/AArch64InstPrinter.h
+        arch/AArch64/AArch64Mapping.h
         arch/AArch64/AArch64GenAsmWriter.inc
         arch/AArch64/AArch64GenDisassemblerTables.inc
         arch/AArch64/AArch64GenInstrInfo.inc
         arch/AArch64/AArch64GenRegisterInfo.inc
+        arch/AArch64/AArch64GenRegisterName.inc
+        arch/AArch64/AArch64GenRegisterV.inc
         arch/AArch64/AArch64GenSubtargetInfo.inc
-        arch/AArch64/AArch64InstPrinter.h
-        arch/AArch64/AArch64Mapping.h
+        arch/AArch64/AArch64GenSystemOperands.inc
+        arch/AArch64/AArch64GenSystemOperands_enum.inc
         arch/AArch64/AArch64MappingInsn.inc
-        )
-    set(HEADERS_ARM64
-        arch/AArch64/AArch64AddressingModes.h
-        arch/AArch64/AArch64BaseInfo.h
-        arch/AArch64/AArch64Disassembler.h
-        arch/AArch64/AArch64GenAsmWriter.inc
-        arch/AArch64/AArch64GenDisassemblerTables.inc
-        arch/AArch64/AArch64GenInstrInfo.inc
-        arch/AArch64/AArch64GenRegisterInfo.inc
-        arch/AArch64/AArch64GenSubtargetInfo.inc
-        arch/AArch64/AArch64InstPrinter.h
-        arch/AArch64/AArch64Mapping.h
-        )
+        arch/AArch64/AArch64MappingInsnName.inc
+        arch/AArch64/AArch64MappingInsnOp.inc
+    )
     set(TEST_SOURCES ${TEST_SOURCES} test_arm64.c)
 endif ()
 
@@ -236,25 +232,17 @@ if (CAPSTONE_PPC_SUPPORT)
     set(HEADERS_PPC
         arch/PowerPC/PPCDisassembler.h
         arch/PowerPC/PPCGenAsmWriter.inc
-        arch/PowerPC/PPCGenDisassemblerTables.inc
-        arch/PowerPC/PPCGenInstrInfo.inc
-        arch/PowerPC/PPCGenRegisterInfo.inc
-        arch/PowerPC/PPCGenSubtargetInfo.inc
         arch/PowerPC/PPCInstPrinter.h
         arch/PowerPC/PPCMapping.h
-        arch/PowerPC/PPCMappingInsn.inc
         arch/PowerPC/PPCPredicates.h
-        )
-    set(HEADERS_PPC
-        arch/PowerPC/PPCDisassembler.h
         arch/PowerPC/PPCGenAsmWriter.inc
+        arch/PowerPC/PPCGenRegisterName.inc
         arch/PowerPC/PPCGenDisassemblerTables.inc
-        arch/PowerPC/PPCGenInstrInfo.inc
-        arch/PowerPC/PPCGenRegisterInfo.inc
+        arch/PowerPC/PPCMappingInsn.inc
+        arch/PowerPC/PPCMappingInsnName.inc
         arch/PowerPC/PPCGenSubtargetInfo.inc
-        arch/PowerPC/PPCInstPrinter.h
-        arch/PowerPC/PPCMapping.h
-        arch/PowerPC/PPCPredicates.h
+        arch/PowerPC/PPCGenRegisterInfo.inc
+        arch/PowerPC/PPCGenInstrInfo.inc
         )
     set(TEST_SOURCES ${TEST_SOURCES} test_ppc.c)
 endif ()
@@ -265,6 +253,7 @@ if (CAPSTONE_X86_SUPPORT)
         arch/X86/X86Disassembler.c
         arch/X86/X86DisassemblerDecoder.c
         arch/X86/X86IntelInstPrinter.c
+        arch/X86/X86InstPrinterCommon.c
         arch/X86/X86Mapping.c
         arch/X86/X86Module.c
     )
@@ -273,21 +262,38 @@ if (CAPSTONE_X86_SUPPORT)
         arch/X86/X86Disassembler.h
         arch/X86/X86DisassemblerDecoder.h
         arch/X86/X86DisassemblerDecoderCommon.h
-        arch/X86/X86InstPrinter.h
-        arch/X86/X86Mapping.h
         arch/X86/X86GenAsmWriter.inc
-        arch/X86/X86GenAsmWriter_reduce.inc
         arch/X86/X86GenAsmWriter1.inc
         arch/X86/X86GenAsmWriter1_reduce.inc
+        arch/X86/X86GenAsmWriter_reduce.inc
         arch/X86/X86GenDisassemblerTables.inc
         arch/X86/X86GenDisassemblerTables_reduce.inc
         arch/X86/X86GenInstrInfo.inc
         arch/X86/X86GenInstrInfo_reduce.inc
         arch/X86/X86GenRegisterInfo.inc
+        arch/X86/X86InstPrinter.h
+        arch/X86/X86Mapping.h
         arch/X86/X86MappingInsn.inc
-        arch/X86/X86MappingInsn_reduce.inc
         arch/X86/X86MappingInsnOp.inc
         arch/X86/X86MappingInsnOp_reduce.inc
+        arch/X86/X86MappingInsn_reduce.inc
+        )
+    set(HEADERS_X86
+        arch/X86/X86BaseInfo.h
+        arch/X86/X86Disassembler.h
+        arch/X86/X86DisassemblerDecoder.h
+        arch/X86/X86DisassemblerDecoderCommon.h
+        arch/X86/X86GenAsmWriter.inc
+        arch/X86/X86GenAsmWriter1.inc
+        arch/X86/X86GenAsmWriter1_reduce.inc
+        arch/X86/X86GenAsmWriter_reduce.inc
+        arch/X86/X86GenDisassemblerTables.inc
+        arch/X86/X86GenDisassemblerTables_reduce.inc
+        arch/X86/X86GenInstrInfo.inc
+        arch/X86/X86GenInstrInfo_reduce.inc
+        arch/X86/X86GenRegisterInfo.inc
+        arch/X86/X86InstPrinter.h
+        arch/X86/X86Mapping.h
         )
     if (NOT CAPSTONE_BUILD_DIET)
         set(SOURCES_X86 ${SOURCES_X86} arch/X86/X86ATTInstPrinter.c)
@@ -331,6 +337,7 @@ if (CAPSTONE_SYSZ_SUPPORT)
         arch/SystemZ/SystemZDisassembler.h
         arch/SystemZ/SystemZGenAsmWriter.inc
         arch/SystemZ/SystemZGenDisassemblerTables.inc
+        arch/SystemZ/SystemZGenInsnNameMaps.inc
         arch/SystemZ/SystemZGenInstrInfo.inc
         arch/SystemZ/SystemZGenRegisterInfo.inc
         arch/SystemZ/SystemZGenSubtargetInfo.inc
@@ -428,6 +435,76 @@ if (CAPSTONE_EVM_SUPPORT)
     set(TEST_SOURCES ${TEST_SOURCES} test_evm.c)
 endif ()
 
+if (CAPSTONE_WASM_SUPPORT)
+    add_definitions(-DCAPSTONE_HAS_WASM)
+    set(SOURCES_WASM
+        arch/WASM/WASMDisassembler.c
+        arch/WASM/WASMInstPrinter.c
+        arch/WASM/WASMMapping.c
+        arch/WASM/WASMModule.c
+    )
+    set(HEADERS_WASM
+        arch/WASM/WASMDisassembler.h
+        arch/WASM/WASMInstPrinter.h
+        arch/WASM/WASMMapping.h
+        )
+    set(TEST_SOURCES ${TEST_SOURCES} test_wasm.c)
+endif ()
+
+if (CAPSTONE_MOS65XX_SUPPORT)
+    add_definitions(-DCAPSTONE_HAS_MOS65XX)
+    set(SOURCES_MOS65XX
+            arch/MOS65XX/MOS65XXModule.c
+            arch/MOS65XX/MOS65XXDisassembler.c)
+    set(HEADERS_SOURCES_MOS65XX
+            arch/MOS65XX/MOS65XXDisassembler.h
+    )
+    set(TEST_SOURCES ${TEST_SOURCES} test_mos65xx.c)
+endif ()
+
+if (CAPSTONE_BPF_SUPPORT)
+    add_definitions(-DCAPSTONE_HAS_BPF)
+    set(SOURCES_BPF
+        arch/BPF/BPFDisassembler.c
+        arch/BPF/BPFInstPrinter.c
+        arch/BPF/BPFMapping.c
+        arch/BPF/BPFModule.c
+	)
+    set(HEADERS_BPF
+        arch/BPF/BPFConstants.h
+        arch/BPF/BPFDisassembler.h
+        arch/BPF/BPFInstPrinter.h
+        arch/BPF/BPFMapping.h
+        arch/BPF/BPFModule.h
+    )
+    set(TEST_SOURCES ${TEST_SOURCES} test_bpf.c)
+endif ()
+
+if (CAPSTONE_RISCV_SUPPORT)
+	add_definitions(-DCAPSTONE_HAS_RISCV)
+	set(SOURCES_RISCV
+		arch/RISCV/RISCVDisassembler.c
+		arch/RISCV/RISCVInstPrinter.c
+		arch/RISCV/RISCVMapping.c
+		arch/RISCV/RISCVModule.c
+	)
+	set(HEADERS_RISCV
+		arch/RISCV/RISCVBaseInfo.h
+	    	arch/RISCV/RISCVDisassembler.h
+	    	arch/RISCV/RISCVInstPrinter.h
+	    	arch/RISCV/RISCVMapping.h
+	    	arch/RISCV/RISCVModule.h
+	    	arch/RISCV/RISCVGenAsmWriter.inc
+	    	arch/RISCV/RISCVGenDisassemblerTables.inc
+	    	arch/RISCV/RISCVGenInsnNameMaps.inc
+	    	arch/RISCV/RISCVGenInstrInfo.inc
+	    	arch/RISCV/RISCVGenRegisterInfo.inc
+	    	arch/RISCV/RISCVGenSubtargetInfo.inc
+	    	arch/RISCV/RISCVMappingInsn.inc
+	)
+	set(TEST_SOURCES ${TEST_SOURCES} test_riscv.c)
+endif ()
+
 if (CAPSTONE_OSXKERNEL_SUPPORT)
     add_definitions(-DCAPSTONE_HAS_OSXKERNEL)
 endif ()
@@ -446,6 +523,10 @@ set(ALL_SOURCES
     ${SOURCES_TMS320C64X}
     ${SOURCES_M680X}
     ${SOURCES_EVM}
+    ${SOURCES_WASM}
+    ${SOURCES_MOS65XX}
+    ${SOURCES_BPF}
+    ${SOURCES_RISCV}
     )
 
 set(ALL_HEADERS
@@ -463,6 +544,10 @@ set(ALL_HEADERS
     ${HEADERS_TMS320C64X}
     ${HEADERS_M680X}
     ${HEADERS_EVM}
+    ${HEADERS_WASM}
+    ${HEADERS_MOS65XX}
+    ${HEADERS_BPF}
+    ${HEADERS_RISCV}
     )
 
 include_directories("${PROJECT_SOURCE_DIR}/include")
@@ -526,7 +611,7 @@ if (CAPSTONE_BUILD_TESTS)
         add_test(NAME "capstone_${ARM_REGRESS_BIN}" COMMAND ${ARM_REGRESS_BIN})
     endif()
     # fuzz target built with the tests
-    add_executable(fuzz_disasm suite/fuzz/onefile.c suite/fuzz/fuzz_disasm.c)
+    add_executable(fuzz_disasm suite/fuzz/onefile.c suite/fuzz/fuzz_disasm.c suite/fuzz/platform.c)
     target_link_libraries(fuzz_disasm ${default-target})
 endif ()
 
@@ -543,6 +628,10 @@ source_group("Source\\M68K" FILES ${SOURCES_M68K})
 source_group("Source\\TMS320C64x" FILES ${SOURCES_TMS320C64X})
 source_group("Source\\M680X" FILES ${SOURCES_M680X})
 source_group("Source\\EVM" FILES ${SOURCES_EVM})
+source_group("Source\\WASM" FILES ${SOURCES_WASM})
+source_group("Source\\MOS65XX" FILES ${SOURCES_MOS65XX})
+source_group("Source\\BPF" FILES ${SOURCES_BPF})
+source_group("Source\\RISCV" FILES ${SOURCES_RISCV})
 
 source_group("Include\\Common" FILES ${HEADERS_COMMON})
 source_group("Include\\Engine" FILES ${HEADERS_ENGINE})
@@ -558,26 +647,61 @@ source_group("Include\\M68K" FILES ${HEADERS_M68K})
 source_group("Include\\TMS320C64x" FILES ${HEADERS_TMS320C64X})
 source_group("Include\\M680X" FILES ${HEADERS_MC680X})
 source_group("Include\\EVM" FILES ${HEADERS_EVM})
+source_group("Include\\WASM" FILES ${HEADERS_WASM})
+source_group("Include\\MOS65XX" FILES ${HEADERS_MOS65XX})
+source_group("Include\\BPF" FILES ${HEADERS_BPF})
+source_group("Include\\RISCV" FILES ${HEADERS_RISCV})
 
 ### test library 64bit routine:
 include("GNUInstallDirs")
 
 ## installation
+if (CAPSTONE_INSTALL)
 install(FILES ${HEADERS_COMMON} DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/capstone)
+endif ()
 configure_file(capstone.pc.in ${CMAKE_BINARY_DIR}/capstone.pc @ONLY)
+
+include(CMakePackageConfigHelpers)
+set(CAPSTONE_CMAKE_CONFIG_INSTALL_DIR "${CMAKE_INSTALL_LIBDIR}/cmake/capstone")
+configure_package_config_file(
+    capstone-config.cmake.in
+    ${CMAKE_CURRENT_BINARY_DIR}/capstone-config.cmake
+    INSTALL_DESTINATION ${CAPSTONE_CMAKE_CONFIG_INSTALL_DIR}
+)
+write_basic_package_version_file(
+    ${CMAKE_CURRENT_BINARY_DIR}/capstone-config-version.cmake
+    VERSION ${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}
+    COMPATIBILITY SameMajorVersion
+)
+
+if (CAPSTONE_INSTALL)
+install(FILES
+    "${CMAKE_CURRENT_BINARY_DIR}/capstone-config.cmake"
+    "${CMAKE_CURRENT_BINARY_DIR}/capstone-config-version.cmake"
+    DESTINATION ${CAPSTONE_CMAKE_CONFIG_INSTALL_DIR}
+)
 
 if (CAPSTONE_BUILD_STATIC)
     install(TARGETS capstone-static
-            RUNTIME DESTINATION bin
+            EXPORT capstone-targets
+            RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
             LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
-            ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR})
+            ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+            INCLUDES DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
 endif ()
 
 if (CAPSTONE_BUILD_SHARED)
     install(TARGETS capstone-shared
-            RUNTIME DESTINATION bin
+            EXPORT capstone-targets
+            RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
             LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
-            ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR})
+            ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+            INCLUDES DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
+endif ()
+
+install(EXPORT capstone-targets
+        NAMESPACE capstone::
+        DESTINATION ${CAPSTONE_CMAKE_CONFIG_INSTALL_DIR})
 endif ()
 
 if (CAPSTONE_BUILD_SHARED AND CAPSTONE_BUILD_CSTOOL)
@@ -585,6 +709,8 @@ FILE(GLOB CSTOOL_SRC cstool/*.c)
 add_executable(cstool ${CSTOOL_SRC})
 target_link_libraries(cstool ${default-target})
 
-install(TARGETS cstool DESTINATION bin)
+if (CAPSTONE_INSTALL)
+install(TARGETS cstool DESTINATION ${CMAKE_INSTALL_BINDIR})
 install(FILES ${CMAKE_BINARY_DIR}/capstone.pc DESTINATION ${CMAKE_INSTALL_LIBDIR}/pkgconfig)
+endif ()
 endif ()
