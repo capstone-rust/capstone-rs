@@ -219,7 +219,7 @@ impl Arm64Shift {
                     )*
                 }
             }
-        };
+        }
 
         arm64_shift_match!(
             Lsl = ARM64_SFT_LSL,
