@@ -19,7 +19,6 @@ pub use capstone_sys::arm64_vas as Arm64Vas;
 pub use capstone_sys::arm64_pstate as Arm64Pstate;
 pub use capstone_sys::arm64_prefetch_op as ArmPrefetchOp;
 pub use capstone_sys::arm64_barrier_op as ArmBarrierOp;
-pub use capstone_sys::arm64_msr_reg as Arm64MsrReg;
 pub use capstone_sys::arm64_sysreg as Arm64Sysreg;
 pub use capstone_sys::arm64_ic_op as Arm64IcOp;
 pub use capstone_sys::arm64_dc_op as Arm64DcOp;
@@ -118,7 +117,7 @@ pub enum Arm64OperandType {
     RegMrs(Arm64Sysreg),
 
     /// MSR registers
-    RegMsr(Arm64MsrReg),
+    RegMsr(Arm64Sysreg),
 
     /// System PState Field (MSR instruction)
     Pstate(Arm64Pstate),
@@ -322,8 +321,8 @@ mod test {
         );
         t(
             (ARM64_OP_REG_MSR, cs_arm64_op__bindgen_ty_2 {
-                reg: arm64_msr_reg::ARM64_SYSREG_ICC_EOIR1_EL1 as u32 }),
-            RegMsr(arm64_msr_reg::ARM64_SYSREG_ICC_EOIR1_EL1),
+                reg: arm64_sysreg::ARM64_SYSREG_ICC_EOIR1_EL1 as u32 }),
+            RegMsr(arm64_sysreg::ARM64_SYSREG_ICC_EOIR1_EL1),
         );
         t(
             (ARM64_OP_SYS, cs_arm64_op__bindgen_ty_2 { sys: 42 }),
