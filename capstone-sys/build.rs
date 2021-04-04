@@ -88,7 +88,8 @@ fn build_capstone_cc() {
 
     fn find_c_source_files(dir: &str) -> Vec<String> {
         read_dir_and_filter(dir, |e| {
-            let file_type = e.file_type()
+            let file_type = e
+                .file_type()
                 .expect("Failed to read capstone source directory");
             let file_name = e.file_name().into_string().expect("Invalid filename");
             file_type.is_file() && (file_name.ends_with(".c") || file_name.ends_with(".C"))
@@ -97,7 +98,8 @@ fn build_capstone_cc() {
 
     fn find_arch_dirs() -> Vec<String> {
         read_dir_and_filter(&format!("{}/{}", CAPSTONE_DIR, "arch"), |e| {
-            let file_type = e.file_type()
+            let file_type = e
+                .file_type()
                 .expect("Failed to read capstone source directory");
             file_type.is_dir()
         })
