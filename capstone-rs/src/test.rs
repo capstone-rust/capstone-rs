@@ -3090,3 +3090,22 @@ fn test_insn_size_and_alignment() {
         assert_eq!(original.id(), transmuted.id());
     }
 }
+
+#[test]
+fn test_insn_from_raw() {
+    use capstone_sys::cs_insn;
+
+    let cs = Capstone::new()
+        .x86()
+        .mode(x86::ArchMode::Mode64)
+        .build()
+        .unwrap();
+
+    let insns = cs.disasm_all(X86_CODE, START_TEST_ADDR).unwrap();
+    for insn in insns.iter() {
+        let raw_insn = &insn.insn as *const cs_insn;
+        let from_raw_insn = unsafe { Insn::from_raw(raw_insn) };
+        assert_eq!(format!("{:?}", from_raw_insn), format!("{:?}", insn));
+    }
+
+}
