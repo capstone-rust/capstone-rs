@@ -1,9 +1,9 @@
 cmake_minimum_required(VERSION 2.6)
 project(capstone)
 
-set(VERSION_MAJOR 4)
+set(VERSION_MAJOR 5)
 set(VERSION_MINOR 0)
-set(VERSION_PATCH 2)
+set(VERSION_PATCH 0)
 
 if(POLICY CMP0042)
   # http://www.cmake.org/cmake/help/v3.0/policy/CMP0042.html
@@ -28,9 +28,10 @@ option(CAPSTONE_BUILD_TESTS "Build tests" ON)
 option(CAPSTONE_BUILD_CSTOOL "Build cstool" ON)
 option(CAPSTONE_USE_DEFAULT_ALLOC "Use default memory allocation functions" ON)
 option(CAPSTONE_ARCHITECTURE_DEFAULT "Whether architectures are enabled by default" ON)
+option(CAPSTONE_INSTALL "Generate install target" ON)
 
-set(SUPPORTED_ARCHITECTURES ARM ARM64 M68K MIPS PPC SPARC SYSZ XCORE X86 TMS320C64X M680X EVM)
-set(SUPPORTED_ARCHITECTURE_LABELS ARM ARM64 M68K MIPS PowerPC Sparc SystemZ XCore x86 TMS320C64x M680x EVM)
+set(SUPPORTED_ARCHITECTURES ARM ARM64 M68K MIPS PPC SPARC SYSZ XCORE X86 TMS320C64X M680X EVM MOS65XX)
+set(SUPPORTED_ARCHITECTURE_LABELS ARM ARM64 M68K MIPS PowerPC Sparc SystemZ XCore x86 TMS320C64x M680x EVM MOS65XX)
 
 list(LENGTH SUPPORTED_ARCHITECTURES count)
 math(EXPR count "${count}-1")
@@ -113,6 +114,7 @@ set(HEADERS_COMMON
     include/capstone/m68k.h
     include/capstone/tms320c64x.h
     include/capstone/m680x.h
+    include/capstone/mos65xx.h
     include/capstone/platform.h
     )
 
@@ -273,21 +275,38 @@ if (CAPSTONE_X86_SUPPORT)
         arch/X86/X86Disassembler.h
         arch/X86/X86DisassemblerDecoder.h
         arch/X86/X86DisassemblerDecoderCommon.h
-        arch/X86/X86InstPrinter.h
-        arch/X86/X86Mapping.h
         arch/X86/X86GenAsmWriter.inc
-        arch/X86/X86GenAsmWriter_reduce.inc
         arch/X86/X86GenAsmWriter1.inc
         arch/X86/X86GenAsmWriter1_reduce.inc
+        arch/X86/X86GenAsmWriter_reduce.inc
         arch/X86/X86GenDisassemblerTables.inc
         arch/X86/X86GenDisassemblerTables_reduce.inc
         arch/X86/X86GenInstrInfo.inc
         arch/X86/X86GenInstrInfo_reduce.inc
         arch/X86/X86GenRegisterInfo.inc
+        arch/X86/X86InstPrinter.h
+        arch/X86/X86Mapping.h
         arch/X86/X86MappingInsn.inc
-        arch/X86/X86MappingInsn_reduce.inc
         arch/X86/X86MappingInsnOp.inc
         arch/X86/X86MappingInsnOp_reduce.inc
+        arch/X86/X86MappingInsn_reduce.inc
+        )
+    set(HEADERS_X86
+        arch/X86/X86BaseInfo.h
+        arch/X86/X86Disassembler.h
+        arch/X86/X86DisassemblerDecoder.h
+        arch/X86/X86DisassemblerDecoderCommon.h
+        arch/X86/X86GenAsmWriter.inc
+        arch/X86/X86GenAsmWriter1.inc
+        arch/X86/X86GenAsmWriter1_reduce.inc
+        arch/X86/X86GenAsmWriter_reduce.inc
+        arch/X86/X86GenDisassemblerTables.inc
+        arch/X86/X86GenDisassemblerTables_reduce.inc
+        arch/X86/X86GenInstrInfo.inc
+        arch/X86/X86GenInstrInfo_reduce.inc
+        arch/X86/X86GenRegisterInfo.inc
+        arch/X86/X86InstPrinter.h
+        arch/X86/X86Mapping.h
         )
     if (NOT CAPSTONE_BUILD_DIET)
         set(SOURCES_X86 ${SOURCES_X86} arch/X86/X86ATTInstPrinter.c)
@@ -331,6 +350,7 @@ if (CAPSTONE_SYSZ_SUPPORT)
         arch/SystemZ/SystemZDisassembler.h
         arch/SystemZ/SystemZGenAsmWriter.inc
         arch/SystemZ/SystemZGenDisassemblerTables.inc
+        arch/SystemZ/SystemZGenInsnNameMaps.inc
         arch/SystemZ/SystemZGenInstrInfo.inc
         arch/SystemZ/SystemZGenRegisterInfo.inc
         arch/SystemZ/SystemZGenSubtargetInfo.inc
@@ -428,6 +448,17 @@ if (CAPSTONE_EVM_SUPPORT)
     set(TEST_SOURCES ${TEST_SOURCES} test_evm.c)
 endif ()
 
+if (CAPSTONE_MOS65XX_SUPPORT)
+    add_definitions(-DCAPSTONE_HAS_MOS65XX)
+    set(SOURCES_MOS65XX
+            arch/MOS65XX/MOS65XXModule.c
+            arch/MOS65XX/MOS65XXDisassembler.c)
+    set(HEADERS_SOURCES_MOS65XX
+            arch/MOS65XX/MOS65XXDisassembler.h
+    )
+    set(TEST_SOURCES ${TEST_SOURCES} test_mos65xx.c)
+endif ()
+
 if (CAPSTONE_OSXKERNEL_SUPPORT)
     add_definitions(-DCAPSTONE_HAS_OSXKERNEL)
 endif ()
@@ -446,6 +477,7 @@ set(ALL_SOURCES
     ${SOURCES_TMS320C64X}
     ${SOURCES_M680X}
     ${SOURCES_EVM}
+    ${SOURCES_MOS65XX}
     )
 
 set(ALL_HEADERS
@@ -463,6 +495,7 @@ set(ALL_HEADERS
     ${HEADERS_TMS320C64X}
     ${HEADERS_M680X}
     ${HEADERS_EVM}
+    ${HEADERS_MOS65XX}
     )
 
 include_directories("${PROJECT_SOURCE_DIR}/include")
@@ -543,6 +576,7 @@ source_group("Source\\M68K" FILES ${SOURCES_M68K})
 source_group("Source\\TMS320C64x" FILES ${SOURCES_TMS320C64X})
 source_group("Source\\M680X" FILES ${SOURCES_M680X})
 source_group("Source\\EVM" FILES ${SOURCES_EVM})
+source_group("Source\\MOS65XX" FILES ${SOURCES_MOS65XX})
 
 source_group("Include\\Common" FILES ${HEADERS_COMMON})
 source_group("Include\\Engine" FILES ${HEADERS_ENGINE})
@@ -558,22 +592,25 @@ source_group("Include\\M68K" FILES ${HEADERS_M68K})
 source_group("Include\\TMS320C64x" FILES ${HEADERS_TMS320C64X})
 source_group("Include\\M680X" FILES ${HEADERS_MC680X})
 source_group("Include\\EVM" FILES ${HEADERS_EVM})
+source_group("Include\\MOS65XX" FILES ${HEADERS_MOS65XX})
 
 ### test library 64bit routine:
 include("GNUInstallDirs")
 
 ## installation
-install(FILES ${HEADERS_COMMON} DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/capstone)
+if (CAPSTONE_INSTALL)
+    install(FILES ${HEADERS_COMMON} DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/capstone)
+endif ()
 configure_file(capstone.pc.in ${CMAKE_BINARY_DIR}/capstone.pc @ONLY)
 
-if (CAPSTONE_BUILD_STATIC)
+if (CAPSTONE_BUILD_STATIC AND CAPSTONE_INSTALL)
     install(TARGETS capstone-static
             RUNTIME DESTINATION bin
             LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
             ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR})
 endif ()
 
-if (CAPSTONE_BUILD_SHARED)
+if (CAPSTONE_BUILD_SHARED AND CAPSTONE_INSTALL)
     install(TARGETS capstone-shared
             RUNTIME DESTINATION bin
             LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
@@ -585,6 +622,8 @@ FILE(GLOB CSTOOL_SRC cstool/*.c)
 add_executable(cstool ${CSTOOL_SRC})
 target_link_libraries(cstool ${default-target})
 
-install(TARGETS cstool DESTINATION bin)
-install(FILES ${CMAKE_BINARY_DIR}/capstone.pc DESTINATION ${CMAKE_INSTALL_LIBDIR}/pkgconfig)
+if (CAPSTONE_INSTALL)
+    install(TARGETS cstool DESTINATION bin)
+    install(FILES ${CMAKE_BINARY_DIR}/capstone.pc DESTINATION ${CMAKE_INSTALL_LIBDIR}/pkgconfig)
+endif ()
 endif ()

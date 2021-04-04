@@ -331,11 +331,11 @@ static void _printOperand(MCInst *MI, unsigned OpNo, SStream *O)
 	if (MCOperand_isReg(Op)) {
 		printRegName(O, MCOperand_getReg(Op));
 	} else if (MCOperand_isImm(Op)) {
-		// Print X86 immediates as signed values.
-		int64_t imm = MCOperand_getImm(Op);
 		uint8_t encsize;
 		uint8_t opsize = X86_immediate_size(MCInst_getOpcode(MI), &encsize);
 
+		// Print X86 immediates as signed values.
+		int64_t imm = MCOperand_getImm(Op);
 		if (imm < 0) {
 			if (MI->csh->imm_unsigned) {
 				if (opsize) {

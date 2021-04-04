@@ -1,8 +1,10 @@
 Capstone Engine
 ===============
 
-[![Build Status](https://travis-ci.org/aquynh/capstone.svg?branch=v4)](https://travis-ci.org/aquynh/capstone)
-[![Build status](https://ci.appveyor.com/api/projects/status/a4wvbn89wu3pinas/branch/v4?svg=true)](https://ci.appveyor.com/project/aquynh/capstone/branch/v4)
+[![Build Status](https://travis-ci.org/aquynh/capstone.svg?branch=master)](https://travis-ci.org/aquynh/capstone)
+[![Build status](https://ci.appveyor.com/api/projects/status/a4wvbn89wu3pinas/branch/master?svg=true)](https://ci.appveyor.com/project/aquynh/capstone/branch/master)
+[![pypi package](https://badge.fury.io/py/capstone.svg)](https://pypi.python.org/pypi/capstone)
+[![pypi downloads](https://pepy.tech/badge/capstone)](https://pepy.tech/project/capstone)
 
 Capstone is a disassembly framework with the target of becoming the ultimate
 disasm engine for binary analysis and reversing in the security community.
@@ -11,7 +13,7 @@ Created by Nguyen Anh Quynh, then developed and maintained by a small community,
 Capstone offers some unparalleled features:
 
 - Support multiple hardware architectures: ARM, ARM64 (ARMv8), Ethereum VM, M68K,
-  Mips, PPC, Sparc, SystemZ, TMS320C64X, M680X, XCore and X86 (including X86_64).
+  Mips, MOS65XX, PPC, Sparc, SystemZ, TMS320C64X, M680X, XCore and X86 (including X86_64).
 
 - Having clean/simple/lightweight/intuitive architecture-neutral API.
 

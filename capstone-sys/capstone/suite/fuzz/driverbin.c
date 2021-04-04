@@ -5,7 +5,6 @@
 #include <unistd.h>
 
 int LLVMFuzzerTestOneInput(const uint8_t *Data, size_t Size);
-const char * cs_fuzz_arch(uint8_t arch);
 
 int main(int argc, char** argv)
 {
@@ -15,7 +14,6 @@ int main(int argc, char** argv)
     DIR *d;
     struct dirent *dir;
     int r = 0;
-    int i;
 
     if (argc != 2) {
         return 1;
@@ -37,10 +35,7 @@ int main(int argc, char** argv)
         if (dir->d_type != DT_REG) {
             continue;
         }
-
-        printf("Running %s\n", dir->d_name);
-        fflush(stdout);
-
+        //printf("Running %s\n", dir->d_name);
         fp = fopen(dir->d_name, "rb");
         if (fp == NULL) {
             r = 3;
@@ -70,20 +65,12 @@ int main(int argc, char** argv)
             r = 8;
             break;
         }
-        if (Size > 0) {
-            printf("command cstool %s\n", cs_fuzz_arch(Data[0]));
-        }
-        for (i=0; i<Size; i++) {
-            printf("%02x", Data[i]);
-        }
-        printf("\n");
 
         //lauch fuzzer
         LLVMFuzzerTestOneInput(Data, Size);
         fclose(fp);
     }
     closedir(d);
-    printf("Ok : whole directory finished\n");
     return r;
 }
 

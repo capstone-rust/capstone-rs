@@ -45,6 +45,9 @@ case $1 in
   EVM)
     ARCH=EVM
     ;;
+  MOS65XX)
+    ARCH=MOS65XX
+    ;;
   *)
     ;;
 esac

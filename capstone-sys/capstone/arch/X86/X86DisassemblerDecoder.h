@@ -549,11 +549,7 @@ typedef void (*dlog_t)(void* arg, const char *log);
 /// The specification for how to extract and interpret a full instruction and
 /// its operands.
 struct InstructionSpecifier {
-#ifdef CAPSTONE_X86_REDUCE
-	uint8_t operands;
-#else
 	uint16_t operands;
-#endif
 };
 
 /*
@@ -608,8 +604,8 @@ typedef struct InternalInstruction {
   uint8_t                       sibScale;
   SIBBase                       sibBase;
   uint8_t                       numImmediatesConsumed;
-  /* 0xf2 or 0xf3 is xacquire or xrelease */
-  uint8_t xAcquireRelease;
+  /* true if the prefix byte, 0xf2 or 0xf3 is xacquire or xrelease */
+  bool xAcquireRelease;
 
   /* The value of the vector extension prefix(EVEX/VEX/XOP), if present */
   uint8_t vectorExtensionPrefix[4];

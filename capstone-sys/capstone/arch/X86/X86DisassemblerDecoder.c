@@ -546,8 +546,7 @@ static int readPrefixes(struct InternalInstruction *insn)
 			 */
 			if (((nextByte == 0xf0) ||
 				((nextByte & 0xfe) == 0x86 || (nextByte & 0xf8) == 0x90)))
-				insn->xAcquireRelease = byte;
-
+				insn->xAcquireRelease = true;
 			/*
 			 * Also if the byte is 0xf3, and the following condition is met:
 			 * - it is followed by a "mov mem, reg" (opcode 0x88/0x89) or
@@ -557,7 +556,7 @@ static int readPrefixes(struct InternalInstruction *insn)
 			if (byte == 0xf3 &&
 					(nextByte == 0x88 || nextByte == 0x89 ||
 					 nextByte == 0xc6 || nextByte == 0xc7))
-				insn->xAcquireRelease = byte;
+				insn->xAcquireRelease = true;
 
 			if (insn->mode == MODE_64BIT && (nextByte & 0xf0) == 0x40) {
 				if (consumeByte(insn, &nextByte))
@@ -2178,10 +2177,6 @@ static bool checkPrefix(struct InternalInstruction *insn)
 			case X86_ADC8mi:
 			case X86_ADC8mi8:
 			case X86_ADC8mr:
-			case X86_ADC8rm:
-			case X86_ADC16rm:
-			case X86_ADC32rm:
-			case X86_ADC64rm:
 
 			// ADD
 			case X86_ADD16mi:
@@ -2196,10 +2191,6 @@ static bool checkPrefix(struct InternalInstruction *insn)
 			case X86_ADD8mi:
 			case X86_ADD8mi8:
 			case X86_ADD8mr:
-			case X86_ADD8rm:
-			case X86_ADD16rm:
-			case X86_ADD32rm:
-			case X86_ADD64rm:
 
 			// AND
 			case X86_AND16mi:
@@ -2214,11 +2205,6 @@ static bool checkPrefix(struct InternalInstruction *insn)
 			case X86_AND8mi:
 			case X86_AND8mi8:
 			case X86_AND8mr:
-			case X86_AND8rm:
-			case X86_AND16rm:
-			case X86_AND32rm:
-			case X86_AND64rm:
-
 
 			// BTC
 			case X86_BTC16mi8:
@@ -2284,10 +2270,6 @@ static bool checkPrefix(struct InternalInstruction *insn)
 			case X86_OR8mi8:
 			case X86_OR8mi:
 			case X86_OR8mr:
-			case X86_OR8rm:
-			case X86_OR16rm:
-			case X86_OR32rm:
-			case X86_OR64rm:
 
 			// SBB
 			case X86_SBB16mi:
@@ -2316,10 +2298,6 @@ static bool checkPrefix(struct InternalInstruction *insn)
 			case X86_SUB8mi8:
 			case X86_SUB8mi:
 			case X86_SUB8mr:
-			case X86_SUB8rm:
-			case X86_SUB16rm:
-			case X86_SUB32rm:
-			case X86_SUB64rm:
 
 			// XADD
 			case X86_XADD16rm:
@@ -2346,10 +2324,6 @@ static bool checkPrefix(struct InternalInstruction *insn)
 			case X86_XOR8mi8:
 			case X86_XOR8mi:
 			case X86_XOR8mr:
-			case X86_XOR8rm:
-			case X86_XOR16rm:
-			case X86_XOR32rm:
-			case X86_XOR64rm:
 
 				// this instruction can be used with LOCK prefix
 				return false;
@@ -2415,7 +2389,30 @@ int decodeInstruction(struct InternalInstruction *insn,
 
 	insn->operands = &x86OperandSets[insn->spec->operands][0];
 
+	// dbgprintf(insn, "Read from 0x%llx to 0x%llx: length %zu",
+	// 		startLoc, insn->readerCursor, insn->length);
+
+	//if (insn->length > 15)
+	//	dbgprintf(insn, "Instruction exceeds 15-byte limit");
+
+#if 0
+	printf("\n>>> x86OperandSets = %lu\n", sizeof(x86OperandSets));
+	printf(">>> x86DisassemblerInstrSpecifiers = %lu\n", sizeof(x86DisassemblerInstrSpecifiers));
+	printf(">>> x86DisassemblerContexts = %lu\n", sizeof(x86DisassemblerContexts));
+	printf(">>> modRMTable = %lu\n", sizeof(modRMTable));
+	printf(">>> x86DisassemblerOneByteOpcodes = %lu\n", sizeof(x86DisassemblerOneByteOpcodes));
+	printf(">>> x86DisassemblerTwoByteOpcodes = %lu\n", sizeof(x86DisassemblerTwoByteOpcodes));
+	printf(">>> x86DisassemblerThreeByte38Opcodes = %lu\n", sizeof(x86DisassemblerThreeByte38Opcodes));
+	printf(">>> x86DisassemblerThreeByte3AOpcodes = %lu\n", sizeof(x86DisassemblerThreeByte3AOpcodes));
+	printf(">>> x86DisassemblerThreeByteA6Opcodes = %lu\n", sizeof(x86DisassemblerThreeByteA6Opcodes));
+	printf(">>> x86DisassemblerThreeByteA7Opcodes= %lu\n", sizeof(x86DisassemblerThreeByteA7Opcodes));
+	printf(">>> x86DisassemblerXOP8Opcodes = %lu\n", sizeof(x86DisassemblerXOP8Opcodes));
+	printf(">>> x86DisassemblerXOP9Opcodes = %lu\n", sizeof(x86DisassemblerXOP9Opcodes));
+	printf(">>> x86DisassemblerXOPAOpcodes = %lu\n\n", sizeof(x86DisassemblerXOPAOpcodes));
+#endif
+
 	return 0;
 }
 
 #endif
+

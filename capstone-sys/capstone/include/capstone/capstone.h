@@ -47,7 +47,7 @@ extern "C" {
 #endif
 
 // Capstone API version
-#define CS_API_MAJOR 4
+#define CS_API_MAJOR 5
 #define CS_API_MINOR 0
 
 // Version for bleeding edge code of the Github's "next" branch.
@@ -58,7 +58,7 @@ extern "C" {
 // Capstone package version
 #define CS_VERSION_MAJOR CS_API_MAJOR
 #define CS_VERSION_MINOR CS_API_MINOR
-#define CS_VERSION_EXTRA 2
+#define CS_VERSION_EXTRA 0
 
 /// Macro to create combined version which can be compared to
 /// result of cs_version() API.
@@ -84,6 +84,7 @@ typedef enum cs_arch {
 	CS_ARCH_TMS320C64X,	///< TMS320C64x architecture
 	CS_ARCH_M680X,		///< 680X architecture
 	CS_ARCH_EVM,		///< Ethereum architecture
+	CS_ARCH_MOS65XX,	///< MOS65XX architecture (including MOS6502)
 	CS_ARCH_MAX,
 	CS_ARCH_ALL = 0xFFFF, // All architectures - for cs_support()
 } cs_arch;
@@ -120,7 +121,7 @@ typedef enum cs_mode {
 	CS_MODE_M68K_030 = 1 << 4, ///< M68K 68030 mode
 	CS_MODE_M68K_040 = 1 << 5, ///< M68K 68040 mode
 	CS_MODE_M68K_060 = 1 << 6, ///< M68K 68060 mode
-	CS_MODE_BIG_ENDIAN = 1 << 31,	///< big-endian mode
+	CS_MODE_BIG_ENDIAN = 1U << 31,	///< big-endian mode
 	CS_MODE_MIPS32 = CS_MODE_32,	///< Mips32 ISA (Mips)
 	CS_MODE_MIPS64 = CS_MODE_64,	///< Mips64 ISA (Mips)
 	CS_MODE_M680X_6301 = 1 << 1, ///< M680X Hitachi 6301,6303 mode
@@ -257,6 +258,7 @@ typedef struct cs_opt_skipdata {
 	/// X86:     1 bytes.
 	/// XCore:   2 bytes.
 	/// EVM:     1 bytes.
+	/// MOS65XX: 1 bytes.
 	cs_skipdata_cb_t callback; 	// default value is NULL
 
 	/// User-defined data to be passed to @callback function pointer.
@@ -276,6 +278,7 @@ typedef struct cs_opt_skipdata {
 #include "tms320c64x.h"
 #include "m680x.h"
 #include "evm.h"
+#include "mos65xx.h"
 
 /// NOTE: All information in cs_detail is only available when CS_OPT_DETAIL = CS_OPT_ON
 /// Initialized as memset(., 0, offsetof(cs_detail, ARCH)+sizeof(cs_ARCH))
@@ -283,7 +286,7 @@ typedef struct cs_opt_skipdata {
 /// if cs_detail changes, in particular if a field is added after the union,
 /// then update arch/ARCH/ARCHDisassembler.c accordingly
 typedef struct cs_detail {
-	uint16_t regs_read[12]; ///< list of implicit registers read by this insn
+	uint16_t regs_read[16]; ///< list of implicit registers read by this insn
 	uint8_t regs_read_count; ///< number of implicit registers read by this insn
 
 	uint16_t regs_write[20]; ///< list of implicit registers modified by this insn
@@ -306,6 +309,7 @@ typedef struct cs_detail {
 		cs_tms320c64x tms320c64x;  ///< TMS320C64x architecture
 		cs_m680x m680x; ///< M680X architecture
 		cs_evm evm;	    ///< Ethereum architecture
+		cs_mos65xx mos65xx;	///< MOS65XX architecture (including MOS6502)
 	};
 } cs_detail;
 
@@ -329,7 +333,7 @@ typedef struct cs_insn {
 
 	/// Machine bytes of this instruction, with number of bytes indicated by @size above
 	/// This information is available even when CS_OPT_DETAIL = CS_OPT_OFF
-	uint8_t bytes[16];
+	uint8_t bytes[24];
 
 	/// Ascii text of instruction mnemonic
 	/// This information is available even when CS_OPT_DETAIL = CS_OPT_OFF

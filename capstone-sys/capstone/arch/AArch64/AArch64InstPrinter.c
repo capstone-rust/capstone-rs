@@ -444,16 +444,6 @@ void AArch64_printInst(MCInst *MI, SStream *O, void *Info)
 	if (mnem) {
 		MCInst_setOpcodePub(MI, AArch64_map_insn(mnem));
 		cs_mem_free(mnem);
-
-		switch(MCInst_getOpcode(MI)) {
-			default: break;
-			case AArch64_UMOVvi64:
-				 arm64_op_addVectorElementSizeSpecifier(MI, ARM64_VESS_D);
-				 break;
-			case AArch64_UMOVvi32:
-				 arm64_op_addVectorElementSizeSpecifier(MI, ARM64_VESS_S);
-				 break;
-		}
 	} else {
 		printInstruction(MI, O, Info);
 	}
@@ -772,10 +762,11 @@ static void printOperand(MCInst *MI, unsigned OpNo, SStream *O)
 			printUInt64Bang(O, imm);
 		} else {
 			if (MI->csh->doing_mem) {
-				if (MI->csh->imm_unsigned)
+				if (MI->csh->imm_unsigned) {
 					printUInt64Bang(O, imm);
-				else
+				} else {
 					printInt64Bang(O, imm);
+				}
 			} else
 				printUInt64Bang(O, imm);
 		}

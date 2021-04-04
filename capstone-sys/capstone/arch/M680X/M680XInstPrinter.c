@@ -7,7 +7,6 @@
 #include <string.h>
 #include <capstone/platform.h>
 
-#include "../../cs_priv.h"
 #include "../../MCInst.h"
 #include "../../SStream.h"
 #include "../../MCRegisterInfo.h"
@@ -180,7 +179,7 @@ static void printOperand(MCInst *MI, SStream *O, m680x_info *info,
 			printRegName(MI->csh, O, op->idx.offset_reg);
 		else if (op->idx.offset_bits > 0) {
 			if (op->idx.base_reg == M680X_REG_PC)
-				SStream_concat(O, "$%04x", op->idx.offset_addr);
+				SStream_concat(O, "$%04X", op->idx.offset_addr);
 			else
 				SStream_concat(O, "%d", op->idx.offset);
 		}
@@ -189,7 +188,7 @@ static void printOperand(MCInst *MI, SStream *O, m680x_info *info,
 			SStream_concat(O, "%d", abs(op->idx.inc_dec));
 
 		if (!(op->idx.flags & M680X_IDX_NO_COMMA))
-			SStream_concat(O, ", ");
+			SStream_concat(O, ",");
 
 		printIncDec(false, O, info, op);
 
@@ -197,7 +196,7 @@ static void printOperand(MCInst *MI, SStream *O, m680x_info *info,
 
 		if (op->idx.base_reg == M680X_REG_PC &&
 			(op->idx.offset_bits > 0))
-			SStream_concat(O, "r");
+			SStream_concat(O, "R");
 
 		printIncDec(true, O, info, op);
 
@@ -207,22 +206,22 @@ static void printOperand(MCInst *MI, SStream *O, m680x_info *info,
 		break;
 
 	case M680X_OP_RELATIVE:
-		SStream_concat(O, "$%04x", op->rel.address);
+		SStream_concat(O, "$%04X", op->rel.address);
 		break;
 
 	case M680X_OP_DIRECT:
-		SStream_concat(O, "$%02x", op->direct_addr);
+		SStream_concat(O, "$%02X", op->direct_addr);
 		break;
 
 	case M680X_OP_EXTENDED:
 		if (op->ext.indirect)
-			SStream_concat(O, "[$%04x]", op->ext.address);
+			SStream_concat(O, "[$%04X]", op->ext.address);
 		else {
 			if (op->ext.address < 256) {
-				SStream_concat(O, ">$%04x", op->ext.address);
+				SStream_concat(O, ">$%04X", op->ext.address);
 			}
 			else {
-				SStream_concat(O, "$%04x", op->ext.address);
+				SStream_concat(O, "$%04X", op->ext.address);
 			}
 		}
 
@@ -241,7 +240,7 @@ static const char *getDelimiter(m680x_info *info, cs_m680x *m680x)
 	int i;
 
 	if (info->insn == M680X_INS_TFM)
-		return ", ";
+		return ",";
 
 	if (m680x->op_count > 1) {
 		for (i  = 0; i < m680x->op_count; ++i) {
@@ -253,7 +252,7 @@ static const char *getDelimiter(m680x_info *info, cs_m680x *m680x)
 		}
 	}
 
-	return (indexed && (count >= 1)) ? "; " : ", ";
+	return (indexed && (count >= 1)) ? ";" : ",";
 };
 
 void M680X_printInst(MCInst *MI, SStream *O, void *PrinterInfo)
@@ -270,7 +269,7 @@ void M680X_printInst(MCInst *MI, SStream *O, void *PrinterInfo)
 
 	if (info->insn == M680X_INS_INVLD || info->insn == M680X_INS_ILLGL) {
 		if (m680x->op_count)
-			SStream_concat(O, "fcb $%02x", m680x->operands[0].imm);
+			SStream_concat(O, "fcb $%02X", m680x->operands[0].imm);
 		else
 			SStream_concat(O, "fcb $<unknown>");
 
@@ -337,17 +336,23 @@ cs_err M680X_instprinter_init(cs_struct *ud)
 #ifndef CAPSTONE_DIET
 
 	if (M680X_REG_ENDING != ARR_SIZE(s_reg_names)) {
-		CS_ASSERT(M680X_REG_ENDING == ARR_SIZE(s_reg_names));
+		fprintf(stderr, "Internal error: Size mismatch in enum "
+			"m680x_reg and s_reg_names\n");
+
 		return CS_ERR_MODE;
 	}
 
 	if (M680X_INS_ENDING != ARR_SIZE(s_instruction_names)) {
-		CS_ASSERT(M680X_INS_ENDING == ARR_SIZE(s_instruction_names));
+		fprintf(stderr, "Internal error: Size mismatch in enum "
+			"m680x_insn and s_instruction_names\n");
+
 		return CS_ERR_MODE;
 	}
 
 	if (M680X_GRP_ENDING != ARR_SIZE(s_group_names)) {
-		CS_ASSERT(M680X_GRP_ENDING == ARR_SIZE(s_group_names));
+		fprintf(stderr, "Internal error: Size mismatch in enum "
+			"m680x_group_type and s_group_names\n");
+
 		return CS_ERR_MODE;
 	}
 

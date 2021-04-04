@@ -1,5 +1,5 @@
 /* Capstone Disassembler Engine */
-/* By Nguyen Anh Quynh <aquynh@gmail.com>, 2018-2019 */
+/* By Nguyen Anh Quynh <aquynh@gmail.com>, 2018 */
 
 #include <stdio.h>
 #include <stdlib.h>

@@ -5947,7 +5947,7 @@
 },
 {	/* X86_MOVBE16mr, X86_INS_MOVBE: movbe{w}	$dst, $src */
 	0,
-	{ CS_AC_READ, CS_AC_READ, 0 }
+	{ CS_AC_WRITE, CS_AC_READ, 0 }
 },
 {	/* X86_MOVBE16rm, X86_INS_MOVBE: movbe{w}	$dst, $src */
 	0,
@@ -5955,7 +5955,7 @@
 },
 {	/* X86_MOVBE32mr, X86_INS_MOVBE: movbe{l}	$dst, $src */
 	0,
-	{ CS_AC_READ, CS_AC_READ, 0 }
+	{ CS_AC_WRITE, CS_AC_READ, 0 }
 },
 {	/* X86_MOVBE32rm, X86_INS_MOVBE: movbe{l}	$dst, $src */
 	0,
@@ -5963,7 +5963,7 @@
 },
 {	/* X86_MOVBE64mr, X86_INS_MOVBE: movbe{q}	$dst, $src */
 	0,
-	{ CS_AC_READ, CS_AC_READ, 0 }
+	{ CS_AC_WRITE, CS_AC_READ, 0 }
 },
 {	/* X86_MOVBE64rm, X86_INS_MOVBE: movbe{q}	$dst, $src */
 	0,
@@ -5995,7 +5995,7 @@
 },
 {	/* X86_MOVDQAmr, X86_INS_MOVDQA: movdqa	$dst, $src */
 	0,
-	{ CS_AC_READ, CS_AC_READ, 0 }
+	{ CS_AC_WRITE, CS_AC_READ, 0 }
 },
 {	/* X86_MOVDQArm, X86_INS_MOVDQA: movdqa	$dst, $src */
 	0,
@@ -6011,7 +6011,7 @@
 },
 {	/* X86_MOVDQUmr, X86_INS_MOVDQU: movdqu	$dst, $src */
 	0,
-	{ CS_AC_WRITE, CS_AC_READ, 0 }
+	{ CS_AC_READ, CS_AC_READ, 0 }
 },
 {	/* X86_MOVDQUrm, X86_INS_MOVDQU: movdqu	$dst, $src */
 	0,
@@ -6107,7 +6107,7 @@
 },
 {	/* X86_MOVPDI2DImr, X86_INS_MOVD: movd	$dst, $src */
 	0,
-	{ CS_AC_WRITE, CS_AC_READ, 0 }
+	{ CS_AC_READ, CS_AC_READ, 0 }
 },
 {	/* X86_MOVPDI2DIrr, X86_INS_MOVD: movd	$dst, $src */
 	0,
