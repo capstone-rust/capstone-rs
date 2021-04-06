@@ -178,8 +178,8 @@ impl_PartialEq_repr_fields!(X86InsnDetail<'a> [ 'a ];
 
 impl X86OpMem {
     /// Segment
-    pub fn segment(&self) -> u32 {
-        self.0.segment as u32
+    pub fn segment(&self) -> RegId {
+        RegId(self.0.segment as RegIdInt)
     }
 
     /// Base register
