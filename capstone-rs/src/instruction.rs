@@ -371,7 +371,7 @@ impl<'a> InsnDetail<'a> {
         (*self.0).groups_count
     }
 
-    /// Architectore-specific detail
+    /// Architecture-specific detail
     pub fn arch_detail(&self) -> ArchDetail {
         macro_rules! def_arch_detail_match {
             (

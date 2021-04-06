@@ -3103,7 +3103,8 @@ fn test_insn_from_raw() {
 
     let insns = cs.disasm_all(X86_CODE, START_TEST_ADDR).unwrap();
     for insn in insns.iter() {
-        assert_eq!(format!("{:?}", unsafe { Insn::from_raw(&insn.insn as *const cs_insn) }), format!("{:?}", insn));
+        let raw_insn = &insn.insn as *const cs_insn;
+        assert_eq!(format!("{:?}", unsafe { Insn::from_raw(raw_insn) }), format!("{:?}", insn));
     }
 
 }
