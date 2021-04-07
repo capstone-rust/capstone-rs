@@ -251,7 +251,13 @@ fn test_instruction_detail_helper<T>(
             expected_op
         })
         .collect();
-    assert_eq!(expected_ops, arch_ops, "operands do not match for \"{}\" (bytes={:02x?})", insn, insn.bytes());
+    assert_eq!(
+        expected_ops,
+        arch_ops,
+        "operands do not match for \"{}\" (bytes={:02x?})",
+        insn,
+        insn.bytes()
+    );
 }
 
 /// Assert instruction belongs or does not belong to groups, testing both insn_belongs_to_group
@@ -3104,7 +3110,9 @@ fn test_insn_from_raw() {
     let insns = cs.disasm_all(X86_CODE, START_TEST_ADDR).unwrap();
     for insn in insns.iter() {
         let raw_insn = &insn.insn as *const cs_insn;
-        assert_eq!(format!("{:?}", unsafe { Insn::from_raw(raw_insn) }), format!("{:?}", insn));
+        assert_eq!(
+            format!("{:?}", unsafe { Insn::from_raw(raw_insn) }),
+            format!("{:?}", insn)
+        );
     }
-
 }
