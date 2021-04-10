@@ -5,6 +5,18 @@ Notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.8.0] - 2021-04-09
+
+### Added
+- `Insn::from_raw()` to convert from a `cs_insn` pointer
+- `Deref` impl for `Instructions`
+
+### Changed
+- X86: return `X86OpMem::segment()` as `RegId` instead of `u32`
+
+### Fixed
+- Fixed data race in multi-threaded environment ([#87](https://github.com/capstone-rust/capstone-rs/issues/87))
+
 ## [0.7.0] - 2020-03-16
 
 ### Added
@@ -112,6 +124,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Removed
 - Dependency
 
+[0.8.0]: https://github.com/capstone-rust/capstone-rs/compare/capstone-v0.7.0...capstone-v0.8.0
 [0.7.0]: https://github.com/capstone-rust/capstone-rs/compare/capstone-v0.6.0...capstone-v0.7.0
 [0.6.0]: https://github.com/capstone-rust/capstone-rs/compare/v0.5.0...capstone-v0.6.0
 [0.5.0]: https://github.com/capstone-rust/capstone-rs/compare/v0.4.0...v0.5.0
