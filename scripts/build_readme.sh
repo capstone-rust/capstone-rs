@@ -26,7 +26,7 @@ build() {
         "$INPUT_MD" -o "$OUTPUT_HTML"
 }
 
-for dir in capstone-rs capstone-sys cstool; do
+for dir in . capstone-rs capstone-sys cstool; do
     build $dir README
     build $dir CHANGELOG
 done

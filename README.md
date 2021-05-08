@@ -117,7 +117,7 @@ Found 4 instructions
     insn groups:
 ```
 
-To see more demos, see the [`examples/`](examples) directory.
+To see more demos, see the [`examples/`](capstone-rs/examples) directory.
 More complex demos welcome!
 
 # Features
@@ -141,6 +141,6 @@ You may find a [full list of contributors on Github](https://github.com/capstone
 
 # License
 
-[MIT](LICENSE)
+[MIT](capstone-rs/LICENSE)
 
 [upstream]: https://www.capstone-engine.org/
