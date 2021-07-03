@@ -285,6 +285,18 @@ macro_rules! arch_info_base {
                 ( both_endian: true )
             ]
             [
+                ( riscv, RISCV )
+                ( mode:
+                    RiscV32,
+                    RiscV64,
+                    )
+                ( extra_modes:
+                    RiscVC,
+                    )
+                ( syntax: )
+                ( both_endian: true )
+            ]
+            [
                 ( sparc, SPARC )
                 ( mode:
                     Default,
@@ -482,6 +494,13 @@ macro_rules! detail_arch_base {
                 op = PpcOperand,
                 /// Returns the PPC details, if any
                 => arch_name = ppc,
+            ]
+            [
+                detail = RiscVDetail,
+                insn_detail = RiscVInsnDetail<'a>,
+                op = RiscVOperand,
+                /// Returns the RISCV details, if any
+                => arch_name = riscv,
             ]
             [
                 detail = SparcDetail,

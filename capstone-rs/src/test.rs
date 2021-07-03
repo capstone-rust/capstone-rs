@@ -3054,6 +3054,117 @@ fn test_arch_xcore_detail() {
 }
 
 #[test]
+fn test_arch_riscv() {
+    test_arch_mode_endian_insns(
+        &mut Capstone::new()
+            .riscv()
+            .mode(riscv::ArchMode::RiscV64)
+            .extra_mode([riscv::ArchExtraMode::RiscVC].iter().map(|x| *x))
+            .build()
+            .unwrap(),
+        Arch::RISCV,
+        Mode::RiscV64,
+        None,
+        &[ExtraMode::RiscVC],
+        &[
+            ("addi", b"\x93\x00\x31\x00"),
+            ("add", b"\xb3\x00\x31\x00"),
+            ("ld", b"\x03\xb2\x82\x00"),
+            ("c.ebreak", b"\x02\x90"),
+            ("c.addi", b"\x05\x04"),
+            ("c.add", b"\x2a\x94"),
+            ("c.ld", b"\x0c\x66"),
+        ],
+    );
+}
+
+#[test]
+fn test_arch_riscv_detail() {
+    use crate::arch::riscv::RiscVOperand::*;
+    use crate::arch::riscv::RiscVReg::*;
+    use crate::arch::riscv::*;
+    use capstone_sys::riscv_op_mem;
+
+    test_arch_mode_endian_insns_detail(
+        &mut Capstone::new()
+            .riscv()
+            .mode(riscv::ArchMode::RiscV64)
+            .extra_mode([riscv::ArchExtraMode::RiscVC].iter().map(|x| *x))
+            .build()
+            .unwrap(),
+        Arch::RISCV,
+        Mode::RiscV64,
+        None,
+        &[ExtraMode::RiscVC],
+        &[
+            // addi x1, x2, 3
+            DII::new(
+                "addi",
+                b"\x93\x00\x31\x00",
+                &[
+                    Reg(RegId(RISCV_REG_X1 as RegIdInt)),
+                    Reg(RegId(RISCV_REG_X2 as RegIdInt)),
+                    Imm(3),
+                ],
+            ),
+            // add x1, x2, x3
+            DII::new(
+                "add",
+                b"\xb3\x00\x31\x00",
+                &[
+                    Reg(RegId(RISCV_REG_X1 as RegIdInt)),
+                    Reg(RegId(RISCV_REG_X2 as RegIdInt)),
+                    Reg(RegId(RISCV_REG_X3 as RegIdInt)),
+                ],
+            ),
+            // ld x4, 8(x5)
+            DII::new(
+                "ld",
+                b"\x03\xb2\x82\x00",
+                &[
+                    Reg(RegId(RISCV_REG_X4 as RegIdInt)),
+                    Mem(RiscVOpMem(riscv_op_mem {
+                        base: RISCV_REG_X5,
+                        disp: 8,
+                    })),
+                ],
+            ),
+            // c.ebreak
+            DII::new("c.ebreak", b"\x02\x90", &[]),
+            // c.addi x8, 1
+            DII::new(
+                "c.addi",
+                b"\x05\x04",
+                &[
+                    Reg(RegId(RISCV_REG_X8 as RegIdInt)),
+                    Imm(1),
+                ],
+            ),
+            // c.add x8, x10
+            DII::new(
+                "c.add",
+                b"\x2a\x94",
+                &[
+                    Reg(RegId(RISCV_REG_X8 as RegIdInt)),
+                    Reg(RegId(RISCV_REG_X10 as RegIdInt)),
+                ],
+            ),
+            // c.ld x11, 8(x12)
+            DII::new(
+                "c.ld",
+                b"\x0c\x66",
+                &[
+                    // Upstream bug? Doesn't seem to use Mem type.
+                    Reg(RegId(RISCV_REG_X11 as RegIdInt)),
+                    Imm(8),
+                    Reg(RegId(RISCV_REG_X12 as RegIdInt)),
+                ],
+            ),
+        ],
+    );
+}
+
+#[test]
 fn test_insn_size_and_alignment() {
     use capstone_sys::cs_insn;
 
