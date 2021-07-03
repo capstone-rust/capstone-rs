@@ -219,6 +219,8 @@ define_cs_enum_wrapper!(
     => M680X = CS_ARCH_M680X;
     /// EVM
     => EVM = CS_ARCH_EVM;
+    /// RISC-V
+    => RISCV = CS_ARCH_RISCV;
 );
 
 define_cs_enum_wrapper!(
@@ -280,6 +282,10 @@ define_cs_enum_wrapper!(
     => M680xCpu12 = CS_MODE_M680X_CPU12;
     /// M680X Freescale/NXP HCS08 mode
     => M680xHcs08 = CS_MODE_M680X_HCS08;
+    /// RISC-V 32-bit mode
+    => RiscV32 = CS_MODE_RISCV32;
+    /// RISC-V 64-bit mode
+    => RiscV64 = CS_MODE_RISCV64;
     /// Default mode for little-endian
     => Default = CS_MODE_LITTLE_ENDIAN;
 );
@@ -295,6 +301,8 @@ define_cs_enum_wrapper!(
     => V8 = CS_MODE_V8;
     /// MicroMips mode. Works in `MIPS` mode.
     => Micro = CS_MODE_MICRO;
+    /// RISC-V compressed instruction mode
+    => RiscVC = CS_MODE_RISCVC;
 );
 
 define_cs_enum_wrapper!(

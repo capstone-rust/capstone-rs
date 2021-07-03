@@ -399,6 +399,7 @@ impl<'a> InsnDetail<'a> {
             [M68K, M68kDetail, M68kInsnDetail, m68k]
             [MIPS, MipsDetail, MipsInsnDetail, mips]
             [PPC, PpcDetail, PpcInsnDetail, ppc]
+            [RISCV, RiscVDetail, RiscVInsnDetail, riscv]
             [SPARC, SparcDetail, SparcInsnDetail, sparc]
             [TMS320C64X, Tms320c64xDetail, Tms320c64xInsnDetail, tms320c64x]
             [X86, X86Detail, X86InsnDetail, x86]
