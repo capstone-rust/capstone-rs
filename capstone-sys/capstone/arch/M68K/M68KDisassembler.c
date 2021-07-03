@@ -2036,8 +2036,14 @@ static void d68020_cpgen(m68k_info *info)
 	ext->op_size.type = M68K_SIZE_TYPE_CPU;
 	ext->op_size.cpu_size = 0;
 
-	op0 = &ext->operands[0];
-	op1 = &ext->operands[1];
+	// Special case - adjust direction of fmove
+	if ((opmode == 0x00) && ((next >> 13) & 0x1) != 0) {
+		op0 = &ext->operands[1];
+		op1 = &ext->operands[0];
+	} else {
+		op0 = &ext->operands[0];
+		op1 = &ext->operands[1];
+	}
 
 	if (rm == 0 && supports_single_op && src == dst) {
 		ext->op_count = 1;
@@ -2594,7 +2600,7 @@ static void d68010_movec(m68k_info *info)
 		case 0x807: reg = M68K_REG_SRP; break;
 	}
 
-	if (BIT_1(info->ir)) {
+	if (BIT_0(info->ir)) {
 		op0->reg = (BIT_F(extension) ? M68K_REG_A0 : M68K_REG_D0) + ((extension >> 12) & 7);
 		op1->reg = reg;
 	} else {

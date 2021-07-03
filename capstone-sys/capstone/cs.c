@@ -655,7 +655,7 @@ static uint8_t skipdata_size(cs_struct *handle)
 		case CS_ARCH_RISCV:
 			// special compress mode
 			if (handle->mode & CS_MODE_RISCVC)
-				return 1;
+				return 2;
 			return 4;
 	}
 }
@@ -707,8 +707,12 @@ cs_err CAPSTONE_API cs_option(csh ud, cs_opt_type type, size_t value)
 			return CS_ERR_OK;
 
 		case CS_OPT_SKIPDATA_SETUP:
-			if (value)
+			if (value) {
 				handle->skipdata_setup = *((cs_opt_skipdata *)value);
+				if (handle->skipdata_setup.mnemonic == NULL) {
+					handle->skipdata_setup.mnemonic = SKIPDATA_MNEM;
+				}
+			}
 			return CS_ERR_OK;
 
 		case CS_OPT_MNEMONIC:
