@@ -126,6 +126,7 @@ fn build_capstone_cc() {
         .define("CAPSTONE_HAS_M68K", None)
         .define("CAPSTONE_HAS_MIPS", None)
         .define("CAPSTONE_HAS_POWERPC", None)
+        .define("CAPSTONE_HAS_RISCV", None)
         .define("CAPSTONE_HAS_SPARC", None)
         .define("CAPSTONE_HAS_SYSZ", None)
         .define("CAPSTONE_HAS_TMS320C64X", None)

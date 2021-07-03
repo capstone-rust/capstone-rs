@@ -951,7 +951,7 @@ impl Clone for cs_arm_op {
 }
 impl ::core::fmt::Debug for cs_arm_op {
     fn fmt(&self, f: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
-        write ! ( f , "cs_arm_op {{ vector_index: {:?}, shift: {:?}, type: {:?}, __bindgen_anon_1: {:?}, subtracted: {:?}, access: {:?}, neon_lane: {:?} }}" , self . vector_index , self . shift , self . type_ , self . __bindgen_anon_1 , self . subtracted , self . access , self . neon_lane )
+        write ! (f , "cs_arm_op {{ vector_index: {:?}, shift: {:?}, type: {:?}, __bindgen_anon_1: {:?}, subtracted: {:?}, access: {:?}, neon_lane: {:?} }}" , self . vector_index , self . shift , self . type_ , self . __bindgen_anon_1 , self . subtracted , self . access , self . neon_lane)
     }
 }
 #[doc = " Instruction structure"]
@@ -989,7 +989,7 @@ impl Clone for cs_arm {
 }
 impl ::core::fmt::Debug for cs_arm {
     fn fmt(&self, f: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
-        write ! ( f , "cs_arm {{ usermode: {:?}, vector_size: {:?}, vector_data: {:?}, cps_mode: {:?}, cps_flag: {:?}, cc: {:?}, update_flags: {:?}, writeback: {:?}, mem_barrier: {:?}, op_count: {:?}, operands: [...] }}" , self . usermode , self . vector_size , self . vector_data , self . cps_mode , self . cps_flag , self . cc , self . update_flags , self . writeback , self . mem_barrier , self . op_count )
+        write ! (f , "cs_arm {{ usermode: {:?}, vector_size: {:?}, vector_data: {:?}, cps_mode: {:?}, cps_flag: {:?}, cc: {:?}, update_flags: {:?}, writeback: {:?}, mem_barrier: {:?}, op_count: {:?}, operands: [...] }}" , self . usermode , self . vector_size , self . vector_data , self . cps_mode , self . cps_flag , self . cc , self . update_flags , self . writeback , self . mem_barrier , self . op_count)
     }
 }
 #[repr(u32)]
@@ -2960,7 +2960,7 @@ impl Clone for cs_arm64_op {
 }
 impl ::core::fmt::Debug for cs_arm64_op {
     fn fmt(&self, f: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
-        write ! ( f , "cs_arm64_op {{ vector_index: {:?}, vas: {:?}, shift: {:?}, ext: {:?}, type: {:?}, __bindgen_anon_1: {:?}, access: {:?} }}" , self . vector_index , self . vas , self . shift , self . ext , self . type_ , self . __bindgen_anon_1 , self . access )
+        write ! (f , "cs_arm64_op {{ vector_index: {:?}, vas: {:?}, shift: {:?}, ext: {:?}, type: {:?}, __bindgen_anon_1: {:?}, access: {:?} }}" , self . vector_index , self . vas , self . shift , self . ext , self . type_ , self . __bindgen_anon_1 , self . access)
     }
 }
 #[doc = " Instruction structure"]
@@ -2986,7 +2986,7 @@ impl Clone for cs_arm64 {
 }
 impl ::core::fmt::Debug for cs_arm64 {
     fn fmt(&self, f: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
-        write ! ( f , "cs_arm64 {{ cc: {:?}, update_flags: {:?}, writeback: {:?}, op_count: {:?}, operands: {:?} }}" , self . cc , self . update_flags , self . writeback , self . op_count , self . operands )
+        write ! (f , "cs_arm64 {{ cc: {:?}, update_flags: {:?}, writeback: {:?}, op_count: {:?}, operands: {:?} }}" , self . cc , self . update_flags , self . writeback , self . op_count , self . operands)
     }
 }
 #[repr(u32)]
@@ -4217,7 +4217,7 @@ impl Clone for cs_m68k_op {
 }
 impl ::core::fmt::Debug for cs_m68k_op {
     fn fmt(&self, f: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
-        write ! ( f , "cs_m68k_op {{ __bindgen_anon_1: {:?}, mem: {:?}, br_disp: {:?}, register_bits: {:?}, type: {:?}, address_mode: {:?} }}" , self . __bindgen_anon_1 , self . mem , self . br_disp , self . register_bits , self . type_ , self . address_mode )
+        write ! (f , "cs_m68k_op {{ __bindgen_anon_1: {:?}, mem: {:?}, br_disp: {:?}, register_bits: {:?}, type: {:?}, address_mode: {:?} }}" , self . __bindgen_anon_1 , self . mem , self . br_disp , self . register_bits , self . type_ , self . address_mode)
     }
 }
 #[repr(u32)]
@@ -11467,7 +11467,7 @@ impl Clone for cs_x86_op {
 }
 impl ::core::fmt::Debug for cs_x86_op {
     fn fmt(&self, f: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
-        write ! ( f , "cs_x86_op {{ type: {:?}, __bindgen_anon_1: {:?}, size: {:?}, access: {:?}, avx_bcast: {:?}, avx_zero_opmask: {:?} }}" , self . type_ , self . __bindgen_anon_1 , self . size , self . access , self . avx_bcast , self . avx_zero_opmask )
+        write ! (f , "cs_x86_op {{ type: {:?}, __bindgen_anon_1: {:?}, size: {:?}, access: {:?}, avx_bcast: {:?}, avx_zero_opmask: {:?} }}" , self . type_ , self . __bindgen_anon_1 , self . size , self . access , self . avx_bcast , self . avx_zero_opmask)
     }
 }
 #[repr(C)]
@@ -11566,7 +11566,7 @@ impl Clone for cs_x86 {
 }
 impl ::core::fmt::Debug for cs_x86 {
     fn fmt(&self, f: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
-        write ! ( f , "cs_x86 {{ prefix: {:?}, opcode: {:?}, rex: {:?}, addr_size: {:?}, modrm: {:?}, sib: {:?}, disp: {:?}, sib_index: {:?}, sib_scale: {:?}, sib_base: {:?}, xop_cc: {:?}, sse_cc: {:?}, avx_cc: {:?}, avx_sae: {:?}, avx_rm: {:?}, __bindgen_anon_1: {:?}, op_count: {:?}, operands: {:?}, encoding: {:?} }}" , self . prefix , self . opcode , self . rex , self . addr_size , self . modrm , self . sib , self . disp , self . sib_index , self . sib_scale , self . sib_base , self . xop_cc , self . sse_cc , self . avx_cc , self . avx_sae , self . avx_rm , self . __bindgen_anon_1 , self . op_count , self . operands , self . encoding )
+        write ! (f , "cs_x86 {{ prefix: {:?}, opcode: {:?}, rex: {:?}, addr_size: {:?}, modrm: {:?}, sib: {:?}, disp: {:?}, sib_index: {:?}, sib_scale: {:?}, sib_base: {:?}, xop_cc: {:?}, sse_cc: {:?}, avx_cc: {:?}, avx_sae: {:?}, avx_rm: {:?}, __bindgen_anon_1: {:?}, op_count: {:?}, operands: {:?}, encoding: {:?} }}" , self . prefix , self . opcode , self . rex , self . addr_size , self . modrm , self . sib , self . disp , self . sib_index , self . sib_scale , self . sib_base , self . xop_cc , self . sse_cc , self . avx_cc , self . avx_sae , self . avx_rm , self . __bindgen_anon_1 , self . op_count , self . operands , self . encoding)
     }
 }
 #[repr(u32)]
@@ -13574,7 +13574,7 @@ impl Clone for cs_tms320c64x {
 }
 impl ::core::fmt::Debug for cs_tms320c64x {
     fn fmt(&self, f: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
-        write ! ( f , "cs_tms320c64x {{ op_count: {:?}, operands: {:?}, condition: {:?}, funit: {:?}, parallel: {:?} }}" , self . op_count , self . operands , self . condition , self . funit , self . parallel )
+        write ! (f , "cs_tms320c64x {{ op_count: {:?}, operands: {:?}, condition: {:?}, funit: {:?}, parallel: {:?} }}" , self . op_count , self . operands , self . condition , self . funit , self . parallel)
     }
 }
 pub mod tms320c64x_reg {
@@ -14743,6 +14743,431 @@ impl ::core::fmt::Debug for cs_riscv {
         )
     }
 }
+pub mod riscv_reg {
+    pub type Type = u32;
+    pub const RISCV_REG_INVALID: Type = 0;
+    pub const RISCV_REG_X0: Type = 1;
+    pub const RISCV_REG_ZERO: Type = 1;
+    pub const RISCV_REG_X1: Type = 2;
+    pub const RISCV_REG_RA: Type = 2;
+    pub const RISCV_REG_X2: Type = 3;
+    pub const RISCV_REG_SP: Type = 3;
+    pub const RISCV_REG_X3: Type = 4;
+    pub const RISCV_REG_GP: Type = 4;
+    pub const RISCV_REG_X4: Type = 5;
+    pub const RISCV_REG_TP: Type = 5;
+    pub const RISCV_REG_X5: Type = 6;
+    pub const RISCV_REG_T0: Type = 6;
+    pub const RISCV_REG_X6: Type = 7;
+    pub const RISCV_REG_T1: Type = 7;
+    pub const RISCV_REG_X7: Type = 8;
+    pub const RISCV_REG_T2: Type = 8;
+    pub const RISCV_REG_X8: Type = 9;
+    pub const RISCV_REG_S0: Type = 9;
+    pub const RISCV_REG_FP: Type = 9;
+    pub const RISCV_REG_X9: Type = 10;
+    pub const RISCV_REG_S1: Type = 10;
+    pub const RISCV_REG_X10: Type = 11;
+    pub const RISCV_REG_A0: Type = 11;
+    pub const RISCV_REG_X11: Type = 12;
+    pub const RISCV_REG_A1: Type = 12;
+    pub const RISCV_REG_X12: Type = 13;
+    pub const RISCV_REG_A2: Type = 13;
+    pub const RISCV_REG_X13: Type = 14;
+    pub const RISCV_REG_A3: Type = 14;
+    pub const RISCV_REG_X14: Type = 15;
+    pub const RISCV_REG_A4: Type = 15;
+    pub const RISCV_REG_X15: Type = 16;
+    pub const RISCV_REG_A5: Type = 16;
+    pub const RISCV_REG_X16: Type = 17;
+    pub const RISCV_REG_A6: Type = 17;
+    pub const RISCV_REG_X17: Type = 18;
+    pub const RISCV_REG_A7: Type = 18;
+    pub const RISCV_REG_X18: Type = 19;
+    pub const RISCV_REG_S2: Type = 19;
+    pub const RISCV_REG_X19: Type = 20;
+    pub const RISCV_REG_S3: Type = 20;
+    pub const RISCV_REG_X20: Type = 21;
+    pub const RISCV_REG_S4: Type = 21;
+    pub const RISCV_REG_X21: Type = 22;
+    pub const RISCV_REG_S5: Type = 22;
+    pub const RISCV_REG_X22: Type = 23;
+    pub const RISCV_REG_S6: Type = 23;
+    pub const RISCV_REG_X23: Type = 24;
+    pub const RISCV_REG_S7: Type = 24;
+    pub const RISCV_REG_X24: Type = 25;
+    pub const RISCV_REG_S8: Type = 25;
+    pub const RISCV_REG_X25: Type = 26;
+    pub const RISCV_REG_S9: Type = 26;
+    pub const RISCV_REG_X26: Type = 27;
+    pub const RISCV_REG_S10: Type = 27;
+    pub const RISCV_REG_X27: Type = 28;
+    pub const RISCV_REG_S11: Type = 28;
+    pub const RISCV_REG_X28: Type = 29;
+    pub const RISCV_REG_T3: Type = 29;
+    pub const RISCV_REG_X29: Type = 30;
+    pub const RISCV_REG_T4: Type = 30;
+    pub const RISCV_REG_X30: Type = 31;
+    pub const RISCV_REG_T5: Type = 31;
+    pub const RISCV_REG_X31: Type = 32;
+    pub const RISCV_REG_T6: Type = 32;
+    pub const RISCV_REG_F0_32: Type = 33;
+    pub const RISCV_REG_F0_64: Type = 34;
+    pub const RISCV_REG_F1_32: Type = 35;
+    pub const RISCV_REG_F1_64: Type = 36;
+    pub const RISCV_REG_F2_32: Type = 37;
+    pub const RISCV_REG_F2_64: Type = 38;
+    pub const RISCV_REG_F3_32: Type = 39;
+    pub const RISCV_REG_F3_64: Type = 40;
+    pub const RISCV_REG_F4_32: Type = 41;
+    pub const RISCV_REG_F4_64: Type = 42;
+    pub const RISCV_REG_F5_32: Type = 43;
+    pub const RISCV_REG_F5_64: Type = 44;
+    pub const RISCV_REG_F6_32: Type = 45;
+    pub const RISCV_REG_F6_64: Type = 46;
+    pub const RISCV_REG_F7_32: Type = 47;
+    pub const RISCV_REG_F7_64: Type = 48;
+    pub const RISCV_REG_F8_32: Type = 49;
+    pub const RISCV_REG_F8_64: Type = 50;
+    pub const RISCV_REG_F9_32: Type = 51;
+    pub const RISCV_REG_F9_64: Type = 52;
+    pub const RISCV_REG_F10_32: Type = 53;
+    pub const RISCV_REG_F10_64: Type = 54;
+    pub const RISCV_REG_F11_32: Type = 55;
+    pub const RISCV_REG_F11_64: Type = 56;
+    pub const RISCV_REG_F12_32: Type = 57;
+    pub const RISCV_REG_F12_64: Type = 58;
+    pub const RISCV_REG_F13_32: Type = 59;
+    pub const RISCV_REG_F13_64: Type = 60;
+    pub const RISCV_REG_F14_32: Type = 61;
+    pub const RISCV_REG_F14_64: Type = 62;
+    pub const RISCV_REG_F15_32: Type = 63;
+    pub const RISCV_REG_F15_64: Type = 64;
+    pub const RISCV_REG_F16_32: Type = 65;
+    pub const RISCV_REG_F16_64: Type = 66;
+    pub const RISCV_REG_F17_32: Type = 67;
+    pub const RISCV_REG_F17_64: Type = 68;
+    pub const RISCV_REG_F18_32: Type = 69;
+    pub const RISCV_REG_F18_64: Type = 70;
+    pub const RISCV_REG_F19_32: Type = 71;
+    pub const RISCV_REG_F19_64: Type = 72;
+    pub const RISCV_REG_F20_32: Type = 73;
+    pub const RISCV_REG_F20_64: Type = 74;
+    pub const RISCV_REG_F21_32: Type = 75;
+    pub const RISCV_REG_F21_64: Type = 76;
+    pub const RISCV_REG_F22_32: Type = 77;
+    pub const RISCV_REG_F22_64: Type = 78;
+    pub const RISCV_REG_F23_32: Type = 79;
+    pub const RISCV_REG_F23_64: Type = 80;
+    pub const RISCV_REG_F24_32: Type = 81;
+    pub const RISCV_REG_F24_64: Type = 82;
+    pub const RISCV_REG_F25_32: Type = 83;
+    pub const RISCV_REG_F25_64: Type = 84;
+    pub const RISCV_REG_F26_32: Type = 85;
+    pub const RISCV_REG_F26_64: Type = 86;
+    pub const RISCV_REG_F27_32: Type = 87;
+    pub const RISCV_REG_F27_64: Type = 88;
+    pub const RISCV_REG_F28_32: Type = 89;
+    pub const RISCV_REG_F28_64: Type = 90;
+    pub const RISCV_REG_F29_32: Type = 91;
+    pub const RISCV_REG_F29_64: Type = 92;
+    pub const RISCV_REG_F30_32: Type = 93;
+    pub const RISCV_REG_F30_64: Type = 94;
+    pub const RISCV_REG_F31_32: Type = 95;
+    pub const RISCV_REG_F31_64: Type = 96;
+    pub const RISCV_REG_ENDING: Type = 97;
+}
+#[repr(u32)]
+#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
+pub enum riscv_insn {
+    RISCV_INS_INVALID = 0,
+    RISCV_INS_ADD = 1,
+    RISCV_INS_ADDI = 2,
+    RISCV_INS_ADDIW = 3,
+    RISCV_INS_ADDW = 4,
+    RISCV_INS_AMOADD_D = 5,
+    RISCV_INS_AMOADD_D_AQ = 6,
+    RISCV_INS_AMOADD_D_AQ_RL = 7,
+    RISCV_INS_AMOADD_D_RL = 8,
+    RISCV_INS_AMOADD_W = 9,
+    RISCV_INS_AMOADD_W_AQ = 10,
+    RISCV_INS_AMOADD_W_AQ_RL = 11,
+    RISCV_INS_AMOADD_W_RL = 12,
+    RISCV_INS_AMOAND_D = 13,
+    RISCV_INS_AMOAND_D_AQ = 14,
+    RISCV_INS_AMOAND_D_AQ_RL = 15,
+    RISCV_INS_AMOAND_D_RL = 16,
+    RISCV_INS_AMOAND_W = 17,
+    RISCV_INS_AMOAND_W_AQ = 18,
+    RISCV_INS_AMOAND_W_AQ_RL = 19,
+    RISCV_INS_AMOAND_W_RL = 20,
+    RISCV_INS_AMOMAXU_D = 21,
+    RISCV_INS_AMOMAXU_D_AQ = 22,
+    RISCV_INS_AMOMAXU_D_AQ_RL = 23,
+    RISCV_INS_AMOMAXU_D_RL = 24,
+    RISCV_INS_AMOMAXU_W = 25,
+    RISCV_INS_AMOMAXU_W_AQ = 26,
+    RISCV_INS_AMOMAXU_W_AQ_RL = 27,
+    RISCV_INS_AMOMAXU_W_RL = 28,
+    RISCV_INS_AMOMAX_D = 29,
+    RISCV_INS_AMOMAX_D_AQ = 30,
+    RISCV_INS_AMOMAX_D_AQ_RL = 31,
+    RISCV_INS_AMOMAX_D_RL = 32,
+    RISCV_INS_AMOMAX_W = 33,
+    RISCV_INS_AMOMAX_W_AQ = 34,
+    RISCV_INS_AMOMAX_W_AQ_RL = 35,
+    RISCV_INS_AMOMAX_W_RL = 36,
+    RISCV_INS_AMOMINU_D = 37,
+    RISCV_INS_AMOMINU_D_AQ = 38,
+    RISCV_INS_AMOMINU_D_AQ_RL = 39,
+    RISCV_INS_AMOMINU_D_RL = 40,
+    RISCV_INS_AMOMINU_W = 41,
+    RISCV_INS_AMOMINU_W_AQ = 42,
+    RISCV_INS_AMOMINU_W_AQ_RL = 43,
+    RISCV_INS_AMOMINU_W_RL = 44,
+    RISCV_INS_AMOMIN_D = 45,
+    RISCV_INS_AMOMIN_D_AQ = 46,
+    RISCV_INS_AMOMIN_D_AQ_RL = 47,
+    RISCV_INS_AMOMIN_D_RL = 48,
+    RISCV_INS_AMOMIN_W = 49,
+    RISCV_INS_AMOMIN_W_AQ = 50,
+    RISCV_INS_AMOMIN_W_AQ_RL = 51,
+    RISCV_INS_AMOMIN_W_RL = 52,
+    RISCV_INS_AMOOR_D = 53,
+    RISCV_INS_AMOOR_D_AQ = 54,
+    RISCV_INS_AMOOR_D_AQ_RL = 55,
+    RISCV_INS_AMOOR_D_RL = 56,
+    RISCV_INS_AMOOR_W = 57,
+    RISCV_INS_AMOOR_W_AQ = 58,
+    RISCV_INS_AMOOR_W_AQ_RL = 59,
+    RISCV_INS_AMOOR_W_RL = 60,
+    RISCV_INS_AMOSWAP_D = 61,
+    RISCV_INS_AMOSWAP_D_AQ = 62,
+    RISCV_INS_AMOSWAP_D_AQ_RL = 63,
+    RISCV_INS_AMOSWAP_D_RL = 64,
+    RISCV_INS_AMOSWAP_W = 65,
+    RISCV_INS_AMOSWAP_W_AQ = 66,
+    RISCV_INS_AMOSWAP_W_AQ_RL = 67,
+    RISCV_INS_AMOSWAP_W_RL = 68,
+    RISCV_INS_AMOXOR_D = 69,
+    RISCV_INS_AMOXOR_D_AQ = 70,
+    RISCV_INS_AMOXOR_D_AQ_RL = 71,
+    RISCV_INS_AMOXOR_D_RL = 72,
+    RISCV_INS_AMOXOR_W = 73,
+    RISCV_INS_AMOXOR_W_AQ = 74,
+    RISCV_INS_AMOXOR_W_AQ_RL = 75,
+    RISCV_INS_AMOXOR_W_RL = 76,
+    RISCV_INS_AND = 77,
+    RISCV_INS_ANDI = 78,
+    RISCV_INS_AUIPC = 79,
+    RISCV_INS_BEQ = 80,
+    RISCV_INS_BGE = 81,
+    RISCV_INS_BGEU = 82,
+    RISCV_INS_BLT = 83,
+    RISCV_INS_BLTU = 84,
+    RISCV_INS_BNE = 85,
+    RISCV_INS_CSRRC = 86,
+    RISCV_INS_CSRRCI = 87,
+    RISCV_INS_CSRRS = 88,
+    RISCV_INS_CSRRSI = 89,
+    RISCV_INS_CSRRW = 90,
+    RISCV_INS_CSRRWI = 91,
+    RISCV_INS_C_ADD = 92,
+    RISCV_INS_C_ADDI = 93,
+    RISCV_INS_C_ADDI16SP = 94,
+    RISCV_INS_C_ADDI4SPN = 95,
+    RISCV_INS_C_ADDIW = 96,
+    RISCV_INS_C_ADDW = 97,
+    RISCV_INS_C_AND = 98,
+    RISCV_INS_C_ANDI = 99,
+    RISCV_INS_C_BEQZ = 100,
+    RISCV_INS_C_BNEZ = 101,
+    RISCV_INS_C_EBREAK = 102,
+    RISCV_INS_C_FLD = 103,
+    RISCV_INS_C_FLDSP = 104,
+    RISCV_INS_C_FLW = 105,
+    RISCV_INS_C_FLWSP = 106,
+    RISCV_INS_C_FSD = 107,
+    RISCV_INS_C_FSDSP = 108,
+    RISCV_INS_C_FSW = 109,
+    RISCV_INS_C_FSWSP = 110,
+    RISCV_INS_C_J = 111,
+    RISCV_INS_C_JAL = 112,
+    RISCV_INS_C_JALR = 113,
+    RISCV_INS_C_JR = 114,
+    RISCV_INS_C_LD = 115,
+    RISCV_INS_C_LDSP = 116,
+    RISCV_INS_C_LI = 117,
+    RISCV_INS_C_LUI = 118,
+    RISCV_INS_C_LW = 119,
+    RISCV_INS_C_LWSP = 120,
+    RISCV_INS_C_MV = 121,
+    RISCV_INS_C_NOP = 122,
+    RISCV_INS_C_OR = 123,
+    RISCV_INS_C_SD = 124,
+    RISCV_INS_C_SDSP = 125,
+    RISCV_INS_C_SLLI = 126,
+    RISCV_INS_C_SRAI = 127,
+    RISCV_INS_C_SRLI = 128,
+    RISCV_INS_C_SUB = 129,
+    RISCV_INS_C_SUBW = 130,
+    RISCV_INS_C_SW = 131,
+    RISCV_INS_C_SWSP = 132,
+    RISCV_INS_C_UNIMP = 133,
+    RISCV_INS_C_XOR = 134,
+    RISCV_INS_DIV = 135,
+    RISCV_INS_DIVU = 136,
+    RISCV_INS_DIVUW = 137,
+    RISCV_INS_DIVW = 138,
+    RISCV_INS_EBREAK = 139,
+    RISCV_INS_ECALL = 140,
+    RISCV_INS_FADD_D = 141,
+    RISCV_INS_FADD_S = 142,
+    RISCV_INS_FCLASS_D = 143,
+    RISCV_INS_FCLASS_S = 144,
+    RISCV_INS_FCVT_D_L = 145,
+    RISCV_INS_FCVT_D_LU = 146,
+    RISCV_INS_FCVT_D_S = 147,
+    RISCV_INS_FCVT_D_W = 148,
+    RISCV_INS_FCVT_D_WU = 149,
+    RISCV_INS_FCVT_LU_D = 150,
+    RISCV_INS_FCVT_LU_S = 151,
+    RISCV_INS_FCVT_L_D = 152,
+    RISCV_INS_FCVT_L_S = 153,
+    RISCV_INS_FCVT_S_D = 154,
+    RISCV_INS_FCVT_S_L = 155,
+    RISCV_INS_FCVT_S_LU = 156,
+    RISCV_INS_FCVT_S_W = 157,
+    RISCV_INS_FCVT_S_WU = 158,
+    RISCV_INS_FCVT_WU_D = 159,
+    RISCV_INS_FCVT_WU_S = 160,
+    RISCV_INS_FCVT_W_D = 161,
+    RISCV_INS_FCVT_W_S = 162,
+    RISCV_INS_FDIV_D = 163,
+    RISCV_INS_FDIV_S = 164,
+    RISCV_INS_FENCE = 165,
+    RISCV_INS_FENCE_I = 166,
+    RISCV_INS_FENCE_TSO = 167,
+    RISCV_INS_FEQ_D = 168,
+    RISCV_INS_FEQ_S = 169,
+    RISCV_INS_FLD = 170,
+    RISCV_INS_FLE_D = 171,
+    RISCV_INS_FLE_S = 172,
+    RISCV_INS_FLT_D = 173,
+    RISCV_INS_FLT_S = 174,
+    RISCV_INS_FLW = 175,
+    RISCV_INS_FMADD_D = 176,
+    RISCV_INS_FMADD_S = 177,
+    RISCV_INS_FMAX_D = 178,
+    RISCV_INS_FMAX_S = 179,
+    RISCV_INS_FMIN_D = 180,
+    RISCV_INS_FMIN_S = 181,
+    RISCV_INS_FMSUB_D = 182,
+    RISCV_INS_FMSUB_S = 183,
+    RISCV_INS_FMUL_D = 184,
+    RISCV_INS_FMUL_S = 185,
+    RISCV_INS_FMV_D_X = 186,
+    RISCV_INS_FMV_W_X = 187,
+    RISCV_INS_FMV_X_D = 188,
+    RISCV_INS_FMV_X_W = 189,
+    RISCV_INS_FNMADD_D = 190,
+    RISCV_INS_FNMADD_S = 191,
+    RISCV_INS_FNMSUB_D = 192,
+    RISCV_INS_FNMSUB_S = 193,
+    RISCV_INS_FSD = 194,
+    RISCV_INS_FSGNJN_D = 195,
+    RISCV_INS_FSGNJN_S = 196,
+    RISCV_INS_FSGNJX_D = 197,
+    RISCV_INS_FSGNJX_S = 198,
+    RISCV_INS_FSGNJ_D = 199,
+    RISCV_INS_FSGNJ_S = 200,
+    RISCV_INS_FSQRT_D = 201,
+    RISCV_INS_FSQRT_S = 202,
+    RISCV_INS_FSUB_D = 203,
+    RISCV_INS_FSUB_S = 204,
+    RISCV_INS_FSW = 205,
+    RISCV_INS_JAL = 206,
+    RISCV_INS_JALR = 207,
+    RISCV_INS_LB = 208,
+    RISCV_INS_LBU = 209,
+    RISCV_INS_LD = 210,
+    RISCV_INS_LH = 211,
+    RISCV_INS_LHU = 212,
+    RISCV_INS_LR_D = 213,
+    RISCV_INS_LR_D_AQ = 214,
+    RISCV_INS_LR_D_AQ_RL = 215,
+    RISCV_INS_LR_D_RL = 216,
+    RISCV_INS_LR_W = 217,
+    RISCV_INS_LR_W_AQ = 218,
+    RISCV_INS_LR_W_AQ_RL = 219,
+    RISCV_INS_LR_W_RL = 220,
+    RISCV_INS_LUI = 221,
+    RISCV_INS_LW = 222,
+    RISCV_INS_LWU = 223,
+    RISCV_INS_MRET = 224,
+    RISCV_INS_MUL = 225,
+    RISCV_INS_MULH = 226,
+    RISCV_INS_MULHSU = 227,
+    RISCV_INS_MULHU = 228,
+    RISCV_INS_MULW = 229,
+    RISCV_INS_OR = 230,
+    RISCV_INS_ORI = 231,
+    RISCV_INS_REM = 232,
+    RISCV_INS_REMU = 233,
+    RISCV_INS_REMUW = 234,
+    RISCV_INS_REMW = 235,
+    RISCV_INS_SB = 236,
+    RISCV_INS_SC_D = 237,
+    RISCV_INS_SC_D_AQ = 238,
+    RISCV_INS_SC_D_AQ_RL = 239,
+    RISCV_INS_SC_D_RL = 240,
+    RISCV_INS_SC_W = 241,
+    RISCV_INS_SC_W_AQ = 242,
+    RISCV_INS_SC_W_AQ_RL = 243,
+    RISCV_INS_SC_W_RL = 244,
+    RISCV_INS_SD = 245,
+    RISCV_INS_SFENCE_VMA = 246,
+    RISCV_INS_SH = 247,
+    RISCV_INS_SLL = 248,
+    RISCV_INS_SLLI = 249,
+    RISCV_INS_SLLIW = 250,
+    RISCV_INS_SLLW = 251,
+    RISCV_INS_SLT = 252,
+    RISCV_INS_SLTI = 253,
+    RISCV_INS_SLTIU = 254,
+    RISCV_INS_SLTU = 255,
+    RISCV_INS_SRA = 256,
+    RISCV_INS_SRAI = 257,
+    RISCV_INS_SRAIW = 258,
+    RISCV_INS_SRAW = 259,
+    RISCV_INS_SRET = 260,
+    RISCV_INS_SRL = 261,
+    RISCV_INS_SRLI = 262,
+    RISCV_INS_SRLIW = 263,
+    RISCV_INS_SRLW = 264,
+    RISCV_INS_SUB = 265,
+    RISCV_INS_SUBW = 266,
+    RISCV_INS_SW = 267,
+    RISCV_INS_UNIMP = 268,
+    RISCV_INS_URET = 269,
+    RISCV_INS_WFI = 270,
+    RISCV_INS_XOR = 271,
+    RISCV_INS_XORI = 272,
+    RISCV_INS_ENDING = 273,
+}
+pub mod riscv_insn_group {
+    pub type Type = u32;
+    pub const RISCV_GRP_INVALID: Type = 0;
+    pub const RISCV_GRP_JUMP: Type = 1;
+    pub const RISCV_GRP_ISRV32: Type = 128;
+    pub const RISCV_GRP_ISRV64: Type = 129;
+    pub const RISCV_GRP_HASSTDEXTA: Type = 130;
+    pub const RISCV_GRP_HASSTDEXTC: Type = 131;
+    pub const RISCV_GRP_HASSTDEXTD: Type = 132;
+    pub const RISCV_GRP_HASSTDEXTF: Type = 133;
+    pub const RISCV_GRP_HASSTDEXTM: Type = 134;
+    pub const RISCV_GRP_ENDING: Type = 135;
+}
 #[repr(u32)]
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
 pub enum wasm_op_type {
@@ -15197,7 +15622,7 @@ impl Clone for cs_detail {
 }
 impl ::core::fmt::Debug for cs_detail {
     fn fmt(&self, f: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
-        write ! ( f , "cs_detail {{ regs_read: {:?}, regs_read_count: {:?}, regs_write: {:?}, regs_write_count: {:?}, groups: {:?}, groups_count: {:?}, __bindgen_anon_1: {:?} }}" , self . regs_read , self . regs_read_count , self . regs_write , self . regs_write_count , self . groups , self . groups_count , self . __bindgen_anon_1 )
+        write ! (f , "cs_detail {{ regs_read: {:?}, regs_read_count: {:?}, regs_write: {:?}, regs_write_count: {:?}, groups: {:?}, groups_count: {:?}, __bindgen_anon_1: {:?} }}" , self . regs_read , self . regs_read_count , self . regs_write , self . regs_write_count , self . groups , self . groups_count , self . __bindgen_anon_1)
     }
 }
 #[doc = " Detail information of disassembled instruction"]
@@ -15242,7 +15667,7 @@ impl Clone for cs_insn {
 }
 impl ::core::fmt::Debug for cs_insn {
     fn fmt(&self, f: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
-        write ! ( f , "cs_insn {{ id: {:?}, address: {:?}, size: {:?}, bytes: {:?}, mnemonic: [...], op_str: [...], detail: {:?} }}" , self . id , self . address , self . size , self . bytes , self . detail )
+        write ! (f , "cs_insn {{ id: {:?}, address: {:?}, size: {:?}, bytes: {:?}, mnemonic: [...], op_str: [...], detail: {:?} }}" , self . id , self . address , self . size , self . bytes , self . detail)
     }
 }
 pub mod cs_err {

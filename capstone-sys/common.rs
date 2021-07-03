@@ -54,6 +54,10 @@ pub static ARCH_INCLUDES: &'static [CapstoneArchInfo<'static>] = &[
         cs_name: "ppc",
     },
     CapstoneArchInfo {
+        header_name: "riscv.h",
+        cs_name: "riscv",
+    },
+    CapstoneArchInfo {
         header_name: "sparc.h",
         cs_name: "sparc",
     },
