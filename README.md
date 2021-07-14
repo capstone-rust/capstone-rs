@@ -23,7 +23,7 @@ Bindings to the [capstone library][upstream] disassembly framework.
 
 See the [`capstone-sys`](capstone-sys) page for the requirements and supported platforms.
 
-* Minimum Rust Version: `1.36.0`
+* Minimum Rust Version: `1.40.0`
 
 # Example
 

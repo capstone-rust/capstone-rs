@@ -1,6 +1,6 @@
 language: rust
 rust:
-  - 1.36.0
+  - 1.40.0
   - stable
   - beta
   - nightly
@@ -26,7 +26,7 @@ matrix:
   # Add each target manually
   include:
     - os: linux
-      rust: 1.36.0
+      rust: 1.40.0
     - os: linux
       rust: stable
       env: JOB=valgrind-test
