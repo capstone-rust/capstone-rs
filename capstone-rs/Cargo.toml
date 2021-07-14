@@ -9,7 +9,7 @@ name = "capstone"
 repository = "https://github.com/capstone-rust/capstone-rs"
 readme = "README.md"
 edition = "2018"
-version = "0.8.0"
+version = "0.9.0"
 
 [badges]
 travis-ci = { repository = "capstone-rust/capstone-rs" }
