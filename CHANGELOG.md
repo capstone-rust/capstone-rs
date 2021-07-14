@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased] - YYYY-MM-DD
 
+### Added
+- Support for RISC-V architecture
+
 ### Changed
 - Updated minimum supported Rust version to 1.40.0
 

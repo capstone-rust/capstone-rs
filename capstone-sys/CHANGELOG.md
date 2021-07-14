@@ -6,7 +6,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased] - YYYY-MM-DD
 
+### Added
+- Support for RISC-V architecture
+
 ### Changed
+- Upgraded bundled capstone to from [a42f9fa9 to f278de39](https://github.com/aquynh/capstone/compare/a42f9fa9...f278de39)
 - Updated minimum supported Rust version to 1.40.0
 
 ## [0.12.0] - 2021-04-09
