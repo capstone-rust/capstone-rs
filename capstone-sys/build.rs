@@ -130,6 +130,7 @@ fn build_capstone_cc() {
         .define("CAPSTONE_HAS_SPARC", None)
         .define("CAPSTONE_HAS_SYSZ", None)
         .define("CAPSTONE_HAS_TMS320C64X", None)
+        .define("CAPSTONE_HAS_WASM", None)
         .define("CAPSTONE_HAS_X86", None)
         .define("CAPSTONE_HAS_XCORE", None)
         .flag_if_supported("-Wno-unused-function")
