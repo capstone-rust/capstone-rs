@@ -632,6 +632,10 @@ macro_rules! def_arch_details_struct {
                     Some(op) => Some($Operand::from(op)),
                 }
             }
+
+            fn size_hint(&self) -> (usize, Option<usize>) {
+                self.0.size_hint()
+            }
         }
 
         impl<'a> ExactSizeIterator for $OperandIteratorLife {
