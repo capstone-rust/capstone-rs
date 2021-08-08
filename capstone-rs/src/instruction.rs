@@ -1,4 +1,4 @@
-use core::convert::TryFrom;
+use core::convert::{TryFrom, TryInto};
 use core::fmt::{self, Debug, Display, Error, Formatter};
 use core::marker::PhantomData;
 use core::slice;
@@ -38,13 +38,14 @@ pub type RegIdInt = u16;
 #[repr(transparent)]
 pub struct RegId(pub RegIdInt);
 
+impl RegId {
+    /// Invalid Register
+    pub const INVALID_REG: Self = Self(0);
+}
+
 impl core::convert::From<u32> for RegId {
     fn from(v: u32) -> RegId {
-        if v <= core::u16::MAX as u32 {
-            RegId(v as u16)
-        } else {
-            RegId(0)
-        }
+        RegId(v.try_into().ok().unwrap_or(Self::INVALID_REG.0))
     }
 }
 
