@@ -166,7 +166,7 @@ impl M68kRegisterBits {
     pub fn m68k_reg_to_bit_idx(reg: M68kReg::Type) -> CsResult<u8> {
         use capstone_sys::m68k_reg::*;
 
-        if reg >= M68K_REG_D0 && reg <= M68K_REG_FP7 {
+        if (M68K_REG_D0..=M68K_REG_FP7).contains(&reg) {
             Ok((reg - M68K_REG_D0) as u8)
         } else {
             Err(Error::InvalidM68kBitfieldRegister)
@@ -221,7 +221,7 @@ impl M68kOperand {
         match cs_op.type_ {
             M68K_OP_REG => Reg(RegId(unsafe { value.reg } as RegIdInt)),
             M68K_OP_IMM => Imm(unsafe { value.imm } as u32),
-            M68K_OP_MEM => Mem(M68kOpMem::new(&cs_op)),
+            M68K_OP_MEM => Mem(M68kOpMem::new(cs_op)),
             M68K_OP_FP_SINGLE => FpSingle(unsafe { value.simm }),
             M68K_OP_FP_DOUBLE => FpDouble(unsafe { value.dimm }),
             M68K_OP_REG_BITS => RegBits(M68kRegisterBits::from_bitfield_infallible(

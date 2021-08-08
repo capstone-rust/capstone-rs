@@ -105,6 +105,7 @@ impl Capstone {
     /// use capstone::prelude::*;
     /// let cs = Capstone::new().x86().mode(arch::x86::ArchMode::Mode32).build();
     /// ```
+    #[allow(clippy::new_ret_no_self)]
     pub fn new() -> CapstoneBuilder {
         CapstoneBuilder::new()
     }

@@ -206,6 +206,7 @@ impl<'a> Insn<'a> {
     ///
     /// This function serves to allow integration with libraries which generate cs_insn's internally.
     ///
+    /// # Safety
     /// Note that this function is unsafe, and assumes that you know what you are doing. In
     /// particular, it generates a lifetime for the Insn from nothing, and that lifetime is in
     /// no-way actually tied to the cs_insn itself. It is the responsibility of the caller to
