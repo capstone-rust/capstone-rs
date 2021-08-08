@@ -3,7 +3,7 @@ on: push
 name: stable-only CI
 
 jobs:
-  install-rust:
+  test:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -25,6 +25,11 @@ jobs:
         env:
           JOB: valgrind-test
           PROFILES: debug release
+        run: ./capstone-rs/ci/test.sh
+
+      - name: code coverage
+        env:
+          JOB: cov
         run: ./capstone-rs/ci/test.sh
 
       - name: cargo fmt

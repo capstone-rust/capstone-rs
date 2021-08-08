@@ -152,7 +152,7 @@ cov() {
 
     KCOV=./kcov-install/usr/local/bin/kcov run_kcov
 
-    if [[ "${TRAVIS_JOB_ID:+Z}" = Z ]]; then
+    if [[ -n "${CI:-}" ]]; then
         codecov_script="$(mktemp)"
         curl --silent --show-error "https://codecov.io/bash" \
             > "${codecov_script}" \
