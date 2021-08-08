@@ -3,23 +3,26 @@ on: push
 name: stable-only CI
 
 jobs:
-  ci:
+  install-rust:
     runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        rust:
-          - stable
-
     steps:
       - uses: actions/checkout@v2
 
       - uses: actions-rs/toolchain@v1
         with:
           profile: minimal
-          toolchain: ${{ matrix.rust }}
+          toolchain: stable
           override: true
           components: rustfmt, clippy
+  tests:
+    runs-on: ubuntu-latest
+    needs: install-rust
+    steps:
+      - name: install valgrind
+        env:
+          JOB: valgrind-test
+          PROFILES: debug release
+        run: sudo apt-get install valgrind
 
       - name: valgrind-test
         env:
@@ -27,6 +30,10 @@ jobs:
           PROFILES: debug release
         run: ./capstone-rs/ci/test.sh
 
+  lint:
+    runs-on: ubuntu-latest
+    needs: install-rust
+    steps:
       - name: cargo fmt
         uses: actions-rs/cargo@v1
         with:
