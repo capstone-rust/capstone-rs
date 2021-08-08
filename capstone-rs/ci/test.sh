@@ -177,7 +177,7 @@ profile_args() {
 }
 
 # Test rust file by making a temporary project
-# Must have a main() function defined
+# Must have a main() function defined, which it reads from stdin
 test_rust_file() {
     (
     tmp_dir="$(mktemp -d /tmp/rust.testdir.XXXXXXXXXX)"
@@ -229,7 +229,8 @@ run_tests() {
                 head -n20
         )
 
-        cat README.md | \
+        # Test the example code in README
+        cat ../README.md | \
             sed -n '/^```rust/,/^```/p' | grep -vE '^```' | \
             test_rust_file
 
