@@ -119,12 +119,24 @@ run_kcov() {
     COVERALLS_ARG="${TRAVIS_JOB_ID:+--coveralls-id=$TRAVIS_JOB_ID}"
 
     # Build binaries
-    cargo test --no-run -v
+    json_format_args="--quiet --message-format=json"
+
+    # Test binaries
+    cargo_test_args="cargo test --no-run"
+    ${cargo_test_args} -v
+    TEST_BINS="$(${cargo_test_args} ${json_format_args} \
+        | jq -r "select(.profile.test == true) | .filenames[]")"
+
+    # Exaple binaries
+    EXAMPLE_BINS=
     for example in $SIMPLE_RUN_EXAMPLES; do
-        cargo build --example "$example"
+        cargo_build_example_args="cargo build --example $example"
+        ${cargo_build_example_args} -v
+        example_bin="$(${cargo_build_example_args} ${json_format_args} \
+            | jq -r '.executable | strings')"
+        EXAMPLE_BINS="${EXAMPLE_BINS} ${example_bin}"
     done
 
-    EXAMPLE_BINS=$(echo "$SIMPLE_RUN_EXAMPLES" | xargs -n1 | sed "s,^,${TARGET}/${PROFILE}/examples/,")
     mkdir -p "${TARGET_COV}"
 
     (
@@ -134,7 +146,8 @@ run_kcov() {
     ls -l ${TARGET}
     ls -l ${TARGET}/${PROFILE}
 
-    for file in ${TARGET}/${PROFILE}/${PROJECT_NAME}-*[^\.d] ${EXAMPLE_BINS} ; do
+    # Run test and example binaries under kcov
+    for file in ${TEST_BINS} ${EXAMPLE_BINS} ; do
         "$KCOV" \
             $COVERALLS_ARG \
             --include-pattern=capstone-rs \
