@@ -1,6 +1,6 @@
 on: push
 
-name: Main CI
+name: main
 
 jobs:
   test:

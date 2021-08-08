@@ -1,6 +1,6 @@
 on: push
 
-name: stable-only CI
+name: stable-only
 
 jobs:
   test:
@@ -19,7 +19,7 @@ jobs:
         env:
           JOB: valgrind-test
           PROFILES: debug release
-        run: sudo apt-get install valgrind
+        run: sudo apt-get install valgrind binutils-dev libcurl4-openssl-dev zlib1g-dev libdw-dev libiberty-dev
 
       - name: valgrind-test
         env:
