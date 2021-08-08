@@ -14,10 +14,7 @@ jobs:
           toolchain: stable
           override: true
           components: rustfmt, clippy
-  tests:
-    runs-on: ubuntu-latest
-    needs: install-rust
-    steps:
+
       - name: install valgrind
         env:
           JOB: valgrind-test
@@ -30,10 +27,6 @@ jobs:
           PROFILES: debug release
         run: ./capstone-rs/ci/test.sh
 
-  lint:
-    runs-on: ubuntu-latest
-    needs: install-rust
-    steps:
       - name: cargo fmt
         uses: actions-rs/cargo@v1
         with:
