@@ -1,7 +1,6 @@
 use alloc::string::{String, ToString};
 use core::convert::From;
 use core::marker::PhantomData;
-use core::mem;
 
 use libc::{c_int, c_uint, c_void};
 
@@ -185,7 +184,14 @@ impl Capstone {
     ///
     /// Pass `count = 0` to disassemble all instructions in the buffer.
     fn disasm<'a>(&'a self, code: &[u8], addr: u64, count: usize) -> CsResult<Instructions<'a>> {
-        let mut ptr: *mut cs_insn = unsafe { mem::zeroed() };
+        // SAFETY NOTE: `cs_disasm()` will write the error state into the
+        // `struct cs_struct` (true form of the `self.csh`) `errnum` field.
+        // CLAIM: since:
+        // - `Capstone` is not `Send`/`Sync`
+        // - The mutation is done through a `*mut c_void` (not through a const reference)
+        // it *should* be safe to accept `&self` (instead of `&mut self`) in this method.
+
+        let mut ptr: *mut cs_insn = core::ptr::null_mut();
         let insn_count = unsafe {
             cs_disasm(
                 self.csh(),
