@@ -1,6 +1,5 @@
 //! Capstone errors
 
-use capstone_sys;
 use capstone_sys::cs_err::*;
 
 use core::fmt;

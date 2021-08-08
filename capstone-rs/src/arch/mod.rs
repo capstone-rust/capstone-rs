@@ -361,7 +361,7 @@ pub trait BuildsCapstone<ArchMode> {
     fn detail(self, enable_detail: bool) -> Self;
 
     /// Get final `Capstone`
-    fn build<'a>(self) -> CsResult<Capstone>;
+    fn build(self) -> CsResult<Capstone>;
 }
 
 /// Implies that a `CapstoneBuilder` architecture has extra modes
@@ -627,10 +627,7 @@ macro_rules! def_arch_details_struct {
             type Item = $Operand;
 
             fn next(&mut self) -> Option<Self::Item> {
-                match self.0.next() {
-                    None => None,
-                    Some(op) => Some($Operand::from(op)),
-                }
+                self.0.next().map($Operand::from)
             }
 
             fn size_hint(&self) -> (usize, Option<usize>) {

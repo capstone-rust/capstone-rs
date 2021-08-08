@@ -55,7 +55,7 @@ use std::path::PathBuf;
 
 include!("common.rs");
 
-const CAPSTONE_DIR: &'static str = "capstone";
+const CAPSTONE_DIR: &str = "capstone";
 
 /// Indicates how capstone library should be linked
 #[allow(dead_code)]
@@ -111,8 +111,8 @@ fn build_capstone_cc() {
     }
 
     let use_static_crt = {
-        let target_features = env::var("CARGO_CFG_TARGET_FEATURE").unwrap_or(String::new());
-        target_features.split(",").any(|f| f == "crt-static")
+        let target_features = env::var("CARGO_CFG_TARGET_FEATURE").unwrap_or_default();
+        target_features.split(',').any(|f| f == "crt-static")
     };
 
     cc::Build::new()
@@ -158,7 +158,7 @@ fn find_capstone_header(header_search_paths: &Vec<PathBuf>, name: &str) -> Optio
 
 /// Gets environment variable value. Panics if variable is not set.
 fn env_var(var: &str) -> String {
-    env::var(var).expect(&format!("Environment variable {} is not set", var))
+    env::var(var).unwrap_or_else(|_| panic!("Environment variable {} is not set", var))
 }
 
 /// Parse generated bindings and impl from_insn_id() for all architectures
@@ -318,14 +318,8 @@ fn main() {
 
     // If UPDATE_CAPSTONE_BINDINGS is set, then updated the pre-generated capstone bindings
     let update_pregenerated_bindings = env::var("UPDATE_CAPSTONE_BINDINGS").is_ok();
-    if update_pregenerated_bindings {
-        assert!(
-            cfg!(feature = "use_bindgen"),
-            concat!(
-                "Setting UPDATE_CAPSTONE_BINDINGS only makes ",
-                "sense when enabling feature \"use_bindgen\""
-            )
-        );
+    if update_pregenerated_bindings && !cfg!(feature = "use_bindgen") {
+        panic!( "Setting UPDATE_CAPSTONE_BINDINGS only makes sense when enabling feature \"use_bindgen\"");
     }
 
     let pregenerated_bindgen_header: PathBuf = [

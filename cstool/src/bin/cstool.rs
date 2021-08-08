@@ -10,7 +10,6 @@ use std::str::FromStr;
 use capstone::{self, prelude::*, Arch, Endian, EnumList, ExtraMode, Mode};
 use clap::{App, Arg, ArgGroup};
 use log::{debug, info};
-use stderrlog;
 
 const DEFAULT_CAPACITY: usize = 1024;
 
@@ -55,7 +54,7 @@ fn unhexed_bytes(input: Vec<u8>) -> Vec<u8> {
     let mut curr_byte_str = String::with_capacity(2);
     for b_u8 in input {
         let b = char::from(b_u8);
-        if ('0' <= b && b <= '9') || ('a' <= b && b <= 'f') || ('A' <= b && b <= 'F') {
+        if ('0'..='9').contains(&b) || ('a'..='f').contains(&b) || ('A'..='F').contains(&b) {
             curr_byte_str.push(b);
         }
 
@@ -108,7 +107,7 @@ fn disasm<T: Iterator<Item = ExtraMode>>(
         .is_ok();
 
         if show_detail {
-            let detail = cs.insn_detail(&i).expect("Failed to get insn detail");
+            let detail = cs.insn_detail(i).expect("Failed to get insn detail");
 
             let output: &[(&str, String)] = &[
                 ("insn id:", format!("{:?}", i.id().0)),
@@ -279,7 +278,7 @@ fn main() {
         file.read_to_end(&mut buf).expect_exit();
         buf
     } else if let Some(code) = matches.value_of(CODE_ARG) {
-        code.as_bytes().iter().map(|x| *x).collect()
+        code.as_bytes().iter().copied().collect()
     } else {
         let mut buf = Vec::with_capacity(DEFAULT_CAPACITY);
         let stdin = std::io::stdin();
@@ -298,21 +297,15 @@ fn main() {
     let show_detail = matches.is_present(DETAIL_ARG);
     info!("show_detail = {:?}", show_detail);
 
-    let arch: Arch = Arch::from_str(matches.value_of(ARCH_ARG).unwrap())
-        .unwrap()
-        .into();
+    let arch: Arch = Arch::from_str(matches.value_of(ARCH_ARG).unwrap()).unwrap();
     info!("Arch = {:?}", arch);
 
-    let mode: Mode = Mode::from_str(matches.value_of(MODE_ARG).unwrap())
-        .unwrap()
-        .into();
+    let mode: Mode = Mode::from_str(matches.value_of(MODE_ARG).unwrap()).unwrap();
     info!("Mode = {:?}", mode);
 
     let extra_mode: Vec<_> = match matches.values_of(EXTRA_MODE_ARG) {
         None => Vec::with_capacity(0),
-        Some(x) => x
-            .map(|x| ExtraMode::from(ExtraMode::from_str(x).unwrap()))
-            .collect(),
+        Some(x) => x.map(|x| ExtraMode::from_str(x).unwrap()).collect(),
     };
     info!("ExtraMode = {:?}", extra_mode);
 
@@ -334,7 +327,7 @@ fn main() {
     disasm(
         arch,
         mode,
-        extra_mode.iter().map(|x| *x),
+        extra_mode.iter().copied(),
         endian,
         input_bytes.as_slice(),
         address,
