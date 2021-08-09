@@ -1,6 +1,7 @@
 use core::convert::{TryFrom, TryInto};
 use core::fmt::{self, Debug, Display, Error, Formatter};
 use core::marker::PhantomData;
+use core::ops::Deref;
 use core::slice;
 use core::str;
 
@@ -10,9 +11,18 @@ use crate::arch::ArchDetail;
 use crate::constants::Arch;
 use crate::ffi::str_from_cstr_ptr;
 
-/// Representation of the array of instructions returned by disasm
+/// Represents a slice of [`Insn`] returned by [`Capstone`](crate::Capstone) `disasm*()` methods.
 ///
-/// Derefs as [`&[Insn]`](Insn)
+/// To access inner [`&[Insn]`](Insn), use [`.as_ref()`](AsRef::as_ref).
+/// ```
+/// # use capstone::Instructions;
+/// # use capstone::prelude::*;
+/// # let cs = Capstone::new().x86().mode(arch::x86::ArchMode::Mode32).build().unwrap();
+/// let insns: Instructions = cs.disasm_all(b"\x55\x48\x8b\x05", 0x1000).unwrap();
+/// for insn in insns.as_ref() {
+///     println!("{}", insn);
+/// }
+/// ```
 #[derive(Debug)]
 pub struct Instructions<'a>(&'a mut [cs_insn]);
 
@@ -20,6 +30,8 @@ pub struct Instructions<'a>(&'a mut [cs_insn]);
 pub type InsnIdInt = u32;
 
 /// Represents an instruction id, which may be architecture-specific.
+///
+/// To translate to a human-readable name, see [`Capstone::insn_name()`](crate::Capstone::insn_name).
 #[derive(Copy, Clone, Debug, Hash, PartialEq, Eq, PartialOrd, Ord)]
 pub struct InsnId(pub InsnIdInt);
 
@@ -27,6 +39,8 @@ pub struct InsnId(pub InsnIdInt);
 pub type InsnGroupIdInt = u8;
 
 /// Represents the group an instruction belongs to, which may be architecture-specific.
+///
+/// To translate to a human-readable name, see [`Capstone::group_name()`](crate::Capstone::group_name).
 #[derive(Copy, Clone, Debug, Hash, PartialEq, Eq, PartialOrd, Ord)]
 #[repr(transparent)]
 pub struct InsnGroupId(pub InsnGroupIdInt);
@@ -37,6 +51,8 @@ pub use capstone_sys::cs_group_type as InsnGroupType;
 pub type RegIdInt = u16;
 
 /// Represents an register id, which is architecture-specific.
+///
+/// To translate to a human-readable name, see [`Capstone::reg_name()`](crate::Capstone::reg_name).
 #[derive(Copy, Clone, Debug, Hash, PartialEq, Eq, PartialOrd, Ord)]
 #[repr(transparent)]
 pub struct RegId(pub RegIdInt);
@@ -112,23 +128,22 @@ impl<'a> Instructions<'a> {
     pub(crate) fn new_empty() -> Instructions<'a> {
         Instructions(&mut [])
     }
-
-    /// Get number of instructions
-    pub fn len(&self) -> usize {
-        self.0.len()
-    }
-
-    pub fn is_empty(&self) -> bool {
-        self.len() == 0
-    }
 }
 
 impl<'a> core::ops::Deref for Instructions<'a> {
     type Target = [Insn<'a>];
 
+    #[inline]
     fn deref(&self) -> &[Insn<'a>] {
         // SAFETY: `cs_insn` has the same memory layout as `Insn`
         unsafe { &*(self.0 as *const [cs_insn] as *const [Insn]) }
+    }
+}
+
+impl<'a> AsRef<[Insn<'a>]> for Instructions<'a> {
+    #[inline]
+    fn as_ref(&self) -> &[Insn<'a>] {
+        self.deref()
     }
 }
 
@@ -142,7 +157,11 @@ impl<'a> Drop for Instructions<'a> {
     }
 }
 
-/// A wrapper for the raw capstone-sys instruction
+/// A single disassembled CPU instruction.
+///
+/// # Detail
+///
+/// To learn how to get more instruction details, see [`InsnDetail`].
 #[derive(Clone)]
 #[repr(transparent)]
 pub struct Insn<'a> {
@@ -153,23 +172,49 @@ pub struct Insn<'a> {
     pub(crate) _marker: PhantomData<&'a InsnDetail<'a>>,
 }
 
-/// Contains architecture-independent details about an instruction, such as register reads.
+/// Contains architecture-independent details about an [`Insn`].
 ///
-/// To get additional architecture-specific information, use the `arch_detail()` method to get an
-/// `ArchDetail` enum.
+/// To get more detail about the instruction, enable extra details for the
+/// [`Capstone`](crate::Capstone) instance with
+/// [`Capstone::set_detail(True)`](crate::Capstone::set_detail) and use
+/// [`Capstone::insn_detail()`](crate::Capstone::insn_detail).
+///
+/// ```
+/// # use capstone::Instructions;
+/// # use capstone::prelude::*;
+/// let cs = Capstone::new()
+///     .x86()
+///     .mode(arch::x86::ArchMode::Mode32)
+///     .detail(true) // needed to enable detail
+///     .build()
+///     .unwrap();
+/// let insns = cs.disasm_all(b"\x90", 0x1000).unwrap();
+/// for insn in insns.as_ref() {
+///     println!("{}", insn);
+///     let insn_detail: InsnDetail = cs.insn_detail(insn).unwrap();
+///     println!("    {:?}", insn_detail.groups());
+/// }
+/// ```
+///
+/// # Arch-specific detail
+///
+/// To get additional architecture-specific information, use the
+/// [`.arch_detail()`](Self::arch_detail) method to get an `ArchDetail` enum.
+///
 pub struct InsnDetail<'a>(pub(crate) &'a cs_detail, pub(crate) Arch);
 
 impl<'a> Insn<'a> {
-    /// Create an Insn from a raw pointer to a capstone cs_insn.
+    /// Create an `Insn` from a raw pointer to a [`capstone_sys::cs_insn`].
     ///
-    /// This function serves to allow integration with libraries which generate cs_insn's internally.
+    /// This function serves to allow integration with libraries which generate `capstone_sys::cs_insn`'s internally.
     ///
     /// # Safety
+    ///
     /// Note that this function is unsafe, and assumes that you know what you are doing. In
-    /// particular, it generates a lifetime for the Insn from nothing, and that lifetime is in
+    /// particular, it generates a lifetime for the `Insn` from nothing, and that lifetime is in
     /// no-way actually tied to the cs_insn itself. It is the responsibility of the caller to
-    /// ensure that the resulting Insn lives only as long as the cs_insn. This function
-    /// assumes that the pointer passed is non-null and a valid cs_insn pointer.
+    /// ensure that the resulting `Insn` lives only as long as the `cs_insn`. This function
+    /// assumes that the pointer passed is non-null and a valid `cs_insn` pointer.
     pub unsafe fn from_raw(insn: *const cs_insn) -> Self {
         Self {
             insn: *insn,

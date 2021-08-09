@@ -14,6 +14,8 @@ use crate::ffi::str_from_cstr_ptr;
 use crate::instruction::{Insn, InsnDetail, InsnGroupId, InsnId, Instructions, RegId};
 
 /// An instance of the capstone disassembler
+///
+/// Create with an instance with [`.new()`](Self::new) and disassemble bytes with [`.disasm_all()`](Self::disasm_all).
 #[derive(Debug)]
 pub struct Capstone {
     /// Opaque handle to cs_engine
@@ -164,6 +166,12 @@ impl Capstone {
     }
 
     /// Disassemble all instructions in buffer
+    ///
+    /// ```
+    /// # use capstone::prelude::*;
+    /// # let cs = Capstone::new().x86().mode(arch::x86::ArchMode::Mode32).build().unwrap();
+    /// cs.disasm_all(b"\x90", 0x1000).unwrap();
+    /// ```
     pub fn disasm_all<'a>(&'a self, code: &[u8], addr: u64) -> CsResult<Instructions<'a>> {
         self.disasm(code, addr, 0)
     }
