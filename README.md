@@ -2,7 +2,7 @@
 
 [![Crates.io Badge](https://img.shields.io/crates/v/capstone.svg)](https://crates.io/crates/capstone)
 
-Linux/MacOS [![Travis CI Badge](https://travis-ci.org/capstone-rust/capstone-rs.svg?branch=master)](https://travis-ci.org/capstone-rust/capstone-rs)
+Linux [![Github Workflow CI Badge](https://github.com/capstone-rust/capstone-rs/actions/workflows/main.yml/badge.svg)](https://github.com/capstone-rust/capstone-rs/actions)
 |
 Windows [![Appveyor CI Badge](https://ci.appveyor.com/api/projects/status/github/capstone-rust/capstone-rs?svg=true&branch=master)](https://ci.appveyor.com/project/tmfink/capstone-rs)
 |
@@ -59,7 +59,7 @@ fn main() {
     let insns = cs.disasm_all(X86_CODE, 0x1000)
         .expect("Failed to disassemble");
     println!("Found {} instructions", insns.len());
-    for i in insns.iter() {
+    for i in insns.as_ref() {
         println!();
         println!("{}", i);
 
