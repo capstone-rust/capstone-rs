@@ -180,7 +180,7 @@ fn test_detail_true() {
             let detail = cs
                 .insn_detail(&insns[insn_idx])
                 .expect("Unable to get detail");
-            let groups: Vec<_> = detail.groups().collect();
+            let groups = detail.groups();
             for insn_group_id in &insn_group_ids {
                 let insn_group = InsnGroupId(*insn_group_id as InsnGroupIdInt);
                 assert_eq!(groups.contains(&insn_group), false);
@@ -276,7 +276,7 @@ fn test_instruction_group_helper<R: Copy + Into<RegId>>(
     let detail = cs.insn_detail(insn).expect("Unable to get detail");
 
     // Assert expected instruction groups is a subset of computed groups through ids
-    let instruction_group_ids: HashSet<InsnGroupId> = detail.groups().collect();
+    let instruction_group_ids: HashSet<InsnGroupId> = detail.groups().iter().copied().collect();
     let expected_groups_ids: HashSet<InsnGroupId> = expected_groups
         .iter()
         .map(|&x| InsnGroupId(x as u8))

@@ -39,12 +39,8 @@ fn reg_names(cs: &Capstone, regs: &[RegId]) -> String {
 }
 
 /// Print instruction group names
-fn group_names<T, I>(cs: &Capstone, regs: T) -> String
-where
-    T: Iterator<Item = I>,
-    I: Into<InsnGroupId>,
-{
-    let names: Vec<String> = regs.map(|x| cs.group_name(x.into()).unwrap()).collect();
+fn group_names(cs: &Capstone, regs: &[InsnGroupId]) -> String {
+    let names: Vec<String> = regs.iter().map(|&x| cs.group_name(x).unwrap()).collect();
     names.join(", ")
 }
 
