@@ -4,6 +4,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.14.0] - 2021-08-09
+
+### Added
+- Compile WASM support
+
+### Changed
+- Bump bindgen version to 0.59.1
+
 ## [0.13.0] - 2021-07-13
 
 ### Added
@@ -86,6 +94,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Removed
 - Dependency
 
+[0.14.0]: https://github.com/capstone-rust/capstone-rs/compare/capstone-sys-v0.13.0...capstone-sys-v0.14.0
 [0.13.0]: https://github.com/capstone-rust/capstone-rs/compare/capstone-sys-v0.12.0...capstone-sys-v0.13.0
 [0.12.0]: https://github.com/capstone-rust/capstone-rs/compare/capstone-sys-v0.11.0...capstone-sys-v0.12.0
 [0.11.0]: https://github.com/capstone-rust/capstone-rs/compare/capstone-sys-v0.10.0...capstone-sys-v0.11.0
