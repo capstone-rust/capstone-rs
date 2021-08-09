@@ -11,6 +11,8 @@ use crate::constants::Arch;
 use crate::ffi::str_from_cstr_ptr;
 
 /// Representation of the array of instructions returned by disasm
+///
+/// Derefs as [`&[Insn]`](Insn)
 #[derive(Debug)]
 pub struct Instructions<'a>(&'a mut [cs_insn]);
 
@@ -26,6 +28,7 @@ pub type InsnGroupIdInt = u8;
 
 /// Represents the group an instruction belongs to, which may be architecture-specific.
 #[derive(Copy, Clone, Debug, Hash, PartialEq, Eq, PartialOrd, Ord)]
+#[repr(transparent)]
 pub struct InsnGroupId(pub InsnGroupIdInt);
 
 pub use capstone_sys::cs_group_type as InsnGroupType;
@@ -139,51 +142,6 @@ impl<'a> Drop for Instructions<'a> {
     }
 }
 
-/// impl Iterator (and variants) for a type that wraps slice::iterator
-///
-/// Implements Iterator, ExactSizeIterator, and DoubleEndedIterator
-macro_rules! impl_SliceIterator_wrapper {
-    (
-        impl <$( $lifetime:tt ),*> Iterator for $iterator:ty {
-            type Item = $item:ty;
-            [ $next:expr ]
-        }
-    ) => {
-        impl <$( $lifetime ),*> Iterator for $iterator {
-            type Item = $item;
-
-            #[inline]
-            fn next(&mut self) -> Option<Self::Item> {
-                self.0.next().map($next)
-            }
-
-            #[inline]
-            fn size_hint(&self) -> (usize, Option<usize>) {
-                self.0.size_hint()
-            }
-
-            #[inline]
-            fn count(self) -> usize {
-                self.0.count()
-            }
-        }
-
-        impl<'a> ExactSizeIterator for $iterator {
-            #[inline]
-            fn len(&self) -> usize {
-                self.0.len()
-            }
-        }
-
-        impl<'a> DoubleEndedIterator for $iterator {
-            #[inline]
-            fn next_back(&mut self) -> Option<Self::Item> {
-                self.0.next_back().map($next)
-            }
-        }
-    }
-}
-
 /// A wrapper for the raw capstone-sys instruction
 #[derive(Clone)]
 #[repr(transparent)]
@@ -288,16 +246,6 @@ impl<'a> Display for Insn<'a> {
 #[derive(Debug, Clone)]
 pub struct InsnGroupIter<'a>(slice::Iter<'a, InsnGroupIdInt>);
 
-impl_SliceIterator_wrapper!(
-    impl<'a> Iterator for InsnGroupIter<'a> {
-        type Item = InsnGroupId;
-
-        [
-            |x| InsnGroupId(*x as InsnGroupIdInt)
-        ]
-    }
-);
-
 impl<'a> InsnDetail<'a> {
     /// Returns the implicit read registers
     pub fn regs_read(&self) -> &[RegId] {
@@ -316,13 +264,11 @@ impl<'a> InsnDetail<'a> {
     }
 
     /// Returns the groups to which this instruction belongs
-    pub fn groups(&self) -> InsnGroupIter {
-        InsnGroupIter((*self.0).groups[..self.groups_count() as usize].iter())
-    }
-
-    /// Returns the number groups to which this instruction belongs
-    pub fn groups_count(&self) -> u8 {
-        (*self.0).groups_count
+    pub fn groups(&self) -> &[InsnGroupId] {
+        unsafe {
+            &*(&self.0.groups[..self.0.groups_count as usize] as *const [InsnGroupIdInt]
+                as *const [InsnGroupId])
+        }
     }
 
     /// Architecture-specific detail
@@ -368,7 +314,6 @@ impl<'a> Debug for InsnDetail<'a> {
             .field("regs_read", &self.regs_read())
             .field("regs_write", &self.regs_write())
             .field("groups", &self.groups())
-            .field("groups_count", &self.groups_count())
             .finish()
     }
 }
