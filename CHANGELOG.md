@@ -5,6 +5,16 @@ Notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.10.0] - 2021-08-09
+
+### Added
+- Links to related types/functions in API documentation
+
+### Changed
+- Access `Insn` elements of `Instructions` via `Deref`/`AsRef` traits instead of an iterator
+- Access `Insn` groups and read/write registers via a slice
+- Update README.md code example
+
 ## [0.9.0] - 2021-07-13
 
 ### Added
@@ -132,6 +142,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Removed
 - Dependency
 
+[0.10.0]: https://github.com/capstone-rust/capstone-rs/compare/capstone-v0.9.0...capstone-v0.10.0
 [0.9.0]: https://github.com/capstone-rust/capstone-rs/compare/capstone-v0.8.0...capstone-v0.9.0
 [0.8.0]: https://github.com/capstone-rust/capstone-rs/compare/capstone-v0.7.0...capstone-v0.8.0
 [0.7.0]: https://github.com/capstone-rust/capstone-rs/compare/capstone-v0.6.0...capstone-v0.7.0
