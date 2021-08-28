@@ -146,7 +146,7 @@ fn build_capstone_cc() {
 
 /// Search for header in search paths
 #[cfg(feature = "use_bindgen")]
-fn find_capstone_header(header_search_paths: &Vec<PathBuf>, name: &str) -> Option<PathBuf> {
+fn find_capstone_header(header_search_paths: &[PathBuf], name: &str) -> Option<PathBuf> {
     for search_path in header_search_paths.iter() {
         let potential_file = search_path.join(name);
         if potential_file.is_file() {
@@ -175,7 +175,7 @@ fn impl_insid_to_insenum(bindings: &str) -> String {
         let re_enum_def = Regex::new(&format!("pub enum {}_insn (?s)\\{{.*?\\}}", arch))
             .expect("Unable to compile regex");
         let cap_enum_def = &re_enum_def
-            .captures(&bindings)
+            .captures(bindings)
             .expect("Unable to capture group")[0];
 
         // find instructions and their id
@@ -193,7 +193,7 @@ fn impl_insid_to_insenum(bindings: &str) -> String {
         ));
 
         // fill match expression
-        for cap_ins_id in re_ins_ids.captures_iter(&cap_enum_def) {
+        for cap_ins_id in re_ins_ids.captures_iter(cap_enum_def) {
             impl_arch_enum.push_str(&format!(
                 "{} => {}_insn::{}_INS_{},\n",
                 &cap_ins_id["id"],
@@ -231,7 +231,7 @@ fn impl_insid_to_insenum(bindings: &str) -> String {
 /// Create bindings using bindgen
 #[cfg(feature = "use_bindgen")]
 fn write_bindgen_bindings(
-    header_search_paths: &Vec<PathBuf>,
+    header_search_paths: &[PathBuf],
     update_pregenerated_bindings: bool,
     pregenerated_bindgen_header: PathBuf,
     pregenerated_bindgen_impl: PathBuf,
@@ -261,8 +261,8 @@ fn write_bindgen_bindings(
     // Whitelist cs_.* functions and types
     let pattern = String::from("cs_.*");
     builder = builder
-        .whitelist_function(&pattern)
-        .whitelist_type(&pattern);
+        .allowlist_function(&pattern)
+        .allowlist_type(&pattern);
 
     // Whitelist types with architectures
     for arch in ARCH_INCLUDES {
@@ -270,7 +270,7 @@ fn write_bindgen_bindings(
         let arch_type_pattern = format!(".*(^|_){}(_|$).*", arch.cs_name);
         let const_mod_pattern = format!("^{}_(reg|insn_group)$", arch.cs_name);
         builder = builder
-            .whitelist_type(&arch_type_pattern)
+            .allowlist_type(&arch_type_pattern)
             .constified_enum_module(&const_mod_pattern);
     }
 
