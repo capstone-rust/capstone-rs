@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## UNRELEASED - YYYY-MM-DD
+### Fixed
+- Document that minimum supported Rust version is actually 1.50.0
+    - Improperly documented as 1.40.0 in 0.14.0 release
+
 ## [0.14.0] - 2021-08-09
 
 ### Added

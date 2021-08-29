@@ -11,7 +11,7 @@ jobs:
       fail-fast: false
       matrix:
         rust:
-          - 1.40.0
+          - 1.50.0
           - stable
           - beta
           - nightly
@@ -27,3 +27,6 @@ jobs:
 
       - name: test
         run: ./capstone-rs/ci/test.sh
+
+      - name: test (all features)
+        run: ALL_FEATURES=1 ./capstone-rs/ci/test.sh

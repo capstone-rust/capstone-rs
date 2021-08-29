@@ -45,3 +45,9 @@ jobs:
         with:
           command: clippy
           args: -- -D warnings
+
+      - name: cargo clippy (all features)
+        uses: actions-rs/cargo@v1
+        with:
+          command: clippy
+          args: --all-features -- -D warnings
