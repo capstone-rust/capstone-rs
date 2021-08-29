@@ -18,7 +18,7 @@ Instead, consider using [capstone-rs](https://github.com/capstone-rust/capstone-
 
 ## Requirements
 
-* Rust version >= 1.40.0
+* Rust version >= 1.50.0
 * A toolchain capable of compiling Capstone
     - We build the bundled Capstone with the [`cc` crate](https://github.com/alexcrichton/cc-rs)
 

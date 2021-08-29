@@ -5,6 +5,7 @@
 #
 # FEATURES: (none by default)
 # NO_DEFAULT_FEATURES: enables --no-default-features
+# ALL_FEATURES: enables --all-features
 # JOB: {*test,valgrind-test,bench,cov}
 # PROFILES: list of {debug,release} [debug release]
 # SHOULD_FAIL: (disabled by default; set to non-empty string to enable)
@@ -21,11 +22,28 @@ fi
 
 pwd
 
+Error() {
+    echo "Error:" "$@" >&2
+    exit 1
+}
+
 RUST_BACKTRACE=1
 SHOULD_FAIL=${SHOULD_FAIL:-}  # Default to false
 VALGRIND_TESTS=${VALGRIND_TESTS:-}
-FEATURES="${FEATURES-}"  # Default to no features
-NO_DEFAULT_FEATURES="${NO_DEFAULT_FEATURES:+--no-default-features}"
+
+# Feature vars
+if [ -n "${ALL_FEATURES:-}" -a -n "${NO_DEFAULT_FEATURES:-}" ]; then
+    Error "ALL_FEATURES and NO_DEFAULT_FEATURES are mutually exclusive"
+fi
+if [ -n "${ALL_FEATURES:-}" -a -n "${FEATURES:-}" ]; then
+    Error "ALL_FEATURES and FEATURES are mutually exclusive"
+fi
+CARGO_FEATURE_ARGS=(
+    ${NO_DEFAULT_FEATURES:+ --no-default-features}
+    ${ALL_FEATURES:+ --all-features}
+    ${FEATURES:+ --features "$FEATURES"}
+)
+
 PROJECT_NAME="$(grep ^name Cargo.toml | head -n1 | xargs -n1 | tail -n1)"
 TARGET="../target"
 TARGET_COV="${TARGET}/cov"
@@ -43,11 +61,6 @@ fi
 
 echo "Running as USER=$USER"
 echo "Test should $EXPECTED_RESULT"
-
-Error() {
-    echo "Error:" "$@" >&2
-    exit 1
-}
 
 if ! [ "${OS_NAME:-}" ]; then
     case "$(uname)" in
@@ -222,11 +235,10 @@ run_tests() {
     for PROFILE in $PROFILES; do
         echo "Cargo tests without Valgrind"
         cargo_cmd_args=(
-            $(profile_args)
-            $NO_DEFAULT_FEATURES
-            --features "$FEATURES"
             --verbose
-            )
+            $(profile_args)
+            "${CARGO_FEATURE_ARGS[@]}"
+        )
         expect_exit_status "$SHOULD_FAIL" \
             cargo test "${cargo_cmd_args[@]}" \
             --color=always -- --color=always \
