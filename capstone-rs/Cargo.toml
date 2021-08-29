@@ -20,7 +20,7 @@ libc = { version = "0.2", default-features = false }
 
 [dev-dependencies]
 macho = "0.*"
-criterion = "0.2"
+criterion = "0.3"
 rayon = "1.1"
 
 [[bench]]
