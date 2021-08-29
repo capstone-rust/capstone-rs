@@ -8,9 +8,9 @@ edition = "2018"
 [dependencies]
 capstone = { path = "../capstone-rs", version = "0.10.0" }
 log = "0.4"
-stderrlog = "0.4"
+stderrlog = "0.5"
 
 [dependencies.clap]
-version = "~2.32"
+version = "2.32"
 default-features = false
 features = []
