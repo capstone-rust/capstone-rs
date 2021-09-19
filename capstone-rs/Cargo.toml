@@ -18,6 +18,9 @@ travis-ci = { repository = "capstone-rust/capstone-rs" }
 capstone-sys = { path = "../capstone-sys", version = "0.14.0" }
 libc = { version = "0.2", default-features = false }
 
+[dependencies.object]
+git = "https://github.com/gimli-rs/object.git"
+
 [dev-dependencies]
 macho = "0.*"
 criterion = "0.3"
