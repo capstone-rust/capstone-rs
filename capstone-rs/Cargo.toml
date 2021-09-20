@@ -22,6 +22,7 @@ libc = { version = "0.2", default-features = false }
 macho = "0.*"
 criterion = "0.3"
 rayon = "1.1"
+object = "0.26.2"
 
 [[bench]]
 name = "my_benchmark"

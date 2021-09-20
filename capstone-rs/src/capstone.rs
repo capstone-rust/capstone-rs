@@ -165,6 +165,39 @@ impl Capstone {
         }
     }
 
+    pub fn malloc<'a>(&'a self) -> *mut cs_insn {
+        unsafe { cs_malloc(self.csh()) }
+    }
+
+    pub fn free<'a>(&'a self, insn: *mut cs_insn) {
+        unsafe {
+            cs_free(insn, 1);
+        }
+    }
+
+    pub fn disasm_iter<'a>(
+        &'a self,
+        code: &[u8],
+        offset: usize,
+        addr: u64,
+        insns: *mut cs_insn,
+    ) -> (bool, usize, u64) {
+        let code_len = code.len();
+        let code_ptr = &mut code[offset..].as_ptr();
+        let mut c = code_len - offset;
+        let mut a = addr;
+        let ret = unsafe {
+            cs_disasm_iter(
+                self.csh(), // capstone handle
+                code_ptr,   // double pointer to code to disassemble; automatically incremented
+                &mut c,     // number of bytes left to disassemble; automatically decremented
+                &mut a,     // automatically incremented address
+                insns,      // pointer to cs_insn object
+            )
+        };
+        (ret, code_len - c, a) // ret: true|false code disassembled or not, next offset, next addr
+    }
+
     /// Disassemble all instructions in buffer
     ///
     /// ```
