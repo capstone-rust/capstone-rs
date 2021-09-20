@@ -165,8 +165,14 @@ impl Capstone {
         }
     }
 
-    pub fn iter_malloc<'a>(&'a self) -> *mut cs_insn {
+    pub fn malloc<'a>(&'a self) -> *mut cs_insn {
         unsafe { cs_malloc(self.csh()) }
+    }
+
+    pub fn free<'a>(&'a self, insn: *mut cs_insn) {
+        unsafe {
+            cs_free(insn, 1);
+        }
     }
 
     pub fn disasm_iter<'a>(

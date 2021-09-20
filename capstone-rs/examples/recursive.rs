@@ -62,7 +62,7 @@ fn main() {
     let mut addr_queue: VecDeque<u64> = VecDeque::new();
     let mut addr_seen: HashMap<u64, bool> = HashMap::new();
 
-    let cs_ins = cs.iter_malloc();
+    let cs_ins = cs.malloc();
     assert!(!cs_ins.is_null());
 
     addr_queue.push_back(obj.entry());
@@ -96,4 +96,6 @@ fn main() {
             }
         }
     }
+
+    cs.free(cs_ins);
 }
