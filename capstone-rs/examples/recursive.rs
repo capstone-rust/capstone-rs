@@ -68,26 +68,22 @@ fn main() {
     addr_queue.push_back(obj.entry());
 
     while !addr_queue.is_empty() {
-        let mut qaddr = addr_queue.pop_front().unwrap();
-        if let Some(_) = addr_seen.get(&qaddr) {
+        let mut addr = addr_queue.pop_front().unwrap();
+        if let Some(_) = addr_seen.get(&addr) {
             continue;
         }
-        addr_seen.insert(qaddr, true);
+        addr_seen.insert(addr, true);
 
-        println!("addr: {:#02x?}", qaddr);
+        println!("addr: {:#02x?}", addr);
 
-        let offset = (qaddr - sec_addr) as usize;
-        let qpc = &mut sec_text[offset..].as_ptr();
-        let mut qcount = sec_text.len() - offset;
-
-        println!("output: count:{} addr:{:#02x?}", qcount, qaddr);
+        let mut offset = (addr - sec_addr) as usize;
         loop {
-            let (ret, count, addr) = cs.disasm_iter(qpc, qcount, qaddr, cs_ins);
+            let (ret, o, a) = cs.disasm_iter(&sec_text, offset, addr, cs_ins);
             if !ret {
                 break;
             }
-            qcount = count;
-            qaddr = addr;
+            offset = o;
+            addr = a;
 
             let ins = unsafe { Insn::from_raw(cs_ins) };
             println!("{}", ins);

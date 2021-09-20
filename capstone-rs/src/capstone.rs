@@ -177,23 +177,25 @@ impl Capstone {
 
     pub fn disasm_iter<'a>(
         &'a self,
-        code: *mut *const u8,
-        count: usize,
+        code: &[u8],
+        offset: usize,
         addr: u64,
         insns: *mut cs_insn,
     ) -> (bool, usize, u64) {
-        let mut c = count;
+        let code_len = code.len();
+        let code_ptr = &mut code[offset..].as_ptr();
+        let mut c = code_len - offset;
         let mut a = addr;
         let ret = unsafe {
             cs_disasm_iter(
                 self.csh(), // capstone handle
-                code,       // double pointer to code to disassemble; automatically incremented
+                code_ptr,       // double pointer to code to disassemble; automatically incremented
                 &mut c,     // number of bytes left to disassemble; automatically decremented
                 &mut a,     // automatically incremented address
                 insns,      // pointer to cs_insn object
             )
         };
-        (ret, c, a)
+        (ret, code_len - c, a) // ret: true|false code disassembled or not, next offset, next addr
     }
 
     /// Disassemble all instructions in buffer
