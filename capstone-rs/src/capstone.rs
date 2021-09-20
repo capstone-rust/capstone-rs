@@ -189,7 +189,7 @@ impl Capstone {
         let ret = unsafe {
             cs_disasm_iter(
                 self.csh(), // capstone handle
-                code_ptr,       // double pointer to code to disassemble; automatically incremented
+                code_ptr,   // double pointer to code to disassemble; automatically incremented
                 &mut c,     // number of bytes left to disassemble; automatically decremented
                 &mut a,     // automatically incremented address
                 insns,      // pointer to cs_insn object
