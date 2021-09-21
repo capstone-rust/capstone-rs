@@ -6,8 +6,8 @@ use std::process;
 use object::{Object, ObjectSection};
 
 use capstone;
-use capstone::prelude::*;
 use capstone::arch::x86::X86Insn;
+use capstone::prelude::*;
 
 fn main() {
     let args: Vec<_> = env::args().collect();
@@ -76,18 +76,18 @@ fn main() {
         println!("addr: {:#02x?}", addr);
 
         let offset = (addr - sec_addr) as usize;
-		let mut cur_insn = disasm.disasm_iter(&sec_text, offset, addr);
+        let mut cur_insn = disasm.disasm_iter(&sec_text, offset, addr);
         while let Ok(insn) = cur_insn {
-			if insn.id() == InsnId(X86Insn::X86_INS_INVALID as u32){
-				break;
-			}
-			println!("{}", insn);
-			if insn.id() == InsnId(X86Insn::X86_INS_HLT as u32) {
-				break;
-			}
-			// other logic here can add more targets to the addr_queue
-			// ...
-			
+            if insn.id() == InsnId(X86Insn::X86_INS_INVALID as u32) {
+                break;
+            }
+            println!("{}", insn);
+            if insn.id() == InsnId(X86Insn::X86_INS_HLT as u32) {
+                break;
+            }
+            // other logic here can add more targets to the addr_queue
+            // ...
+
             cur_insn = disasm.disasm_iter_continue(&sec_text);
         }
     }

@@ -165,8 +165,8 @@ impl Capstone {
         }
     }
 
-	/// Creates an instance of DisasmIter structure
-	///
+    /// Creates an instance of DisasmIter structure
+    ///
     pub fn get_disasm_iter<'a>(&'a self) -> DisasmIter<'a> {
         DisasmIter {
             insn: unsafe { cs_malloc(self.csh()) },
@@ -441,8 +441,8 @@ impl Drop for Capstone {
 /// Create with a capstone instance `get_disasm_iter()`
 ///
 pub struct DisasmIter<'a> {
-    insn: *mut cs_insn,              // space for current instruction to be processed
-    csh: *mut c_void,                // reference to the the capstone handle required by disasm_iter
+    insn: *mut cs_insn, // space for current instruction to be processed
+    csh: *mut c_void,   // reference to the the capstone handle required by disasm_iter
     offset: usize,
     addr: u64,
     _covariant: PhantomData<&'a ()>, // used to make sure DIasmIter lifetime doesn't exceed Capstone's lifetime
@@ -455,16 +455,16 @@ impl<'a> Drop for DisasmIter<'a> {
 }
 
 impl<'a> DisasmIter<'a> {
-	/// Used to continue to the next instruction without jumping
-	///
-	/// usage shown in examples/recursive.rs
-	pub fn disasm_iter_continue(&mut self, code: &[u8]) -> CsResult<Insn> {
-		self.disasm_iter(code, self.offset, self.addr)
-	}
-	
-	/// Used to start the iterative disassembly 
-	/// 
-	/// usage shown in examples/recursive.rs
+    /// Used to continue to the next instruction without jumping
+    ///
+    /// usage shown in examples/recursive.rs
+    pub fn disasm_iter_continue(&mut self, code: &[u8]) -> CsResult<Insn> {
+        self.disasm_iter(code, self.offset, self.addr)
+    }
+
+    /// Used to start the iterative disassembly
+    ///
+    /// usage shown in examples/recursive.rs
     pub fn disasm_iter(&mut self, code: &[u8], offset: usize, addr: u64) -> CsResult<Insn> {
         let code_len = code.len();
         let code_ptr = &mut code[offset..].as_ptr();
@@ -480,9 +480,9 @@ impl<'a> DisasmIter<'a> {
             )
         };
         if ret {
-			self.offset = code_len - c;
-			self.addr = a;
-			let insn = unsafe {Insn::from_raw(self.insn)};
+            self.offset = code_len - c;
+            self.addr = a;
+            let insn = unsafe { Insn::from_raw(self.insn) };
             Ok(insn)
         } else {
             Err(Error::CustomError("not disasm"))
@@ -490,9 +490,9 @@ impl<'a> DisasmIter<'a> {
     }
 
     pub fn offset(&self) -> usize {
-		self.offset
-	}
-	pub fn addr(&self) -> u64 {
-		self.addr
-	}
+        self.offset
+    }
+    pub fn addr(&self) -> u64 {
+        self.addr
+    }
 }
