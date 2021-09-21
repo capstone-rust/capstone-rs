@@ -3,7 +3,7 @@ use std::env;
 use std::fs;
 use std::process;
 
-use object::{Object, ObjectSection};
+use object::{Object, ObjectSection, SectionKind};
 
 use capstone;
 use capstone::arch::x86::X86Insn;
@@ -30,28 +30,16 @@ fn main() {
         process::exit(-1);
     };
 
-    let (sec_addr, sec_text) = if let Some(section) = obj.section_by_name(".text") {
-        if let Ok(data) = section.data() {
-            (section.address(), data)
-        } else {
-            eprintln!("cannot get data from .text section");
-            process::exit(1);
-        }
-    } else {
-        eprintln!("no section .text found");
-        process::exit(2);
-    };
-
-    println!(
-        ".text section addr: {:#02x?} size: {:#02x?}",
-        sec_addr,
-        sec_text.len()
-    );
-
     let mut addr_queue: VecDeque<u64> = VecDeque::new();
     let mut addr_seen: HashMap<u64, bool> = HashMap::new();
 
-    addr_queue.push_back(obj.entry());
+    for section in obj.sections() {
+        if section.kind() == SectionKind::Text {
+            println!("{:x?} ", section);
+            addr_queue.push_back(section.address());
+        }
+    }
+
     let cs = if let Ok(cs) = Capstone::new()
         .x86()
         .mode(arch::x86::ArchMode::Mode64)
@@ -73,22 +61,27 @@ fn main() {
         }
         addr_seen.insert(addr, true);
 
-        println!("addr: {:#02x?}", addr);
+        println!("---> addr: {:#02x?}", addr);
 
-        let offset = (addr - sec_addr) as usize;
-        let mut cur_insn = disasm.disasm_iter(&sec_text, offset, addr);
+        let offset = addr as usize;
+        let mut cur_insn = disasm.disasm_iter(&buf, offset, addr);
         while let Ok(insn) = cur_insn {
             if insn.id() == InsnId(X86Insn::X86_INS_INVALID as u32) {
                 break;
             }
             println!("{}", insn);
-            if insn.id() == InsnId(X86Insn::X86_INS_HLT as u32) {
-                break;
+            match X86Insn::from(insn.id().0) {
+                X86Insn::X86_INS_HLT => break,
+                X86Insn::X86_INS_CALL => break,
+                X86Insn::X86_INS_JMP => break,
+                X86Insn::X86_INS_RET => break,
+                _ => {}
             }
-            // other logic here can add more targets to the addr_queue
+
+            // add logic here to add more targets to the addr_queue
             // ...
 
-            cur_insn = disasm.disasm_iter_continue(&sec_text);
+            cur_insn = disasm.disasm_iter_continue(&buf);
         }
     }
 }
