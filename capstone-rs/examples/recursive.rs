@@ -3,24 +3,13 @@ use std::env;
 use std::fs;
 use std::process;
 
-use capstone;
-use capstone::prelude::*;
-use capstone::Insn;
 use object::{Object, ObjectSection};
 
-fn main() {
-    let cs = if let Ok(cs) = Capstone::new()
-        .x86()
-        .mode(arch::x86::ArchMode::Mode64)
-        .detail(true)
-        .build()
-    {
-        cs
-    } else {
-        eprintln!("failed to create capstone handle");
-        process::exit(-1);
-    };
+use capstone;
+use capstone::prelude::*;
+use capstone::arch::x86::X86Insn;
 
+fn main() {
     let args: Vec<_> = env::args().collect();
     if args.len() != 2 {
         eprintln!("Usage: {} <file>", args[0]);
@@ -62,13 +51,23 @@ fn main() {
     let mut addr_queue: VecDeque<u64> = VecDeque::new();
     let mut addr_seen: HashMap<u64, bool> = HashMap::new();
 
-    let cs_ins = cs.malloc();
-    assert!(!cs_ins.is_null());
-
     addr_queue.push_back(obj.entry());
+    let cs = if let Ok(cs) = Capstone::new()
+        .x86()
+        .mode(arch::x86::ArchMode::Mode64)
+        .detail(true)
+        .build()
+    {
+        cs
+    } else {
+        eprintln!("failed to create capstone handle");
+        process::exit(-1);
+    };
+
+    let mut disasm = cs.get_disasm_iter();
 
     while !addr_queue.is_empty() {
-        let mut addr = addr_queue.pop_front().unwrap();
+        let addr = addr_queue.pop_front().unwrap();
         if let Some(_) = addr_seen.get(&addr) {
             continue;
         }
@@ -76,22 +75,20 @@ fn main() {
 
         println!("addr: {:#02x?}", addr);
 
-        let mut offset = (addr - sec_addr) as usize;
-        loop {
-            let (ret, o, a) = cs.disasm_iter(&sec_text, offset, addr, cs_ins);
-            if !ret {
-                break;
-            }
-            offset = o;
-            addr = a;
-
-            let ins = unsafe { Insn::from_raw(cs_ins) };
-            println!("{}", ins);
-            if ins.id() == InsnId(arch::x86::X86Insn::X86_INS_HLT as u32) {
-                break;
-            }
+        let offset = (addr - sec_addr) as usize;
+		let mut cur_insn = disasm.disasm_iter(&sec_text, offset, addr);
+        while let Ok(insn) = cur_insn {
+			if insn.id() == InsnId(X86Insn::X86_INS_INVALID as u32){
+				break;
+			}
+			println!("{}", insn);
+			if insn.id() == InsnId(X86Insn::X86_INS_HLT as u32) {
+				break;
+			}
+			// other logic here can add more targets to the addr_queue
+			// ...
+			
+            cur_insn = disasm.disasm_iter_continue(&sec_text);
         }
     }
-
-    cs.free(cs_ins);
 }
