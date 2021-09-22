@@ -550,6 +550,7 @@ fn test_arch_mode_endian_insns(
             .expect("Failed to set endianness");
     }
 
+    // test iter
     instructions_match(cs, expected_insns.as_slice(), true);
     instructions_match(&mut cs_raw, expected_insns.as_slice(), true);
     instructions_match(&mut cs_raw_endian_set, expected_insns.as_slice(), true);

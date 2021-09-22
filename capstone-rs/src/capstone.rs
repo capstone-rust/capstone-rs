@@ -9,9 +9,9 @@ use capstone_sys::*;
 
 use crate::arch::CapstoneBuilder;
 use crate::constants::{Arch, Endian, ExtraMode, Mode, OptValue, Syntax};
-use crate::error::*;
 use crate::ffi::str_from_cstr_ptr;
 use crate::instruction::{Insn, InsnDetail, InsnGroupId, InsnId, Instructions, RegId};
+use crate::{error::*, InsnSlot};
 
 /// An instance of the capstone disassembler
 ///
@@ -219,6 +219,64 @@ impl Capstone {
         } else {
             Ok(unsafe { Instructions::from_raw_parts(ptr, insn_count) })
         }
+    }
+
+    // Inputs:
+    // - csh (self)
+    // - code bytes (ptr + len)
+    // - start_address
+    // - insn (return slot)
+    // Output:
+    // - next_insn_addr
+    // - insn
+    // - more_bytes?
+
+    /// Disassemble one instruction at a time using pre-allocated memory via
+    /// [`InsnSlot`].
+    /// ```
+    /// # use capstone::prelude::*;
+    /// # let cs = Capstone::new().x86().mode(arch::x86::ArchMode::Mode32).build().unwrap();
+    /// let mut slot = cs.insn_slot();
+    /// let insn = cs.disasm_iter(&mut slot, b"\x90", 0x1000).unwrap();
+    /// ```
+    pub fn disasm_iter<'a, 'slot>(
+        &'a self,
+        insn_slot: &'slot mut InsnSlot<'slot>,
+        code: &[u8],
+        addr: u64,
+    ) -> CsResult<&'slot Insn<'slot>> {
+        let mut new_address = addr;
+        let mut new_code = code.as_ptr();
+        let mut new_len = code.len() as usize;
+
+        unsafe {
+            let suceeded = cs_disasm_iter(
+                self.csh(),
+                &mut new_code,
+                &mut new_len,
+                &mut new_address,
+                &mut (*insn_slot.insn_ptr).insn,
+            );
+            if suceeded {
+                // SAFETY: since cs_disasm_iter() succeeded,
+                // `insn_slot.insn_ptr` should point to a valid `cs_insn`
+                Ok(&*insn_slot.insn_ptr)
+            } else {
+                match self.error_result() {
+                    Ok(_) => unreachable!("cs_disasm_iter() failed but errno not set"),
+                    Err(err) => Err(err),
+                }
+            }
+        }
+    }
+
+    pub fn insn_slot<'a>(&'a self) -> InsnSlot<'a> {
+        let insn_ptr: *mut Insn = unsafe {
+            let insn_ptr: *mut cs_insn = cs_malloc(self.csh());
+            // SAFETY: `Insn` is repr(transparent) of `cs_insn`
+            core::mem::transmute::<*mut cs_insn, *mut Insn>(insn_ptr)
+        };
+        InsnSlot { insn_ptr }
     }
 
     /// Returns csh handle

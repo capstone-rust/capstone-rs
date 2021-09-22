@@ -26,6 +26,21 @@ use crate::ffi::str_from_cstr_ptr;
 #[derive(Debug)]
 pub struct Instructions<'a>(&'a mut [cs_insn]);
 
+/// A "slot" to use with [`Capstone::disasm_iter`].
+#[repr(transparent)]
+pub struct InsnSlot<'cs> {
+    /// Insn pointer created by `cs_malloc()`
+    pub(crate) insn_ptr: *mut Insn<'cs>,
+}
+
+//todo(tmfink): move cs_malloc() call here
+
+impl<'cs> Drop for InsnSlot<'cs> {
+    fn drop(&mut self) {
+        unsafe { cs_free(&mut (*self.insn_ptr).insn, 1) }
+    }
+}
+
 /// Integer type used in `InsnId`
 pub type InsnIdInt = u32;
 
