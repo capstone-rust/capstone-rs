@@ -47,7 +47,7 @@ fn main() {
 
     let mut disasm = cs.get_disasm_iter();
 
-    while let Some(addr) = addr_queue.pop_front(){
+    while let Some(addr) = addr_queue.pop_front() {
         if addr_seen.contains(&addr) {
             continue;
         }
@@ -87,12 +87,11 @@ fn is_invalid_insn(insn_detail: &InsnDetail) -> bool {
 fn is_unconditional_cflow_insn(insn_detail: &InsnDetail) -> bool {
     for insn_grp in insn_detail.groups() {
         match insn_grp.0 as u32 {
-            InsnGroupType::CS_GRP_JUMP |
-            InsnGroupType::CS_GRP_CALL |
-            InsnGroupType::CS_GRP_RET => return true,
+            InsnGroupType::CS_GRP_JUMP | InsnGroupType::CS_GRP_CALL | InsnGroupType::CS_GRP_RET => {
+                return true
+            }
             _ => {}
         }
     }
     false
 }
-

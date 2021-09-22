@@ -170,7 +170,7 @@ impl Capstone {
     pub fn get_disasm_iter<'a>(&'a self) -> DisasmIter<'a> {
         let insn = unsafe { cs_malloc(self.csh()) };
         if let Err(e) = self.error_result() {
-            panic!("{}",e);
+            panic!("{}", e);
         }
         DisasmIter {
             insn: insn,
@@ -478,8 +478,8 @@ impl<'a> DisasmIter<'a> {
             cs_disasm_iter(
                 self.csh as csh, // capstone handle
                 code_ptr,        // double pointer to code to disassemble; automatically incremented
-                &mut count,          // number of bytes left to disassemble; automatically decremented
-                &mut local_addr,          // automatically incremented address
+                &mut count,      // number of bytes left to disassemble; automatically decremented
+                &mut local_addr, // automatically incremented address
                 self.insn,       // pointer to cs_insn object
             )
         };
