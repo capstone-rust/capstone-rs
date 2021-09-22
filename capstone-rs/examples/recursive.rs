@@ -1,4 +1,7 @@
-use std::collections::{HashMap, VecDeque};
+//! This example shows how to do recursive disassemble
+//! The example is written specificly for X86 ELF binary format
+//!
+use std::collections::{HashSet, VecDeque};
 use std::env;
 use std::fs;
 use std::process;
@@ -6,8 +9,8 @@ use std::process;
 use object::{Object, ObjectSection, SectionKind};
 
 use capstone;
-use capstone::arch::x86::X86Insn;
 use capstone::prelude::*;
+use capstone::InsnGroupType;
 
 fn main() {
     let args: Vec<_> = env::args().collect();
@@ -16,22 +19,12 @@ fn main() {
         process::exit(-1);
     }
 
-    let buf = if let Ok(bd) = fs::read(&args[1]) {
-        bd
-    } else {
-        eprintln!("cannot read file");
-        process::exit(-1);
-    };
+    let buf = fs::read(&args[1]).expect("cannot read file");
 
-    let obj = if let Ok(od) = object::File::parse(&*buf) {
-        od
-    } else {
-        eprintln!("cannot parse file");
-        process::exit(-1);
-    };
+    let obj = object::File::parse(&*buf).expect("cannot parse file");
 
     let mut addr_queue: VecDeque<u64> = VecDeque::new();
-    let mut addr_seen: HashMap<u64, bool> = HashMap::new();
+    let mut addr_seen: HashSet<u64> = HashSet::new();
 
     for section in obj.sections() {
         if section.kind() == SectionKind::Text {
@@ -54,28 +47,24 @@ fn main() {
 
     let mut disasm = cs.get_disasm_iter();
 
-    while !addr_queue.is_empty() {
-        let addr = addr_queue.pop_front().unwrap();
-        if let Some(_) = addr_seen.get(&addr) {
+    while let Some(addr) = addr_queue.pop_front(){
+        if addr_seen.contains(&addr) {
             continue;
         }
-        addr_seen.insert(addr, true);
+        addr_seen.insert(addr);
 
         println!("---> addr: {:#02x?}", addr);
 
         let offset = addr as usize;
         let mut cur_insn = disasm.disasm_iter(&buf, offset, addr);
         while let Ok(insn) = cur_insn {
-            if insn.id() == InsnId(X86Insn::X86_INS_INVALID as u32) {
+            let insn_detail: InsnDetail = cs.insn_detail(&insn).unwrap();
+            if is_invalid_insn(&insn_detail) {
                 break;
             }
             println!("{}", insn);
-            match X86Insn::from(insn.id().0) {
-                X86Insn::X86_INS_HLT => break,
-                X86Insn::X86_INS_CALL => break,
-                X86Insn::X86_INS_JMP => break,
-                X86Insn::X86_INS_RET => break,
-                _ => {}
+            if is_unconditional_cflow_insn(&insn_detail) {
+                break;
             }
 
             // add logic here to add more targets to the addr_queue
@@ -85,3 +74,25 @@ fn main() {
         }
     }
 }
+
+fn is_invalid_insn(insn_detail: &InsnDetail) -> bool {
+    for insn_grp in insn_detail.groups() {
+        if insn_grp.0 as u32 == InsnGroupType::CS_GRP_INVALID {
+            return true;
+        }
+    }
+    false
+}
+
+fn is_unconditional_cflow_insn(insn_detail: &InsnDetail) -> bool {
+    for insn_grp in insn_detail.groups() {
+        match insn_grp.0 as u32 {
+            InsnGroupType::CS_GRP_JUMP |
+            InsnGroupType::CS_GRP_CALL |
+            InsnGroupType::CS_GRP_RET => return true,
+            _ => {}
+        }
+    }
+    false
+}
+

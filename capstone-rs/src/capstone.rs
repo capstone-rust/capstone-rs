@@ -168,8 +168,12 @@ impl Capstone {
     /// Creates an instance of DisasmIter structure
     ///
     pub fn get_disasm_iter<'a>(&'a self) -> DisasmIter<'a> {
+        let insn = unsafe { cs_malloc(self.csh()) };
+        if let Err(e) = self.error_result() {
+            panic!("{}",e);
+        }
         DisasmIter {
-            insn: unsafe { cs_malloc(self.csh()) },
+            insn: insn,
             csh: self.csh,
             _covariant: PhantomData,
             offset: 0,
@@ -468,20 +472,20 @@ impl<'a> DisasmIter<'a> {
     pub fn disasm_iter(&mut self, code: &[u8], offset: usize, addr: u64) -> CsResult<Insn> {
         let code_len = code.len();
         let code_ptr = &mut code[offset..].as_ptr();
-        let mut c = code_len - offset;
-        let mut a = addr;
+        let mut count = code_len - offset;
+        let mut local_addr = addr;
         let ret = unsafe {
             cs_disasm_iter(
                 self.csh as csh, // capstone handle
                 code_ptr,        // double pointer to code to disassemble; automatically incremented
-                &mut c,          // number of bytes left to disassemble; automatically decremented
-                &mut a,          // automatically incremented address
+                &mut count,          // number of bytes left to disassemble; automatically decremented
+                &mut local_addr,          // automatically incremented address
                 self.insn,       // pointer to cs_insn object
             )
         };
         if ret {
-            self.offset = code_len - c;
-            self.addr = a;
+            self.offset = code_len - count;
+            self.addr = local_addr;
             let insn = unsafe { Insn::from_raw(self.insn) };
             Ok(insn)
         } else {
