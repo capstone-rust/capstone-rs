@@ -33,17 +33,12 @@ fn main() {
         }
     }
 
-    let cs = if let Ok(cs) = Capstone::new()
+    let cs = Capstone::new()
         .x86()
         .mode(arch::x86::ArchMode::Mode64)
         .detail(true)
         .build()
-    {
-        cs
-    } else {
-        eprintln!("failed to create capstone handle");
-        process::exit(-1);
-    };
+        .expect("failed to create capstone handle");
 
     let mut disasm = cs.get_disasm_iter();
 
@@ -63,7 +58,7 @@ fn main() {
                 break;
             }
             println!("{}", insn);
-            if is_unconditional_cflow_insn(&insn_detail) {
+            if is_cflow_insn(&insn_detail) {
                 break;
             }
 
@@ -84,14 +79,21 @@ fn is_invalid_insn(insn_detail: &InsnDetail) -> bool {
     false
 }
 
-fn is_unconditional_cflow_insn(insn_detail: &InsnDetail) -> bool {
+fn is_cflow_insn(insn_detail: &InsnDetail) -> bool {
     for insn_grp in insn_detail.groups() {
-        match insn_grp.0 as u32 {
-            InsnGroupType::CS_GRP_JUMP | InsnGroupType::CS_GRP_CALL | InsnGroupType::CS_GRP_RET => {
-                return true
-            }
-            _ => {}
+        if is_cflow_group(insn_grp) {
+            return true;
         }
     }
     false
+}
+
+fn is_cflow_group(insn_group: &InsnGroupId) -> bool {
+    match insn_group.0 as u32 {
+        InsnGroupType::CS_GRP_JUMP
+        | InsnGroupType::CS_GRP_CALL
+        | InsnGroupType::CS_GRP_RET
+        | InsnGroupType::CS_GRP_IRET => true,
+        _ => false,
+    }
 }
