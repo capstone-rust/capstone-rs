@@ -169,8 +169,8 @@ impl Capstone {
     ///
     pub fn get_disasm_iter<'a>(&'a self) -> DisasmIter<'a> {
         let insn = unsafe { cs_malloc(self.csh()) };
-        if let Err(e) = self.error_result() {
-            panic!("{}", e);
+        if insn.is_null() {
+            panic!("cs_malloc() failed");
         }
         DisasmIter {
             insn: insn,

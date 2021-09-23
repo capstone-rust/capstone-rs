@@ -1,5 +1,6 @@
 //! This example shows how to do recursive disassemble
-//! The example is written specificly for X86 ELF binary format
+//! The example is written specificly for X86 ELF binary format with PIE enabled
+//! If PIE is disabled `gcc -no-pie ...` offset needs to be properly calculated
 //!
 use std::collections::{HashSet, VecDeque};
 use std::env;
