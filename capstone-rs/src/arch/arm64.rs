@@ -38,10 +38,10 @@ pub struct Arm64InsnDetail<'a>(pub(crate) &'a cs_arm64);
 pub enum Arm64Shift {
     Invalid,
 
-    /// Logical shift lift
+    /// Logical shift left
     Lsl(u32),
 
-    /// Masking shift lift
+    /// Masking shift left
     Msl(u32),
 
     /// Logical shift right
