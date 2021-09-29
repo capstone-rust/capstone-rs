@@ -33,7 +33,7 @@ pub enum ArmShift {
     /// Arithmetic shift right (immediate)
     Asr(u32),
 
-    /// Logical shift lift (immediate)
+    /// Logical shift left (immediate)
     Lsl(u32),
 
     /// Logical shift right (immediate)
@@ -48,7 +48,7 @@ pub enum ArmShift {
     /// Arithmetic shift right (register)
     AsrReg(RegId),
 
-    /// Logical shift lift (register)
+    /// Logical shift left (register)
     LslReg(RegId),
 
     /// Logical shift right (register)
