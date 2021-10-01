@@ -10,6 +10,7 @@ use capstone_sys::*;
 use crate::arch::ArchDetail;
 use crate::constants::Arch;
 use crate::ffi::str_from_cstr_ptr;
+use crate::CsResult;
 
 /// Represents a slice of [`Insn`] returned by [`Capstone`](crate::Capstone) `disasm*()` methods.
 ///
@@ -203,6 +204,16 @@ pub struct Insn<'a> {
 ///
 pub struct InsnDetail<'a>(pub(crate) &'a cs_detail, pub(crate) Arch);
 
+// Can't derive `PartialEq` and `Eq` because `regs_read` and `regs_write` are bigger than 32
+#[derive(Clone)]
+/// Contains information about registers accessed by an instruction, either explicitly or implicitly
+pub struct InsnRegsAccess {
+    pub(crate) regs_read: cs_regs,
+    pub(crate) regs_read_count: u8,
+    pub(crate) regs_write: cs_regs,
+    pub(crate) regs_write_count: u8,
+}
+
 impl<'a> Insn<'a> {
     /// Create an `Insn` from a raw pointer to a [`capstone_sys::cs_insn`].
     ///
@@ -259,6 +270,15 @@ impl<'a> Insn<'a> {
     /// architecture matrices
     pub(crate) unsafe fn detail(&self, arch: Arch) -> InsnDetail {
         InsnDetail(&*self.insn.detail, arch)
+    }
+
+    /// Returns the `RegsAccess` object, if there is one. It is up to the caller to determine
+    /// the pre-conditions are satisfied.
+    ///
+    /// Be careful this is still in early stages and largely untested with various `cs_option` and
+    /// architecture matrices
+    pub(crate) fn regs_access(&self, cs: csh) -> CsResult<InsnRegsAccess> {
+        InsnRegsAccess::new(cs, &self.insn)
     }
 }
 
@@ -350,6 +370,69 @@ impl<'a> InsnDetail<'a> {
             [X86, X86Detail, X86InsnDetail, x86]
             [XCORE, XcoreDetail, XcoreInsnDetail, xcore]
         );
+    }
+}
+
+impl<'a> InsnRegsAccess {
+    fn new(cs: csh, ins: &cs_insn) -> CsResult<Self> {
+        let mut regs_read = [0u16; 64];
+        let mut regs_read_count = 0u8;
+        let mut regs_write = [0u16; 64];
+        let mut regs_write_count = 0u8;
+
+        let result = unsafe {
+            cs_regs_access(
+                cs,
+                ins,
+                regs_read.as_mut_ptr(),
+                &mut regs_read_count,
+                regs_write.as_mut_ptr(),
+                &mut regs_write_count,
+            )
+        };
+
+        if result == cs_err::CS_ERR_OK {
+            Ok(Self {
+                regs_read,
+                regs_read_count,
+                regs_write,
+                regs_write_count,
+            })
+        } else {
+            Err(result.into())
+        }
+    }
+
+    /// Returns the explicit and implicit accessed registers
+    pub fn regs_read(&self) -> RegsIter<RegIdInt> {
+        RegsIter(self.regs_read[..self.regs_read_count as usize].iter())
+    }
+
+    /// Returns the number of explicit and implicit read registers
+    pub fn regs_read_count(&self) -> u8 {
+        self.regs_read_count
+    }
+
+    /// Returns the explicit and implicit write registers
+    pub fn regs_write(&self) -> RegsIter<RegIdInt> {
+        RegsIter(self.regs_write[..self.regs_write_count as usize].iter())
+    }
+
+    /// Returns the number of explicit and implicit write registers
+    pub fn regs_write_count(&self) -> u8 {
+        self.regs_write_count
+    }
+}
+
+// Can't derive `Debug` because `regs_read` and `regs_write` are bigger than 32
+impl Debug for InsnRegsAccess {
+    fn fmt(&self, fmt: &mut Formatter) -> fmt::Result {
+        fmt.debug_struct("RegsAccess")
+            .field("regs_read", &self.regs_read())
+            .field("regs_read_count", &self.regs_read_count())
+            .field("regs_write", &self.regs_write())
+            .field("regs_write_count", &self.regs_write_count())
+            .finish()
     }
 }
 
