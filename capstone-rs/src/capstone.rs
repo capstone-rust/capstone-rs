@@ -11,7 +11,7 @@ use crate::arch::CapstoneBuilder;
 use crate::constants::{Arch, Endian, ExtraMode, Mode, OptValue, Syntax};
 use crate::error::*;
 use crate::ffi::str_from_cstr_ptr;
-use crate::instruction::{Insn, InsnDetail, InsnGroupId, InsnId, Instructions, RegId, RegAccess, cs_regs};
+use crate::instruction::{Insn, InsnDetail, InsnGroupId, InsnId, Instructions, RegId, RegAccess, CsRegs};
 
 /// An instance of the capstone disassembler
 ///
@@ -396,8 +396,8 @@ impl Capstone {
     /// Returns `RegsAccess` structure for a given instruction
     pub fn regs_access(&self, insn: &Insn) -> CsResult<RegAccess> {
 
-        let cs_regs_read: &mut cs_regs  = &mut [0u16; 64];
-        let cs_regs_write: &mut cs_regs = &mut [0u16; 64];
+        let cs_regs_read: &mut CsRegs  = &mut [0u16; 64];
+        let cs_regs_write: &mut CsRegs = &mut [0u16; 64];
         let mut regs_read_count: u8 = 0;
         let mut regs_write_count: u8 = 0;
         

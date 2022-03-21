@@ -12,7 +12,7 @@ use crate::arch::ArchDetail;
 use crate::constants::Arch;
 use crate::ffi::str_from_cstr_ptr;
 
-pub type cs_regs = [u16; 64];
+pub type CsRegs = [u16; 64];
 
 /// Represents a slice of [`Insn`] returned by [`Capstone`](crate::Capstone) `disasm*()` methods.
 ///
@@ -388,7 +388,8 @@ impl<'a> Display for Instructions<'a> {
         Ok(())
     }
 }
-
+/// Registers read and/or written to by a given instruction
+#[derive(Debug)]
 pub struct RegAccess {
     /// `Vec` containing the `RegId` of the registers read from
     read: Vec<RegId>,
