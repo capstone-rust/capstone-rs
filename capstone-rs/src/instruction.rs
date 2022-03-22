@@ -400,9 +400,9 @@ pub struct RegAccess {
 impl RegAccess {
     /// Converts the two slices of u16's from the API into the `RegAccss` type
     pub(crate) fn from_slice_u16(
-        registers_read: &cs_regs,
+        registers_read: &CsRegs,
         registers_read_count: usize,
-        registers_written: &cs_regs,
+        registers_written: &CsRegs,
         registers_written_count: usize,
         ) -> Self {
             let read = registers_read[0..registers_read_count]
