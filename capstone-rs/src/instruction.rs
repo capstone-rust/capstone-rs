@@ -162,7 +162,6 @@ impl<'a> Drop for Instructions<'a> {
 /// # Detail
 ///
 /// To learn how to get more instruction details, see [`InsnDetail`].
-#[derive(Clone)]
 #[repr(transparent)]
 pub struct Insn<'a> {
     /// Inner `cs_insn`
