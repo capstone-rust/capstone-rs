@@ -72,7 +72,6 @@ capstone_error_def!(
     => UnsupportedX86Masm = CS_ERR_X86_MASM;
 );
 
-#[must_use]
 pub type CsResult<T> = result::Result<T, Error>;
 
 impl fmt::Display for Error {
