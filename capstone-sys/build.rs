@@ -256,7 +256,8 @@ fn write_bindgen_bindings(
         .impl_debug(true)
         .constified_enum_module("cs_err|cs_group_type|cs_opt_value")
         .bitfield_enum("cs_mode|cs_ac_type")
-        .rustified_enum(".*");
+        .rustified_enum(".*")
+        .no_copy("cs_insn");
 
     // Whitelist cs_.* functions and types
     let pattern = String::from("cs_.*");

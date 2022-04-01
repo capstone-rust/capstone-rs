@@ -1,9 +1,11 @@
 use core::convert::{TryFrom, TryInto};
 use core::fmt::{self, Debug, Display, Error, Formatter};
 use core::marker::PhantomData;
+use core::mem::MaybeUninit;
 use core::ops::Deref;
 use core::slice;
 use core::str;
+use alloc::{self, alloc::Layout};
 
 use capstone_sys::*;
 
@@ -157,15 +159,102 @@ impl<'a> Drop for Instructions<'a> {
     }
 }
 
+pub trait Instruction {
+    /// The mnemonic for the instruction
+    fn mnemonic(&self) -> Option<&str> {
+        unsafe { str_from_cstr_ptr(self.insn().mnemonic.as_ptr()) }
+    }
+
+    /// The operand string associated with the instruction
+    fn op_str(&self) -> Option<&str> {
+        unsafe { str_from_cstr_ptr(self.insn().op_str.as_ptr()) }
+    }
+
+    /// Access instruction id
+    fn id(&self) -> InsnId {
+        InsnId(self.insn().id)
+    }
+
+    /// Size of instruction (in bytes)
+    fn len(&self) -> usize {
+        self.insn().size as usize
+    }
+
+    /// Instruction address
+    fn address(&self) -> u64 {
+        self.insn().address as u64
+    }
+
+    /// Byte-level representation of the instruction
+    fn bytes(&self) -> &[u8] {
+        &self.insn().bytes[..self.len()]
+    }
+
+    /// Returns the `Detail` object, if there is one. It is up to the caller to determine
+    /// the pre-conditions are satisfied.
+    ///
+    /// Be careful this is still in early stages and largely untested with various `cs_option` and
+    /// architecture matrices
+    unsafe fn detail(&self, arch: Arch) -> InsnDetail {
+        InsnDetail(&*self.insn().detail, arch)
+    }
+
+    fn insn(&self) -> &cs_insn;
+}
+
 /// A single disassembled CPU instruction.
 ///
 /// # Detail
 ///
 /// To learn how to get more instruction details, see [`InsnDetail`].
-#[derive(Clone)]
 #[repr(transparent)]
 pub struct Insn<'a> {
     /// Inner `cs_insn`
+    pub(crate) insn: cs_insn,
+
+    /// Adds lifetime
+    pub(crate) _marker: PhantomData<&'a InsnDetail<'a>>,
+}
+
+impl<'a> Instruction for Insn<'a> {
+    fn insn(&self) -> &cs_insn {
+        &self.insn
+    }
+}
+
+impl<'a> From<&Insn<'_>> for OwnedInsn<'a> {
+    fn from(insn: &Insn<'_>) -> Self {
+        let mut new = MaybeUninit::<cs_insn>::uninit();
+        let mut new: cs_insn = unsafe {
+            core::ptr::copy(&insn.insn as *const cs_insn, new.as_mut_ptr(), 1);
+            new.assume_init()
+        };
+        new.detail =  if new.detail as usize == 0 {
+            new.detail
+        } else {
+            unsafe {
+                let new_detail = alloc::alloc::alloc(Layout::new::<cs_detail>()) as *mut cs_detail;
+                core::ptr::copy(new.detail, new_detail, 1);
+                new_detail
+            }
+        };
+        Self {insn: new, _marker: PhantomData}
+    }
+}
+
+impl<'a> Instruction for OwnedInsn<'a> {
+    fn insn(&self) -> &cs_insn {
+        &self.insn
+    }
+}
+
+/// A single disassembled CPI instruction that lives on the Rust heap.
+///
+/// # Detail
+///
+/// To learn how to get more instruction details, see [`InsnDetail`].
+pub struct OwnedInsn<'a> {
+    /// Inner cs_insn
     pub(crate) insn: cs_insn,
 
     /// Adds lifetime
@@ -203,62 +292,9 @@ pub struct Insn<'a> {
 ///
 pub struct InsnDetail<'a>(pub(crate) &'a cs_detail, pub(crate) Arch);
 
-impl<'a> Insn<'a> {
-    /// Create an `Insn` from a raw pointer to a [`capstone_sys::cs_insn`].
-    ///
-    /// This function serves to allow integration with libraries which generate `capstone_sys::cs_insn`'s internally.
-    ///
-    /// # Safety
-    ///
-    /// Note that this function is unsafe, and assumes that you know what you are doing. In
-    /// particular, it generates a lifetime for the `Insn` from nothing, and that lifetime is in
-    /// no-way actually tied to the cs_insn itself. It is the responsibility of the caller to
-    /// ensure that the resulting `Insn` lives only as long as the `cs_insn`. This function
-    /// assumes that the pointer passed is non-null and a valid `cs_insn` pointer.
-    pub unsafe fn from_raw(insn: *const cs_insn) -> Self {
-        Self {
-            insn: *insn,
-            _marker: PhantomData,
-        }
-    }
-
-    /// The mnemonic for the instruction
-    pub fn mnemonic(&self) -> Option<&str> {
-        unsafe { str_from_cstr_ptr(self.insn.mnemonic.as_ptr()) }
-    }
-
-    /// The operand string associated with the instruction
-    pub fn op_str(&self) -> Option<&str> {
-        unsafe { str_from_cstr_ptr(self.insn.op_str.as_ptr()) }
-    }
-
-    /// Access instruction id
-    pub fn id(&self) -> InsnId {
-        InsnId(self.insn.id)
-    }
-
-    /// Size of instruction (in bytes)
-    fn len(&self) -> usize {
-        self.insn.size as usize
-    }
-
-    /// Instruction address
-    pub fn address(&self) -> u64 {
-        self.insn.address as u64
-    }
-
-    /// Byte-level representation of the instruction
-    pub fn bytes(&self) -> &[u8] {
-        &self.insn.bytes[..self.len()]
-    }
-
-    /// Returns the `Detail` object, if there is one. It is up to the caller to determine
-    /// the pre-conditions are satisfied.
-    ///
-    /// Be careful this is still in early stages and largely untested with various `cs_option` and
-    /// architecture matrices
-    pub(crate) unsafe fn detail(&self, arch: Arch) -> InsnDetail {
-        InsnDetail(&*self.insn.detail, arch)
+impl<'a> Drop for Insn<'a> {
+    fn drop(&mut self) {
+        unsafe {cs_free(&mut self.insn as *mut cs_insn, 1)}
     }
 }
 
@@ -273,8 +309,39 @@ impl<'a> Debug for Insn<'a> {
             .finish()
     }
 }
+impl<'a> Display for Insn<'a>  {
+    fn fmt(&self, fmt: &mut Formatter) -> fmt::Result {
+        write!(fmt, "{:#x}: ", self.address())?;
+        if let Some(mnemonic) = self.mnemonic() {
+            write!(fmt, "{} ", mnemonic)?;
+            if let Some(op_str) = self.op_str() {
+                write!(fmt, "{}", op_str)?;
+            }
+        }
+        Ok(())
+    }
+}
 
-impl<'a> Display for Insn<'a> {
+impl<'a> Drop for OwnedInsn<'a> {
+    fn drop(&mut self) {
+        unsafe {
+            alloc::alloc::dealloc(self.insn.detail as *mut u8, Layout::new::<cs_detail>());
+        }
+    }
+}
+
+impl<'a> Debug for OwnedInsn<'a> {
+    fn fmt(&self, fmt: &mut Formatter) -> Result<(), Error> {
+        fmt.debug_struct("Insn")
+            .field("address", &self.address())
+            .field("len", &self.len())
+            .field("bytes", &self.bytes())
+            .field("mnemonic", &self.mnemonic())
+            .field("op_str", &self.op_str())
+            .finish()
+    }
+}
+impl<'a> Display for OwnedInsn<'a>  {
     fn fmt(&self, fmt: &mut Formatter) -> fmt::Result {
         write!(fmt, "{:#x}: ", self.address())?;
         if let Some(mnemonic) = self.mnemonic() {

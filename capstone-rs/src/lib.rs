@@ -160,6 +160,6 @@ pub mod prelude {
     };
     pub use crate::{
         Capstone, CsResult, InsnDetail, InsnGroupId, InsnGroupIdInt, InsnId, InsnIdInt, RegId,
-        RegIdInt,
+        RegIdInt, Instruction
     };
 }
