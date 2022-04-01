@@ -1,11 +1,10 @@
+use alloc::{self, boxed::Box};
 use core::convert::{TryFrom, TryInto};
 use core::fmt::{self, Debug, Display, Error, Formatter};
 use core::marker::PhantomData;
-use core::mem::MaybeUninit;
 use core::ops::Deref;
 use core::slice;
 use core::str;
-use alloc::{self, alloc::Layout};
 
 use capstone_sys::*;
 
@@ -159,7 +158,14 @@ impl<'a> Drop for Instructions<'a> {
     }
 }
 
-pub trait Instruction {
+/// Shared functionality for structs wrapping [`cs_insn`]
+///
+/// # Safety
+///
+/// The [`cs_insn::detail`] pointer must be safely allocated and correspondingly freed
+/// to implement this trait safely.
+#[allow(clippy::len_without_is_empty)]
+pub unsafe trait Instruction {
     /// The mnemonic for the instruction
     fn mnemonic(&self) -> Option<&str> {
         unsafe { str_from_cstr_ptr(self.insn().mnemonic.as_ptr()) }
@@ -195,6 +201,9 @@ pub trait Instruction {
     ///
     /// Be careful this is still in early stages and largely untested with various `cs_option` and
     /// architecture matrices
+    ///
+    /// # Safety
+    /// The [`cs_insn::detail`] pointer must be valid and non-null.
     unsafe fn detail(&self, arch: Arch) -> InsnDetail {
         InsnDetail(&*self.insn().detail, arch)
     }
@@ -216,7 +225,7 @@ pub struct Insn<'a> {
     pub(crate) _marker: PhantomData<&'a InsnDetail<'a>>,
 }
 
-impl<'a> Instruction for Insn<'a> {
+unsafe impl<'a> Instruction for Insn<'a> {
     fn insn(&self) -> &cs_insn {
         &self.insn
     }
@@ -224,27 +233,32 @@ impl<'a> Instruction for Insn<'a> {
 
 impl<'a> From<&Insn<'_>> for OwnedInsn<'a> {
     fn from(insn: &Insn<'_>) -> Self {
-        let mut new = MaybeUninit::<cs_insn>::uninit();
-        let mut new: cs_insn = unsafe {
-            core::ptr::copy(&insn.insn as *const cs_insn, new.as_mut_ptr(), 1);
-            new.assume_init()
-        };
-        new.detail =  if new.detail as usize == 0 {
+        let mut new = unsafe { <*const cs_insn>::read(&insn.insn as _) };
+        new.detail = if new.detail.is_null() {
             new.detail
         } else {
             unsafe {
-                let new_detail = alloc::alloc::alloc(Layout::new::<cs_detail>()) as *mut cs_detail;
-                core::ptr::copy(new.detail, new_detail, 1);
-                new_detail
+                let new_detail = Box::new(*new.detail);
+                Box::into_raw(new_detail)
             }
         };
-        Self {insn: new, _marker: PhantomData}
+        Self {
+            insn: new,
+            _marker: PhantomData,
+        }
     }
 }
 
-impl<'a> Instruction for OwnedInsn<'a> {
+unsafe impl<'a> Instruction for OwnedInsn<'a> {
     fn insn(&self) -> &cs_insn {
         &self.insn
+    }
+}
+
+impl<'a> Deref for OwnedInsn<'a> {
+    type Target = Insn<'a>;
+    fn deref(&self) -> &Self::Target {
+        unsafe { &*(&self.insn as *const cs_insn as *const Insn) }
     }
 }
 
@@ -294,7 +308,7 @@ pub struct InsnDetail<'a>(pub(crate) &'a cs_detail, pub(crate) Arch);
 
 impl<'a> Drop for Insn<'a> {
     fn drop(&mut self) {
-        unsafe {cs_free(&mut self.insn as *mut cs_insn, 1)}
+        unsafe { cs_free(&mut self.insn as *mut cs_insn, 1) }
     }
 }
 
@@ -309,7 +323,7 @@ impl<'a> Debug for Insn<'a> {
             .finish()
     }
 }
-impl<'a> Display for Insn<'a>  {
+impl<'a> Display for Insn<'a> {
     fn fmt(&self, fmt: &mut Formatter) -> fmt::Result {
         write!(fmt, "{:#x}: ", self.address())?;
         if let Some(mnemonic) = self.mnemonic() {
@@ -324,8 +338,8 @@ impl<'a> Display for Insn<'a>  {
 
 impl<'a> Drop for OwnedInsn<'a> {
     fn drop(&mut self) {
-        unsafe {
-            alloc::alloc::dealloc(self.insn.detail as *mut u8, Layout::new::<cs_detail>());
+        if let Some(ptr) = core::ptr::NonNull::new(self.insn.detail) {
+            unsafe { drop(Box::from_raw(ptr.as_ptr())) }
         }
     }
 }
@@ -341,7 +355,7 @@ impl<'a> Debug for OwnedInsn<'a> {
             .finish()
     }
 }
-impl<'a> Display for OwnedInsn<'a>  {
+impl<'a> Display for OwnedInsn<'a> {
     fn fmt(&self, fmt: &mut Formatter) -> fmt::Result {
         write!(fmt, "{:#x}: ", self.address())?;
         if let Some(mnemonic) = self.mnemonic() {

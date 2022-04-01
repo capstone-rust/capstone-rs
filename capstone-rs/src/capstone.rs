@@ -11,7 +11,7 @@ use crate::arch::CapstoneBuilder;
 use crate::constants::{Arch, Endian, ExtraMode, Mode, OptValue, Syntax};
 use crate::error::*;
 use crate::ffi::str_from_cstr_ptr;
-use crate::instruction::{InsnDetail, InsnGroupId, InsnId, Instructions, RegId, Instruction};
+use crate::instruction::{Insn, InsnDetail, InsnGroupId, InsnId, Instruction, Instructions, RegId};
 
 /// An instance of the capstone disassembler
 ///
@@ -381,7 +381,7 @@ impl Capstone {
     /// 1. Instruction was created with detail enabled
     /// 2. Skipdata is disabled
     /// 3. Capstone was not compiled in diet mode
-    pub fn insn_detail<'s, 'i: 's>(&'s self, insn: &'i impl Instruction) -> CsResult<InsnDetail<'i>> {
+    pub fn insn_detail<'s, 'i: 's>(&'s self, insn: &'i Insn) -> CsResult<InsnDetail<'i>> {
         if !self.detail_enabled {
             Err(Error::DetailOff)
         } else if insn.id().0 == 0 {

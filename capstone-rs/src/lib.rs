@@ -159,7 +159,7 @@ pub mod prelude {
         BuildsCapstoneSyntax, DetailsArchInsn,
     };
     pub use crate::{
-        Capstone, CsResult, InsnDetail, InsnGroupId, InsnGroupIdInt, InsnId, InsnIdInt, RegId,
-        RegIdInt, Instruction
+        Capstone, CsResult, InsnDetail, InsnGroupId, InsnGroupIdInt, InsnId, InsnIdInt,
+        Instruction, RegId, RegIdInt,
     };
 }
