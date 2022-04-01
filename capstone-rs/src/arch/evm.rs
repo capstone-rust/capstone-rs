@@ -36,14 +36,8 @@ impl_PartialEq_repr_fields!(EvmInsnDetail<'a> [ 'a ];
 );
 
 /// EVM has no operands, so this is a zero-size type.
-#[derive(Clone, Debug, Eq, PartialEq)]
+#[derive(Clone, Debug, Eq, PartialEq, Default)]
 pub struct EvmOperand(());
-
-impl Default for EvmOperand {
-    fn default() -> Self {
-        EvmOperand(())
-    }
-}
 
 // Do not use def_arch_details_struct! since EVM does not have operands
 
