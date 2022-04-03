@@ -159,6 +159,26 @@ impl<'a> Drop for Instructions<'a> {
 }
 
 impl<'a> Insn<'a> {
+    /// Create an `Insn` from a raw pointer to a [`capstone_sys::cs_insn`].
+    ///
+    /// This function serves to allow integration with libraries which generate `capstone_sys::cs_insn`'s internally.
+    ///
+    /// # Safety
+    ///
+    /// Note that this function is unsafe, and assumes that you know what you are doing. In
+    /// particular, it generates a lifetime for the `Insn` from nothing, and that lifetime is in
+    /// no-way actually tied to the cs_insn itself. It is the responsibility of the caller to
+    /// ensure that the resulting `Insn` lives only as long as the `cs_insn`. This function
+    /// assumes that the pointer passed is non-null and a valid `cs_insn` pointer.
+    ///
+    /// The caller is fully responsible for the backing allocations lifetime, including freeing.
+    pub unsafe fn from_raw(insn: *const cs_insn) -> Self {
+        Self {
+            insn: core::ptr::read(insn),
+            _marker: PhantomData,
+        }
+    }
+
     /// The mnemonic for the instruction
     pub fn mnemonic(&self) -> Option<&str> {
         unsafe { str_from_cstr_ptr(self.insn().mnemonic.as_ptr()) }
