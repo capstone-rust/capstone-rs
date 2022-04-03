@@ -223,6 +223,9 @@ pub struct Insn<'a> {
 }
 
 impl<'a> From<&Insn<'_>> for OwnedInsn<'a> {
+    // SAFETY: assumes that `cs_detail` struct transitively only contains owned
+    // types and no pointers, including the union over the architecture-specific
+    // types.
     fn from(insn: &Insn<'_>) -> Self {
         let mut new = unsafe { <*const cs_insn>::read(&insn.insn as _) };
         new.detail = if new.detail.is_null() {
