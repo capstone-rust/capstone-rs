@@ -201,6 +201,8 @@ impl<'a> Insn<'a> {
         InsnDetail(&*self.insn().detail, arch)
     }
 
+    // Any pointers are owned by the Capstone C library and should be freed accordingly
+    #[inline(always)]
     fn insn(&self) -> &cs_insn {
         &self.insn
     }
