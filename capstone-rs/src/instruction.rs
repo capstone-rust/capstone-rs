@@ -341,25 +341,12 @@ impl<'a> Drop for OwnedInsn<'a> {
 
 impl<'a> Debug for OwnedInsn<'a> {
     fn fmt(&self, fmt: &mut Formatter) -> Result<(), Error> {
-        fmt.debug_struct("Insn")
-            .field("address", &self.address())
-            .field("len", &self.len())
-            .field("bytes", &self.bytes())
-            .field("mnemonic", &self.mnemonic())
-            .field("op_str", &self.op_str())
-            .finish()
+        Debug::fmt(&self.deref(), fmt)
     }
 }
 impl<'a> Display for OwnedInsn<'a> {
     fn fmt(&self, fmt: &mut Formatter) -> fmt::Result {
-        write!(fmt, "{:#x}: ", self.address())?;
-        if let Some(mnemonic) = self.mnemonic() {
-            write!(fmt, "{} ", mnemonic)?;
-            if let Some(op_str) = self.op_str() {
-                write!(fmt, "{}", op_str)?;
-            }
-        }
-        Ok(())
+        Display::fmt(&self.deref(), fmt)
     }
 }
 
