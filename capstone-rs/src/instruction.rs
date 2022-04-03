@@ -158,41 +158,34 @@ impl<'a> Drop for Instructions<'a> {
     }
 }
 
-/// Shared functionality for structs wrapping [`cs_insn`]
-///
-/// # Safety
-///
-/// The [`cs_insn::detail`] pointer must be safely allocated and correspondingly freed
-/// to implement this trait safely.
-#[allow(clippy::len_without_is_empty)]
-pub unsafe trait Instruction {
+impl<'a> Insn<'a> {
     /// The mnemonic for the instruction
-    fn mnemonic(&self) -> Option<&str> {
+    pub fn mnemonic(&self) -> Option<&str> {
         unsafe { str_from_cstr_ptr(self.insn().mnemonic.as_ptr()) }
     }
 
     /// The operand string associated with the instruction
-    fn op_str(&self) -> Option<&str> {
+    pub fn op_str(&self) -> Option<&str> {
         unsafe { str_from_cstr_ptr(self.insn().op_str.as_ptr()) }
     }
 
     /// Access instruction id
-    fn id(&self) -> InsnId {
+    pub fn id(&self) -> InsnId {
         InsnId(self.insn().id)
     }
 
     /// Size of instruction (in bytes)
-    fn len(&self) -> usize {
+    pub fn len(&self) -> usize {
         self.insn().size as usize
     }
 
     /// Instruction address
-    fn address(&self) -> u64 {
+    pub fn address(&self) -> u64 {
         self.insn().address as u64
     }
 
     /// Byte-level representation of the instruction
-    fn bytes(&self) -> &[u8] {
+    pub fn bytes(&self) -> &[u8] {
         &self.insn().bytes[..self.len()]
     }
 
@@ -204,11 +197,13 @@ pub unsafe trait Instruction {
     ///
     /// # Safety
     /// The [`cs_insn::detail`] pointer must be valid and non-null.
-    unsafe fn detail(&self, arch: Arch) -> InsnDetail {
+    pub(crate) unsafe fn detail(&self, arch: Arch) -> InsnDetail {
         InsnDetail(&*self.insn().detail, arch)
     }
 
-    fn insn(&self) -> &cs_insn;
+    fn insn(&self) -> &cs_insn {
+        &self.insn
+    }
 }
 
 /// A single disassembled CPU instruction.
@@ -223,12 +218,6 @@ pub struct Insn<'a> {
 
     /// Adds lifetime
     pub(crate) _marker: PhantomData<&'a InsnDetail<'a>>,
-}
-
-unsafe impl<'a> Instruction for Insn<'a> {
-    fn insn(&self) -> &cs_insn {
-        &self.insn
-    }
 }
 
 impl<'a> From<&Insn<'_>> for OwnedInsn<'a> {
@@ -249,12 +238,9 @@ impl<'a> From<&Insn<'_>> for OwnedInsn<'a> {
     }
 }
 
-unsafe impl<'a> Instruction for OwnedInsn<'a> {
-    fn insn(&self) -> &cs_insn {
-        &self.insn
-    }
-}
-
+/// SAFETY:
+/// 1. `Insn` must be `#repr(transparent)` of `cs_insn`
+/// 2. all `Insn` methods must be safe to perform for an `OwnedInsn`
 impl<'a> Deref for OwnedInsn<'a> {
     type Target = Insn<'a>;
     fn deref(&self) -> &Self::Target {
