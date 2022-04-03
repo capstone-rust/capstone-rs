@@ -306,11 +306,6 @@ pub struct OwnedInsn<'a> {
 ///
 pub struct InsnDetail<'a>(pub(crate) &'a cs_detail, pub(crate) Arch);
 
-impl<'a> Drop for Insn<'a> {
-    fn drop(&mut self) {
-        unsafe { cs_free(&mut self.insn as *mut cs_insn, 1) }
-    }
-}
 
 impl<'a> Debug for Insn<'a> {
     fn fmt(&self, fmt: &mut Formatter) -> Result<(), Error> {
