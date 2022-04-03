@@ -3215,3 +3215,19 @@ fn test_insn_from_raw() {
         assert_eq!(format!("{:?}", from_raw_insn), format!("{:?}", insn));
     }
 }
+
+#[test]
+fn test_owned_insn() {
+    let cs = Capstone::new()
+        .x86()
+        .mode(x86::ArchMode::Mode64)
+        .detail(true)
+        .build()
+        .unwrap();
+
+    let insns = cs.disasm_all(X86_CODE, START_TEST_ADDR).unwrap();
+    let owned: Vec<OwnedInsn> = insns.iter().map(|i| i.into()).collect();
+    for (insn, owned) in insns.iter().zip(&owned) {
+        assert_eq!(format!("{:?}", insn), format!("{:?}", owned));
+    }
+}
