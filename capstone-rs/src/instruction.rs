@@ -158,6 +158,7 @@ impl<'a> Drop for Instructions<'a> {
     }
 }
 
+#[allow(clippy::len_without_is_empty)]
 impl<'a> Insn<'a> {
     /// Create an `Insn` from a raw pointer to a [`capstone_sys::cs_insn`].
     ///
@@ -316,7 +317,6 @@ pub struct OwnedInsn<'a> {
 /// [`.arch_detail()`](Self::arch_detail) method to get an `ArchDetail` enum.
 ///
 pub struct InsnDetail<'a>(pub(crate) &'a cs_detail, pub(crate) Arch);
-
 
 impl<'a> Debug for Insn<'a> {
     fn fmt(&self, fmt: &mut Formatter) -> Result<(), Error> {
