@@ -140,6 +140,7 @@ fn build_capstone_cc() {
         .flag_if_supported("-Wno-return-type")
         .flag_if_supported("-Wno-implicit-fallthrough")
         .flag_if_supported("-Wno-missing-field-initializers")
+        .flag_if_supported("-Wno-enum-conversion")
         .static_crt(use_static_crt)
         .compile("capstone");
 }
