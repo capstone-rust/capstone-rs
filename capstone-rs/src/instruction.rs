@@ -158,77 +158,6 @@ impl<'a> Drop for Instructions<'a> {
     }
 }
 
-#[allow(clippy::len_without_is_empty)]
-impl<'a> Insn<'a> {
-    /// Create an `Insn` from a raw pointer to a [`capstone_sys::cs_insn`].
-    ///
-    /// This function serves to allow integration with libraries which generate `capstone_sys::cs_insn`'s internally.
-    ///
-    /// # Safety
-    ///
-    /// Note that this function is unsafe, and assumes that you know what you are doing. In
-    /// particular, it generates a lifetime for the `Insn` from nothing, and that lifetime is in
-    /// no-way actually tied to the cs_insn itself. It is the responsibility of the caller to
-    /// ensure that the resulting `Insn` lives only as long as the `cs_insn`. This function
-    /// assumes that the pointer passed is non-null and a valid `cs_insn` pointer.
-    ///
-    /// The caller is fully responsible for the backing allocations lifetime, including freeing.
-    pub unsafe fn from_raw(insn: *const cs_insn) -> Self {
-        Self {
-            insn: core::ptr::read(insn),
-            _marker: PhantomData,
-        }
-    }
-
-    /// The mnemonic for the instruction
-    pub fn mnemonic(&self) -> Option<&str> {
-        unsafe { str_from_cstr_ptr(self.insn().mnemonic.as_ptr()) }
-    }
-
-    /// The operand string associated with the instruction
-    pub fn op_str(&self) -> Option<&str> {
-        unsafe { str_from_cstr_ptr(self.insn().op_str.as_ptr()) }
-    }
-
-    /// Access instruction id
-    pub fn id(&self) -> InsnId {
-        InsnId(self.insn().id)
-    }
-
-    /// Size of instruction (in bytes)
-    pub fn len(&self) -> usize {
-        self.insn().size as usize
-    }
-
-    /// Instruction address
-    pub fn address(&self) -> u64 {
-        self.insn().address as u64
-    }
-
-    /// Byte-level representation of the instruction
-    pub fn bytes(&self) -> &[u8] {
-        &self.insn().bytes[..self.len()]
-    }
-
-    /// Returns the `Detail` object, if there is one. It is up to the caller to determine
-    /// the pre-conditions are satisfied.
-    ///
-    /// Be careful this is still in early stages and largely untested with various `cs_option` and
-    /// architecture matrices
-    ///
-    /// # Safety
-    /// The [`cs_insn::detail`] pointer must be valid and non-null.
-    pub(crate) unsafe fn detail(&self, arch: Arch) -> InsnDetail {
-        InsnDetail(&*self.insn().detail, arch)
-    }
-
-    // Any pointers are owned by the Capstone C library and should be freed accordingly
-    #[inline(always)]
-    fn insn(&self) -> &cs_insn {
-        &self.insn
-    }
-}
-
 /// A single disassembled CPU instruction.
 ///
 /// # Detail
@@ -237,50 +166,6 @@ impl<'a> Insn<'a> {
 #[repr(transparent)]
 pub struct Insn<'a> {
     /// Inner `cs_insn`
-    pub(crate) insn: cs_insn,
-
-    /// Adds lifetime
-    pub(crate) _marker: PhantomData<&'a InsnDetail<'a>>,
-}
-
-impl<'a> From<&Insn<'_>> for OwnedInsn<'a> {
-    // SAFETY: assumes that `cs_detail` struct transitively only contains owned
-    // types and no pointers, including the union over the architecture-specific
-    // types.
-    fn from(insn: &Insn<'_>) -> Self {
-        let mut new = unsafe { <*const cs_insn>::read(&insn.insn as _) };
-        new.detail = if new.detail.is_null() {
-            new.detail
-        } else {
-            unsafe {
-                let new_detail = Box::new(*new.detail);
-                Box::into_raw(new_detail)
-            }
-        };
-        Self {
-            insn: new,
-            _marker: PhantomData,
-        }
-    }
-}
-
-/// SAFETY:
-/// 1. `Insn` must be `#repr(transparent)` of `cs_insn`
-/// 2. all `Insn` methods must be safe to perform for an `OwnedInsn`
-impl<'a> Deref for OwnedInsn<'a> {
-    type Target = Insn<'a>;
-    fn deref(&self) -> &Self::Target {
-        unsafe { &*(&self.insn as *const cs_insn as *const Insn) }
-    }
-}
-
-/// A single disassembled CPI instruction that lives on the Rust heap.
-///
-/// # Detail
-///
-/// To learn how to get more instruction details, see [`InsnDetail`].
-pub struct OwnedInsn<'a> {
-    /// Inner cs_insn
     pub(crate) insn: cs_insn,
 
     /// Adds lifetime
@@ -317,6 +202,115 @@ pub struct OwnedInsn<'a> {
 /// [`.arch_detail()`](Self::arch_detail) method to get an `ArchDetail` enum.
 ///
 pub struct InsnDetail<'a>(pub(crate) &'a cs_detail, pub(crate) Arch);
+
+#[allow(clippy::len_without_is_empty)]
+impl<'a> Insn<'a> {
+    /// Create an `Insn` from a raw pointer to a [`capstone_sys::cs_insn`].
+    ///
+    /// This function serves to allow integration with libraries which generate `capstone_sys::cs_insn`'s internally.
+    ///
+    /// # Safety
+    ///
+    /// Note that this function is unsafe, and assumes that you know what you are doing. In
+    /// particular, it generates a lifetime for the `Insn` from nothing, and that lifetime is in
+    /// no-way actually tied to the cs_insn itself. It is the responsibility of the caller to
+    /// ensure that the resulting `Insn` lives only as long as the `cs_insn`. This function
+    /// assumes that the pointer passed is non-null and a valid `cs_insn` pointer.
+    ///
+    /// The caller is fully responsible for the backing allocations lifetime, including freeing.
+    pub unsafe fn from_raw(insn: *const cs_insn) -> Self {
+        Self {
+            insn: core::ptr::read(insn),
+            _marker: PhantomData,
+        }
+    }
+
+    /// The mnemonic for the instruction
+    pub fn mnemonic(&self) -> Option<&str> {
+        unsafe { str_from_cstr_ptr(self.insn.mnemonic.as_ptr()) }
+    }
+
+    /// The operand string associated with the instruction
+    pub fn op_str(&self) -> Option<&str> {
+        unsafe { str_from_cstr_ptr(self.insn.op_str.as_ptr()) }
+    }
+
+    /// Access instruction id
+    pub fn id(&self) -> InsnId {
+        InsnId(self.insn.id)
+    }
+
+    /// Size of instruction (in bytes)
+    pub fn len(&self) -> usize {
+        self.insn.size as usize
+    }
+
+    /// Instruction address
+    pub fn address(&self) -> u64 {
+        self.insn.address as u64
+    }
+
+    /// Byte-level representation of the instruction
+    pub fn bytes(&self) -> &[u8] {
+        &self.insn.bytes[..self.len()]
+    }
+
+    /// Returns the `Detail` object, if there is one. It is up to the caller to determine
+    /// the pre-conditions are satisfied.
+    ///
+    /// Be careful this is still in early stages and largely untested with various `cs_option` and
+    /// architecture matrices
+    ///
+    /// # Safety
+    /// The [`cs_insn::detail`] pointer must be valid and non-null.
+    pub(crate) unsafe fn detail(&self, arch: Arch) -> InsnDetail {
+        InsnDetail(&*self.insn.detail, arch)
+    }
+}
+
+impl<'a> From<&Insn<'_>> for OwnedInsn<'a> {
+    // SAFETY: assumes that `cs_detail` struct transitively only contains owned
+    // types and no pointers, including the union over the architecture-specific
+    // types.
+    fn from(insn: &Insn<'_>) -> Self {
+        let mut new = unsafe { <*const cs_insn>::read(&insn.insn as _) };
+        new.detail = if new.detail.is_null() {
+            new.detail
+        } else {
+            unsafe {
+                let new_detail = Box::new(*new.detail);
+                Box::into_raw(new_detail)
+            }
+        };
+        Self {
+            insn: new,
+            _marker: PhantomData,
+        }
+    }
+}
+
+/// SAFETY:
+/// 1. [`OwnedInsn`] and [`Insn`] must be `#repr(transparent)` of [`cs_insn`]
+/// 2. all [`Insn`] methods must be safe to perform for an [`OwnedInsn`]
+impl<'a> Deref for OwnedInsn<'a> {
+    type Target = Insn<'a>;
+    fn deref(&self) -> &Self::Target {
+        unsafe { &*(&self.insn as *const cs_insn as *const Insn) }
+    }
+}
+
+/// A single disassembled CPI instruction that lives on the Rust heap.
+///
+/// # Detail
+///
+/// To learn how to get more instruction details, see [`InsnDetail`].
+pub struct OwnedInsn<'a> {
+    /// Inner cs_insn
+    pub(crate) insn: cs_insn,
+
+    /// Adds lifetime
+    pub(crate) _marker: PhantomData<&'a InsnDetail<'a>>,
+}
 
 impl<'a> Debug for Insn<'a> {
     fn fmt(&self, fmt: &mut Formatter) -> Result<(), Error> {
