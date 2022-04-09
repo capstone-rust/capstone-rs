@@ -1,3 +1,4 @@
+use alloc::{self, boxed::Box};
 use core::convert::{TryFrom, TryInto};
 use core::fmt::{self, Debug, Display, Error, Formatter};
 use core::marker::PhantomData;
@@ -202,6 +203,7 @@ pub struct Insn<'a> {
 ///
 pub struct InsnDetail<'a>(pub(crate) &'a cs_detail, pub(crate) Arch);
 
+#[allow(clippy::len_without_is_empty)]
 impl<'a> Insn<'a> {
     /// Create an `Insn` from a raw pointer to a [`capstone_sys::cs_insn`].
     ///
@@ -214,9 +216,11 @@ impl<'a> Insn<'a> {
     /// no-way actually tied to the cs_insn itself. It is the responsibility of the caller to
     /// ensure that the resulting `Insn` lives only as long as the `cs_insn`. This function
     /// assumes that the pointer passed is non-null and a valid `cs_insn` pointer.
+    ///
+    /// The caller is fully responsible for the backing allocations lifetime, including freeing.
     pub unsafe fn from_raw(insn: *const cs_insn) -> Self {
         Self {
-            insn: *insn,
+            insn: core::ptr::read(insn),
             _marker: PhantomData,
         }
     }
@@ -237,7 +241,7 @@ impl<'a> Insn<'a> {
     }
 
     /// Size of instruction (in bytes)
-    fn len(&self) -> usize {
+    pub fn len(&self) -> usize {
         self.insn.size as usize
     }
 
@@ -256,9 +260,56 @@ impl<'a> Insn<'a> {
     ///
     /// Be careful this is still in early stages and largely untested with various `cs_option` and
     /// architecture matrices
+    ///
+    /// # Safety
+    /// The [`cs_insn::detail`] pointer must be valid and non-null.
     pub(crate) unsafe fn detail(&self, arch: Arch) -> InsnDetail {
         InsnDetail(&*self.insn.detail, arch)
     }
+}
+
+impl<'a> From<&Insn<'_>> for OwnedInsn<'a> {
+    // SAFETY: assumes that `cs_detail` struct transitively only contains owned
+    // types and no pointers, including the union over the architecture-specific
+    // types.
+    fn from(insn: &Insn<'_>) -> Self {
+        let mut new = unsafe { <*const cs_insn>::read(&insn.insn as _) };
+        new.detail = if new.detail.is_null() {
+            new.detail
+        } else {
+            unsafe {
+                let new_detail = Box::new(*new.detail);
+                Box::into_raw(new_detail)
+            }
+        };
+        Self {
+            insn: new,
+            _marker: PhantomData,
+        }
+    }
+}
+
+/// SAFETY:
+/// 1. [`OwnedInsn`] and [`Insn`] must be `#repr(transparent)` of [`cs_insn`]
+/// 2. all [`Insn`] methods must be safe to perform for an [`OwnedInsn`]
+impl<'a> Deref for OwnedInsn<'a> {
+    type Target = Insn<'a>;
+    fn deref(&self) -> &Self::Target {
+        unsafe { &*(&self.insn as *const cs_insn as *const Insn) }
+    }
+}
+
+/// A single disassembled CPU instruction that lives on the Rust heap.
+///
+/// # Detail
+///
+/// To learn how to get more instruction details, see [`InsnDetail`].
+pub struct OwnedInsn<'a> {
+    /// Inner cs_insn
+    pub(crate) insn: cs_insn,
+
+    /// Adds lifetime
+    pub(crate) _marker: PhantomData<&'a InsnDetail<'a>>,
 }
 
 impl<'a> Debug for Insn<'a> {
@@ -272,7 +323,6 @@ impl<'a> Debug for Insn<'a> {
             .finish()
     }
 }
-
 impl<'a> Display for Insn<'a> {
     fn fmt(&self, fmt: &mut Formatter) -> fmt::Result {
         write!(fmt, "{:#x}: ", self.address())?;
@@ -283,6 +333,25 @@ impl<'a> Display for Insn<'a> {
             }
         }
         Ok(())
+    }
+}
+
+impl<'a> Drop for OwnedInsn<'a> {
+    fn drop(&mut self) {
+        if let Some(ptr) = core::ptr::NonNull::new(self.insn.detail) {
+            unsafe { drop(Box::from_raw(ptr.as_ptr())) }
+        }
+    }
+}
+
+impl<'a> Debug for OwnedInsn<'a> {
+    fn fmt(&self, fmt: &mut Formatter) -> Result<(), Error> {
+        Debug::fmt(&self.deref(), fmt)
+    }
+}
+impl<'a> Display for OwnedInsn<'a> {
+    fn fmt(&self, fmt: &mut Formatter) -> fmt::Result {
+        Display::fmt(&self.deref(), fmt)
     }
 }
 

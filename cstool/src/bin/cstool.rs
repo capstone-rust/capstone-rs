@@ -274,7 +274,7 @@ fn main() {
         file.read_to_end(&mut buf).expect_exit();
         buf
     } else if let Some(code) = matches.value_of(CODE_ARG) {
-        code.as_bytes().iter().copied().collect()
+        code.as_bytes().to_vec()
     } else {
         let mut buf = Vec::with_capacity(DEFAULT_CAPACITY);
         let stdin = std::io::stdin();
