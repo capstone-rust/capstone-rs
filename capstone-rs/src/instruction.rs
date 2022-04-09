@@ -299,7 +299,7 @@ impl<'a> Deref for OwnedInsn<'a> {
     }
 }
 
-/// A single disassembled CPI instruction that lives on the Rust heap.
+/// A single disassembled CPU instruction that lives on the Rust heap.
 ///
 /// # Detail
 ///
