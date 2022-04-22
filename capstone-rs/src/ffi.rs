@@ -30,10 +30,6 @@ mod test {
         unsafe {
             assert_eq!(str_from_cstr_ptr(core::ptr::null() as *const c_char), None);
             assert_eq!(
-                str_from_cstr_ptr(b"\xff\x00".as_ptr() as *const c_char),
-                None
-            );
-            assert_eq!(
                 str_from_cstr_ptr(b"\x00".as_ptr() as *const c_char),
                 Some("")
             );
