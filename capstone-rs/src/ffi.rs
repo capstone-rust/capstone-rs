@@ -6,19 +6,17 @@ use libc::{self, c_char};
 /// Given a valid C-style, NUL terminated, UTF8-encoded string, returns a Rust `&str`
 ///
 /// Warnings:
-/// - No checks are made for: NULL pointers, valid UTF-8
+/// - No checks are made for: valid UTF-8
 /// - This function "creates" a reference with an arbitrary lifetime, so be careful to limit the
 ///   lifetime appropriately
 pub(crate) unsafe fn str_from_cstr_ptr<'a>(ptr: *const c_char) -> Option<&'a str> {
-    if ptr.is_null() {
-        return None;
-    }
+    (!ptr.is_null()).then(||  {
+        let len = libc::strlen(ptr);
 
-    let len = libc::strlen(ptr);
-
-    /* ASSUMPTION: capstone returns NUL terminated string */
-    let view: &[u8] = slice::from_raw_parts(ptr as *const u8, len as usize);
-    str::from_utf8(view).ok()
+        /* ASSUMPTION: capstone returns NUL terminated string */
+        let view: &[u8] = slice::from_raw_parts(ptr as *const u8, len as usize);
+        str::from_utf8_unchecked(view)
+    })
 }
 
 #[cfg(test)]
