@@ -226,31 +226,37 @@ impl<'a> Insn<'a> {
     }
 
     /// The mnemonic for the instruction
+    #[inline]
     pub fn mnemonic(&self) -> Option<&str> {
         unsafe { str_from_cstr_ptr(self.insn.mnemonic.as_ptr()) }
     }
 
     /// The operand string associated with the instruction
+    #[inline]
     pub fn op_str(&self) -> Option<&str> {
         unsafe { str_from_cstr_ptr(self.insn.op_str.as_ptr()) }
     }
 
     /// Access instruction id
+    #[inline]
     pub fn id(&self) -> InsnId {
         InsnId(self.insn.id)
     }
 
     /// Size of instruction (in bytes)
+    #[inline]
     pub fn len(&self) -> usize {
         self.insn.size as usize
     }
 
     /// Instruction address
+    #[inline]
     pub fn address(&self) -> u64 {
         self.insn.address as u64
     }
 
     /// Byte-level representation of the instruction
+    #[inline]
     pub fn bytes(&self) -> &[u8] {
         &self.insn.bytes[..self.len()]
     }
@@ -263,6 +269,7 @@ impl<'a> Insn<'a> {
     ///
     /// # Safety
     /// The [`cs_insn::detail`] pointer must be valid and non-null.
+    #[inline]
     pub(crate) unsafe fn detail(&self, arch: Arch) -> InsnDetail {
         InsnDetail(&*self.insn.detail, arch)
     }
