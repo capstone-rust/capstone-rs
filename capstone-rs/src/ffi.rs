@@ -9,8 +9,9 @@ use libc::{self, c_char};
 /// - No checks are made for: valid UTF-8
 /// - This function "creates" a reference with an arbitrary lifetime, so be careful to limit the
 ///   lifetime appropriately
+#[inline]
 pub(crate) unsafe fn str_from_cstr_ptr<'a>(ptr: *const c_char) -> Option<&'a str> {
-    (!ptr.is_null()).then(||  {
+    (!ptr.is_null()).then(|| {
         let len = libc::strlen(ptr);
 
         /* ASSUMPTION: capstone returns NUL terminated string */
