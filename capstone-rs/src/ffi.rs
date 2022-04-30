@@ -11,13 +11,14 @@ use libc::{self, c_char};
 ///   lifetime appropriately
 #[inline]
 pub(crate) unsafe fn str_from_cstr_ptr<'a>(ptr: *const c_char) -> Option<&'a str> {
-    (!ptr.is_null()).then(|| {
-        let len = libc::strlen(ptr);
-
-        /* ASSUMPTION: capstone returns NUL terminated string */
-        let view: &[u8] = slice::from_raw_parts(ptr as *const u8, len as usize);
-        str::from_utf8_unchecked(view)
-    })
+    if ptr.is_null() {
+        return None;
+    }
+    let len = libc::strlen(ptr);
+    /* ASSUMPTION: capstone returns NUL terminated string */
+    let view: &[u8] = slice::from_raw_parts(ptr as *const u8, len as usize);
+    /* ASSUMPTION: capstone returns a valid UTF-8 string */
+    Some(str::from_utf8_unchecked(view))
 }
 
 #[cfg(test)]
