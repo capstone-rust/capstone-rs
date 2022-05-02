@@ -1,4 +1,8 @@
+# Cargo
 target
 Cargo.lock
+
+# HTML output
 CHANGELOG.html
 README.html
+publish-crates.html
