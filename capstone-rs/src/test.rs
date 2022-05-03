@@ -1210,6 +1210,7 @@ fn test_arch_arm64_detail() {
                     Arm64Operand {
                         vector_index: Some(1),
                         op_type: Reg(RegId(ARM64_REG_V5 as RegIdInt)),
+                        vas: ARM64_VAS_1D,
                         ..Default::default()
                     },
                 ],
