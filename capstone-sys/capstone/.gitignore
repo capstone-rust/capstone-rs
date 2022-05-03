@@ -105,21 +105,26 @@ build*/
 
 # CMake build directories
 build*/
+/build
+/out
 
 # Xcode
 xcode/Capstone.xcodeproj/xcuserdata
 xcode/Capstone.xcodeproj/project.xcworkspace/xcuserdata
 
 # suite/
+corpus-libFuzzer-capstone_fuzz_disasmnext-latest.zip
 test_arm_regression
 test_arm_regression.o
 fuzz_harness
 test_iter_benchmark
+test_file_benchmark
 fuzz_bindisasm
 fuzz_disasm
 fuzz_decode_platform
 capstone_get_setup
-
+suite/fuzz/
+suite/cstest/cmocka/
 
 *.s
 
