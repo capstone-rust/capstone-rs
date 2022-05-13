@@ -1,6 +1,5 @@
 use alloc::string::String;
 use alloc::vec::Vec;
-use std::collections::HashSet;
 
 use capstone_sys::cs_group_type;
 use libc::c_uint;
@@ -180,10 +179,13 @@ fn test_detail_true() {
             let detail = cs
                 .insn_detail(&insns[insn_idx])
                 .expect("Unable to get detail");
-            let groups = detail.groups();
-            for insn_group_id in &insn_group_ids {
-                let insn_group = InsnGroupId(*insn_group_id as InsnGroupIdInt);
-                assert_eq!(groups.contains(&insn_group), false);
+            #[cfg(feature = "not_diet")]
+            {
+                let groups = detail.groups();
+                for insn_group_id in &insn_group_ids {
+                    let insn_group = InsnGroupId(*insn_group_id as InsnGroupIdInt);
+                    assert_eq!(groups.contains(&insn_group), false);
+                }
             }
         }
     }
@@ -260,6 +262,7 @@ fn test_instruction_detail_helper<T>(
     );
 }
 
+#[cfg(feature = "not_diet")]
 /// Assert instruction belongs or does not belong to groups, testing both insn_belongs_to_group
 /// and insn_group_ids
 fn test_instruction_group_helper<R: Copy + Into<RegId>>(
@@ -272,6 +275,7 @@ fn test_instruction_group_helper<R: Copy + Into<RegId>>(
     expected_regs_write: &[R],
     has_default_syntax: bool,
 ) {
+    use std::collections::HashSet;
     test_instruction_helper(&cs, insn, mnemonic_name, bytes, has_default_syntax);
     let detail = cs.insn_detail(insn).expect("Unable to get detail");
 
@@ -344,6 +348,7 @@ fn instructions_match_group<R: Copy + Into<RegId>>(
     // Check number of instructions
     assert_eq!(insns.len(), expected_insns.len());
 
+    #[cfg(feature = "not_diet")]
     for (
         insn,
         &(

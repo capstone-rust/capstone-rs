@@ -7,12 +7,14 @@ const MIPS_CODE: &'static [u8] = b"\x56\x34\x21\x34\xc2\x17\x01\x00";
 
 const X86_CODE: &'static [u8] = b"\x55\x48\x8b\x05\xb8\x13\x00\x00\xe9\x14\x9e\x08\x00\x45\x31\xe4";
 
+#[cfg(feature = "not_diet")]
 /// Print register names
 fn reg_names(cs: &Capstone, regs: &[RegId]) -> String {
     let names: Vec<String> = regs.iter().map(|&x| cs.reg_name(x).unwrap()).collect();
     names.join(", ")
 }
 
+#[cfg(feature = "not_diet")]
 /// Print instruction group names
 fn group_names(cs: &Capstone, regs: &[InsnGroupId]) -> String {
     let names: Vec<String> = regs.iter().map(|&x| cs.group_name(x).unwrap()).collect();
@@ -31,12 +33,19 @@ fn arch_example(cs: &mut Capstone, code: &[u8]) -> CsResult<()> {
         let arch_detail: ArchDetail = detail.arch_detail();
         let ops = arch_detail.operands();
 
+        #[cfg(feature = "not_diet")]
         let output: &[(&str, String)] = &[
             ("insn id:", format!("{:?}", i.id().0)),
             ("bytes:", format!("{:?}", i.bytes())),
             ("read regs:", reg_names(&cs, detail.regs_read())),
             ("write regs:", reg_names(&cs, detail.regs_write())),
             ("insn groups:", group_names(&cs, detail.groups())),
+        ];
+        
+        #[cfg(not(feature = "not_diet"))]
+        let output: &[(&str, String)] = &[
+            ("insn id:", format!("{:?}", i.id().0)),
+            ("bytes:", format!("{:?}", i.bytes())),
         ];
 
         for &(ref name, ref message) in output.iter() {

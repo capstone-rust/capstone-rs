@@ -1,8 +1,8 @@
-use alloc::string::{String, ToString};
+use alloc::string::String;
 use core::convert::From;
 use core::marker::PhantomData;
 
-use libc::{c_int, c_uint, c_void};
+use libc::{c_int, c_void};
 
 use capstone_sys::cs_opt_value::*;
 use capstone_sys::*;
@@ -10,8 +10,10 @@ use capstone_sys::*;
 use crate::arch::CapstoneBuilder;
 use crate::constants::{Arch, Endian, ExtraMode, Mode, OptValue, Syntax};
 use crate::error::*;
-use crate::ffi::str_from_cstr_ptr;
 use crate::instruction::{Insn, InsnDetail, InsnGroupId, InsnId, Instructions, RegId};
+
+#[cfg(feature = "not_diet")]
+use {libc::c_uint, crate::ffi::str_from_cstr_ptr, alloc::string::ToString};
 
 /// An instance of the capstone disassembler
 ///
@@ -342,6 +344,8 @@ impl Capstone {
         result
     }
 
+
+    #[cfg(feature = "not_diet")]
     /// Converts a register id `reg_id` to a `String` containing the register name.
     pub fn reg_name(&self, reg_id: RegId) -> Option<String> {
         let reg_name = unsafe {
@@ -352,6 +356,13 @@ impl Capstone {
         Some(reg_name)
     }
 
+    #[cfg(not(feature = "not_diet"))]
+    /// `cs_reg_name` is not available in Diet mode.
+    pub fn reg_name(&self, _: RegId) -> Option<String> {
+        None
+    }
+
+    #[cfg(feature = "not_diet")]
     /// Converts an instruction id `insn_id` to a `String` containing the instruction name.
     ///
     /// Note: This function ignores the current syntax and uses the default syntax.
@@ -364,6 +375,13 @@ impl Capstone {
         Some(insn_name)
     }
 
+    #[cfg(not(feature = "not_diet"))]
+    /// `cs_insn_name` is not available in Diet mode. This will always return `None`.
+    pub fn insn_name(&self, _: InsnId) -> Option<String> {
+        None
+    }
+
+    #[cfg(feature = "not_diet")]
     /// Converts a group id `group_id` to a `String` containing the group name.
     pub fn group_name(&self, group_id: InsnGroupId) -> Option<String> {
         let group_name = unsafe {
@@ -373,6 +391,14 @@ impl Capstone {
 
         Some(group_name)
     }
+
+    #[cfg(not(feature = "not_diet"))]
+    /// `cs_group_name` is not available in Diet mode. This will always return None.
+    pub fn group_name(&self, _: InsnGroupId) -> Option<String> {
+        None
+    }
+
+
 
     /// Returns `Detail` structure for a given instruction
     ///

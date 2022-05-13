@@ -3,6 +3,8 @@
 use core::{slice, str};
 use libc::{self, c_char};
 
+// This function will go unused in Diet mode
+#[allow(unused)]
 /// Given a valid C-style, NUL terminated, UTF8-encoded string, returns a Rust `&str`
 ///
 /// Warnings:

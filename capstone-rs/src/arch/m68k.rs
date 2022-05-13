@@ -634,6 +634,7 @@ mod test {
         );
     }
 
+    #[cfg(feature = "not_diet")]
     #[test]
     fn extra_info() {
         use crate::arch::DetailsArchInsn;
