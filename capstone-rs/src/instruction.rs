@@ -10,6 +10,8 @@ use capstone_sys::*;
 
 use crate::arch::ArchDetail;
 use crate::constants::Arch;
+
+#[cfg(feature = "not_diet")]
 use crate::ffi::str_from_cstr_ptr;
 
 /// Represents a slice of [`Insn`] returned by [`Capstone`](crate::Capstone) `disasm*()` methods.
@@ -228,13 +230,19 @@ impl<'a> Insn<'a> {
     /// The mnemonic for the instruction
     #[inline]
     pub fn mnemonic(&self) -> Option<&str> {
+        #[cfg(feature = "not_diet")]
         unsafe { str_from_cstr_ptr(self.insn.mnemonic.as_ptr()) }
+        #[cfg(not(feature = "not_diet"))]
+        return None;
     }
 
     /// The operand string associated with the instruction
     #[inline]
     pub fn op_str(&self) -> Option<&str> {
+        #[cfg(feature = "not_diet")]
         unsafe { str_from_cstr_ptr(self.insn.op_str.as_ptr()) }
+        #[cfg(not(feature = "not_diet"))]
+        return None;
     }
 
     /// Access instruction id
@@ -330,6 +338,7 @@ impl<'a> Debug for Insn<'a> {
             .finish()
     }
 }
+
 impl<'a> Display for Insn<'a> {
     fn fmt(&self, fmt: &mut Formatter) -> fmt::Result {
         write!(fmt, "{:#x}: ", self.address())?;
@@ -356,6 +365,7 @@ impl<'a> Debug for OwnedInsn<'a> {
         Debug::fmt(&self.deref(), fmt)
     }
 }
+
 impl<'a> Display for OwnedInsn<'a> {
     fn fmt(&self, fmt: &mut Formatter) -> fmt::Result {
         Display::fmt(&self.deref(), fmt)
@@ -367,6 +377,7 @@ impl<'a> Display for OwnedInsn<'a> {
 pub struct InsnGroupIter<'a>(slice::Iter<'a, InsnGroupIdInt>);
 
 impl<'a> InsnDetail<'a> {
+    #[cfg(feature = "not_diet")]
     /// Returns the implicit read registers
     pub fn regs_read(&self) -> &[RegId] {
         unsafe {
@@ -375,6 +386,7 @@ impl<'a> InsnDetail<'a> {
         }
     }
 
+    #[cfg(feature = "not_diet")]
     /// Returns the implicit write registers
     pub fn regs_write(&self) -> &[RegId] {
         unsafe {
@@ -383,6 +395,7 @@ impl<'a> InsnDetail<'a> {
         }
     }
 
+    #[cfg(feature = "not_diet")]
     /// Returns the groups to which this instruction belongs
     pub fn groups(&self) -> &[InsnGroupId] {
         unsafe {
@@ -428,6 +441,7 @@ impl<'a> InsnDetail<'a> {
     }
 }
 
+#[cfg(feature = "not_diet")]
 impl<'a> Debug for InsnDetail<'a> {
     fn fmt(&self, fmt: &mut Formatter) -> fmt::Result {
         fmt.debug_struct("Detail")
@@ -435,6 +449,13 @@ impl<'a> Debug for InsnDetail<'a> {
             .field("regs_write", &self.regs_write())
             .field("groups", &self.groups())
             .finish()
+    }
+}
+
+#[cfg(not(feature = "not_diet"))]
+impl<'a> Debug for InsnDetail<'a> {
+    fn fmt(&self, fmt: &mut Formatter) -> fmt::Result {
+        fmt.debug_struct("Detail").finish()
     }
 }
 

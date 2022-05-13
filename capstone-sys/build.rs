@@ -114,8 +114,8 @@ fn build_capstone_cc() {
         let target_features = env::var("CARGO_CFG_TARGET_FEATURE").unwrap_or_default();
         target_features.split(',').any(|f| f == "crt-static")
     };
-
-    cc::Build::new()
+    let mut builder = cc::Build::new();
+    builder
         .files(files)
         .include(format!("{}/{}", CAPSTONE_DIR, "include"))
         .define("CAPSTONE_USE_SYS_DYN_MEM", None)
@@ -133,16 +133,13 @@ fn build_capstone_cc() {
         .define("CAPSTONE_HAS_WASM", None)
         .define("CAPSTONE_HAS_X86", None)
         .define("CAPSTONE_HAS_XCORE", None)
-        .flag_if_supported("-Wno-unused-function")
-        .flag_if_supported("-Wno-unused-parameter")
-        .flag_if_supported("-Wno-unknown-pragmas")
-        .flag_if_supported("-Wno-sign-compare")
-        .flag_if_supported("-Wno-return-type")
-        .flag_if_supported("-Wno-implicit-fallthrough")
-        .flag_if_supported("-Wno-missing-field-initializers")
-        .flag_if_supported("-Wno-enum-conversion")
-        .static_crt(use_static_crt)
-        .compile("capstone");
+        // No need to display any warnings from the C library
+        .flag_if_supported("-w")
+        .static_crt(use_static_crt);
+    #[cfg(not(feature = "not_diet"))]
+    builder.define("CAPSTONE_DIET", "no");
+
+    builder.compile("capstone");
 }
 
 /// Search for header in search paths
