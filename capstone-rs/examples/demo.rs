@@ -41,7 +41,7 @@ fn arch_example(cs: &mut Capstone, code: &[u8]) -> CsResult<()> {
             ("write regs:", reg_names(&cs, detail.regs_write())),
             ("insn groups:", group_names(&cs, detail.groups())),
         ];
-        
+
         #[cfg(not(feature = "not_diet"))]
         let output: &[(&str, String)] = &[
             ("insn id:", format!("{:?}", i.id().0)),

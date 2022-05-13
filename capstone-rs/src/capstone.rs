@@ -13,7 +13,7 @@ use crate::error::*;
 use crate::instruction::{Insn, InsnDetail, InsnGroupId, InsnId, Instructions, RegId};
 
 #[cfg(feature = "not_diet")]
-use {libc::c_uint, crate::ffi::str_from_cstr_ptr, alloc::string::ToString};
+use {crate::ffi::str_from_cstr_ptr, alloc::string::ToString, libc::c_uint};
 
 /// An instance of the capstone disassembler
 ///
@@ -344,7 +344,6 @@ impl Capstone {
         result
     }
 
-
     #[cfg(feature = "not_diet")]
     /// Converts a register id `reg_id` to a `String` containing the register name.
     pub fn reg_name(&self, reg_id: RegId) -> Option<String> {
@@ -397,8 +396,6 @@ impl Capstone {
     pub fn group_name(&self, _: InsnGroupId) -> Option<String> {
         None
     }
-
-
 
     /// Returns `Detail` structure for a given instruction
     ///

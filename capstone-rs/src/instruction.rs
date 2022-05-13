@@ -231,7 +231,9 @@ impl<'a> Insn<'a> {
     #[inline]
     pub fn mnemonic(&self) -> Option<&str> {
         #[cfg(feature = "not_diet")]
-        unsafe { str_from_cstr_ptr(self.insn.mnemonic.as_ptr()) }
+        unsafe {
+            str_from_cstr_ptr(self.insn.mnemonic.as_ptr())
+        }
         #[cfg(not(feature = "not_diet"))]
         return None;
     }
@@ -240,7 +242,9 @@ impl<'a> Insn<'a> {
     #[inline]
     pub fn op_str(&self) -> Option<&str> {
         #[cfg(feature = "not_diet")]
-        unsafe { str_from_cstr_ptr(self.insn.op_str.as_ptr()) }
+        unsafe {
+            str_from_cstr_ptr(self.insn.op_str.as_ptr())
+        }
         #[cfg(not(feature = "not_diet"))]
         return None;
     }
