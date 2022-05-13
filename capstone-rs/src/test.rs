@@ -1,4 +1,3 @@
-use alloc::string::String;
 use alloc::vec::Vec;
 
 use capstone_sys::cs_group_type;
@@ -27,7 +26,9 @@ fn test_x86_simple() {
             Ok(insns) => {
                 assert_eq!(insns.len(), 2);
                 let is: Vec<_> = insns.iter().collect();
+                #[cfg(feature = "not_diet")]
                 assert_eq!(is[0].mnemonic().unwrap(), "push");
+                #[cfg(feature = "not_diet")]
                 assert_eq!(is[1].mnemonic().unwrap(), "mov");
 
                 assert_eq!(is[0].address(), START_TEST_ADDR);
@@ -51,7 +52,9 @@ fn test_arm_simple() {
             Ok(insns) => {
                 assert_eq!(insns.len(), 2);
                 let is: Vec<_> = insns.iter().collect();
+                #[cfg(feature = "not_diet")]
                 assert_eq!(is[0].mnemonic().unwrap(), "streq");
+                #[cfg(feature = "not_diet")]
                 assert_eq!(is[1].mnemonic().unwrap(), "strheq");
 
                 assert_eq!(is[0].address(), START_TEST_ADDR);
@@ -75,8 +78,10 @@ fn test_arm64_none() {
     assert!(cs.disasm_all(ARM_CODE, START_TEST_ADDR).unwrap().is_empty());
 }
 
+#[cfg(feature = "not_diet")]
 #[test]
 fn test_x86_names() {
+    use alloc::string::String;
     match Capstone::new().x86().mode(x86::ArchMode::Mode32).build() {
         Ok(cs) => {
             let reg_id = RegId(1);
@@ -149,6 +154,7 @@ fn test_skipdata() {
     assert_eq!(insns[1].id().0, x86_insn::X86_INS_INSB as u32);
 }
 
+#[cfg(feature = "not_diet")]
 #[test]
 fn test_detail_true() {
     let mut cs1 = Capstone::new()
@@ -179,7 +185,6 @@ fn test_detail_true() {
             let detail = cs
                 .insn_detail(&insns[insn_idx])
                 .expect("Unable to get detail");
-            #[cfg(feature = "not_diet")]
             {
                 let groups = detail.groups();
                 for insn_group_id in &insn_group_ids {
@@ -191,6 +196,7 @@ fn test_detail_true() {
     }
 }
 
+#[cfg_attr(not(feature = "not_diet"), allow(unused_variables))]
 fn test_instruction_helper(
     cs: &Capstone,
     insn: &Insn,
@@ -201,12 +207,14 @@ fn test_instruction_helper(
     println!("{:?}", insn);
 
     // Check mnemonic
+    #[cfg(feature = "not_diet")]
     if has_default_syntax {
         // insn_name() does not respect current syntax
         // does not always match the internal mnemonic
         cs.insn_name(insn.id())
             .expect("Failed to get instruction name");
     }
+    #[cfg(feature = "not_diet")]
     assert_eq!(
         mnemonic_name,
         insn.mnemonic().expect("Failed to get mnemonic"),
@@ -217,6 +225,8 @@ fn test_instruction_helper(
     assert_eq!(bytes, insn.bytes());
 }
 
+
+#[cfg_attr(not(feature = "not_diet"), allow(unused_variables))]
 fn test_instruction_detail_helper<T>(
     cs: &Capstone,
     insn: &Insn,
@@ -225,13 +235,16 @@ fn test_instruction_detail_helper<T>(
 ) where
     T: Into<ArchOperand> + Clone,
 {
+
     // Check mnemonic
+    #[cfg(feature = "not_diet")]
     if has_default_syntax {
         // insn_name() does not respect current syntax
         // does not always match the internal mnemonic
         cs.insn_name(insn.id())
             .expect("Failed to get instruction name");
     }
+    #[cfg(feature = "not_diet")]
     assert_eq!(
         info.mnemonic,
         insn.mnemonic().expect("Failed to get mnemonic"),
@@ -326,6 +339,7 @@ fn test_instruction_group_helper<R: Copy + Into<RegId>>(
     );
 }
 
+#[cfg_attr(not(feature = "not_diet"), allow(unused_variables))]
 fn instructions_match_group<R: Copy + Into<RegId>>(
     cs: &mut Capstone,
     expected_insns: &[(&str, &[u8], &[cs_group_type::Type], &[R], &[R])],
@@ -489,12 +503,13 @@ fn test_instruction_details() {
     instructions_match_group(&mut cs, expected_insns, true);
 }
 
+#[cfg_attr(not(feature = "not_diet"), allow(unused_variables))]
 fn test_insns_match(cs: &mut Capstone, insns: &[(&str, &[u8])]) {
     for &(mnemonic, bytes) in insns.iter() {
         let insns = cs.disasm_all(bytes, START_TEST_ADDR).unwrap();
         assert_eq!(insns.len(), 1);
-        let insn = insns.iter().next().unwrap();
-        assert_eq!(insn.mnemonic(), Some(mnemonic));
+        #[cfg(feature = "not_diet")]
+        assert_eq!(insns.iter().next().unwrap().mnemonic(), Some(mnemonic));
     }
 }
 
@@ -559,8 +574,8 @@ fn test_arch_mode_endian_insns(
     instructions_match(&mut cs_raw, expected_insns.as_slice(), true);
     instructions_match(&mut cs_raw_endian_set, expected_insns.as_slice(), true);
 }
-
-#[derive(Copy, Clone, Debug)]
+#[cfg_attr(feature = "not_diet", derive(Copy, Clone, Debug))]
+#[cfg_attr(not(feature = "not_diet"), derive(Copy, Clone), allow(unused))]
 struct DetailedInsnInfo<'a, T: 'a + Into<ArchOperand>> {
     pub mnemonic: &'a str,
     pub bytes: &'a [u8],
@@ -601,6 +616,7 @@ fn test_arch_mode_endian_insns_detail<T>(
     instructions_match_detail(cs, insns, true);
 }
 
+#[cfg(feature = "not_diet")]
 #[test]
 fn test_syntax() {
     use crate::arch::x86::X86Reg;

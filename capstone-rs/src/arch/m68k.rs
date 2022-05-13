@@ -463,11 +463,9 @@ def_arch_details_struct!(
 #[cfg(test)]
 mod test {
     use super::*;
-    use alloc::vec::Vec;
     use capstone_sys::m68k_address_mode::*;
     use capstone_sys::m68k_op_type::*;
     use capstone_sys::m68k_reg::*;
-    use crate::instruction::*;
 
     const MEM_ZERO: m68k_op_mem = m68k_op_mem {
         base_reg: M68K_REG_INVALID,
@@ -637,6 +635,8 @@ mod test {
     #[cfg(feature = "not_diet")]
     #[test]
     fn extra_info() {
+        use alloc::vec::Vec;
+        use crate::instruction::*;
         use crate::arch::DetailsArchInsn;
 
         let cs = Capstone::new()
