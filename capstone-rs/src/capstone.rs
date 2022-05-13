@@ -403,14 +403,11 @@ impl Capstone {
     ///
     /// 1. Instruction was created with detail enabled
     /// 2. Skipdata is disabled
-    /// 3. Capstone was not compiled in diet mode
     pub fn insn_detail<'s, 'i: 's>(&'s self, insn: &'i Insn) -> CsResult<InsnDetail<'i>> {
         if !self.detail_enabled {
             Err(Error::DetailOff)
         } else if insn.id().0 == 0 {
             Err(Error::IrrelevantDataInSkipData)
-        } else if Self::is_diet() {
-            Err(Error::IrrelevantDataInDiet)
         } else {
             Ok(unsafe { insn.detail(self.arch) })
         }
