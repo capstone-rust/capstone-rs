@@ -225,7 +225,6 @@ fn test_instruction_helper(
     assert_eq!(bytes, insn.bytes());
 }
 
-
 #[cfg_attr(not(feature = "not_diet"), allow(unused_variables))]
 fn test_instruction_detail_helper<T>(
     cs: &Capstone,
@@ -235,7 +234,6 @@ fn test_instruction_detail_helper<T>(
 ) where
     T: Into<ArchOperand> + Clone,
 {
-
     // Check mnemonic
     #[cfg(feature = "not_diet")]
     if has_default_syntax {
