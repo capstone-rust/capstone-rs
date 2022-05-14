@@ -11,7 +11,7 @@ use crate::arch::CapstoneBuilder;
 use crate::constants::{Arch, Endian, ExtraMode, Mode, OptValue, Syntax};
 use crate::error::*;
 use crate::ffi::str_from_cstr_ptr;
-use crate::instruction::{Insn, InsnDetail, InsnGroupId, InsnId, Instructions, RegId};
+use crate::instruction::{Insn, InsnDetail, InsnGroupId, InsnId, Instructions, RegId, RegAccess, CsRegs};
 
 /// An instance of the capstone disassembler
 ///
@@ -392,6 +392,40 @@ impl Capstone {
             Ok(unsafe { insn.detail(self.arch) })
         }
     }
+    
+    /// Returns `RegsAccess` structure for a given instruction
+    pub fn regs_access(&self, insn: &Insn) -> CsResult<RegAccess> {
+
+        let cs_regs_read: &mut CsRegs  = &mut [0u16; 64];
+        let cs_regs_write: &mut CsRegs = &mut [0u16; 64];
+        let mut regs_read_count: u8 = 0;
+        let mut regs_write_count: u8 = 0;
+        
+        let err = unsafe{
+            cs_regs_access(
+                self.csh(),
+                &insn.insn as _,
+                cs_regs_read.as_mut_ptr(),
+                &mut regs_read_count as *mut u8,
+                cs_regs_write.as_mut_ptr(),
+                &mut regs_write_count as *mut u8
+                )
+        };
+
+        if cs_err::CS_ERR_OK == err {
+            Ok ( 
+                RegAccess::from_slice_u16(
+                    cs_regs_read,
+                    regs_read_count.into(),
+                    cs_regs_write,
+                    regs_write_count.into()
+                    )
+               )
+        } else {
+            Err(err.into())
+        }
+    }
+
 
     /// Returns a tuple (major, minor) indicating the version of the capstone C library.
     pub fn lib_version() -> (u32, u32) {

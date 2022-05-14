@@ -5,12 +5,15 @@ use core::marker::PhantomData;
 use core::ops::Deref;
 use core::slice;
 use core::str;
+use alloc::vec::Vec;
 
 use capstone_sys::*;
 
 use crate::arch::ArchDetail;
 use crate::constants::Arch;
 use crate::ffi::str_from_cstr_ptr;
+
+pub type CsRegs = [u16; 64];
 
 /// Represents a slice of [`Insn`] returned by [`Capstone`](crate::Capstone) `disasm*()` methods.
 ///
@@ -460,6 +463,44 @@ impl<'a> Display for Instructions<'a> {
         Ok(())
     }
 }
+/// Registers read and/or written to by a given instruction
+#[derive(Debug)]
+pub struct RegAccess {
+    /// `Vec` containing the `RegId` of the registers read from
+    read: Vec<RegId>,
+     
+    /// `Vec` containing the `RegId` of the registers written to
+    write: Vec<RegId>,
+}
+impl RegAccess {
+    /// Converts the two slices of u16's from the API into the `RegAccss` type
+    pub(crate) fn from_slice_u16(
+        registers_read: &CsRegs,
+        registers_read_count: usize,
+        registers_written: &CsRegs,
+        registers_written_count: usize,
+        ) -> Self {
+            let read = registers_read[0..registers_read_count]
+                .iter()
+                .cloned()
+                .map(|x| RegId::from(x as u32))
+                .collect::<Vec<RegId>>();
+            
+
+            let write = registers_written[0..registers_written_count]
+                .iter()
+                .cloned()
+                .map(|x| RegId::from(x as u32))
+                .collect::<Vec<RegId>>();
+
+            Self{
+                read,
+                write}
+    }
+
+}
+
+
 
 #[cfg(test)]
 mod test {
