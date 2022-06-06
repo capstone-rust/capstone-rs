@@ -12,7 +12,6 @@ use crate::constants::{Arch, Endian, ExtraMode, Mode, OptValue, Syntax};
 use crate::error::*;
 use crate::instruction::{Insn, InsnDetail, InsnGroupId, InsnId, Instructions, RegId};
 
-#[cfg(feature = "full")]
 use {crate::ffi::str_from_cstr_ptr, alloc::string::ToString, libc::c_uint};
 
 /// An instance of the capstone disassembler
