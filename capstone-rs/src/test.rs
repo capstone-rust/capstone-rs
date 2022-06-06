@@ -193,6 +193,7 @@ fn test_detail_true() {
     }
 }
 
+#[allow(unused)]
 fn test_instruction_helper(
     cs: &Capstone,
     insn: &Insn,
@@ -329,6 +330,7 @@ fn test_instruction_group_helper<R: Copy + Into<RegId>>(
     );
 }
 
+#[allow(unused)]
 fn instructions_match_group<R: Copy + Into<RegId>>(
     cs: &mut Capstone,
     expected_insns: &[(&str, &[u8], &[cs_group_type::Type], &[R], &[R])],
@@ -492,6 +494,7 @@ fn test_instruction_details() {
     instructions_match_group(&mut cs, expected_insns, true);
 }
 
+#[allow(unused)]
 fn test_insns_match(cs: &mut Capstone, insns: &[(&str, &[u8])]) {
     for &(mnemonic, bytes) in insns.iter() {
         let insns = cs.disasm_all(bytes, START_TEST_ADDR).unwrap();
@@ -562,6 +565,8 @@ fn test_arch_mode_endian_insns(
     instructions_match(&mut cs_raw, expected_insns.as_slice(), true);
     instructions_match(&mut cs_raw_endian_set, expected_insns.as_slice(), true);
 }
+
+#[allow(unused)]
 #[derive(Copy, Clone)]
 #[cfg_attr(feature = "full", derive(Debug))]
 struct DetailedInsnInfo<'a, T: 'a + Into<ArchOperand>> {

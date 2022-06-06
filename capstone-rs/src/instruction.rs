@@ -11,7 +11,6 @@ use capstone_sys::*;
 use crate::arch::ArchDetail;
 use crate::constants::Arch;
 
-#[cfg(feature = "full")]
 use crate::ffi::str_from_cstr_ptr;
 
 /// Represents a slice of [`Insn`] returned by [`Capstone`](crate::Capstone) `disasm*()` methods.
