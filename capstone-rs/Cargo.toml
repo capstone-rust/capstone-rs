@@ -29,5 +29,8 @@ harness = false
 
 [features]
 default = ["full"]
+# The 'full' feature, enabled by default, compiles Capstone normally. When disabled,
+# Capstone will be built in Diet mode (https://www.capstone-engine.org/diet.html).
+# This disables some features to reduce the size of the library
 full = ["capstone-sys/full"]
 use_bindgen = ["capstone-sys/use_bindgen"]
