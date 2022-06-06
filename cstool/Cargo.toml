@@ -14,3 +14,7 @@ stderrlog = "0.5"
 version = "2.32"
 default-features = false
 features = []
+
+[features]
+default = ["full"]
+full = ["capstone/full"]
