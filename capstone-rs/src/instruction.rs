@@ -11,7 +11,7 @@ use capstone_sys::*;
 use crate::arch::ArchDetail;
 use crate::constants::Arch;
 
-#[cfg(feature = "not_diet")]
+#[cfg(feature = "full")]
 use crate::ffi::str_from_cstr_ptr;
 
 /// Represents a slice of [`Insn`] returned by [`Capstone`](crate::Capstone) `disasm*()` methods.
@@ -227,26 +227,26 @@ impl<'a> Insn<'a> {
         }
     }
 
-    /// The mnemonic for the instruction
+    /// The mnemonic for the instruction.
+    /// Unavailable in Diet mode.
     #[inline]
     pub fn mnemonic(&self) -> Option<&str> {
-        #[cfg(feature = "not_diet")]
-        unsafe {
-            str_from_cstr_ptr(self.insn.mnemonic.as_ptr())
+        if cfg!(feature = "full") {
+            unsafe { str_from_cstr_ptr(self.insn.mnemonic.as_ptr()) }
+        } else {
+            None
         }
-        #[cfg(not(feature = "not_diet"))]
-        return None;
     }
 
-    /// The operand string associated with the instruction
+    /// The operand string associated with the instruction.
+    /// Unavailable in Diet mode.
     #[inline]
     pub fn op_str(&self) -> Option<&str> {
-        #[cfg(feature = "not_diet")]
-        unsafe {
-            str_from_cstr_ptr(self.insn.op_str.as_ptr())
+        if cfg!(feature = "full") {
+            unsafe { str_from_cstr_ptr(self.insn.op_str.as_ptr()) }
+        } else {
+            None
         }
-        #[cfg(not(feature = "not_diet"))]
-        return None;
     }
 
     /// Access instruction id
@@ -381,7 +381,7 @@ impl<'a> Display for OwnedInsn<'a> {
 pub struct InsnGroupIter<'a>(slice::Iter<'a, InsnGroupIdInt>);
 
 impl<'a> InsnDetail<'a> {
-    #[cfg(feature = "not_diet")]
+    #[cfg(feature = "full")]
     /// Returns the implicit read registers
     pub fn regs_read(&self) -> &[RegId] {
         unsafe {
@@ -390,7 +390,7 @@ impl<'a> InsnDetail<'a> {
         }
     }
 
-    #[cfg(feature = "not_diet")]
+    #[cfg(feature = "full")]
     /// Returns the implicit write registers
     pub fn regs_write(&self) -> &[RegId] {
         unsafe {
@@ -399,7 +399,7 @@ impl<'a> InsnDetail<'a> {
         }
     }
 
-    #[cfg(feature = "not_diet")]
+    #[cfg(feature = "full")]
     /// Returns the groups to which this instruction belongs
     pub fn groups(&self) -> &[InsnGroupId] {
         unsafe {
@@ -445,7 +445,7 @@ impl<'a> InsnDetail<'a> {
     }
 }
 
-#[cfg(feature = "not_diet")]
+#[cfg(feature = "full")]
 impl<'a> Debug for InsnDetail<'a> {
     fn fmt(&self, fmt: &mut Formatter) -> fmt::Result {
         fmt.debug_struct("Detail")
@@ -456,7 +456,7 @@ impl<'a> Debug for InsnDetail<'a> {
     }
 }
 
-#[cfg(not(feature = "not_diet"))]
+#[cfg(not(feature = "full"))]
 impl<'a> Debug for InsnDetail<'a> {
     fn fmt(&self, fmt: &mut Formatter) -> fmt::Result {
         fmt.debug_struct("Detail").finish()

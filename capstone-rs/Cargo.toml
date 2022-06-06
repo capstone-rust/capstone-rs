@@ -28,6 +28,6 @@ name = "my_benchmark"
 harness = false
 
 [features]
-default = ["not_diet"]
-not_diet = ["capstone-sys/not_diet"]
+default = ["full"]
+full = ["capstone-sys/full"]
 use_bindgen = ["capstone-sys/use_bindgen"]
