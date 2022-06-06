@@ -136,8 +136,10 @@ fn build_capstone_cc() {
         // No need to display any warnings from the C library
         .flag_if_supported("-w")
         .static_crt(use_static_crt);
-    #[cfg(not(feature = "not_diet"))]
-    builder.define("CAPSTONE_DIET", "no");
+    
+    if !cfg!(feature = "full") {
+        builder.define("CAPSTONE_DIET", "yes");
+    }
 
     builder.compile("capstone");
 }

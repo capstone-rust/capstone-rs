@@ -12,7 +12,7 @@ use crate::constants::{Arch, Endian, ExtraMode, Mode, OptValue, Syntax};
 use crate::error::*;
 use crate::instruction::{Insn, InsnDetail, InsnGroupId, InsnId, Instructions, RegId};
 
-#[cfg(feature = "not_diet")]
+#[cfg(feature = "full")]
 use {crate::ffi::str_from_cstr_ptr, alloc::string::ToString, libc::c_uint};
 
 /// An instance of the capstone disassembler
@@ -344,57 +344,49 @@ impl Capstone {
         result
     }
 
-    #[cfg(feature = "not_diet")]
     /// Converts a register id `reg_id` to a `String` containing the register name.
+    /// Unavailable in Diet mode
     pub fn reg_name(&self, reg_id: RegId) -> Option<String> {
-        let reg_name = unsafe {
-            let _reg_name = cs_reg_name(self.csh(), c_uint::from(reg_id.0));
-            str_from_cstr_ptr(_reg_name)?.to_string()
-        };
-
-        Some(reg_name)
+        if cfg!(feature = "full") {
+            let reg_name = unsafe {
+                let _reg_name = cs_reg_name(self.csh(), c_uint::from(reg_id.0));
+                str_from_cstr_ptr(_reg_name)?.to_string()
+            };
+            Some(reg_name)
+        } else {
+            None
+        }
     }
 
-    #[cfg(not(feature = "not_diet"))]
-    /// `cs_reg_name` is not available in Diet mode.
-    pub fn reg_name(&self, _: RegId) -> Option<String> {
-        None
-    }
-
-    #[cfg(feature = "not_diet")]
     /// Converts an instruction id `insn_id` to a `String` containing the instruction name.
-    ///
+    /// Unavailable in Diet mode.
     /// Note: This function ignores the current syntax and uses the default syntax.
     pub fn insn_name(&self, insn_id: InsnId) -> Option<String> {
-        let insn_name = unsafe {
-            let _insn_name = cs_insn_name(self.csh(), insn_id.0 as c_uint);
-            str_from_cstr_ptr(_insn_name)?.to_string()
-        };
+        if cfg!(feature = "full") {
+            let insn_name = unsafe {
+                let _insn_name = cs_insn_name(self.csh(), insn_id.0 as c_uint);
+                str_from_cstr_ptr(_insn_name)?.to_string()
+            };
 
-        Some(insn_name)
+            Some(insn_name)
+        } else {
+            None
+        }
     }
 
-    #[cfg(not(feature = "not_diet"))]
-    /// `cs_insn_name` is not available in Diet mode. This will always return `None`.
-    pub fn insn_name(&self, _: InsnId) -> Option<String> {
-        None
-    }
-
-    #[cfg(feature = "not_diet")]
     /// Converts a group id `group_id` to a `String` containing the group name.
+    /// Unavailable in Diet mode
     pub fn group_name(&self, group_id: InsnGroupId) -> Option<String> {
-        let group_name = unsafe {
-            let _group_name = cs_group_name(self.csh(), c_uint::from(group_id.0));
-            str_from_cstr_ptr(_group_name)?.to_string()
-        };
+        if cfg!(feature = "full") {
+            let group_name = unsafe {
+                let _group_name = cs_group_name(self.csh(), c_uint::from(group_id.0));
+                str_from_cstr_ptr(_group_name)?.to_string()
+            };
 
-        Some(group_name)
-    }
-
-    #[cfg(not(feature = "not_diet"))]
-    /// `cs_group_name` is not available in Diet mode. This will always return None.
-    pub fn group_name(&self, _: InsnGroupId) -> Option<String> {
-        None
+            Some(group_name)
+        } else {
+            None
+        }
     }
 
     /// Returns `Detail` structure for a given instruction

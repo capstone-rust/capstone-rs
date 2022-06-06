@@ -632,7 +632,7 @@ mod test {
         );
     }
 
-    #[cfg(feature = "not_diet")]
+    #[cfg(feature = "full")]
     #[test]
     fn extra_info() {
         use alloc::vec::Vec;
