@@ -20,10 +20,7 @@ pub use capstone_sys::arm64_pstate as Arm64Pstate;
 pub use capstone_sys::arm64_prefetch_op as ArmPrefetchOp;
 pub use capstone_sys::arm64_barrier_op as ArmBarrierOp;
 pub use capstone_sys::arm64_sysreg as Arm64Sysreg;
-pub use capstone_sys::arm64_ic_op as Arm64IcOp;
-pub use capstone_sys::arm64_dc_op as Arm64DcOp;
-pub use capstone_sys::arm64_at_op as Arm64AtOp;
-pub use capstone_sys::arm64_tlbi_op as Arm64TlbiOp;
+pub use capstone_sys::arm64_sys_op as Arm64SysOp;
 pub use capstone_sys::arm64_barrier_op as Arm64BarrierOp;
 
 use capstone_sys::cs_arm64_op__bindgen_ty_2;
@@ -122,9 +119,8 @@ pub enum Arm64OperandType {
     /// System PState Field (MSR instruction)
     Pstate(Arm64Pstate),
 
-    // XXX todo(tmfink)
-    /// IC/DC/AT/TLBI operation (see Arm64IcOp, Arm64DcOp, Arm64AtOp, Arm64TlbiOp)
-    Sys(u32),
+    /// System operation (IC/DC/AT/TLBI)
+    Sys(Arm64SysOp),
 
     /// PRFM operation
     Prefetch(ArmPrefetchOp),
@@ -325,8 +321,8 @@ mod test {
             RegMsr(arm64_sysreg::ARM64_SYSREG_ICC_EOIR1_EL1),
         );
         t(
-            (ARM64_OP_SYS, cs_arm64_op__bindgen_ty_2 { sys: 42 }),
-            Sys(42),
+            (ARM64_OP_SYS, cs_arm64_op__bindgen_ty_2 { sys: arm64_sys_op::ARM64_AT_S1E0R }),
+            Sys(arm64_sys_op::ARM64_AT_S1E0R),
         );
         t(
             (ARM64_OP_PREFETCH, cs_arm64_op__bindgen_ty_2 {
