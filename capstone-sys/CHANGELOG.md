@@ -4,10 +4,17 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## UNRELEASED - YYYY-MM-DD
+## [Unreleased] - YYYY-MM-DD
+
+### Changed
+- Upgraded bundled capstone to from [f278de39 to 3b298421](https://github.com/aquynh/capstone/compare/f278de39...3b298421)
+- Merged enums `arm64_tlbi_op`, `arm64_at_op`, `arm64_dc_op`, `arm64_ic_op` into single enum `arm64_sys_op` (based on upstream [`3e23b60af0`](https://github.com/capstone-engine/capstone/commit/3e23b60af04aa75eb17c14ba33d6ed139a2c405c))
+
+## [0.15.0] - 2022-05-01
 ### Fixed
 - Document that minimum supported Rust version is actually 1.50.0
     - Improperly documented as 1.40.0 in 0.14.0 release
+- Suppress C compiler warning
 
 ## [0.14.0] - 2021-08-09
 
@@ -99,6 +106,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Removed
 - Dependency
 
+[Unreleased]: https://github.com/capstone-rust/capstone-rs/compare/capstone-sys-v0.15.0...master
+[0.15.0]: https://github.com/capstone-rust/capstone-rs/compare/capstone-sys-v0.14.0...capstone-sys-v0.15.0
 [0.14.0]: https://github.com/capstone-rust/capstone-rs/compare/capstone-sys-v0.13.0...capstone-sys-v0.14.0
 [0.13.0]: https://github.com/capstone-rust/capstone-rs/compare/capstone-sys-v0.12.0...capstone-sys-v0.13.0
 [0.12.0]: https://github.com/capstone-rust/capstone-rs/compare/capstone-sys-v0.11.0...capstone-sys-v0.12.0

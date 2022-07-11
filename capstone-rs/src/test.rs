@@ -1067,7 +1067,7 @@ fn test_arch_arm64_detail() {
     use crate::arch::arm64::Arm64OperandType::*;
     use crate::arch::arm64::Arm64Pstate::*;
     use crate::arch::arm64::Arm64Reg::*;
-    use crate::arch::arm64::Arm64Sysreg::*;
+    //use crate::arch::arm64::Arm64Sysreg::*;
     use crate::arch::arm64::Arm64Vas::*;
     use crate::arch::arm64::*;
     use capstone_sys::arm64_op_mem;
@@ -1101,6 +1101,8 @@ fn test_arch_arm64_detail() {
         &[],
         &[
             // mrs x9, midr_el1
+            // todo(tmfink): https://github.com/capstone-engine/capstone/issues/1881
+            /*
             DII::new(
                 "mrs",
                 b"\x09\x00\x38\xd5",
@@ -1115,6 +1117,7 @@ fn test_arch_arm64_detail() {
                     },
                 ],
             ),
+            */
             // msr spsel, #0
             DII::new(
                 "msr",

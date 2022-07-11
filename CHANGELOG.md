@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [UNRELEASED] - YYYY-MM-DD
 ### Changed
 - Bump minimum Rust version to 1.56.0
+- `Arm64OperandType::Sys` contains `Arm64SysOp` instead of `u32`
 
 ## [0.11.0] - 2022-05-01
 
@@ -19,8 +20,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 - Soundness issue by remove `Insn` `Clone` impl (see "Removed" note above)
-- `capstone-sys`: document that minimum supported Rust version is 1.50.0
-- `capstone-sys`: suppress C compiler warning
 
 ## [0.10.0] - 2021-08-09
 
