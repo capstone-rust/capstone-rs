@@ -16,6 +16,7 @@ FreeBSD [![Cirrus CI Badge](https://api.cirrus-ci.com/github/capstone-rust/capst
 
 Bindings to the [capstone library][upstream] disassembly framework.
 
+The `Capstone` struct is the main interface to the library.
 
 # Requirements
 
@@ -27,7 +28,6 @@ See the [`capstone-sys`](capstone-sys) page for the requirements and supported p
 
 # Example
 
-<!-- START: code_sample -->
 ```rust
 extern crate capstone;
 
@@ -86,11 +86,10 @@ fn main() {
     }
 }
 ```
-<!-- END: code_sample -->
 
 Produces:
 
-```
+```plain
 Found 4 instructions
 
 0x1000: pushq %rbp
