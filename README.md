@@ -24,7 +24,7 @@ The `Capstone` struct is the main interface to the library.
 
 See the [`capstone-sys`](capstone-sys) page for the requirements and supported platforms.
 
-* Minimum Rust Version: `1.50.0`
+* Minimum Rust Version: `1.56.0`
 
 # Example
 
