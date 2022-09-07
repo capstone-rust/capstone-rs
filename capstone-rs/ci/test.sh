@@ -264,6 +264,9 @@ run_tests() {
             continue
         fi
 
+        which valgrind
+        valgrind --version
+
         test_binary="$(cat "$TMPFILE" |
             grep -E 'Running[^`]*`' |
             sed 's/^.*Running[^`]*`\([^` ]*\).*$/\1/' |
