@@ -42,7 +42,7 @@ impl X86OperandType {
 }
 
 /// X86 operand
-#[derive(Clone, Debug, PartialEq)]
+#[derive(Clone, Debug, PartialEq, Eq)]
 pub struct X86Operand {
     /// Operand size
     pub size: u8,
@@ -62,7 +62,7 @@ pub struct X86Operand {
 }
 
 /// X86 operand
-#[derive(Clone, Debug, PartialEq)]
+#[derive(Clone, Debug, PartialEq, Eq)]
 pub enum X86OperandType {
     /// Register
     Reg(RegId),
@@ -285,7 +285,7 @@ mod test {
         };
 
         assert_eq!(a1, a1.clone());
-        assert_ne!(a1, a2.clone());
+        assert_ne!(a1, a2);
     }
 
     #[test]
@@ -335,7 +335,7 @@ mod test {
             ; 8],
 
         };
-        let mut a2 = a1.clone();
+        let mut a2 = a1;
         a2.operands[1].type_ = x86_op_type::X86_OP_REG;
         let a1_clone = cs_x86 {
             ..a1
@@ -348,7 +348,7 @@ mod test {
             op_count: 1,
             ..a1
         };
-        let mut op1_differ = op_count_differ.clone();
+        let mut op1_differ = op_count_differ;
         op1_differ.operands[0].avx_bcast = x86_avx_bcast::X86_AVX_BCAST_2;
 
         t_eq(&a1, &a1);

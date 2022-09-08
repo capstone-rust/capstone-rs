@@ -8,8 +8,8 @@ use libc::c_uint;
 use super::arch::*;
 use super::*;
 
-const X86_CODE: &'static [u8] = b"\x55\x48\x8b\x05\xb8\x13\x00\x00";
-const ARM_CODE: &'static [u8] = b"\x55\x48\x8b\x05\xb8\x13\x00\x00";
+const X86_CODE: &[u8] = b"\x55\x48\x8b\x05\xb8\x13\x00\x00";
+const ARM_CODE: &[u8] = b"\x55\x48\x8b\x05\xb8\x13\x00\x00";
 
 // Aliases for group types
 const JUMP: cs_group_type::Type = cs_group_type::CS_GRP_JUMP;
@@ -130,8 +130,8 @@ fn test_detail_false_fail() {
     let insns = cs.disasm_all(X86_CODE, START_TEST_ADDR).unwrap();
     let insns: Vec<_> = insns.iter().collect();
 
-    assert_eq!(cs.insn_detail(&insns[0]).unwrap_err(), Error::DetailOff);
-    assert_eq!(cs.insn_detail(&insns[1]).unwrap_err(), Error::DetailOff);
+    assert_eq!(cs.insn_detail(insns[0]).unwrap_err(), Error::DetailOff);
+    assert_eq!(cs.insn_detail(insns[1]).unwrap_err(), Error::DetailOff);
 }
 
 #[test]
@@ -280,7 +280,7 @@ fn test_instruction_group_helper<R: Copy + Into<RegId>>(
     expected_regs_write: &[R],
     has_default_syntax: bool,
 ) {
-    test_instruction_helper(&cs, insn, mnemonic_name, bytes, has_default_syntax);
+    test_instruction_helper(cs, insn, mnemonic_name, bytes, has_default_syntax);
     let detail = cs.insn_detail(insn).expect("Unable to get detail");
 
     // Assert expected instruction groups is a subset of computed groups through ids
@@ -339,7 +339,7 @@ fn instructions_match_group<R: Copy + Into<RegId>>(
     let insns_buf: Vec<u8> = expected_insns
         .iter()
         .flat_map(|&(_, bytes, _, _, _)| bytes)
-        .map(|x| *x)
+        .copied()
         .collect();
 
     // Details required to get groups information
@@ -366,7 +366,7 @@ fn instructions_match_group<R: Copy + Into<RegId>>(
     ) in insns.iter().zip(expected_insns)
     {
         test_instruction_group_helper(
-            &cs,
+            cs,
             insn,
             expected_mnemonic,
             expected_bytes,
@@ -386,7 +386,7 @@ fn instructions_match(
     let insns_buf: Vec<u8> = expected_insns
         .iter()
         .flat_map(|&(_, bytes)| bytes)
-        .map(|x| *x)
+        .copied()
         .collect();
 
     // Details required to get groups information
@@ -406,7 +406,7 @@ fn instructions_match(
 
     for (insn, &(expected_mnemonic, expected_bytes)) in insns.iter().zip(expected_insns) {
         test_instruction_helper(
-            &cs,
+            cs,
             insn,
             expected_mnemonic,
             expected_bytes,
@@ -422,17 +422,13 @@ fn instructions_match_detail<T>(
 ) where
     T: Into<ArchOperand> + Clone,
 {
-    let insns_buf: Vec<u8> = info
-        .iter()
-        .flat_map(|ref info| info.bytes)
-        .map(|x| *x)
-        .collect();
+    let insns_buf: Vec<u8> = info.iter().flat_map(|info| info.bytes).copied().collect();
 
     // Details required to get groups information
     cs.set_detail(true).unwrap();
 
     // todo(tmfink) eliminate check
-    if info.len() == 0 {
+    if info.is_empty() {
         // Input was empty, which will cause disasm_all() to fail
         return;
     }
@@ -452,7 +448,7 @@ fn instructions_match_detail<T>(
     );
 
     for (insn, info) in insns.iter().zip(info) {
-        test_instruction_detail_helper(&cs, insn, info, has_default_syntax)
+        test_instruction_detail_helper(cs, insn, info, has_default_syntax)
     }
 }
 
@@ -511,7 +507,7 @@ fn test_extra_mode_helper(
     valid_both_insns: &[(&str, &[u8])],
     valid_extra_mode: &[(&str, &[u8])],
 ) {
-    let extra_mode = extra_mode.iter().map(|x| *x);
+    let extra_mode = extra_mode.iter().copied();
     let mut cs = Capstone::new_raw(arch, mode, extra_mode, None).unwrap();
 
     test_insns_match(&mut cs, valid_both_insns);
@@ -552,9 +548,9 @@ fn test_arch_mode_endian_insns(
         .map(|&(mnemonic, bytes)| (mnemonic, bytes))
         .collect();
 
-    let mut cs_raw = Capstone::new_raw(arch, mode, extra_mode.iter().map(|x| *x), endian).unwrap();
+    let mut cs_raw = Capstone::new_raw(arch, mode, extra_mode.iter().copied(), endian).unwrap();
     let mut cs_raw_endian_set =
-        Capstone::new_raw(arch, mode, extra_mode.iter().map(|x| *x), None).unwrap();
+        Capstone::new_raw(arch, mode, extra_mode.iter().copied(), None).unwrap();
     if let Some(some_endian) = endian {
         cs_raw_endian_set
             .set_endian(some_endian)
@@ -602,7 +598,7 @@ fn test_arch_mode_endian_insns_detail<T>(
 ) where
     T: Into<ArchOperand> + Clone,
 {
-    let extra_mode = extra_mode.iter().map(|x| *x);
+    let extra_mode = extra_mode.iter().copied();
     let mut cs_raw = Capstone::new_raw(arch, mode, extra_mode, endian).unwrap();
 
     instructions_match_detail(&mut cs_raw, insns, true);
@@ -862,7 +858,7 @@ fn test_arch_arm() {
         &mut Capstone::new()
             .arm()
             .mode(arm::ArchMode::Thumb)
-            .extra_mode([arm::ArchExtraMode::MClass].iter().map(|x| *x))
+            .extra_mode([arm::ArchExtraMode::MClass].iter().copied())
             .build()
             .unwrap(),
         Arch::ARM,
@@ -875,7 +871,7 @@ fn test_arch_arm() {
         &mut Capstone::new()
             .arm()
             .mode(arm::ArchMode::Arm)
-            .extra_mode([arm::ArchExtraMode::V8].iter().map(|x| *x))
+            .extra_mode([arm::ArchExtraMode::V8].iter().copied())
             .build()
             .unwrap(),
         Arch::ARM,
@@ -1002,7 +998,7 @@ fn test_arch_arm_detail() {
                 "mov",
                 b"\x00\x00\xa0\xe3",
                 &[
-                    r0_op.clone(),
+                    r0_op,
                     ArmOperand {
                         op_type: Imm(0),
                         ..Default::default()
@@ -1194,7 +1190,7 @@ fn test_arch_arm64_detail() {
                 b"\x00\x18\xa0\x5f",
                 &[
                     s0.clone(),
-                    s0.clone(),
+                    s0,
                     Arm64Operand {
                         vector_index: Some(3),
                         op_type: Reg(RegId(ARM64_REG_V0 as RegIdInt)),
@@ -1310,8 +1306,8 @@ fn test_arch_arm64_detail() {
                 "add",
                 b"\x20\x08\x02\x8b",
                 &[
-                    x0.clone(),
-                    x1.clone(),
+                    x0,
+                    x1,
                     Arm64Operand {
                         shift: Arm64Shift::Lsl(2),
                         ..x2
@@ -1830,7 +1826,7 @@ fn test_arch_m68k_detail() {
                                 M68K_REG_A3,
                             ]
                             .iter()
-                            .map(|x| *x),
+                            .copied(),
                         )
                         .unwrap(),
                     ),
@@ -1861,7 +1857,7 @@ fn test_arch_m68k_detail() {
                                 M68K_REG_A3,
                             ]
                             .iter()
-                            .map(|x| *x),
+                            .copied(),
                         )
                         .unwrap(),
                     ),
@@ -2008,7 +2004,7 @@ fn test_arch_mips() {
         &mut Capstone::new()
             .mips()
             .mode(mips::ArchMode::Mips32R6)
-            .extra_mode([mips::ArchExtraMode::Micro].iter().map(|x| *x))
+            .extra_mode([mips::ArchExtraMode::Micro].iter().copied())
             .endian(Endian::Big)
             .build()
             .unwrap(),
@@ -3072,7 +3068,7 @@ fn test_arch_riscv() {
         &mut Capstone::new()
             .riscv()
             .mode(riscv::ArchMode::RiscV64)
-            .extra_mode([riscv::ArchExtraMode::RiscVC].iter().map(|x| *x))
+            .extra_mode([riscv::ArchExtraMode::RiscVC].iter().copied())
             .build()
             .unwrap(),
         Arch::RISCV,
@@ -3102,7 +3098,7 @@ fn test_arch_riscv_detail() {
         &mut Capstone::new()
             .riscv()
             .mode(riscv::ArchMode::RiscV64)
-            .extra_mode([riscv::ArchExtraMode::RiscVC].iter().map(|x| *x))
+            .extra_mode([riscv::ArchExtraMode::RiscVC].iter().copied())
             .build()
             .unwrap(),
         Arch::RISCV,
