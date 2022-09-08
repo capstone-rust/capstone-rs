@@ -371,7 +371,7 @@ mod test {
             op_count: 19,
             ..a1
         };
-        let a4_clone = a4.clone();
+        let a4_clone = a4;
         assert_eq!(ArmInsnDetail(&a1), ArmInsnDetail(&a1));
         assert_ne!(ArmInsnDetail(&a1), ArmInsnDetail(&a2));
         assert_ne!(ArmInsnDetail(&a1), ArmInsnDetail(&a3));

@@ -553,7 +553,7 @@ mod test {
     fn register_bits_mask() {
         assert_eq!(
             M68K_REGISTER_BITS_ALLOWED_MASK,
-            0b11111111_11111111_11111111
+            0b1111_1111_1111_1111_1111_1111
         );
     }
 
@@ -569,16 +569,16 @@ mod test {
     fn register_bits_from_iter() {
         let empty: &[m68k_reg::Type] = &[];
         assert_eq!(
-            M68kRegisterBits::from_register_iter(empty.into_iter().map(|x| *x)),
+            M68kRegisterBits::from_register_iter(empty.iter().copied()),
             Ok(M68kRegisterBits { bits: 0 })
         );
         assert_eq!(
-            M68kRegisterBits::from_register_iter([M68K_REG_D1].iter().map(|x| *x)),
+            M68kRegisterBits::from_register_iter([M68K_REG_D1].iter().copied()),
             Ok(M68kRegisterBits { bits: 0b10 })
         );
         assert_eq!(
             M68kRegisterBits::from_register_iter(
-                [M68K_REG_D1, M68K_REG_A2, M68K_REG_FP7].iter().map(|x| *x)
+                [M68K_REG_D1, M68K_REG_A2, M68K_REG_FP7].iter().copied()
             ),
             Ok(M68kRegisterBits {
                 bits: 0b1000_0000_0000_0100_0000_0010
@@ -606,14 +606,13 @@ mod test {
             M68kOperand::RegBits(
                 M68kRegisterBits::from_register_iter(
                     [M68K_REG_D0, M68K_REG_D2, M68K_REG_A2, M68K_REG_A3]
-                        .iter()
-                        .map(|x| *x)
+                        .iter().copied()
                 )
                 .unwrap()
             ),
             M68kOperand::RegBits(
                 M68kRegisterBits::from_register_iter(
-                    [M68K_REG_D0, M68K_REG_A2, M68K_REG_A3].iter().map(|x| *x)
+                    [M68K_REG_D0, M68K_REG_A2, M68K_REG_A3].iter().copied()
                 )
                 .unwrap()
             )
@@ -652,16 +651,14 @@ mod test {
         ];
         let code: Vec<u8> = code_parts
             .iter()
-            .map(|x| x.iter())
-            .flatten()
-            .map(|x| *x)
+            .flat_map(|x| x.iter()).copied()
             .collect();
         let insns = cs.disasm_all(&code, 0x1000).expect("Failed to disasm");
         let mut insns_iter = insns.iter();
 
         // jsr
         let insn_jsr: &Insn = insns_iter.next().unwrap();
-        let detail = cs.insn_detail(&insn_jsr).unwrap();
+        let detail = cs.insn_detail(insn_jsr).unwrap();
         let _arch_detail = detail.arch_detail();
         let arch_detail = _arch_detail.m68k().unwrap();
         let mut ops = arch_detail.operands();
