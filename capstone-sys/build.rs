@@ -165,6 +165,8 @@ fn env_var(var: &str) -> String {
 /// instructions enum declaration.
 #[cfg(feature = "use_bindgen")]
 fn impl_insid_to_insenum(bindings: &str) -> String {
+    use std::fmt::Write as _;
+
     let mut impl_arch_enum = String::new();
     impl_arch_enum.push_str("use core::convert::From;\n");
 
@@ -185,42 +187,42 @@ fn impl_insid_to_insenum(bindings: &str) -> String {
         ))
         .expect("Unable to compile regex");
 
-        impl_arch_enum.push_str(&format!(
+        write!(
+            impl_arch_enum,
             "impl From<u32> for {}_insn {{\n
             fn from(id: u32) -> Self {{\n
             match id {{\n",
             &arch
-        ));
+        )
+        .unwrap();
 
         // fill match expression
         for cap_ins_id in re_ins_ids.captures_iter(cap_enum_def) {
-            impl_arch_enum.push_str(&format!(
-                "{} => {}_insn::{}_INS_{},\n",
+            writeln!(
+                impl_arch_enum,
+                "{} => {}_insn::{}_INS_{},",
                 &cap_ins_id["id"],
                 &arch,
                 &arch.to_uppercase(),
                 &cap_ins_id["ins"]
-            ));
+            )
+            .unwrap();
         }
 
         // if id didn't match, return [arch]_INS_INVALID.
         // special case for m680x which has 'INVLD' variant instead of 'INVALID'
-        match arch {
-            "m680x" => {
-                impl_arch_enum.push_str(&format!(
-                    "_ => {}_insn::{}_INS_INVLD,",
-                    &arch,
-                    &arch.to_uppercase()
-                ));
-            }
-            _ => {
-                impl_arch_enum.push_str(&format!(
-                    "_ => {}_insn::{}_INS_INVALID,",
-                    &arch,
-                    &arch.to_uppercase()
-                ));
-            }
-        }
+        let invalid_str = match arch {
+            "m680x" => "INVLD",
+            _ => "INVALID",
+        };
+        write!(
+            impl_arch_enum,
+            "_ => {}_insn::{}_INS_{},",
+            &arch,
+            &arch.to_uppercase(),
+            invalid_str,
+        )
+        .unwrap();
 
         impl_arch_enum.push_str("}\n}\n}\n");
     }
