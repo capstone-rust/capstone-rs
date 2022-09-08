@@ -1,3 +1,10 @@
+#![allow(
+    clippy::approx_constant,
+    clippy::too_many_arguments,
+    clippy::type_complexity,
+    clippy::upper_case_acronyms
+)]
+
 use alloc::vec::Vec;
 #[cfg(feature = "full")]
 use {alloc::string::String, std::collections::HashSet};
@@ -39,10 +46,10 @@ fn test_x86_simple() {
                 assert_eq!(is[0].bytes(), b"\x55");
                 assert_eq!(is[1].bytes(), b"\x48\x8b\x05\xb8\x13\x00\x00");
             }
-            Err(err) => assert!(false, "Couldn't disasm instructions: {}", err),
+            Err(err) => panic!("Couldn't disasm instructions: {}", err),
         },
         Err(e) => {
-            assert!(false, "Couldn't create a cs engine: {}", e);
+            panic!("Couldn't create a cs engine: {}", e);
         }
     }
 }
@@ -62,10 +69,10 @@ fn test_arm_simple() {
                 assert_eq!(is[0].address(), START_TEST_ADDR);
                 assert_eq!(is[1].address(), START_TEST_ADDR + 4);
             }
-            Err(err) => assert!(false, "Couldn't disasm instructions: {}", err),
+            Err(err) => panic!("Couldn't disasm instructions: {}", err),
         },
         Err(e) => {
-            assert!(false, "Couldn't create a cs engine: {}", e);
+            panic!("Couldn't create a cs engine: {}", e);
         }
     }
 }
@@ -88,33 +95,33 @@ fn test_x86_names() {
             let reg_id = RegId(1);
             match cs.reg_name(reg_id) {
                 Some(reg_name) => assert_eq!(reg_name, "ah"),
-                None => assert!(false, "Couldn't get register name"),
+                None => panic!("Couldn't get register name"),
             }
 
             let insn_id = InsnId(1);
             match cs.insn_name(insn_id) {
                 Some(insn_name) => assert_eq!(insn_name, "aaa"),
-                None => assert!(false, "Couldn't get instruction name"),
+                None => panic!("Couldn't get instruction name"),
             }
 
             assert_eq!(cs.group_name(InsnGroupId(1)), Some(String::from("jump")));
 
             let reg_id = RegId(250);
             match cs.reg_name(reg_id) {
-                Some(_) => assert!(false, "invalid register worked"),
+                Some(_) => panic!("invalid register worked"),
                 None => {}
             }
 
             let insn_id = InsnId(6000);
             match cs.insn_name(insn_id) {
-                Some(_) => assert!(false, "invalid instruction worked"),
+                Some(_) => panic!("invalid instruction worked"),
                 None => {}
             }
 
             assert_eq!(cs.group_name(InsnGroupId(250)), None);
         }
         Err(e) => {
-            assert!(false, "Couldn't create a cs engine: {}", e);
+            panic!("Couldn't create a cs engine: {}", e);
         }
     }
 }
@@ -330,10 +337,18 @@ fn test_instruction_group_helper<R: Copy + Into<RegId>>(
     );
 }
 
+type ExpectedInsns<'a, R> = (
+    &'a str,
+    &'a [u8],
+    &'a [cs_group_type::Type],
+    &'a [R],
+    &'a [R],
+);
+
 #[allow(unused)]
 fn instructions_match_group<R: Copy + Into<RegId>>(
     cs: &mut Capstone,
-    expected_insns: &[(&str, &[u8], &[cs_group_type::Type], &[R], &[R])],
+    expected_insns: &[ExpectedInsns<R>],
     has_default_syntax: bool,
 ) {
     let insns_buf: Vec<u8> = expected_insns
@@ -457,13 +472,7 @@ fn test_instruction_details() {
     use crate::arch::x86::X86Reg;
     use crate::arch::x86::X86Reg::*;
 
-    let expected_insns: &[(
-        &str,
-        &[u8],
-        &[cs_group_type::Type],
-        &[X86Reg::Type],
-        &[X86Reg::Type],
-    )] = &[
+    let expected_insns: &[ExpectedInsns<X86Reg::Type>] = &[
         ("nop", b"\x90", &[], &[], &[]),
         ("je", b"\x74\x05", &[JUMP], &[X86_REG_EFLAGS], &[]),
         (
@@ -570,6 +579,8 @@ struct DetailedInsnInfo<'a, T: 'a + Into<ArchOperand>> {
     pub bytes: &'a [u8],
     pub operands: &'a [T],
 }
+
+#[allow(clippy::upper_case_acronyms)]
 type DII<'a, T> = DetailedInsnInfo<'a, T>;
 
 impl<'a, T> DetailedInsnInfo<'a, T>
@@ -666,25 +677,13 @@ fn test_syntax() {
         ("mov", "movl", b"\xb9\x04\x02\x00\x00", &[], &[], &[]),
     ];
 
-    let expected_insns_intel: Vec<(
-        &str,
-        &[u8],
-        &[cs_group_type::Type],
-        &[X86Reg::Type],
-        &[X86Reg::Type],
-    )> = expected_insns
+    let expected_insns_intel: Vec<ExpectedInsns<X86Reg::Type>> = expected_insns
         .iter()
         .map(|&(mnemonic, _, bytes, groups, reads, writes)| {
             (mnemonic, bytes, groups, reads, writes)
         })
         .collect();
-    let expected_insns_att: Vec<(
-        &str,
-        &[u8],
-        &[cs_group_type::Type],
-        &[X86Reg::Type],
-        &[X86Reg::Type],
-    )> = expected_insns
+    let expected_insns_att: Vec<ExpectedInsns<X86Reg::Type>> = expected_insns
         .iter()
         .map(|&(_, mnemonic, bytes, groups, reads, writes)| {
             (mnemonic, bytes, groups, reads, writes)
