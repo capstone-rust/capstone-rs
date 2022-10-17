@@ -86,14 +86,14 @@ impl<'a> X86InsnDetail<'a> {
     /// A prefix byte gets value 0 when irrelevant.
     /// See `X86Prefix` for details.
     ///
-    /// prefix[0] indicates REP/REPNE/LOCK prefix (See `X86_PREFIX_REP`/`REPNE`/`LOCK`)
+    /// `prefix[0]` indicates REP/REPNE/LOCK prefix (See `X86_PREFIX_REP`/`REPNE`/`LOCK`)
     ///
-    /// prefix[1] indicates segment override (irrelevant for x86_64):
+    /// `prefix[1]` indicates segment override (irrelevant for x86_64):
     /// See `X86_PREFIX_CS`/`SS`/`DS`/`ES`/`FS`/`GS`.
     ///
-    /// prefix[2] indicates operand-size override (`X86_PREFIX_OPSIZE`)
+    /// `prefix[2]` indicates operand-size override (`X86_PREFIX_OPSIZE`)
     ///
-    /// prefix[3] indicates address-size override (`X86_PREFIX_ADDRSIZE`)
+    /// `prefix[3]` indicates address-size override (`X86_PREFIX_ADDRSIZE`)
     pub fn prefix(&self) -> &[u8; 4] {
         &self.0.prefix
     }
