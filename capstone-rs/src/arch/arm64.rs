@@ -22,6 +22,8 @@ pub use capstone_sys::arm64_barrier_op as ArmBarrierOp;
 pub use capstone_sys::arm64_sysreg as Arm64Sysreg;
 pub use capstone_sys::arm64_sys_op as Arm64SysOp;
 pub use capstone_sys::arm64_barrier_op as Arm64BarrierOp;
+//TODO: pub use capstone_sys::arm64_svcr_op as Arm64SvcrOp;
+//TODO: pub use capstone_sys::arm64_op_sme_index as Arm64SmeIndexOp;
 
 use capstone_sys::cs_arm64_op__bindgen_ty_2;
 use capstone_sys::arm64_shifter;
@@ -69,6 +71,12 @@ impl Arm64OperandType {
             ARM64_OP_SYS => Sys(unsafe { value.sys }),
             ARM64_OP_PREFETCH => Prefetch(unsafe { value.prefetch }),
             ARM64_OP_BARRIER => Barrier(unsafe { value.barrier }),
+            // TODO: This likely needs to be filled with the proper value
+            #[cfg(feature = "frida")]
+            ARM64_OP_SVCR => Svcr,
+            //TODO: More missing values (unsafe {value.sme_index}),
+            #[cfg(feature = "frida")]
+            ARM64_OP_SME_INDEX => SmeIndex,
         }
     }
 }
@@ -127,6 +135,14 @@ pub enum Arm64OperandType {
 
     /// Memory barrier operation (ISB/DMB/DSB instructions)
     Barrier(Arm64BarrierOp),
+
+    /// SVCR operand for MSR SVCR instructions.
+    #[cfg(feature = "frida")]
+    Svcr,
+
+    /// SME instruction operand with with index.
+    #[cfg(feature = "frida")]
+    SmeIndex,
 
     /// Invalid
     Invalid,

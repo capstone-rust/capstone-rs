@@ -34,3 +34,4 @@ default = ["full"]
 # This disables some features to reduce the size of the library
 full = ["capstone-sys/full"]
 use_bindgen = ["capstone-sys/use_bindgen"]
+frida = ["use_bindgen", "capstone-sys/frida"] # Clone frida's capstone fork from git instead of using upstream capstone
