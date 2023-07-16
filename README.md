@@ -118,8 +118,14 @@ More complex demos welcome!
 
 # Features
 
+- `full`<sup>&dagger;</sup>: do not compile Capstone C library in
+  [diet mode](https://www.capstone-engine.org/diet.html)
+- `std`<sup>&dagger;</sup>: enable `std`-only features, such as the
+  [`Error` trait](https://doc.rust-lang.org/std/error/trait.Error.html)
 - `use_bindgen`: run `bindgen` to generate Rust bindings to Capstone C library
   instead of using pre-generated bindings (not recommended).
+
+<sup>&dagger;</sup>: enabled by default
 
 # Reporting Issues
 
