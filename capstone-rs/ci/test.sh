@@ -30,6 +30,7 @@ Error() {
 RUST_BACKTRACE=1
 SHOULD_FAIL=${SHOULD_FAIL:-}  # Default to false
 VALGRIND_TESTS=${VALGRIND_TESTS:-}
+CARGO="${CARGO:-cargo}"
 
 # Feature vars
 if [ -n "${ALL_FEATURES:-}" -a -n "${NO_DEFAULT_FEATURES:-}" ]; then
@@ -135,7 +136,7 @@ run_kcov() {
     json_format_args="--quiet --message-format=json"
 
     # Test binaries
-    cargo_test_args="cargo test --no-run"
+    cargo_test_args="${CARGO} test --no-run"
     ${cargo_test_args} -v
     TEST_BINS="$(${cargo_test_args} ${json_format_args} \
         | jq -r "select(.profile.test == true) | .filenames[]")"
@@ -143,7 +144,7 @@ run_kcov() {
     # Exaple binaries
     EXAMPLE_BINS=
     for example in $SIMPLE_RUN_EXAMPLES; do
-        cargo_build_example_args="cargo build --example $example"
+        cargo_build_example_args="${CARGO} build --example $example"
         ${cargo_build_example_args} -v
         example_bin="$(${cargo_build_example_args} ${json_format_args} \
             | jq -r '.executable | strings')"
@@ -191,7 +192,7 @@ cov() {
 }
 
 bench() {
-    cargo bench
+    ${CARGO} bench
 }
 
 profile_args() {
@@ -211,7 +212,7 @@ test_rust_file() {
 
     capstone_dir="$(pwd)"
     cd "$tmp_dir"
-    cargo new --bin test_project -v
+    ${CARGO} new --bin test_project -v
     cd test_project
     echo "capstone = { path = \"$capstone_dir\" }" >> Cargo.toml
     cat Cargo.toml
@@ -223,7 +224,7 @@ test_rust_file() {
         $(profile_args)
         --verbose
         )
-    cargo check "${cargo_cmd_args[@]}" || exit 1
+    ${CARGO} check "${cargo_cmd_args[@]}" || exit 1
 
     rm -rf "$tmp_dir"
     ) || exit 1
@@ -240,16 +241,16 @@ run_tests() {
             "${CARGO_FEATURE_ARGS[@]}"
         )
         expect_exit_status "$SHOULD_FAIL" \
-            cargo test "${cargo_cmd_args[@]}" \
+            ${CARGO} test "${cargo_cmd_args[@]}" \
             --color=always -- --color=always \
             2>&1 | tee "$TMPFILE"
         # Use 2>&1 above instead of '|&' because OS X uses Bash 3
         for example in $SIMPLE_RUN_EXAMPLES; do
-            cargo run "${cargo_cmd_args[@]}" --example "$example"
+            ${CARGO} run "${cargo_cmd_args[@]}" --example "$example"
         done
         (
             cd ../cstool
-            cargo run $(profile_args) -- \
+            ${CARGO} run $(profile_args) -- \
                 --arch x86 --mode mode64 --file ../capstone-rs/test-inputs/x86_64.bin_ls.bin |
                 head -n20
         )
