@@ -50,7 +50,7 @@ fn unhexed_bytes(input: Vec<u8>) -> Vec<u8> {
     let mut curr_byte_str = String::with_capacity(2);
     for b_u8 in input {
         let b = char::from(b_u8);
-        if ('0'..='9').contains(&b) || ('a'..='f').contains(&b) || ('A'..='F').contains(&b) {
+        if b.is_ascii_hexdigit() {
             curr_byte_str.push(b);
         }
 
@@ -112,7 +112,7 @@ fn disasm<T: Iterator<Item = ExtraMode>>(
                 ("insn groups:", group_names(&cs, detail.groups())),
             ];
 
-            for &(ref name, ref message) in output.iter() {
+            for (name, message) in output.iter() {
                 let _ = writeln!(&mut handle, "{:13}{:12} {}", "", name, message).is_ok();
             }
         }
@@ -270,7 +270,7 @@ fn main() {
             Err(_) => DEFAULT_CAPACITY,
             Ok(metadata) => metadata.len() as usize,
         };
-        let mut buf = Vec::with_capacity(capacity as usize);
+        let mut buf = Vec::with_capacity(capacity);
         file.read_to_end(&mut buf).expect_exit();
         buf
     } else if let Some(code) = matches.value_of(CODE_ARG) {

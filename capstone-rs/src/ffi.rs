@@ -12,6 +12,7 @@ use libc::{self, c_char};
 /// - This function "creates" a reference with an arbitrary lifetime, so be careful to limit the
 ///   lifetime appropriately
 #[inline]
+#[allow(clippy::unnecessary_cast)]
 pub(crate) unsafe fn str_from_cstr_ptr<'a>(ptr: *const c_char) -> Option<&'a str> {
     if ptr.is_null() {
         return None;

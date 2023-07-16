@@ -1,5 +1,9 @@
 //! Contains architecture-specific types and modules
 
+// We use explicit casts from c_int (and such) so the code compiles on platforms with different
+// integer widths
+#![allow(clippy::unnecessary_cast)]
+
 use alloc::vec::Vec;
 use core::fmt::Debug;
 use core::marker::PhantomData;
