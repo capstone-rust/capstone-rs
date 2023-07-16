@@ -1,16 +1,16 @@
 #![doc = include_str!("../../README.md")]
-#![no_std]
+#![cfg_attr(not(feature = "std"), no_std)]
 
 // The `vec` macro cannot be imported directly since it conflicts with the `vec` module
 #[allow(unused_imports)]
 #[macro_use]
 extern crate alloc;
 
-#[cfg(test)]
+#[cfg(any(test, not(feature = "std")))]
 #[macro_use]
 extern crate std;
 
-#[cfg(test)]
+#[cfg(any(test, not(feature = "std")))]
 #[global_allocator]
 static ALLOCATOR: std::alloc::System = std::alloc::System;
 

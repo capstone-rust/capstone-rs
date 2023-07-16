@@ -28,7 +28,8 @@ name = "my_benchmark"
 harness = false
 
 [features]
-default = ["full"]
+default = ["full", "std"]
+std = []
 # The 'full' feature, enabled by default, compiles Capstone normally. When disabled,
 # Capstone will be built in Diet mode (https://www.capstone-engine.org/diet.html).
 # This disables some features to reduce the size of the library
