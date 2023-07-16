@@ -263,7 +263,7 @@ impl<'a> Insn<'a> {
     /// Instruction address
     #[inline]
     pub fn address(&self) -> u64 {
-        self.insn.address as u64
+        self.insn.address
     }
 
     /// Byte-level representation of the instruction

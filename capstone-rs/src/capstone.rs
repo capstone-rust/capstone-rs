@@ -202,16 +202,8 @@ impl Capstone {
         // it *should* be safe to accept `&self` (instead of `&mut self`) in this method.
 
         let mut ptr: *mut cs_insn = core::ptr::null_mut();
-        let insn_count = unsafe {
-            cs_disasm(
-                self.csh(),
-                code.as_ptr(),
-                code.len() as usize,
-                addr,
-                count as usize,
-                &mut ptr,
-            )
-        };
+        let insn_count =
+            unsafe { cs_disasm(self.csh(), code.as_ptr(), code.len(), addr, count, &mut ptr) };
         if insn_count == 0 {
             match self.error_result() {
                 Ok(_) => Ok(Instructions::new_empty()),

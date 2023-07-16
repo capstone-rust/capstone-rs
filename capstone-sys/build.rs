@@ -73,7 +73,6 @@ fn build_capstone_cc() {
 
         read_dir(dir)
             .expect("Failed to read capstone source directory")
-            .into_iter()
             .map(|e| e.expect("Failed to read capstone source directory"))
             .filter(|e| filter(e))
             .map(|e| {
@@ -357,9 +356,8 @@ fn main() {
     // Otherwise, copy the pregenerated bindings
     #[cfg(not(feature = "use_bindgen"))]
     {
-        copy(&pregenerated_bindgen_header, &out_bindings_path)
+        copy(pregenerated_bindgen_header, out_bindings_path)
             .expect("Unable to update capstone bindings");
-        copy(&pregenerated_bindgen_impl, &out_impl_path)
-            .expect("Unable to update capstone bindings");
+        copy(pregenerated_bindgen_impl, out_impl_path).expect("Unable to update capstone bindings");
     }
 }

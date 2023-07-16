@@ -1,5 +1,7 @@
 #![doc = include_str!("../../README.md")]
 #![cfg_attr(not(feature = "std"), no_std)]
+// derive Default on enums was not stable until 1.62.0
+#![allow(clippy::derivable_impls)]
 
 // The `vec` macro cannot be imported directly since it conflicts with the `vec` module
 #[allow(unused_imports)]
