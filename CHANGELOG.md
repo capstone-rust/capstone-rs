@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [UNRELEASED] - YYYY-MM-DD
 ### Changed
-- Bump minimum Rust version to 1.56.0
+- Bump minimum Rust version to 1.60.0
 - `Arm64OperandType::Sys` contains `Arm64SysOp` instead of `u32`
 
 ## [0.11.0] - 2022-05-01
