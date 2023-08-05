@@ -12,8 +12,32 @@ pub use capstone_sys::ppc_bh as PpcBh;
 use capstone_sys::{cs_ppc, cs_ppc_op, ppc_op_mem, ppc_op_crx, ppc_op_type};
 
 pub use crate::arch::arch_builder::ppc::*;
-use crate::arch::DetailsArchInsn;
+use crate::arch::{ArchTag, DetailsArchInsn};
+use crate::arch::internal::ArchTagSealed;
 use crate::instruction::{RegId, RegIdInt};
+use crate::{Arch, InsnDetail};
+
+pub struct PpcArchTag;
+
+impl ArchTagSealed for PpcArchTag {}
+
+impl ArchTag for PpcArchTag {
+    type Builder = ArchCapstoneBuilder;
+
+    type Mode = ArchMode;
+    type ExtraMode = ArchExtraMode;
+    type Syntax = ArchSyntax;
+
+    type RegId = PpcReg::Type;
+    type InsnId = PpcInsn;
+    type InsnGroupId = PpcInsnGroup::Type;
+
+    type InsnDetail<'a> = PpcInsnDetail<'a>;
+
+    fn support_arch(arch: Arch) -> bool {
+        arch == Arch::PPC
+    }
+}
 
 /// Contains PPC-specific details for an instruction
 pub struct PpcInsnDetail<'a>(pub(crate) &'a cs_ppc);
@@ -38,6 +62,12 @@ impl<'a> PpcInsnDetail<'a> {
 impl_PartialEq_repr_fields!(PpcInsnDetail<'a> [ 'a ];
     bc, bh, update_cr0, operands
 );
+
+impl<'a, 'i> From<&'i InsnDetail<'a, PpcArchTag>> for PpcInsnDetail<'a> {
+    fn from(value: &'i InsnDetail<'a, PpcArchTag>) -> Self {
+        Self(unsafe { &value.0.__bindgen_anon_1.ppc })
+    }
+}
 
 /// PPC operand
 #[derive(Clone, Debug, Eq, PartialEq)]

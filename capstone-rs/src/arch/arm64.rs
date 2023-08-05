@@ -1,13 +1,16 @@
 //! Contains arm64-specific types
 
+use core::convert::From;
+use core::{cmp, fmt, mem, slice};
+
+use capstone_sys::{arm64_op_mem, arm64_op_type, cs_arm64, cs_arm64_op};
 use libc::c_uint;
 
 pub use crate::arch::arch_builder::arm64::*;
-use crate::arch::DetailsArchInsn;
-use capstone_sys::{arm64_op_mem, arm64_op_type, cs_arm64, cs_arm64_op};
+use crate::arch::{ArchTag, DetailsArchInsn};
+use crate::arch::internal::ArchTagSealed;
 use crate::instruction::{RegId, RegIdInt};
-use core::convert::From;
-use core::{cmp, fmt, mem, slice};
+use crate::{Arch, InsnDetail};
 
 // Re-exports
 pub use capstone_sys::arm64_insn_group as Arm64InsnGroup;
@@ -26,9 +29,36 @@ pub use capstone_sys::arm64_barrier_op as Arm64BarrierOp;
 use capstone_sys::cs_arm64_op__bindgen_ty_2;
 use capstone_sys::arm64_shifter;
 
+pub struct Arm64ArchTag;
+
+impl ArchTagSealed for Arm64ArchTag {}
+
+impl ArchTag for Arm64ArchTag {
+    type Builder = ArchCapstoneBuilder;
+
+    type Mode = ArchMode;
+    type ExtraMode = ArchExtraMode;
+    type Syntax = ArchSyntax;
+
+    type RegId = Arm64Reg::Type;
+    type InsnId = Arm64Insn;
+    type InsnGroupId = Arm64InsnGroup::Type;
+
+    type InsnDetail<'a> = Arm64InsnDetail<'a>;
+
+    fn support_arch(arch: Arch) -> bool {
+        arch == Arch::ARM64
+    }
+}
 
 /// Contains ARM64-specific details for an instruction
 pub struct Arm64InsnDetail<'a>(pub(crate) &'a cs_arm64);
+
+impl<'a, 'i> From<&'i InsnDetail<'a, Arm64ArchTag>> for Arm64InsnDetail<'a> {
+    fn from(value: &'i InsnDetail<'a, Arm64ArchTag>) -> Self {
+        Self(unsafe { &value.0.__bindgen_anon_1.arm64 })
+    }
+}
 
 /// ARM64 shift amount
 #[derive(Clone, Copy, Debug, Eq, PartialEq, Hash)]

@@ -11,6 +11,7 @@ use core::marker::PhantomData;
 use crate::capstone::Capstone;
 use crate::constants::Endian;
 use crate::error::CsResult;
+use crate::{Arch, ExtraMode, InsnDetail, InsnGroupId, InsnId, Mode, RegId, Syntax};
 
 macro_rules! define_subset_enum {
     ( [
@@ -40,9 +41,9 @@ macro_rules! define_subset_enum {
 /// Define arch builders
 macro_rules! define_arch_builder {
     // ExtraMode rules
-    ( @extra_modes () ) => {};
-    ( @extra_modes ( $( $extra_mode:ident, )+ ) ) => {
-        impl super::BuildsCapstoneExtraMode<ArchMode, ArchExtraMode> for ArchCapstoneBuilder {
+    ( @extra_modes ( $arch:ident, $arch_tag:ident, ) ) => {};
+    ( @extra_modes ( $arch:ident, $arch_tag:ident, $( $extra_mode:ident, )+ ) ) => {
+        impl super::BuildsCapstoneExtraMode<crate::arch::$arch::$arch_tag> for ArchCapstoneBuilder {
             fn extra_mode<T: Iterator<Item=ArchExtraMode>>(mut self, extra_mode: T) -> Self {
                 self.extra_mode.clear();
                 self.extra_mode.extend(extra_mode);
@@ -52,9 +53,9 @@ macro_rules! define_arch_builder {
     };
 
     // Syntax rules
-    ( @syntax () ) => {};
-    ( @syntax ( $( $syntax:ident, )+ ) ) => {
-        impl super::BuildsCapstoneSyntax<ArchMode, ArchSyntax> for ArchCapstoneBuilder {
+    ( @syntax ( $arch:ident, $arch_tag:ident, ) ) => {};
+    ( @syntax ( $arch:ident, $arch_tag:ident, $( $syntax:ident, )+ ) ) => {
+        impl super::BuildsCapstoneSyntax<crate::arch::$arch::$arch_tag> for ArchCapstoneBuilder {
             fn syntax(mut self, syntax: ArchSyntax) -> Self {
                 self.syntax = Some(syntax);
                 self
@@ -63,9 +64,9 @@ macro_rules! define_arch_builder {
     };
 
     // Endian rules
-    ( @endian ( false) ) => {};
-    ( @endian ( true ) ) => {
-        impl super::BuildsCapstoneEndian<ArchMode> for ArchCapstoneBuilder {
+    ( @endian ( $arch:ident, $arch_tag:ident, false) ) => {};
+    ( @endian ( $arch:ident, $arch_tag:ident, true ) ) => {
+        impl super::BuildsCapstoneEndian<crate::arch::$arch::$arch_tag> for ArchCapstoneBuilder {
             fn endian(mut self, endian: Endian) -> Self {
                 self.endian = Some(endian);
                 self
@@ -76,7 +77,7 @@ macro_rules! define_arch_builder {
     // Entrance rule
     (
         $( [
-            ( $arch:ident, $arch_variant:ident )
+            ( $arch:ident, $arch_variant:ident, $arch_tag:ident )
             ( mode: $( $mode:ident, )+ )
             ( extra_modes: $( $extra_mode:ident, )* )
             ( syntax: $( $syntax:ident, )* )
@@ -95,9 +96,9 @@ macro_rules! define_arch_builder {
                 use crate::constants::{Arch, Endian, ExtraMode, Mode, Syntax};
                 use crate::error::{CsResult, Error};
 
-                define_arch_builder!( @syntax ( $( $syntax, )* ) );
-                define_arch_builder!( @endian ( $( $endian )* ) );
-                define_arch_builder!( @extra_modes ( $( $extra_mode, )* ) );
+                define_arch_builder!( @syntax ( $arch, $arch_tag, $( $syntax, )* ) );
+                define_arch_builder!( @endian ( $arch, $arch_tag, $( $endian )* ) );
+                define_arch_builder!( @extra_modes ( $arch, $arch_tag, $( $extra_mode, )* ) );
 
                 define_subset_enum!(
                     [ ArchMode = Mode ]
@@ -123,7 +124,7 @@ macro_rules! define_arch_builder {
                     pub(crate) endian: Option<Endian>,
                 }
 
-                impl super::BuildsCapstone<ArchMode> for ArchCapstoneBuilder {
+                impl super::BuildsCapstone<crate::arch::$arch::$arch_tag> for ArchCapstoneBuilder {
                     fn mode(mut self, mode: ArchMode) -> Self {
                         self.mode = Some(mode);
                         self
@@ -134,7 +135,7 @@ macro_rules! define_arch_builder {
                         self
                     }
 
-                    fn build(self) -> CsResult<Capstone> {
+                    fn build(self) -> CsResult<Capstone<crate::arch::$arch::$arch_tag>> {
                         let mode = match self.mode {
                             Some(mode) => mode,
                             None => {
@@ -146,14 +147,13 @@ macro_rules! define_arch_builder {
                                 return Err(Error::CustomError(msg));
                             }
                         };
-                        let extra_mode = self.extra_mode.iter().map(|x| ExtraMode::from(*x));
                         let mut capstone = Capstone::new_raw(Arch::$arch_variant,
                                                              mode.into(),
-                                                             extra_mode,
+                                                             self.extra_mode.iter().copied().map(|x| x.into()),
                                                              self.endian)?;
 
                         if let Some(syntax) = self.syntax {
-                            capstone.set_syntax(Syntax::from(syntax))?;
+                            capstone.set_syntax(syntax)?;
                         }
                         if self.is_detail {
                             capstone.set_detail(self.is_detail)?;
@@ -197,7 +197,7 @@ macro_rules! arch_info_base {
     ($x_macro:ident) => {
         $x_macro!(
             [
-                ( arm, ARM )
+                ( arm, ARM, ArmArchTag )
                 ( mode:
                     Arm,
                     Thumb,
@@ -212,7 +212,7 @@ macro_rules! arch_info_base {
                 ( both_endian: true )
             ]
             [
-                ( arm64, ARM64 )
+                ( arm64, ARM64, Arm64ArchTag )
                 ( mode:
                     Arm,
                     )
@@ -221,7 +221,7 @@ macro_rules! arch_info_base {
                 ( both_endian: true )
             ]
             [
-                ( evm, EVM )
+                ( evm, EVM, EvmArchTag )
                 ( mode:
                     Default,
                     )
@@ -230,7 +230,7 @@ macro_rules! arch_info_base {
                 ( both_endian: false )
             ]
             [
-                ( m680x, M680X )
+                ( m680x, M680X, M680xArchTag )
                 ( mode:
                     M680x6301,
                     M680x6309,
@@ -248,7 +248,7 @@ macro_rules! arch_info_base {
                 ( both_endian: false )
             ]
             [
-                ( m68k, M68K )
+                ( m68k, M68K, M68kArchTag )
                 ( mode:
                     M68k000,
                     M68k010,
@@ -261,7 +261,7 @@ macro_rules! arch_info_base {
                 ( both_endian: false )
             ]
             [
-                ( mips, MIPS )
+                ( mips, MIPS, MipsArchTag )
                 ( mode:
                     Mips32,
                     Mips64,
@@ -276,7 +276,7 @@ macro_rules! arch_info_base {
                 ( both_endian: true )
             ]
             [
-                ( ppc, PPC )
+                ( ppc, PPC, PpcArchTag )
                 ( mode:
                     Mode32,
                     Mode64,
@@ -289,7 +289,7 @@ macro_rules! arch_info_base {
                 ( both_endian: true )
             ]
             [
-                ( riscv, RISCV )
+                ( riscv, RISCV, RiscVArchTag )
                 ( mode:
                     RiscV32,
                     RiscV64,
@@ -301,7 +301,7 @@ macro_rules! arch_info_base {
                 ( both_endian: true )
             ]
             [
-                ( sparc, SPARC )
+                ( sparc, SPARC, SparcArchTag )
                 ( mode:
                     Default,
                     V9,
@@ -311,7 +311,7 @@ macro_rules! arch_info_base {
                 ( both_endian: false )
             ]
             [
-                ( sysz, SYSZ )
+                ( sysz, SYSZ, SyszArchTag )
                 ( mode:
                     Default,
                     )
@@ -320,7 +320,7 @@ macro_rules! arch_info_base {
                 ( both_endian: false )
             ]
             [
-                ( tms320c64x, TMS320C64X )
+                ( tms320c64x, TMS320C64X, Tms320c64xArchTag )
                 ( mode:
                     Default,
                     )
@@ -329,7 +329,7 @@ macro_rules! arch_info_base {
                 ( both_endian: false )
             ]
             [
-                ( x86, X86 )
+                ( x86, X86, X86ArchTag )
                 ( mode:
                     Mode16,
                     Mode32,
@@ -344,7 +344,7 @@ macro_rules! arch_info_base {
                 ( both_endian: false )
             ]
             [
-                ( xcore, XCORE )
+                ( xcore, XCORE, XcoreArchTag )
                 ( mode:
                     Default,
                     )
@@ -356,32 +356,79 @@ macro_rules! arch_info_base {
     };
 }
 
+mod internal {
+    /// Make sure that only this crate can implement `ArchTag`.
+    pub trait ArchTagSealed {}
+}
+
+/// Provides types relative to a specific arch.
+pub trait ArchTag: internal::ArchTagSealed + 'static + Sized {
+    /// Type of capstone builder that builds Capstone instances for this architecture.
+    type Builder: Default;
+
+    type Mode: Into<Mode>;
+    type ExtraMode: Into<ExtraMode>;
+    type Syntax: Into<Syntax>;
+
+    type RegId: Into<RegId>;
+    type InsnId: Into<InsnId>;
+    type InsnGroupId: Into<InsnGroupId>;
+
+    type InsnDetail<'a>: for<'i> From<&'i InsnDetail<'a, Self>>;
+
+    /// Determine whether the given [`Arch`] value is supported by this arch tag.
+    fn support_arch(arch: Arch) -> bool;
+}
+
+/// An architecture tag that indicates the architecture is unknown at compile-time.
+pub struct DynamicArchTag;
+
+impl internal::ArchTagSealed for DynamicArchTag {}
+
+impl ArchTag for DynamicArchTag {
+    type Builder = CapstoneBuilder;
+
+    type Mode = Mode;
+    type ExtraMode = ExtraMode;
+    type Syntax = Syntax;
+
+    type RegId = RegId;
+    type InsnId = InsnId;
+    type InsnGroupId = InsnGroupId;
+
+    type InsnDetail<'a> = ArchDetail<'a>;
+
+    fn support_arch(_: Arch) -> bool {
+        true
+    }
+}
+
 /// Builds a `Capstone` struct
-pub trait BuildsCapstone<ArchMode> {
+pub trait BuildsCapstone<A: ArchTag> {
     /// Set the disassembly mode
-    fn mode(self, mode: ArchMode) -> Self;
+    fn mode(self, mode: A::Mode) -> Self;
 
     /// Enable detailed output
     fn detail(self, enable_detail: bool) -> Self;
 
     /// Get final `Capstone`
-    fn build(self) -> CsResult<Capstone>;
+    fn build(self) -> CsResult<Capstone<A>>;
 }
 
 /// Implies that a `CapstoneBuilder` architecture has extra modes
-pub trait BuildsCapstoneExtraMode<ArchMode, ArchExtraMode>: BuildsCapstone<ArchMode> {
+pub trait BuildsCapstoneExtraMode<A: ArchTag>: BuildsCapstone<A> {
     /// Set architecture endianness
-    fn extra_mode<T: Iterator<Item = ArchExtraMode>>(self, extra_mode: T) -> Self;
+    fn extra_mode<T: Iterator<Item = A::ExtraMode>>(self, extra_mode: T) -> Self;
 }
 
 /// Implies that a `CapstoneBuilder` has different syntax options
-pub trait BuildsCapstoneSyntax<ArchMode, ArchSyntax>: BuildsCapstone<ArchMode> {
+pub trait BuildsCapstoneSyntax<A: ArchTag>: BuildsCapstone<A> {
     /// Set the disassembly syntax
-    fn syntax(self, syntax: ArchSyntax) -> Self;
+    fn syntax(self, syntax: A::Syntax) -> Self;
 }
 
 /// Implies that a `CapstoneBuilder` architecture has a configurable endianness
-pub trait BuildsCapstoneEndian<ArchMode>: BuildsCapstone<ArchMode> {
+pub trait BuildsCapstoneEndian<A: ArchTag>: BuildsCapstone<A> {
     /// Set architecture endianness
     fn endian(self, endian: Endian) -> Self;
 }
@@ -394,18 +441,11 @@ pub(crate) mod arch_builder {
 }
 
 /// Builds `Capstone` object
-#[derive(Debug)]
+#[derive(Debug, Default)]
 pub struct CapstoneBuilder(
     /// Hidden field to prevent users from instantiating `CapstoneBuilder`
     PhantomData<()>,
 );
-
-impl CapstoneBuilder {
-    /// Create a `CapstoneBuilder`
-    pub(crate) fn new() -> Self {
-        CapstoneBuilder(PhantomData)
-    }
-}
 
 /// Provides architecture-specific details about an instruction
 pub trait DetailsArchInsn: PartialEq + Debug {
@@ -597,12 +637,58 @@ macro_rules! detail_defs {
         }
 
         $(
+            impl<'a> From<$InsnDetail> for ArchDetail<'a> {
+                fn from(insn_detail: $InsnDetail) -> Self {
+                    Self::$Detail(insn_detail)
+                }
+            }
+        )+
+
+        $(
             impl From<$Operand> for ArchOperand {
                 fn from(op: $Operand) -> ArchOperand {
                     ArchOperand::$Operand(op)
                 }
             }
         )+
+    }
+}
+
+impl<'a, 'i> From<&'i InsnDetail<'a, DynamicArchTag>> for ArchDetail<'a> {
+    fn from(insn_detail: &'i InsnDetail<'a, DynamicArchTag>) -> Self {
+        macro_rules! def_arch_detail_match {
+            (
+                $( [ $ARCH:ident, $detail:ident, $insn_detail:ident, $arch:ident ] )*
+            ) => {
+                use self::ArchDetail::*;
+                use crate::Arch::*;
+                $( use crate::arch::$arch::$insn_detail; )*
+
+                return match insn_detail.1 {
+                    $(
+                        $ARCH => {
+                            $detail($insn_detail(unsafe { &insn_detail.0.__bindgen_anon_1.$arch }))
+                        }
+                    )*
+                    _ => panic!("Unsupported detail arch"),
+                }
+            }
+        }
+
+        def_arch_detail_match!(
+            [ARM, ArmDetail, ArmInsnDetail, arm]
+            [ARM64, Arm64Detail, Arm64InsnDetail, arm64]
+            [EVM, EvmDetail, EvmInsnDetail, evm]
+            [M680X, M680xDetail, M680xInsnDetail, m680x]
+            [M68K, M68kDetail, M68kInsnDetail, m68k]
+            [MIPS, MipsDetail, MipsInsnDetail, mips]
+            [PPC, PpcDetail, PpcInsnDetail, ppc]
+            [RISCV, RiscVDetail, RiscVInsnDetail, riscv]
+            [SPARC, SparcDetail, SparcInsnDetail, sparc]
+            [TMS320C64X, Tms320c64xDetail, Tms320c64xInsnDetail, tms320c64x]
+            [X86, X86Detail, X86InsnDetail, x86]
+            [XCORE, XcoreDetail, XcoreInsnDetail, xcore]
+        );
     }
 }
 
@@ -684,7 +770,7 @@ detail_arch_base!(detail_defs);
 macro_rules! define_arch_mods {
     (
         $( [
-            ( $arch:ident, $arch_variant:ident )
+            ( $arch:ident, $arch_variant:ident, $arch_tag:ident )
             ( mode: $( $mode:ident, )+ )
             ( extra_modes: $( $extra_mode:ident, )* )
             ( syntax: $( $syntax:ident, )* )

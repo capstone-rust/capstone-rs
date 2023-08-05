@@ -9,7 +9,31 @@ pub use capstone_sys::evm_insn_group as EvmInsnGroup;
 pub use capstone_sys::evm_insn as EvmInsn;
 
 pub use crate::arch::arch_builder::evm::*;
-use crate::arch::DetailsArchInsn;
+use crate::arch::{ArchTag, DetailsArchInsn};
+use crate::arch::internal::ArchTagSealed;
+use crate::{Arch, InsnDetail};
+
+pub struct EvmArchTag;
+
+impl ArchTagSealed for EvmArchTag {}
+
+impl ArchTag for EvmArchTag {
+    type Builder = ArchCapstoneBuilder;
+
+    type Mode = ArchMode;
+    type ExtraMode = ArchExtraMode;
+    type Syntax = ArchSyntax;
+
+    type RegId = u32;
+    type InsnId = EvmInsn;
+    type InsnGroupId = EvmInsnGroup::Type;
+
+    type InsnDetail<'a> = EvmInsnDetail<'a>;
+
+    fn support_arch(arch: Arch) -> bool {
+        arch == Arch::EVM
+    }
+}
 
 /// Contains EVM-specific details for an instruction
 pub struct EvmInsnDetail<'a>(pub(crate) &'a cs_evm);
@@ -34,6 +58,12 @@ impl<'a> EvmInsnDetail<'a> {
 impl_PartialEq_repr_fields!(EvmInsnDetail<'a> [ 'a ];
     popped_items, pushed_items, fee
 );
+
+impl<'a, 'i> From<&'i InsnDetail<'a, EvmArchTag>> for EvmInsnDetail<'a> {
+    fn from(value: &'i InsnDetail<'a, EvmArchTag>) -> Self {
+        Self(unsafe { &value.0.__bindgen_anon_1.evm })
+    }
+}
 
 /// EVM has no operands, so this is a zero-size type.
 #[derive(Clone, Debug, Eq, PartialEq, Default)]

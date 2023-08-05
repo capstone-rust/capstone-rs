@@ -14,11 +14,33 @@ pub use capstone_sys::m68k_insn as M68kInsn;
 pub use capstone_sys::m68k_reg as M68kReg;
 
 pub use crate::arch::arch_builder::m68k::*;
-use crate::arch::DetailsArchInsn;
-use crate::Error;
+use crate::arch::{ArchTag, DetailsArchInsn};
+use crate::arch::internal::ArchTagSealed;
+use crate::{Arch, Error, InsnDetail};
 use crate::instruction::{RegId, RegIdInt};
 use crate::prelude::*;
 
+pub struct M68kArchTag;
+
+impl ArchTagSealed for M68kArchTag {}
+
+impl ArchTag for M68kArchTag {
+    type Builder = ArchCapstoneBuilder;
+
+    type Mode = ArchMode;
+    type ExtraMode = ArchExtraMode;
+    type Syntax = ArchSyntax;
+
+    type RegId = M68kReg::Type;
+    type InsnId = M68kInsn;
+    type InsnGroupId = u32;
+
+    type InsnDetail<'a> = M68kInsnDetail<'a>;
+
+    fn support_arch(arch: Arch) -> bool {
+        arch == Arch::M68K
+    }
+}
 
 /// Contains M68K-specific details for an instruction
 pub struct M68kInsnDetail<'a>(pub(crate) &'a cs_m68k);
@@ -27,6 +49,12 @@ impl<'a> M68kInsnDetail<'a> {
     /// size of data operand works on in bytes (.b, .w, .l, etc)
     pub fn op_size(&self) -> Option<M68kOpSize> {
         M68kOpSize::new(&self.0.op_size)
+    }
+}
+
+impl<'a, 'i> From<&'i InsnDetail<'a, M68kArchTag>> for M68kInsnDetail<'a> {
+    fn from(value: &'i InsnDetail<'a, M68kArchTag>) -> Self {
+        Self(unsafe { &value.0.__bindgen_anon_1.m68k })
     }
 }
 
@@ -638,8 +666,7 @@ mod test {
         use crate::instruction::*;
         use crate::arch::DetailsArchInsn;
 
-        let cs = Capstone::new()
-            .m68k()
+        let cs = Capstone::<M68kArchTag>::new()
             .mode(arch::m68k::ArchMode::M68k040)
             .detail(true)
             .build()
@@ -657,10 +684,9 @@ mod test {
         let mut insns_iter = insns.iter();
 
         // jsr
-        let insn_jsr: &Insn = insns_iter.next().unwrap();
+        let insn_jsr: &Insn<M68kArchTag> = insns_iter.next().unwrap();
         let detail = cs.insn_detail(insn_jsr).unwrap();
-        let _arch_detail = detail.arch_detail();
-        let arch_detail = _arch_detail.m68k().unwrap();
+        let arch_detail = detail.arch_detail();
         let mut ops = arch_detail.operands();
         if let M68kOperand::Mem(mem) = ops.next().unwrap() {
             assert_eq!(mem.imm(), Some(0x12));

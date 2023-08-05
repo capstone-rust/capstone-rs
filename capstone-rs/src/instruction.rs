@@ -8,7 +8,7 @@ use core::str;
 
 use capstone_sys::*;
 
-use crate::arch::ArchDetail;
+use crate::arch::ArchTag;
 use crate::constants::Arch;
 
 use crate::ffi::str_from_cstr_ptr;
@@ -25,8 +25,19 @@ use crate::ffi::str_from_cstr_ptr;
 ///     println!("{}", insn);
 /// }
 /// ```
-#[derive(Debug)]
-pub struct Instructions<'a>(&'a mut [cs_insn]);
+pub struct Instructions<'a, A: ArchTag>(&'a mut [cs_insn], PhantomData<A>);
+
+impl<'a, A: ArchTag> Instructions<'a, A> {
+    fn new(insns: &'a mut [cs_insn]) -> Self {
+        Self(insns, PhantomData::default())
+    }
+}
+
+impl<'a, A: ArchTag> Debug for Instructions<'a, A> {
+    fn fmt(&self, f: &mut Formatter<'_>) -> core::fmt::Result {
+        f.debug_tuple("Instructions").field(&self.0).finish()
+    }
+}
 
 /// Integer type used in `InsnId`
 pub type InsnIdInt = u32;
@@ -37,6 +48,34 @@ pub type InsnIdInt = u32;
 #[derive(Copy, Clone, Debug, Hash, PartialEq, Eq, PartialOrd, Ord)]
 pub struct InsnId(pub InsnIdInt);
 
+macro_rules! define_insn_id_from_arch_insn {
+    ( $( $arch_insn_ty:ty ),+ $(,)? ) => {
+        $(
+            impl From<$arch_insn_ty> for InsnId {
+                fn from(arch_insn: $arch_insn_ty) -> Self {
+                    Self(arch_insn as InsnIdInt)
+                }
+            }
+        )+
+    };
+}
+
+define_insn_id_from_arch_insn![
+    crate::arch::arm::ArmInsn,
+    crate::arch::arm64::Arm64Insn,
+    crate::arch::evm::EvmInsn,
+    crate::arch::m68k::M68kInsn,
+    crate::arch::m680x::M680xInsn,
+    crate::arch::mips::MipsInsn,
+    crate::arch::ppc::PpcInsn,
+    crate::arch::riscv::RiscVInsn,
+    crate::arch::sparc::SparcInsn,
+    crate::arch::sysz::SyszInsn,
+    crate::arch::tms320c64x::Tms320c64xInsn,
+    crate::arch::x86::X86Insn,
+    crate::arch::xcore::XcoreInsn,
+];
+
 /// Integer type used in `InsnGroupId`
 pub type InsnGroupIdInt = u8;
 
@@ -46,6 +85,16 @@ pub type InsnGroupIdInt = u8;
 #[derive(Copy, Clone, Debug, Hash, PartialEq, Eq, PartialOrd, Ord)]
 #[repr(transparent)]
 pub struct InsnGroupId(pub InsnGroupIdInt);
+
+impl InsnGroupId {
+    pub const INVALID_GROUP: Self = Self(0);
+}
+
+impl From<u32> for InsnGroupId {
+    fn from(value: u32) -> Self {
+        Self(value.try_into().ok().unwrap_or(Self::INVALID_GROUP.0))
+    }
+}
 
 pub use capstone_sys::cs_group_type as InsnGroupType;
 
@@ -64,7 +113,7 @@ impl RegId {
     pub const INVALID_REG: Self = Self(0);
 }
 
-impl core::convert::From<u32> for RegId {
+impl From<u32> for RegId {
     fn from(v: u32) -> RegId {
         RegId(v.try_into().ok().unwrap_or(Self::INVALID_REG.0))
     }
@@ -122,34 +171,34 @@ impl TryFrom<cs_ac_type> for RegAccessType {
     }
 }
 
-impl<'a> Instructions<'a> {
-    pub(crate) unsafe fn from_raw_parts(ptr: *mut cs_insn, len: usize) -> Instructions<'a> {
-        Instructions(slice::from_raw_parts_mut(ptr, len))
+impl<'a, A: ArchTag> Instructions<'a, A> {
+    pub(crate) unsafe fn from_raw_parts(ptr: *mut cs_insn, len: usize) -> Instructions<'a, A> {
+        Instructions::new(slice::from_raw_parts_mut(ptr, len))
     }
 
-    pub(crate) fn new_empty() -> Instructions<'a> {
-        Instructions(&mut [])
+    pub(crate) fn new_empty() -> Instructions<'a, A> {
+        Instructions::new(&mut [])
     }
 }
 
-impl<'a> core::ops::Deref for Instructions<'a> {
-    type Target = [Insn<'a>];
+impl<'a, A: ArchTag> Deref for Instructions<'a, A> {
+    type Target = [Insn<'a, A>];
 
     #[inline]
-    fn deref(&self) -> &[Insn<'a>] {
+    fn deref(&self) -> &[Insn<'a, A>] {
         // SAFETY: `cs_insn` has the same memory layout as `Insn`
-        unsafe { &*(self.0 as *const [cs_insn] as *const [Insn]) }
+        unsafe { &*(self.0 as *const [cs_insn] as *const [Insn<'a, A>]) }
     }
 }
 
-impl<'a> AsRef<[Insn<'a>]> for Instructions<'a> {
+impl<'a, A: ArchTag> AsRef<[Insn<'a, A>]> for Instructions<'a, A> {
     #[inline]
-    fn as_ref(&self) -> &[Insn<'a>] {
+    fn as_ref(&self) -> &[Insn<'a, A>] {
         self.deref()
     }
 }
 
-impl<'a> Drop for Instructions<'a> {
+impl<'a, A: ArchTag> Drop for Instructions<'a, A> {
     fn drop(&mut self) {
         if !self.is_empty() {
             unsafe {
@@ -165,12 +214,12 @@ impl<'a> Drop for Instructions<'a> {
 ///
 /// To learn how to get more instruction details, see [`InsnDetail`].
 #[repr(transparent)]
-pub struct Insn<'a> {
+pub struct Insn<'a, A: ArchTag> {
     /// Inner `cs_insn`
     pub(crate) insn: cs_insn,
 
     /// Adds lifetime
-    pub(crate) _marker: PhantomData<&'a InsnDetail<'a>>,
+    pub(crate) _marker: PhantomData<&'a InsnDetail<'a, A>>,
 }
 
 /// Contains architecture-independent details about an [`Insn`].
@@ -202,10 +251,16 @@ pub struct Insn<'a> {
 /// To get additional architecture-specific information, use the
 /// [`.arch_detail()`](Self::arch_detail) method to get an `ArchDetail` enum.
 ///
-pub struct InsnDetail<'a>(pub(crate) &'a cs_detail, pub(crate) Arch);
+pub struct InsnDetail<'a, A: ArchTag>(pub(crate) &'a cs_detail, pub(crate) Arch, PhantomData<A>);
+
+impl<'a, A: ArchTag> InsnDetail<'a, A> {
+    fn new(detail: &'a cs_detail, arch: Arch) -> Self {
+        Self(detail, arch, PhantomData::default())
+    }
+}
 
 #[allow(clippy::len_without_is_empty)]
-impl<'a> Insn<'a> {
+impl<'a, A: ArchTag> Insn<'a, A> {
     /// Create an `Insn` from a raw pointer to a [`capstone_sys::cs_insn`].
     ///
     /// This function serves to allow integration with libraries which generate `capstone_sys::cs_insn`'s internally.
@@ -281,16 +336,16 @@ impl<'a> Insn<'a> {
     /// # Safety
     /// The [`cs_insn::detail`] pointer must be valid and non-null.
     #[inline]
-    pub(crate) unsafe fn detail(&self, arch: Arch) -> InsnDetail {
-        InsnDetail(&*self.insn.detail, arch)
+    pub(crate) unsafe fn detail(&self, arch: Arch) -> InsnDetail<'_, A> {
+        InsnDetail::new(&*self.insn.detail, arch)
     }
 }
 
-impl<'a> From<&Insn<'_>> for OwnedInsn<'a> {
+impl<'a, A: ArchTag> From<&Insn<'_, A>> for OwnedInsn<'a, A> {
     // SAFETY: assumes that `cs_detail` struct transitively only contains owned
     // types and no pointers, including the union over the architecture-specific
     // types.
-    fn from(insn: &Insn<'_>) -> Self {
+    fn from(insn: &Insn<'_, A>) -> Self {
         let mut new = unsafe { <*const cs_insn>::read(&insn.insn as _) };
         new.detail = if new.detail.is_null() {
             new.detail
@@ -310,10 +365,10 @@ impl<'a> From<&Insn<'_>> for OwnedInsn<'a> {
 /// SAFETY:
 /// 1. [`OwnedInsn`] and [`Insn`] must be `#repr(transparent)` of [`cs_insn`]
 /// 2. all [`Insn`] methods must be safe to perform for an [`OwnedInsn`]
-impl<'a> Deref for OwnedInsn<'a> {
-    type Target = Insn<'a>;
+impl<'a, A: ArchTag> Deref for OwnedInsn<'a, A> {
+    type Target = Insn<'a, A>;
     fn deref(&self) -> &Self::Target {
-        unsafe { &*(&self.insn as *const cs_insn as *const Insn) }
+        unsafe { &*(&self.insn as *const cs_insn as *const Insn<'a, A>) }
     }
 }
 
@@ -322,15 +377,15 @@ impl<'a> Deref for OwnedInsn<'a> {
 /// # Detail
 ///
 /// To learn how to get more instruction details, see [`InsnDetail`].
-pub struct OwnedInsn<'a> {
+pub struct OwnedInsn<'a, A: ArchTag> {
     /// Inner cs_insn
     pub(crate) insn: cs_insn,
 
     /// Adds lifetime
-    pub(crate) _marker: PhantomData<&'a InsnDetail<'a>>,
+    pub(crate) _marker: PhantomData<&'a InsnDetail<'a, A>>,
 }
 
-impl<'a> Debug for Insn<'a> {
+impl<'a, A: ArchTag> Debug for Insn<'a, A> {
     fn fmt(&self, fmt: &mut Formatter) -> Result<(), Error> {
         fmt.debug_struct("Insn")
             .field("address", &self.address())
@@ -342,7 +397,7 @@ impl<'a> Debug for Insn<'a> {
     }
 }
 
-impl<'a> Display for Insn<'a> {
+impl<'a, A: ArchTag> Display for Insn<'a, A> {
     fn fmt(&self, fmt: &mut Formatter) -> fmt::Result {
         write!(fmt, "{:#x}: ", self.address())?;
         if let Some(mnemonic) = self.mnemonic() {
@@ -355,7 +410,7 @@ impl<'a> Display for Insn<'a> {
     }
 }
 
-impl<'a> Drop for OwnedInsn<'a> {
+impl<'a, A: ArchTag> Drop for OwnedInsn<'a, A> {
     fn drop(&mut self) {
         if let Some(ptr) = core::ptr::NonNull::new(self.insn.detail) {
             unsafe { drop(Box::from_raw(ptr.as_ptr())) }
@@ -363,13 +418,13 @@ impl<'a> Drop for OwnedInsn<'a> {
     }
 }
 
-impl<'a> Debug for OwnedInsn<'a> {
+impl<'a, A: ArchTag> Debug for OwnedInsn<'a, A> {
     fn fmt(&self, fmt: &mut Formatter) -> Result<(), Error> {
         Debug::fmt(&self.deref(), fmt)
     }
 }
 
-impl<'a> Display for OwnedInsn<'a> {
+impl<'a, A: ArchTag> Display for OwnedInsn<'a, A> {
     fn fmt(&self, fmt: &mut Formatter) -> fmt::Result {
         Display::fmt(&self.deref(), fmt)
     }
@@ -379,73 +434,46 @@ impl<'a> Display for OwnedInsn<'a> {
 #[derive(Debug, Clone)]
 pub struct InsnGroupIter<'a>(slice::Iter<'a, InsnGroupIdInt>);
 
-impl<'a> InsnDetail<'a> {
+impl<'a, A: ArchTag> InsnDetail<'a, A> {
     #[cfg(feature = "full")]
     /// Returns the implicit read registers
-    pub fn regs_read(&self) -> &[RegId] {
+    pub fn regs_read(&self) -> &[A::RegId] {
         unsafe {
             &*(&self.0.regs_read[..self.0.regs_read_count as usize] as *const [RegIdInt]
-                as *const [RegId])
+                as *const [A::RegId])
         }
     }
 
     #[cfg(feature = "full")]
     /// Returns the implicit write registers
-    pub fn regs_write(&self) -> &[RegId] {
+    pub fn regs_write(&self) -> &[A::RegId] {
         unsafe {
             &*(&self.0.regs_write[..self.0.regs_write_count as usize] as *const [RegIdInt]
-                as *const [RegId])
+                as *const [A::RegId])
         }
     }
 
     #[cfg(feature = "full")]
     /// Returns the groups to which this instruction belongs
-    pub fn groups(&self) -> &[InsnGroupId] {
+    pub fn groups(&self) -> &[A::InsnGroupId] {
         unsafe {
             &*(&self.0.groups[..self.0.groups_count as usize] as *const [InsnGroupIdInt]
-                as *const [InsnGroupId])
+                as *const [A::InsnGroupId])
         }
     }
 
     /// Architecture-specific detail
-    pub fn arch_detail(&self) -> ArchDetail {
-        macro_rules! def_arch_detail_match {
-            (
-                $( [ $ARCH:ident, $detail:ident, $insn_detail:ident, $arch:ident ] )*
-            ) => {
-                use self::ArchDetail::*;
-                use crate::Arch::*;
-                $( use crate::arch::$arch::$insn_detail; )*
-
-                return match self.1 {
-                    $(
-                        $ARCH => {
-                            $detail($insn_detail(unsafe { &self.0.__bindgen_anon_1.$arch }))
-                        }
-                    )*
-                    _ => panic!("Unsupported detail arch"),
-                }
-            }
-        }
-        def_arch_detail_match!(
-            [ARM, ArmDetail, ArmInsnDetail, arm]
-            [ARM64, Arm64Detail, Arm64InsnDetail, arm64]
-            [EVM, EvmDetail, EvmInsnDetail, evm]
-            [M680X, M680xDetail, M680xInsnDetail, m680x]
-            [M68K, M68kDetail, M68kInsnDetail, m68k]
-            [MIPS, MipsDetail, MipsInsnDetail, mips]
-            [PPC, PpcDetail, PpcInsnDetail, ppc]
-            [RISCV, RiscVDetail, RiscVInsnDetail, riscv]
-            [SPARC, SparcDetail, SparcInsnDetail, sparc]
-            [TMS320C64X, Tms320c64xDetail, Tms320c64xInsnDetail, tms320c64x]
-            [X86, X86Detail, X86InsnDetail, x86]
-            [XCORE, XcoreDetail, XcoreInsnDetail, xcore]
-        );
+    pub fn arch_detail(&self) -> A::InsnDetail<'_> {
+        A::InsnDetail::from(self)
     }
 }
 
 #[cfg(feature = "full")]
-impl<'a> Debug for InsnDetail<'a> {
+impl<'a, A: ArchTag> Debug for InsnDetail<'a, A>
+where
+    A::RegId: Debug,
+    A::InsnGroupId: Debug,
+{
     fn fmt(&self, fmt: &mut Formatter) -> fmt::Result {
         fmt.debug_struct("Detail")
             .field("regs_read", &self.regs_read())
@@ -462,7 +490,7 @@ impl<'a> Debug for InsnDetail<'a> {
     }
 }
 
-impl<'a> Display for Instructions<'a> {
+impl<'a, A: ArchTag> Display for Instructions<'a, A> {
     fn fmt(&self, fmt: &mut Formatter) -> fmt::Result {
         for instruction in self.iter() {
             write!(fmt, "{:x}:\t", instruction.address())?;

@@ -11,8 +11,32 @@ pub use capstone_sys::mips_insn as MipsInsn;
 pub use capstone_sys::mips_reg as MipsReg;
 
 pub use crate::arch::arch_builder::mips::*;
-use crate::arch::DetailsArchInsn;
+use crate::arch::{ArchTag, DetailsArchInsn};
+use crate::arch::internal::ArchTagSealed;
 use crate::instruction::{RegId, RegIdInt};
+use crate::{Arch, InsnDetail};
+
+pub struct MipsArchTag;
+
+impl ArchTagSealed for MipsArchTag {}
+
+impl ArchTag for MipsArchTag {
+    type Builder = ArchCapstoneBuilder;
+
+    type Mode = ArchMode;
+    type ExtraMode = ArchExtraMode;
+    type Syntax = ArchSyntax;
+
+    type RegId = MipsReg::Type;
+    type InsnId = MipsInsn;
+    type InsnGroupId = MipsInsnGroup::Type;
+
+    type InsnDetail<'a> = MipsInsnDetail<'a>;
+
+    fn support_arch(arch: Arch) -> bool {
+        arch == Arch::MIPS
+    }
+}
 
 /// Contains MIPS-specific details for an instruction
 pub struct MipsInsnDetail<'a>(pub(crate) &'a cs_mips);
@@ -20,6 +44,12 @@ pub struct MipsInsnDetail<'a>(pub(crate) &'a cs_mips);
 impl_PartialEq_repr_fields!(MipsInsnDetail<'a> [ 'a ];
     operands
 );
+
+impl<'a, 'i> From<&'i InsnDetail<'a, MipsArchTag>> for MipsInsnDetail<'a> {
+    fn from(value: &'i InsnDetail<'a, MipsArchTag>) -> Self {
+        Self(unsafe { &value.0.__bindgen_anon_1.mips })
+    }
+}
 
 /// MIPS operand
 #[derive(Clone, Debug, Eq, PartialEq)]

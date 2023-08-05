@@ -10,8 +10,32 @@ pub use capstone_sys::riscv_reg as RiscVReg;
 use capstone_sys::{cs_riscv, cs_riscv_op, riscv_op_mem, riscv_op_type};
 
 pub use crate::arch::arch_builder::riscv::*;
-use crate::arch::DetailsArchInsn;
+use crate::arch::{ArchTag, DetailsArchInsn};
+use crate::arch::internal::ArchTagSealed;
 use crate::instruction::{RegId, RegIdInt};
+use crate::{Arch, InsnDetail};
+
+pub struct RiscVArchTag;
+
+impl ArchTagSealed for RiscVArchTag {}
+
+impl ArchTag for RiscVArchTag {
+    type Builder = ArchCapstoneBuilder;
+
+    type Mode = ArchMode;
+    type ExtraMode = ArchExtraMode;
+    type Syntax = ArchSyntax;
+
+    type RegId = RiscVReg::Type;
+    type InsnId = RiscVInsn;
+    type InsnGroupId = RiscVInsnGroup::Type;
+
+    type InsnDetail<'a> = RiscVInsnDetail<'a>;
+
+    fn support_arch(arch: Arch) -> bool {
+        arch == Arch::RISCV
+    }
+}
 
 /// Contains RISCV-specific details for an instruction
 pub struct RiscVInsnDetail<'a>(pub(crate) &'a cs_riscv);
@@ -19,6 +43,12 @@ pub struct RiscVInsnDetail<'a>(pub(crate) &'a cs_riscv);
 impl_PartialEq_repr_fields!(RiscVInsnDetail<'a> [ 'a ];
     operands
 );
+
+impl<'a, 'i> From<&'i InsnDetail<'a, RiscVArchTag>> for RiscVInsnDetail<'a> {
+    fn from(value: &'i InsnDetail<'a, RiscVArchTag>) -> Self {
+        Self(unsafe { &value.0.__bindgen_anon_1.riscv })
+    }
+}
 
 /// RISCV operand
 #[derive(Clone, Debug, Eq, PartialEq)]

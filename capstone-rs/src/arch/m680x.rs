@@ -12,9 +12,32 @@ pub use capstone_sys::m680x_insn as M680xInsn;
 pub use capstone_sys::m680x_reg as M680xReg;
 
 pub use crate::arch::arch_builder::m680x::*;
-use crate::arch::DetailsArchInsn;
+use crate::arch::{ArchTag, DetailsArchInsn};
+use crate::arch::internal::ArchTagSealed;
 use crate::instruction::{RegId, RegIdInt};
+use crate::{Arch, InsnDetail};
 
+pub struct M680xArchTag;
+
+impl ArchTagSealed for M680xArchTag {}
+
+impl ArchTag for M680xArchTag {
+    type Builder = ArchCapstoneBuilder;
+
+    type Mode = ArchMode;
+    type ExtraMode = ArchExtraMode;
+    type Syntax = ArchSyntax;
+
+    type RegId = M680xReg::Type;
+    type InsnId = M680xInsn;
+    type InsnGroupId = u32;
+
+    type InsnDetail<'a> = M680xInsnDetail<'a>;
+
+    fn support_arch(arch: Arch) -> bool {
+        arch == Arch::M680X
+    }
+}
 
 /// Contains M680X-specific details for an instruction
 pub struct M680xInsnDetail<'a>(pub(crate) &'a cs_m680x);
@@ -22,6 +45,12 @@ pub struct M680xInsnDetail<'a>(pub(crate) &'a cs_m680x);
 impl_PartialEq_repr_fields!(M680xInsnDetail<'a> [ 'a ];
     operands, flags
 );
+
+impl<'a, 'i> From<&'i InsnDetail<'a, M680xArchTag>> for M680xInsnDetail<'a> {
+    fn from(value: &'i InsnDetail<'a, M680xArchTag>) -> Self {
+        Self(unsafe { &value.0.__bindgen_anon_1.m680x })
+    }
+}
 
 // M680X instruction flags
 const M680X_FIRST_OP_IN_MNEM: u8 = 1;

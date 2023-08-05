@@ -12,12 +12,41 @@ pub use capstone_sys::sparc_hint as SparcHint;
 use capstone_sys::{cs_sparc, cs_sparc_op, sparc_op_mem, sparc_op_type};
 
 pub use crate::arch::arch_builder::sparc::*;
-use crate::arch::DetailsArchInsn;
+use crate::arch::{ArchTag, DetailsArchInsn};
+use crate::arch::internal::ArchTagSealed;
 use crate::instruction::{RegId, RegIdInt};
+use crate::{Arch, InsnDetail};
 
+pub struct SparcArchTag;
+
+impl ArchTagSealed for SparcArchTag {}
+
+impl ArchTag for SparcArchTag {
+    type Builder = ArchCapstoneBuilder;
+
+    type Mode = ArchMode;
+    type ExtraMode = ArchExtraMode;
+    type Syntax = ArchSyntax;
+
+    type RegId = SparcReg::Type;
+    type InsnId = SparcInsn;
+    type InsnGroupId = SparcInsnGroup::Type;
+
+    type InsnDetail<'a> = SparcInsnDetail<'a>;
+
+    fn support_arch(arch: Arch) -> bool {
+        arch == Arch::SPARC
+    }
+}
 
 /// Contains SPARC-specific details for an instruction
 pub struct SparcInsnDetail<'a>(pub(crate) &'a cs_sparc);
+
+impl<'a, 'i> From<&'i InsnDetail<'a, SparcArchTag>> for SparcInsnDetail<'a> {
+    fn from(value: &'i InsnDetail<'a, SparcArchTag>) -> Self {
+        Self(unsafe { &value.0.__bindgen_anon_1.sparc })
+    }
+}
 
 /// SPARC operand
 #[derive(Clone, Debug, Eq, PartialEq)]

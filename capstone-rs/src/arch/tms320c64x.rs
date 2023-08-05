@@ -15,11 +15,41 @@ pub use capstone_sys::tms320c64x_insn_group as Tms320c64xInsnGroup;
 pub use capstone_sys::tms320c64x_reg as Tms320c64xReg;
 
 pub use crate::arch::arch_builder::tms320c64x::*;
+use crate::arch::ArchTag;
+use crate::arch::internal::ArchTagSealed;
 use crate::instruction::{RegId, RegIdInt};
+use crate::{Arch, InsnDetail};
 
+pub struct Tms320c64xArchTag;
+
+impl ArchTagSealed for Tms320c64xArchTag {}
+
+impl ArchTag for Tms320c64xArchTag {
+    type Builder = ArchCapstoneBuilder;
+
+    type Mode = ArchMode;
+    type ExtraMode = ArchExtraMode;
+    type Syntax = ArchSyntax;
+
+    type RegId = Tms320c64xReg::Type;
+    type InsnId = Tms320c64xInsn;
+    type InsnGroupId = Tms320c64xInsnGroup::Type;
+
+    type InsnDetail<'a> = Tms320c64xInsnDetail<'a>;
+
+    fn support_arch(arch: Arch) -> bool {
+        arch == Arch::TMS320C64X
+    }
+}
 
 /// Contains TMS320C64X-specific details for an instruction
 pub struct Tms320c64xInsnDetail<'a>(pub(crate) &'a cs_tms320c64x);
+
+impl<'a, 'i> From<&'i InsnDetail<'a, Tms320c64xArchTag>> for Tms320c64xInsnDetail<'a> {
+    fn from(value: &'i InsnDetail<'a, Tms320c64xArchTag>) -> Self {
+        Self(unsafe { &value.0.__bindgen_anon_1.tms320c64x })
+    }
+}
 
 define_cs_enum_wrapper_reverse!(
     [

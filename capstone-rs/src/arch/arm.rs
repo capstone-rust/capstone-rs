@@ -9,8 +9,10 @@ use capstone_sys::{
 use libc::c_uint;
 
 pub use crate::arch::arch_builder::arm::*;
-use crate::arch::DetailsArchInsn;
+use crate::arch::{ArchTag, DetailsArchInsn};
+use crate::arch::internal::ArchTagSealed;
 use crate::instruction::{RegId, RegIdInt};
+use crate::{Arch, InsnDetail};
 
 pub use capstone_sys::arm_insn_group as ArmInsnGroup;
 pub use capstone_sys::arm_insn as ArmInsn;
@@ -22,8 +24,36 @@ pub use capstone_sys::arm_cc as ArmCC;
 pub use capstone_sys::arm_mem_barrier as ArmMemBarrier;
 pub use capstone_sys::arm_setend_type as ArmSetendType;
 
+pub struct ArmArchTag;
+
+impl ArchTagSealed for ArmArchTag {}
+
+impl ArchTag for ArmArchTag {
+    type Builder = ArchCapstoneBuilder;
+
+    type Mode = ArchMode;
+    type ExtraMode = ArchExtraMode;
+    type Syntax = ArchSyntax;
+
+    type RegId = ArmReg::Type;
+    type InsnId = ArmInsn;
+    type InsnGroupId = ArmInsnGroup::Type;
+
+    type InsnDetail<'a> = ArmInsnDetail<'a>;
+
+    fn support_arch(arch: Arch) -> bool {
+        arch == Arch::ARM
+    }
+}
+
 /// Contains ARM-specific details for an instruction
 pub struct ArmInsnDetail<'a>(pub(crate) &'a cs_arm);
+
+impl<'a, 'i> From<&'i InsnDetail<'a, ArmArchTag>> for ArmInsnDetail<'a> {
+    fn from(value: &'i InsnDetail<'a, ArmArchTag>) -> Self {
+        Self(unsafe { &value.0.__bindgen_anon_1.arm })
+    }
+}
 
 /// ARM shift amount
 #[derive(Clone, Copy, Debug, Eq, PartialEq, Hash)]

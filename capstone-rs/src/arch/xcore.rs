@@ -10,8 +10,32 @@ pub use capstone_sys::xcore_reg as XcoreReg;
 use capstone_sys::{cs_xcore, cs_xcore_op, xcore_op_mem, xcore_op_type};
 
 pub use crate::arch::arch_builder::xcore::*;
-use crate::arch::DetailsArchInsn;
+use crate::arch::{ArchTag, DetailsArchInsn};
+use crate::arch::internal::ArchTagSealed;
 use crate::instruction::{RegId, RegIdInt};
+use crate::{Arch, InsnDetail};
+
+pub struct XcoreArchTag;
+
+impl ArchTagSealed for XcoreArchTag {}
+
+impl ArchTag for XcoreArchTag {
+    type Builder = ArchCapstoneBuilder;
+
+    type Mode = ArchMode;
+    type ExtraMode = ArchExtraMode;
+    type Syntax = ArchSyntax;
+
+    type RegId = XcoreReg::Type;
+    type InsnId = XcoreInsn;
+    type InsnGroupId = XcoreInsnGroup::Type;
+
+    type InsnDetail<'a> = XcoreInsnDetail<'a>;
+
+    fn support_arch(arch: Arch) -> bool {
+        arch == Arch::XCORE
+    }
+}
 
 /// Contains XCORE-specific details for an instruction
 pub struct XcoreInsnDetail<'a>(pub(crate) &'a cs_xcore);
@@ -19,6 +43,12 @@ pub struct XcoreInsnDetail<'a>(pub(crate) &'a cs_xcore);
 impl_PartialEq_repr_fields!(XcoreInsnDetail<'a> [ 'a ];
     operands
 );
+
+impl<'a, 'i> From<&'i InsnDetail<'a, XcoreArchTag>> for XcoreInsnDetail<'a> {
+    fn from(value: &'i InsnDetail<'a, XcoreArchTag>) -> Self {
+        Self(unsafe { &value.0.__bindgen_anon_1.xcore })
+    }
+}
 
 /// XCORE operand
 #[derive(Clone, Debug, Eq, PartialEq)]

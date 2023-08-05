@@ -18,11 +18,41 @@ pub use capstone_sys::x86_xop_cc as X86XopCC;
 pub use capstone_sys::x86_avx_rm as X86AvxRm;
 
 pub use crate::arch::arch_builder::x86::*;
-use crate::arch::DetailsArchInsn;
+use crate::arch::{ArchTag, DetailsArchInsn};
+use crate::arch::internal::ArchTagSealed;
 use crate::instruction::{RegAccessType, RegId, RegIdInt};
+use crate::{Arch, InsnDetail};
+
+pub struct X86ArchTag;
+
+impl ArchTagSealed for X86ArchTag {}
+
+impl ArchTag for X86ArchTag {
+    type Builder = ArchCapstoneBuilder;
+
+    type Mode = ArchMode;
+    type ExtraMode = ArchExtraMode;
+    type Syntax = ArchSyntax;
+
+    type RegId = X86Reg::Type;
+    type InsnId = X86Insn;
+    type InsnGroupId = X86InsnGroup::Type;
+
+    type InsnDetail<'a> = X86InsnDetail<'a>;
+
+    fn support_arch(arch: Arch) -> bool {
+        arch == Arch::X86
+    }
+}
 
 /// Contains X86-specific details for an instruction
 pub struct X86InsnDetail<'a>(pub(crate) &'a cs_x86);
+
+impl<'a, 'i> From<&'i InsnDetail<'a, X86ArchTag>> for X86InsnDetail<'a> {
+    fn from(value: &'i InsnDetail<'a, X86ArchTag>) -> Self {
+        Self(unsafe { &value.0.__bindgen_anon_1.x86 })
+    }
+}
 
 // todo(tmfink): expose new types cs_x86__bindgen_ty_1, cs_x86_encoding, x86_xop_cc,
 // cs_x86_op::access
