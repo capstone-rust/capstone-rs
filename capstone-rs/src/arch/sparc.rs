@@ -28,9 +28,9 @@ impl ArchTag for SparcArchTag {
     type ExtraMode = ArchExtraMode;
     type Syntax = ArchSyntax;
 
-    type RegId = SparcReg::Type;
+    type RegId = SparcReg;
     type InsnId = SparcInsn;
-    type InsnGroupId = SparcInsnGroup::Type;
+    type InsnGroupId = SparcInsnGroup;
 
     type InsnDetail<'a> = SparcInsnDetail<'a>;
 
@@ -117,7 +117,7 @@ impl<'a> From<&'a cs_sparc_op> for SparcOperand {
     fn from(insn: &cs_sparc_op) -> SparcOperand {
         match insn.type_ {
             sparc_op_type::SPARC_OP_REG => {
-                SparcOperand::Reg(RegId(unsafe { insn.__bindgen_anon_1.reg } as RegIdInt))
+                SparcOperand::Reg(unsafe { insn.__bindgen_anon_1.reg.into() })
             }
             sparc_op_type::SPARC_OP_IMM => SparcOperand::Imm(unsafe { insn.__bindgen_anon_1.imm }),
             sparc_op_type::SPARC_OP_MEM => {

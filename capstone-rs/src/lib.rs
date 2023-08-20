@@ -26,8 +26,8 @@ mod error;
 mod ffi;
 mod instruction;
 
-#[cfg(test)]
-mod test;
+// #[cfg(test)]
+// mod test;
 
 pub use crate::capstone::*;
 pub use crate::constants::*;

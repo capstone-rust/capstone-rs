@@ -240,7 +240,7 @@ fn write_bindgen_bindings(
     out_impl_path: PathBuf,
 ) {
     let mut builder = bindgen::Builder::default()
-        .rust_target(bindgen::RustTarget::Stable_1_19)
+        .rust_target(bindgen::RustTarget::Stable_1_59)
         .size_t_is_usize(true)
         .use_core()
         .ctypes_prefix("libc")
@@ -255,7 +255,7 @@ fn write_bindgen_bindings(
         .generate_comments(true)
         .layout_tests(false) // eliminate test failures on platforms with different pointer sizes
         .impl_debug(true)
-        .constified_enum_module("cs_err|cs_group_type|cs_opt_value")
+        .newtype_enum("cs_err|cs_group_type|cs_opt_value")
         .bitfield_enum("cs_mode|cs_ac_type")
         .rustified_enum(".*")
         .no_copy("cs_insn");
@@ -270,10 +270,10 @@ fn write_bindgen_bindings(
     for arch in ARCH_INCLUDES {
         // .*(^|_)ARCH(_|$).*
         let arch_type_pattern = format!(".*(^|_){}(_|$).*", arch.cs_name);
-        let const_mod_pattern = format!("^{}_(reg|insn_group)$", arch.cs_name);
+        let const_mod_pattern = format!("^{}_(reg|insn_group|group_type)$", arch.cs_name);
         builder = builder
             .allowlist_type(&arch_type_pattern)
-            .constified_enum_module(&const_mod_pattern);
+            .newtype_enum(&const_mod_pattern);
     }
 
     let bindings = builder.generate().expect("Unable to generate bindings");

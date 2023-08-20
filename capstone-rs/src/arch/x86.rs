@@ -20,7 +20,7 @@ pub use capstone_sys::x86_avx_rm as X86AvxRm;
 pub use crate::arch::arch_builder::x86::*;
 use crate::arch::{ArchTag, DetailsArchInsn};
 use crate::arch::internal::ArchTagSealed;
-use crate::instruction::{RegAccessType, RegId, RegIdInt};
+use crate::instruction::{RegAccessType, RegId};
 use crate::{Arch, InsnDetail};
 
 pub struct X86ArchTag;
@@ -34,9 +34,9 @@ impl ArchTag for X86ArchTag {
     type ExtraMode = ArchExtraMode;
     type Syntax = ArchSyntax;
 
-    type RegId = X86Reg::Type;
+    type RegId = X86Reg;
     type InsnId = X86Insn;
-    type InsnGroupId = X86InsnGroup::Type;
+    type InsnGroupId = X86InsnGroup;
 
     type InsnDetail<'a> = X86InsnDetail<'a>;
 
@@ -63,7 +63,7 @@ impl X86OperandType {
         use self::X86OperandType::*;
 
         match op_type {
-            X86_OP_REG => Reg(RegId(unsafe { value.reg } as RegIdInt)),
+            X86_OP_REG => Reg(unsafe { value.reg.into() }),
             X86_OP_IMM => Imm(unsafe { value.imm }),
             X86_OP_MEM => Mem(X86OpMem(unsafe { value.mem })),
             X86_OP_INVALID => Invalid,
@@ -162,7 +162,7 @@ impl<'a> X86InsnDetail<'a> {
 
     /// Scaled Index Byte (SIB) index, or X86_REG_INVALID when irrelevant
     pub fn sib_index(&self) -> RegId {
-        RegId(self.0.sib_index as RegIdInt)
+        self.0.sib_index.into()
     }
 
     /// Scaled Index Byte (SIB) scale, or X86_REG_INVALID when irrelevant
@@ -172,7 +172,7 @@ impl<'a> X86InsnDetail<'a> {
 
     /// Scaled Index Byte (SIB) base register, or X86_REG_INVALID when irrelevant
     pub fn sib_base(&self) -> RegId {
-        RegId(self.0.sib_base as RegIdInt)
+        self.0.sib_base.into()
     }
 
     /// eXtended Operations (XOP) Code Condition
@@ -209,17 +209,17 @@ impl_PartialEq_repr_fields!(X86InsnDetail<'a> [ 'a ];
 impl X86OpMem {
     /// Segment
     pub fn segment(&self) -> RegId {
-        RegId(self.0.segment as RegIdInt)
+        self.0.segment.into()
     }
 
     /// Base register
     pub fn base(&self) -> RegId {
-        RegId(self.0.base as RegIdInt)
+        self.0.base.into()
     }
 
     /// Index register
     pub fn index(&self) -> RegId {
-        RegId(self.0.index as RegIdInt)
+        self.0.index.into()
     }
 
     /// Scale
@@ -294,11 +294,11 @@ mod test {
         }
 
         t(
-            (X86_OP_INVALID, cs_x86_op__bindgen_ty_1 { reg: 0 }),
+            (X86_OP_INVALID, cs_x86_op__bindgen_ty_1 { reg: X86Reg(0) }),
             Invalid,
         );
         t(
-            (X86_OP_REG, cs_x86_op__bindgen_ty_1 { reg: 0 }),
+            (X86_OP_REG, cs_x86_op__bindgen_ty_1 { reg: X86Reg(0) }),
             Reg(RegId(0)),
         );
     }

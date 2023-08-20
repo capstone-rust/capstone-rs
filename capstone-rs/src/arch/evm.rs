@@ -26,7 +26,7 @@ impl ArchTag for EvmArchTag {
 
     type RegId = u32;
     type InsnId = EvmInsn;
-    type InsnGroupId = EvmInsnGroup::Type;
+    type InsnGroupId = EvmInsnGroup;
 
     type InsnDetail<'a> = EvmInsnDetail<'a>;
 

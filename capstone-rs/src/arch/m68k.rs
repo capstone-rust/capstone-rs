@@ -10,15 +10,16 @@ use capstone_sys::{
 
 // XXX todo(tmfink): create rusty versions
 pub use capstone_sys::m68k_address_mode as M68kAddressMode;
+pub use capstone_sys::m68k_group_type as M68kInsnGroup;
 pub use capstone_sys::m68k_insn as M68kInsn;
 pub use capstone_sys::m68k_reg as M68kReg;
 
 pub use crate::arch::arch_builder::m68k::*;
-use crate::arch::{ArchTag, DetailsArchInsn};
 use crate::arch::internal::ArchTagSealed;
-use crate::{Arch, Error, InsnDetail};
+use crate::arch::{ArchTag, DetailsArchInsn};
 use crate::instruction::{RegId, RegIdInt};
 use crate::prelude::*;
+use crate::{Arch, Error, InsnDetail};
 
 pub struct M68kArchTag;
 
@@ -31,9 +32,9 @@ impl ArchTag for M68kArchTag {
     type ExtraMode = ArchExtraMode;
     type Syntax = ArchSyntax;
 
-    type RegId = M68kReg::Type;
+    type RegId = M68kReg;
     type InsnId = M68kInsn;
-    type InsnGroupId = u32;
+    type InsnGroupId = M68kInsnGroup;
 
     type InsnDetail<'a> = M68kInsnDetail<'a>;
 
@@ -152,7 +153,7 @@ pub struct M68kRegisterBits {
 
 /// Allowed bits are 1; disallowed bits are 0
 const M68K_REGISTER_BITS_ALLOWED_MASK: u32 =
-    (1_u32 << ((m68k_reg::M68K_REG_FP7 as u8 - m68k_reg::M68K_REG_D0 as u8) + 1_u8)) - 1;
+    (1_u32 << ((m68k_reg::M68K_REG_FP7.0 - m68k_reg::M68K_REG_D0.0) + 1)) - 1;
 
 impl M68kRegisterBits {
     /// Create from a bitfield where 0th bit is d0, 1th bit is d1, ...
@@ -177,7 +178,7 @@ impl M68kRegisterBits {
 
     /// Create from iterator over registers: d0-d7, a0-a7, fp0-fp7
     /// Invalid registers will cause an error
-    pub fn from_register_iter<T: Iterator<Item = R>, R: Into<M68kReg::Type>>(
+    pub fn from_register_iter<T: Iterator<Item = R>, R: Into<M68kReg>>(
         reg_iter: T,
     ) -> CsResult<Self> {
         let mut bits: u32 = 0;
@@ -191,11 +192,9 @@ impl M68kRegisterBits {
     ///
     /// Returns an error if the register is invalid
     #[inline]
-    pub fn m68k_reg_to_bit_idx(reg: M68kReg::Type) -> CsResult<u8> {
-        use capstone_sys::m68k_reg::*;
-
-        if (M68K_REG_D0..=M68K_REG_FP7).contains(&reg) {
-            Ok((reg - M68K_REG_D0) as u8)
+    pub fn m68k_reg_to_bit_idx(reg: M68kReg) -> CsResult<u8> {
+        if (M68kReg::M68K_REG_D0.0..=M68kReg::M68K_REG_FP7.0).contains(&reg.0) {
+            Ok((reg.0 - M68kReg::M68K_REG_D0.0) as u8)
         } else {
             Err(Error::InvalidM68kBitfieldRegister)
         }
@@ -247,7 +246,7 @@ impl M68kOperand {
         let value: cs_m68k_op__bindgen_ty_1 = cs_op.__bindgen_anon_1;
 
         match cs_op.type_ {
-            M68K_OP_REG => Reg(RegId(unsafe { value.reg } as RegIdInt)),
+            M68K_OP_REG => Reg(RegId(unsafe { value.reg.0 } as RegIdInt)),
             M68K_OP_IMM => Imm(unsafe { value.imm } as u32),
             M68K_OP_MEM => Mem(M68kOpMem::new(cs_op)),
             M68K_OP_FP_SINGLE => FpSingle(unsafe { value.simm }),
@@ -258,8 +257,8 @@ impl M68kOperand {
             M68K_OP_REG_PAIR => {
                 let reg_pair = unsafe { value.reg_pair };
                 RegPair(
-                    RegId(reg_pair.reg_0 as RegIdInt),
-                    RegId(reg_pair.reg_1 as RegIdInt),
+                    RegId(reg_pair.reg_0.0 as RegIdInt),
+                    RegId(reg_pair.reg_1.0 as RegIdInt),
                 )
             }
             M68K_OP_BR_DISP => Displacement(cs_op.br_disp.into()),
@@ -322,7 +321,7 @@ macro_rules! define_m68k_register_option_getter {
             if self.op_mem.$field == M68kReg::M68K_REG_INVALID {
                 None
             } else {
-                Some(RegId(self.op_mem.$field as RegIdInt))
+                Some(self.op_mem.$field.into())
             }
         }
     }
@@ -362,9 +361,7 @@ impl M68kOpMem {
             | M68K_AM_REG_DIRECT_ADDR
             | M68K_AM_REGI_ADDR
             | M68K_AM_REGI_ADDR_POST_INC
-            | M68K_AM_REGI_ADDR_PRE_DEC => {
-                M68kOpMemExtraInfo::Reg(RegId(unsafe { value.reg } as RegIdInt))
-            }
+            | M68K_AM_REGI_ADDR_PRE_DEC => M68kOpMemExtraInfo::Reg(unsafe { value.reg.into() }),
 
             // The M68K_AM_IMMEDIATE case cannot be floating point because type will not be op_mem
             M68K_AM_ABSOLUTE_DATA_LONG | M68K_AM_ABSOLUTE_DATA_SHORT | M68K_AM_IMMEDIATE => {
@@ -493,12 +490,11 @@ mod test {
     use super::*;
     use capstone_sys::m68k_address_mode::*;
     use capstone_sys::m68k_op_type::*;
-    use capstone_sys::m68k_reg::*;
 
     const MEM_ZERO: m68k_op_mem = m68k_op_mem {
-        base_reg: M68K_REG_INVALID,
-        index_reg: M68K_REG_INVALID,
-        in_base_reg: M68K_REG_INVALID,
+        base_reg: M68kReg::M68K_REG_INVALID,
+        index_reg: M68kReg::M68K_REG_INVALID,
+        in_base_reg: M68kReg::M68K_REG_INVALID,
         in_disp: 0,
         out_disp: 0,
         disp: 0,
@@ -525,13 +521,15 @@ mod test {
 
         // Reg
         let op_reg = cs_m68k_op {
-            __bindgen_anon_1: cs_m68k_op__bindgen_ty_1 { reg: M68K_REG_D7 },
+            __bindgen_anon_1: cs_m68k_op__bindgen_ty_1 {
+                reg: M68kReg::M68K_REG_D7,
+            },
             type_: M68K_OP_REG,
             ..op_zero
         };
         assert_eq!(
             M68kOperand::new(&op_reg),
-            M68kOperand::Reg(RegId(M68K_REG_D7 as RegIdInt))
+            M68kOperand::Reg(RegId(M68kReg::M68K_REG_D7.0 as RegIdInt))
         );
 
         // Imm
@@ -544,8 +542,8 @@ mod test {
 
         // Mem
         let op_mem1 = m68k_op_mem {
-            base_reg: M68K_REG_A0,
-            index_reg: M68K_REG_D0,
+            base_reg: M68kReg::M68K_REG_A0,
+            index_reg: M68kReg::M68K_REG_D0,
             index_size: 0, // w
             ..MEM_ZERO
         };
@@ -564,10 +562,13 @@ mod test {
             M68kOperand::new(&op_mem),
             M68kOperand::Mem(rust_op_mem.clone())
         );
-        assert_eq!(rust_op_mem.base_reg(), Some(RegId(M68K_REG_A0 as RegIdInt)));
+        assert_eq!(
+            rust_op_mem.base_reg(),
+            Some(RegId(M68kReg::M68K_REG_A0.0 as RegIdInt))
+        );
         assert_eq!(
             rust_op_mem.index_reg(),
-            Some(RegId(M68K_REG_D0 as RegIdInt))
+            Some(RegId(M68kReg::M68K_REG_D0.0 as RegIdInt))
         );
         assert_eq!(rust_op_mem.in_base_reg(), None);
         assert_eq!(rust_op_mem.disp(), 0);
@@ -595,18 +596,24 @@ mod test {
 
     #[test]
     fn register_bits_from_iter() {
-        let empty: &[m68k_reg::Type] = &[];
+        let empty: &[M68kReg] = &[];
         assert_eq!(
             M68kRegisterBits::from_register_iter(empty.iter().copied()),
             Ok(M68kRegisterBits { bits: 0 })
         );
         assert_eq!(
-            M68kRegisterBits::from_register_iter([M68K_REG_D1].iter().copied()),
+            M68kRegisterBits::from_register_iter([M68kReg::M68K_REG_D1].iter().copied()),
             Ok(M68kRegisterBits { bits: 0b10 })
         );
         assert_eq!(
             M68kRegisterBits::from_register_iter(
-                [M68K_REG_D1, M68K_REG_A2, M68K_REG_FP7].iter().copied()
+                [
+                    M68kReg::M68K_REG_D1,
+                    M68kReg::M68K_REG_A2,
+                    M68kReg::M68K_REG_FP7
+                ]
+                .iter()
+                .copied()
             ),
             Ok(M68kRegisterBits {
                 bits: 0b1000_0000_0000_0100_0000_0010
@@ -626,21 +633,32 @@ mod test {
     #[test]
     fn op_eq() {
         use crate::arch::m68k::M68kOperand::*;
-        use crate::arch::m68k::M68kReg::*;
         use crate::arch::m68k::*;
         use capstone_sys::m68k_address_mode::*;
 
         assert_ne!(
             M68kOperand::RegBits(
                 M68kRegisterBits::from_register_iter(
-                    [M68K_REG_D0, M68K_REG_D2, M68K_REG_A2, M68K_REG_A3]
-                        .iter().copied()
+                    [
+                        M68kReg::M68K_REG_D0,
+                        M68kReg::M68K_REG_D2,
+                        M68kReg::M68K_REG_A2,
+                        M68kReg::M68K_REG_A3
+                    ]
+                    .iter()
+                    .copied()
                 )
                 .unwrap()
             ),
             M68kOperand::RegBits(
                 M68kRegisterBits::from_register_iter(
-                    [M68K_REG_D0, M68K_REG_A2, M68K_REG_A3].iter().copied()
+                    [
+                        M68kReg::M68K_REG_D0,
+                        M68kReg::M68K_REG_A2,
+                        M68kReg::M68K_REG_A3
+                    ]
+                    .iter()
+                    .copied()
                 )
                 .unwrap()
             )
@@ -649,12 +667,12 @@ mod test {
             Mem(M68kOpMem {
                 op_mem: MEM_ZERO,
                 address_mode: M68K_AM_REGI_ADDR_PRE_DEC,
-                extra_info: M68kOpMemExtraInfo::Reg(RegId(M68K_REG_A7 as RegIdInt)),
+                extra_info: M68kOpMemExtraInfo::Reg(M68kReg::M68K_REG_A7.into()),
             }),
             Mem(M68kOpMem {
                 op_mem: MEM_ZERO,
                 address_mode: M68K_AM_REGI_ADDR_PRE_DEC,
-                extra_info: M68kOpMemExtraInfo::Reg(RegId(M68K_REG_A6 as RegIdInt)),
+                extra_info: M68kOpMemExtraInfo::Reg(M68kReg::M68K_REG_A6.into()),
             })
         );
     }
@@ -662,9 +680,9 @@ mod test {
     #[cfg(feature = "full")]
     #[test]
     fn extra_info() {
-        use alloc::vec::Vec;
-        use crate::instruction::*;
         use crate::arch::DetailsArchInsn;
+        use crate::instruction::*;
+        use alloc::vec::Vec;
 
         let cs = Capstone::<M68kArchTag>::new()
             .mode(arch::m68k::ArchMode::M68k040)
@@ -676,10 +694,7 @@ mod test {
             // jsr     $12.l
             b"\x4e\xb9\x00\x00\x00\x12",
         ];
-        let code: Vec<u8> = code_parts
-            .iter()
-            .flat_map(|x| x.iter()).copied()
-            .collect();
+        let code: Vec<u8> = code_parts.iter().flat_map(|x| x.iter()).copied().collect();
         let insns = cs.disasm_all(&code, 0x1000).expect("Failed to disasm");
         let mut insns_iter = insns.iter();
 

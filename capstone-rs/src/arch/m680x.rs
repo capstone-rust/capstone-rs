@@ -10,11 +10,12 @@ use capstone_sys::{
 // XXX todo(tmfink): create rusty versions
 pub use capstone_sys::m680x_insn as M680xInsn;
 pub use capstone_sys::m680x_reg as M680xReg;
+pub use capstone_sys::m680x_group_type as M680xInsnGroup;
 
 pub use crate::arch::arch_builder::m680x::*;
 use crate::arch::{ArchTag, DetailsArchInsn};
 use crate::arch::internal::ArchTagSealed;
-use crate::instruction::{RegId, RegIdInt};
+use crate::instruction::RegId;
 use crate::{Arch, InsnDetail};
 
 pub struct M680xArchTag;
@@ -28,9 +29,9 @@ impl ArchTag for M680xArchTag {
     type ExtraMode = ArchExtraMode;
     type Syntax = ArchSyntax;
 
-    type RegId = M680xReg::Type;
+    type RegId = M680xReg;
     type InsnId = M680xInsn;
-    type InsnGroupId = u32;
+    type InsnGroupId = M680xInsnGroup;
 
     type InsnDetail<'a> = M680xInsnDetail<'a>;
 
@@ -88,7 +89,7 @@ macro_rules! define_m680x_register_option_getter {
             if (self.0).$field == M680xReg::M680X_REG_INVALID {
                 None
             } else {
-                Some(RegId((self.0).$field as RegIdInt))
+                Some(self.0.$field.into())
             }
         }
     }
@@ -214,7 +215,7 @@ impl<'a> From<&'a cs_m680x_op> for M680xOperand {
     fn from(op: &cs_m680x_op) -> M680xOperand {
         let op_type = match op.type_ {
             m680x_op_type::M680X_OP_REGISTER => {
-                M680xOperandType::Reg(RegId(unsafe { op.__bindgen_anon_1.reg } as RegIdInt))
+                M680xOperandType::Reg(unsafe { op.__bindgen_anon_1.reg.into() })
             }
             m680x_op_type::M680X_OP_IMMEDIATE => {
                 M680xOperandType::Imm(unsafe { op.__bindgen_anon_1.imm })
@@ -281,7 +282,7 @@ mod test {
     fn m680x_op_type() {
         let op_base = cs_m680x_op {
             type_: m680x_op_type::M680X_OP_INVALID,
-            __bindgen_anon_1: cs_m680x_op__bindgen_ty_1 { reg: 0 },
+            __bindgen_anon_1: cs_m680x_op__bindgen_ty_1 { reg: M680xReg(0) },
             size: 1,
             access: 0,
         };
@@ -299,7 +300,7 @@ mod test {
                 ..op_base
             })
             .op_type,
-            M680xOperandType::Reg(RegId(M680xReg::M680X_REG_E as RegIdInt))
+            M680xOperandType::Reg(M680xReg::M680X_REG_E.into())
         );
         assert_eq!(
             M680xOperand::from(&cs_m680x_op {
@@ -391,8 +392,8 @@ mod test {
             flags: 7,
         });
 
-        assert_eq!(idx.base_reg(), Some(RegId(base_reg as RegIdInt)));
-        assert_eq!(idx.offset_reg(), Some(RegId(offset_reg as RegIdInt)));
+        assert_eq!(idx.base_reg(), Some(base_reg.into()));
+        assert_eq!(idx.offset_reg(), Some(offset_reg.into()));
         assert_eq!(idx.offset(), offset);
         assert_eq!(idx.offset_addr(), offset_addr);
         assert_eq!(idx.offset_bits(), offset_bits);

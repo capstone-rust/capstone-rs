@@ -49,10 +49,10 @@ pub type InsnIdInt = u32;
 pub struct InsnId(pub InsnIdInt);
 
 macro_rules! define_insn_id_from_arch_insn {
-    ( $( $arch_insn_ty:ty ),+ $(,)? ) => {
+    ( $( $arch:ident => $arch_insn:ident ),+ $(,)? ) => {
         $(
-            impl From<$arch_insn_ty> for InsnId {
-                fn from(arch_insn: $arch_insn_ty) -> Self {
+            impl From<$crate::arch::$arch::$arch_insn> for InsnId {
+                fn from(arch_insn: $crate::arch::$arch::$arch_insn) -> Self {
                     Self(arch_insn as InsnIdInt)
                 }
             }
@@ -61,19 +61,19 @@ macro_rules! define_insn_id_from_arch_insn {
 }
 
 define_insn_id_from_arch_insn![
-    crate::arch::arm::ArmInsn,
-    crate::arch::arm64::Arm64Insn,
-    crate::arch::evm::EvmInsn,
-    crate::arch::m68k::M68kInsn,
-    crate::arch::m680x::M680xInsn,
-    crate::arch::mips::MipsInsn,
-    crate::arch::ppc::PpcInsn,
-    crate::arch::riscv::RiscVInsn,
-    crate::arch::sparc::SparcInsn,
-    crate::arch::sysz::SyszInsn,
-    crate::arch::tms320c64x::Tms320c64xInsn,
-    crate::arch::x86::X86Insn,
-    crate::arch::xcore::XcoreInsn,
+    arm => ArmInsn,
+    arm64 => Arm64Insn,
+    evm => EvmInsn,
+    m68k => M68kInsn,
+    m680x => M680xInsn,
+    mips => MipsInsn,
+    ppc => PpcInsn,
+    riscv => RiscVInsn,
+    sparc => SparcInsn,
+    sysz => SyszInsn,
+    tms320c64x => Tms320c64xInsn,
+    x86 => X86Insn,
+    xcore => XcoreInsn,
 ];
 
 /// Integer type used in `InsnGroupId`
@@ -95,6 +95,34 @@ impl From<u32> for InsnGroupId {
         Self(value.try_into().ok().unwrap_or(Self::INVALID_GROUP.0))
     }
 }
+
+macro_rules! define_insn_grp_id_from_arch_grp_id {
+    ( $( $arch:ident => $arch_insn_grp:ident ),+ $(,)? ) => {
+        $(
+            impl From<$crate::arch::$arch::$arch_insn_grp> for InsnGroupId {
+                fn from(arch_insn_grp: $crate::arch::$arch::$arch_insn_grp) -> Self {
+                    Self(arch_insn_grp.0 as InsnGroupIdInt)
+                }
+            }
+        )+
+    };
+}
+
+define_insn_grp_id_from_arch_grp_id![
+    arm => ArmInsnGroup,
+    arm64 => Arm64InsnGroup,
+    evm => EvmInsnGroup,
+    m68k => M68kInsnGroup,
+    m680x => M680xInsnGroup,
+    mips => MipsInsnGroup,
+    ppc => PpcInsnGroup,
+    riscv => RiscVInsnGroup,
+    sparc => SparcInsnGroup,
+    sysz => SyszInsnGroup,
+    tms320c64x => Tms320c64xInsnGroup,
+    x86 => X86InsnGroup,
+    xcore => XcoreInsnGroup,
+];
 
 pub use capstone_sys::cs_group_type as InsnGroupType;
 
@@ -118,6 +146,33 @@ impl From<u32> for RegId {
         RegId(v.try_into().ok().unwrap_or(Self::INVALID_REG.0))
     }
 }
+
+macro_rules! define_reg_id_from_arch_reg {
+    ( $( $arch:ident => $arch_reg:ident ),+ $(,)? ) => {
+        $(
+            impl From<$crate::arch::$arch::$arch_reg> for RegId {
+                fn from(arch_reg: $crate::arch::$arch::$arch_reg) -> Self {
+                    Self(arch_reg.0 as RegIdInt)
+                }
+            }
+        )+
+    };
+}
+
+define_reg_id_from_arch_reg![
+    arm => ArmReg,
+    arm64 => Arm64Reg,
+    m68k => M68kReg,
+    m680x => M680xReg,
+    mips => MipsReg,
+    ppc => PpcReg,
+    riscv => RiscVReg,
+    sparc => SparcReg,
+    sysz => SyszReg,
+    tms320c64x => Tms320c64xReg,
+    x86 => X86Reg,
+    xcore => XcoreReg,
+];
 
 /// Represents how the register is accessed.
 #[derive(Copy, Clone, Debug, Hash, PartialEq, Eq)]
@@ -155,13 +210,13 @@ impl TryFrom<cs_ac_type> for RegAccessType {
 
     fn try_from(access: cs_ac_type) -> Result<Self, Self::Error> {
         // Check for flags other than CS_AC_READ or CS_AC_WRITE.
-        let unknown_flag_mask = !(CS_AC_READ | CS_AC_WRITE).0;
+        let unknown_flag_mask = !(cs_ac_type::CS_AC_READ | cs_ac_type::CS_AC_WRITE).0;
         if (access.0 & unknown_flag_mask) != 0 {
             return Err(());
         }
 
-        let is_readable = (access & CS_AC_READ).0 != 0;
-        let is_writable = (access & CS_AC_WRITE).0 != 0;
+        let is_readable = (access & cs_ac_type::CS_AC_READ).0 != 0;
+        let is_writable = (access & cs_ac_type::CS_AC_WRITE).0 != 0;
         match (is_readable, is_writable) {
             (true, false) => Ok(RegAccessType::ReadOnly),
             (false, true) => Ok(RegAccessType::WriteOnly),

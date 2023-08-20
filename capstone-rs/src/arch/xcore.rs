@@ -26,9 +26,9 @@ impl ArchTag for XcoreArchTag {
     type ExtraMode = ArchExtraMode;
     type Syntax = ArchSyntax;
 
-    type RegId = XcoreReg::Type;
+    type RegId = XcoreReg;
     type InsnId = XcoreInsn;
-    type InsnGroupId = XcoreInsnGroup::Type;
+    type InsnGroupId = XcoreInsnGroup;
 
     type InsnDetail<'a> = XcoreInsnDetail<'a>;
 
@@ -108,7 +108,7 @@ impl<'a> From<&'a cs_xcore_op> for XcoreOperand {
     fn from(insn: &cs_xcore_op) -> XcoreOperand {
         match insn.type_ {
             xcore_op_type::XCORE_OP_REG => {
-                XcoreOperand::Reg(RegId(unsafe { insn.__bindgen_anon_1.reg } as RegIdInt))
+                XcoreOperand::Reg(unsafe { insn.__bindgen_anon_1.reg.into() })
             }
             xcore_op_type::XCORE_OP_IMM => XcoreOperand::Imm(unsafe { insn.__bindgen_anon_1.imm }),
             xcore_op_type::XCORE_OP_MEM => {

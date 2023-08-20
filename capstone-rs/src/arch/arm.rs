@@ -35,9 +35,9 @@ impl ArchTag for ArmArchTag {
     type ExtraMode = ArchExtraMode;
     type Syntax = ArchSyntax;
 
-    type RegId = ArmReg::Type;
+    type RegId = ArmReg;
     type InsnId = ArmInsn;
-    type InsnGroupId = ArmInsnGroup::Type;
+    type InsnGroupId = ArmInsnGroup;
 
     type InsnDetail<'a> = ArmInsnDetail<'a>;
 
@@ -251,12 +251,12 @@ impl_PartialEq_repr_fields!(ArmInsnDetail<'a> [ 'a ];
 impl ArmOpMem {
     /// Base register
     pub fn base(&self) -> RegId {
-        RegId(self.0.base as RegIdInt)
+        RegId(self.0.base.0 as RegIdInt)
     }
 
     /// Index value
     pub fn index(&self) -> RegId {
-        RegId(self.0.index as RegIdInt)
+        RegId(self.0.index.0 as RegIdInt)
     }
 
     /// Scale for index register (can be 1, or -1)

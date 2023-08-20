@@ -13,7 +13,7 @@ pub use capstone_sys::mips_reg as MipsReg;
 pub use crate::arch::arch_builder::mips::*;
 use crate::arch::{ArchTag, DetailsArchInsn};
 use crate::arch::internal::ArchTagSealed;
-use crate::instruction::{RegId, RegIdInt};
+use crate::instruction::RegId;
 use crate::{Arch, InsnDetail};
 
 pub struct MipsArchTag;
@@ -27,9 +27,9 @@ impl ArchTag for MipsArchTag {
     type ExtraMode = ArchExtraMode;
     type Syntax = ArchSyntax;
 
-    type RegId = MipsReg::Type;
+    type RegId = MipsReg;
     type InsnId = MipsInsn;
-    type InsnGroupId = MipsInsnGroup::Type;
+    type InsnGroupId = MipsInsnGroup;
 
     type InsnDetail<'a> = MipsInsnDetail<'a>;
 
@@ -80,7 +80,7 @@ pub struct MipsOpMem(pub(crate) mips_op_mem);
 impl MipsOpMem {
     /// Base register
     pub fn base(&self) -> RegId {
-        RegId(self.0.base as RegIdInt)
+        self.0.base.into()
     }
 
     /// Disp value
@@ -99,7 +99,7 @@ impl<'a> From<&'a cs_mips_op> for MipsOperand {
     fn from(insn: &cs_mips_op) -> MipsOperand {
         match insn.type_ {
             mips_op_type::MIPS_OP_REG => {
-                MipsOperand::Reg(RegId(unsafe { insn.__bindgen_anon_1.reg } as RegIdInt))
+                MipsOperand::Reg(unsafe { insn.__bindgen_anon_1.reg.into() })
             }
             mips_op_type::MIPS_OP_IMM => MipsOperand::Imm(unsafe { insn.__bindgen_anon_1.imm }),
             mips_op_type::MIPS_OP_MEM => {
@@ -129,7 +129,7 @@ mod test {
     fn test_mips_op_from() {
         let op = cs_mips_op {
             type_: mips_op_type::MIPS_OP_INVALID,
-            __bindgen_anon_1: cs_mips_op__bindgen_ty_1 { reg: 0 },
+            __bindgen_anon_1: cs_mips_op__bindgen_ty_1 { reg: MipsReg(0) },
         };
         assert_eq!(MipsOperand::from(&op), MipsOperand::Invalid);
     }

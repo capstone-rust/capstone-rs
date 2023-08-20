@@ -21,9 +21,9 @@ impl ArchTag for SyszArchTag {
     type ExtraMode = ArchExtraMode;
     type Syntax = ArchSyntax;
 
-    type RegId = SyszReg::Type;
+    type RegId = SyszReg;
     type InsnId = SyszInsn;
-    type InsnGroupId = SyszInsnGroup::Type;
+    type InsnGroupId = SyszInsnGroup;
 
     type InsnDetail<'a> = SyszInsnDetail<'a>;
 

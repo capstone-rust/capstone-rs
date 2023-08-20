@@ -40,9 +40,9 @@ impl ArchTag for Arm64ArchTag {
     type ExtraMode = ArchExtraMode;
     type Syntax = ArchSyntax;
 
-    type RegId = Arm64Reg::Type;
+    type RegId = Arm64Reg;
     type InsnId = Arm64Insn;
-    type InsnGroupId = Arm64InsnGroup::Type;
+    type InsnGroupId = Arm64InsnGroup;
 
     type InsnDetail<'a> = Arm64InsnDetail<'a>;
 
@@ -88,7 +88,7 @@ impl Arm64OperandType {
 
         match op_type {
             ARM64_OP_INVALID => Invalid,
-            ARM64_OP_REG => Reg(RegId(unsafe { value.reg } as RegIdInt)),
+            ARM64_OP_REG => Reg(RegId(unsafe { value.reg.0 } as RegIdInt)),
             ARM64_OP_IMM => Imm(unsafe { value.imm }),
             ARM64_OP_MEM => Mem(Arm64OpMem(unsafe { value.mem })),
             ARM64_OP_FP => Fp(unsafe { value.fp }),
@@ -190,12 +190,12 @@ impl_PartialEq_repr_fields!(Arm64InsnDetail<'a> [ 'a ];
 impl Arm64OpMem {
     /// Base register
     pub fn base(&self) -> RegId {
-        RegId(self.0.base as RegIdInt)
+        RegId(self.0.base.0 as RegIdInt)
     }
 
     /// Index register
     pub fn index(&self) -> RegId {
-        RegId(self.0.index as RegIdInt)
+        RegId(self.0.index.0 as RegIdInt)
     }
 
     /// Disp value
@@ -318,11 +318,11 @@ mod test {
         }
 
         t(
-            (ARM64_OP_INVALID, cs_arm64_op__bindgen_ty_2 { reg: 0 }),
+            (ARM64_OP_INVALID, cs_arm64_op__bindgen_ty_2 { reg: Arm64Reg::ARM64_REG_INVALID }),
             Invalid,
         );
         t(
-            (ARM64_OP_REG, cs_arm64_op__bindgen_ty_2 { reg: 0 }),
+            (ARM64_OP_REG, cs_arm64_op__bindgen_ty_2 { reg: Arm64Reg::ARM64_REG_INVALID }),
             Reg(RegId(0)),
         );
         t(
@@ -330,7 +330,7 @@ mod test {
             Imm(42),
         );
         t(
-            (ARM64_OP_REG_MRS, cs_arm64_op__bindgen_ty_2 { reg: ARM64_SYSREG_MDRAR_EL1 as u32 }),
+            (ARM64_OP_REG_MRS, cs_arm64_op__bindgen_ty_2 { reg: Arm64Reg(ARM64_SYSREG_MDRAR_EL1 as u32) }),
             RegMrs(ARM64_SYSREG_MDRAR_EL1),
         );
         t(
@@ -347,8 +347,8 @@ mod test {
         );
         t(
             (ARM64_OP_REG_MSR, cs_arm64_op__bindgen_ty_2 {
-                reg: arm64_sysreg::ARM64_SYSREG_ICC_EOIR1_EL1 as u32 }),
-            RegMsr(arm64_sysreg::ARM64_SYSREG_ICC_EOIR1_EL1),
+                reg: Arm64Reg(ARM64_SYSREG_ICC_EOIR1_EL1 as u32) }),
+            RegMsr(ARM64_SYSREG_ICC_EOIR1_EL1),
         );
         t(
             (ARM64_OP_SYS, cs_arm64_op__bindgen_ty_2 { sys: arm64_sys_op::ARM64_AT_S1E0R }),

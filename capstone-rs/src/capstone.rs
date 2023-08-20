@@ -5,7 +5,6 @@ use core::marker::PhantomData;
 
 use libc::{c_int, c_void};
 
-use capstone_sys::cs_opt_value::*;
 use capstone_sys::*;
 
 use crate::arch::ArchTag;
@@ -29,7 +28,7 @@ pub struct Capstone<A: ArchTag> {
     endian: cs_mode,
 
     /// Syntax
-    syntax: cs_opt_value::Type,
+    syntax: cs_opt_value,
 
     /// Internal extra mode bitfield
     extra_mode: cs_mode,
@@ -164,7 +163,7 @@ impl<A: ArchTag> Capstone<A> {
         let err = unsafe { cs_open(csarch, combined_mode, &mut handle) };
 
         if cs_err::CS_ERR_OK == err {
-            let syntax = CS_OPT_SYNTAX_DEFAULT;
+            let syntax = cs_opt_value::CS_OPT_SYNTAX_DEFAULT;
             let raw_mode = cs_mode(0);
             let detail_enabled = false;
             let skipdata_enabled = detail_enabled;
@@ -281,8 +280,8 @@ impl<A: ArchTag> Capstone<A> {
     /// Set the assembly syntax (has no effect on some platforms)
     pub fn set_syntax(&mut self, syntax: A::Syntax) -> CsResult<()> {
         // Todo(tmfink) check for valid syntax
-        let syntax_int = cs_opt_value::Type::from(syntax.into());
-        let result = self._set_cs_option(cs_opt_type::CS_OPT_SYNTAX, syntax_int as usize);
+        let syntax_int = cs_opt_value::from(syntax.into());
+        let result = self._set_cs_option(cs_opt_type::CS_OPT_SYNTAX, syntax_int.0 as usize);
 
         if result.is_ok() {
             self.syntax = syntax_int;
@@ -328,7 +327,7 @@ impl<A: ArchTag> Capstone<A> {
     ///
     /// Pass `true` to enable detail or `false` to disable detail.
     pub fn set_detail(&mut self, enable_detail: bool) -> CsResult<()> {
-        let option_value: usize = OptValue::from(enable_detail).0 as usize;
+        let option_value: usize = OptValue::from(enable_detail).0 .0 as usize;
         let result = self._set_cs_option(cs_opt_type::CS_OPT_DETAIL, option_value);
 
         // Only update internal state on success
@@ -343,7 +342,7 @@ impl<A: ArchTag> Capstone<A> {
     ///
     /// Pass `true` to enable skipdata or `false` to disable skipdata.
     pub fn set_skipdata(&mut self, enable_skipdata: bool) -> CsResult<()> {
-        let option_value: usize = OptValue::from(enable_skipdata).0 as usize;
+        let option_value: usize = OptValue::from(enable_skipdata).0 .0 as usize;
         let result = self._set_cs_option(cs_opt_type::CS_OPT_SKIPDATA, option_value);
 
         // Only update internal state on success

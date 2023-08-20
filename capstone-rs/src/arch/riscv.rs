@@ -26,9 +26,9 @@ impl ArchTag for RiscVArchTag {
     type ExtraMode = ArchExtraMode;
     type Syntax = ArchSyntax;
 
-    type RegId = RiscVReg::Type;
+    type RegId = RiscVReg;
     type InsnId = RiscVInsn;
-    type InsnGroupId = RiscVInsnGroup::Type;
+    type InsnGroupId = RiscVInsnGroup;
 
     type InsnDetail<'a> = RiscVInsnDetail<'a>;
 

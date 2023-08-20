@@ -31,9 +31,9 @@ impl ArchTag for Tms320c64xArchTag {
     type ExtraMode = ArchExtraMode;
     type Syntax = ArchSyntax;
 
-    type RegId = Tms320c64xReg::Type;
+    type RegId = Tms320c64xReg;
     type InsnId = Tms320c64xInsn;
-    type InsnGroupId = Tms320c64xInsnGroup::Type;
+    type InsnGroupId = Tms320c64xInsnGroup;
 
     type InsnDetail<'a> = Tms320c64xInsnDetail<'a>;
 
@@ -308,7 +308,7 @@ mod test {
             op_count: 0,
             operands: [op; 8],
             condition: cs_tms320c64x__bindgen_ty_1 {
-                reg: tms320c64x_reg::TMS320C64X_REG_GPLYA as c_uint,
+                reg: tms320c64x_reg::TMS320C64X_REG_GPLYA.0,
                 zero: 1,
             },
             funit: cs_tms320c64x__bindgen_ty_2 {
@@ -323,7 +323,7 @@ mod test {
         assert!(d.is_condition_zero());
         assert_eq!(
             d.condition_reg(),
-            RegId(Tms320c64xReg::TMS320C64X_REG_GPLYA as RegIdInt)
+            Tms320c64xReg::TMS320C64X_REG_GPLYA.into()
         );
         assert_eq!(d.functional_unit(), Tms320c64xFuntionalUnit::L);
         assert_eq!(d.functional_unit_side(), 18);
@@ -370,21 +370,21 @@ mod test {
         assert_eq!(
             Tms320c64xOpMem(tms320c64x_op_mem {
                 disptype: tms320c64x_mem_disp::TMS320C64X_MEM_DISP_REGISTER as c_uint,
-                disp: tms320c64x_reg::TMS320C64X_REG_A13 as c_uint,
+                disp: tms320c64x_reg::TMS320C64X_REG_A13.0,
                 ..OP_MEM_ZERO
             })
             .display(),
-            Tms320c64xMemDisplay::Register(RegId(Tms320c64xReg::TMS320C64X_REG_A13 as RegIdInt))
+            Tms320c64xMemDisplay::Register(Tms320c64xReg::TMS320C64X_REG_A13.into())
         );
 
         // Simple getters
         assert_eq!(
             Tms320c64xOpMem(tms320c64x_op_mem {
-                base: tms320c64x_reg::TMS320C64X_REG_A13 as c_uint,
+                base: tms320c64x_reg::TMS320C64X_REG_A13.0,
                 ..OP_MEM_ZERO
             })
             .base(),
-            RegId(Tms320c64xReg::TMS320C64X_REG_A13 as RegIdInt)
+            Tms320c64xReg::TMS320C64X_REG_A13.into()
         );
         assert_eq!(
             Tms320c64xOpMem(tms320c64x_op_mem {

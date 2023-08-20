@@ -14,7 +14,7 @@ use capstone_sys::{cs_ppc, cs_ppc_op, ppc_op_mem, ppc_op_crx, ppc_op_type};
 pub use crate::arch::arch_builder::ppc::*;
 use crate::arch::{ArchTag, DetailsArchInsn};
 use crate::arch::internal::ArchTagSealed;
-use crate::instruction::{RegId, RegIdInt};
+use crate::instruction::RegId;
 use crate::{Arch, InsnDetail};
 
 pub struct PpcArchTag;
@@ -28,9 +28,9 @@ impl ArchTag for PpcArchTag {
     type ExtraMode = ArchExtraMode;
     type Syntax = ArchSyntax;
 
-    type RegId = PpcReg::Type;
+    type RegId = PpcReg;
     type InsnId = PpcInsn;
-    type InsnGroupId = PpcInsnGroup::Type;
+    type InsnGroupId = PpcInsnGroup;
 
     type InsnDetail<'a> = PpcInsnDetail<'a>;
 
@@ -101,7 +101,7 @@ pub struct PpcOpMem(pub(crate) ppc_op_mem);
 impl PpcOpMem {
     /// Base register
     pub fn base(&self) -> RegId {
-        RegId(self.0.base as RegIdInt)
+        self.0.base.into()
     }
 
     /// Disp value
@@ -128,7 +128,7 @@ impl PpcOpCrx {
 
     /// Register value
     pub fn reg(&self) -> RegId {
-        RegId(self.0.reg as RegIdInt)
+        self.0.reg.into()
     }
 
     /// Condition value
@@ -149,7 +149,7 @@ impl<'a> From<&'a cs_ppc_op> for PpcOperand {
     fn from(insn: &cs_ppc_op) -> PpcOperand {
         match insn.type_ {
             ppc_op_type::PPC_OP_REG => {
-                PpcOperand::Reg(RegId(unsafe { insn.__bindgen_anon_1.reg } as RegIdInt))
+                PpcOperand::Reg(unsafe { insn.__bindgen_anon_1.reg.into() })
             }
             ppc_op_type::PPC_OP_IMM => PpcOperand::Imm(unsafe { insn.__bindgen_anon_1.imm }),
             ppc_op_type::PPC_OP_MEM => {
@@ -182,7 +182,6 @@ mod test {
         use capstone_sys::*;
         use super::ppc_op_type::*;
         use super::PpcBc::*;
-        use super::PpcReg::*;
         use self::PpcOperand::*;
 
         fn t(
@@ -197,11 +196,11 @@ mod test {
         }
 
         t(
-            (PPC_OP_INVALID, cs_ppc_op__bindgen_ty_1 { reg: 0 }),
+            (PPC_OP_INVALID, cs_ppc_op__bindgen_ty_1 { reg: PpcReg(0) }),
             Invalid,
         );
         t(
-            (PPC_OP_REG, cs_ppc_op__bindgen_ty_1 { reg: 0 }),
+            (PPC_OP_REG, cs_ppc_op__bindgen_ty_1 { reg: PpcReg(0) }),
             Reg(RegId(0)),
         );
         t(
@@ -209,7 +208,7 @@ mod test {
             Imm(42),
         );
 
-        let crx = ppc_op_crx { scale: 0, reg: PPC_REG_R0, cond: PPC_BC_LT };
+        let crx = ppc_op_crx { scale: 0, reg: PpcReg::PPC_REG_R0, cond: PPC_BC_LT };
         t(
             (PPC_OP_CRX, cs_ppc_op__bindgen_ty_1 { crx }),
             Crx(PpcOpCrx(crx)),
@@ -218,13 +217,13 @@ mod test {
         let op_mem = PpcOperand::from(&cs_ppc_op {
             type_: PPC_OP_MEM,
             __bindgen_anon_1: cs_ppc_op__bindgen_ty_1 { mem: ppc_op_mem {
-                base: PPC_REG_VS38,
+                base: PpcReg::PPC_REG_VS38,
                 disp: -10 }}
         });
         if let Mem(op_mem) = op_mem {
             assert_eq!(
                 (op_mem.base(), op_mem.disp()),
-                (RegId(PPC_REG_VS38 as RegIdInt), -10)
+                (PpcReg::PPC_REG_VS38.into(), -10)
             );
         } else {
             panic!("Did not get expected Mem");
