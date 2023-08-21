@@ -6,12 +6,11 @@
 
 use alloc::vec::Vec;
 use core::fmt::Debug;
-use core::marker::PhantomData;
 
 use crate::capstone::Capstone;
 use crate::constants::Endian;
 use crate::error::CsResult;
-use crate::{Arch, ExtraMode, InsnDetail, InsnGroupId, InsnId, Mode, RegId, Syntax};
+use crate::{Arch, Error, ExtraMode, InsnDetail, InsnGroupId, InsnId, Mode, RegId, Syntax};
 
 macro_rules! define_subset_enum {
     ( [
@@ -176,14 +175,6 @@ macro_rules! define_arch_builder {
                 }
             }
         )+
-
-        impl CapstoneBuilder {
-            $(
-                pub fn $arch(self) -> $arch::ArchCapstoneBuilder {
-                    Default::default()
-                }
-            )*
-        }
     }
 }
 
@@ -442,10 +433,83 @@ pub(crate) mod arch_builder {
 
 /// Builds `Capstone` object
 #[derive(Debug, Default)]
-pub struct CapstoneBuilder(
-    /// Hidden field to prevent users from instantiating `CapstoneBuilder`
-    PhantomData<()>,
-);
+pub struct CapstoneBuilder {
+    arch: Option<Arch>,
+    mode: Option<Mode>,
+    is_detail: bool,
+    extra_mode: Vec<ExtraMode>,
+    syntax: Option<Syntax>,
+    endian: Option<Endian>,
+}
+
+impl CapstoneBuilder {
+    /// Set the capstone architecture.
+    ///
+    /// This function must be called before the `build` function is called.
+    pub fn arch(mut self, arch: Arch) -> Self {
+        self.arch = Some(arch);
+        self
+    }
+}
+
+impl BuildsCapstone<DynamicArchTag> for CapstoneBuilder {
+    fn mode(mut self, mode: Mode) -> Self {
+        self.mode = Some(mode);
+        self
+    }
+
+    fn detail(mut self, enable_detail: bool) -> Self {
+        self.is_detail = enable_detail;
+        self
+    }
+
+    fn build(self) -> CsResult<Capstone<DynamicArchTag>> {
+        let arch = self
+            .arch
+            .ok_or_else(|| Error::CustomError("Must specify arch with `arch()` method"))?;
+        let mode = self
+            .mode
+            .ok_or_else(|| Error::CustomError("Must specify mode with `mode()` method"))?;
+
+        let mut capstone = Capstone::new_raw(
+            arch,
+            mode.into(),
+            self.extra_mode.iter().copied().map(|x| x.into()),
+            self.endian,
+        )?;
+
+        if let Some(syntax) = self.syntax {
+            capstone.set_syntax(syntax)?;
+        }
+        if self.is_detail {
+            capstone.set_detail(self.is_detail)?;
+        }
+
+        Ok(capstone)
+    }
+}
+
+impl BuildsCapstoneEndian<DynamicArchTag> for CapstoneBuilder {
+    fn endian(mut self, endian: Endian) -> Self {
+        self.endian = Some(endian);
+        self
+    }
+}
+
+impl BuildsCapstoneExtraMode<DynamicArchTag> for CapstoneBuilder {
+    fn extra_mode<T: Iterator<Item = ExtraMode>>(mut self, extra_mode: T) -> Self {
+        self.extra_mode.clear();
+        self.extra_mode.extend(extra_mode);
+        self
+    }
+}
+
+impl BuildsCapstoneSyntax<DynamicArchTag> for CapstoneBuilder {
+    fn syntax(mut self, syntax: Syntax) -> Self {
+        self.syntax = Some(syntax);
+        self
+    }
+}
 
 /// Provides architecture-specific details about an instruction
 pub trait DetailsArchInsn: PartialEq + Debug {
