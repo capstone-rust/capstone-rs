@@ -1,7 +1,6 @@
 //! Contains tms320c64x-specific types
 
 use core::convert::From;
-use core::{cmp, fmt, slice};
 
 use libc::c_int;
 use capstone_sys::{
@@ -248,7 +247,7 @@ impl_PartialEq_repr_fields!(Tms320c64xOpMem;
     base, disp, unit, scaled, display_type, direction, modify
 );
 
-impl cmp::Eq for Tms320c64xOpMem {}
+impl Eq for Tms320c64xOpMem {}
 
 impl<'a> From<&'a cs_tms320c64x_op> for Tms320c64xOperand {
     fn from(insn: &cs_tms320c64x_op) -> Tms320c64xOperand {
@@ -277,7 +276,7 @@ def_arch_details_struct!(
     Operand = Tms320c64xOperand;
     OperandIterator = Tms320c64xOperandIterator;
     OperandIteratorLife = Tms320c64xOperandIterator<'a>;
-    [ pub struct Tms320c64xOperandIterator<'a>(slice::Iter<'a, cs_tms320c64x_op>); ]
+    [ pub struct Tms320c64xOperandIterator<'a>(core::slice::Iter<'a, cs_tms320c64x_op>); ]
     cs_arch_op = cs_tms320c64x_op;
     cs_arch = cs_tms320c64x;
 );

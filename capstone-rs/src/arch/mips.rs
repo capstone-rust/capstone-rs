@@ -1,7 +1,6 @@
 //! Contains mips-specific types
 
 use core::convert::From;
-use core::{cmp, fmt, slice};
 
 use capstone_sys::{cs_mips, cs_mips_op, mips_op_mem, mips_op_type};
 
@@ -93,7 +92,7 @@ impl_PartialEq_repr_fields!(MipsOpMem;
     base, disp
 );
 
-impl cmp::Eq for MipsOpMem {}
+impl Eq for MipsOpMem {}
 
 impl<'a> From<&'a cs_mips_op> for MipsOperand {
     fn from(insn: &cs_mips_op) -> MipsOperand {
@@ -115,7 +114,7 @@ def_arch_details_struct!(
     Operand = MipsOperand;
     OperandIterator = MipsOperandIterator;
     OperandIteratorLife = MipsOperandIterator<'a>;
-    [ pub struct MipsOperandIterator<'a>(slice::Iter<'a, cs_mips_op>); ]
+    [ pub struct MipsOperandIterator<'a>(core::slice::Iter<'a, cs_mips_op>); ]
     cs_arch_op = cs_mips_op;
     cs_arch = cs_mips;
 );

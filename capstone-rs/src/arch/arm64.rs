@@ -1,7 +1,7 @@
 //! Contains arm64-specific types
 
 use core::convert::From;
-use core::{cmp, fmt, mem, slice};
+use core::{cmp, mem, slice};
 
 use capstone_sys::{arm64_op_mem, arm64_op_type, cs_arm64, cs_arm64_op};
 use libc::c_uint;

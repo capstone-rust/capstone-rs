@@ -357,15 +357,15 @@ pub trait ArchTag: internal::ArchTagSealed + 'static + Sized {
     /// Type of capstone builder that builds Capstone instances for this architecture.
     type Builder: Default;
 
-    type Mode: Into<Mode>;
-    type ExtraMode: Into<ExtraMode>;
-    type Syntax: Into<Syntax>;
+    type Mode: Copy + Into<Mode>;
+    type ExtraMode: Copy + Into<ExtraMode>;
+    type Syntax: Copy + Into<Syntax>;
 
-    type RegId: Into<RegId>;
-    type InsnId: Into<InsnId>;
-    type InsnGroupId: Into<InsnGroupId>;
+    type RegId: Copy + Into<RegId>;
+    type InsnId: Copy + Into<InsnId>;
+    type InsnGroupId: Copy + Into<InsnGroupId>;
 
-    type InsnDetail<'a>: for<'i> From<&'i InsnDetail<'a, Self>>;
+    type InsnDetail<'a>: DetailsArchInsn + for<'i> From<&'i InsnDetail<'a, Self>>;
 
     /// Determine whether the given [`Arch`] value is supported by this arch tag.
     fn support_arch(arch: Arch) -> bool;
@@ -387,7 +387,7 @@ impl ArchTag for DynamicArchTag {
     type InsnId = InsnId;
     type InsnGroupId = InsnGroupId;
 
-    type InsnDetail<'a> = ArchDetail<'a>;
+    type InsnDetail<'a> = ArchInsnDetail<'a>;
 
     fn support_arch(_: Arch) -> bool {
         true
@@ -558,6 +558,7 @@ macro_rules! detail_arch_base {
                 detail = ArmDetail,
                 insn_detail = ArmInsnDetail<'a>,
                 op = ArmOperand,
+                op_iter = ArmOperandIterator,
                 /// Returns the ARM details, if any
                 => arch_name = arm,
             ]
@@ -565,6 +566,7 @@ macro_rules! detail_arch_base {
                 detail = Arm64Detail,
                 insn_detail = Arm64InsnDetail<'a>,
                 op = Arm64Operand,
+                op_iter = Arm64OperandIterator,
                 /// Returns the ARM64 details, if any
                 => arch_name = arm64,
             ]
@@ -572,6 +574,7 @@ macro_rules! detail_arch_base {
                 detail = EvmDetail,
                 insn_detail = EvmInsnDetail<'a>,
                 op = EvmOperand,
+                op_iter = EvmOperandIterator,
                 /// Returns the EVM details, if any
                 => arch_name = evm,
             ]
@@ -579,6 +582,7 @@ macro_rules! detail_arch_base {
                 detail = M680xDetail,
                 insn_detail = M680xInsnDetail<'a>,
                 op = M680xOperand,
+                op_iter = M680xOperandIterator,
                 /// Returns the M680X details, if any
                 => arch_name = m680x,
             ]
@@ -586,6 +590,7 @@ macro_rules! detail_arch_base {
                 detail = M68kDetail,
                 insn_detail = M68kInsnDetail<'a>,
                 op = M68kOperand,
+                op_iter = M68kOperandIterator,
                 /// Returns the M68K details, if any
                 => arch_name = m68k,
             ]
@@ -593,6 +598,7 @@ macro_rules! detail_arch_base {
                 detail = MipsDetail,
                 insn_detail = MipsInsnDetail<'a>,
                 op = MipsOperand,
+                op_iter = MipsOperandIterator,
                 /// Returns the MIPS details, if any
                 => arch_name = mips,
             ]
@@ -600,6 +606,7 @@ macro_rules! detail_arch_base {
                 detail = PpcDetail,
                 insn_detail = PpcInsnDetail<'a>,
                 op = PpcOperand,
+                op_iter = PpcOperandIterator,
                 /// Returns the PPC details, if any
                 => arch_name = ppc,
             ]
@@ -607,6 +614,7 @@ macro_rules! detail_arch_base {
                 detail = RiscVDetail,
                 insn_detail = RiscVInsnDetail<'a>,
                 op = RiscVOperand,
+                op_iter = RiscVOperandIterator,
                 /// Returns the RISCV details, if any
                 => arch_name = riscv,
             ]
@@ -614,13 +622,23 @@ macro_rules! detail_arch_base {
                 detail = SparcDetail,
                 insn_detail = SparcInsnDetail<'a>,
                 op = SparcOperand,
+                op_iter = SparcOperandIterator,
                 /// Returns the SPARC details, if any
                 => arch_name = sparc,
+            ]
+            [
+                detail = SyszDetail,
+                insn_detail = SyszInsnDetail<'a>,
+                op = SyszOperand,
+                op_iter = SyszOperandIterator,
+                /// Returns the Sysz details, if any
+                => arch_name = sysz,
             ]
             [
                 detail = Tms320c64xDetail,
                 insn_detail = Tms320c64xInsnDetail<'a>,
                 op = Tms320c64xOperand,
+                op_iter = Tms320c64xOperandIterator,
                 /// Returns the Tms320c64x details, if any
                 => arch_name = tms320c64x,
             ]
@@ -628,6 +646,7 @@ macro_rules! detail_arch_base {
                 detail = X86Detail,
                 insn_detail = X86InsnDetail<'a>,
                 op = X86Operand,
+                op_iter = X86OperandIterator,
                 /// Returns the X86 details, if any
                 => arch_name = x86,
             ]
@@ -635,6 +654,7 @@ macro_rules! detail_arch_base {
                 detail = XcoreDetail,
                 insn_detail = XcoreInsnDetail<'a>,
                 op = XcoreOperand,
+                op_iter = XcoreOperandIterator,
                 /// Returns the XCore details, if any
                 => arch_name = xcore,
             ]
@@ -642,13 +662,14 @@ macro_rules! detail_arch_base {
     };
 }
 
-/// Define ArchDetail enum, ArchOperand enum, and From<$Operand> for ArchOperand
+/// Define ArchInsnDetail enum, ArchOperand enum, ArchOperandIterator enum, and From<$Operand> for ArchOperand
 macro_rules! detail_defs {
     (
         $( [
             detail = $Detail:tt,
             insn_detail = $InsnDetail:ty,
             op = $Operand:tt,
+            op_iter = $OperandIter:tt,
             $( #[$func_attr:meta] )+
             => arch_name = $arch_name:ident,
         ] )+
@@ -662,36 +683,28 @@ macro_rules! detail_defs {
         /// For convenience, there are methods for each architecture that return an `Option` of that
         /// architecture's detail structure. This allows you to use an `if let Some(...) = { /* ... */ }`
         /// instead of a match statement.
-        #[derive(Debug)]
-        pub enum ArchDetail<'a> {
+        #[derive(Debug, PartialEq)]
+        pub enum ArchInsnDetail<'a> {
             $( $Detail($InsnDetail), )+
         }
 
         /// Architecture-independent enum of operands
         #[derive(Clone, Debug, PartialEq)]
         pub enum ArchOperand {
+            Invalid,
             $( $Operand($Operand), )+
         }
 
-        impl<'a> ArchDetail<'a> {
-            /// Returns architecture independent set of operands
-            pub fn operands(&'a self) -> Vec<ArchOperand> {
-                match *self {
-                    $(
-                        ArchDetail::$Detail(ref detail) => {
-                            let ops = detail.operands();
-                            let map = ops.map(ArchOperand::from);
-                            let vec: Vec<ArchOperand> = map.collect();
-                            vec
-                        }
-                    )+
-                }
-            }
+        /// Iterate arch-specific operands of an instruction.
+        pub enum ArchOperandIterator<'a> {
+            $( $OperandIter($OperandIter<'a>), )+
+        }
 
+        impl<'a> ArchInsnDetail<'a> {
             $(
                 $( #[$func_attr] )+
                 pub fn $arch_name(&'a self) -> Option<& $InsnDetail> {
-                    if let ArchDetail::$Detail(ref arch_detail) = *self {
+                    if let ArchInsnDetail::$Detail(ref arch_detail) = *self {
                         Some(arch_detail)
                     } else {
                         None
@@ -701,12 +714,18 @@ macro_rules! detail_defs {
         }
 
         $(
-            impl<'a> From<$InsnDetail> for ArchDetail<'a> {
+            impl<'a> From<$InsnDetail> for ArchInsnDetail<'a> {
                 fn from(insn_detail: $InsnDetail) -> Self {
                     Self::$Detail(insn_detail)
                 }
             }
         )+
+
+        impl Default for ArchOperand {
+            fn default() -> Self {
+                Self::Invalid
+            }
+        }
 
         $(
             impl From<$Operand> for ArchOperand {
@@ -715,16 +734,37 @@ macro_rules! detail_defs {
                 }
             }
         )+
+
+        impl<'a> Iterator for ArchOperandIterator<'a> {
+            type Item = ArchOperand;
+
+            fn next(&mut self) -> Option<Self::Item> {
+                match self {
+                    $(
+                        Self::$OperandIter( op_iter ) => op_iter.next().map(From::from),
+                    )+
+                }
+            }
+        }
+
+        impl<'a> DetailsArchInsn for ArchInsnDetail<'a> {
+            type Operand = ArchOperand;
+            type OperandIterator = ArchOperandIterator<'a>;
+
+            fn operands(&self) -> Self::OperandIterator {
+                todo!()
+            }
+        }
     }
 }
 
-impl<'a, 'i> From<&'i InsnDetail<'a, DynamicArchTag>> for ArchDetail<'a> {
+impl<'a, 'i> From<&'i InsnDetail<'a, DynamicArchTag>> for ArchInsnDetail<'a> {
     fn from(insn_detail: &'i InsnDetail<'a, DynamicArchTag>) -> Self {
         macro_rules! def_arch_detail_match {
             (
                 $( [ $ARCH:ident, $detail:ident, $insn_detail:ident, $arch:ident ] )*
             ) => {
-                use self::ArchDetail::*;
+                use self::ArchInsnDetail::*;
                 use crate::Arch::*;
                 $( use crate::arch::$arch::$insn_detail; )*
 
@@ -804,13 +844,13 @@ macro_rules! def_arch_details_struct {
         }
 
         impl<'a> ::core::fmt::Debug for $OperandIteratorLife {
-            fn fmt(&self, fmt: &mut fmt::Formatter) -> ::core::fmt::Result {
+            fn fmt(&self, fmt: &mut ::core::fmt::Formatter) -> ::core::fmt::Result {
                 fmt.debug_struct(stringify!($OperandIterator)).finish()
             }
         }
 
         impl<'a> ::core::fmt::Debug for $InsnDetail<'a> {
-            fn fmt(&self, fmt: &mut fmt::Formatter) -> ::core::fmt::Result {
+            fn fmt(&self, fmt: &mut ::core::fmt::Formatter) -> ::core::fmt::Result {
                 fmt.debug_struct(stringify!($InsnDetail))
                     .field(stringify!($cs_arch), &(self.0 as *const $cs_arch))
                     .finish()

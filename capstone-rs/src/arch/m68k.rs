@@ -1,7 +1,6 @@
 //! Contains m68k-specific types
 
 use core::convert::From;
-use core::{cmp, fmt, slice};
 
 use capstone_sys::{
     cs_m68k, cs_m68k_op, cs_m68k_op__bindgen_ty_1, m68k_address_mode, m68k_cpu_size, m68k_fpu_size,
@@ -467,7 +466,7 @@ impl_PartialEq_repr_fields!(M68kOpMem;
     address_mode, extra_info
 );
 
-impl cmp::Eq for M68kOpMem {}
+impl Eq for M68kOpMem {}
 
 impl<'a> From<&'a cs_m68k_op> for M68kOperand {
     fn from(insn: &cs_m68k_op) -> M68kOperand {
@@ -480,7 +479,7 @@ def_arch_details_struct!(
     Operand = M68kOperand;
     OperandIterator = M68kOperandIterator;
     OperandIteratorLife = M68kOperandIterator<'a>;
-    [ pub struct M68kOperandIterator<'a>(slice::Iter<'a, cs_m68k_op>); ]
+    [ pub struct M68kOperandIterator<'a>(core::slice::Iter<'a, cs_m68k_op>); ]
     cs_arch_op = cs_m68k_op;
     cs_arch = cs_m68k;
 );

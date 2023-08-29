@@ -1,6 +1,7 @@
 //! Contains EVM-specific types
 
-use core::fmt;
+use core::fmt::{Debug, Formatter};
+use core::marker::PhantomData;
 
 use capstone_sys::cs_evm;
 
@@ -73,15 +74,15 @@ pub struct EvmOperand(());
 
 /// Iterates over instruction operands
 #[derive(Clone)]
-pub struct EvmOperandIterator(());
+pub struct EvmOperandIterator<'a>(PhantomData<&'a ()>);
 
-impl EvmOperandIterator {
-    fn new() -> EvmOperandIterator {
-        EvmOperandIterator(())
+impl<'a> EvmOperandIterator<'a> {
+    fn new() -> EvmOperandIterator<'a> {
+        EvmOperandIterator(PhantomData::default())
     }
 }
 
-impl Iterator for EvmOperandIterator {
+impl<'a> Iterator for EvmOperandIterator<'a> {
     type Item = EvmOperand;
 
     fn next(&mut self) -> Option<Self::Item> {
@@ -89,26 +90,26 @@ impl Iterator for EvmOperandIterator {
     }
 }
 
-impl ExactSizeIterator for EvmOperandIterator {
+impl<'a> ExactSizeIterator for EvmOperandIterator<'a> {
     fn len(&self) -> usize {
         0
     }
 }
 
-impl PartialEq for EvmOperandIterator {
+impl<'a> PartialEq for EvmOperandIterator<'a> {
     fn eq(&self, _other: &EvmOperandIterator) -> bool {
         false
     }
 }
 
-impl fmt::Debug for EvmOperandIterator {
-    fn fmt(&self, fmt: &mut fmt::Formatter) -> ::core::fmt::Result {
+impl<'a> Debug for EvmOperandIterator<'a> {
+    fn fmt(&self, fmt: &mut Formatter) -> ::core::fmt::Result {
         fmt.debug_struct("EvmOperandIterator").finish()
     }
 }
 
-impl<'a> fmt::Debug for EvmInsnDetail<'a> {
-    fn fmt(&self, fmt: &mut fmt::Formatter) -> ::core::fmt::Result {
+impl<'a> Debug for EvmInsnDetail<'a> {
+    fn fmt(&self, fmt: &mut Formatter) -> ::core::fmt::Result {
         fmt.debug_struct("EvmInsnDetail")
             .field("cs_evm", &(self.0 as *const cs_evm))
             .finish()
@@ -116,10 +117,10 @@ impl<'a> fmt::Debug for EvmInsnDetail<'a> {
 }
 
 impl<'a> DetailsArchInsn for EvmInsnDetail<'a> {
-    type OperandIterator = EvmOperandIterator;
+    type OperandIterator = EvmOperandIterator<'a>;
     type Operand = EvmOperand;
 
-    fn operands(&self) -> EvmOperandIterator {
+    fn operands(&self) -> EvmOperandIterator<'a> {
         EvmOperandIterator::new()
     }
 }

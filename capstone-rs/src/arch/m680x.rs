@@ -1,7 +1,6 @@
 //! Contains m680x-specific types
 
 use core::convert::From;
-use core::{fmt, slice};
 
 use capstone_sys::{
     cs_m680x, cs_m680x_op, m680x_op_ext, m680x_op_idx, m680x_op_rel, m680x_op_type,
@@ -268,7 +267,7 @@ def_arch_details_struct!(
     Operand = M680xOperand;
     OperandIterator = M680xOperandIterator;
     OperandIteratorLife = M680xOperandIterator<'a>;
-    [ pub struct M680xOperandIterator<'a>(slice::Iter<'a, cs_m680x_op>); ]
+    [ pub struct M680xOperandIterator<'a>(core::slice::Iter<'a, cs_m680x_op>); ]
     cs_arch_op = cs_m680x_op;
     cs_arch = cs_m680x;
 );

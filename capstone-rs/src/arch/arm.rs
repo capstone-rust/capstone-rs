@@ -1,7 +1,6 @@
 //! Contains arm-specific types
 
 use core::convert::From;
-use core::{cmp, fmt, slice};
 
 use capstone_sys::{
     arm_op_mem, arm_op_type, cs_arm, cs_arm_op, arm_shifter,
@@ -274,7 +273,7 @@ impl_PartialEq_repr_fields!(ArmOpMem;
     base, index, scale, disp
 );
 
-impl cmp::Eq for ArmOpMem {}
+impl Eq for ArmOpMem {}
 
 impl Default for ArmOperand {
     fn default() -> Self {
@@ -310,7 +309,7 @@ def_arch_details_struct!(
     Operand = ArmOperand;
     OperandIterator = ArmOperandIterator;
     OperandIteratorLife = ArmOperandIterator<'a>;
-    [ pub struct ArmOperandIterator<'a>(slice::Iter<'a, cs_arm_op>); ]
+    [ pub struct ArmOperandIterator<'a>(core::slice::Iter<'a, cs_arm_op>); ]
     cs_arch_op = cs_arm_op;
     cs_arch = cs_arm;
 );

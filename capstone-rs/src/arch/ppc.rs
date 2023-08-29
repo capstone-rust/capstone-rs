@@ -1,7 +1,6 @@
 //! Contains ppc-specific types
 
 use core::convert::From;
-use core::{cmp, fmt, slice};
 
 // XXX todo(tmfink): create rusty versions
 pub use capstone_sys::ppc_insn_group as PpcInsnGroup;
@@ -114,7 +113,7 @@ impl_PartialEq_repr_fields!(PpcOpMem;
     base, disp
 );
 
-impl cmp::Eq for PpcOpMem {}
+impl Eq for PpcOpMem {}
 
 /// PPC condition register field
 #[derive(Debug, Copy, Clone)]
@@ -137,13 +136,13 @@ impl PpcOpCrx {
     }
 }
 
-impl cmp::PartialEq for PpcOpCrx {
+impl PartialEq for PpcOpCrx {
     fn eq(&self, other: &Self) -> bool {
         (self.scale(), self.reg(), self.cond()) == (other.scale(), other.reg(), other.cond())
     }
 }
 
-impl cmp::Eq for PpcOpCrx {}
+impl Eq for PpcOpCrx {}
 
 impl<'a> From<&'a cs_ppc_op> for PpcOperand {
     fn from(insn: &cs_ppc_op) -> PpcOperand {
@@ -168,7 +167,7 @@ def_arch_details_struct!(
     Operand = PpcOperand;
     OperandIterator = PpcOperandIterator;
     OperandIteratorLife = PpcOperandIterator<'a>;
-    [ pub struct PpcOperandIterator<'a>(slice::Iter<'a, cs_ppc_op>); ]
+    [ pub struct PpcOperandIterator<'a>(core::slice::Iter<'a, cs_ppc_op>); ]
     cs_arch_op = cs_ppc_op;
     cs_arch = cs_ppc;
 );

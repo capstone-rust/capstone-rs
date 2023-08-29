@@ -8,7 +8,7 @@ use core::str;
 
 use capstone_sys::*;
 
-use crate::arch::ArchTag;
+use crate::arch::{ArchTag, DetailsArchInsn};
 use crate::constants::Arch;
 
 use crate::ffi::str_from_cstr_ptr;
@@ -515,6 +515,10 @@ impl<'a, A: ArchTag> InsnDetail<'a, A> {
             &*(&self.0.groups[..self.0.groups_count as usize] as *const [InsnGroupIdInt]
                 as *const [A::InsnGroupId])
         }
+    }
+
+    pub fn operands(&self) -> Vec<<A::InsnDetail<'a> as DetailsArchInsn>::Operand> {
+        todo!()
     }
 
     /// Architecture-specific detail

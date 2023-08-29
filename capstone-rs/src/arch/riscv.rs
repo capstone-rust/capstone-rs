@@ -1,7 +1,6 @@
 //! Contains riscv-specific types
 
 use core::convert::From;
-use core::{cmp, fmt, slice};
 
 // XXX todo(tmfink): create rusty versions
 pub use capstone_sys::riscv_insn_group as RiscVInsnGroup;
@@ -92,7 +91,7 @@ impl_PartialEq_repr_fields!(RiscVOpMem;
     base, disp
 );
 
-impl cmp::Eq for RiscVOpMem {}
+impl Eq for RiscVOpMem {}
 
 impl<'a> From<&'a cs_riscv_op> for RiscVOperand {
     fn from(insn: &cs_riscv_op) -> RiscVOperand {
@@ -114,7 +113,7 @@ def_arch_details_struct!(
     Operand = RiscVOperand;
     OperandIterator = RiscVOperandIterator;
     OperandIteratorLife = RiscVOperandIterator<'a>;
-    [ pub struct RiscVOperandIterator<'a>(slice::Iter<'a, cs_riscv_op>); ]
+    [ pub struct RiscVOperandIterator<'a>(core::slice::Iter<'a, cs_riscv_op>); ]
     cs_arch_op = cs_riscv_op;
     cs_arch = cs_riscv;
 );

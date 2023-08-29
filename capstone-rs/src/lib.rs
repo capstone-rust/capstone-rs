@@ -43,7 +43,7 @@ pub use crate::instruction::*;
 /// ```
 pub mod prelude {
     pub use crate::arch::{
-        self, ArchDetail, BuildsCapstone, BuildsCapstoneEndian, BuildsCapstoneExtraMode,
+        self, ArchInsnDetail, BuildsCapstone, BuildsCapstoneEndian, BuildsCapstoneExtraMode,
         BuildsCapstoneSyntax, DetailsArchInsn,
     };
     pub use crate::{

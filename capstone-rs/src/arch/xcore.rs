@@ -1,7 +1,6 @@
 //! Contains xcore-specific types
 
 use core::convert::From;
-use core::{cmp, fmt, slice};
 
 // XXX todo(tmfink): create rusty versions
 pub use capstone_sys::xcore_insn_group as XcoreInsnGroup;
@@ -102,7 +101,7 @@ impl_PartialEq_repr_fields!(XcoreOpMem;
     base, index, disp, direct
 );
 
-impl cmp::Eq for XcoreOpMem {}
+impl Eq for XcoreOpMem {}
 
 impl<'a> From<&'a cs_xcore_op> for XcoreOperand {
     fn from(insn: &cs_xcore_op) -> XcoreOperand {
@@ -124,7 +123,7 @@ def_arch_details_struct!(
     Operand = XcoreOperand;
     OperandIterator = XcoreOperandIterator;
     OperandIteratorLife = XcoreOperandIterator<'a>;
-    [ pub struct XcoreOperandIterator<'a>(slice::Iter<'a, cs_xcore_op>); ]
+    [ pub struct XcoreOperandIterator<'a>(core::slice::Iter<'a, cs_xcore_op>); ]
     cs_arch_op = cs_xcore_op;
     cs_arch = cs_xcore;
 );

@@ -2,7 +2,6 @@
 
 use core::convert::From;
 use core::convert::TryInto;
-use core::{cmp, fmt, slice};
 
 use capstone_sys::{
     cs_ac_type, cs_x86, cs_x86_op, cs_x86_op__bindgen_ty_1, x86_op_mem, x86_op_type,
@@ -237,7 +236,7 @@ impl_PartialEq_repr_fields!(X86OpMem;
     segment, base, index, scale, disp
 );
 
-impl cmp::Eq for X86OpMem {}
+impl Eq for X86OpMem {}
 
 impl Default for X86Operand {
     fn default() -> Self {
@@ -269,7 +268,7 @@ def_arch_details_struct!(
     Operand = X86Operand;
     OperandIterator = X86OperandIterator;
     OperandIteratorLife = X86OperandIterator<'a>;
-    [ pub struct X86OperandIterator<'a>(slice::Iter<'a, cs_x86_op>); ]
+    [ pub struct X86OperandIterator<'a>(core::slice::Iter<'a, cs_x86_op>); ]
     cs_arch_op = cs_x86_op;
     cs_arch = cs_x86;
 );

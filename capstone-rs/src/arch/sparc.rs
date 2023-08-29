@@ -1,7 +1,6 @@
 //! Contains sparc-specific types
 
 use core::convert::From;
-use core::{cmp, fmt, slice};
 
 // XXX todo(tmfink): create rusty versions
 pub use capstone_sys::sparc_insn_group as SparcInsnGroup;
@@ -111,7 +110,7 @@ impl_PartialEq_repr_fields!(SparcOpMem;
     base, index, disp
 );
 
-impl cmp::Eq for SparcOpMem {}
+impl Eq for SparcOpMem {}
 
 impl<'a> From<&'a cs_sparc_op> for SparcOperand {
     fn from(insn: &cs_sparc_op) -> SparcOperand {
@@ -133,7 +132,7 @@ def_arch_details_struct!(
     Operand = SparcOperand;
     OperandIterator = SparcOperandIterator;
     OperandIteratorLife = SparcOperandIterator<'a>;
-    [ pub struct SparcOperandIterator<'a>(slice::Iter<'a, cs_sparc_op>); ]
+    [ pub struct SparcOperandIterator<'a>(core::slice::Iter<'a, cs_sparc_op>); ]
     cs_arch_op = cs_sparc_op;
     cs_arch = cs_sparc;
 );
