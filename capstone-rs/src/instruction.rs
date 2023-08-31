@@ -8,7 +8,7 @@ use core::str;
 
 use capstone_sys::*;
 
-use crate::arch::{ArchTag, DetailsArchInsn};
+use crate::arch::ArchTag;
 use crate::constants::Arch;
 
 use crate::ffi::str_from_cstr_ptr;
@@ -17,10 +17,10 @@ use crate::ffi::str_from_cstr_ptr;
 ///
 /// To access inner [`&[Insn]`](Insn), use [`.as_ref()`](AsRef::as_ref).
 /// ```
-/// # use capstone::Instructions;
+/// # use capstone::arch::x86::X86ArchTag;
 /// # use capstone::prelude::*;
-/// # let cs = Capstone::new().x86().mode(arch::x86::ArchMode::Mode32).build().unwrap();
-/// let insns: Instructions = cs.disasm_all(b"\x55\x48\x8b\x05", 0x1000).unwrap();
+/// # let cs = Capstone::<X86ArchTag>::new().mode(arch::x86::ArchMode::Mode32).build().unwrap();
+/// let insns = cs.disasm_all(b"\x55\x48\x8b\x05", 0x1000).unwrap();
 /// for insn in insns.as_ref() {
 ///     println!("{}", insn);
 /// }
@@ -48,8 +48,8 @@ pub type InsnIdInt = u32;
 #[derive(Copy, Clone, Debug, Hash, PartialEq, Eq, PartialOrd, Ord)]
 pub struct InsnId(pub InsnIdInt);
 
-macro_rules! define_insn_id_from_arch_insn {
-    ( $( $arch:ident => $arch_insn:ident ),+ $(,)? ) => {
+macro_rules! define_arch_insn_conversions {
+    ( $( [ $arch:ident, $arch_insn:ident ] ),+ $(,)? ) => {
         $(
             impl From<$crate::arch::$arch::$arch_insn> for InsnId {
                 fn from(arch_insn: $crate::arch::$arch::$arch_insn) -> Self {
@@ -60,20 +60,20 @@ macro_rules! define_insn_id_from_arch_insn {
     };
 }
 
-define_insn_id_from_arch_insn![
-    arm => ArmInsn,
-    arm64 => Arm64Insn,
-    evm => EvmInsn,
-    m68k => M68kInsn,
-    m680x => M680xInsn,
-    mips => MipsInsn,
-    ppc => PpcInsn,
-    riscv => RiscVInsn,
-    sparc => SparcInsn,
-    sysz => SyszInsn,
-    tms320c64x => Tms320c64xInsn,
-    x86 => X86Insn,
-    xcore => XcoreInsn,
+define_arch_insn_conversions![
+    [arm, ArmInsn],
+    [arm64, Arm64Insn],
+    [evm, EvmInsn],
+    [m68k, M68kInsn],
+    [m680x, M680xInsn],
+    [mips, MipsInsn],
+    [ppc, PpcInsn],
+    [riscv, RiscVInsn],
+    [sparc, SparcInsn],
+    [sysz, SyszInsn],
+    [tms320c64x, Tms320c64xInsn],
+    [x86, X86Insn],
+    [xcore, XcoreInsn],
 ];
 
 /// Integer type used in `InsnGroupId`
@@ -96,32 +96,38 @@ impl From<u32> for InsnGroupId {
     }
 }
 
-macro_rules! define_insn_grp_id_from_arch_grp_id {
-    ( $( $arch:ident => $arch_insn_grp:ident ),+ $(,)? ) => {
+macro_rules! define_arch_grp_id_conversions {
+    ( $( [ $arch:ident, $arch_insn_grp:ident ] ),+ $(,)? ) => {
         $(
             impl From<$crate::arch::$arch::$arch_insn_grp> for InsnGroupId {
                 fn from(arch_insn_grp: $crate::arch::$arch::$arch_insn_grp) -> Self {
                     Self(arch_insn_grp.0 as InsnGroupIdInt)
                 }
             }
+
+            impl From<InsnGroupId> for $crate::arch::$arch::$arch_insn_grp {
+                fn from(insn_grp: InsnGroupId) -> Self {
+                    Self(insn_grp.0 as _)
+                }
+            }
         )+
     };
 }
 
-define_insn_grp_id_from_arch_grp_id![
-    arm => ArmInsnGroup,
-    arm64 => Arm64InsnGroup,
-    evm => EvmInsnGroup,
-    m68k => M68kInsnGroup,
-    m680x => M680xInsnGroup,
-    mips => MipsInsnGroup,
-    ppc => PpcInsnGroup,
-    riscv => RiscVInsnGroup,
-    sparc => SparcInsnGroup,
-    sysz => SyszInsnGroup,
-    tms320c64x => Tms320c64xInsnGroup,
-    x86 => X86InsnGroup,
-    xcore => XcoreInsnGroup,
+define_arch_grp_id_conversions![
+    [arm, ArmInsnGroup],
+    [arm64, Arm64InsnGroup],
+    [evm, EvmInsnGroup],
+    [m68k, M68kInsnGroup],
+    [m680x, M680xInsnGroup],
+    [mips, MipsInsnGroup],
+    [ppc, PpcInsnGroup],
+    [riscv, RiscVInsnGroup],
+    [sparc, SparcInsnGroup],
+    [sysz, SyszInsnGroup],
+    [tms320c64x, Tms320c64xInsnGroup],
+    [x86, X86InsnGroup],
+    [xcore, XcoreInsnGroup],
 ];
 
 pub use capstone_sys::cs_group_type as InsnGroupType;
@@ -141,37 +147,49 @@ impl RegId {
     pub const INVALID_REG: Self = Self(0);
 }
 
-impl From<u32> for RegId {
-    fn from(v: u32) -> RegId {
-        RegId(v.try_into().ok().unwrap_or(Self::INVALID_REG.0))
+impl From<RegIdInt> for RegId {
+    fn from(value: RegIdInt) -> Self {
+        Self(value)
     }
 }
 
-macro_rules! define_reg_id_from_arch_reg {
-    ( $( $arch:ident => $arch_reg:ident ),+ $(,)? ) => {
+impl From<RegId> for RegIdInt {
+    fn from(value: RegId) -> Self {
+        value.0
+    }
+}
+
+macro_rules! define_arch_reg_conversions {
+    ( $( [ $arch:ident, $arch_reg:ident ] ),+ $(,)? ) => {
         $(
             impl From<$crate::arch::$arch::$arch_reg> for RegId {
                 fn from(arch_reg: $crate::arch::$arch::$arch_reg) -> Self {
-                    Self(arch_reg.0 as RegIdInt)
+                    Self(arch_reg.0 as _)
+                }
+            }
+
+            impl From<RegId> for $crate::arch::$arch::$arch_reg {
+                fn from(reg_id: RegId) -> Self {
+                    Self(reg_id.0 as _)
                 }
             }
         )+
     };
 }
 
-define_reg_id_from_arch_reg![
-    arm => ArmReg,
-    arm64 => Arm64Reg,
-    m68k => M68kReg,
-    m680x => M680xReg,
-    mips => MipsReg,
-    ppc => PpcReg,
-    riscv => RiscVReg,
-    sparc => SparcReg,
-    sysz => SyszReg,
-    tms320c64x => Tms320c64xReg,
-    x86 => X86Reg,
-    xcore => XcoreReg,
+define_arch_reg_conversions![
+    [arm, ArmReg],
+    [arm64, Arm64Reg],
+    [m68k, M68kReg],
+    [m680x, M680xReg],
+    [mips, MipsReg],
+    [ppc, PpcReg],
+    [riscv, RiscVReg],
+    [sparc, SparcReg],
+    [sysz, SyszReg],
+    [tms320c64x, Tms320c64xReg],
+    [x86, X86Reg],
+    [xcore, XcoreReg],
 ];
 
 /// Represents how the register is accessed.
@@ -285,10 +303,9 @@ pub struct Insn<'a, A: ArchTag> {
 /// [`Capstone::insn_detail()`](crate::Capstone::insn_detail).
 ///
 /// ```
-/// # use capstone::Instructions;
+/// # use capstone::arch::x86::X86ArchTag;
 /// # use capstone::prelude::*;
-/// let cs = Capstone::new()
-///     .x86()
+/// let cs = Capstone::<X86ArchTag>::new()
 ///     .mode(arch::x86::ArchMode::Mode32)
 ///     .detail(true) // needed to enable detail
 ///     .build()
@@ -296,8 +313,8 @@ pub struct Insn<'a, A: ArchTag> {
 /// let insns = cs.disasm_all(b"\x90", 0x1000).unwrap();
 /// for insn in insns.as_ref() {
 ///     println!("{}", insn);
-///     let insn_detail: InsnDetail = cs.insn_detail(insn).unwrap();
-///     println!("    {:?}", insn_detail.groups());
+///     let insn_detail = cs.insn_detail(insn).unwrap();
+///     println!("    {:?}", insn_detail.groups().collect::<Vec<_>>());
 /// }
 /// ```
 ///
@@ -492,33 +509,26 @@ pub struct InsnGroupIter<'a>(slice::Iter<'a, InsnGroupIdInt>);
 impl<'a, A: ArchTag> InsnDetail<'a, A> {
     #[cfg(feature = "full")]
     /// Returns the implicit read registers
-    pub fn regs_read(&self) -> &[A::RegId] {
-        unsafe {
-            &*(&self.0.regs_read[..self.0.regs_read_count as usize] as *const [RegIdInt]
-                as *const [A::RegId])
-        }
+    pub fn regs_read(&self) -> impl Iterator<Item = A::RegId> + '_ {
+        self.0.regs_read[..self.0.regs_read_count as usize]
+            .iter()
+            .map(|raw_reg| A::RegId::from(RegId(*raw_reg)))
     }
 
     #[cfg(feature = "full")]
     /// Returns the implicit write registers
-    pub fn regs_write(&self) -> &[A::RegId] {
-        unsafe {
-            &*(&self.0.regs_write[..self.0.regs_write_count as usize] as *const [RegIdInt]
-                as *const [A::RegId])
-        }
+    pub fn regs_write(&self) -> impl Iterator<Item = A::RegId> + '_ {
+        self.0.regs_write[..self.0.regs_write_count as usize]
+            .iter()
+            .map(|raw_reg| A::RegId::from(RegId(*raw_reg)))
     }
 
     #[cfg(feature = "full")]
     /// Returns the groups to which this instruction belongs
-    pub fn groups(&self) -> &[A::InsnGroupId] {
-        unsafe {
-            &*(&self.0.groups[..self.0.groups_count as usize] as *const [InsnGroupIdInt]
-                as *const [A::InsnGroupId])
-        }
-    }
-
-    pub fn operands(&self) -> Vec<<A::InsnDetail<'a> as DetailsArchInsn>::Operand> {
-        todo!()
+    pub fn groups(&self) -> impl Iterator<Item = A::InsnGroupId> + '_ {
+        self.0.groups[..self.0.groups_count as usize]
+            .iter()
+            .map(|raw_grp| A::InsnGroupId::from(InsnGroupId(*raw_grp)))
     }
 
     /// Architecture-specific detail
@@ -535,9 +545,9 @@ where
 {
     fn fmt(&self, fmt: &mut Formatter) -> fmt::Result {
         fmt.debug_struct("Detail")
-            .field("regs_read", &self.regs_read())
-            .field("regs_write", &self.regs_write())
-            .field("groups", &self.groups())
+            .field("regs_read", &self.regs_read().collect::<Vec<_>>())
+            .field("regs_write", &self.regs_write().collect::<Vec<_>>())
+            .field("groups", &self.groups().collect::<Vec<_>>())
             .finish()
     }
 }

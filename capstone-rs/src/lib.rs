@@ -43,8 +43,8 @@ pub use crate::instruction::*;
 /// ```
 pub mod prelude {
     pub use crate::arch::{
-        self, ArchInsnDetail, BuildsCapstone, BuildsCapstoneEndian, BuildsCapstoneExtraMode,
-        BuildsCapstoneSyntax, DetailsArchInsn,
+        self, ArchInsnDetail, ArchTag, BuildsCapstone, BuildsCapstoneEndian,
+        BuildsCapstoneExtraMode, BuildsCapstoneSyntax, DetailsArchInsn,
     };
     pub use crate::{
         Capstone, CsResult, InsnDetail, InsnGroupId, InsnGroupIdInt, InsnId, InsnIdInt, RegId,

@@ -361,9 +361,9 @@ pub trait ArchTag: internal::ArchTagSealed + 'static + Sized {
     type ExtraMode: Copy + Into<ExtraMode>;
     type Syntax: Copy + Into<Syntax>;
 
-    type RegId: Copy + Into<RegId>;
+    type RegId: Copy + From<RegId> + Into<RegId>;
     type InsnId: Copy + Into<InsnId>;
-    type InsnGroupId: Copy + Into<InsnGroupId>;
+    type InsnGroupId: Copy + From<InsnGroupId> + Into<InsnGroupId>;
 
     type InsnDetail<'a>: DetailsArchInsn + for<'i> From<&'i InsnDetail<'a, Self>>;
 

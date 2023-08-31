@@ -12,7 +12,7 @@ pub use capstone_sys::evm_insn as EvmInsn;
 pub use crate::arch::arch_builder::evm::*;
 use crate::arch::{ArchTag, DetailsArchInsn};
 use crate::arch::internal::ArchTagSealed;
-use crate::{Arch, InsnDetail};
+use crate::{Arch, InsnDetail, RegIdInt};
 
 pub struct EvmArchTag;
 
@@ -25,7 +25,7 @@ impl ArchTag for EvmArchTag {
     type ExtraMode = ArchExtraMode;
     type Syntax = ArchSyntax;
 
-    type RegId = u32;
+    type RegId = RegIdInt;
     type InsnId = EvmInsn;
     type InsnGroupId = EvmInsnGroup;
 

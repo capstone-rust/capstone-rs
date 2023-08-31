@@ -121,8 +121,9 @@ impl<A: ArchTag> Capstone<A> {
     /// This is the recommended interface to `Capstone`.
     ///
     /// ```
+    /// use capstone::arch::x86::X86ArchTag;
     /// use capstone::prelude::*;
-    /// let cs = Capstone::new().x86().mode(arch::x86::ArchMode::Mode32).build();
+    /// let cs = Capstone::<X86ArchTag>::new().mode(arch::x86::ArchMode::Mode32).build();
     /// ```
     #[allow(clippy::new_ret_no_self)]
     pub fn new() -> A::Builder {
@@ -134,7 +135,8 @@ impl<A: ArchTag> Capstone<A> {
     ///
     /// ```
     /// use capstone::{Arch, Capstone, NO_EXTRA_MODE, Mode};
-    /// let cs = Capstone::new_raw(Arch::X86, Mode::Mode64, NO_EXTRA_MODE, None);
+    /// use capstone::arch::DynamicArchTag;
+    /// let cs = Capstone::<DynamicArchTag>::new_raw(Arch::X86, Mode::Mode64, NO_EXTRA_MODE, None);
     /// assert!(cs.is_ok());
     /// ```
     pub fn new_raw<T: Iterator<Item = ExtraMode>>(
@@ -191,7 +193,8 @@ impl<A: ArchTag> Capstone<A> {
     ///
     /// ```
     /// # use capstone::prelude::*;
-    /// # let cs = Capstone::new().x86().mode(arch::x86::ArchMode::Mode32).build().unwrap();
+    /// # use capstone::arch::x86::X86ArchTag;
+    /// # let cs = Capstone::<X86ArchTag>::new().mode(arch::x86::ArchMode::Mode32).build().unwrap();
     /// cs.disasm_all(b"\x90", 0x1000).unwrap();
     /// ```
     pub fn disasm_all<'a>(&'a self, code: &[u8], addr: u64) -> CsResult<Instructions<'a, A>> {

@@ -11,15 +11,23 @@ const X86_CODE: &[u8] = b"\x55\x48\x8b\x05\xb8\x13\x00\x00\xe9\x14\x9e\x08\x00\x
 
 #[cfg(feature = "full")]
 /// Print register names
-fn reg_names<A: ArchTag>(cs: &Capstone<A>, regs: &[A::RegId]) -> String {
-    let names: Vec<String> = regs.iter().map(|&x| cs.reg_name(x).unwrap()).collect();
+fn reg_names<A, I>(cs: &Capstone<A>, regs: I) -> String
+where
+    A: ArchTag,
+    I: Iterator<Item = A::RegId>,
+{
+    let names: Vec<String> = regs.map(|x| cs.reg_name(x).unwrap()).collect();
     names.join(", ")
 }
 
 #[cfg(feature = "full")]
 /// Print instruction group names
-fn group_names<A: ArchTag>(cs: &Capstone<A>, regs: &[A::InsnGroupId]) -> String {
-    let names: Vec<String> = regs.iter().map(|&x| cs.group_name(x).unwrap()).collect();
+fn group_names<A, I>(cs: &Capstone<A>, regs: I) -> String
+where
+    A: ArchTag,
+    I: Iterator<Item = A::InsnGroupId>,
+{
+    let names: Vec<String> = regs.map(|x| cs.group_name(x).unwrap()).collect();
     names.join(", ")
 }
 
