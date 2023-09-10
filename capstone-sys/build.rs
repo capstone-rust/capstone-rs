@@ -132,6 +132,7 @@ fn build_capstone_cc() {
         .define("CAPSTONE_HAS_WASM", None)
         .define("CAPSTONE_HAS_X86", None)
         .define("CAPSTONE_HAS_XCORE", None)
+        .define("CAPSTONE_HAS_BPF", None)
         // No need to display any warnings from the C library
         .flag_if_supported("-w")
         .static_crt(use_static_crt);
@@ -282,7 +283,7 @@ fn write_bindgen_bindings(
     bindings
         .write_to_file(&out_bindings_path)
         .expect("Unable to write bindings");
-
+ 
     // Parse bindings and impl fn to cast u32 to <arch>_insn, write output to file
     let bindings_impl_str = impl_insid_to_insenum(&bindings.to_string());
     let mut bindings_impl = File::create(&out_impl_path).expect("Unable to open file");
