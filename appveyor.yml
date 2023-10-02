@@ -1,4 +1,4 @@
-image: Visual Studio 2015
+image: Visual Studio 2022
 
 environment:
   global:
@@ -15,10 +15,10 @@ environment:
       CHANNEL: stable
 
 # Install Rust and Cargo
-# (Based on from https://github.com/rust-lang/libc/blob/master/appveyor.yml)
+# (Based on from https://github.com/rust-lang/libc/blob/d03a1ff2dc55044f4ac919c2673608d65791efbe/appveyor.yml)
 install:
-  - if "%TARGET%" == "i686-pc-windows-gnu" set PATH=C:\mingw-w64\i686-6.3.0-posix-dwarf-rt_v5-rev1\mingw32\bin;%PATH%
-  - if "%TARGET%" == "x86_64-pc-windows-gnu" set PATH=C:\mingw-w64\x86_64-6.3.0-posix-seh-rt_v5-rev1\mingw64\bin;%PATH%
+  - if "%TARGET%" == "i686-pc-windows-gnu" set PATH=C:\mingw-w64\i686-8.1.0-posix-dwarf-rt_v6-rev0\mingw32\bin;%PATH%
+  - if "%TARGET%" == "x86_64-pc-windows-gnu" set PATH=C:\mingw-w64\x86_64-8.1.0-posix-seh-rt_v6-rev0\mingw64\bin;%PATH%
   - curl -sSf -o rustup-init.exe https://win.rustup.rs
   - rustup-init.exe --default-host %TARGET% --default-toolchain %CHANNEL% -y
   - set PATH=%PATH%;C:\Users\appveyor\.cargo\bin
