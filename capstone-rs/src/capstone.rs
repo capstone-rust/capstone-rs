@@ -366,7 +366,7 @@ impl Capstone {
     }
 
     /// Get the registers are which are read to and written to, in that order.
-    pub fn regs_access(&self, insn: Insn) -> Option<CsResult<(Vec<RegId>, Vec<RegId>)>> {
+    pub fn regs_access(&self, insn: &Insn) -> Option<CsResult<(Vec<RegId>, Vec<RegId>)>> {
         if cfg!(feature = "full") {
             let (write, read) = unsafe {
                 let mut regs_read_count: u8 = 0;
