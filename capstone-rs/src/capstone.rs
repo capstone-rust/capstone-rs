@@ -388,16 +388,15 @@ impl Capstone {
                     return Some(Err(err.into()));
                 }
 
-                assert!(regs_read_count as usize <= regs_read.len());
-                assert!(regs_write_count as usize <= regs_write.len());
+                fn to_vec(ints: [u16; 64], len: usize) -> Vec<RegId> {
+                    assert!(len <= ints.len());
+                    ints[..len].iter().map(|v| RegId(*v)).collect()
+                }
 
-                let regs_write: Vec<_> = regs_write[..regs_write_count as usize]
-                    .iter()
-                    .map(|v| RegId(*v))
-                    .collect();
-                let regs_read = regs_write[..regs_write_count as usize].to_vec();
-
-                (regs_write, regs_read)
+                (
+                    to_vec(regs_read, regs_read_count as usize),
+                    to_vec(regs_write, regs_write_count as usize),
+                )
             };
 
             Some(Ok((read, write)))
