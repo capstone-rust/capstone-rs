@@ -368,7 +368,7 @@ impl Capstone {
     /// Get the registers are which are read to and written to, in that order.
     pub fn regs_access(&self, insn: &Insn) -> Option<CsResult<(Vec<RegId>, Vec<RegId>)>> {
         if cfg!(feature = "full") {
-            let (write, read) = unsafe {
+            Some(Ok(unsafe {
                 let mut regs_read_count: u8 = 0;
                 let mut regs_write_count: u8 = 0;
 
@@ -397,9 +397,7 @@ impl Capstone {
                     to_vec(regs_read, regs_read_count as usize),
                     to_vec(regs_write, regs_write_count as usize),
                 )
-            };
-
-            Some(Ok((read, write)))
+            }))
         } else {
             None
         }
