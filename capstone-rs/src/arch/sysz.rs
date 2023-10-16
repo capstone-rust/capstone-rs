@@ -14,6 +14,7 @@ use crate::{Arch, InsnDetail};
 
 use super::DetailsArchInsn;
 
+/// Architecture tag that represents Sysz.
 pub struct SyszArchTag;
 
 impl ArchTagSealed for SyszArchTag {}

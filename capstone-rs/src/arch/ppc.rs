@@ -16,6 +16,7 @@ use crate::arch::internal::ArchTagSealed;
 use crate::instruction::RegId;
 use crate::{Arch, InsnDetail};
 
+/// Architecture tag that represents PPC.
 pub struct PpcArchTag;
 
 impl ArchTagSealed for PpcArchTag {}

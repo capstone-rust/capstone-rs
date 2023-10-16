@@ -20,6 +20,7 @@ use crate::instruction::{RegId, RegIdInt};
 use crate::prelude::*;
 use crate::{Arch, Error, InsnDetail};
 
+/// Architecture tag that represents M68K.
 pub struct M68kArchTag;
 
 impl ArchTagSealed for M68kArchTag {}

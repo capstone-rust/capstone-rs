@@ -26,6 +26,7 @@ pub struct X86ArchTag;
 
 impl ArchTagSealed for X86ArchTag {}
 
+/// Architecture that represents both x86 and x86_64.
 impl ArchTag for X86ArchTag {
     type Builder = ArchCapstoneBuilder;
 

@@ -23,6 +23,7 @@ pub use capstone_sys::arm_cc as ArmCC;
 pub use capstone_sys::arm_mem_barrier as ArmMemBarrier;
 pub use capstone_sys::arm_setend_type as ArmSetendType;
 
+/// Architecture tag that represents ARM.
 pub struct ArmArchTag;
 
 impl ArchTagSealed for ArmArchTag {}

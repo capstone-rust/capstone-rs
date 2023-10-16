@@ -14,6 +14,7 @@ use crate::arch::internal::ArchTagSealed;
 use crate::instruction::{RegId, RegIdInt};
 use crate::{Arch, InsnDetail};
 
+/// Architecture tag that represents Xcore.
 pub struct XcoreArchTag;
 
 impl ArchTagSealed for XcoreArchTag {}

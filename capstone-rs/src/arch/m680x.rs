@@ -17,6 +17,7 @@ use crate::arch::internal::ArchTagSealed;
 use crate::instruction::RegId;
 use crate::{Arch, InsnDetail};
 
+/// Architecture tag that represents M680X.
 pub struct M680xArchTag;
 
 impl ArchTagSealed for M680xArchTag {}

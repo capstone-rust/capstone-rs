@@ -3,6 +3,7 @@ use core::convert::{TryFrom, TryInto};
 use core::fmt::{self, Debug, Display, Error, Formatter};
 use core::marker::PhantomData;
 use core::ops::Deref;
+use core::ptr::NonNull;
 use core::slice;
 use core::str;
 
@@ -342,13 +343,15 @@ impl<'a, A: ArchTag> Insn<'a, A> {
     /// Note that this function is unsafe, and assumes that you know what you are doing. In
     /// particular, it generates a lifetime for the `Insn` from nothing, and that lifetime is in
     /// no-way actually tied to the cs_insn itself. It is the responsibility of the caller to
-    /// ensure that the resulting `Insn` lives only as long as the `cs_insn`. This function
-    /// assumes that the pointer passed is non-null and a valid `cs_insn` pointer.
+    /// ensure that:
+    /// - The resulting `Insn` does not outlive the given `cs_insn` object.
+    /// - The pointer passed in as `insn` is non-null and is a valid pointer to a `cs_insn` object.
+    /// - The architecture of the instruction matches the architecture specified by the architecture tag `A`.
     ///
     /// The caller is fully responsible for the backing allocations lifetime, including freeing.
-    pub unsafe fn from_raw(insn: *const cs_insn) -> Self {
+    pub unsafe fn from_raw(insn: NonNull<cs_insn>) -> Self {
         Self {
-            insn: core::ptr::read(insn),
+            insn: core::ptr::read(insn.as_ptr()),
             _marker: PhantomData,
         }
     }
@@ -375,25 +378,25 @@ impl<'a, A: ArchTag> Insn<'a, A> {
         }
     }
 
-    /// Access instruction id
+    /// Access instruction id.
     #[inline]
     pub fn id(&self) -> InsnId {
         InsnId(self.insn.id)
     }
 
-    /// Size of instruction (in bytes)
+    /// Size of instruction (in bytes).
     #[inline]
     pub fn len(&self) -> usize {
         self.insn.size as usize
     }
 
-    /// Instruction address
+    /// Instruction address.
     #[inline]
     pub fn address(&self) -> u64 {
         self.insn.address
     }
 
-    /// Byte-level representation of the instruction
+    /// Byte-level representation of the instruction.
     #[inline]
     pub fn bytes(&self) -> &[u8] {
         &self.insn.bytes[..self.len()]
@@ -403,7 +406,7 @@ impl<'a, A: ArchTag> Insn<'a, A> {
     /// the pre-conditions are satisfied.
     ///
     /// Be careful this is still in early stages and largely untested with various `cs_option` and
-    /// architecture matrices
+    /// architecture matrices.
     ///
     /// # Safety
     /// The [`cs_insn::detail`] pointer must be valid and non-null.

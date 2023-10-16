@@ -14,6 +14,7 @@ use crate::arch::internal::ArchTagSealed;
 use crate::instruction::{RegId, RegIdInt};
 use crate::{Arch, InsnDetail};
 
+/// Architecture tag that represents RISC-V.
 pub struct RiscVArchTag;
 
 impl ArchTagSealed for RiscVArchTag {}

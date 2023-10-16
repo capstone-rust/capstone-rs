@@ -15,6 +15,7 @@ use crate::arch::internal::ArchTagSealed;
 use crate::instruction::RegId;
 use crate::{Arch, InsnDetail};
 
+/// Architecture tag that represents MIPS.
 pub struct MipsArchTag;
 
 impl ArchTagSealed for MipsArchTag {}

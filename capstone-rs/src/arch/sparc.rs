@@ -16,6 +16,7 @@ use crate::arch::internal::ArchTagSealed;
 use crate::instruction::{RegId, RegIdInt};
 use crate::{Arch, InsnDetail};
 
+/// Architecture tag that represents Sparc.
 pub struct SparcArchTag;
 
 impl ArchTagSealed for SparcArchTag {}

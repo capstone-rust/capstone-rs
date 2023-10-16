@@ -13,7 +13,16 @@ use crate::error::*;
 use crate::ffi::str_from_cstr_ptr;
 use crate::instruction::{Insn, InsnDetail, Instructions};
 
-/// An instance of the capstone disassembler
+/// An instance of the capstone disassembler.
+///
+/// The generic type parameter `A` is called the "architecture tag" and it allows you to specify the target architecture
+/// of the disassembler. For example, a Capstone disassembler that disassembles x86 and x86_64 code has the type
+/// `Capstone<X86ArchTag>`. For the full list of architecture tags, please refer to the "implementors" section of the
+/// [`ArchTag`] trait.
+///
+/// If the target architecture is unknown at compile time, you can use the special architecture tag [`DynamicArchTag`].
+///
+/// [`DynamicArchTag`]: ./arch/struct.DynamicArchTag.html
 ///
 /// Create with an instance with [`.new()`](Self::new) and disassemble bytes with [`.disasm_all()`](Self::disasm_all).
 pub struct Capstone<A: ArchTag> {
@@ -130,8 +139,11 @@ impl<A: ArchTag> Capstone<A> {
         A::Builder::default()
     }
 
-    /// Create a new instance of the decompiler using the "raw" interface.
-    /// The user must ensure that only sensible `Arch`/`Mode` combinations are used.
+    /// Create a new instance of the decompiler using the "raw" interface. The user must ensure that only sensible
+    /// [`Arch`] / [`Mode`] combinations are used.
+    ///
+    /// This function will return an `Err` value if the given [`Arch`], [`Mode`], or extra modes are invalid for the
+    /// disassembler's target architecture specified by `A`.
     ///
     /// ```
     /// use capstone::{Arch, Capstone, NO_EXTRA_MODE, Mode};
@@ -189,7 +201,7 @@ impl<A: ArchTag> Capstone<A> {
         }
     }
 
-    /// Disassemble all instructions in buffer
+    /// Disassemble all instructions in buffer.
     ///
     /// ```
     /// # use capstone::prelude::*;
@@ -201,7 +213,7 @@ impl<A: ArchTag> Capstone<A> {
         self.disasm(code, addr, 0)
     }
 
-    /// Disassemble `count` instructions in `code`
+    /// Disassemble `count` instructions in `code`.
     pub fn disasm_count<'a>(
         &'a self,
         code: &[u8],
@@ -238,13 +250,13 @@ impl<A: ArchTag> Capstone<A> {
         }
     }
 
-    /// Returns csh handle
+    /// Returns csh handle.
     #[inline]
     fn csh(&self) -> csh {
         self.csh as csh
     }
 
-    /// Returns the raw mode value, which is useful for debugging
+    /// Returns the raw mode value, which is useful for debugging.
     #[allow(dead_code)]
     pub(crate) fn raw_mode(&self) -> cs_mode {
         self.raw_mode
@@ -258,7 +270,7 @@ impl<A: ArchTag> Capstone<A> {
         self.raw_mode
     }
 
-    /// Set extra modes in addition to normal `mode`
+    /// Set extra modes in addition to normal `mode`.
     pub fn set_extra_mode<T: Iterator<Item = A::ExtraMode>>(
         &mut self,
         extra_mode: T,
@@ -280,7 +292,7 @@ impl<A: ArchTag> Capstone<A> {
         result
     }
 
-    /// Set the assembly syntax (has no effect on some platforms)
+    /// Set the assembly syntax (has no effect on some platforms).
     pub fn set_syntax(&mut self, syntax: A::Syntax) -> CsResult<()> {
         // Todo(tmfink) check for valid syntax
         let syntax_int = cs_opt_value::from(syntax.into());
@@ -326,7 +338,7 @@ impl<A: ArchTag> Capstone<A> {
         }
     }
 
-    /// Controls whether to capstone will generate extra details about disassembled instructions.
+    /// Controls whether capstone should generate extra details about disassembled instructions.
     ///
     /// Pass `true` to enable detail or `false` to disable detail.
     pub fn set_detail(&mut self, enable_detail: bool) -> CsResult<()> {
@@ -341,7 +353,7 @@ impl<A: ArchTag> Capstone<A> {
         result
     }
 
-    /// Controls whether capstone will skip over invalid or data instructions.
+    /// Controls whether capstone should skip over invalid or data instructions.
     ///
     /// Pass `true` to enable skipdata or `false` to disable skipdata.
     pub fn set_skipdata(&mut self, enable_skipdata: bool) -> CsResult<()> {
@@ -357,7 +369,7 @@ impl<A: ArchTag> Capstone<A> {
     }
 
     /// Converts a register id `reg_id` to a `String` containing the register name.
-    /// Unavailable in Diet mode
+    /// Unavailable in Diet mode.
     pub fn reg_name(&self, reg_id: A::RegId) -> Option<String> {
         if cfg!(feature = "full") {
             let reg_name = unsafe {
@@ -387,7 +399,7 @@ impl<A: ArchTag> Capstone<A> {
     }
 
     /// Converts a group id `group_id` to a `String` containing the group name.
-    /// Unavailable in Diet mode
+    /// Unavailable in Diet mode.
     pub fn group_name(&self, group_id: A::InsnGroupId) -> Option<String> {
         if cfg!(feature = "full") {
             let group_name = unsafe {
@@ -401,12 +413,12 @@ impl<A: ArchTag> Capstone<A> {
         }
     }
 
-    /// Returns `Detail` structure for a given instruction
+    /// Returns `Detail` structure for a given instruction.
     ///
     /// Requires:
     ///
-    /// 1. Instruction was created with detail enabled
-    /// 2. Skipdata is disabled
+    /// 1. Instruction was created with details enabled.
+    /// 2. Skipdata is disabled.
     pub fn insn_detail<'s, 'i: 's>(&'s self, insn: &'i Insn<A>) -> CsResult<InsnDetail<'i, A>> {
         if !self.detail_enabled {
             Err(Error::DetailOff)

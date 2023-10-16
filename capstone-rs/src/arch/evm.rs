@@ -14,6 +14,7 @@ use crate::arch::{ArchTag, DetailsArchInsn};
 use crate::arch::internal::ArchTagSealed;
 use crate::{Arch, InsnDetail, RegIdInt};
 
+/// Architecture tag that represents EVM.
 pub struct EvmArchTag;
 
 impl ArchTagSealed for EvmArchTag {}

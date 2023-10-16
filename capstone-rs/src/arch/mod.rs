@@ -354,17 +354,30 @@ mod internal {
 
 /// Provides types relative to a specific arch.
 pub trait ArchTag: internal::ArchTagSealed + 'static + Sized {
-    /// Type of capstone builder that builds Capstone instances for this architecture.
+    /// Type of capstone builder that builds [`Capstone`] instances for this architecture.
+    ///
+    /// Objects of this type are returned from the `Capstone::new` function.
     type Builder: Default;
 
+    /// Type that represents the disassembler's mode.
     type Mode: Copy + Into<Mode>;
+
+    /// Type that represents the disassembler's extra modes.
     type ExtraMode: Copy + Into<ExtraMode>;
+
+    /// Type that represents the disassembler's syntax specifier.
     type Syntax: Copy + Into<Syntax>;
 
+    /// Type that represents the registers provided by the architecture.
     type RegId: Copy + From<RegId> + Into<RegId>;
+
+    /// Type that represents the instruction IDs provided by the architecture.
     type InsnId: Copy + Into<InsnId>;
+
+    /// Type that represents the instruction group IDs provided by the architecture.
     type InsnGroupId: Copy + From<InsnGroupId> + Into<InsnGroupId>;
 
+    /// Type that provides detailed information about an instruction under the architecture.
     type InsnDetail<'a>: DetailsArchInsn + for<'i> From<&'i InsnDetail<'a, Self>>;
 
     /// Determine whether the given [`Arch`] value is supported by this arch tag.

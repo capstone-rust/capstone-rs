@@ -29,6 +29,7 @@ pub use capstone_sys::arm64_barrier_op as Arm64BarrierOp;
 use capstone_sys::cs_arm64_op__bindgen_ty_2;
 use capstone_sys::arm64_shifter;
 
+/// Architecture tag that represents ARM64.
 pub struct Arm64ArchTag;
 
 impl ArchTagSealed for Arm64ArchTag {}

@@ -19,6 +19,7 @@ use crate::arch::internal::ArchTagSealed;
 use crate::instruction::{RegId, RegIdInt};
 use crate::{Arch, InsnDetail};
 
+/// Architecture tag that represents TMS320C64X.
 pub struct Tms320c64xArchTag;
 
 impl ArchTagSealed for Tms320c64xArchTag {}
