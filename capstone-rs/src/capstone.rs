@@ -14,6 +14,9 @@ use crate::instruction::{Insn, InsnDetail, InsnGroupId, InsnId, Instructions, Re
 
 use {crate::ffi::str_from_cstr_ptr, alloc::string::ToString, libc::c_uint};
 
+/// This is taken from the [python bindings](https://github.com/capstone-engine/capstone/blob/5fb8a423d4455cade99b12912142fd3a0c10d957/bindings/python/capstone/__init__.py#L929)
+const MAX_NUM_REGISTERS: usize = 64;
+
 /// An instance of the capstone disassembler
 ///
 /// Create with an instance with [`.new()`](Self::new) and disassemble bytes with [`.disasm_all()`](Self::disasm_all).
@@ -372,8 +375,8 @@ impl Capstone {
                 let mut regs_read_count: u8 = 0;
                 let mut regs_write_count: u8 = 0;
 
-                let mut regs_write = [0u16; 64];
-                let mut regs_read = [0u16; 64];
+                let mut regs_write = [0u16; MAX_NUM_REGISTERS];
+                let mut regs_read = [0u16; MAX_NUM_REGISTERS];
 
                 let err = cs_regs_access(
                     self.csh(),
@@ -388,7 +391,7 @@ impl Capstone {
                     return Err(err.into());
                 }
 
-                fn to_vec(ints: [u16; 64], len: usize) -> Vec<RegId> {
+                fn to_vec(ints: [u16; MAX_NUM_REGISTERS], len: usize) -> Vec<RegId> {
                     assert!(len <= ints.len());
                     ints[..len].iter().map(|v| RegId(*v)).collect()
                 }
