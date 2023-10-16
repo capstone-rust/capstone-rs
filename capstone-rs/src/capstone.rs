@@ -378,7 +378,8 @@ impl Capstone {
         Ok((read, write))
     }
 
-    /// Get the registers are which are read to and written to, in that order.
+    /// Get the registers are which are read to and written to\
+    /// the registers are pushed to the back of the provided buffers
     pub fn regs_access(
         &self,
         insn: &Insn,
