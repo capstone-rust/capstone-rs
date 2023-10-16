@@ -368,8 +368,23 @@ impl Capstone {
         }
     }
 
+    /// Get the registers are which are read to and written to
+    pub fn regs_access_buf(&self, insn: &Insn) -> CsResult<(Vec<RegId>, Vec<RegId>)> {
+        let mut read = Vec::new();
+        let mut write = Vec::new();
+
+        self.regs_access(insn, &mut read, &mut write)?;
+
+        Ok((read, write))
+    }
+
     /// Get the registers are which are read to and written to, in that order.
-    pub fn regs_access(&self, insn: &Insn) -> CsResult<(Vec<RegId>, Vec<RegId>)> {
+    pub fn regs_access(
+        &self,
+        insn: &Insn,
+        read: &mut Vec<RegId>,
+        write: &mut Vec<RegId>,
+    ) -> CsResult<()> {
         if cfg!(feature = "full") {
             Ok(unsafe {
                 let mut regs_read_count: u8 = 0;
@@ -391,15 +406,18 @@ impl Capstone {
                     return Err(err.into());
                 }
 
-                fn to_vec(ints: [u16; MAX_NUM_REGISTERS], len: usize) -> Vec<RegId> {
-                    assert!(len <= ints.len());
-                    ints[..len].iter().map(|v| RegId(*v)).collect()
-                }
-
-                (
-                    to_vec(regs_read, regs_read_count as usize),
-                    to_vec(regs_write, regs_write_count as usize),
-                )
+                read.extend(
+                    regs_read
+                        .iter()
+                        .take(regs_read_count as usize)
+                        .map(|x| RegId(*x)),
+                );
+                write.extend(
+                    regs_write
+                        .iter()
+                        .take(regs_write_count as usize)
+                        .map(|x| RegId(*x)),
+                );
             })
         } else {
             Err(Error::DetailOff)
