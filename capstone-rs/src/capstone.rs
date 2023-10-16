@@ -386,39 +386,41 @@ impl Capstone {
         write: &mut Vec<RegId>,
     ) -> CsResult<()> {
         if cfg!(feature = "full") {
-            Ok(unsafe {
-                let mut regs_read_count: u8 = 0;
-                let mut regs_write_count: u8 = 0;
+            let mut regs_read_count: u8 = 0;
+            let mut regs_write_count: u8 = 0;
 
-                let mut regs_write = [0u16; MAX_NUM_REGISTERS];
-                let mut regs_read = [0u16; MAX_NUM_REGISTERS];
+            let mut regs_write = [0u16; MAX_NUM_REGISTERS];
+            let mut regs_read = [0u16; MAX_NUM_REGISTERS];
 
-                let err = cs_regs_access(
+            let err = unsafe {
+                cs_regs_access(
                     self.csh(),
                     &insn.insn as *const cs_insn,
                     &mut regs_read as *mut _,
                     &mut regs_read_count as *mut _,
                     &mut regs_write as *mut _,
                     &mut regs_write_count as *mut _,
-                );
+                )
+            };
 
-                if err != cs_err::CS_ERR_OK {
-                    return Err(err.into());
-                }
+            if err != cs_err::CS_ERR_OK {
+                return Err(err.into());
+            }
 
-                read.extend(
-                    regs_read
-                        .iter()
-                        .take(regs_read_count as usize)
-                        .map(|x| RegId(*x)),
-                );
-                write.extend(
-                    regs_write
-                        .iter()
-                        .take(regs_write_count as usize)
-                        .map(|x| RegId(*x)),
-                );
-            })
+            read.extend(
+                regs_read
+                    .iter()
+                    .take(regs_read_count as usize)
+                    .map(|x| RegId(*x)),
+            );
+            write.extend(
+                regs_write
+                    .iter()
+                    .take(regs_write_count as usize)
+                    .map(|x| RegId(*x)),
+            );
+
+            Ok(())
         } else {
             Err(Error::DetailOff)
         }
