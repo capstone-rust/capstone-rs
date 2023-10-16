@@ -103,6 +103,11 @@ impl Iterator for EmptyExtraModeIter {
     }
 }
 
+pub struct RegAccess {
+    pub read: Vec<RegId>,
+    pub write: Vec<RegId>,
+}
+
 impl Capstone {
     /// Create a new instance of the decompiler using the builder pattern interface.
     /// This is the recommended interface to `Capstone`.
@@ -369,13 +374,13 @@ impl Capstone {
     }
 
     /// Get the registers are which are read to and written to
-    pub fn regs_access_buf(&self, insn: &Insn) -> CsResult<(Vec<RegId>, Vec<RegId>)> {
+    pub fn regs_access_buf(&self, insn: &Insn) -> CsResult<RegAccess> {
         let mut read = Vec::new();
         let mut write = Vec::new();
 
         self.regs_access(insn, &mut read, &mut write)?;
 
-        Ok((read, write))
+        Ok(RegAccess { read, write })
     }
 
     /// Get the registers are which are read to and written to\
