@@ -366,9 +366,9 @@ impl Capstone {
     }
 
     /// Get the registers are which are read to and written to, in that order.
-    pub fn regs_access(&self, insn: &Insn) -> Option<CsResult<(Vec<RegId>, Vec<RegId>)>> {
+    pub fn regs_access(&self, insn: &Insn) -> CsResult<(Vec<RegId>, Vec<RegId>)> {
         if cfg!(feature = "full") {
-            Some(Ok(unsafe {
+            Ok(unsafe {
                 let mut regs_read_count: u8 = 0;
                 let mut regs_write_count: u8 = 0;
 
@@ -385,7 +385,7 @@ impl Capstone {
                 );
 
                 if err != cs_err::CS_ERR_OK {
-                    return Some(Err(err.into()));
+                    return Err(err.into());
                 }
 
                 fn to_vec(ints: [u16; 64], len: usize) -> Vec<RegId> {
@@ -397,9 +397,9 @@ impl Capstone {
                     to_vec(regs_read, regs_read_count as usize),
                     to_vec(regs_write, regs_write_count as usize),
                 )
-            }))
+            })
         } else {
-            None
+            Err(Error::DetailOff)
         }
     }
 
