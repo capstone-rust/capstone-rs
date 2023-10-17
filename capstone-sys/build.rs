@@ -283,7 +283,7 @@ fn write_bindgen_bindings(
     bindings
         .write_to_file(&out_bindings_path)
         .expect("Unable to write bindings");
- 
+
     // Parse bindings and impl fn to cast u32 to <arch>_insn, write output to file
     let bindings_impl_str = impl_insid_to_insenum(&bindings.to_string());
     let mut bindings_impl = File::create(&out_impl_path).expect("Unable to open file");

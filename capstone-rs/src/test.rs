@@ -3256,7 +3256,6 @@ fn test_owned_insn() {
     }
 }
 
-
 /// Print register names
 fn reg_names(cs: &Capstone, regs: &[RegId]) -> String {
     let names: Vec<String> = regs.iter().map(|&x| cs.reg_name(x).unwrap()).collect();
@@ -3271,7 +3270,13 @@ fn group_names(cs: &Capstone, regs: &[InsnGroupId]) -> String {
 
 #[test]
 fn test_cbpf() {
-    let cs = Capstone::new().bpf().mode(bpf::ArchMode::Cbpf).endian(Endian::Little).detail(true).build().unwrap();
+    let cs = Capstone::new()
+        .bpf()
+        .mode(bpf::ArchMode::Cbpf)
+        .endian(Endian::Little)
+        .detail(true)
+        .build()
+        .unwrap();
     let insns = cs.disasm_all(CBPF_CODE, 0x1000);
     match insns {
         Ok(ins) => {
@@ -3299,7 +3304,6 @@ fn test_cbpf() {
                 for op in ops {
                     eprintln!("{:8}{:?}", "", op);
                 }
-                
             }
         }
 
@@ -3308,11 +3312,16 @@ fn test_cbpf() {
             assert!(false);
         }
     }
-
 }
 
 fn test_ebpf() {
-    let cs = Capstone::new().bpf().mode(bpf::ArchMode::Ebpf).endian(Endian::Little).detail(true).build().unwrap();
+    let cs = Capstone::new()
+        .bpf()
+        .mode(bpf::ArchMode::Ebpf)
+        .endian(Endian::Little)
+        .detail(true)
+        .build()
+        .unwrap();
     let insns = cs.disasm_all(EBPF_CODE, 0x1000);
     match insns {
         Ok(ins) => {
@@ -3340,7 +3349,6 @@ fn test_ebpf() {
                 for op in ops {
                     eprintln!("{:8}{:?}", "", op);
                 }
-                
             }
         }
 
@@ -3349,5 +3357,4 @@ fn test_ebpf() {
             assert!(false);
         }
     }
-
 }
