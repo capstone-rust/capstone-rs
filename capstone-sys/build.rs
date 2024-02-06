@@ -108,7 +108,7 @@ fn build_capstone_cc() {
     for arch_dir in find_arch_dirs().into_iter() {
         files.append(&mut find_c_source_files(&arch_dir));
     }
-
+    file.sort();
     let use_static_crt = {
         let target_features = env::var("CARGO_CFG_TARGET_FEATURE").unwrap_or_default();
         target_features.split(',').any(|f| f == "crt-static")
