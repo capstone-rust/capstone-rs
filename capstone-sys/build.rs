@@ -108,7 +108,7 @@ fn build_capstone_cc() {
     for arch_dir in find_arch_dirs().into_iter() {
         files.append(&mut find_c_source_files(&arch_dir));
     }
-    // add sort for resloving build-unproducible
+    // keep build reproducible
     files.sort();
     let use_static_crt = {
         let target_features = env::var("CARGO_CFG_TARGET_FEATURE").unwrap_or_default();
