@@ -6,9 +6,16 @@ set -eu
 
 cd "$(dirname $0)/.."
 
+Error() {
+    echo "Error:" "$@" >&2
+    exit 1
+}
+
 extract_toml_value() {
     grep "^$1" Cargo.toml | sed 's/^[^ =].*=.*"\([^"]\+\)"$/\1/' | head -n1
 }
+
+git diff --exit-code HEAD || Error "Uncommitted changes"
 
 PACKAGE_NAME="$(extract_toml_value name)"
 PACKAGE_VERSION="${PACKAGE_VERSION:-$(extract_toml_value version)}"
