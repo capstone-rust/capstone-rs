@@ -1,4 +1,4 @@
-#![doc = include_str!("../../README.md")]
+#![doc = include_str!(concat!(env!("CARGO_MANIFEST_DIR"), "/README.md"))]
 #![cfg_attr(not(feature = "std"), no_std)]
 // derive Default on enums was not stable until 1.62.0
 #![allow(clippy::derivable_impls)]
