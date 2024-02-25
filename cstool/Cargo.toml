@@ -6,7 +6,7 @@ license = "MIT"
 edition = "2018"
 
 [dependencies]
-capstone = { path = "../capstone-rs", version = "0.11.0" }
+capstone = { path = "../capstone-rs", version = "0.12.0" }
 log = "0.4"
 stderrlog = "0.5"
 
