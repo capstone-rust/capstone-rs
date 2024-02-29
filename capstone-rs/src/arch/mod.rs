@@ -352,6 +352,16 @@ macro_rules! arch_info_base {
                 ( syntax: )
                 ( both_endian: false  )
             ]
+            [
+                ( bpf, BPF )
+                ( mode:
+                    Cbpf,
+                    Ebpf,
+                )
+                ( extra_modes: )
+                ( syntax: )
+                ( both_endian: true  )
+            ]
         );
     };
 }
@@ -533,6 +543,13 @@ macro_rules! detail_arch_base {
                 op = XcoreOperand,
                 /// Returns the XCore details, if any
                 => arch_name = xcore,
+            ]
+            [
+                detail = BpfDetail,
+                insn_detail = BpfInsnDetail<'a>,
+                op = BpfOperand,
+                /// Returns the XCore details, if any
+                => arch_name = bpf,
             ]
         );
     };

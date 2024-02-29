@@ -221,6 +221,8 @@ define_cs_enum_wrapper!(
     => EVM = CS_ARCH_EVM;
     /// RISC-V
     => RISCV = CS_ARCH_RISCV;
+    /// BPF
+    => BPF = CS_ARCH_BPF;
 );
 
 define_cs_enum_wrapper!(
@@ -286,6 +288,10 @@ define_cs_enum_wrapper!(
     => RiscV32 = CS_MODE_RISCV32;
     /// RISC-V 64-bit mode
     => RiscV64 = CS_MODE_RISCV64;
+    /// Classic BPF mode
+    => Cbpf = CS_MODE_BPF_CLASSIC;
+    /// Extended BPF mode
+    => Ebpf = CS_MODE_BPF_EXTENDED;
     /// Default mode for little-endian
     => Default = CS_MODE_LITTLE_ENDIAN;
 );
