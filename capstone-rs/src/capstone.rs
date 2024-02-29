@@ -14,6 +14,9 @@ use crate::instruction::{Insn, InsnDetail, InsnGroupId, InsnId, Instructions, Re
 
 use {crate::ffi::str_from_cstr_ptr, alloc::string::ToString, libc::c_uint};
 
+/// This is taken from the [python bindings](https://github.com/capstone-engine/capstone/blob/5fb8a423d4455cade99b12912142fd3a0c10d957/bindings/python/capstone/__init__.py#L929)
+const MAX_NUM_REGISTERS: usize = 64;
+
 /// An instance of the capstone disassembler
 ///
 /// Create with an instance with [`.new()`](Self::new) and disassemble bytes with [`.disasm_all()`](Self::disasm_all).
@@ -98,6 +101,11 @@ impl Iterator for EmptyExtraModeIter {
     fn next(&mut self) -> Option<Self::Item> {
         None
     }
+}
+
+pub struct RegAccess {
+    pub read: Vec<RegId>,
+    pub write: Vec<RegId>,
 }
 
 impl Capstone {
@@ -362,6 +370,65 @@ impl Capstone {
             Some(insn_name)
         } else {
             None
+        }
+    }
+
+    /// Get the registers are which are read to and written to
+    pub fn regs_access_buf(&self, insn: &Insn) -> CsResult<RegAccess> {
+        let mut read = Vec::new();
+        let mut write = Vec::new();
+
+        self.regs_access(insn, &mut read, &mut write)?;
+
+        Ok(RegAccess { read, write })
+    }
+
+    /// Get the registers are which are read to and written to\
+    /// the registers are pushed to the back of the provided buffers
+    pub fn regs_access(
+        &self,
+        insn: &Insn,
+        read: &mut Vec<RegId>,
+        write: &mut Vec<RegId>,
+    ) -> CsResult<()> {
+        if cfg!(feature = "full") {
+            let mut regs_read_count: u8 = 0;
+            let mut regs_write_count: u8 = 0;
+
+            let mut regs_write = [0u16; MAX_NUM_REGISTERS];
+            let mut regs_read = [0u16; MAX_NUM_REGISTERS];
+
+            let err = unsafe {
+                cs_regs_access(
+                    self.csh(),
+                    &insn.insn as *const cs_insn,
+                    &mut regs_read as *mut _,
+                    &mut regs_read_count as *mut _,
+                    &mut regs_write as *mut _,
+                    &mut regs_write_count as *mut _,
+                )
+            };
+
+            if err != cs_err::CS_ERR_OK {
+                return Err(err.into());
+            }
+
+            read.extend(
+                regs_read
+                    .iter()
+                    .take(regs_read_count as usize)
+                    .map(|x| RegId(*x)),
+            );
+            write.extend(
+                regs_write
+                    .iter()
+                    .take(regs_write_count as usize)
+                    .map(|x| RegId(*x)),
+            );
+
+            Ok(())
+        } else {
+            Err(Error::DetailOff)
         }
     }
 
