@@ -7,7 +7,9 @@ use std::io::prelude::*;
 use std::process::exit;
 use std::str::FromStr;
 
-use capstone::{self, prelude::*, Arch, Endian, EnumList, ExtraMode, Mode};
+use capstone::arch::{ArchTag, DynamicArchTag};
+use capstone::prelude::*;
+use capstone::{Arch, Endian, EnumList, ExtraMode, Mode};
 use clap::{App, Arg, ArgGroup};
 use log::{debug, info};
 
@@ -33,14 +35,22 @@ where
 }
 
 /// Print register names
-fn reg_names(cs: &Capstone, regs: &[RegId]) -> String {
-    let names: Vec<String> = regs.iter().map(|&x| cs.reg_name(x).unwrap()).collect();
+fn reg_names<A, I>(cs: &Capstone<A>, regs: I) -> String
+where
+    A: ArchTag,
+    I: Iterator<Item = A::RegId>,
+{
+    let names: Vec<String> = regs.map(|x| cs.reg_name(x).unwrap()).collect();
     names.join(", ")
 }
 
 /// Print instruction group names
-fn group_names(cs: &Capstone, regs: &[InsnGroupId]) -> String {
-    let names: Vec<String> = regs.iter().map(|&x| cs.group_name(x).unwrap()).collect();
+fn group_names<A, I>(cs: &Capstone<A>, regs: I) -> String
+where
+    A: ArchTag,
+    I: Iterator<Item = A::InsnGroupId>,
+{
+    let names: Vec<String> = regs.map(|x| cs.group_name(x).unwrap()).collect();
     names.join(", ")
 }
 
@@ -80,7 +90,7 @@ fn disasm<T: Iterator<Item = ExtraMode>>(
     show_detail: bool,
 ) {
     info!("Got {} bytes", code.len());
-    let mut cs = Capstone::new_raw(arch, mode, extra_mode, endian).expect_exit();
+    let mut cs = Capstone::<DynamicArchTag>::new_raw(arch, mode, extra_mode, endian).expect_exit();
 
     if show_detail {
         cs.set_detail(true).expect("Failed to set detail");

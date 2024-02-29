@@ -1,13 +1,16 @@
 //! Contains arm64-specific types
 
+use core::convert::From;
+use core::{cmp, mem, slice};
+
+use capstone_sys::{arm64_op_mem, arm64_op_type, cs_arm64, cs_arm64_op};
 use libc::c_uint;
 
 pub use crate::arch::arch_builder::arm64::*;
-use crate::arch::DetailsArchInsn;
-use capstone_sys::{arm64_op_mem, arm64_op_type, cs_arm64, cs_arm64_op};
+use crate::arch::{ArchTag, DetailsArchInsn};
+use crate::arch::internal::ArchTagSealed;
 use crate::instruction::{RegId, RegIdInt};
-use core::convert::From;
-use core::{cmp, fmt, mem, slice};
+use crate::{Arch, InsnDetail};
 
 // Re-exports
 pub use capstone_sys::arm64_insn_group as Arm64InsnGroup;
@@ -26,9 +29,37 @@ pub use capstone_sys::arm64_barrier_op as Arm64BarrierOp;
 use capstone_sys::cs_arm64_op__bindgen_ty_2;
 use capstone_sys::arm64_shifter;
 
+/// Architecture tag that represents ARM64.
+pub struct Arm64ArchTag;
+
+impl ArchTagSealed for Arm64ArchTag {}
+
+impl ArchTag for Arm64ArchTag {
+    type Builder = ArchCapstoneBuilder;
+
+    type Mode = ArchMode;
+    type ExtraMode = ArchExtraMode;
+    type Syntax = ArchSyntax;
+
+    type RegId = Arm64Reg;
+    type InsnId = Arm64Insn;
+    type InsnGroupId = Arm64InsnGroup;
+
+    type InsnDetail<'a> = Arm64InsnDetail<'a>;
+
+    fn support_arch(arch: Arch) -> bool {
+        arch == Arch::ARM64
+    }
+}
 
 /// Contains ARM64-specific details for an instruction
 pub struct Arm64InsnDetail<'a>(pub(crate) &'a cs_arm64);
+
+impl<'a, 'i> From<&'i InsnDetail<'a, Arm64ArchTag>> for Arm64InsnDetail<'a> {
+    fn from(value: &'i InsnDetail<'a, Arm64ArchTag>) -> Self {
+        Self(unsafe { &value.0.__bindgen_anon_1.arm64 })
+    }
+}
 
 /// ARM64 shift amount
 #[derive(Clone, Copy, Debug, Eq, PartialEq, Hash)]
@@ -58,7 +89,7 @@ impl Arm64OperandType {
 
         match op_type {
             ARM64_OP_INVALID => Invalid,
-            ARM64_OP_REG => Reg(RegId(unsafe { value.reg } as RegIdInt)),
+            ARM64_OP_REG => Reg(RegId(unsafe { value.reg.0 } as RegIdInt)),
             ARM64_OP_IMM => Imm(unsafe { value.imm }),
             ARM64_OP_MEM => Mem(Arm64OpMem(unsafe { value.mem })),
             ARM64_OP_FP => Fp(unsafe { value.fp }),
@@ -160,12 +191,12 @@ impl_PartialEq_repr_fields!(Arm64InsnDetail<'a> [ 'a ];
 impl Arm64OpMem {
     /// Base register
     pub fn base(&self) -> RegId {
-        RegId(self.0.base as RegIdInt)
+        RegId(self.0.base.0 as RegIdInt)
     }
 
     /// Index register
     pub fn index(&self) -> RegId {
-        RegId(self.0.index as RegIdInt)
+        RegId(self.0.index.0 as RegIdInt)
     }
 
     /// Disp value
@@ -288,11 +319,11 @@ mod test {
         }
 
         t(
-            (ARM64_OP_INVALID, cs_arm64_op__bindgen_ty_2 { reg: 0 }),
+            (ARM64_OP_INVALID, cs_arm64_op__bindgen_ty_2 { reg: Arm64Reg::ARM64_REG_INVALID }),
             Invalid,
         );
         t(
-            (ARM64_OP_REG, cs_arm64_op__bindgen_ty_2 { reg: 0 }),
+            (ARM64_OP_REG, cs_arm64_op__bindgen_ty_2 { reg: Arm64Reg::ARM64_REG_INVALID }),
             Reg(RegId(0)),
         );
         t(
@@ -300,7 +331,7 @@ mod test {
             Imm(42),
         );
         t(
-            (ARM64_OP_REG_MRS, cs_arm64_op__bindgen_ty_2 { reg: ARM64_SYSREG_MDRAR_EL1 as u32 }),
+            (ARM64_OP_REG_MRS, cs_arm64_op__bindgen_ty_2 { reg: Arm64Reg(ARM64_SYSREG_MDRAR_EL1 as u32) }),
             RegMrs(ARM64_SYSREG_MDRAR_EL1),
         );
         t(
@@ -317,8 +348,8 @@ mod test {
         );
         t(
             (ARM64_OP_REG_MSR, cs_arm64_op__bindgen_ty_2 {
-                reg: arm64_sysreg::ARM64_SYSREG_ICC_EOIR1_EL1 as u32 }),
-            RegMsr(arm64_sysreg::ARM64_SYSREG_ICC_EOIR1_EL1),
+                reg: Arm64Reg(ARM64_SYSREG_ICC_EOIR1_EL1 as u32) }),
+            RegMsr(ARM64_SYSREG_ICC_EOIR1_EL1),
         );
         t(
             (ARM64_OP_SYS, cs_arm64_op__bindgen_ty_2 { sys: arm64_sys_op::ARM64_AT_S1E0R }),

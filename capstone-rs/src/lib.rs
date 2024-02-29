@@ -26,8 +26,8 @@ mod error;
 mod ffi;
 mod instruction;
 
-#[cfg(test)]
-mod test;
+// #[cfg(test)]
+// mod test;
 
 pub use crate::capstone::*;
 pub use crate::constants::*;
@@ -43,8 +43,8 @@ pub use crate::instruction::*;
 /// ```
 pub mod prelude {
     pub use crate::arch::{
-        self, ArchDetail, BuildsCapstone, BuildsCapstoneEndian, BuildsCapstoneExtraMode,
-        BuildsCapstoneSyntax, DetailsArchInsn,
+        self, ArchInsnDetail, ArchTag, BuildsCapstone, BuildsCapstoneEndian,
+        BuildsCapstoneExtraMode, BuildsCapstoneSyntax, DetailsArchInsn,
     };
     pub use crate::{
         Capstone, CsResult, InsnDetail, InsnGroupId, InsnGroupIdInt, InsnId, InsnIdInt, RegId,

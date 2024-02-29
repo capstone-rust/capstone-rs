@@ -6,11 +6,11 @@
 
 use alloc::vec::Vec;
 use core::fmt::Debug;
-use core::marker::PhantomData;
 
 use crate::capstone::Capstone;
 use crate::constants::Endian;
 use crate::error::CsResult;
+use crate::{Arch, Error, ExtraMode, InsnDetail, InsnGroupId, InsnId, Mode, RegId, Syntax};
 
 macro_rules! define_subset_enum {
     ( [
@@ -40,9 +40,9 @@ macro_rules! define_subset_enum {
 /// Define arch builders
 macro_rules! define_arch_builder {
     // ExtraMode rules
-    ( @extra_modes () ) => {};
-    ( @extra_modes ( $( $extra_mode:ident, )+ ) ) => {
-        impl super::BuildsCapstoneExtraMode<ArchMode, ArchExtraMode> for ArchCapstoneBuilder {
+    ( @extra_modes ( $arch:ident, $arch_tag:ident, ) ) => {};
+    ( @extra_modes ( $arch:ident, $arch_tag:ident, $( $extra_mode:ident, )+ ) ) => {
+        impl super::BuildsCapstoneExtraMode<crate::arch::$arch::$arch_tag> for ArchCapstoneBuilder {
             fn extra_mode<T: Iterator<Item=ArchExtraMode>>(mut self, extra_mode: T) -> Self {
                 self.extra_mode.clear();
                 self.extra_mode.extend(extra_mode);
@@ -52,9 +52,9 @@ macro_rules! define_arch_builder {
     };
 
     // Syntax rules
-    ( @syntax () ) => {};
-    ( @syntax ( $( $syntax:ident, )+ ) ) => {
-        impl super::BuildsCapstoneSyntax<ArchMode, ArchSyntax> for ArchCapstoneBuilder {
+    ( @syntax ( $arch:ident, $arch_tag:ident, ) ) => {};
+    ( @syntax ( $arch:ident, $arch_tag:ident, $( $syntax:ident, )+ ) ) => {
+        impl super::BuildsCapstoneSyntax<crate::arch::$arch::$arch_tag> for ArchCapstoneBuilder {
             fn syntax(mut self, syntax: ArchSyntax) -> Self {
                 self.syntax = Some(syntax);
                 self
@@ -63,9 +63,9 @@ macro_rules! define_arch_builder {
     };
 
     // Endian rules
-    ( @endian ( false) ) => {};
-    ( @endian ( true ) ) => {
-        impl super::BuildsCapstoneEndian<ArchMode> for ArchCapstoneBuilder {
+    ( @endian ( $arch:ident, $arch_tag:ident, false) ) => {};
+    ( @endian ( $arch:ident, $arch_tag:ident, true ) ) => {
+        impl super::BuildsCapstoneEndian<crate::arch::$arch::$arch_tag> for ArchCapstoneBuilder {
             fn endian(mut self, endian: Endian) -> Self {
                 self.endian = Some(endian);
                 self
@@ -76,7 +76,7 @@ macro_rules! define_arch_builder {
     // Entrance rule
     (
         $( [
-            ( $arch:ident, $arch_variant:ident )
+            ( $arch:ident, $arch_variant:ident, $arch_tag:ident )
             ( mode: $( $mode:ident, )+ )
             ( extra_modes: $( $extra_mode:ident, )* )
             ( syntax: $( $syntax:ident, )* )
@@ -95,9 +95,9 @@ macro_rules! define_arch_builder {
                 use crate::constants::{Arch, Endian, ExtraMode, Mode, Syntax};
                 use crate::error::{CsResult, Error};
 
-                define_arch_builder!( @syntax ( $( $syntax, )* ) );
-                define_arch_builder!( @endian ( $( $endian )* ) );
-                define_arch_builder!( @extra_modes ( $( $extra_mode, )* ) );
+                define_arch_builder!( @syntax ( $arch, $arch_tag, $( $syntax, )* ) );
+                define_arch_builder!( @endian ( $arch, $arch_tag, $( $endian )* ) );
+                define_arch_builder!( @extra_modes ( $arch, $arch_tag, $( $extra_mode, )* ) );
 
                 define_subset_enum!(
                     [ ArchMode = Mode ]
@@ -123,7 +123,7 @@ macro_rules! define_arch_builder {
                     pub(crate) endian: Option<Endian>,
                 }
 
-                impl super::BuildsCapstone<ArchMode> for ArchCapstoneBuilder {
+                impl super::BuildsCapstone<crate::arch::$arch::$arch_tag> for ArchCapstoneBuilder {
                     fn mode(mut self, mode: ArchMode) -> Self {
                         self.mode = Some(mode);
                         self
@@ -134,7 +134,7 @@ macro_rules! define_arch_builder {
                         self
                     }
 
-                    fn build(self) -> CsResult<Capstone> {
+                    fn build(self) -> CsResult<Capstone<crate::arch::$arch::$arch_tag>> {
                         let mode = match self.mode {
                             Some(mode) => mode,
                             None => {
@@ -146,14 +146,13 @@ macro_rules! define_arch_builder {
                                 return Err(Error::CustomError(msg));
                             }
                         };
-                        let extra_mode = self.extra_mode.iter().map(|x| ExtraMode::from(*x));
                         let mut capstone = Capstone::new_raw(Arch::$arch_variant,
                                                              mode.into(),
-                                                             extra_mode,
+                                                             self.extra_mode.iter().copied().map(|x| x.into()),
                                                              self.endian)?;
 
                         if let Some(syntax) = self.syntax {
-                            capstone.set_syntax(Syntax::from(syntax))?;
+                            capstone.set_syntax(syntax)?;
                         }
                         if self.is_detail {
                             capstone.set_detail(self.is_detail)?;
@@ -176,14 +175,6 @@ macro_rules! define_arch_builder {
                 }
             }
         )+
-
-        impl CapstoneBuilder {
-            $(
-                pub fn $arch(self) -> $arch::ArchCapstoneBuilder {
-                    Default::default()
-                }
-            )*
-        }
     }
 }
 
@@ -197,7 +188,7 @@ macro_rules! arch_info_base {
     ($x_macro:ident) => {
         $x_macro!(
             [
-                ( arm, ARM )
+                ( arm, ARM, ArmArchTag )
                 ( mode:
                     Arm,
                     Thumb,
@@ -212,7 +203,7 @@ macro_rules! arch_info_base {
                 ( both_endian: true )
             ]
             [
-                ( arm64, ARM64 )
+                ( arm64, ARM64, Arm64ArchTag )
                 ( mode:
                     Arm,
                     )
@@ -221,7 +212,7 @@ macro_rules! arch_info_base {
                 ( both_endian: true )
             ]
             [
-                ( evm, EVM )
+                ( evm, EVM, EvmArchTag )
                 ( mode:
                     Default,
                     )
@@ -230,7 +221,7 @@ macro_rules! arch_info_base {
                 ( both_endian: false )
             ]
             [
-                ( m680x, M680X )
+                ( m680x, M680X, M680xArchTag )
                 ( mode:
                     M680x6301,
                     M680x6309,
@@ -248,7 +239,7 @@ macro_rules! arch_info_base {
                 ( both_endian: false )
             ]
             [
-                ( m68k, M68K )
+                ( m68k, M68K, M68kArchTag )
                 ( mode:
                     M68k000,
                     M68k010,
@@ -261,7 +252,7 @@ macro_rules! arch_info_base {
                 ( both_endian: false )
             ]
             [
-                ( mips, MIPS )
+                ( mips, MIPS, MipsArchTag )
                 ( mode:
                     Mips32,
                     Mips64,
@@ -276,7 +267,7 @@ macro_rules! arch_info_base {
                 ( both_endian: true )
             ]
             [
-                ( ppc, PPC )
+                ( ppc, PPC, PpcArchTag )
                 ( mode:
                     Mode32,
                     Mode64,
@@ -289,7 +280,7 @@ macro_rules! arch_info_base {
                 ( both_endian: true )
             ]
             [
-                ( riscv, RISCV )
+                ( riscv, RISCV, RiscVArchTag )
                 ( mode:
                     RiscV32,
                     RiscV64,
@@ -301,7 +292,7 @@ macro_rules! arch_info_base {
                 ( both_endian: true )
             ]
             [
-                ( sparc, SPARC )
+                ( sparc, SPARC, SparcArchTag )
                 ( mode:
                     Default,
                     V9,
@@ -311,7 +302,7 @@ macro_rules! arch_info_base {
                 ( both_endian: false )
             ]
             [
-                ( sysz, SYSZ )
+                ( sysz, SYSZ, SyszArchTag )
                 ( mode:
                     Default,
                     )
@@ -320,7 +311,7 @@ macro_rules! arch_info_base {
                 ( both_endian: false )
             ]
             [
-                ( tms320c64x, TMS320C64X )
+                ( tms320c64x, TMS320C64X, Tms320c64xArchTag )
                 ( mode:
                     Default,
                     )
@@ -329,7 +320,7 @@ macro_rules! arch_info_base {
                 ( both_endian: false )
             ]
             [
-                ( x86, X86 )
+                ( x86, X86, X86ArchTag )
                 ( mode:
                     Mode16,
                     Mode32,
@@ -344,7 +335,7 @@ macro_rules! arch_info_base {
                 ( both_endian: false )
             ]
             [
-                ( xcore, XCORE )
+                ( xcore, XCORE, XcoreArchTag )
                 ( mode:
                     Default,
                     )
@@ -356,32 +347,92 @@ macro_rules! arch_info_base {
     };
 }
 
+mod internal {
+    /// Make sure that only this crate can implement `ArchTag`.
+    pub trait ArchTagSealed {}
+}
+
+/// Provides types relative to a specific arch.
+pub trait ArchTag: internal::ArchTagSealed + 'static + Sized {
+    /// Type of capstone builder that builds [`Capstone`] instances for this architecture.
+    ///
+    /// Objects of this type are returned from the `Capstone::new` function.
+    type Builder: Default;
+
+    /// Type that represents the disassembler's mode.
+    type Mode: Copy + Into<Mode>;
+
+    /// Type that represents the disassembler's extra modes.
+    type ExtraMode: Copy + Into<ExtraMode>;
+
+    /// Type that represents the disassembler's syntax specifier.
+    type Syntax: Copy + Into<Syntax>;
+
+    /// Type that represents the registers provided by the architecture.
+    type RegId: Copy + From<RegId> + Into<RegId>;
+
+    /// Type that represents the instruction IDs provided by the architecture.
+    type InsnId: Copy + Into<InsnId>;
+
+    /// Type that represents the instruction group IDs provided by the architecture.
+    type InsnGroupId: Copy + From<InsnGroupId> + Into<InsnGroupId>;
+
+    /// Type that provides detailed information about an instruction under the architecture.
+    type InsnDetail<'a>: DetailsArchInsn + for<'i> From<&'i InsnDetail<'a, Self>>;
+
+    /// Determine whether the given [`Arch`] value is supported by this arch tag.
+    fn support_arch(arch: Arch) -> bool;
+}
+
+/// An architecture tag that indicates the architecture is unknown at compile-time.
+pub struct DynamicArchTag;
+
+impl internal::ArchTagSealed for DynamicArchTag {}
+
+impl ArchTag for DynamicArchTag {
+    type Builder = CapstoneBuilder;
+
+    type Mode = Mode;
+    type ExtraMode = ExtraMode;
+    type Syntax = Syntax;
+
+    type RegId = RegId;
+    type InsnId = InsnId;
+    type InsnGroupId = InsnGroupId;
+
+    type InsnDetail<'a> = ArchInsnDetail<'a>;
+
+    fn support_arch(_: Arch) -> bool {
+        true
+    }
+}
+
 /// Builds a `Capstone` struct
-pub trait BuildsCapstone<ArchMode> {
+pub trait BuildsCapstone<A: ArchTag> {
     /// Set the disassembly mode
-    fn mode(self, mode: ArchMode) -> Self;
+    fn mode(self, mode: A::Mode) -> Self;
 
     /// Enable detailed output
     fn detail(self, enable_detail: bool) -> Self;
 
     /// Get final `Capstone`
-    fn build(self) -> CsResult<Capstone>;
+    fn build(self) -> CsResult<Capstone<A>>;
 }
 
 /// Implies that a `CapstoneBuilder` architecture has extra modes
-pub trait BuildsCapstoneExtraMode<ArchMode, ArchExtraMode>: BuildsCapstone<ArchMode> {
+pub trait BuildsCapstoneExtraMode<A: ArchTag>: BuildsCapstone<A> {
     /// Set architecture endianness
-    fn extra_mode<T: Iterator<Item = ArchExtraMode>>(self, extra_mode: T) -> Self;
+    fn extra_mode<T: Iterator<Item = A::ExtraMode>>(self, extra_mode: T) -> Self;
 }
 
 /// Implies that a `CapstoneBuilder` has different syntax options
-pub trait BuildsCapstoneSyntax<ArchMode, ArchSyntax>: BuildsCapstone<ArchMode> {
+pub trait BuildsCapstoneSyntax<A: ArchTag>: BuildsCapstone<A> {
     /// Set the disassembly syntax
-    fn syntax(self, syntax: ArchSyntax) -> Self;
+    fn syntax(self, syntax: A::Syntax) -> Self;
 }
 
 /// Implies that a `CapstoneBuilder` architecture has a configurable endianness
-pub trait BuildsCapstoneEndian<ArchMode>: BuildsCapstone<ArchMode> {
+pub trait BuildsCapstoneEndian<A: ArchTag>: BuildsCapstone<A> {
     /// Set architecture endianness
     fn endian(self, endian: Endian) -> Self;
 }
@@ -394,16 +445,82 @@ pub(crate) mod arch_builder {
 }
 
 /// Builds `Capstone` object
-#[derive(Debug)]
-pub struct CapstoneBuilder(
-    /// Hidden field to prevent users from instantiating `CapstoneBuilder`
-    PhantomData<()>,
-);
+#[derive(Debug, Default)]
+pub struct CapstoneBuilder {
+    arch: Option<Arch>,
+    mode: Option<Mode>,
+    is_detail: bool,
+    extra_mode: Vec<ExtraMode>,
+    syntax: Option<Syntax>,
+    endian: Option<Endian>,
+}
 
 impl CapstoneBuilder {
-    /// Create a `CapstoneBuilder`
-    pub(crate) fn new() -> Self {
-        CapstoneBuilder(PhantomData)
+    /// Set the capstone architecture.
+    ///
+    /// This function must be called before the `build` function is called.
+    pub fn arch(mut self, arch: Arch) -> Self {
+        self.arch = Some(arch);
+        self
+    }
+}
+
+impl BuildsCapstone<DynamicArchTag> for CapstoneBuilder {
+    fn mode(mut self, mode: Mode) -> Self {
+        self.mode = Some(mode);
+        self
+    }
+
+    fn detail(mut self, enable_detail: bool) -> Self {
+        self.is_detail = enable_detail;
+        self
+    }
+
+    fn build(self) -> CsResult<Capstone<DynamicArchTag>> {
+        let arch = self
+            .arch
+            .ok_or_else(|| Error::CustomError("Must specify arch with `arch()` method"))?;
+        let mode = self
+            .mode
+            .ok_or_else(|| Error::CustomError("Must specify mode with `mode()` method"))?;
+
+        let mut capstone = Capstone::new_raw(
+            arch,
+            mode.into(),
+            self.extra_mode.iter().copied().map(|x| x.into()),
+            self.endian,
+        )?;
+
+        if let Some(syntax) = self.syntax {
+            capstone.set_syntax(syntax)?;
+        }
+        if self.is_detail {
+            capstone.set_detail(self.is_detail)?;
+        }
+
+        Ok(capstone)
+    }
+}
+
+impl BuildsCapstoneEndian<DynamicArchTag> for CapstoneBuilder {
+    fn endian(mut self, endian: Endian) -> Self {
+        self.endian = Some(endian);
+        self
+    }
+}
+
+impl BuildsCapstoneExtraMode<DynamicArchTag> for CapstoneBuilder {
+    fn extra_mode<T: Iterator<Item = ExtraMode>>(mut self, extra_mode: T) -> Self {
+        self.extra_mode.clear();
+        self.extra_mode.extend(extra_mode);
+        self
+    }
+}
+
+impl BuildsCapstoneSyntax<DynamicArchTag> for CapstoneBuilder {
+    fn syntax(mut self, syntax: Syntax) -> Self {
+        self.syntax = Some(syntax);
+        self
     }
 }
 
@@ -454,6 +571,7 @@ macro_rules! detail_arch_base {
                 detail = ArmDetail,
                 insn_detail = ArmInsnDetail<'a>,
                 op = ArmOperand,
+                op_iter = ArmOperandIterator,
                 /// Returns the ARM details, if any
                 => arch_name = arm,
             ]
@@ -461,6 +579,7 @@ macro_rules! detail_arch_base {
                 detail = Arm64Detail,
                 insn_detail = Arm64InsnDetail<'a>,
                 op = Arm64Operand,
+                op_iter = Arm64OperandIterator,
                 /// Returns the ARM64 details, if any
                 => arch_name = arm64,
             ]
@@ -468,6 +587,7 @@ macro_rules! detail_arch_base {
                 detail = EvmDetail,
                 insn_detail = EvmInsnDetail<'a>,
                 op = EvmOperand,
+                op_iter = EvmOperandIterator,
                 /// Returns the EVM details, if any
                 => arch_name = evm,
             ]
@@ -475,6 +595,7 @@ macro_rules! detail_arch_base {
                 detail = M680xDetail,
                 insn_detail = M680xInsnDetail<'a>,
                 op = M680xOperand,
+                op_iter = M680xOperandIterator,
                 /// Returns the M680X details, if any
                 => arch_name = m680x,
             ]
@@ -482,6 +603,7 @@ macro_rules! detail_arch_base {
                 detail = M68kDetail,
                 insn_detail = M68kInsnDetail<'a>,
                 op = M68kOperand,
+                op_iter = M68kOperandIterator,
                 /// Returns the M68K details, if any
                 => arch_name = m68k,
             ]
@@ -489,6 +611,7 @@ macro_rules! detail_arch_base {
                 detail = MipsDetail,
                 insn_detail = MipsInsnDetail<'a>,
                 op = MipsOperand,
+                op_iter = MipsOperandIterator,
                 /// Returns the MIPS details, if any
                 => arch_name = mips,
             ]
@@ -496,6 +619,7 @@ macro_rules! detail_arch_base {
                 detail = PpcDetail,
                 insn_detail = PpcInsnDetail<'a>,
                 op = PpcOperand,
+                op_iter = PpcOperandIterator,
                 /// Returns the PPC details, if any
                 => arch_name = ppc,
             ]
@@ -503,6 +627,7 @@ macro_rules! detail_arch_base {
                 detail = RiscVDetail,
                 insn_detail = RiscVInsnDetail<'a>,
                 op = RiscVOperand,
+                op_iter = RiscVOperandIterator,
                 /// Returns the RISCV details, if any
                 => arch_name = riscv,
             ]
@@ -510,13 +635,23 @@ macro_rules! detail_arch_base {
                 detail = SparcDetail,
                 insn_detail = SparcInsnDetail<'a>,
                 op = SparcOperand,
+                op_iter = SparcOperandIterator,
                 /// Returns the SPARC details, if any
                 => arch_name = sparc,
+            ]
+            [
+                detail = SyszDetail,
+                insn_detail = SyszInsnDetail<'a>,
+                op = SyszOperand,
+                op_iter = SyszOperandIterator,
+                /// Returns the Sysz details, if any
+                => arch_name = sysz,
             ]
             [
                 detail = Tms320c64xDetail,
                 insn_detail = Tms320c64xInsnDetail<'a>,
                 op = Tms320c64xOperand,
+                op_iter = Tms320c64xOperandIterator,
                 /// Returns the Tms320c64x details, if any
                 => arch_name = tms320c64x,
             ]
@@ -524,6 +659,7 @@ macro_rules! detail_arch_base {
                 detail = X86Detail,
                 insn_detail = X86InsnDetail<'a>,
                 op = X86Operand,
+                op_iter = X86OperandIterator,
                 /// Returns the X86 details, if any
                 => arch_name = x86,
             ]
@@ -531,6 +667,7 @@ macro_rules! detail_arch_base {
                 detail = XcoreDetail,
                 insn_detail = XcoreInsnDetail<'a>,
                 op = XcoreOperand,
+                op_iter = XcoreOperandIterator,
                 /// Returns the XCore details, if any
                 => arch_name = xcore,
             ]
@@ -538,13 +675,14 @@ macro_rules! detail_arch_base {
     };
 }
 
-/// Define ArchDetail enum, ArchOperand enum, and From<$Operand> for ArchOperand
+/// Define ArchInsnDetail enum, ArchOperand enum, ArchOperandIterator enum, and From<$Operand> for ArchOperand
 macro_rules! detail_defs {
     (
         $( [
             detail = $Detail:tt,
             insn_detail = $InsnDetail:ty,
             op = $Operand:tt,
+            op_iter = $OperandIter:tt,
             $( #[$func_attr:meta] )+
             => arch_name = $arch_name:ident,
         ] )+
@@ -558,36 +696,28 @@ macro_rules! detail_defs {
         /// For convenience, there are methods for each architecture that return an `Option` of that
         /// architecture's detail structure. This allows you to use an `if let Some(...) = { /* ... */ }`
         /// instead of a match statement.
-        #[derive(Debug)]
-        pub enum ArchDetail<'a> {
+        #[derive(Debug, PartialEq)]
+        pub enum ArchInsnDetail<'a> {
             $( $Detail($InsnDetail), )+
         }
 
         /// Architecture-independent enum of operands
         #[derive(Clone, Debug, PartialEq)]
         pub enum ArchOperand {
+            Invalid,
             $( $Operand($Operand), )+
         }
 
-        impl<'a> ArchDetail<'a> {
-            /// Returns architecture independent set of operands
-            pub fn operands(&'a self) -> Vec<ArchOperand> {
-                match *self {
-                    $(
-                        ArchDetail::$Detail(ref detail) => {
-                            let ops = detail.operands();
-                            let map = ops.map(ArchOperand::from);
-                            let vec: Vec<ArchOperand> = map.collect();
-                            vec
-                        }
-                    )+
-                }
-            }
+        /// Iterate arch-specific operands of an instruction.
+        pub enum ArchOperandIterator<'a> {
+            $( $OperandIter($OperandIter<'a>), )+
+        }
 
+        impl<'a> ArchInsnDetail<'a> {
             $(
                 $( #[$func_attr] )+
                 pub fn $arch_name(&'a self) -> Option<& $InsnDetail> {
-                    if let ArchDetail::$Detail(ref arch_detail) = *self {
+                    if let ArchInsnDetail::$Detail(ref arch_detail) = *self {
                         Some(arch_detail)
                     } else {
                         None
@@ -597,12 +727,85 @@ macro_rules! detail_defs {
         }
 
         $(
+            impl<'a> From<$InsnDetail> for ArchInsnDetail<'a> {
+                fn from(insn_detail: $InsnDetail) -> Self {
+                    Self::$Detail(insn_detail)
+                }
+            }
+        )+
+
+        impl Default for ArchOperand {
+            fn default() -> Self {
+                Self::Invalid
+            }
+        }
+
+        $(
             impl From<$Operand> for ArchOperand {
                 fn from(op: $Operand) -> ArchOperand {
                     ArchOperand::$Operand(op)
                 }
             }
         )+
+
+        impl<'a> Iterator for ArchOperandIterator<'a> {
+            type Item = ArchOperand;
+
+            fn next(&mut self) -> Option<Self::Item> {
+                match self {
+                    $(
+                        Self::$OperandIter( op_iter ) => op_iter.next().map(From::from),
+                    )+
+                }
+            }
+        }
+
+        impl<'a> DetailsArchInsn for ArchInsnDetail<'a> {
+            type Operand = ArchOperand;
+            type OperandIterator = ArchOperandIterator<'a>;
+
+            fn operands(&self) -> Self::OperandIterator {
+                todo!()
+            }
+        }
+    }
+}
+
+impl<'a, 'i> From<&'i InsnDetail<'a, DynamicArchTag>> for ArchInsnDetail<'a> {
+    fn from(insn_detail: &'i InsnDetail<'a, DynamicArchTag>) -> Self {
+        macro_rules! def_arch_detail_match {
+            (
+                $( [ $ARCH:ident, $detail:ident, $insn_detail:ident, $arch:ident ] )*
+            ) => {
+                use self::ArchInsnDetail::*;
+                use crate::Arch::*;
+                $( use crate::arch::$arch::$insn_detail; )*
+
+                return match insn_detail.1 {
+                    $(
+                        $ARCH => {
+                            $detail($insn_detail(unsafe { &insn_detail.0.__bindgen_anon_1.$arch }))
+                        }
+                    )*
+                    _ => panic!("Unsupported detail arch"),
+                }
+            }
+        }
+
+        def_arch_detail_match!(
+            [ARM, ArmDetail, ArmInsnDetail, arm]
+            [ARM64, Arm64Detail, Arm64InsnDetail, arm64]
+            [EVM, EvmDetail, EvmInsnDetail, evm]
+            [M680X, M680xDetail, M680xInsnDetail, m680x]
+            [M68K, M68kDetail, M68kInsnDetail, m68k]
+            [MIPS, MipsDetail, MipsInsnDetail, mips]
+            [PPC, PpcDetail, PpcInsnDetail, ppc]
+            [RISCV, RiscVDetail, RiscVInsnDetail, riscv]
+            [SPARC, SparcDetail, SparcInsnDetail, sparc]
+            [TMS320C64X, Tms320c64xDetail, Tms320c64xInsnDetail, tms320c64x]
+            [X86, X86Detail, X86InsnDetail, x86]
+            [XCORE, XcoreDetail, XcoreInsnDetail, xcore]
+        );
     }
 }
 
@@ -654,13 +857,13 @@ macro_rules! def_arch_details_struct {
         }
 
         impl<'a> ::core::fmt::Debug for $OperandIteratorLife {
-            fn fmt(&self, fmt: &mut fmt::Formatter) -> ::core::fmt::Result {
+            fn fmt(&self, fmt: &mut ::core::fmt::Formatter) -> ::core::fmt::Result {
                 fmt.debug_struct(stringify!($OperandIterator)).finish()
             }
         }
 
         impl<'a> ::core::fmt::Debug for $InsnDetail<'a> {
-            fn fmt(&self, fmt: &mut fmt::Formatter) -> ::core::fmt::Result {
+            fn fmt(&self, fmt: &mut ::core::fmt::Formatter) -> ::core::fmt::Result {
                 fmt.debug_struct(stringify!($InsnDetail))
                     .field(stringify!($cs_arch), &(self.0 as *const $cs_arch))
                     .finish()
@@ -684,7 +887,7 @@ detail_arch_base!(detail_defs);
 macro_rules! define_arch_mods {
     (
         $( [
-            ( $arch:ident, $arch_variant:ident )
+            ( $arch:ident, $arch_variant:ident, $arch_tag:ident )
             ( mode: $( $mode:ident, )+ )
             ( extra_modes: $( $extra_mode:ident, )* )
             ( syntax: $( $syntax:ident, )* )

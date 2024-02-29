@@ -1,7 +1,6 @@
 //! Contains sparc-specific types
 
 use core::convert::From;
-use core::{cmp, fmt, slice};
 
 // XXX todo(tmfink): create rusty versions
 pub use capstone_sys::sparc_insn_group as SparcInsnGroup;
@@ -12,12 +11,42 @@ pub use capstone_sys::sparc_hint as SparcHint;
 use capstone_sys::{cs_sparc, cs_sparc_op, sparc_op_mem, sparc_op_type};
 
 pub use crate::arch::arch_builder::sparc::*;
-use crate::arch::DetailsArchInsn;
+use crate::arch::{ArchTag, DetailsArchInsn};
+use crate::arch::internal::ArchTagSealed;
 use crate::instruction::{RegId, RegIdInt};
+use crate::{Arch, InsnDetail};
 
+/// Architecture tag that represents Sparc.
+pub struct SparcArchTag;
+
+impl ArchTagSealed for SparcArchTag {}
+
+impl ArchTag for SparcArchTag {
+    type Builder = ArchCapstoneBuilder;
+
+    type Mode = ArchMode;
+    type ExtraMode = ArchExtraMode;
+    type Syntax = ArchSyntax;
+
+    type RegId = SparcReg;
+    type InsnId = SparcInsn;
+    type InsnGroupId = SparcInsnGroup;
+
+    type InsnDetail<'a> = SparcInsnDetail<'a>;
+
+    fn support_arch(arch: Arch) -> bool {
+        arch == Arch::SPARC
+    }
+}
 
 /// Contains SPARC-specific details for an instruction
 pub struct SparcInsnDetail<'a>(pub(crate) &'a cs_sparc);
+
+impl<'a, 'i> From<&'i InsnDetail<'a, SparcArchTag>> for SparcInsnDetail<'a> {
+    fn from(value: &'i InsnDetail<'a, SparcArchTag>) -> Self {
+        Self(unsafe { &value.0.__bindgen_anon_1.sparc })
+    }
+}
 
 /// SPARC operand
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -82,13 +111,13 @@ impl_PartialEq_repr_fields!(SparcOpMem;
     base, index, disp
 );
 
-impl cmp::Eq for SparcOpMem {}
+impl Eq for SparcOpMem {}
 
 impl<'a> From<&'a cs_sparc_op> for SparcOperand {
     fn from(insn: &cs_sparc_op) -> SparcOperand {
         match insn.type_ {
             sparc_op_type::SPARC_OP_REG => {
-                SparcOperand::Reg(RegId(unsafe { insn.__bindgen_anon_1.reg } as RegIdInt))
+                SparcOperand::Reg(unsafe { insn.__bindgen_anon_1.reg.into() })
             }
             sparc_op_type::SPARC_OP_IMM => SparcOperand::Imm(unsafe { insn.__bindgen_anon_1.imm }),
             sparc_op_type::SPARC_OP_MEM => {
@@ -104,7 +133,7 @@ def_arch_details_struct!(
     Operand = SparcOperand;
     OperandIterator = SparcOperandIterator;
     OperandIteratorLife = SparcOperandIterator<'a>;
-    [ pub struct SparcOperandIterator<'a>(slice::Iter<'a, cs_sparc_op>); ]
+    [ pub struct SparcOperandIterator<'a>(core::slice::Iter<'a, cs_sparc_op>); ]
     cs_arch_op = cs_sparc_op;
     cs_arch = cs_sparc;
 );

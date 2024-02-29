@@ -1,6 +1,7 @@
 extern crate capstone;
 extern crate macho;
 
+use capstone::arch::x86::X86ArchTag;
 use capstone::prelude::*;
 use std::env;
 use std::fs;
@@ -8,8 +9,7 @@ use std::io::Read;
 use std::process;
 
 fn main() {
-    let cs = Capstone::new()
-        .x86()
+    let cs = Capstone::<X86ArchTag>::new()
         .mode(arch::x86::ArchMode::Mode64)
         .build()
         .expect("Failed to create capstone handle");

@@ -2,7 +2,6 @@
 
 use core::convert::From;
 use core::convert::TryInto;
-use core::{cmp, fmt, slice};
 
 use capstone_sys::{
     cs_ac_type, cs_x86, cs_x86_op, cs_x86_op__bindgen_ty_1, x86_op_mem, x86_op_type,
@@ -18,11 +17,42 @@ pub use capstone_sys::x86_xop_cc as X86XopCC;
 pub use capstone_sys::x86_avx_rm as X86AvxRm;
 
 pub use crate::arch::arch_builder::x86::*;
-use crate::arch::DetailsArchInsn;
-use crate::instruction::{RegAccessType, RegId, RegIdInt};
+use crate::arch::{ArchTag, DetailsArchInsn};
+use crate::arch::internal::ArchTagSealed;
+use crate::instruction::{RegAccessType, RegId};
+use crate::{Arch, InsnDetail};
+
+pub struct X86ArchTag;
+
+impl ArchTagSealed for X86ArchTag {}
+
+/// Architecture that represents both x86 and x86_64.
+impl ArchTag for X86ArchTag {
+    type Builder = ArchCapstoneBuilder;
+
+    type Mode = ArchMode;
+    type ExtraMode = ArchExtraMode;
+    type Syntax = ArchSyntax;
+
+    type RegId = X86Reg;
+    type InsnId = X86Insn;
+    type InsnGroupId = X86InsnGroup;
+
+    type InsnDetail<'a> = X86InsnDetail<'a>;
+
+    fn support_arch(arch: Arch) -> bool {
+        arch == Arch::X86
+    }
+}
 
 /// Contains X86-specific details for an instruction
 pub struct X86InsnDetail<'a>(pub(crate) &'a cs_x86);
+
+impl<'a, 'i> From<&'i InsnDetail<'a, X86ArchTag>> for X86InsnDetail<'a> {
+    fn from(value: &'i InsnDetail<'a, X86ArchTag>) -> Self {
+        Self(unsafe { &value.0.__bindgen_anon_1.x86 })
+    }
+}
 
 // todo(tmfink): expose new types cs_x86__bindgen_ty_1, cs_x86_encoding, x86_xop_cc,
 // cs_x86_op::access
@@ -33,7 +63,7 @@ impl X86OperandType {
         use self::X86OperandType::*;
 
         match op_type {
-            X86_OP_REG => Reg(RegId(unsafe { value.reg } as RegIdInt)),
+            X86_OP_REG => Reg(unsafe { value.reg.into() }),
             X86_OP_IMM => Imm(unsafe { value.imm }),
             X86_OP_MEM => Mem(X86OpMem(unsafe { value.mem })),
             X86_OP_INVALID => Invalid,
@@ -132,7 +162,7 @@ impl<'a> X86InsnDetail<'a> {
 
     /// Scaled Index Byte (SIB) index, or X86_REG_INVALID when irrelevant
     pub fn sib_index(&self) -> RegId {
-        RegId(self.0.sib_index as RegIdInt)
+        self.0.sib_index.into()
     }
 
     /// Scaled Index Byte (SIB) scale, or X86_REG_INVALID when irrelevant
@@ -142,7 +172,7 @@ impl<'a> X86InsnDetail<'a> {
 
     /// Scaled Index Byte (SIB) base register, or X86_REG_INVALID when irrelevant
     pub fn sib_base(&self) -> RegId {
-        RegId(self.0.sib_base as RegIdInt)
+        self.0.sib_base.into()
     }
 
     /// eXtended Operations (XOP) Code Condition
@@ -179,17 +209,17 @@ impl_PartialEq_repr_fields!(X86InsnDetail<'a> [ 'a ];
 impl X86OpMem {
     /// Segment
     pub fn segment(&self) -> RegId {
-        RegId(self.0.segment as RegIdInt)
+        self.0.segment.into()
     }
 
     /// Base register
     pub fn base(&self) -> RegId {
-        RegId(self.0.base as RegIdInt)
+        self.0.base.into()
     }
 
     /// Index register
     pub fn index(&self) -> RegId {
-        RegId(self.0.index as RegIdInt)
+        self.0.index.into()
     }
 
     /// Scale
@@ -207,7 +237,7 @@ impl_PartialEq_repr_fields!(X86OpMem;
     segment, base, index, scale, disp
 );
 
-impl cmp::Eq for X86OpMem {}
+impl Eq for X86OpMem {}
 
 impl Default for X86Operand {
     fn default() -> Self {
@@ -239,7 +269,7 @@ def_arch_details_struct!(
     Operand = X86Operand;
     OperandIterator = X86OperandIterator;
     OperandIteratorLife = X86OperandIterator<'a>;
-    [ pub struct X86OperandIterator<'a>(slice::Iter<'a, cs_x86_op>); ]
+    [ pub struct X86OperandIterator<'a>(core::slice::Iter<'a, cs_x86_op>); ]
     cs_arch_op = cs_x86_op;
     cs_arch = cs_x86;
 );
@@ -264,11 +294,11 @@ mod test {
         }
 
         t(
-            (X86_OP_INVALID, cs_x86_op__bindgen_ty_1 { reg: 0 }),
+            (X86_OP_INVALID, cs_x86_op__bindgen_ty_1 { reg: X86Reg(0) }),
             Invalid,
         );
         t(
-            (X86_OP_REG, cs_x86_op__bindgen_ty_1 { reg: 0 }),
+            (X86_OP_REG, cs_x86_op__bindgen_ty_1 { reg: X86Reg(0) }),
             Reg(RegId(0)),
         );
     }

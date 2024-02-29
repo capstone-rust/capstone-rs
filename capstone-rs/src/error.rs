@@ -1,7 +1,5 @@
 //! Capstone errors
 
-use capstone_sys::cs_err::*;
-
 use core::fmt;
 use core::result;
 
@@ -28,11 +26,11 @@ macro_rules! capstone_error_def {
             CustomError(&'static str),
         }
 
-        impl From<capstone_sys::cs_err::Type> for Error {
-            fn from(err: capstone_sys::cs_err::Type) -> Self {
+        impl From<capstone_sys::cs_err> for Error {
+            fn from(err: capstone_sys::cs_err) -> Self {
                 match err {
                     $(
-                        $cs_variant => Error::$rust_variant,
+                        capstone_sys::cs_err::$cs_variant => Error::$rust_variant,
                     )*
                     _ => Error::UnknownCapstoneError,
                 }
@@ -125,7 +123,7 @@ mod test {
             Error::UnknownCapstoneError,
             Error::CustomError("custom error"),
             Error::from(cs_err::CS_ERR_ARCH),
-            Error::from(500 as cs_err::Type),
+            Error::from(cs_err(500)),
         ];
 
         for error in errors.iter() {

@@ -1,7 +1,6 @@
 //! Contains arm-specific types
 
 use core::convert::From;
-use core::{cmp, fmt, slice};
 
 use capstone_sys::{
     arm_op_mem, arm_op_type, cs_arm, cs_arm_op, arm_shifter,
@@ -9,8 +8,10 @@ use capstone_sys::{
 use libc::c_uint;
 
 pub use crate::arch::arch_builder::arm::*;
-use crate::arch::DetailsArchInsn;
+use crate::arch::{ArchTag, DetailsArchInsn};
+use crate::arch::internal::ArchTagSealed;
 use crate::instruction::{RegId, RegIdInt};
+use crate::{Arch, InsnDetail};
 
 pub use capstone_sys::arm_insn_group as ArmInsnGroup;
 pub use capstone_sys::arm_insn as ArmInsn;
@@ -22,8 +23,37 @@ pub use capstone_sys::arm_cc as ArmCC;
 pub use capstone_sys::arm_mem_barrier as ArmMemBarrier;
 pub use capstone_sys::arm_setend_type as ArmSetendType;
 
+/// Architecture tag that represents ARM.
+pub struct ArmArchTag;
+
+impl ArchTagSealed for ArmArchTag {}
+
+impl ArchTag for ArmArchTag {
+    type Builder = ArchCapstoneBuilder;
+
+    type Mode = ArchMode;
+    type ExtraMode = ArchExtraMode;
+    type Syntax = ArchSyntax;
+
+    type RegId = ArmReg;
+    type InsnId = ArmInsn;
+    type InsnGroupId = ArmInsnGroup;
+
+    type InsnDetail<'a> = ArmInsnDetail<'a>;
+
+    fn support_arch(arch: Arch) -> bool {
+        arch == Arch::ARM
+    }
+}
+
 /// Contains ARM-specific details for an instruction
 pub struct ArmInsnDetail<'a>(pub(crate) &'a cs_arm);
+
+impl<'a, 'i> From<&'i InsnDetail<'a, ArmArchTag>> for ArmInsnDetail<'a> {
+    fn from(value: &'i InsnDetail<'a, ArmArchTag>) -> Self {
+        Self(unsafe { &value.0.__bindgen_anon_1.arm })
+    }
+}
 
 /// ARM shift amount
 #[derive(Clone, Copy, Debug, Eq, PartialEq, Hash)]
@@ -221,12 +251,12 @@ impl_PartialEq_repr_fields!(ArmInsnDetail<'a> [ 'a ];
 impl ArmOpMem {
     /// Base register
     pub fn base(&self) -> RegId {
-        RegId(self.0.base as RegIdInt)
+        RegId(self.0.base.0 as RegIdInt)
     }
 
     /// Index value
     pub fn index(&self) -> RegId {
-        RegId(self.0.index as RegIdInt)
+        RegId(self.0.index.0 as RegIdInt)
     }
 
     /// Scale for index register (can be 1, or -1)
@@ -244,7 +274,7 @@ impl_PartialEq_repr_fields!(ArmOpMem;
     base, index, scale, disp
 );
 
-impl cmp::Eq for ArmOpMem {}
+impl Eq for ArmOpMem {}
 
 impl Default for ArmOperand {
     fn default() -> Self {
@@ -280,7 +310,7 @@ def_arch_details_struct!(
     Operand = ArmOperand;
     OperandIterator = ArmOperandIterator;
     OperandIteratorLife = ArmOperandIterator<'a>;
-    [ pub struct ArmOperandIterator<'a>(slice::Iter<'a, cs_arm_op>); ]
+    [ pub struct ArmOperandIterator<'a>(core::slice::Iter<'a, cs_arm_op>); ]
     cs_arch_op = cs_arm_op;
     cs_arch = cs_arm;
 );

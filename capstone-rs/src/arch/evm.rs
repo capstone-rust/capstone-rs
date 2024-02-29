@@ -1,6 +1,7 @@
 //! Contains EVM-specific types
 
-use core::fmt;
+use core::fmt::{Debug, Formatter};
+use core::marker::PhantomData;
 
 use capstone_sys::cs_evm;
 
@@ -9,7 +10,32 @@ pub use capstone_sys::evm_insn_group as EvmInsnGroup;
 pub use capstone_sys::evm_insn as EvmInsn;
 
 pub use crate::arch::arch_builder::evm::*;
-use crate::arch::DetailsArchInsn;
+use crate::arch::{ArchTag, DetailsArchInsn};
+use crate::arch::internal::ArchTagSealed;
+use crate::{Arch, InsnDetail, RegIdInt};
+
+/// Architecture tag that represents EVM.
+pub struct EvmArchTag;
+
+impl ArchTagSealed for EvmArchTag {}
+
+impl ArchTag for EvmArchTag {
+    type Builder = ArchCapstoneBuilder;
+
+    type Mode = ArchMode;
+    type ExtraMode = ArchExtraMode;
+    type Syntax = ArchSyntax;
+
+    type RegId = RegIdInt;
+    type InsnId = EvmInsn;
+    type InsnGroupId = EvmInsnGroup;
+
+    type InsnDetail<'a> = EvmInsnDetail<'a>;
+
+    fn support_arch(arch: Arch) -> bool {
+        arch == Arch::EVM
+    }
+}
 
 /// Contains EVM-specific details for an instruction
 pub struct EvmInsnDetail<'a>(pub(crate) &'a cs_evm);
@@ -35,6 +61,12 @@ impl_PartialEq_repr_fields!(EvmInsnDetail<'a> [ 'a ];
     popped_items, pushed_items, fee
 );
 
+impl<'a, 'i> From<&'i InsnDetail<'a, EvmArchTag>> for EvmInsnDetail<'a> {
+    fn from(value: &'i InsnDetail<'a, EvmArchTag>) -> Self {
+        Self(unsafe { &value.0.__bindgen_anon_1.evm })
+    }
+}
+
 /// EVM has no operands, so this is a zero-size type.
 #[derive(Clone, Debug, Eq, PartialEq, Default)]
 pub struct EvmOperand(());
@@ -43,15 +75,15 @@ pub struct EvmOperand(());
 
 /// Iterates over instruction operands
 #[derive(Clone)]
-pub struct EvmOperandIterator(());
+pub struct EvmOperandIterator<'a>(PhantomData<&'a ()>);
 
-impl EvmOperandIterator {
-    fn new() -> EvmOperandIterator {
-        EvmOperandIterator(())
+impl<'a> EvmOperandIterator<'a> {
+    fn new() -> EvmOperandIterator<'a> {
+        EvmOperandIterator(PhantomData::default())
     }
 }
 
-impl Iterator for EvmOperandIterator {
+impl<'a> Iterator for EvmOperandIterator<'a> {
     type Item = EvmOperand;
 
     fn next(&mut self) -> Option<Self::Item> {
@@ -59,26 +91,26 @@ impl Iterator for EvmOperandIterator {
     }
 }
 
-impl ExactSizeIterator for EvmOperandIterator {
+impl<'a> ExactSizeIterator for EvmOperandIterator<'a> {
     fn len(&self) -> usize {
         0
     }
 }
 
-impl PartialEq for EvmOperandIterator {
+impl<'a> PartialEq for EvmOperandIterator<'a> {
     fn eq(&self, _other: &EvmOperandIterator) -> bool {
         false
     }
 }
 
-impl fmt::Debug for EvmOperandIterator {
-    fn fmt(&self, fmt: &mut fmt::Formatter) -> ::core::fmt::Result {
+impl<'a> Debug for EvmOperandIterator<'a> {
+    fn fmt(&self, fmt: &mut Formatter) -> ::core::fmt::Result {
         fmt.debug_struct("EvmOperandIterator").finish()
     }
 }
 
-impl<'a> fmt::Debug for EvmInsnDetail<'a> {
-    fn fmt(&self, fmt: &mut fmt::Formatter) -> ::core::fmt::Result {
+impl<'a> Debug for EvmInsnDetail<'a> {
+    fn fmt(&self, fmt: &mut Formatter) -> ::core::fmt::Result {
         fmt.debug_struct("EvmInsnDetail")
             .field("cs_evm", &(self.0 as *const cs_evm))
             .finish()
@@ -86,10 +118,10 @@ impl<'a> fmt::Debug for EvmInsnDetail<'a> {
 }
 
 impl<'a> DetailsArchInsn for EvmInsnDetail<'a> {
-    type OperandIterator = EvmOperandIterator;
+    type OperandIterator = EvmOperandIterator<'a>;
     type Operand = EvmOperand;
 
-    fn operands(&self) -> EvmOperandIterator {
+    fn operands(&self) -> EvmOperandIterator<'a> {
         EvmOperandIterator::new()
     }
 }

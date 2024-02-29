@@ -1,7 +1,9 @@
 extern crate capstone;
 
+use capstone::arch::mips::MipsArchTag;
+use capstone::arch::x86::X86ArchTag;
+use capstone::arch::{ArchTag, DetailsArchInsn};
 use capstone::prelude::*;
-use capstone::InsnDetail;
 
 const MIPS_CODE: &[u8] = b"\x56\x34\x21\x34\xc2\x17\x01\x00";
 
@@ -9,29 +11,40 @@ const X86_CODE: &[u8] = b"\x55\x48\x8b\x05\xb8\x13\x00\x00\xe9\x14\x9e\x08\x00\x
 
 #[cfg(feature = "full")]
 /// Print register names
-fn reg_names(cs: &Capstone, regs: &[RegId]) -> String {
-    let names: Vec<String> = regs.iter().map(|&x| cs.reg_name(x).unwrap()).collect();
+fn reg_names<A, I>(cs: &Capstone<A>, regs: I) -> String
+where
+    A: ArchTag,
+    I: Iterator<Item = A::RegId>,
+{
+    let names: Vec<String> = regs.map(|x| cs.reg_name(x).unwrap()).collect();
     names.join(", ")
 }
 
 #[cfg(feature = "full")]
 /// Print instruction group names
-fn group_names(cs: &Capstone, regs: &[InsnGroupId]) -> String {
-    let names: Vec<String> = regs.iter().map(|&x| cs.group_name(x).unwrap()).collect();
+fn group_names<A, I>(cs: &Capstone<A>, regs: I) -> String
+where
+    A: ArchTag,
+    I: Iterator<Item = A::InsnGroupId>,
+{
+    let names: Vec<String> = regs.map(|x| cs.group_name(x).unwrap()).collect();
     names.join(", ")
 }
 
 /// Disassemble code and print information
-fn arch_example(cs: &mut Capstone, code: &[u8]) -> CsResult<()> {
+fn arch_example<A: ArchTag>(arch: &'static str, cs: &mut Capstone<A>, code: &[u8]) -> CsResult<()> {
+    println!("\n*************************************");
+    println!("Architecture {}:", arch);
+
     let insns = cs.disasm_all(code, 0x1000)?;
     println!("Found {} instructions", insns.len());
     for i in insns.iter() {
         println!();
         println!("{}", i);
 
-        let detail: InsnDetail = cs.insn_detail(i)?;
-        let arch_detail: ArchDetail = detail.arch_detail();
-        let ops = arch_detail.operands();
+        let detail = cs.insn_detail(i)?;
+        let arch_detail = detail.arch_detail();
+        let ops: Vec<_> = arch_detail.operands().collect();
 
         #[cfg(feature = "full")]
         let output: &[(&str, String)] = &[
@@ -61,26 +74,19 @@ fn arch_example(cs: &mut Capstone, code: &[u8]) -> CsResult<()> {
 }
 
 fn example() -> CsResult<()> {
-    let cs_mips: Capstone = Capstone::new()
-        .mips()
+    let mut cs_mips = Capstone::<MipsArchTag>::new()
         .mode(arch::mips::ArchMode::Mips32R6)
         .detail(true)
         .build()?;
 
-    let cs_x86 = Capstone::new()
-        .x86()
+    let mut cs_x86 = Capstone::<X86ArchTag>::new()
         .mode(arch::x86::ArchMode::Mode64)
         .syntax(arch::x86::ArchSyntax::Att)
         .detail(true)
         .build()?;
 
-    let mut examples = [("MIPS", cs_mips, MIPS_CODE), ("X86", cs_x86, X86_CODE)];
-
-    for &mut (arch, ref mut cs, code) in examples.iter_mut() {
-        println!("\n*************************************");
-        println!("Architecture {}:", arch);
-        arch_example(cs, code)?;
-    }
+    arch_example("MIPS", &mut cs_mips, MIPS_CODE)?;
+    arch_example("X86", &mut cs_x86, X86_CODE)?;
 
     Ok(())
 }

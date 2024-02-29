@@ -12,6 +12,10 @@ use {alloc::string::String, std::collections::HashSet};
 use capstone_sys::cs_group_type;
 use libc::c_uint;
 
+use crate::arch::arm::ArmArchTag;
+use crate::arch::arm64::Arm64ArchTag;
+use crate::arch::x86::{X86ArchTag, X86Insn, X86Reg};
+
 use super::arch::*;
 use super::*;
 
@@ -30,7 +34,10 @@ const START_TEST_ADDR: u64 = 0x1000;
 
 #[test]
 fn test_x86_simple() {
-    match Capstone::new().x86().mode(x86::ArchMode::Mode64).build() {
+    match Capstone::<X86ArchTag>::new()
+        .mode(x86::ArchMode::Mode64)
+        .build()
+    {
         Ok(cs) => match cs.disasm_all(X86_CODE, START_TEST_ADDR) {
             Ok(insns) => {
                 assert_eq!(insns.len(), 2);
@@ -56,7 +63,10 @@ fn test_x86_simple() {
 
 #[test]
 fn test_arm_simple() {
-    match Capstone::new().arm().mode(arm::ArchMode::Arm).build() {
+    match Capstone::<ArmArchTag>::new()
+        .mode(arm::ArchMode::Arm)
+        .build()
+    {
         Ok(cs) => match cs.disasm_all(ARM_CODE, START_TEST_ADDR) {
             Ok(insns) => {
                 assert_eq!(insns.len(), 2);
@@ -79,8 +89,7 @@ fn test_arm_simple() {
 
 #[test]
 fn test_arm64_none() {
-    let cs = Capstone::new()
-        .arm64()
+    let cs = Capstone::<Arm64ArchTag>::new()
         .mode(arm64::ArchMode::Arm)
         .build()
         .unwrap();
@@ -90,23 +99,26 @@ fn test_arm64_none() {
 #[cfg(feature = "full")]
 #[test]
 fn test_x86_names() {
-    match Capstone::new().x86().mode(x86::ArchMode::Mode32).build() {
+    match Capstone::<X86ArchTag>::new()
+        .mode(x86::ArchMode::Mode32)
+        .build()
+    {
         Ok(cs) => {
-            let reg_id = RegId(1);
+            let reg_id = X86Reg::X86_REG_AH;
             match cs.reg_name(reg_id) {
                 Some(reg_name) => assert_eq!(reg_name, "ah"),
                 None => panic!("Couldn't get register name"),
             }
 
-            let insn_id = InsnId(1);
+            let insn_id = X86Insn::X86_INS_AAA;
             match cs.insn_name(insn_id) {
                 Some(insn_name) => assert_eq!(insn_name, "aaa"),
                 None => panic!("Couldn't get instruction name"),
             }
 
-            assert_eq!(cs.group_name(InsnGroupId(1)), Some(String::from("jump")));
+            assert_eq!(cs.group_name(1), Some(String::from("jump")));
 
-            let reg_id = RegId(250);
+            let reg_id = 250 as X86Reg::Type;
             match cs.reg_name(reg_id) {
                 Some(_) => panic!("invalid register worked"),
                 None => {}
@@ -118,7 +130,7 @@ fn test_x86_names() {
                 None => {}
             }
 
-            assert_eq!(cs.group_name(InsnGroupId(250)), None);
+            assert_eq!(cs.group_name(250), None);
         }
         Err(e) => {
             panic!("Couldn't create a cs engine: {}", e);
@@ -128,8 +140,7 @@ fn test_x86_names() {
 
 #[test]
 fn test_detail_false_fail() {
-    let mut cs = Capstone::new()
-        .x86()
+    let mut cs = Capstone::<X86ArchTag>::new()
         .mode(x86::ArchMode::Mode64)
         .build()
         .unwrap();
@@ -145,8 +156,7 @@ fn test_detail_false_fail() {
 fn test_skipdata() {
     use capstone_sys::x86_insn;
 
-    let mut cs = Capstone::new()
-        .x86()
+    let mut cs = Capstone::<X86ArchTag>::new()
         .mode(x86::ArchMode::Mode64)
         .build()
         .unwrap();
@@ -165,15 +175,13 @@ fn test_skipdata() {
 #[cfg(feature = "full")]
 #[test]
 fn test_detail_true() {
-    let mut cs1 = Capstone::new()
-        .x86()
+    let mut cs1 = Capstone::<X86ArchTag>::new()
         .mode(x86::ArchMode::Mode64)
         .build()
         .unwrap();
     cs1.set_detail(true).unwrap();
 
-    let cs2 = Capstone::new()
-        .x86()
+    let cs2 = Capstone::<X86ArchTag>::new()
         .mode(x86::ArchMode::Mode64)
         .detail(true)
         .build()
@@ -201,9 +209,9 @@ fn test_detail_true() {
 }
 
 #[allow(unused)]
-fn test_instruction_helper(
-    cs: &Capstone,
-    insn: &Insn,
+fn test_instruction_helper<A: ArchTag>(
+    cs: &Capstone<A>,
+    insn: &Insn<A>,
     mnemonic_name: &str,
     bytes: &[u8],
     has_default_syntax: bool,
@@ -228,9 +236,9 @@ fn test_instruction_helper(
     assert_eq!(bytes, insn.bytes());
 }
 
-fn test_instruction_detail_helper<T>(
-    cs: &Capstone,
-    insn: &Insn,
+fn test_instruction_detail_helper<T, A: ArchTag>(
+    cs: &Capstone<A>,
+    insn: &Insn<A>,
     info: &DetailedInsnInfo<T>,
     has_default_syntax: bool,
 ) where
@@ -277,9 +285,9 @@ fn test_instruction_detail_helper<T>(
 #[cfg(feature = "full")]
 /// Assert instruction belongs or does not belong to groups, testing both insn_belongs_to_group
 /// and insn_group_ids
-fn test_instruction_group_helper<R: Copy + Into<RegId>>(
-    cs: &Capstone,
-    insn: &Insn,
+fn test_instruction_group_helper<R: Copy + Into<RegId>, A: ArchTag>(
+    cs: &Capstone<A>,
+    insn: &Insn<A>,
     mnemonic_name: &str,
     bytes: &[u8],
     expected_groups: &[cs_group_type::Type],
@@ -346,8 +354,8 @@ type ExpectedInsns<'a, R> = (
 );
 
 #[allow(unused)]
-fn instructions_match_group<R: Copy + Into<RegId>>(
-    cs: &mut Capstone,
+fn instructions_match_group<R: Copy + Into<RegId>, A: ArchTag>(
+    cs: &mut Capstone<A>,
     expected_insns: &[ExpectedInsns<R>],
     has_default_syntax: bool,
 ) {
@@ -393,8 +401,8 @@ fn instructions_match_group<R: Copy + Into<RegId>>(
     }
 }
 
-fn instructions_match(
-    cs: &mut Capstone,
+fn instructions_match<A: ArchTag>(
+    cs: &mut Capstone<A>,
     expected_insns: &[(&str, &[u8])],
     has_default_syntax: bool,
 ) {
@@ -430,8 +438,8 @@ fn instructions_match(
     }
 }
 
-fn instructions_match_detail<T>(
-    cs: &mut Capstone,
+fn instructions_match_detail<T, A: ArchTag>(
+    cs: &mut Capstone<A>,
     info: &[DetailedInsnInfo<T>],
     has_default_syntax: bool,
 ) where
@@ -491,8 +499,7 @@ fn test_instruction_details() {
         ("mov", b"\xb9\x04\x02\x00\x00", &[], &[], &[]),
     ];
 
-    let mut cs = Capstone::new()
-        .x86()
+    let mut cs = Capstone::<X86ArchTag>::new()
         .mode(x86::ArchMode::Mode64)
         .build()
         .unwrap();
@@ -500,7 +507,7 @@ fn test_instruction_details() {
 }
 
 #[allow(unused)]
-fn test_insns_match(cs: &mut Capstone, insns: &[(&str, &[u8])]) {
+fn test_insns_match<A: ArchTag>(cs: &mut Capstone<A>, insns: &[(&str, &[u8])]) {
     for &(mnemonic, bytes) in insns.iter() {
         let insns = cs.disasm_all(bytes, START_TEST_ADDR).unwrap();
         assert_eq!(insns.len(), 1);
@@ -544,8 +551,8 @@ fn test_extra_mode() {
     );
 }
 
-fn test_arch_mode_endian_insns(
-    cs: &mut Capstone,
+fn test_arch_mode_endian_insns<A: ArchTag>(
+    cs: &mut Capstone<A>,
     arch: Arch,
     mode: Mode,
     endian: Option<Endian>,
@@ -599,8 +606,8 @@ where
     }
 }
 
-fn test_arch_mode_endian_insns_detail<T>(
-    cs: &mut Capstone,
+fn test_arch_mode_endian_insns_detail<T, A: ArchTag>(
+    cs: &mut Capstone<A>,
     arch: Arch,
     mode: Mode,
     endian: Option<Endian>,
@@ -610,7 +617,7 @@ fn test_arch_mode_endian_insns_detail<T>(
     T: Into<ArchOperand> + Clone,
 {
     let extra_mode = extra_mode.iter().copied();
-    let mut cs_raw = Capstone::new_raw(arch, mode, extra_mode, endian).unwrap();
+    let mut cs_raw = Capstone::<A>::new_raw(arch, mode, extra_mode, endian).unwrap();
 
     instructions_match_detail(&mut cs_raw, insns, true);
     instructions_match_detail(cs, insns, true);

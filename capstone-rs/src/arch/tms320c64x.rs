@@ -1,7 +1,6 @@
 //! Contains tms320c64x-specific types
 
 use core::convert::From;
-use core::{cmp, fmt, slice};
 
 use libc::c_int;
 use capstone_sys::{
@@ -15,11 +14,42 @@ pub use capstone_sys::tms320c64x_insn_group as Tms320c64xInsnGroup;
 pub use capstone_sys::tms320c64x_reg as Tms320c64xReg;
 
 pub use crate::arch::arch_builder::tms320c64x::*;
+use crate::arch::ArchTag;
+use crate::arch::internal::ArchTagSealed;
 use crate::instruction::{RegId, RegIdInt};
+use crate::{Arch, InsnDetail};
 
+/// Architecture tag that represents TMS320C64X.
+pub struct Tms320c64xArchTag;
+
+impl ArchTagSealed for Tms320c64xArchTag {}
+
+impl ArchTag for Tms320c64xArchTag {
+    type Builder = ArchCapstoneBuilder;
+
+    type Mode = ArchMode;
+    type ExtraMode = ArchExtraMode;
+    type Syntax = ArchSyntax;
+
+    type RegId = Tms320c64xReg;
+    type InsnId = Tms320c64xInsn;
+    type InsnGroupId = Tms320c64xInsnGroup;
+
+    type InsnDetail<'a> = Tms320c64xInsnDetail<'a>;
+
+    fn support_arch(arch: Arch) -> bool {
+        arch == Arch::TMS320C64X
+    }
+}
 
 /// Contains TMS320C64X-specific details for an instruction
 pub struct Tms320c64xInsnDetail<'a>(pub(crate) &'a cs_tms320c64x);
+
+impl<'a, 'i> From<&'i InsnDetail<'a, Tms320c64xArchTag>> for Tms320c64xInsnDetail<'a> {
+    fn from(value: &'i InsnDetail<'a, Tms320c64xArchTag>) -> Self {
+        Self(unsafe { &value.0.__bindgen_anon_1.tms320c64x })
+    }
+}
 
 define_cs_enum_wrapper_reverse!(
     [
@@ -218,7 +248,7 @@ impl_PartialEq_repr_fields!(Tms320c64xOpMem;
     base, disp, unit, scaled, display_type, direction, modify
 );
 
-impl cmp::Eq for Tms320c64xOpMem {}
+impl Eq for Tms320c64xOpMem {}
 
 impl<'a> From<&'a cs_tms320c64x_op> for Tms320c64xOperand {
     fn from(insn: &cs_tms320c64x_op) -> Tms320c64xOperand {
@@ -247,7 +277,7 @@ def_arch_details_struct!(
     Operand = Tms320c64xOperand;
     OperandIterator = Tms320c64xOperandIterator;
     OperandIteratorLife = Tms320c64xOperandIterator<'a>;
-    [ pub struct Tms320c64xOperandIterator<'a>(slice::Iter<'a, cs_tms320c64x_op>); ]
+    [ pub struct Tms320c64xOperandIterator<'a>(core::slice::Iter<'a, cs_tms320c64x_op>); ]
     cs_arch_op = cs_tms320c64x_op;
     cs_arch = cs_tms320c64x;
 );
@@ -278,7 +308,7 @@ mod test {
             op_count: 0,
             operands: [op; 8],
             condition: cs_tms320c64x__bindgen_ty_1 {
-                reg: tms320c64x_reg::TMS320C64X_REG_GPLYA as c_uint,
+                reg: tms320c64x_reg::TMS320C64X_REG_GPLYA.0,
                 zero: 1,
             },
             funit: cs_tms320c64x__bindgen_ty_2 {
@@ -293,7 +323,7 @@ mod test {
         assert!(d.is_condition_zero());
         assert_eq!(
             d.condition_reg(),
-            RegId(Tms320c64xReg::TMS320C64X_REG_GPLYA as RegIdInt)
+            Tms320c64xReg::TMS320C64X_REG_GPLYA.into()
         );
         assert_eq!(d.functional_unit(), Tms320c64xFuntionalUnit::L);
         assert_eq!(d.functional_unit_side(), 18);
@@ -340,21 +370,21 @@ mod test {
         assert_eq!(
             Tms320c64xOpMem(tms320c64x_op_mem {
                 disptype: tms320c64x_mem_disp::TMS320C64X_MEM_DISP_REGISTER as c_uint,
-                disp: tms320c64x_reg::TMS320C64X_REG_A13 as c_uint,
+                disp: tms320c64x_reg::TMS320C64X_REG_A13.0,
                 ..OP_MEM_ZERO
             })
             .display(),
-            Tms320c64xMemDisplay::Register(RegId(Tms320c64xReg::TMS320C64X_REG_A13 as RegIdInt))
+            Tms320c64xMemDisplay::Register(Tms320c64xReg::TMS320C64X_REG_A13.into())
         );
 
         // Simple getters
         assert_eq!(
             Tms320c64xOpMem(tms320c64x_op_mem {
-                base: tms320c64x_reg::TMS320C64X_REG_A13 as c_uint,
+                base: tms320c64x_reg::TMS320C64X_REG_A13.0,
                 ..OP_MEM_ZERO
             })
             .base(),
-            RegId(Tms320c64xReg::TMS320C64X_REG_A13 as RegIdInt)
+            Tms320c64xReg::TMS320C64X_REG_A13.into()
         );
         assert_eq!(
             Tms320c64xOpMem(tms320c64x_op_mem {

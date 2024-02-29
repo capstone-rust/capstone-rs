@@ -3,14 +3,14 @@
 //!
 //! We shard the input by using parallel iterators from the rayon crate.
 
+use capstone::arch::x86::X86ArchTag;
 use capstone::prelude::*;
 use rayon::prelude::*;
 
 fn main() -> CsResult<()> {
     // Closure to create `Capstone` instance
-    let create_cs = || -> CsResult<Capstone> {
-        let cs = Capstone::new()
-            .x86()
+    let create_cs = || -> CsResult<Capstone<X86ArchTag>> {
+        let cs = Capstone::<X86ArchTag>::new()
             .mode(arch::x86::ArchMode::Mode64)
             .detail(true)
             .build()?;

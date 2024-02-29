@@ -1,9 +1,8 @@
-use capstone_sys::cs_arch::*;
-use capstone_sys::cs_opt_value::*;
-use capstone_sys::*;
 use core::convert::From;
 use core::fmt::{self, Display};
 use core::str::FromStr;
+
+use capstone_sys::*;
 
 /// A C-like enum can list its variants
 pub trait EnumList
@@ -57,7 +56,7 @@ macro_rules! define_cs_enum_wrapper {
             fn from(other: $rust_enum) -> Self {
                 match other {
                     $(
-                        $rust_enum::$rust_variant => $cs_variant,
+                        $rust_enum::$rust_variant => <$cs_enum>::$cs_variant,
                     )*
                 }
             }
@@ -319,7 +318,7 @@ define_cs_enum_wrapper!(
 define_cs_enum_wrapper!(
     [
         /// Disassembly syntax
-        => Syntax = cs_opt_value::Type
+        => Syntax = cs_opt_value
     ]
     /// Intel syntax
     => Intel = CS_OPT_SYNTAX_INTEL;
@@ -331,7 +330,7 @@ define_cs_enum_wrapper!(
     => NoRegName = CS_OPT_SYNTAX_NOREGNAME;
 );
 
-pub(crate) struct OptValue(pub cs_opt_value::Type);
+pub(crate) struct OptValue(pub cs_opt_value);
 
 impl From<bool> for OptValue {
     fn from(value: bool) -> Self {
