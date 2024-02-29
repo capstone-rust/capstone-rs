@@ -166,6 +166,22 @@ impl Capstone {
         }
     }
 
+    /// Creates an instance of DisasmIter structure
+    ///
+    pub fn get_disasm_iter<'a>(&'a self) -> DisasmIter<'a> {
+        let insn = unsafe { cs_malloc(self.csh()) };
+        if insn.is_null() {
+            panic!("cs_malloc() failed");
+        }
+        DisasmIter {
+            insn: insn,
+            csh: self.csh,
+            _covariant: PhantomData,
+            offset: 0,
+            addr: 0,
+        }
+    }
+
     /// Disassemble all instructions in buffer
     ///
     /// ```
@@ -424,5 +440,66 @@ impl Capstone {
 impl Drop for Capstone {
     fn drop(&mut self) {
         unsafe { cs_close(&mut self.csh()) };
+    }
+}
+
+/// Structure to handle iterative disassembly
+///
+/// Create with a capstone instance `get_disasm_iter()`
+///
+pub struct DisasmIter<'a> {
+    insn: *mut cs_insn, // space for current instruction to be processed
+    csh: *mut c_void,   // reference to the the capstone handle required by disasm_iter
+    offset: usize,
+    addr: u64,
+    _covariant: PhantomData<&'a ()>, // used to make sure DIasmIter lifetime doesn't exceed Capstone's lifetime
+}
+
+impl<'a> Drop for DisasmIter<'a> {
+    fn drop(&mut self) {
+        unsafe { cs_free(self.insn, 1) };
+    }
+}
+
+impl<'a> DisasmIter<'a> {
+    /// Used to continue to the next instruction without jumping
+    ///
+    /// usage shown in examples/recursive.rs
+    pub fn disasm_iter_continue(&mut self, code: &[u8]) -> CsResult<Insn> {
+        self.disasm_iter(code, self.offset, self.addr)
+    }
+
+    /// Used to start the iterative disassembly
+    ///
+    /// usage shown in examples/recursive.rs
+    pub fn disasm_iter(&mut self, code: &[u8], offset: usize, addr: u64) -> CsResult<Insn> {
+        let code_len = code.len();
+        let code_ptr = &mut code[offset..].as_ptr();
+        let mut count = code_len - offset;
+        let mut local_addr = addr;
+        let ret = unsafe {
+            cs_disasm_iter(
+                self.csh as csh, // capstone handle
+                code_ptr,        // double pointer to code to disassemble; automatically incremented
+                &mut count,      // number of bytes left to disassemble; automatically decremented
+                &mut local_addr, // automatically incremented address
+                self.insn,       // pointer to cs_insn object
+            )
+        };
+        if ret {
+            self.offset = code_len - count;
+            self.addr = local_addr;
+            let insn = unsafe { Insn::from_raw(self.insn) };
+            Ok(insn)
+        } else {
+            Err(Error::CustomError("not disasm"))
+        }
+    }
+
+    pub fn offset(&self) -> usize {
+        self.offset
+    }
+    pub fn addr(&self) -> u64 {
+        self.addr
     }
 }
