@@ -3314,6 +3314,7 @@ fn test_cbpf() {
     }
 }
 
+#[test]
 fn test_ebpf() {
     let cs = Capstone::new()
         .bpf()
@@ -3357,4 +3358,82 @@ fn test_ebpf() {
             assert!(false);
         }
     }
+}
+
+#[test]
+fn test_arch_bpf_detail() {
+    use crate::arch::bpf::BpfOperand::*;
+    use crate::arch::bpf::BpfReg::*;
+    use crate::arch::bpf::*;
+    use capstone_sys::*;
+
+    test_arch_mode_endian_insns_detail(
+        &mut Capstone::new()
+            .bpf()
+            .mode(bpf::ArchMode::Ebpf)
+            .endian(Endian::Little)
+            .detail(true)
+            .build()
+            .unwrap(),
+        Arch::BPF,
+        Mode::Ebpf,
+        None,
+        &[],
+        &[
+            // r1 = 0x1
+            DII::new(
+                "mov64",
+                b"\xb7\x01\x00\x00\x01\x00\x00\x00",
+                &[Reg(RegId(BPF_REG_R1 as RegIdInt)), Imm(1)],
+            ),
+            // r0 = *(u32 *)(r10 - 0xc)
+            DII::new(
+                "ldxw",
+                b"\x61\xa0\xf4\xff\x00\x00\x00\x00",
+                &[
+                    Reg(RegId(BPF_REG_R0 as RegIdInt)),
+                    Mem(BpfOpMem(bpf_op_mem {
+                        base: BPF_REG_R10,
+                        disp: 0xfff4,
+                    })),
+                ],
+            ),
+            // *(u32 *)(r10 - 0xc) = r1
+            DII::new(
+                "stxw",
+                b"\x63\x1a\xf4\xff\x00\x00\x00\x00",
+                &[
+                    Mem(BpfOpMem(bpf_op_mem {
+                        base: BPF_REG_R10,
+                        disp: 0xfff4,
+                    })),
+                    Reg(RegId(BPF_REG_R1 as RegIdInt)),
+                ],
+            ),
+            // exit
+            DII::new("exit", b"\x95\x00\x00\x00\x00\x00\x00\x00", &[]),
+        ],
+    );
+
+    test_arch_mode_endian_insns_detail(
+        &mut Capstone::new()
+            .bpf()
+            .mode(bpf::ArchMode::Cbpf)
+            .endian(Endian::Little)
+            .detail(true)
+            .build()
+            .unwrap(),
+        Arch::BPF,
+        Mode::Cbpf,
+        None,
+        &[],
+        &[
+            DII::new("txa", b"\x87\x00\x00\x00\x00\x00\x00\x00", &[]),
+            DII::new(
+                "ret",
+                b"\x16\x00\x00\x00\x00\x00\x00\x00",
+                &[Reg(RegId(BPF_REG_A as RegIdInt))],
+            ),
+        ],
+    );
 }
