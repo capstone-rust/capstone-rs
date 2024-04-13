@@ -3308,8 +3308,7 @@ fn test_cbpf() {
         }
 
         Err(e) => {
-            eprintln!("{:?}", e);
-            assert!(false);
+            panic!("{:?}", e);
         }
     }
 }
@@ -3354,8 +3353,7 @@ fn test_ebpf() {
         }
 
         Err(e) => {
-            eprintln!("{:?}", e);
-            assert!(false);
+            panic!("{:?}", e);
         }
     }
 }

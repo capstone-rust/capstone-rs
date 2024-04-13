@@ -548,7 +548,7 @@ macro_rules! detail_arch_base {
                 detail = BpfDetail,
                 insn_detail = BpfInsnDetail<'a>,
                 op = BpfOperand,
-                /// Returns the XCore details, if any
+                /// Returns the BPF details, if any
                 => arch_name = bpf,
             ]
         );
