@@ -17,6 +17,17 @@ use super::*;
 
 const X86_CODE: &[u8] = b"\x55\x48\x8b\x05\xb8\x13\x00\x00";
 const ARM_CODE: &[u8] = b"\x55\x48\x8b\x05\xb8\x13\x00\x00";
+const CBPF_CODE: &[u8] = b"\x94\x09\x00\x00\x37\x13\x03\x00\
+                          \x87\x00\x00\x00\x00\x00\x00\x00\
+                          \x07\x00\x00\x00\x00\x00\x00\x00\
+                          \x16\x00\x00\x00\x00\x00\x00\x00\
+                          \x80\x00\x00\x00\x00\x00\x00\x00";
+const EBPF_CODE: &[u8] = b"\x97\x09\x00\x00\x37\x13\x03\x00\
+                        \xdc\x02\x00\x00\x20\x00\x00\x00\
+                        \x30\x00\x00\x00\x00\x00\x00\x00\
+                        \xdb\x3a\x00\x01\x00\x00\x00\x00\
+                        \x84\x02\x00\x00\x00\x00\x00\x00\
+                        \x6d\x33\x17\x02\x00\x00\x00\x00";
 
 // Aliases for group types
 const JUMP: cs_group_type::Type = cs_group_type::CS_GRP_JUMP;
@@ -3243,4 +3254,186 @@ fn test_owned_insn() {
     for (insn, owned) in insns.iter().zip(&owned) {
         assert_eq!(format!("{:?}", insn), format!("{:?}", owned));
     }
+}
+
+/// Print register names
+fn reg_names(cs: &Capstone, regs: &[RegId]) -> String {
+    let names: Vec<String> = regs.iter().map(|&x| cs.reg_name(x).unwrap()).collect();
+    names.join(", ")
+}
+
+/// Print instruction group names
+fn group_names(cs: &Capstone, regs: &[InsnGroupId]) -> String {
+    let names: Vec<String> = regs.iter().map(|&x| cs.group_name(x).unwrap()).collect();
+    names.join(", ")
+}
+
+#[test]
+fn test_cbpf() {
+    let cs = Capstone::new()
+        .bpf()
+        .mode(bpf::ArchMode::Cbpf)
+        .endian(Endian::Little)
+        .detail(true)
+        .build()
+        .unwrap();
+    let insns = cs.disasm_all(CBPF_CODE, 0x1000);
+    match insns {
+        Ok(ins) => {
+            for i in ins.as_ref() {
+                println!();
+                eprintln!("{}", i);
+
+                let detail: InsnDetail = cs.insn_detail(&i).expect("Failed to get insn detail");
+                let arch_detail: ArchDetail = detail.arch_detail();
+                let ops = arch_detail.operands();
+
+                let output: &[(&str, String)] = &[
+                    ("insn id:", format!("{:?}", i.id().0)),
+                    ("bytes:", format!("{:?}", i.bytes())),
+                    ("read regs:", reg_names(&cs, detail.regs_read())),
+                    ("write regs:", reg_names(&cs, detail.regs_write())),
+                    ("insn groups:", group_names(&cs, detail.groups())),
+                ];
+
+                for &(ref name, ref message) in output.iter() {
+                    eprintln!("{:4}{:12} {}", "", name, message);
+                }
+
+                println!("{:4}operands: {}", "", ops.len());
+                for op in ops {
+                    eprintln!("{:8}{:?}", "", op);
+                }
+            }
+        }
+
+        Err(e) => {
+            eprintln!("{:?}", e);
+            assert!(false);
+        }
+    }
+}
+
+#[test]
+fn test_ebpf() {
+    let cs = Capstone::new()
+        .bpf()
+        .mode(bpf::ArchMode::Ebpf)
+        .endian(Endian::Little)
+        .detail(true)
+        .build()
+        .unwrap();
+    let insns = cs.disasm_all(EBPF_CODE, 0x1000);
+    match insns {
+        Ok(ins) => {
+            for i in ins.as_ref() {
+                println!();
+                eprintln!("{}", i);
+
+                let detail: InsnDetail = cs.insn_detail(&i).expect("Failed to get insn detail");
+                let arch_detail: ArchDetail = detail.arch_detail();
+                let ops = arch_detail.operands();
+
+                let output: &[(&str, String)] = &[
+                    ("insn id:", format!("{:?}", i.id().0)),
+                    ("bytes:", format!("{:?}", i.bytes())),
+                    ("read regs:", reg_names(&cs, detail.regs_read())),
+                    ("write regs:", reg_names(&cs, detail.regs_write())),
+                    ("insn groups:", group_names(&cs, detail.groups())),
+                ];
+
+                for &(ref name, ref message) in output.iter() {
+                    eprintln!("{:4}{:12} {}", "", name, message);
+                }
+
+                println!("{:4}operands: {}", "", ops.len());
+                for op in ops {
+                    eprintln!("{:8}{:?}", "", op);
+                }
+            }
+        }
+
+        Err(e) => {
+            eprintln!("{:?}", e);
+            assert!(false);
+        }
+    }
+}
+
+#[test]
+fn test_arch_bpf_detail() {
+    use crate::arch::bpf::BpfOperand::*;
+    use crate::arch::bpf::BpfReg::*;
+    use crate::arch::bpf::*;
+    use capstone_sys::*;
+
+    test_arch_mode_endian_insns_detail(
+        &mut Capstone::new()
+            .bpf()
+            .mode(bpf::ArchMode::Ebpf)
+            .endian(Endian::Little)
+            .detail(true)
+            .build()
+            .unwrap(),
+        Arch::BPF,
+        Mode::Ebpf,
+        None,
+        &[],
+        &[
+            // r1 = 0x1
+            DII::new(
+                "mov64",
+                b"\xb7\x01\x00\x00\x01\x00\x00\x00",
+                &[Reg(RegId(BPF_REG_R1 as RegIdInt)), Imm(1)],
+            ),
+            // r0 = *(u32 *)(r10 - 0xc)
+            DII::new(
+                "ldxw",
+                b"\x61\xa0\xf4\xff\x00\x00\x00\x00",
+                &[
+                    Reg(RegId(BPF_REG_R0 as RegIdInt)),
+                    Mem(BpfOpMem(bpf_op_mem {
+                        base: BPF_REG_R10,
+                        disp: 0xfff4,
+                    })),
+                ],
+            ),
+            // *(u32 *)(r10 - 0xc) = r1
+            DII::new(
+                "stxw",
+                b"\x63\x1a\xf4\xff\x00\x00\x00\x00",
+                &[
+                    Mem(BpfOpMem(bpf_op_mem {
+                        base: BPF_REG_R10,
+                        disp: 0xfff4,
+                    })),
+                    Reg(RegId(BPF_REG_R1 as RegIdInt)),
+                ],
+            ),
+            // exit
+            DII::new("exit", b"\x95\x00\x00\x00\x00\x00\x00\x00", &[]),
+        ],
+    );
+
+    test_arch_mode_endian_insns_detail(
+        &mut Capstone::new()
+            .bpf()
+            .mode(bpf::ArchMode::Cbpf)
+            .endian(Endian::Little)
+            .detail(true)
+            .build()
+            .unwrap(),
+        Arch::BPF,
+        Mode::Cbpf,
+        None,
+        &[],
+        &[
+            DII::new("txa", b"\x87\x00\x00\x00\x00\x00\x00\x00", &[]),
+            DII::new(
+                "ret",
+                b"\x16\x00\x00\x00\x00\x00\x00\x00",
+                &[Reg(RegId(BPF_REG_A as RegIdInt))],
+            ),
+        ],
+    );
 }

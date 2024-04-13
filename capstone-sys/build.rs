@@ -133,6 +133,7 @@ fn build_capstone_cc() {
         .define("CAPSTONE_HAS_WASM", None)
         .define("CAPSTONE_HAS_X86", None)
         .define("CAPSTONE_HAS_XCORE", None)
+        .define("CAPSTONE_HAS_BPF", None)
         // No need to display any warnings from the C library
         .flag_if_supported("-w")
         .static_crt(use_static_crt);
