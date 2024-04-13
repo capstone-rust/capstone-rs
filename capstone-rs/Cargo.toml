@@ -10,6 +10,7 @@ repository = "https://github.com/capstone-rust/capstone-rs"
 readme = "../README.md"
 edition = "2018"
 version = "0.12.0"
+rust-version.workspace = true
 
 [badges]
 travis-ci = { repository = "capstone-rust/capstone-rs" }

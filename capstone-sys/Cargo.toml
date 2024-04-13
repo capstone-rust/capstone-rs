@@ -11,6 +11,7 @@ license = "MIT"
 readme = "README.md"
 repository = "https://github.com/capstone-rust/capstone-rs/tree/master/capstone-sys"
 edition = "2018"
+rust-version.workspace = true
 
 exclude = [
     "/capstone/docs/**",
