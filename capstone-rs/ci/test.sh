@@ -11,6 +11,7 @@
 # - JOB: {*test,valgrind-test,bench,cov}
 # - PROFILES: list of {debug,release} [debug release]
 # - SHOULD_FAIL: (disabled by default; set to non-empty string to enable)
+# - SKIP_CARGO_UPDATE: set to disable "cargo update" part of tests
 # - VALGRIND_TESTS: run tests under Valgrind
 
 set -euo pipefail
@@ -174,6 +175,7 @@ run_kcov() {
 
 cov() {
     echo "Running coverage"
+    cargo_update
 
     install_kcov
     cleanup_cov
@@ -193,6 +195,9 @@ cov() {
 }
 
 bench() {
+    echo "Running bench"
+    cargo_update
+
     ${CARGO} bench
 }
 
@@ -232,6 +237,8 @@ test_rust_file() {
 }
 
 run_tests() {
+    cargo_update
+
     TMPFILE="$(mktemp /tmp/capstone-rs.XXXXXXXXXX)"
     [ -f "$TMPFILE" ] || Error "Could not make temp file"
     for PROFILE in $PROFILES; do
@@ -282,6 +289,15 @@ run_tests() {
         valgrind --error-exitcode=1 "$test_binary"
     done
     rm "$TMPFILE"
+}
+
+cargo_update() {
+    if [ -z "${SKIP_CARGO_UPDATE:-}" ]; then
+        echo "Updating dependencies in Cargo.lock"
+        ${CARGO} update
+    else
+        echo "Skipping 'cargo update' since SKIP_CARGO_UPDATE is set"
+    fi
 }
 
 PROFILES="${PROFILES-debug}"
