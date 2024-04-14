@@ -1,20 +1,22 @@
 #!/usr/bin/env bash
 #
-# Modified `ci/test.sh` from capstone-sys
 # Environment variables:
 #
-# FEATURES: (none by default)
-# NO_DEFAULT_FEATURES: enables --no-default-features
-# ALL_FEATURES: enables --all-features
-# JOB: {*test,valgrind-test,bench,cov}
-# PROFILES: list of {debug,release} [debug release]
-# SHOULD_FAIL: (disabled by default; set to non-empty string to enable)
-# VALGRIND_TESTS: run tests under Valgrind
+# features:
+# - FEATURES: (none by default)
+# - NO_DEFAULT_FEATURES: enables --no-default-features
+# - ALL_FEATURES: enables --all-features
+#
+# other:
+# - JOB: {*test,valgrind-test,bench,cov}
+# - PROFILES: list of {debug,release} [debug release]
+# - SHOULD_FAIL: (disabled by default; set to non-empty string to enable)
+# - VALGRIND_TESTS: run tests under Valgrind
 
 set -euo pipefail
 set -x
 
-if [ $(basename "$0") = "test.sh" ]; then
+if [ "$(basename "$0")" = "test.sh" ]; then
     cd "$(dirname "$0")/.."
 else
     echo "Script is sourced"
@@ -27,16 +29,16 @@ Error() {
     exit 1
 }
 
-RUST_BACKTRACE=1
+export RUST_BACKTRACE=1
 SHOULD_FAIL=${SHOULD_FAIL:-}  # Default to false
 VALGRIND_TESTS=${VALGRIND_TESTS:-}
 CARGO="${CARGO:-cargo}"
 
 # Feature vars
-if [ -n "${ALL_FEATURES:-}" -a -n "${NO_DEFAULT_FEATURES:-}" ]; then
+if [ -n "${ALL_FEATURES:-}" ] && [ -n "${NO_DEFAULT_FEATURES:-}" ]; then
     Error "ALL_FEATURES and NO_DEFAULT_FEATURES are mutually exclusive"
 fi
-if [ -n "${ALL_FEATURES:-}" -a -n "${FEATURES:-}" ]; then
+if [ -n "${ALL_FEATURES:-}" ] && [ -n "${FEATURES:-}" ]; then
     Error "ALL_FEATURES and FEATURES are mutually exclusive"
 fi
 CARGO_FEATURE_ARGS=(
@@ -45,7 +47,6 @@ CARGO_FEATURE_ARGS=(
     ${FEATURES:+ --features "$FEATURES"}
 )
 
-PROJECT_NAME="$(grep ^name Cargo.toml | head -n1 | xargs -n1 | tail -n1)"
 TARGET="../target"
 TARGET_COV="${TARGET}/cov"
 SIMPLE_RUN_EXAMPLES="${SIMPLE_RUN_EXAMPLES:-demo parallel}"
@@ -130,15 +131,15 @@ cleanup_cov() {
 
 run_kcov() {
     KCOV="${KCOV:-kcov}"
-    COVERALLS_ARG="${TRAVIS_JOB_ID:+--coveralls-id=$TRAVIS_JOB_ID}"
+    COVERALLS_ARG="${TRAVIS_JOB_ID:+--coveralls-id=${TRAVIS_JOB_ID}}"
 
     # Build binaries
-    json_format_args="--quiet --message-format=json"
+    json_format_args=(--quiet --message-format=json)
 
     # Test binaries
     cargo_test_args="${CARGO} test --no-run"
     ${cargo_test_args} -v
-    TEST_BINS="$(${cargo_test_args} ${json_format_args} \
+    TEST_BINS="$(${cargo_test_args} "${json_format_args[@]}" \
         | jq -r "select(.profile.test == true) | .filenames[]")"
 
     # Exaple binaries
@@ -146,7 +147,7 @@ run_kcov() {
     for example in $SIMPLE_RUN_EXAMPLES; do
         cargo_build_example_args="${CARGO} build --example $example"
         ${cargo_build_example_args} -v
-        example_bin="$(${cargo_build_example_args} ${json_format_args} \
+        example_bin="$(${cargo_build_example_args} "${json_format_args[@]}" \
             | jq -r '.executable | strings')"
         EXAMPLE_BINS="${EXAMPLE_BINS} ${example_bin}"
     done
@@ -157,13 +158,13 @@ run_kcov() {
     set -x
 
     pwd
-    ls -l ${TARGET}
-    ls -l ${TARGET}/${PROFILE}
+    ls -l "${TARGET}"
+    ls -l "${TARGET}/${PROFILE}"
 
     # Run test and example binaries under kcov
     for file in ${TEST_BINS} ${EXAMPLE_BINS} ; do
-        "$KCOV" \
-            $COVERALLS_ARG \
+        ${KCOV} \
+            ${COVERALLS_ARG} \
             --include-pattern=capstone-rs \
             --exclude-pattern=/.cargo,/usr/lib,/out/capstone.rs,capstone-sys \
             --verify "${TARGET_COV}" "$file"
@@ -293,7 +294,7 @@ done
 # necessary so we don't pass an unexpected flag to cargo.
 
 
-if [ $(basename "$0") = "test.sh" ]; then
+if [ "$(basename "$0")" = "test.sh" ]; then
     JOB="${JOB:-test}"
 
     set -x
