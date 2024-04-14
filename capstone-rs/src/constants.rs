@@ -160,6 +160,7 @@ macro_rules! define_impl_bitmask {
             => $getter:ident = $mask_constant:ident;
         )*
     ) => {
+        #[allow(clippy::redundant_closure_call)]
         impl < $($impl_lifetime),* > $struct < $($impl_lifetime),* > {
             /// Raw mask from Capstone
             pub(crate) fn $mask_getter(&self) -> $mask_getter_ty {
