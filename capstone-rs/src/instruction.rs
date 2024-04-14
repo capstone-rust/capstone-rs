@@ -375,10 +375,6 @@ impl<'a> Display for OwnedInsn<'a> {
     }
 }
 
-/// Iterator over instruction group ids
-#[derive(Debug, Clone)]
-pub struct InsnGroupIter<'a>(slice::Iter<'a, InsnGroupIdInt>);
-
 impl<'a> InsnDetail<'a> {
     #[cfg(feature = "full")]
     /// Returns the implicit read registers
