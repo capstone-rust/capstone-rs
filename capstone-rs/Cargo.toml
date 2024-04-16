@@ -20,9 +20,7 @@ capstone-sys = { path = "../capstone-sys", version = "0.16.0",  default_features
 libc = { version = "0.2", default-features = false }
 
 [dev-dependencies]
-macho = "0.4.1"
-criterion = "0.3"
-rayon = "1.1"
+criterion = "0.5"
 
 [[bench]]
 name = "my_benchmark"
