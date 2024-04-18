@@ -6,17 +6,19 @@ name: main
 
 jobs:
   test:
-    runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
         rust:
-          # Don't pull in newest dependencies when using old Rust toolchain
-          - version: 1.70.0
+          - version: 1.70.0 # MSRV
             env: SKIP_CARGO_UPDATE=1
           - version: stable
           - version: beta
           - version: nightly
+        os:
+          - ubuntu-latest
+          - windows-latest
+    runs-on: ${{ matrix.os }}
 
     steps:
       - uses: actions/checkout@v2
