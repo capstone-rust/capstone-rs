@@ -2,7 +2,7 @@ on:
   - push
   - pull_request
 
-name: stable-only
+name: extra-checks
 
 jobs:
   test:
