@@ -34,6 +34,7 @@ export RUST_BACKTRACE=1
 SHOULD_FAIL=${SHOULD_FAIL:-}  # Default to false
 VALGRIND_TESTS=${VALGRIND_TESTS:-}
 CARGO="${CARGO:-cargo}"
+UNAME="$(uname)"
 
 # Feature vars
 if [ -n "${ALL_FEATURES:-}" ] && [ -n "${NO_DEFAULT_FEATURES:-}" ]; then
@@ -66,12 +67,20 @@ echo "Running as USER=$USER"
 echo "Test should $EXPECTED_RESULT"
 
 if ! [ "${OS_NAME:-}" ]; then
-    case "$(uname)" in
+    case "${UNAME}" in
+    CYGWIN*|MINGW*|MSYS_NT*) OS_NAME=windows ;;
     Linux) OS_NAME=linux ;;
     Darwin) OS_NAME=osx ;;
     FreeBSD) OS_NAME=freebsd ;;
     esac
 fi
+
+true_path() {
+    case "${OS_NAME}" in
+        windows) cygpath -m "$@" ;;
+        *) echo "$@" ;;
+    esac
+}
 
 # Usage: SHOULD_FAIL [ARG1 [ARG2 [...]]]
 expect_exit_status() {
@@ -216,7 +225,7 @@ test_rust_file() {
     tmp_dir="$(mktemp -d /tmp/rust.testdir.XXXXXXXXXX)"
     [ -d "$tmp_dir" ] || Error "Could not make temp dir"
 
-    capstone_dir="$(pwd)"
+    capstone_dir="$(true_path "$(pwd)")"
     cd "$tmp_dir"
     ${CARGO} new --bin test_project -v
     cd test_project
@@ -293,8 +302,12 @@ run_tests() {
 
 cargo_update() {
     if [ -z "${SKIP_CARGO_UPDATE:-}" ]; then
-        echo "Updating dependencies in Cargo.lock"
-        ${CARGO} update
+        if [[ -n "${CI:-}" ]]; then
+            echo "Updating dependencies in Cargo.lock"
+            ${CARGO} update
+        else
+            echo "Skipping 'cargo update' since we are not in CI"
+        fi
     else
         echo "Skipping 'cargo update' since SKIP_CARGO_UPDATE is set"
     fi
