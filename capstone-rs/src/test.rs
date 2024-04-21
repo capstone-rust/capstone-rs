@@ -5,6 +5,8 @@
     clippy::upper_case_acronyms
 )]
 
+use core::{convert::TryInto, fmt::Debug};
+
 use alloc::vec::Vec;
 #[cfg(feature = "full")]
 use {alloc::string::String, std::collections::HashSet};
@@ -288,7 +290,7 @@ fn test_instruction_detail_helper<T>(
 #[cfg(feature = "full")]
 /// Assert instruction belongs or does not belong to groups, testing both insn_belongs_to_group
 /// and insn_group_ids
-fn test_instruction_group_helper<R: Copy + Into<RegId>>(
+fn test_instruction_group_helper<R: Copy + Debug + TryInto<RegIdInt>>(
     cs: &Capstone,
     insn: &Insn,
     mnemonic_name: &str,
@@ -328,7 +330,15 @@ fn test_instruction_group_helper<R: Copy + Into<RegId>>(
 
     macro_rules! assert_regs_match {
         ($expected:expr, $actual_regs:expr, $msg:expr) => {{
-            let mut expected_regs: Vec<RegId> = $expected.iter().map(|&x| x.into()).collect();
+            let mut expected_regs: Vec<RegId> = $expected
+                .iter()
+                .map(|&x| {
+                    RegId(
+                        x.try_into()
+                            .unwrap_or_else(|_| panic!("Failed to convert {:?} to RegIdInt", x)),
+                    )
+                })
+                .collect();
             expected_regs.sort_unstable();
             let mut regs: Vec<RegId> = $actual_regs.iter().map(|&x| x.into()).collect();
             regs.sort_unstable();
@@ -357,7 +367,7 @@ type ExpectedInsns<'a, R> = (
 );
 
 #[allow(unused)]
-fn instructions_match_group<R: Copy + Into<RegId>>(
+fn instructions_match_group<R: Copy + Debug + TryInto<RegIdInt>>(
     cs: &mut Capstone,
     expected_insns: &[ExpectedInsns<R>],
     has_default_syntax: bool,
@@ -2483,13 +2493,10 @@ fn test_arch_systemz() {
 
 #[test]
 fn test_arch_tms320c64x_detail() {
-    use crate::arch::tms320c64x::Tms320c64xOperand::*;
-    use crate::arch::tms320c64x::Tms320c64xReg::*;
-    use crate::arch::tms320c64x::*;
-    use capstone_sys::tms320c64x_funit::*;
-    use capstone_sys::tms320c64x_mem_dir::*;
-    use capstone_sys::tms320c64x_mem_disp::*;
-    use capstone_sys::tms320c64x_mem_mod::*;
+    use crate::arch::tms320c64x::{
+        Tms320c64xFuntionalUnit, Tms320c64xMemDirection, Tms320c64xMemDisplayType,
+        Tms320c64xMemModify, Tms320c64xOpMem, Tms320c64xOperand::*, Tms320c64xReg::*,
+    };
     use capstone_sys::tms320c64x_op_mem;
 
     test_arch_mode_endian_insns_detail(
@@ -2529,13 +2536,13 @@ fn test_arch_tms320c64x_detail() {
                 b"\x02\x80\x46\x9e",
                 &[
                     Mem(Tms320c64xOpMem(tms320c64x_op_mem {
-                        base: TMS320C64X_REG_B15,
+                        base: TMS320C64X_REG_B15 as c_uint,
                         disp: 0x46,
-                        unit: TMS320C64X_FUNIT_L as c_uint,
+                        unit: Tms320c64xFuntionalUnit::L as c_uint,
                         scaled: false as c_uint,
-                        disptype: TMS320C64X_MEM_DISP_CONSTANT as c_uint,
-                        direction: TMS320C64X_MEM_DIR_FW as c_uint,
-                        modify: TMS320C64X_MEM_MOD_NO as c_uint,
+                        disptype: Tms320c64xMemDisplayType::Constant as c_uint,
+                        direction: Tms320c64xMemDirection::Forward as c_uint,
+                        modify: Tms320c64xMemModify::No as c_uint,
                     })),
                     Reg(RegId(TMS320C64X_REG_B5 as RegIdInt)),
                 ],
@@ -2548,13 +2555,13 @@ fn test_arch_tms320c64x_detail() {
                 b"\x02\x90\x32\x96",
                 &[
                     Mem(Tms320c64xOpMem(tms320c64x_op_mem {
-                        base: TMS320C64X_REG_A4,
+                        base: TMS320C64X_REG_A4 as c_uint,
                         disp: 0x1,
-                        unit: TMS320C64X_FUNIT_L as c_uint,
+                        unit: Tms320c64xFuntionalUnit::L as c_uint,
                         scaled: true as c_uint,
-                        disptype: TMS320C64X_MEM_DISP_CONSTANT as c_uint,
-                        direction: TMS320C64X_MEM_DIR_FW as c_uint,
-                        modify: TMS320C64X_MEM_MOD_PRE as c_uint,
+                        disptype: Tms320c64xMemDisplayType::Constant as c_uint,
+                        direction: Tms320c64xMemDirection::Forward as c_uint,
+                        modify: Tms320c64xMemModify::Pre as c_uint,
                     })),
                     Reg(RegId(TMS320C64X_REG_B5 as RegIdInt)),
                 ],
@@ -2565,13 +2572,13 @@ fn test_arch_tms320c64x_detail() {
                 b"\x02\x80\x46\x9e",
                 &[
                     Mem(Tms320c64xOpMem(tms320c64x_op_mem {
-                        base: TMS320C64X_REG_B15,
+                        base: TMS320C64X_REG_B15 as c_uint,
                         disp: 0x46,
-                        unit: TMS320C64X_FUNIT_L as c_uint,
+                        unit: Tms320c64xFuntionalUnit::L as c_uint,
                         scaled: false as c_uint,
-                        disptype: TMS320C64X_MEM_DISP_CONSTANT as c_uint,
-                        direction: TMS320C64X_MEM_DIR_FW as c_uint,
-                        modify: TMS320C64X_MEM_MOD_NO as c_uint,
+                        disptype: Tms320c64xMemDisplayType::Constant as c_uint,
+                        direction: Tms320c64xMemDirection::Forward as c_uint,
+                        modify: Tms320c64xMemModify::No as c_uint,
                     })),
                     Reg(RegId(TMS320C64X_REG_B5 as RegIdInt)),
                 ],
@@ -2582,13 +2589,13 @@ fn test_arch_tms320c64x_detail() {
                 b"\x05\x3c\x83\xe6",
                 &[
                     Mem(Tms320c64xOpMem(tms320c64x_op_mem {
-                        base: TMS320C64X_REG_A15,
+                        base: TMS320C64X_REG_A15 as c_uint,
                         disp: 0x4,
-                        unit: TMS320C64X_FUNIT_L as c_uint,
+                        unit: Tms320c64xFuntionalUnit::L as c_uint,
                         scaled: true as c_uint,
-                        disptype: TMS320C64X_MEM_DISP_CONSTANT as c_uint,
-                        direction: TMS320C64X_MEM_DIR_FW as c_uint,
-                        modify: TMS320C64X_MEM_MOD_NO as c_uint,
+                        disptype: Tms320c64xMemDisplayType::Constant as c_uint,
+                        direction: Tms320c64xMemDirection::Forward as c_uint,
+                        modify: Tms320c64xMemModify::No as c_uint,
                     })),
                     RegPair(
                         RegId(TMS320C64X_REG_B11 as RegIdInt),
@@ -2602,13 +2609,13 @@ fn test_arch_tms320c64x_detail() {
                 b"\x0b\x0c\x8b\x24",
                 &[
                     Mem(Tms320c64xOpMem(tms320c64x_op_mem {
-                        base: TMS320C64X_REG_A3,
+                        base: TMS320C64X_REG_A3 as c_uint,
                         disp: TMS320C64X_REG_A4 as c_uint,
-                        unit: TMS320C64X_FUNIT_D as c_uint,
+                        unit: Tms320c64xFuntionalUnit::D as c_uint,
                         scaled: false as c_uint,
-                        disptype: TMS320C64X_MEM_DISP_REGISTER as c_uint,
-                        direction: TMS320C64X_MEM_DIR_FW as c_uint,
-                        modify: TMS320C64X_MEM_MOD_NO as c_uint,
+                        disptype: Tms320c64xMemDisplayType::Register as c_uint,
+                        direction: Tms320c64xMemDirection::Forward as c_uint,
+                        modify: Tms320c64xMemModify::No as c_uint,
                     })),
                     RegPair(
                         RegId(TMS320C64X_REG_A23 as RegIdInt),
@@ -3147,7 +3154,7 @@ fn test_arch_riscv_detail() {
                 &[
                     Reg(RegId(RISCV_REG_X4 as RegIdInt)),
                     Mem(RiscVOpMem(riscv_op_mem {
-                        base: RISCV_REG_X5,
+                        base: RISCV_REG_X5 as c_uint,
                         disp: 8,
                     })),
                 ],
