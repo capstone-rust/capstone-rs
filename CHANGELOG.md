@@ -9,6 +9,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - Bump minimum Rust version to 1.70.0
 
+### Removed
+- `From<u32> for RegId` impl
+
 ## [0.12.0] - 2024-02-25
 ### Added
 - `full` feature (enabled by default) which disables [diet mode] for the Capstone C library
