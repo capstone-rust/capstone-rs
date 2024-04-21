@@ -14,6 +14,12 @@
 # - SKIP_CARGO_UPDATE: set to disable "cargo update" part of tests
 # - VALGRIND_TESTS: run tests under Valgrind
 
+# Useful debug info
+echo "BASH=${BASH}"
+echo "BASH_VERSION=${BASH_VERSION}"
+echo "BASH_OPTIONS=$-"
+echo "BASH_COMPAT=${BASH_COMPAT}"
+
 set -euo pipefail
 set -x
 
