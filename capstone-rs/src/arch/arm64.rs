@@ -300,7 +300,7 @@ mod test {
             Imm(42),
         );
         t(
-            (ARM64_OP_REG_MRS, cs_arm64_op__bindgen_ty_2 { reg: ARM64_SYSREG_MDRAR_EL1 as u32 }),
+            (ARM64_OP_REG_MRS, cs_arm64_op__bindgen_ty_2 { reg: ARM64_SYSREG_MDRAR_EL1 as arm64_reg::Type }),
             RegMrs(ARM64_SYSREG_MDRAR_EL1),
         );
         t(
@@ -317,7 +317,7 @@ mod test {
         );
         t(
             (ARM64_OP_REG_MSR, cs_arm64_op__bindgen_ty_2 {
-                reg: arm64_sysreg::ARM64_SYSREG_ICC_EOIR1_EL1 as u32 }),
+                reg: arm64_sysreg::ARM64_SYSREG_ICC_EOIR1_EL1 as arm64_reg::Type }),
             RegMsr(arm64_sysreg::ARM64_SYSREG_ICC_EOIR1_EL1),
         );
         t(

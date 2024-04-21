@@ -1,5 +1,5 @@
 use alloc::{self, boxed::Box};
-use core::convert::{TryFrom, TryInto};
+use core::convert::TryFrom;
 use core::fmt::{self, Debug, Display, Error, Formatter};
 use core::marker::PhantomData;
 use core::ops::Deref;
@@ -62,12 +62,6 @@ pub struct RegId(pub RegIdInt);
 impl RegId {
     /// Invalid Register
     pub const INVALID_REG: Self = Self(0);
-}
-
-impl core::convert::From<u32> for RegId {
-    fn from(v: u32) -> RegId {
-        RegId(v.try_into().ok().unwrap_or(Self::INVALID_REG.0))
-    }
 }
 
 /// Represents how the register is accessed.
