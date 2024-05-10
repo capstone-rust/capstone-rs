@@ -413,6 +413,7 @@ impl<'a> InsnDetail<'a> {
                             $detail($insn_detail(unsafe { &self.0.__bindgen_anon_1.$arch }))
                         }
                     )*
+                    #[allow(unreachable_patterns)]
                     _ => panic!("Unsupported detail arch"),
                 }
             }
@@ -431,6 +432,7 @@ impl<'a> InsnDetail<'a> {
             [X86, X86Detail, X86InsnDetail, x86]
             [XCORE, XcoreDetail, XcoreInsnDetail, xcore]
             [BPF, BpfDetail, BpfInsnDetail, bpf]
+            [SYSZ, SysZDetail, SysZInsnDetail, sysz]
         );
     }
 }

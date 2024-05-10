@@ -551,6 +551,13 @@ macro_rules! detail_arch_base {
                 /// Returns the BPF details, if any
                 => arch_name = bpf,
             ]
+            [
+                detail = SysZDetail,
+                insn_detail = SysZInsnDetail<'a>,
+                op = SysZOperand,
+                /// Returns the SysZ details, if any
+                => arch_name = sysz,
+            ]
         );
     };
 }
