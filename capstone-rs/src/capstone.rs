@@ -412,7 +412,7 @@ impl Capstone {
 
     /// Returns whether the capstone library supports a given architecture.
     pub fn supports_arch(arch: Arch) -> bool {
-        unsafe { cs_support(arch as c_int) }
+        unsafe { cs_support(cs_arch::from(arch) as c_int) }
     }
 
     /// Returns whether the capstone library was compiled in diet mode.
