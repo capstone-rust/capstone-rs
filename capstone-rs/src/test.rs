@@ -2492,6 +2492,65 @@ fn test_arch_systemz() {
 }
 
 #[test]
+fn test_arch_systemz_detail() {
+    use crate::arch::sysz::SysZOperand::*;
+    use crate::arch::sysz::SysZReg::*;
+    use crate::arch::sysz::*;
+    use capstone_sys::sysz_op_mem;
+
+    test_arch_mode_endian_insns_detail(
+        &mut Capstone::new()
+            .sysz()
+            .mode(sysz::ArchMode::Default)
+            .build()
+            .unwrap(),
+        Arch::SYSZ,
+        Mode::Default,
+        None,
+        &[],
+        &[
+            // br %r7
+            DII::new("br", b"\x07\xf7", &[Reg(RegId(SYSZ_REG_7 as RegIdInt))]),
+            // ear %r7, %a8
+            DII::new(
+                "ear",
+                b"\xb2\x4f\x00\x78",
+                &[
+                    Reg(RegId(SYSZ_REG_7 as RegIdInt)),
+                    Reg(RegId(SYSZ_REG_A8 as RegIdInt)),
+                ],
+            ),
+            // adb %f0, 0
+            DII::new(
+                "adb",
+                b"\xed\x00\x00\x00\x00\x1a",
+                &[Reg(RegId(SYSZ_REG_F0 as RegIdInt)), Imm(0)],
+            ),
+            // afi %r0, -0x80000000
+            DII::new(
+                "afi",
+                b"\xc2\x09\x80\x00\x00\x00",
+                &[Reg(RegId(SYSZ_REG_0 as RegIdInt)), Imm(-0x80000000)],
+            ),
+            // a %r0, 0xfff(%r15, %r1)
+            DII::new(
+                "a",
+                b"\x5a\x0f\x1f\xff",
+                &[
+                    Reg(RegId(SYSZ_REG_0 as RegIdInt)),
+                    Mem(SysZOpMem(sysz_op_mem {
+                        base: SYSZ_REG_1 as u8,
+                        index: SYSZ_REG_15 as u8,
+                        disp: 0xfff,
+                        length: 0,
+                    })),
+                ],
+            ),
+        ],
+    );
+}
+
+#[test]
 fn test_arch_tms320c64x_detail() {
     use crate::arch::tms320c64x::{
         Tms320c64xFuntionalUnit, Tms320c64xMemDirection, Tms320c64xMemDisplayType,
