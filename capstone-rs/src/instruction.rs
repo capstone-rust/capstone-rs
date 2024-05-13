@@ -413,8 +413,6 @@ impl<'a> InsnDetail<'a> {
                             $detail($insn_detail(unsafe { &self.0.__bindgen_anon_1.$arch }))
                         }
                     )*
-                    #[allow(unreachable_patterns)]
-                    _ => panic!("Unsupported detail arch"),
                 }
             }
         }
