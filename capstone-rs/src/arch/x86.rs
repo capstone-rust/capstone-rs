@@ -4,6 +4,7 @@ use core::convert::From;
 use core::convert::TryInto;
 use core::{cmp, fmt, slice};
 
+use capstone_sys::cs_x86_encoding;
 use capstone_sys::{
     cs_ac_type, cs_x86, cs_x86_op, cs_x86_op__bindgen_ty_1, x86_op_mem, x86_op_type,
 };
@@ -24,8 +25,7 @@ use crate::instruction::{RegAccessType, RegId, RegIdInt};
 /// Contains X86-specific details for an instruction
 pub struct X86InsnDetail<'a>(pub(crate) &'a cs_x86);
 
-// todo(tmfink): expose new types cs_x86__bindgen_ty_1, cs_x86_encoding, x86_xop_cc,
-// cs_x86_op::access
+// todo(tmfink): expose new types cs_x86__bindgen_ty_1, cs_x86_op::access
 
 impl X86OperandType {
     fn new(op_type: x86_op_type, value: cs_x86_op__bindgen_ty_1) -> X86OperandType {
@@ -103,6 +103,11 @@ impl<'a> X86InsnDetail<'a> {
     /// A trailing opcode byte gets value 0 when irrelevant.
     pub fn opcode(&self) -> &[u8; 4] {
         &self.0.opcode
+    }
+
+    /// Instruction encoding information, e.g. displacement offset, size.
+    pub fn encoding(&self) -> cs_x86_encoding {
+        self.0.encoding
     }
 
     /// REX prefix: only a non-zero value is relevant for x86_64
