@@ -912,8 +912,14 @@ fn test_arch_arm_detail() {
     use crate::arch::arm::*;
     use capstone_sys::arm_op_mem;
 
-    let r0_op = ArmOperand {
+    let r0_op_read = ArmOperand {
         op_type: Reg(RegId(ArmReg::ARM_REG_R0 as RegIdInt)),
+        access: Some(RegAccessType::ReadOnly),
+        ..Default::default()
+    };
+    let r0_op_write = ArmOperand {
+        op_type: Reg(RegId(ArmReg::ARM_REG_R0 as RegIdInt)),
+        access: Some(RegAccessType::WriteOnly),
         ..Default::default()
     };
 
@@ -944,6 +950,7 @@ fn test_arch_arm_detail() {
                 &[
                     ArmOperand {
                         op_type: Reg(RegId(ArmReg::ARM_REG_LR as RegIdInt)),
+                        access: Some(RegAccessType::ReadOnly),
                         ..Default::default()
                     },
                     ArmOperand {
@@ -954,6 +961,7 @@ fn test_arch_arm_detail() {
                             disp: -4,
                             lshift: 0,
                         })),
+                        access: Some(RegAccessType::WriteOnly),
                         ..Default::default()
                     },
                 ],
@@ -962,7 +970,7 @@ fn test_arch_arm_detail() {
             DII::new(
                 "andeq",
                 b"\x00\x00\x00\x00",
-                &[r0_op.clone(), r0_op.clone(), r0_op.clone()],
+                &[r0_op_write.clone(), r0_op_read.clone(), r0_op_read.clone()],
             ),
             // str     r8, [r2, #-0x3e0]!
             DII::new(
@@ -971,6 +979,7 @@ fn test_arch_arm_detail() {
                 &[
                     ArmOperand {
                         op_type: Reg(RegId(ArmReg::ARM_REG_R8 as RegIdInt)),
+                        access: Some(RegAccessType::ReadOnly),
                         ..Default::default()
                     },
                     ArmOperand {
@@ -981,6 +990,7 @@ fn test_arch_arm_detail() {
                             disp: -992,
                             lshift: 0,
                         })),
+                        access: Some(RegAccessType::WriteOnly),
                         ..Default::default()
                     },
                 ],
@@ -998,7 +1008,7 @@ fn test_arch_arm_detail() {
                         op_type: Imm(0),
                         ..Default::default()
                     },
-                    r0_op.clone(),
+                    r0_op_read.clone(),
                     ArmOperand {
                         op_type: Cimm(3),
                         ..Default::default()
@@ -1018,7 +1028,7 @@ fn test_arch_arm_detail() {
                 "mov",
                 b"\x00\x00\xa0\xe3",
                 &[
-                    r0_op,
+                    r0_op_write,
                     ArmOperand {
                         op_type: Imm(0),
                         ..Default::default()
@@ -1043,6 +1053,7 @@ fn test_arch_arm_detail() {
             b"\x70\x47",
             &[ArmOperand {
                 op_type: Reg(RegId(ArmReg::ARM_REG_LR as RegIdInt)),
+                access: Some(RegAccessType::ReadOnly),
                 ..Default::default()
             }],
         )],
