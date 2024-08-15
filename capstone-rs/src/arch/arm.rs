@@ -1,16 +1,16 @@
 //! Contains arm-specific types
 
-use core::convert::From;
+use core::convert::{From, TryInto};
 use core::{cmp, fmt, slice};
 
 use capstone_sys::{
-    arm_op_mem, arm_op_type, cs_arm, cs_arm_op, arm_shifter,
-    cs_arm_op__bindgen_ty_2};
+    arm_op_mem, arm_op_type, arm_shifter, cs_ac_type, cs_arm, cs_arm_op, cs_arm_op__bindgen_ty_2};
 use libc::c_uint;
 
 pub use crate::arch::arch_builder::arm::*;
 use crate::arch::DetailsArchInsn;
 use crate::instruction::{RegId, RegIdInt};
+use crate::RegAccessType;
 
 pub use capstone_sys::arm_insn_group as ArmInsnGroup;
 pub use capstone_sys::arm_insn as ArmInsn;
@@ -129,6 +129,10 @@ pub struct ArmOperand {
 
     /// Operand type
     pub op_type: ArmOperandType,
+
+    /// How is this operand accessed? NOTE: this field is irrelevant if engine
+    /// is compiled in DIET mode.
+    pub access: Option<RegAccessType>
 }
 
 /// ARM operand
@@ -252,7 +256,8 @@ impl Default for ArmOperand {
             vector_index: None,
             subtracted: false,
             shift: ArmShift::Invalid,
-            op_type: ArmOperandType::Invalid
+            op_type: ArmOperandType::Invalid,
+            access: None
         }
     }
 }
@@ -271,6 +276,7 @@ impl<'a> From<&'a cs_arm_op> for ArmOperand {
             shift,
             op_type,
             subtracted: op.subtracted,
+            access: cs_ac_type(op.access as _).try_into().ok(),
         }
     }
 }
