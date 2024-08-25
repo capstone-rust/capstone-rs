@@ -4,28 +4,27 @@ use libc::c_uint;
 
 pub use crate::arch::arch_builder::arm64::*;
 use crate::arch::DetailsArchInsn;
-use capstone_sys::{arm64_op_mem, arm64_op_type, cs_arm64, cs_arm64_op};
 use crate::instruction::{RegId, RegIdInt};
+use capstone_sys::{arm64_op_mem, arm64_op_type, cs_arm64, cs_arm64_op};
 use core::convert::From;
 use core::{cmp, fmt, mem, slice};
 
 // Re-exports
-pub use capstone_sys::arm64_insn_group as Arm64InsnGroup;
-pub use capstone_sys::arm64_insn as Arm64Insn;
-pub use capstone_sys::arm64_reg as Arm64Reg;
+pub use capstone_sys::arm64_barrier_op as ArmBarrierOp;
+pub use capstone_sys::arm64_barrier_op as Arm64BarrierOp;
 pub use capstone_sys::arm64_cc as Arm64CC;
 pub use capstone_sys::arm64_extender as Arm64Extender;
-pub use capstone_sys::arm64_vas as Arm64Vas;
-pub use capstone_sys::arm64_pstate as Arm64Pstate;
+pub use capstone_sys::arm64_insn as Arm64Insn;
+pub use capstone_sys::arm64_insn_group as Arm64InsnGroup;
 pub use capstone_sys::arm64_prefetch_op as ArmPrefetchOp;
-pub use capstone_sys::arm64_barrier_op as ArmBarrierOp;
-pub use capstone_sys::arm64_sysreg as Arm64Sysreg;
+pub use capstone_sys::arm64_pstate as Arm64Pstate;
+pub use capstone_sys::arm64_reg as Arm64Reg;
 pub use capstone_sys::arm64_sys_op as Arm64SysOp;
-pub use capstone_sys::arm64_barrier_op as Arm64BarrierOp;
+pub use capstone_sys::arm64_sysreg as Arm64Sysreg;
+pub use capstone_sys::arm64_vas as Arm64Vas;
 
-use capstone_sys::cs_arm64_op__bindgen_ty_2;
 use capstone_sys::arm64_shifter;
-
+use capstone_sys::cs_arm64_op__bindgen_ty_2;
 
 /// Contains ARM64-specific details for an instruction
 pub struct Arm64InsnDetail<'a>(pub(crate) &'a cs_arm64);
@@ -63,8 +62,12 @@ impl Arm64OperandType {
             ARM64_OP_MEM => Mem(Arm64OpMem(unsafe { value.mem })),
             ARM64_OP_FP => Fp(unsafe { value.fp }),
             ARM64_OP_CIMM => Cimm(unsafe { value.imm }),
-            ARM64_OP_REG_MRS => RegMrs(unsafe { mem::transmute(value.reg) }),
-            ARM64_OP_REG_MSR => RegMsr(unsafe { mem::transmute(value.reg) }),
+            ARM64_OP_REG_MRS => RegMrs(unsafe {
+                mem::transmute::<Arm64Reg::Type, Arm64Sysreg>(value.reg as Arm64Reg::Type)
+            }),
+            ARM64_OP_REG_MSR => RegMsr(unsafe {
+                mem::transmute::<Arm64Reg::Type, Arm64Sysreg>(value.reg as Arm64Reg::Type)
+            }),
             ARM64_OP_PSTATE => Pstate(unsafe { value.pstate }),
             ARM64_OP_SYS => Sys(unsafe { value.sys }),
             ARM64_OP_PREFETCH => Prefetch(unsafe { value.prefetch }),
@@ -187,7 +190,7 @@ impl Default for Arm64Operand {
             vas: Arm64Vas::ARM64_VAS_INVALID,
             shift: Arm64Shift::Invalid,
             ext: Arm64Extender::ARM64_EXT_INVALID,
-            op_type: Arm64OperandType::Invalid
+            op_type: Arm64OperandType::Invalid,
         }
     }
 }
@@ -274,9 +277,9 @@ mod test {
         use super::arm64_op_type::*;
         use super::Arm64OperandType::*;
         use super::Arm64Sysreg::*;
-        use capstone_sys::*;
         use capstone_sys::arm64_prefetch_op::*;
         use capstone_sys::arm64_pstate::*;
+        use capstone_sys::*;
 
         fn t(
             op_type_value: (arm64_op_type, cs_arm64_op__bindgen_ty_2),
@@ -300,11 +303,21 @@ mod test {
             Imm(42),
         );
         t(
-            (ARM64_OP_REG_MRS, cs_arm64_op__bindgen_ty_2 { reg: ARM64_SYSREG_MDRAR_EL1 as arm64_reg::Type }),
+            (
+                ARM64_OP_REG_MRS,
+                cs_arm64_op__bindgen_ty_2 {
+                    reg: ARM64_SYSREG_MDRAR_EL1 as arm64_reg::Type,
+                },
+            ),
             RegMrs(ARM64_SYSREG_MDRAR_EL1),
         );
         t(
-            (ARM64_OP_PSTATE, cs_arm64_op__bindgen_ty_2 { pstate: ARM64_PSTATE_SPSEL }),
+            (
+                ARM64_OP_PSTATE,
+                cs_arm64_op__bindgen_ty_2 {
+                    pstate: ARM64_PSTATE_SPSEL,
+                },
+            ),
             Pstate(Arm64Pstate::ARM64_PSTATE_SPSEL),
         );
         t(
@@ -316,17 +329,30 @@ mod test {
             Cimm(42),
         );
         t(
-            (ARM64_OP_REG_MSR, cs_arm64_op__bindgen_ty_2 {
-                reg: arm64_sysreg::ARM64_SYSREG_ICC_EOIR1_EL1 as arm64_reg::Type }),
+            (
+                ARM64_OP_REG_MSR,
+                cs_arm64_op__bindgen_ty_2 {
+                    reg: arm64_sysreg::ARM64_SYSREG_ICC_EOIR1_EL1 as arm64_reg::Type,
+                },
+            ),
             RegMsr(arm64_sysreg::ARM64_SYSREG_ICC_EOIR1_EL1),
         );
         t(
-            (ARM64_OP_SYS, cs_arm64_op__bindgen_ty_2 { sys: arm64_sys_op::ARM64_AT_S1E0R }),
+            (
+                ARM64_OP_SYS,
+                cs_arm64_op__bindgen_ty_2 {
+                    sys: arm64_sys_op::ARM64_AT_S1E0R,
+                },
+            ),
             Sys(arm64_sys_op::ARM64_AT_S1E0R),
         );
         t(
-            (ARM64_OP_PREFETCH, cs_arm64_op__bindgen_ty_2 {
-                prefetch: ARM64_PRFM_PLDL2KEEP }),
+            (
+                ARM64_OP_PREFETCH,
+                cs_arm64_op__bindgen_ty_2 {
+                    prefetch: ARM64_PRFM_PLDL2KEEP,
+                },
+            ),
             Prefetch(ARM64_PRFM_PLDL2KEEP),
         );
     }

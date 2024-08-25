@@ -48,7 +48,7 @@ fn arch_example(cs: &mut Capstone, code: &[u8]) -> CsResult<()> {
             ("bytes:", format!("{:?}", i.bytes())),
         ];
 
-        for &(ref name, ref message) in output.iter() {
+        for (name, message) in output.iter() {
             println!("{:4}{:12} {}", "", name, message);
         }
 

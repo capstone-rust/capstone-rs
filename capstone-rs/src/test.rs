@@ -120,15 +120,13 @@ fn test_x86_names() {
             assert_eq!(cs.group_name(InsnGroupId(1)), Some(String::from("jump")));
 
             let reg_id = RegId(250);
-            match cs.reg_name(reg_id) {
-                Some(_) => panic!("invalid register worked"),
-                None => {}
+            if let Some(_) = cs.reg_name(reg_id) {
+                panic!("invalid register worked")
             }
 
             let insn_id = InsnId(6000);
-            match cs.insn_name(insn_id) {
-                Some(_) => panic!("invalid instruction worked"),
-                None => {}
+            if let Some(_) = cs.insn_name(insn_id) {
+                panic!("invalid instruction worked")
             }
 
             assert_eq!(cs.group_name(InsnGroupId(250)), None);
@@ -3361,7 +3359,7 @@ fn test_cbpf() {
                 println!();
                 eprintln!("{}", i);
 
-                let detail: InsnDetail = cs.insn_detail(&i).expect("Failed to get insn detail");
+                let detail: InsnDetail = cs.insn_detail(i).expect("Failed to get insn detail");
                 let arch_detail: ArchDetail = detail.arch_detail();
                 let ops = arch_detail.operands();
 
@@ -3373,7 +3371,7 @@ fn test_cbpf() {
                     ("insn groups:", group_names(&cs, detail.groups())),
                 ];
 
-                for &(ref name, ref message) in output.iter() {
+                for (name, message) in output.iter() {
                     eprintln!("{:4}{:12} {}", "", name, message);
                 }
 
@@ -3406,7 +3404,7 @@ fn test_ebpf() {
                 println!();
                 eprintln!("{}", i);
 
-                let detail: InsnDetail = cs.insn_detail(&i).expect("Failed to get insn detail");
+                let detail: InsnDetail = cs.insn_detail(i).expect("Failed to get insn detail");
                 let arch_detail: ArchDetail = detail.arch_detail();
                 let ops = arch_detail.operands();
 
@@ -3418,7 +3416,7 @@ fn test_ebpf() {
                     ("insn groups:", group_names(&cs, detail.groups())),
                 ];
 
-                for &(ref name, ref message) in output.iter() {
+                for (name, message) in output.iter() {
                     eprintln!("{:4}{:12} {}", "", name, message);
                 }
 
