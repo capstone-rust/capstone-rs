@@ -47,8 +47,9 @@ pub struct X86Operand {
     /// Operand size
     pub size: u8,
 
-    /// How is this operand accessed? NOTE: this field is irrelevant if engine
-    /// is compiled in DIET mode.
+    /// How is this operand accessed?
+    ///
+    /// NOTE: this field is always `None` if the "full" feataure is not enabled.
     pub access: Option<RegAccessType>,
 
     /// AVX broadcast
