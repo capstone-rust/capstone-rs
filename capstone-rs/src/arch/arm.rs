@@ -130,8 +130,9 @@ pub struct ArmOperand {
     /// Operand type
     pub op_type: ArmOperandType,
 
-    /// How is this operand accessed? NOTE: this field is irrelevant if engine
-    /// is compiled in DIET mode.
+    /// How is this operand accessed?
+    ///
+    /// NOTE: this field is always `None` if the "full" feataure is not enabled.
     pub access: Option<RegAccessType>
 }
 
