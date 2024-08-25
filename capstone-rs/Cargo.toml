@@ -16,7 +16,7 @@ rust-version.workspace = true
 travis-ci = { repository = "capstone-rust/capstone-rs" }
 
 [dependencies]
-capstone-sys = { path = "../capstone-sys", version = "0.16.0",  default_features = false }
+capstone-sys = { path = "../capstone-sys", version = "0.16.0",  default-features = false }
 libc = { version = "0.2", default-features = false }
 
 [dev-dependencies]
