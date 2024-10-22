@@ -167,6 +167,15 @@ pub struct Insn<'a> {
     pub(crate) _marker: PhantomData<&'a InsnDetail<'a>>,
 }
 
+impl<'a> Clone for Insn<'a> {
+    fn clone(&self) -> Self {
+        Self {
+            insn: self.insn.clone(),
+            _marker: PhantomData,
+        }
+    }
+}
+
 /// Contains architecture-independent details about an [`Insn`].
 ///
 /// To get more detail about the instruction, enable extra details for the

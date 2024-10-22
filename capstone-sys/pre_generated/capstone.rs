@@ -15715,6 +15715,21 @@ pub struct cs_insn {
     #[doc = " Pointer to cs_detail.\n NOTE: detail pointer is only valid when both requirements below are met:\n (1) CS_OP_DETAIL = CS_OPT_ON\n (2) Engine is not in Skipdata mode (CS_OP_SKIPDATA option set to CS_OPT_ON)\n\n NOTE 2: when in Skipdata mode, or when detail mode is OFF, even if this pointer\n     is not NULL, its content is still irrelevant."]
     pub detail: *mut cs_detail,
 }
+
+impl Clone for cs_insn {
+    fn clone(&self) -> Self {
+        Self {
+            id: self.id,
+            address: self.address,
+            size: self.size,
+            bytes: self.bytes,
+            mnemonic: self.mnemonic,
+            op_str: self.op_str,
+            detail: self.detail.clone(),
+        }
+    }
+}
+
 impl ::core::fmt::Debug for cs_insn {
     fn fmt(&self, f: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
         write!(
