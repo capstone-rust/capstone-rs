@@ -243,7 +243,7 @@ fn write_bindgen_bindings(
 ) {
     #[allow(deprecated)]
     let mut builder = bindgen::Builder::default()
-        .rust_target(bindgen::RustTarget::Stable_1_19)
+        .rust_target(bindgen::RustTarget::Stable_1_28)
         .size_t_is_usize(true)
         .use_core()
         .ctypes_prefix("libc")

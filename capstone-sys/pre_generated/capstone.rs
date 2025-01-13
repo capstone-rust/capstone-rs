@@ -41,99 +41,193 @@ pub enum cs_arch {
     CS_ARCH_MAX = 16,
     CS_ARCH_ALL = 65535,
 }
-#[doc = "< little-endian mode (default mode)"]
-pub const CS_MODE_LITTLE_ENDIAN: cs_mode = cs_mode(0);
-#[doc = "< 32-bit ARM"]
-pub const CS_MODE_ARM: cs_mode = cs_mode(0);
-#[doc = "< 16-bit mode (X86)"]
-pub const CS_MODE_16: cs_mode = cs_mode(2);
-#[doc = "< 32-bit mode (X86)"]
-pub const CS_MODE_32: cs_mode = cs_mode(4);
-#[doc = "< 64-bit mode (X86, PPC)"]
-pub const CS_MODE_64: cs_mode = cs_mode(8);
-#[doc = "< ARM's Thumb mode, including Thumb-2"]
-pub const CS_MODE_THUMB: cs_mode = cs_mode(16);
-#[doc = "< ARM's Cortex-M series"]
-pub const CS_MODE_MCLASS: cs_mode = cs_mode(32);
-#[doc = "< ARMv8 A32 encodings for ARM"]
-pub const CS_MODE_V8: cs_mode = cs_mode(64);
-#[doc = "< MicroMips mode (MIPS)"]
-pub const CS_MODE_MICRO: cs_mode = cs_mode(16);
-#[doc = "< Mips III ISA"]
-pub const CS_MODE_MIPS3: cs_mode = cs_mode(32);
-#[doc = "< Mips32r6 ISA"]
-pub const CS_MODE_MIPS32R6: cs_mode = cs_mode(64);
-#[doc = "< Mips II ISA"]
-pub const CS_MODE_MIPS2: cs_mode = cs_mode(128);
-#[doc = "< SparcV9 mode (Sparc)"]
-pub const CS_MODE_V9: cs_mode = cs_mode(16);
-#[doc = "< Quad Processing eXtensions mode (PPC)"]
-pub const CS_MODE_QPX: cs_mode = cs_mode(16);
-#[doc = "< Signal Processing Engine mode (PPC)"]
-pub const CS_MODE_SPE: cs_mode = cs_mode(32);
-#[doc = "< Book-E mode (PPC)"]
-pub const CS_MODE_BOOKE: cs_mode = cs_mode(64);
-#[doc = "< M68K 68000 mode"]
-pub const CS_MODE_M68K_000: cs_mode = cs_mode(2);
-#[doc = "< M68K 68010 mode"]
-pub const CS_MODE_M68K_010: cs_mode = cs_mode(4);
-#[doc = "< M68K 68020 mode"]
-pub const CS_MODE_M68K_020: cs_mode = cs_mode(8);
-#[doc = "< M68K 68030 mode"]
-pub const CS_MODE_M68K_030: cs_mode = cs_mode(16);
-#[doc = "< M68K 68040 mode"]
-pub const CS_MODE_M68K_040: cs_mode = cs_mode(32);
-#[doc = "< M68K 68060 mode"]
-pub const CS_MODE_M68K_060: cs_mode = cs_mode(64);
-#[doc = "< big-endian mode"]
-pub const CS_MODE_BIG_ENDIAN: cs_mode = cs_mode(2147483648);
-#[doc = "< Mips32 ISA (Mips)"]
-pub const CS_MODE_MIPS32: cs_mode = cs_mode(4);
-#[doc = "< Mips64 ISA (Mips)"]
-pub const CS_MODE_MIPS64: cs_mode = cs_mode(8);
-#[doc = "< M680X Hitachi 6301,6303 mode"]
-pub const CS_MODE_M680X_6301: cs_mode = cs_mode(2);
-#[doc = "< M680X Hitachi 6309 mode"]
-pub const CS_MODE_M680X_6309: cs_mode = cs_mode(4);
-#[doc = "< M680X Motorola 6800,6802 mode"]
-pub const CS_MODE_M680X_6800: cs_mode = cs_mode(8);
-#[doc = "< M680X Motorola 6801,6803 mode"]
-pub const CS_MODE_M680X_6801: cs_mode = cs_mode(16);
-#[doc = "< M680X Motorola/Freescale 6805 mode"]
-pub const CS_MODE_M680X_6805: cs_mode = cs_mode(32);
-#[doc = "< M680X Motorola/Freescale/NXP 68HC08 mode"]
-pub const CS_MODE_M680X_6808: cs_mode = cs_mode(64);
-#[doc = "< M680X Motorola 6809 mode"]
-pub const CS_MODE_M680X_6809: cs_mode = cs_mode(128);
-#[doc = "< M680X Motorola/Freescale/NXP 68HC11 mode"]
-pub const CS_MODE_M680X_6811: cs_mode = cs_mode(256);
-#[doc = "< M680X Motorola/Freescale/NXP CPU12\n< used on M68HC12/HCS12"]
-pub const CS_MODE_M680X_CPU12: cs_mode = cs_mode(512);
-#[doc = "< M680X Freescale/NXP HCS08 mode"]
-pub const CS_MODE_M680X_HCS08: cs_mode = cs_mode(1024);
-#[doc = "< Classic BPF mode (default)"]
-pub const CS_MODE_BPF_CLASSIC: cs_mode = cs_mode(0);
-#[doc = "< Extended BPF mode"]
-pub const CS_MODE_BPF_EXTENDED: cs_mode = cs_mode(1);
-#[doc = "< RISCV RV32G"]
-pub const CS_MODE_RISCV32: cs_mode = cs_mode(1);
-#[doc = "< RISCV RV64G"]
-pub const CS_MODE_RISCV64: cs_mode = cs_mode(2);
-#[doc = "< RISCV compressed instructure mode"]
-pub const CS_MODE_RISCVC: cs_mode = cs_mode(4);
-#[doc = "< MOS65XXX MOS 6502"]
-pub const CS_MODE_MOS65XX_6502: cs_mode = cs_mode(2);
-#[doc = "< MOS65XXX WDC 65c02"]
-pub const CS_MODE_MOS65XX_65C02: cs_mode = cs_mode(4);
-#[doc = "< MOS65XXX WDC W65c02"]
-pub const CS_MODE_MOS65XX_W65C02: cs_mode = cs_mode(8);
-#[doc = "< MOS65XXX WDC 65816, 8-bit m/x"]
-pub const CS_MODE_MOS65XX_65816: cs_mode = cs_mode(16);
-#[doc = "< MOS65XXX WDC 65816, 16-bit m, 8-bit x"]
-pub const CS_MODE_MOS65XX_65816_LONG_M: cs_mode = cs_mode(32);
-#[doc = "< MOS65XXX WDC 65816, 8-bit m, 16-bit x"]
-pub const CS_MODE_MOS65XX_65816_LONG_X: cs_mode = cs_mode(64);
-pub const CS_MODE_MOS65XX_65816_LONG_MX: cs_mode = cs_mode(96);
+impl cs_mode {
+    #[doc = "< little-endian mode (default mode)"]
+    pub const CS_MODE_LITTLE_ENDIAN: cs_mode = cs_mode(0);
+}
+impl cs_mode {
+    #[doc = "< 32-bit ARM"]
+    pub const CS_MODE_ARM: cs_mode = cs_mode(0);
+}
+impl cs_mode {
+    #[doc = "< 16-bit mode (X86)"]
+    pub const CS_MODE_16: cs_mode = cs_mode(2);
+}
+impl cs_mode {
+    #[doc = "< 32-bit mode (X86)"]
+    pub const CS_MODE_32: cs_mode = cs_mode(4);
+}
+impl cs_mode {
+    #[doc = "< 64-bit mode (X86, PPC)"]
+    pub const CS_MODE_64: cs_mode = cs_mode(8);
+}
+impl cs_mode {
+    #[doc = "< ARM's Thumb mode, including Thumb-2"]
+    pub const CS_MODE_THUMB: cs_mode = cs_mode(16);
+}
+impl cs_mode {
+    #[doc = "< ARM's Cortex-M series"]
+    pub const CS_MODE_MCLASS: cs_mode = cs_mode(32);
+}
+impl cs_mode {
+    #[doc = "< ARMv8 A32 encodings for ARM"]
+    pub const CS_MODE_V8: cs_mode = cs_mode(64);
+}
+impl cs_mode {
+    #[doc = "< MicroMips mode (MIPS)"]
+    pub const CS_MODE_MICRO: cs_mode = cs_mode(16);
+}
+impl cs_mode {
+    #[doc = "< Mips III ISA"]
+    pub const CS_MODE_MIPS3: cs_mode = cs_mode(32);
+}
+impl cs_mode {
+    #[doc = "< Mips32r6 ISA"]
+    pub const CS_MODE_MIPS32R6: cs_mode = cs_mode(64);
+}
+impl cs_mode {
+    #[doc = "< Mips II ISA"]
+    pub const CS_MODE_MIPS2: cs_mode = cs_mode(128);
+}
+impl cs_mode {
+    #[doc = "< SparcV9 mode (Sparc)"]
+    pub const CS_MODE_V9: cs_mode = cs_mode(16);
+}
+impl cs_mode {
+    #[doc = "< Quad Processing eXtensions mode (PPC)"]
+    pub const CS_MODE_QPX: cs_mode = cs_mode(16);
+}
+impl cs_mode {
+    #[doc = "< Signal Processing Engine mode (PPC)"]
+    pub const CS_MODE_SPE: cs_mode = cs_mode(32);
+}
+impl cs_mode {
+    #[doc = "< Book-E mode (PPC)"]
+    pub const CS_MODE_BOOKE: cs_mode = cs_mode(64);
+}
+impl cs_mode {
+    #[doc = "< M68K 68000 mode"]
+    pub const CS_MODE_M68K_000: cs_mode = cs_mode(2);
+}
+impl cs_mode {
+    #[doc = "< M68K 68010 mode"]
+    pub const CS_MODE_M68K_010: cs_mode = cs_mode(4);
+}
+impl cs_mode {
+    #[doc = "< M68K 68020 mode"]
+    pub const CS_MODE_M68K_020: cs_mode = cs_mode(8);
+}
+impl cs_mode {
+    #[doc = "< M68K 68030 mode"]
+    pub const CS_MODE_M68K_030: cs_mode = cs_mode(16);
+}
+impl cs_mode {
+    #[doc = "< M68K 68040 mode"]
+    pub const CS_MODE_M68K_040: cs_mode = cs_mode(32);
+}
+impl cs_mode {
+    #[doc = "< M68K 68060 mode"]
+    pub const CS_MODE_M68K_060: cs_mode = cs_mode(64);
+}
+impl cs_mode {
+    #[doc = "< big-endian mode"]
+    pub const CS_MODE_BIG_ENDIAN: cs_mode = cs_mode(2147483648);
+}
+impl cs_mode {
+    #[doc = "< Mips32 ISA (Mips)"]
+    pub const CS_MODE_MIPS32: cs_mode = cs_mode(4);
+}
+impl cs_mode {
+    #[doc = "< Mips64 ISA (Mips)"]
+    pub const CS_MODE_MIPS64: cs_mode = cs_mode(8);
+}
+impl cs_mode {
+    #[doc = "< M680X Hitachi 6301,6303 mode"]
+    pub const CS_MODE_M680X_6301: cs_mode = cs_mode(2);
+}
+impl cs_mode {
+    #[doc = "< M680X Hitachi 6309 mode"]
+    pub const CS_MODE_M680X_6309: cs_mode = cs_mode(4);
+}
+impl cs_mode {
+    #[doc = "< M680X Motorola 6800,6802 mode"]
+    pub const CS_MODE_M680X_6800: cs_mode = cs_mode(8);
+}
+impl cs_mode {
+    #[doc = "< M680X Motorola 6801,6803 mode"]
+    pub const CS_MODE_M680X_6801: cs_mode = cs_mode(16);
+}
+impl cs_mode {
+    #[doc = "< M680X Motorola/Freescale 6805 mode"]
+    pub const CS_MODE_M680X_6805: cs_mode = cs_mode(32);
+}
+impl cs_mode {
+    #[doc = "< M680X Motorola/Freescale/NXP 68HC08 mode"]
+    pub const CS_MODE_M680X_6808: cs_mode = cs_mode(64);
+}
+impl cs_mode {
+    #[doc = "< M680X Motorola 6809 mode"]
+    pub const CS_MODE_M680X_6809: cs_mode = cs_mode(128);
+}
+impl cs_mode {
+    #[doc = "< M680X Motorola/Freescale/NXP 68HC11 mode"]
+    pub const CS_MODE_M680X_6811: cs_mode = cs_mode(256);
+}
+impl cs_mode {
+    #[doc = "< M680X Motorola/Freescale/NXP CPU12\n< used on M68HC12/HCS12"]
+    pub const CS_MODE_M680X_CPU12: cs_mode = cs_mode(512);
+}
+impl cs_mode {
+    #[doc = "< M680X Freescale/NXP HCS08 mode"]
+    pub const CS_MODE_M680X_HCS08: cs_mode = cs_mode(1024);
+}
+impl cs_mode {
+    #[doc = "< Classic BPF mode (default)"]
+    pub const CS_MODE_BPF_CLASSIC: cs_mode = cs_mode(0);
+}
+impl cs_mode {
+    #[doc = "< Extended BPF mode"]
+    pub const CS_MODE_BPF_EXTENDED: cs_mode = cs_mode(1);
+}
+impl cs_mode {
+    #[doc = "< RISCV RV32G"]
+    pub const CS_MODE_RISCV32: cs_mode = cs_mode(1);
+}
+impl cs_mode {
+    #[doc = "< RISCV RV64G"]
+    pub const CS_MODE_RISCV64: cs_mode = cs_mode(2);
+}
+impl cs_mode {
+    #[doc = "< RISCV compressed instructure mode"]
+    pub const CS_MODE_RISCVC: cs_mode = cs_mode(4);
+}
+impl cs_mode {
+    #[doc = "< MOS65XXX MOS 6502"]
+    pub const CS_MODE_MOS65XX_6502: cs_mode = cs_mode(2);
+}
+impl cs_mode {
+    #[doc = "< MOS65XXX WDC 65c02"]
+    pub const CS_MODE_MOS65XX_65C02: cs_mode = cs_mode(4);
+}
+impl cs_mode {
+    #[doc = "< MOS65XXX WDC W65c02"]
+    pub const CS_MODE_MOS65XX_W65C02: cs_mode = cs_mode(8);
+}
+impl cs_mode {
+    #[doc = "< MOS65XXX WDC 65816, 8-bit m/x"]
+    pub const CS_MODE_MOS65XX_65816: cs_mode = cs_mode(16);
+}
+impl cs_mode {
+    #[doc = "< MOS65XXX WDC 65816, 16-bit m, 8-bit x"]
+    pub const CS_MODE_MOS65XX_65816_LONG_M: cs_mode = cs_mode(32);
+}
+impl cs_mode {
+    #[doc = "< MOS65XXX WDC 65816, 8-bit m, 16-bit x"]
+    pub const CS_MODE_MOS65XX_65816_LONG_X: cs_mode = cs_mode(64);
+}
+impl cs_mode {
+    pub const CS_MODE_MOS65XX_65816_LONG_MX: cs_mode = cs_mode(96);
+}
 impl ::core::ops::BitOr<cs_mode> for cs_mode {
     type Output = Self;
     #[inline]
@@ -160,7 +254,7 @@ impl ::core::ops::BitAndAssign for cs_mode {
         self.0 &= rhs.0;
     }
 }
-#[repr(C)]
+#[repr(transparent)]
 #[doc = " Mode type"]
 #[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
 pub struct cs_mode(pub libc::c_uint);
@@ -182,7 +276,7 @@ pub type cs_vsnprintf_t = ::core::option::Option<
 >;
 #[doc = " User-defined dynamic memory related functions: malloc/calloc/realloc/free/vsnprintf()\n By default, Capstone uses system's malloc(), calloc(), realloc(), free() & vsnprintf()."]
 #[repr(C)]
-#[derive(Debug, Copy)]
+#[derive(Debug, Copy, Clone)]
 pub struct cs_opt_mem {
     pub malloc: cs_malloc_t,
     pub calloc: cs_calloc_t,
@@ -190,24 +284,14 @@ pub struct cs_opt_mem {
     pub free: cs_free_t,
     pub vsnprintf: cs_vsnprintf_t,
 }
-impl Clone for cs_opt_mem {
-    fn clone(&self) -> Self {
-        *self
-    }
-}
 #[doc = " Customize mnemonic for instructions with alternative name.\n To reset existing customized instruction to its default mnemonic,\n call cs_option(CS_OPT_MNEMONIC) again with the same @id and NULL value\n for @mnemonic."]
 #[repr(C)]
-#[derive(Debug, Copy)]
+#[derive(Debug, Copy, Clone)]
 pub struct cs_opt_mnem {
     #[doc = " ID of instruction to be customized."]
     pub id: libc::c_uint,
     #[doc = " Customized instruction mnemonic."]
     pub mnemonic: *const libc::c_char,
-}
-impl Clone for cs_opt_mnem {
-    fn clone(&self) -> Self {
-        *self
-    }
 }
 #[repr(u32)]
 #[doc = " Runtime option for the disassembled engine"]
@@ -267,12 +351,18 @@ pub enum cs_op_type {
     #[doc = "< Floating-Point operand."]
     CS_OP_FP = 4,
 }
-#[doc = "< Uninitialized/invalid access type."]
-pub const CS_AC_INVALID: cs_ac_type = cs_ac_type(0);
-#[doc = "< Operand read from memory or register."]
-pub const CS_AC_READ: cs_ac_type = cs_ac_type(1);
-#[doc = "< Operand write to memory or register."]
-pub const CS_AC_WRITE: cs_ac_type = cs_ac_type(2);
+impl cs_ac_type {
+    #[doc = "< Uninitialized/invalid access type."]
+    pub const CS_AC_INVALID: cs_ac_type = cs_ac_type(0);
+}
+impl cs_ac_type {
+    #[doc = "< Operand read from memory or register."]
+    pub const CS_AC_READ: cs_ac_type = cs_ac_type(1);
+}
+impl cs_ac_type {
+    #[doc = "< Operand write to memory or register."]
+    pub const CS_AC_WRITE: cs_ac_type = cs_ac_type(2);
+}
 impl ::core::ops::BitOr<cs_ac_type> for cs_ac_type {
     type Output = Self;
     #[inline]
@@ -299,7 +389,7 @@ impl ::core::ops::BitAndAssign for cs_ac_type {
         self.0 &= rhs.0;
     }
 }
-#[repr(C)]
+#[repr(transparent)]
 #[doc = " Common instruction operand access types - to be consistent across all architectures.\n It is possible to combine access types, for example: CS_AC_READ | CS_AC_WRITE"]
 #[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
 pub struct cs_ac_type(pub libc::c_uint);
@@ -334,7 +424,7 @@ pub type cs_skipdata_cb_t = ::core::option::Option<
 >;
 #[doc = " User-customized setup for SKIPDATA option"]
 #[repr(C)]
-#[derive(Debug, Copy)]
+#[derive(Debug, Copy, Clone)]
 pub struct cs_opt_skipdata {
     #[doc = " Capstone considers data to skip as special \"instructions\".\n User can specify the string for this instruction's \"mnemonic\" here.\n By default (if @mnemonic is NULL), Capstone use \".byte\"."]
     pub mnemonic: *const libc::c_char,
@@ -342,11 +432,6 @@ pub struct cs_opt_skipdata {
     pub callback: cs_skipdata_cb_t,
     #[doc = " User-defined data to be passed to @callback function pointer."]
     pub user_data: *mut libc::c_void,
-}
-impl Clone for cs_opt_skipdata {
-    fn clone(&self) -> Self {
-        *self
-    }
 }
 #[repr(u32)]
 #[doc = " ARM shift type"]
@@ -819,7 +904,7 @@ pub mod arm_reg {
 }
 #[doc = " Instruction's operand referring to memory\n This is associated with ARM_OP_MEM operand type above"]
 #[repr(C)]
-#[derive(Debug, Copy)]
+#[derive(Debug, Copy, Clone)]
 pub struct arm_op_mem {
     #[doc = "< base register"]
     pub base: arm_reg::Type,
@@ -832,14 +917,9 @@ pub struct arm_op_mem {
     #[doc = " left-shift on index register, or 0 if irrelevant\n NOTE: this value can also be fetched via operand.shift.value"]
     pub lshift: libc::c_int,
 }
-impl Clone for arm_op_mem {
-    fn clone(&self) -> Self {
-        *self
-    }
-}
 #[doc = " Instruction operand"]
 #[repr(C)]
-#[derive(Copy)]
+#[derive(Copy, Clone)]
 pub struct cs_arm_op {
     #[doc = "< Vector Index for some vector operands (or -1 if irrelevant)"]
     pub vector_index: libc::c_int,
@@ -855,18 +935,13 @@ pub struct cs_arm_op {
     pub neon_lane: i8,
 }
 #[repr(C)]
-#[derive(Debug, Copy)]
+#[derive(Debug, Copy, Clone)]
 pub struct cs_arm_op__bindgen_ty_1 {
     pub type_: arm_shifter,
     pub value: libc::c_uint,
 }
-impl Clone for cs_arm_op__bindgen_ty_1 {
-    fn clone(&self) -> Self {
-        *self
-    }
-}
 #[repr(C)]
-#[derive(Copy)]
+#[derive(Copy, Clone)]
 pub union cs_arm_op__bindgen_ty_2 {
     #[doc = "< register value for REG/SYSREG operand"]
     pub reg: libc::c_int,
@@ -879,19 +954,9 @@ pub union cs_arm_op__bindgen_ty_2 {
     #[doc = "< SETEND instruction's operand type"]
     pub setend: arm_setend_type,
 }
-impl Clone for cs_arm_op__bindgen_ty_2 {
-    fn clone(&self) -> Self {
-        *self
-    }
-}
 impl ::core::fmt::Debug for cs_arm_op__bindgen_ty_2 {
     fn fmt(&self, f: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
         write!(f, "cs_arm_op__bindgen_ty_2 {{ union }}")
-    }
-}
-impl Clone for cs_arm_op {
-    fn clone(&self) -> Self {
-        *self
     }
 }
 impl ::core::fmt::Debug for cs_arm_op {
@@ -901,7 +966,7 @@ impl ::core::fmt::Debug for cs_arm_op {
 }
 #[doc = " Instruction structure"]
 #[repr(C)]
-#[derive(Copy)]
+#[derive(Copy, Clone)]
 pub struct cs_arm {
     #[doc = "< User-mode registers to be loaded (for LDM/STM instructions)"]
     pub usermode: bool,
@@ -925,11 +990,6 @@ pub struct cs_arm {
     pub op_count: u8,
     #[doc = "< operands for this instruction."]
     pub operands: [cs_arm_op; 36usize],
-}
-impl Clone for cs_arm {
-    fn clone(&self) -> Self {
-        *self
-    }
 }
 impl ::core::fmt::Debug for cs_arm {
     fn fmt(&self, f: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
@@ -1526,7 +1586,9 @@ pub enum arm64_cc {
     #[doc = "< Always (unconditional):   Always (unconditional)"]
     ARM64_CC_NV = 16,
 }
-pub const ARM64_SYSREG_DBGDTRTX_EL0: arm64_sysreg = arm64_sysreg::ARM64_SYSREG_DBGDTRRX_EL0;
+impl arm64_sysreg {
+    pub const ARM64_SYSREG_DBGDTRTX_EL0: arm64_sysreg = arm64_sysreg::ARM64_SYSREG_DBGDTRRX_EL0;
+}
 #[repr(u32)]
 #[doc = " System registers"]
 #[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
@@ -2906,7 +2968,7 @@ pub mod arm64_reg {
 }
 #[doc = " Instruction's operand referring to memory\n This is associated with ARM64_OP_MEM operand type above"]
 #[repr(C)]
-#[derive(Debug, Copy)]
+#[derive(Debug, Copy, Clone)]
 pub struct arm64_op_mem {
     #[doc = "< base register"]
     pub base: arm64_reg::Type,
@@ -2915,14 +2977,9 @@ pub struct arm64_op_mem {
     #[doc = "< displacement/offset value"]
     pub disp: i32,
 }
-impl Clone for arm64_op_mem {
-    fn clone(&self) -> Self {
-        *self
-    }
-}
 #[doc = " Instruction operand"]
 #[repr(C)]
-#[derive(Copy)]
+#[derive(Copy, Clone)]
 pub struct cs_arm64_op {
     #[doc = "< Vector Index for some vector operands (or -1 if irrelevant)"]
     pub vector_index: libc::c_int,
@@ -2938,20 +2995,15 @@ pub struct cs_arm64_op {
     pub access: u8,
 }
 #[repr(C)]
-#[derive(Debug, Copy)]
+#[derive(Debug, Copy, Clone)]
 pub struct cs_arm64_op__bindgen_ty_1 {
     #[doc = "< shifter type of this operand"]
     pub type_: arm64_shifter,
     #[doc = "< shifter value of this operand"]
     pub value: libc::c_uint,
 }
-impl Clone for cs_arm64_op__bindgen_ty_1 {
-    fn clone(&self) -> Self {
-        *self
-    }
-}
 #[repr(C)]
-#[derive(Copy)]
+#[derive(Copy, Clone)]
 pub union cs_arm64_op__bindgen_ty_2 {
     #[doc = "< register value for REG operand"]
     pub reg: arm64_reg::Type,
@@ -2970,19 +3022,9 @@ pub union cs_arm64_op__bindgen_ty_2 {
     #[doc = "< Memory barrier operation (ISB/DMB/DSB instructions)."]
     pub barrier: arm64_barrier_op,
 }
-impl Clone for cs_arm64_op__bindgen_ty_2 {
-    fn clone(&self) -> Self {
-        *self
-    }
-}
 impl ::core::fmt::Debug for cs_arm64_op__bindgen_ty_2 {
     fn fmt(&self, f: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
         write!(f, "cs_arm64_op__bindgen_ty_2 {{ union }}")
-    }
-}
-impl Clone for cs_arm64_op {
-    fn clone(&self) -> Self {
-        *self
     }
 }
 impl ::core::fmt::Debug for cs_arm64_op {
@@ -2992,7 +3034,7 @@ impl ::core::fmt::Debug for cs_arm64_op {
 }
 #[doc = " Instruction structure"]
 #[repr(C)]
-#[derive(Copy)]
+#[derive(Copy, Clone)]
 pub struct cs_arm64 {
     #[doc = "< conditional code for this insn"]
     pub cc: arm64_cc,
@@ -3004,11 +3046,6 @@ pub struct cs_arm64 {
     pub op_count: u8,
     #[doc = "< operands for this instruction."]
     pub operands: [cs_arm64_op; 8usize],
-}
-impl Clone for cs_arm64 {
-    fn clone(&self) -> Self {
-        *self
-    }
 }
 impl ::core::fmt::Debug for cs_arm64 {
     fn fmt(&self, f: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
@@ -4131,7 +4168,7 @@ pub enum m68k_op_type {
 }
 #[doc = " Instruction's operand referring to memory\n This is associated with M68K_OP_MEM operand type above"]
 #[repr(C)]
-#[derive(Debug, Copy)]
+#[derive(Debug, Copy, Clone)]
 pub struct m68k_op_mem {
     #[doc = "< base register (or M68K_REG_INVALID if irrelevant)"]
     pub base_reg: m68k_reg::Type,
@@ -4156,11 +4193,6 @@ pub struct m68k_op_mem {
     #[doc = "< 0 = w, 1 = l"]
     pub index_size: u8,
 }
-impl Clone for m68k_op_mem {
-    fn clone(&self) -> Self {
-        *self
-    }
-}
 #[repr(u32)]
 #[doc = " Operand type for instruction's operands"]
 #[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
@@ -4175,33 +4207,23 @@ pub enum m68k_op_br_disp_size {
     M68K_OP_BR_DISP_SIZE_LONG = 4,
 }
 #[repr(C)]
-#[derive(Debug, Copy)]
+#[derive(Debug, Copy, Clone)]
 pub struct m68k_op_br_disp {
     #[doc = "< displacement value"]
     pub disp: i32,
     #[doc = "< Size from m68k_op_br_disp_size type above"]
     pub disp_size: u8,
 }
-impl Clone for m68k_op_br_disp {
-    fn clone(&self) -> Self {
-        *self
-    }
-}
 #[doc = " Register pair in one operand."]
 #[repr(C)]
-#[derive(Debug, Copy)]
+#[derive(Debug, Copy, Clone)]
 pub struct cs_m68k_op_reg_pair {
     pub reg_0: m68k_reg::Type,
     pub reg_1: m68k_reg::Type,
 }
-impl Clone for cs_m68k_op_reg_pair {
-    fn clone(&self) -> Self {
-        *self
-    }
-}
 #[doc = " Instruction operand"]
 #[repr(C)]
-#[derive(Copy)]
+#[derive(Copy, Clone)]
 pub struct cs_m68k_op {
     pub __bindgen_anon_1: cs_m68k_op__bindgen_ty_1,
     #[doc = "< data when operand is targeting memory"]
@@ -4215,7 +4237,7 @@ pub struct cs_m68k_op {
     pub address_mode: m68k_address_mode,
 }
 #[repr(C)]
-#[derive(Copy)]
+#[derive(Copy, Clone)]
 pub union cs_m68k_op__bindgen_ty_1 {
     #[doc = "< immediate value for IMM operand"]
     pub imm: u64,
@@ -4228,19 +4250,9 @@ pub union cs_m68k_op__bindgen_ty_1 {
     #[doc = "< register pair in one operand"]
     pub reg_pair: cs_m68k_op_reg_pair,
 }
-impl Clone for cs_m68k_op__bindgen_ty_1 {
-    fn clone(&self) -> Self {
-        *self
-    }
-}
 impl ::core::fmt::Debug for cs_m68k_op__bindgen_ty_1 {
     fn fmt(&self, f: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
         write!(f, "cs_m68k_op__bindgen_ty_1 {{ union }}")
-    }
-}
-impl Clone for cs_m68k_op {
-    fn clone(&self) -> Self {
-        *self
     }
 }
 impl ::core::fmt::Debug for cs_m68k_op {
@@ -4284,30 +4296,20 @@ pub enum m68k_size_type {
 }
 #[doc = " Operation size of the current instruction (NOT the actually size of instruction)"]
 #[repr(C)]
-#[derive(Copy)]
+#[derive(Copy, Clone)]
 pub struct m68k_op_size {
     pub type_: m68k_size_type,
     pub __bindgen_anon_1: m68k_op_size__bindgen_ty_1,
 }
 #[repr(C)]
-#[derive(Copy)]
+#[derive(Copy, Clone)]
 pub union m68k_op_size__bindgen_ty_1 {
     pub cpu_size: m68k_cpu_size,
     pub fpu_size: m68k_fpu_size,
 }
-impl Clone for m68k_op_size__bindgen_ty_1 {
-    fn clone(&self) -> Self {
-        *self
-    }
-}
 impl ::core::fmt::Debug for m68k_op_size__bindgen_ty_1 {
     fn fmt(&self, f: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
         write!(f, "m68k_op_size__bindgen_ty_1 {{ union }}")
-    }
-}
-impl Clone for m68k_op_size {
-    fn clone(&self) -> Self {
-        *self
     }
 }
 impl ::core::fmt::Debug for m68k_op_size {
@@ -4321,7 +4323,7 @@ impl ::core::fmt::Debug for m68k_op_size {
 }
 #[doc = " The M68K instruction and it's operands"]
 #[repr(C)]
-#[derive(Copy)]
+#[derive(Copy, Clone)]
 pub struct cs_m68k {
     #[doc = "< operands for this instruction."]
     pub operands: [cs_m68k_op; 4usize],
@@ -4329,11 +4331,6 @@ pub struct cs_m68k {
     pub op_size: m68k_op_size,
     #[doc = "< number of operands for the instruction"]
     pub op_count: u8,
-}
-impl Clone for cs_m68k {
-    fn clone(&self) -> Self {
-        *self
-    }
 }
 impl ::core::fmt::Debug for cs_m68k {
     fn fmt(&self, f: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
@@ -4939,28 +4936,23 @@ pub mod mips_reg {
 }
 #[doc = " Instruction's operand referring to memory\n This is associated with MIPS_OP_MEM operand type above"]
 #[repr(C)]
-#[derive(Debug, Copy)]
+#[derive(Debug, Copy, Clone)]
 pub struct mips_op_mem {
     #[doc = "< base register"]
     pub base: mips_reg::Type,
     #[doc = "< displacement/offset value"]
     pub disp: i64,
 }
-impl Clone for mips_op_mem {
-    fn clone(&self) -> Self {
-        *self
-    }
-}
 #[doc = " Instruction operand"]
 #[repr(C)]
-#[derive(Copy)]
+#[derive(Copy, Clone)]
 pub struct cs_mips_op {
     #[doc = "< operand type"]
     pub type_: mips_op_type,
     pub __bindgen_anon_1: cs_mips_op__bindgen_ty_1,
 }
 #[repr(C)]
-#[derive(Copy)]
+#[derive(Copy, Clone)]
 pub union cs_mips_op__bindgen_ty_1 {
     #[doc = "< register id for REG operand"]
     pub reg: mips_reg::Type,
@@ -4969,19 +4961,9 @@ pub union cs_mips_op__bindgen_ty_1 {
     #[doc = "< base/index/scale/disp value for MEM operand"]
     pub mem: mips_op_mem,
 }
-impl Clone for cs_mips_op__bindgen_ty_1 {
-    fn clone(&self) -> Self {
-        *self
-    }
-}
 impl ::core::fmt::Debug for cs_mips_op__bindgen_ty_1 {
     fn fmt(&self, f: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
         write!(f, "cs_mips_op__bindgen_ty_1 {{ union }}")
-    }
-}
-impl Clone for cs_mips_op {
-    fn clone(&self) -> Self {
-        *self
     }
 }
 impl ::core::fmt::Debug for cs_mips_op {
@@ -4995,17 +4977,12 @@ impl ::core::fmt::Debug for cs_mips_op {
 }
 #[doc = " Instruction structure"]
 #[repr(C)]
-#[derive(Copy)]
+#[derive(Copy, Clone)]
 pub struct cs_mips {
     #[doc = " Number of operands of this instruction,\n or 0 when instruction has no operand."]
     pub op_count: u8,
     #[doc = "< operands for this instruction."]
     pub operands: [cs_mips_op; 10usize],
-}
-impl Clone for cs_mips {
-    fn clone(&self) -> Self {
-        *self
-    }
 }
 impl ::core::fmt::Debug for cs_mips {
     fn fmt(&self, f: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
@@ -5991,40 +5968,30 @@ pub mod ppc_reg {
 }
 #[doc = " Instruction's operand referring to memory\n This is associated with PPC_OP_MEM operand type above"]
 #[repr(C)]
-#[derive(Debug, Copy)]
+#[derive(Debug, Copy, Clone)]
 pub struct ppc_op_mem {
     #[doc = "< base register"]
     pub base: ppc_reg::Type,
     #[doc = "< displacement/offset value"]
     pub disp: i32,
 }
-impl Clone for ppc_op_mem {
-    fn clone(&self) -> Self {
-        *self
-    }
-}
 #[repr(C)]
-#[derive(Debug, Copy)]
+#[derive(Debug, Copy, Clone)]
 pub struct ppc_op_crx {
     pub scale: libc::c_uint,
     pub reg: ppc_reg::Type,
     pub cond: ppc_bc,
 }
-impl Clone for ppc_op_crx {
-    fn clone(&self) -> Self {
-        *self
-    }
-}
 #[doc = " Instruction operand"]
 #[repr(C)]
-#[derive(Copy)]
+#[derive(Copy, Clone)]
 pub struct cs_ppc_op {
     #[doc = "< operand type"]
     pub type_: ppc_op_type,
     pub __bindgen_anon_1: cs_ppc_op__bindgen_ty_1,
 }
 #[repr(C)]
-#[derive(Copy)]
+#[derive(Copy, Clone)]
 pub union cs_ppc_op__bindgen_ty_1 {
     #[doc = "< register value for REG operand"]
     pub reg: ppc_reg::Type,
@@ -6035,19 +6002,9 @@ pub union cs_ppc_op__bindgen_ty_1 {
     #[doc = "< operand with condition register"]
     pub crx: ppc_op_crx,
 }
-impl Clone for cs_ppc_op__bindgen_ty_1 {
-    fn clone(&self) -> Self {
-        *self
-    }
-}
 impl ::core::fmt::Debug for cs_ppc_op__bindgen_ty_1 {
     fn fmt(&self, f: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
         write!(f, "cs_ppc_op__bindgen_ty_1 {{ union }}")
-    }
-}
-impl Clone for cs_ppc_op {
-    fn clone(&self) -> Self {
-        *self
     }
 }
 impl ::core::fmt::Debug for cs_ppc_op {
@@ -6061,7 +6018,7 @@ impl ::core::fmt::Debug for cs_ppc_op {
 }
 #[doc = " Instruction structure"]
 #[repr(C)]
-#[derive(Copy)]
+#[derive(Copy, Clone)]
 pub struct cs_ppc {
     #[doc = " branch code for branch instructions"]
     pub bc: ppc_bc,
@@ -6073,11 +6030,6 @@ pub struct cs_ppc {
     pub op_count: u8,
     #[doc = "< operands for this instruction."]
     pub operands: [cs_ppc_op; 8usize],
-}
-impl Clone for cs_ppc {
-    fn clone(&self) -> Self {
-        *self
-    }
 }
 impl ::core::fmt::Debug for cs_ppc {
     fn fmt(&self, f: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
@@ -8000,7 +7952,7 @@ pub mod sparc_reg {
 }
 #[doc = " Instruction's operand referring to memory\n This is associated with SPARC_OP_MEM operand type above"]
 #[repr(C)]
-#[derive(Debug, Copy)]
+#[derive(Debug, Copy, Clone)]
 pub struct sparc_op_mem {
     #[doc = "< base register, can be safely interpreted as\n< a value of type `sparc_reg`, but it is only\n< one byte wide"]
     pub base: u8,
@@ -8009,21 +7961,16 @@ pub struct sparc_op_mem {
     #[doc = "< displacement/offset value"]
     pub disp: i32,
 }
-impl Clone for sparc_op_mem {
-    fn clone(&self) -> Self {
-        *self
-    }
-}
 #[doc = " Instruction operand"]
 #[repr(C)]
-#[derive(Copy)]
+#[derive(Copy, Clone)]
 pub struct cs_sparc_op {
     #[doc = "< operand type"]
     pub type_: sparc_op_type,
     pub __bindgen_anon_1: cs_sparc_op__bindgen_ty_1,
 }
 #[repr(C)]
-#[derive(Copy)]
+#[derive(Copy, Clone)]
 pub union cs_sparc_op__bindgen_ty_1 {
     #[doc = "< register value for REG operand"]
     pub reg: sparc_reg::Type,
@@ -8032,19 +7979,9 @@ pub union cs_sparc_op__bindgen_ty_1 {
     #[doc = "< base/disp value for MEM operand"]
     pub mem: sparc_op_mem,
 }
-impl Clone for cs_sparc_op__bindgen_ty_1 {
-    fn clone(&self) -> Self {
-        *self
-    }
-}
 impl ::core::fmt::Debug for cs_sparc_op__bindgen_ty_1 {
     fn fmt(&self, f: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
         write!(f, "cs_sparc_op__bindgen_ty_1 {{ union }}")
-    }
-}
-impl Clone for cs_sparc_op {
-    fn clone(&self) -> Self {
-        *self
     }
 }
 impl ::core::fmt::Debug for cs_sparc_op {
@@ -8058,7 +7995,7 @@ impl ::core::fmt::Debug for cs_sparc_op {
 }
 #[doc = " Instruction structure"]
 #[repr(C)]
-#[derive(Copy)]
+#[derive(Copy, Clone)]
 pub struct cs_sparc {
     #[doc = "< code condition for this insn"]
     pub cc: sparc_cc,
@@ -8068,11 +8005,6 @@ pub struct cs_sparc {
     pub op_count: u8,
     #[doc = "< operands for this instruction."]
     pub operands: [cs_sparc_op; 4usize],
-}
-impl Clone for cs_sparc {
-    fn clone(&self) -> Self {
-        *self
-    }
 }
 impl ::core::fmt::Debug for cs_sparc {
     fn fmt(&self, f: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
@@ -8544,7 +8476,7 @@ pub mod sysz_reg {
 }
 #[doc = " Instruction's operand referring to memory\n This is associated with SYSZ_OP_MEM operand type above"]
 #[repr(C)]
-#[derive(Debug, Copy)]
+#[derive(Debug, Copy, Clone)]
 pub struct sysz_op_mem {
     #[doc = "< base register, can be safely interpreted as\n< a value of type `sysz_reg`, but it is only\n< one byte wide"]
     pub base: u8,
@@ -8555,21 +8487,16 @@ pub struct sysz_op_mem {
     #[doc = "< displacement/offset value"]
     pub disp: i64,
 }
-impl Clone for sysz_op_mem {
-    fn clone(&self) -> Self {
-        *self
-    }
-}
 #[doc = " Instruction operand"]
 #[repr(C)]
-#[derive(Copy)]
+#[derive(Copy, Clone)]
 pub struct cs_sysz_op {
     #[doc = "< operand type"]
     pub type_: sysz_op_type,
     pub __bindgen_anon_1: cs_sysz_op__bindgen_ty_1,
 }
 #[repr(C)]
-#[derive(Copy)]
+#[derive(Copy, Clone)]
 pub union cs_sysz_op__bindgen_ty_1 {
     #[doc = "< register value for REG operand"]
     pub reg: sysz_reg::Type,
@@ -8578,19 +8505,9 @@ pub union cs_sysz_op__bindgen_ty_1 {
     #[doc = "< base/disp value for MEM operand"]
     pub mem: sysz_op_mem,
 }
-impl Clone for cs_sysz_op__bindgen_ty_1 {
-    fn clone(&self) -> Self {
-        *self
-    }
-}
 impl ::core::fmt::Debug for cs_sysz_op__bindgen_ty_1 {
     fn fmt(&self, f: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
         write!(f, "cs_sysz_op__bindgen_ty_1 {{ union }}")
-    }
-}
-impl Clone for cs_sysz_op {
-    fn clone(&self) -> Self {
-        *self
     }
 }
 impl ::core::fmt::Debug for cs_sysz_op {
@@ -8603,7 +8520,7 @@ impl ::core::fmt::Debug for cs_sysz_op {
     }
 }
 #[repr(C)]
-#[derive(Copy)]
+#[derive(Copy, Clone)]
 pub struct cs_sysz {
     #[doc = "< Code condition"]
     pub cc: sysz_cc,
@@ -8611,11 +8528,6 @@ pub struct cs_sysz {
     pub op_count: u8,
     #[doc = "< operands for this instruction."]
     pub operands: [cs_sysz_op; 6usize],
-}
-impl Clone for cs_sysz {
-    fn clone(&self) -> Self {
-        *self
-    }
 }
 impl ::core::fmt::Debug for cs_sysz {
     fn fmt(&self, f: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
@@ -11379,7 +11291,9 @@ pub enum x86_avx_rm {
     #[doc = "< Round toward zero"]
     X86_AVX_RM_RZ = 4,
 }
-pub const X86_PREFIX_REPE: x86_prefix = x86_prefix::X86_PREFIX_REP;
+impl x86_prefix {
+    pub const X86_PREFIX_REPE: x86_prefix = x86_prefix::X86_PREFIX_REP;
+}
 #[repr(u32)]
 #[doc = " Instruction prefixes - to be used in cs_x86.prefix[]"]
 #[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
@@ -11409,7 +11323,7 @@ pub enum x86_prefix {
 }
 #[doc = " Instruction's operand referring to memory\n This is associated with X86_OP_MEM operand type above"]
 #[repr(C)]
-#[derive(Debug, Copy)]
+#[derive(Debug, Copy, Clone)]
 pub struct x86_op_mem {
     #[doc = "< segment register (or X86_REG_INVALID if irrelevant)"]
     pub segment: x86_reg::Type,
@@ -11422,14 +11336,9 @@ pub struct x86_op_mem {
     #[doc = "< displacement value"]
     pub disp: i64,
 }
-impl Clone for x86_op_mem {
-    fn clone(&self) -> Self {
-        *self
-    }
-}
 #[doc = " Instruction operand"]
 #[repr(C)]
-#[derive(Copy)]
+#[derive(Copy, Clone)]
 pub struct cs_x86_op {
     #[doc = "< operand type"]
     pub type_: x86_op_type,
@@ -11444,7 +11353,7 @@ pub struct cs_x86_op {
     pub avx_zero_opmask: bool,
 }
 #[repr(C)]
-#[derive(Copy)]
+#[derive(Copy, Clone)]
 pub union cs_x86_op__bindgen_ty_1 {
     #[doc = "< register value for REG operand"]
     pub reg: x86_reg::Type,
@@ -11453,19 +11362,9 @@ pub union cs_x86_op__bindgen_ty_1 {
     #[doc = "< base/index/scale/disp value for MEM operand"]
     pub mem: x86_op_mem,
 }
-impl Clone for cs_x86_op__bindgen_ty_1 {
-    fn clone(&self) -> Self {
-        *self
-    }
-}
 impl ::core::fmt::Debug for cs_x86_op__bindgen_ty_1 {
     fn fmt(&self, f: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
         write!(f, "cs_x86_op__bindgen_ty_1 {{ union }}")
-    }
-}
-impl Clone for cs_x86_op {
-    fn clone(&self) -> Self {
-        *self
     }
 }
 impl ::core::fmt::Debug for cs_x86_op {
@@ -11474,7 +11373,7 @@ impl ::core::fmt::Debug for cs_x86_op {
     }
 }
 #[repr(C)]
-#[derive(Debug, Copy)]
+#[derive(Debug, Copy, Clone)]
 pub struct cs_x86_encoding {
     #[doc = " ModR/M offset, or 0 when irrelevant"]
     pub modrm_offset: u8,
@@ -11485,14 +11384,9 @@ pub struct cs_x86_encoding {
     pub imm_offset: u8,
     pub imm_size: u8,
 }
-impl Clone for cs_x86_encoding {
-    fn clone(&self) -> Self {
-        *self
-    }
-}
 #[doc = " Instruction structure"]
 #[repr(C)]
-#[derive(Copy)]
+#[derive(Copy, Clone)]
 pub struct cs_x86 {
     #[doc = " Instruction prefix, which can be up to 4 bytes.\n A prefix byte gets value 0 when irrelevant.\n prefix[0] indicates REP/REPNE/LOCK prefix (See X86_PREFIX_REP/REPNE/LOCK above)\n prefix[1] indicates segment override (irrelevant for x86_64):\n See X86_PREFIX_CS/SS/DS/ES/FS/GS above.\n prefix[2] indicates operand-size override (X86_PREFIX_OPSIZE)\n prefix[3] indicates address-size override (X86_PREFIX_ADDRSIZE)"]
     pub prefix: [u8; 4usize],
@@ -11533,26 +11427,16 @@ pub struct cs_x86 {
     pub encoding: cs_x86_encoding,
 }
 #[repr(C)]
-#[derive(Copy)]
+#[derive(Copy, Clone)]
 pub union cs_x86__bindgen_ty_1 {
     #[doc = " EFLAGS updated by this instruction.\n This can be formed from OR combination of X86_EFLAGS_* symbols in x86.h"]
     pub eflags: u64,
     #[doc = " FPU_FLAGS updated by this instruction.\n This can be formed from OR combination of X86_FPU_FLAGS_* symbols in x86.h"]
     pub fpu_flags: u64,
 }
-impl Clone for cs_x86__bindgen_ty_1 {
-    fn clone(&self) -> Self {
-        *self
-    }
-}
 impl ::core::fmt::Debug for cs_x86__bindgen_ty_1 {
     fn fmt(&self, f: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
         write!(f, "cs_x86__bindgen_ty_1 {{ union }}")
-    }
-}
-impl Clone for cs_x86 {
-    fn clone(&self) -> Self {
-        *self
     }
 }
 impl ::core::fmt::Debug for cs_x86 {
@@ -13202,7 +13086,7 @@ pub mod xcore_reg {
 }
 #[doc = " Instruction's operand referring to memory\n This is associated with XCORE_OP_MEM operand type above"]
 #[repr(C)]
-#[derive(Debug, Copy)]
+#[derive(Debug, Copy, Clone)]
 pub struct xcore_op_mem {
     #[doc = "< base register, can be safely interpreted as\n< a value of type `xcore_reg`, but it is only\n< one byte wide"]
     pub base: u8,
@@ -13213,21 +13097,16 @@ pub struct xcore_op_mem {
     #[doc = "< +1: forward, -1: backward"]
     pub direct: libc::c_int,
 }
-impl Clone for xcore_op_mem {
-    fn clone(&self) -> Self {
-        *self
-    }
-}
 #[doc = " Instruction operand"]
 #[repr(C)]
-#[derive(Copy)]
+#[derive(Copy, Clone)]
 pub struct cs_xcore_op {
     #[doc = "< operand type"]
     pub type_: xcore_op_type,
     pub __bindgen_anon_1: cs_xcore_op__bindgen_ty_1,
 }
 #[repr(C)]
-#[derive(Copy)]
+#[derive(Copy, Clone)]
 pub union cs_xcore_op__bindgen_ty_1 {
     #[doc = "< register value for REG operand"]
     pub reg: xcore_reg::Type,
@@ -13236,19 +13115,9 @@ pub union cs_xcore_op__bindgen_ty_1 {
     #[doc = "< base/disp value for MEM operand"]
     pub mem: xcore_op_mem,
 }
-impl Clone for cs_xcore_op__bindgen_ty_1 {
-    fn clone(&self) -> Self {
-        *self
-    }
-}
 impl ::core::fmt::Debug for cs_xcore_op__bindgen_ty_1 {
     fn fmt(&self, f: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
         write!(f, "cs_xcore_op__bindgen_ty_1 {{ union }}")
-    }
-}
-impl Clone for cs_xcore_op {
-    fn clone(&self) -> Self {
-        *self
     }
 }
 impl ::core::fmt::Debug for cs_xcore_op {
@@ -13262,17 +13131,12 @@ impl ::core::fmt::Debug for cs_xcore_op {
 }
 #[doc = " Instruction structure"]
 #[repr(C)]
-#[derive(Copy)]
+#[derive(Copy, Clone)]
 pub struct cs_xcore {
     #[doc = " Number of operands of this instruction,\n or 0 when instruction has no operand."]
     pub op_count: u8,
     #[doc = "< operands for this instruction."]
     pub operands: [cs_xcore_op; 8usize],
-}
-impl Clone for cs_xcore {
-    fn clone(&self) -> Self {
-        *self
-    }
 }
 impl ::core::fmt::Debug for cs_xcore {
     fn fmt(&self, f: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
@@ -13452,7 +13316,7 @@ pub enum tms320c64x_mem_mod {
     TMS320C64X_MEM_MOD_POST = 3,
 }
 #[repr(C)]
-#[derive(Debug, Copy)]
+#[derive(Debug, Copy, Clone)]
 pub struct tms320c64x_op_mem {
     #[doc = "< base register"]
     pub base: libc::c_uint,
@@ -13469,20 +13333,15 @@ pub struct tms320c64x_op_mem {
     #[doc = "< modification"]
     pub modify: libc::c_uint,
 }
-impl Clone for tms320c64x_op_mem {
-    fn clone(&self) -> Self {
-        *self
-    }
-}
 #[repr(C)]
-#[derive(Copy)]
+#[derive(Copy, Clone)]
 pub struct cs_tms320c64x_op {
     #[doc = "< operand type"]
     pub type_: tms320c64x_op_type,
     pub __bindgen_anon_1: cs_tms320c64x_op__bindgen_ty_1,
 }
 #[repr(C)]
-#[derive(Copy)]
+#[derive(Copy, Clone)]
 pub union cs_tms320c64x_op__bindgen_ty_1 {
     #[doc = "< register value for REG operand or first register for REGPAIR operand"]
     pub reg: libc::c_uint,
@@ -13491,19 +13350,9 @@ pub union cs_tms320c64x_op__bindgen_ty_1 {
     #[doc = "< base/disp value for MEM operand"]
     pub mem: tms320c64x_op_mem,
 }
-impl Clone for cs_tms320c64x_op__bindgen_ty_1 {
-    fn clone(&self) -> Self {
-        *self
-    }
-}
 impl ::core::fmt::Debug for cs_tms320c64x_op__bindgen_ty_1 {
     fn fmt(&self, f: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
         write!(f, "cs_tms320c64x_op__bindgen_ty_1 {{ union }}")
-    }
-}
-impl Clone for cs_tms320c64x_op {
-    fn clone(&self) -> Self {
-        *self
     }
 }
 impl ::core::fmt::Debug for cs_tms320c64x_op {
@@ -13516,7 +13365,7 @@ impl ::core::fmt::Debug for cs_tms320c64x_op {
     }
 }
 #[repr(C)]
-#[derive(Copy)]
+#[derive(Copy, Clone)]
 pub struct cs_tms320c64x {
     pub op_count: u8,
     #[doc = "< operands for this instruction."]
@@ -13526,32 +13375,17 @@ pub struct cs_tms320c64x {
     pub parallel: libc::c_uint,
 }
 #[repr(C)]
-#[derive(Debug, Copy)]
+#[derive(Debug, Copy, Clone)]
 pub struct cs_tms320c64x__bindgen_ty_1 {
     pub reg: libc::c_uint,
     pub zero: libc::c_uint,
 }
-impl Clone for cs_tms320c64x__bindgen_ty_1 {
-    fn clone(&self) -> Self {
-        *self
-    }
-}
 #[repr(C)]
-#[derive(Debug, Copy)]
+#[derive(Debug, Copy, Clone)]
 pub struct cs_tms320c64x__bindgen_ty_2 {
     pub unit: libc::c_uint,
     pub side: libc::c_uint,
     pub crosspath: libc::c_uint,
-}
-impl Clone for cs_tms320c64x__bindgen_ty_2 {
-    fn clone(&self) -> Self {
-        *self
-    }
-}
-impl Clone for cs_tms320c64x {
-    fn clone(&self) -> Self {
-        *self
-    }
 }
 impl ::core::fmt::Debug for cs_tms320c64x {
     fn fmt(&self, f: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
@@ -13903,7 +13737,7 @@ pub enum m680x_op_type {
 }
 #[doc = " Instruction's operand referring to indexed addressing"]
 #[repr(C)]
-#[derive(Debug, Copy)]
+#[derive(Debug, Copy, Clone)]
 pub struct m680x_op_idx {
     #[doc = "< base register (or M680X_REG_INVALID if\n< irrelevant)"]
     pub base_reg: m680x_reg::Type,
@@ -13920,42 +13754,27 @@ pub struct m680x_op_idx {
     #[doc = "< 8-bit flags (see above)"]
     pub flags: u8,
 }
-impl Clone for m680x_op_idx {
-    fn clone(&self) -> Self {
-        *self
-    }
-}
 #[doc = " Instruction's memory operand referring to relative addressing (Bcc/LBcc)"]
 #[repr(C)]
-#[derive(Debug, Copy)]
+#[derive(Debug, Copy, Clone)]
 pub struct m680x_op_rel {
     #[doc = "< The absolute address.\n< calculated as PC + offset. PC is the first\n< address after the instruction."]
     pub address: u16,
     #[doc = "< the offset/displacement value"]
     pub offset: i16,
 }
-impl Clone for m680x_op_rel {
-    fn clone(&self) -> Self {
-        *self
-    }
-}
 #[doc = " Instruction's operand referring to extended addressing"]
 #[repr(C)]
-#[derive(Debug, Copy)]
+#[derive(Debug, Copy, Clone)]
 pub struct m680x_op_ext {
     #[doc = "< The absolute address"]
     pub address: u16,
     #[doc = "< true if extended indirect addressing"]
     pub indirect: bool,
 }
-impl Clone for m680x_op_ext {
-    fn clone(&self) -> Self {
-        *self
-    }
-}
 #[doc = " Instruction operand"]
 #[repr(C)]
-#[derive(Copy)]
+#[derive(Copy, Clone)]
 pub struct cs_m680x_op {
     pub type_: m680x_op_type,
     pub __bindgen_anon_1: cs_m680x_op__bindgen_ty_1,
@@ -13965,7 +13784,7 @@ pub struct cs_m680x_op {
     pub access: u8,
 }
 #[repr(C)]
-#[derive(Copy)]
+#[derive(Copy, Clone)]
 pub union cs_m680x_op__bindgen_ty_1 {
     #[doc = "< immediate value for IMM operand"]
     pub imm: i32,
@@ -13982,19 +13801,9 @@ pub union cs_m680x_op__bindgen_ty_1 {
     #[doc = "< constant value (bit index, page nr.)"]
     pub const_val: u8,
 }
-impl Clone for cs_m680x_op__bindgen_ty_1 {
-    fn clone(&self) -> Self {
-        *self
-    }
-}
 impl ::core::fmt::Debug for cs_m680x_op__bindgen_ty_1 {
     fn fmt(&self, f: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
         write!(f, "cs_m680x_op__bindgen_ty_1 {{ union }}")
-    }
-}
-impl Clone for cs_m680x_op {
-    fn clone(&self) -> Self {
-        *self
     }
 }
 impl ::core::fmt::Debug for cs_m680x_op {
@@ -14029,7 +13838,7 @@ pub enum m680x_group_type {
 }
 #[doc = " The M680X instruction and it's operands"]
 #[repr(C)]
-#[derive(Copy)]
+#[derive(Copy, Clone)]
 pub struct cs_m680x {
     #[doc = "< See: M680X instruction flags"]
     pub flags: u8,
@@ -14037,11 +13846,6 @@ pub struct cs_m680x {
     pub op_count: u8,
     #[doc = "< operands for this insn."]
     pub operands: [cs_m680x_op; 9usize],
-}
-impl Clone for cs_m680x {
-    fn clone(&self) -> Self {
-        *self
-    }
 }
 impl ::core::fmt::Debug for cs_m680x {
     fn fmt(&self, f: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
@@ -14450,7 +14254,7 @@ pub enum m680x_insn {
 }
 #[doc = " Instruction structure"]
 #[repr(C)]
-#[derive(Debug, Copy)]
+#[derive(Debug, Copy, Clone)]
 pub struct cs_evm {
     #[doc = "< number of items popped from the stack"]
     pub pop: libc::c_uchar,
@@ -14458,11 +14262,6 @@ pub struct cs_evm {
     pub push: libc::c_uchar,
     #[doc = "< gas fee for the instruction"]
     pub fee: libc::c_uint,
-}
-impl Clone for cs_evm {
-    fn clone(&self) -> Self {
-        *self
-    }
 }
 #[repr(u32)]
 #[doc = " EVM instruction"]
@@ -14641,42 +14440,27 @@ pub enum riscv_op_type {
     RISCV_OP_MEM = 3,
 }
 #[repr(C)]
-#[derive(Debug, Copy)]
+#[derive(Debug, Copy, Clone)]
 pub struct riscv_op_mem {
     pub base: libc::c_uint,
     pub disp: i64,
 }
-impl Clone for riscv_op_mem {
-    fn clone(&self) -> Self {
-        *self
-    }
-}
 #[repr(C)]
-#[derive(Copy)]
+#[derive(Copy, Clone)]
 pub struct cs_riscv_op {
     pub type_: riscv_op_type,
     pub __bindgen_anon_1: cs_riscv_op__bindgen_ty_1,
 }
 #[repr(C)]
-#[derive(Copy)]
+#[derive(Copy, Clone)]
 pub union cs_riscv_op__bindgen_ty_1 {
     pub reg: libc::c_uint,
     pub imm: i64,
     pub mem: riscv_op_mem,
 }
-impl Clone for cs_riscv_op__bindgen_ty_1 {
-    fn clone(&self) -> Self {
-        *self
-    }
-}
 impl ::core::fmt::Debug for cs_riscv_op__bindgen_ty_1 {
     fn fmt(&self, f: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
         write!(f, "cs_riscv_op__bindgen_ty_1 {{ union }}")
-    }
-}
-impl Clone for cs_riscv_op {
-    fn clone(&self) -> Self {
-        *self
     }
 }
 impl ::core::fmt::Debug for cs_riscv_op {
@@ -14689,16 +14473,11 @@ impl ::core::fmt::Debug for cs_riscv_op {
     }
 }
 #[repr(C)]
-#[derive(Copy)]
+#[derive(Copy, Clone)]
 pub struct cs_riscv {
     pub need_effective_addr: bool,
     pub op_count: u8,
     pub operands: [cs_riscv_op; 8usize],
-}
-impl Clone for cs_riscv {
-    fn clone(&self) -> Self {
-        *self
-    }
 }
 impl ::core::fmt::Debug for cs_riscv {
     fn fmt(&self, f: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
@@ -15148,26 +14927,21 @@ pub enum wasm_op_type {
     WASM_OP_BRTABLE = 8,
 }
 #[repr(C)]
-#[derive(Debug, Copy)]
+#[derive(Debug, Copy, Clone)]
 pub struct cs_wasm_brtable {
     pub length: u32,
     pub address: u64,
     pub default_target: u32,
 }
-impl Clone for cs_wasm_brtable {
-    fn clone(&self) -> Self {
-        *self
-    }
-}
 #[repr(C)]
-#[derive(Copy)]
+#[derive(Copy, Clone)]
 pub struct cs_wasm_op {
     pub type_: wasm_op_type,
     pub size: u32,
     pub __bindgen_anon_1: cs_wasm_op__bindgen_ty_1,
 }
 #[repr(C)]
-#[derive(Copy)]
+#[derive(Copy, Clone)]
 pub union cs_wasm_op__bindgen_ty_1 {
     pub int7: i8,
     pub varuint32: u32,
@@ -15177,19 +14951,9 @@ pub union cs_wasm_op__bindgen_ty_1 {
     pub immediate: [u32; 2usize],
     pub brtable: cs_wasm_brtable,
 }
-impl Clone for cs_wasm_op__bindgen_ty_1 {
-    fn clone(&self) -> Self {
-        *self
-    }
-}
 impl ::core::fmt::Debug for cs_wasm_op__bindgen_ty_1 {
     fn fmt(&self, f: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
         write!(f, "cs_wasm_op__bindgen_ty_1 {{ union }}")
-    }
-}
-impl Clone for cs_wasm_op {
-    fn clone(&self) -> Self {
-        *self
     }
 }
 impl ::core::fmt::Debug for cs_wasm_op {
@@ -15203,15 +14967,10 @@ impl ::core::fmt::Debug for cs_wasm_op {
 }
 #[doc = " Instruction structure"]
 #[repr(C)]
-#[derive(Copy)]
+#[derive(Copy, Clone)]
 pub struct cs_wasm {
     pub op_count: u8,
     pub operands: [cs_wasm_op; 2usize],
-}
-impl Clone for cs_wasm {
-    fn clone(&self) -> Self {
-        *self
-    }
 }
 impl ::core::fmt::Debug for cs_wasm {
     fn fmt(&self, f: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
@@ -15313,14 +15072,14 @@ pub enum mos65xx_op_type {
 }
 #[doc = " Instruction operand"]
 #[repr(C)]
-#[derive(Copy)]
+#[derive(Copy, Clone)]
 pub struct cs_mos65xx_op {
     #[doc = "< operand type"]
     pub type_: mos65xx_op_type,
     pub __bindgen_anon_1: cs_mos65xx_op__bindgen_ty_1,
 }
 #[repr(C)]
-#[derive(Copy)]
+#[derive(Copy, Clone)]
 pub union cs_mos65xx_op__bindgen_ty_1 {
     #[doc = "< register value for REG operand"]
     pub reg: mos65xx_reg,
@@ -15329,19 +15088,9 @@ pub union cs_mos65xx_op__bindgen_ty_1 {
     #[doc = "< address for MEM operand"]
     pub mem: u32,
 }
-impl Clone for cs_mos65xx_op__bindgen_ty_1 {
-    fn clone(&self) -> Self {
-        *self
-    }
-}
 impl ::core::fmt::Debug for cs_mos65xx_op__bindgen_ty_1 {
     fn fmt(&self, f: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
         write!(f, "cs_mos65xx_op__bindgen_ty_1 {{ union }}")
-    }
-}
-impl Clone for cs_mos65xx_op {
-    fn clone(&self) -> Self {
-        *self
     }
 }
 impl ::core::fmt::Debug for cs_mos65xx_op {
@@ -15355,7 +15104,7 @@ impl ::core::fmt::Debug for cs_mos65xx_op {
 }
 #[doc = " The MOS65XX address mode and it's operands"]
 #[repr(C)]
-#[derive(Copy)]
+#[derive(Copy, Clone)]
 pub struct cs_mos65xx {
     pub am: mos65xx_address_mode,
     pub modifies_flags: bool,
@@ -15363,11 +15112,6 @@ pub struct cs_mos65xx {
     pub op_count: u8,
     #[doc = "< operands for this instruction."]
     pub operands: [cs_mos65xx_op; 3usize],
-}
-impl Clone for cs_mos65xx {
-    fn clone(&self) -> Self {
-        *self
-    }
 }
 impl ::core::fmt::Debug for cs_mos65xx {
     fn fmt(&self, f: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
@@ -15415,17 +15159,12 @@ pub mod bpf_reg {
 }
 #[doc = " Instruction's operand referring to memory\n This is associated with BPF_OP_MEM operand type above"]
 #[repr(C)]
-#[derive(Debug, Copy)]
+#[derive(Debug, Copy, Clone)]
 pub struct bpf_op_mem {
     #[doc = "< base register"]
     pub base: bpf_reg::Type,
     #[doc = "< offset value"]
     pub disp: u32,
-}
-impl Clone for bpf_op_mem {
-    fn clone(&self) -> Self {
-        *self
-    }
 }
 #[repr(u32)]
 #[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
@@ -15435,7 +15174,7 @@ pub enum bpf_ext_type {
 }
 #[doc = " Instruction operand"]
 #[repr(C)]
-#[derive(Copy)]
+#[derive(Copy, Clone)]
 pub struct cs_bpf_op {
     pub type_: bpf_op_type,
     pub __bindgen_anon_1: cs_bpf_op__bindgen_ty_1,
@@ -15443,7 +15182,7 @@ pub struct cs_bpf_op {
     pub access: u8,
 }
 #[repr(C)]
-#[derive(Copy)]
+#[derive(Copy, Clone)]
 pub union cs_bpf_op__bindgen_ty_1 {
     #[doc = "< register value for REG operand"]
     pub reg: u8,
@@ -15460,19 +15199,9 @@ pub union cs_bpf_op__bindgen_ty_1 {
     #[doc = "< cBPF's extension (not eBPF)"]
     pub ext: u32,
 }
-impl Clone for cs_bpf_op__bindgen_ty_1 {
-    fn clone(&self) -> Self {
-        *self
-    }
-}
 impl ::core::fmt::Debug for cs_bpf_op__bindgen_ty_1 {
     fn fmt(&self, f: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
         write!(f, "cs_bpf_op__bindgen_ty_1 {{ union }}")
-    }
-}
-impl Clone for cs_bpf_op {
-    fn clone(&self) -> Self {
-        *self
     }
 }
 impl ::core::fmt::Debug for cs_bpf_op {
@@ -15486,25 +15215,28 @@ impl ::core::fmt::Debug for cs_bpf_op {
 }
 #[doc = " Instruction structure"]
 #[repr(C)]
-#[derive(Copy)]
+#[derive(Copy, Clone)]
 pub struct cs_bpf {
     pub op_count: u8,
     pub operands: [cs_bpf_op; 4usize],
-}
-impl Clone for cs_bpf {
-    fn clone(&self) -> Self {
-        *self
-    }
 }
 impl ::core::fmt::Debug for cs_bpf {
     fn fmt(&self, f: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
         write!(f, "cs_bpf {{ operands: {:?} }}", self.operands)
     }
 }
-pub const BPF_INS_LD: bpf_insn = bpf_insn::BPF_INS_LDW;
-pub const BPF_INS_LDX: bpf_insn = bpf_insn::BPF_INS_LDXW;
-pub const BPF_INS_ST: bpf_insn = bpf_insn::BPF_INS_STW;
-pub const BPF_INS_STX: bpf_insn = bpf_insn::BPF_INS_STXW;
+impl bpf_insn {
+    pub const BPF_INS_LD: bpf_insn = bpf_insn::BPF_INS_LDW;
+}
+impl bpf_insn {
+    pub const BPF_INS_LDX: bpf_insn = bpf_insn::BPF_INS_LDXW;
+}
+impl bpf_insn {
+    pub const BPF_INS_ST: bpf_insn = bpf_insn::BPF_INS_STW;
+}
+impl bpf_insn {
+    pub const BPF_INS_STX: bpf_insn = bpf_insn::BPF_INS_STXW;
+}
 #[repr(u32)]
 #[doc = " BPF instruction"]
 #[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
@@ -15624,7 +15356,7 @@ pub mod bpf_insn_group {
 }
 #[doc = " NOTE: All information in cs_detail is only available when CS_OPT_DETAIL = CS_OPT_ON\n Initialized as memset(., 0, offsetof(cs_detail, ARCH)+sizeof(cs_ARCH))\n by ARCH_getInstruction in arch/ARCH/ARCHDisassembler.c\n if cs_detail changes, in particular if a field is added after the union,\n then update arch/ARCH/ARCHDisassembler.c accordingly"]
 #[repr(C)]
-#[derive(Copy)]
+#[derive(Copy, Clone)]
 pub struct cs_detail {
     #[doc = "< list of implicit registers read by this insn"]
     pub regs_read: [u16; 16usize],
@@ -15642,7 +15374,7 @@ pub struct cs_detail {
 }
 #[doc = " Architecture-specific instruction info"]
 #[repr(C)]
-#[derive(Copy)]
+#[derive(Copy, Clone)]
 pub union cs_detail__bindgen_ty_1 {
     #[doc = "< X86 architecture, including 16-bit, 32-bit & 64-bit mode"]
     pub x86: cs_x86,
@@ -15677,19 +15409,9 @@ pub union cs_detail__bindgen_ty_1 {
     #[doc = "< RISCV architecture"]
     pub riscv: cs_riscv,
 }
-impl Clone for cs_detail__bindgen_ty_1 {
-    fn clone(&self) -> Self {
-        *self
-    }
-}
 impl ::core::fmt::Debug for cs_detail__bindgen_ty_1 {
     fn fmt(&self, f: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
         write!(f, "cs_detail__bindgen_ty_1 {{ union }}")
-    }
-}
-impl Clone for cs_detail {
-    fn clone(&self) -> Self {
-        *self
     }
 }
 impl ::core::fmt::Debug for cs_detail {
@@ -15867,15 +15589,10 @@ extern "C" {
 }
 pub type __builtin_va_list = [__va_list_tag; 1usize];
 #[repr(C)]
-#[derive(Debug, Copy)]
+#[derive(Debug, Copy, Clone)]
 pub struct __va_list_tag {
     pub gp_offset: libc::c_uint,
     pub fp_offset: libc::c_uint,
     pub overflow_arg_area: *mut libc::c_void,
     pub reg_save_area: *mut libc::c_void,
-}
-impl Clone for __va_list_tag {
-    fn clone(&self) -> Self {
-        *self
-    }
 }
