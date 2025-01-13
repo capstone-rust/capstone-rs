@@ -100,13 +100,13 @@ impl TryFrom<cs_ac_type> for RegAccessType {
 
     fn try_from(access: cs_ac_type) -> Result<Self, Self::Error> {
         // Check for flags other than CS_AC_READ or CS_AC_WRITE.
-        let unknown_flag_mask = !(CS_AC_READ | CS_AC_WRITE).0;
+        let unknown_flag_mask = !(cs_ac_type::CS_AC_READ | cs_ac_type::CS_AC_WRITE).0;
         if (access.0 & unknown_flag_mask) != 0 {
             return Err(());
         }
 
-        let is_readable = (access & CS_AC_READ).0 != 0;
-        let is_writable = (access & CS_AC_WRITE).0 != 0;
+        let is_readable = (access & cs_ac_type::CS_AC_READ).0 != 0;
+        let is_writable = (access & cs_ac_type::CS_AC_WRITE).0 != 0;
         match (is_readable, is_writable) {
             (true, false) => Ok(RegAccessType::ReadOnly),
             (false, true) => Ok(RegAccessType::WriteOnly),
