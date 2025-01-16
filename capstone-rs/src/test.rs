@@ -120,12 +120,12 @@ fn test_x86_names() {
             assert_eq!(cs.group_name(InsnGroupId(1)), Some(String::from("jump")));
 
             let reg_id = RegId(250);
-            if let Some(_) = cs.reg_name(reg_id) {
+            if cs.reg_name(reg_id).is_some() {
                 panic!("invalid register worked")
             }
 
             let insn_id = InsnId(6000);
-            if let Some(_) = cs.insn_name(insn_id) {
+            if cs.insn_name(insn_id).is_some() {
                 panic!("invalid instruction worked")
             }
 

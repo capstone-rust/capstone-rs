@@ -143,7 +143,7 @@ impl<'a> AsRef<[Insn<'a>]> for Instructions<'a> {
     }
 }
 
-impl<'a> Drop for Instructions<'a> {
+impl Drop for Instructions<'_> {
     fn drop(&mut self) {
         if !self.is_empty() {
             unsafe {
@@ -199,7 +199,7 @@ pub struct Insn<'a> {
 pub struct InsnDetail<'a>(pub(crate) &'a cs_detail, pub(crate) Arch);
 
 #[allow(clippy::len_without_is_empty)]
-impl<'a> Insn<'a> {
+impl Insn<'_> {
     /// Create an `Insn` from a raw pointer to a [`capstone_sys::cs_insn`].
     ///
     /// This function serves to allow integration with libraries which generate `capstone_sys::cs_insn`'s internally.
@@ -280,7 +280,7 @@ impl<'a> Insn<'a> {
     }
 }
 
-impl<'a> From<&Insn<'_>> for OwnedInsn<'a> {
+impl From<&Insn<'_>> for OwnedInsn<'_> {
     // SAFETY: assumes that `cs_detail` struct transitively only contains owned
     // types and no pointers, including the union over the architecture-specific
     // types.
@@ -324,7 +324,7 @@ pub struct OwnedInsn<'a> {
     pub(crate) _marker: PhantomData<&'a InsnDetail<'a>>,
 }
 
-impl<'a> Debug for Insn<'a> {
+impl Debug for Insn<'_> {
     fn fmt(&self, fmt: &mut Formatter) -> Result<(), Error> {
         fmt.debug_struct("Insn")
             .field("address", &self.address())
@@ -336,7 +336,7 @@ impl<'a> Debug for Insn<'a> {
     }
 }
 
-impl<'a> Display for Insn<'a> {
+impl Display for Insn<'_> {
     fn fmt(&self, fmt: &mut Formatter) -> fmt::Result {
         write!(fmt, "{:#x}: ", self.address())?;
         if let Some(mnemonic) = self.mnemonic() {
@@ -349,7 +349,7 @@ impl<'a> Display for Insn<'a> {
     }
 }
 
-impl<'a> Drop for OwnedInsn<'a> {
+impl Drop for OwnedInsn<'_> {
     fn drop(&mut self) {
         if let Some(ptr) = core::ptr::NonNull::new(self.insn.detail) {
             unsafe { drop(Box::from_raw(ptr.as_ptr())) }
@@ -357,19 +357,19 @@ impl<'a> Drop for OwnedInsn<'a> {
     }
 }
 
-impl<'a> Debug for OwnedInsn<'a> {
+impl Debug for OwnedInsn<'_> {
     fn fmt(&self, fmt: &mut Formatter) -> Result<(), Error> {
         Debug::fmt(&self.deref(), fmt)
     }
 }
 
-impl<'a> Display for OwnedInsn<'a> {
+impl Display for OwnedInsn<'_> {
     fn fmt(&self, fmt: &mut Formatter) -> fmt::Result {
         Display::fmt(&self.deref(), fmt)
     }
 }
 
-impl<'a> InsnDetail<'a> {
+impl InsnDetail<'_> {
     #[cfg(feature = "full")]
     /// Returns the implicit read registers
     pub fn regs_read(&self) -> &[RegId] {
@@ -436,7 +436,7 @@ impl<'a> InsnDetail<'a> {
 }
 
 #[cfg(feature = "full")]
-impl<'a> Debug for InsnDetail<'a> {
+impl Debug for InsnDetail<'_> {
     fn fmt(&self, fmt: &mut Formatter) -> fmt::Result {
         fmt.debug_struct("Detail")
             .field("regs_read", &self.regs_read())
@@ -453,7 +453,7 @@ impl<'a> Debug for InsnDetail<'a> {
     }
 }
 
-impl<'a> Display for Instructions<'a> {
+impl Display for Instructions<'_> {
     fn fmt(&self, fmt: &mut Formatter) -> fmt::Result {
         for instruction in self.iter() {
             write!(fmt, "{:x}:\t", instruction.address())?;

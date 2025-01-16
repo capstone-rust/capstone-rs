@@ -76,7 +76,7 @@ impl_PartialEq_repr_fields!(BpfOpMem;
 
 impl cmp::Eq for BpfOpMem {}
 
-impl<'a> From<&'a cs_bpf_op> for BpfOperand {
+impl From<&cs_bpf_op> for BpfOperand {
     fn from(insn: &cs_bpf_op) -> BpfOperand {
         match insn.type_ {
             bpf_op_type::BPF_OP_EXT => BpfOperand::Ext(unsafe { insn.__bindgen_anon_1.ext }),

@@ -171,7 +171,7 @@ pub enum ArmOperandType {
 #[derive(Debug, Copy, Clone)]
 pub struct ArmOpMem(pub(crate) arm_op_mem);
 
-impl<'a> ArmInsnDetail<'a> {
+impl ArmInsnDetail<'_> {
     /// Whether the instruction is a user mode
     pub fn usermode(&self) -> bool {
         self.0.usermode
@@ -263,7 +263,7 @@ impl Default for ArmOperand {
     }
 }
 
-impl<'a> From<&'a cs_arm_op> for ArmOperand {
+impl From<&cs_arm_op> for ArmOperand {
     fn from(op: &cs_arm_op) -> ArmOperand {
         let shift = ArmShift::new(op.shift.type_, op.shift.value);
         let op_type = ArmOperandType::new(op.type_, op.__bindgen_anon_1);

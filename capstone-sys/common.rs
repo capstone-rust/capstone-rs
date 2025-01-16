@@ -12,7 +12,7 @@ pub struct CapstoneArchInfo<'a> {
     cs_name: &'a str,
 }
 
-impl<'a> CapstoneArchInfo<'a> {
+impl CapstoneArchInfo<'_> {
     /// Get the name of the C header
     pub fn header_name(&self) -> &str {
         self.header_name

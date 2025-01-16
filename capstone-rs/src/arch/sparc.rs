@@ -35,7 +35,7 @@ pub enum SparcOperand {
     Invalid,
 }
 
-impl<'a> SparcInsnDetail<'a> {
+impl SparcInsnDetail<'_> {
     /// Condition codes
     pub fn cc(&self) -> SparcCC {
         self.0.cc
@@ -84,7 +84,7 @@ impl_PartialEq_repr_fields!(SparcOpMem;
 
 impl cmp::Eq for SparcOpMem {}
 
-impl<'a> From<&'a cs_sparc_op> for SparcOperand {
+impl From<&cs_sparc_op> for SparcOperand {
     fn from(insn: &cs_sparc_op) -> SparcOperand {
         match insn.type_ {
             sparc_op_type::SPARC_OP_REG => {
