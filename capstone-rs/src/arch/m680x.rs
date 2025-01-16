@@ -181,7 +181,7 @@ impl Default for M680xOperandType {
     }
 }
 
-impl<'a> From<&'a cs_m680x_op> for M680xOperand {
+impl From<&cs_m680x_op> for M680xOperand {
     fn from(op: &cs_m680x_op) -> M680xOperand {
         let op_type = match op.type_ {
             m680x_op_type::M680X_OP_REGISTER => {

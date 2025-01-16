@@ -610,7 +610,7 @@ macro_rules! detail_defs {
 
             $(
                 $( #[$func_attr] )+
-                pub fn $arch_name(&'a self) -> Option<& $InsnDetail> {
+                pub fn $arch_name(&'a self) -> Option<&'a $InsnDetail> {
                     if let ArchDetail::$Detail(ref arch_detail) = *self {
                         Some(arch_detail)
                     } else {

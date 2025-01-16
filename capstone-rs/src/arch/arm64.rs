@@ -139,7 +139,7 @@ pub enum Arm64OperandType {
 #[derive(Debug, Copy, Clone)]
 pub struct Arm64OpMem(pub(crate) arm64_op_mem);
 
-impl<'a> Arm64InsnDetail<'a> {
+impl Arm64InsnDetail<'_> {
     /// Condition codes
     pub fn cc(&self) -> Arm64CC {
         self.0.cc
@@ -224,7 +224,7 @@ impl Arm64Shift {
     }
 }
 
-impl<'a> From<&'a cs_arm64_op> for Arm64Operand {
+impl From<&cs_arm64_op> for Arm64Operand {
     fn from(op: &cs_arm64_op) -> Arm64Operand {
         let shift = Arm64Shift::new(op.shift.type_, op.shift.value);
         let op_type = Arm64OperandType::new(op.type_, op.__bindgen_anon_1);

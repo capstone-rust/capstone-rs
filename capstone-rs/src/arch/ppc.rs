@@ -18,7 +18,7 @@ use crate::instruction::{RegId, RegIdInt};
 /// Contains PPC-specific details for an instruction
 pub struct PpcInsnDetail<'a>(pub(crate) &'a cs_ppc);
 
-impl<'a> PpcInsnDetail<'a> {
+impl PpcInsnDetail<'_> {
     /// Branch code for branch instructions
     pub fn bc(&self) -> PpcBc {
         self.0.bc
@@ -115,7 +115,7 @@ impl cmp::PartialEq for PpcOpCrx {
 
 impl cmp::Eq for PpcOpCrx {}
 
-impl<'a> From<&'a cs_ppc_op> for PpcOperand {
+impl From<&cs_ppc_op> for PpcOperand {
     fn from(insn: &cs_ppc_op) -> PpcOperand {
         match insn.type_ {
             ppc_op_type::PPC_OP_REG => {

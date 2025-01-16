@@ -77,7 +77,7 @@ impl_PartialEq_repr_fields!(SysZOpMem;
 
 impl cmp::Eq for SysZOpMem {}
 
-impl <'a> From<&'a cs_sysz_op> for SysZOperand {
+impl  From<&cs_sysz_op> for SysZOperand {
     fn from(insn: &cs_sysz_op) -> SysZOperand {
         match insn.type_ {
             sysz_op_type::SYSZ_OP_REG => {

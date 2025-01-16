@@ -40,7 +40,7 @@ define_cs_enum_wrapper_reverse!(
     => No = TMS320C64X_FUNIT_NO;
 );
 
-impl<'a> Tms320c64xInsnDetail<'a> {
+impl Tms320c64xInsnDetail<'_> {
     /// Whether condition is zero
     pub fn is_condition_zero(&self) -> bool {
         self.0.condition.zero != 0
@@ -220,7 +220,7 @@ impl_PartialEq_repr_fields!(Tms320c64xOpMem;
 
 impl cmp::Eq for Tms320c64xOpMem {}
 
-impl<'a> From<&'a cs_tms320c64x_op> for Tms320c64xOperand {
+impl From<&cs_tms320c64x_op> for Tms320c64xOperand {
     fn from(insn: &cs_tms320c64x_op) -> Tms320c64xOperand {
         match insn.type_ {
             tms320c64x_op_type::TMS320C64X_OP_REG => {

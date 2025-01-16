@@ -23,7 +23,7 @@ use crate::prelude::*;
 /// Contains M68K-specific details for an instruction
 pub struct M68kInsnDetail<'a>(pub(crate) &'a cs_m68k);
 
-impl<'a> M68kInsnDetail<'a> {
+impl M68kInsnDetail<'_> {
     /// size of data operand works on in bytes (.b, .w, .l, etc)
     pub fn op_size(&self) -> Option<M68kOpSize> {
         M68kOpSize::new(&self.0.op_size)
@@ -444,7 +444,7 @@ impl_PartialEq_repr_fields!(M68kOpMem;
 
 impl cmp::Eq for M68kOpMem {}
 
-impl<'a> From<&'a cs_m68k_op> for M68kOperand {
+impl From<&cs_m68k_op> for M68kOperand {
     fn from(insn: &cs_m68k_op) -> M68kOperand {
         M68kOperand::new(insn)
     }
