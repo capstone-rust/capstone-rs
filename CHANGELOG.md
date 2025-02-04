@@ -6,8 +6,17 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [UNRELEASED] - YYYY-MM-DD
+### Added
+- BPF arch support
+- Detail support for SystemZ
+- Make RegAccessType available for ARM
+
 ### Changed
 - Bump minimum Rust version to 1.70.0
+
+### Fixed
+- Build on Windows platforms when using `bindgen` feature
+- Segfault when running on s390x (AKA SystemZ)
 
 ### Removed
 - `From<u32> for RegId` impl
