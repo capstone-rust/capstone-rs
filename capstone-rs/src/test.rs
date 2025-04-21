@@ -3510,3 +3510,97 @@ fn test_arch_bpf_detail() {
         ],
     );
 }
+
+#[cfg(feature = "full")]
+fn assert_regs_access_matches(
+    cs: &mut Capstone,
+    bytes: &[u8],
+    expected_regs_access: CsResult<&[RegAccess]>,
+) {
+    let expected_regs_access = expected_regs_access.clone().map(|accesses: &[RegAccess]| {
+        accesses
+            .iter()
+            .map(|regs| {
+                let mut regs = regs.clone();
+                regs.sort();
+                regs
+            })
+            .collect::<Vec<RegAccess>>()
+    });
+    let insns = cs.disasm_all(bytes, 0x1000).unwrap();
+    let reg_access: CsResult<Vec<RegAccess>> = insns
+        .iter()
+        .map(|insn| {
+            cs.regs_access(insn).map(|mut regs| {
+                regs.sort();
+                regs
+            })
+        })
+        .collect();
+    let reg_access = reg_access.as_ref().map(|access| access.as_slice());
+    assert_eq!(reg_access, expected_regs_access.as_deref());
+}
+
+fn as_reg_access<T: TryInto<RegIdInt> + Copy + Debug>(read: &[T], write: &[T]) -> RegAccess {
+    let as_reg_access = |input: &[T]| -> Vec<RegId> {
+        input
+            .iter()
+            .copied()
+            .map(|reg| {
+                RegId(
+                    reg.try_into()
+                        .unwrap_or_else(|_| panic!("Failed to create RegInt")),
+                )
+            })
+            .collect()
+    };
+    RegAccess {
+        read: as_reg_access(read),
+        write: as_reg_access(write),
+    }
+}
+
+#[cfg(feature = "full")]
+fn test_regs_access(mut cs: Capstone, code: &[u8], expected_regs_access: CsResult<&[RegAccess]>) {
+    // should always fail when not in debug mode
+    assert_regs_access_matches(&mut cs, code, CsResult::Err(Error::DetailOff));
+
+    // now detail is enabled, check for expected outcome
+    cs.set_detail(true).expect("failed to set detail");
+    assert_regs_access_matches(&mut cs, code, expected_regs_access);
+}
+
+#[cfg(feature = "full")]
+#[test]
+fn test_regs_access_arm() {
+    use crate::arch::arm::ArmReg::*;
+
+    test_regs_access(
+        Capstone::new()
+            .arm()
+            .mode(arm::ArchMode::Thumb)
+            .build()
+            .unwrap(),
+        b"\xf0\xbd",
+        CsResult::Ok(&[as_reg_access(
+            &[ARM_REG_SP],
+            &[
+                ARM_REG_SP, ARM_REG_R4, ARM_REG_R5, ARM_REG_R6, ARM_REG_R7, ARM_REG_PC,
+            ],
+        )]),
+    );
+}
+
+#[cfg(feature = "full")]
+#[test]
+fn test_regs_tms320c64x() {
+    test_regs_access(
+        Capstone::new()
+            .tms320c64x()
+            .mode(tms320c64x::ArchMode::Default)
+            .build()
+            .unwrap(),
+        b"\x01\xac\x88\x40",
+        CsResult::Err(Error::UnsupportedArch),
+    );
+}

@@ -14,7 +14,7 @@ use crate::instruction::{Insn, InsnDetail, InsnGroupId, InsnId, Instructions, Re
 
 use {crate::ffi::str_from_cstr_ptr, alloc::string::ToString, libc::c_uint};
 
-/// This is taken from the [python bindings](https://github.com/capstone-engine/capstone/blob/5fb8a423d4455cade99b12912142fd3a0c10d957/bindings/python/capstone/__init__.py#L929)
+/// taken from the [python bindings](https://github.com/capstone-engine/capstone/blob/5fb8a423d4455cade99b12912142fd3a0c10d957/bindings/python/capstone/__init__.py#L929)
 const MAX_NUM_REGISTERS: usize = 64;
 
 /// An instance of the capstone disassembler
@@ -103,9 +103,18 @@ impl Iterator for EmptyExtraModeIter {
     }
 }
 
+#[derive(Clone, Debug, PartialEq, Eq, Hash)]
 pub struct RegAccess {
     pub read: Vec<RegId>,
     pub write: Vec<RegId>,
+}
+
+impl RegAccess {
+    /// Sort read and write fields
+    pub fn sort(&mut self) {
+        self.read.sort_unstable();
+        self.write.sort_unstable();
+    }
 }
 
 impl Capstone {
@@ -373,19 +382,20 @@ impl Capstone {
         }
     }
 
-    /// Get the registers are which are read to and written to
-    pub fn regs_access_buf(&self, insn: &Insn) -> CsResult<RegAccess> {
+    // todo(tmfink): integrate into regs_read()/regs_write() methods to avoid the need to call
+    /// Get the registers which are read and written
+    pub fn regs_access(&self, insn: &Insn) -> CsResult<RegAccess> {
         let mut read = Vec::new();
         let mut write = Vec::new();
 
-        self.regs_access(insn, &mut read, &mut write)?;
+        self.regs_access_buf(insn, &mut read, &mut write)?;
 
         Ok(RegAccess { read, write })
     }
 
-    /// Get the registers are which are read to and written to\
-    /// the registers are pushed to the back of the provided buffers
-    pub fn regs_access(
+    /// Get the registers are which are read and written.
+    /// The registers are pushed to the back of the provided buffers
+    pub(crate) fn regs_access_buf(
         &self,
         insn: &Insn,
         read: &mut Vec<RegId>,
