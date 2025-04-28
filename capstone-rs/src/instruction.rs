@@ -2,6 +2,7 @@ use alloc::{self, boxed::Box};
 use core::convert::TryFrom;
 use core::fmt::{self, Debug, Display, Error, Formatter};
 use core::marker::PhantomData;
+use core::mem::MaybeUninit;
 use core::ops::Deref;
 use core::slice;
 use core::str;
@@ -12,6 +13,7 @@ use crate::arch::ArchDetail;
 use crate::constants::Arch;
 
 use crate::ffi::str_from_cstr_ptr;
+use crate::{RegsAccessBuf, REGS_ACCESS_BUF_LEN};
 
 /// Represents a slice of [`Insn`] returned by [`Capstone`](crate::Capstone) `disasm*()` methods.
 ///
@@ -167,6 +169,50 @@ pub struct Insn<'a> {
     pub(crate) _marker: PhantomData<&'a InsnDetail<'a>>,
 }
 
+pub(crate) struct RWRegsAccessBuf {
+    pub(crate) read_buf: RegsAccessBuf,
+    pub(crate) write_buf: RegsAccessBuf,
+}
+
+impl RWRegsAccessBuf {
+    pub(crate) fn new() -> Self {
+        Self {
+            read_buf: [MaybeUninit::uninit(); REGS_ACCESS_BUF_LEN],
+            write_buf: [MaybeUninit::uninit(); REGS_ACCESS_BUF_LEN],
+        }
+    }
+}
+
+/// Contains partially initialized buffer of registers
+#[cfg_attr(not(feature = "full"), allow(dead_code))]
+pub(crate) struct PartialInitRegsAccess {
+    pub(crate) regs_buf: Box<RWRegsAccessBuf>,
+    pub(crate) read_len: u16,
+    pub(crate) write_len: u16,
+}
+
+// make sure len fields can be stored as u16
+static_assertions::const_assert!(crate::REGS_ACCESS_BUF_LEN <= u16::MAX as usize);
+
+#[cfg_attr(not(feature = "full"), allow(dead_code))]
+impl PartialInitRegsAccess {
+    unsafe fn maybeuninit_slice_to_slice(buf: &[MaybeUninit<RegId>]) -> &[RegId] {
+        &*(buf as *const [MaybeUninit<RegId>] as *const [RegId])
+    }
+
+    pub(crate) fn read(&self) -> &[RegId] {
+        unsafe {
+            Self::maybeuninit_slice_to_slice(&self.regs_buf.read_buf[..self.read_len as usize])
+        }
+    }
+
+    pub(crate) fn write(&self) -> &[RegId] {
+        unsafe {
+            Self::maybeuninit_slice_to_slice(&self.regs_buf.write_buf[..self.write_len as usize])
+        }
+    }
+}
+
 /// Contains architecture-independent details about an [`Insn`].
 ///
 /// To get more detail about the instruction, enable extra details for the
@@ -196,7 +242,13 @@ pub struct Insn<'a> {
 /// To get additional architecture-specific information, use the
 /// [`.arch_detail()`](Self::arch_detail) method to get an `ArchDetail` enum.
 ///
-pub struct InsnDetail<'a>(pub(crate) &'a cs_detail, pub(crate) Arch);
+pub struct InsnDetail<'a> {
+    pub(crate) detail: &'a cs_detail,
+    pub(crate) arch: Arch,
+
+    #[cfg_attr(not(feature = "full"), allow(dead_code))]
+    partial_init_regs_access: Option<PartialInitRegsAccess>,
+}
 
 #[allow(clippy::len_without_is_empty)]
 impl Insn<'_> {
@@ -275,8 +327,16 @@ impl Insn<'_> {
     /// # Safety
     /// The [`cs_insn::detail`] pointer must be valid and non-null.
     #[inline]
-    pub(crate) unsafe fn detail(&self, arch: Arch) -> InsnDetail {
-        InsnDetail(&*self.insn.detail, arch)
+    pub(crate) unsafe fn detail(
+        &self,
+        arch: Arch,
+        partial_init_regs_access: Option<PartialInitRegsAccess>,
+    ) -> InsnDetail<'_> {
+        InsnDetail {
+            detail: &*self.insn.detail,
+            arch,
+            partial_init_regs_access,
+        }
     }
 }
 
@@ -371,20 +431,28 @@ impl Display for OwnedInsn<'_> {
 
 impl InsnDetail<'_> {
     #[cfg(feature = "full")]
-    /// Returns the implicit read registers
+    /// Returns the read registers
     pub fn regs_read(&self) -> &[RegId] {
-        unsafe {
-            &*(&self.0.regs_read[..self.0.regs_read_count as usize] as *const [RegIdInt]
-                as *const [RegId])
+        if let Some(partial) = self.partial_init_regs_access.as_ref() {
+            partial.read()
+        } else {
+            unsafe {
+                &*(&self.detail.regs_read[..self.detail.regs_read_count as usize]
+                    as *const [RegIdInt] as *const [RegId])
+            }
         }
     }
 
     #[cfg(feature = "full")]
-    /// Returns the implicit write registers
+    /// Returns the written to registers
     pub fn regs_write(&self) -> &[RegId] {
-        unsafe {
-            &*(&self.0.regs_write[..self.0.regs_write_count as usize] as *const [RegIdInt]
-                as *const [RegId])
+        if let Some(partial) = self.partial_init_regs_access.as_ref() {
+            partial.write()
+        } else {
+            unsafe {
+                &*(&self.detail.regs_write[..self.detail.regs_write_count as usize]
+                    as *const [RegIdInt] as *const [RegId])
+            }
         }
     }
 
@@ -392,7 +460,7 @@ impl InsnDetail<'_> {
     /// Returns the groups to which this instruction belongs
     pub fn groups(&self) -> &[InsnGroupId] {
         unsafe {
-            &*(&self.0.groups[..self.0.groups_count as usize] as *const [InsnGroupIdInt]
+            &*(&self.detail.groups[..self.detail.groups_count as usize] as *const [InsnGroupIdInt]
                 as *const [InsnGroupId])
         }
     }
@@ -407,10 +475,10 @@ impl InsnDetail<'_> {
                 use crate::Arch::*;
                 $( use crate::arch::$arch::$insn_detail; )*
 
-                return match self.1 {
+                return match self.arch {
                     $(
                         $ARCH => {
-                            $detail($insn_detail(unsafe { &self.0.__bindgen_anon_1.$arch }))
+                            $detail($insn_detail(unsafe { &self.detail.__bindgen_anon_1.$arch }))
                         }
                     )*
                 }
