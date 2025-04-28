@@ -271,7 +271,7 @@ pub type cs_vsnprintf_t = ::core::option::Option<
         str_: *mut libc::c_char,
         size: usize,
         format: *const libc::c_char,
-        ap: *mut __va_list_tag,
+        ap: *mut va_list,
     ) -> libc::c_int,
 >;
 #[doc = " User-defined dynamic memory related functions: malloc/calloc/realloc/free/vsnprintf()\n By default, Capstone uses system's malloc(), calloc(), realloc(), free() & vsnprintf()."]
@@ -15581,9 +15581,9 @@ extern "C" {
     pub fn cs_regs_access(
         handle: csh,
         insn: *const cs_insn,
-        regs_read: *mut u16,
+        regs_read: *mut cs_regs,
         regs_read_count: *mut u8,
-        regs_write: *mut u16,
+        regs_write: *mut cs_regs,
         regs_write_count: *mut u8,
     ) -> cs_err::Type;
 }
