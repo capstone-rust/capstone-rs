@@ -1,3 +1,4 @@
+use alloc::boxed::Box;
 use alloc::string::String;
 use core::convert::From;
 use core::marker::PhantomData;
@@ -10,10 +11,23 @@ use capstone_sys::*;
 
 use crate::arch::CapstoneBuilder;
 use crate::constants::{Arch, Endian, ExtraMode, Mode, OptValue, Syntax};
-use crate::error::*;
 use crate::instruction::{Insn, InsnDetail, InsnGroupId, InsnId, Instructions, RegId};
+use crate::{error::*, PartialInitRegsAccess};
 
 use {crate::ffi::str_from_cstr_ptr, alloc::string::ToString, libc::c_uint};
+
+/// Length of `cs_regs`
+pub(crate) const REGS_ACCESS_BUF_LEN: usize = 64;
+
+// todo(tmfink) When MSRV is 1.75 or later, can use:
+//pub(crate) const REGS_ACCESS_BUF_LEN: usize = unsafe { core::mem::zeroed::<cs_regs>() }.len();
+
+/// Equivalent to `MaybeUninit<cs_regs>`
+pub(crate) type RegsAccessBuf = [MaybeUninit<RegId>; REGS_ACCESS_BUF_LEN];
+
+static_assertions::assert_eq_size!(RegId, u16);
+static_assertions::assert_eq_size!(RegsAccessBuf, cs_regs);
+static_assertions::assert_type_eq_all!([u16; REGS_ACCESS_BUF_LEN], cs_regs);
 
 /// An instance of the capstone disassembler
 ///
@@ -101,17 +115,19 @@ impl Iterator for EmptyExtraModeIter {
     }
 }
 
-#[derive(Clone, Debug, PartialEq, Eq, Hash)]
-pub struct RegAccess {
-    pub read: Vec<RegId>,
-    pub write: Vec<RegId>,
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
+pub struct RegAccessRef<'a> {
+    pub(crate) read: &'a [RegId],
+    pub(crate) write: &'a [RegId],
 }
 
-impl RegAccess {
-    /// Sort read and write fields
-    pub fn sort(&mut self) {
-        self.read.sort_unstable();
-        self.write.sort_unstable();
+impl RegAccessRef<'_> {
+    pub fn read(&self) -> &[RegId] {
+        self.read
+    }
+
+    pub fn write(&self) -> &[RegId] {
+        self.write
     }
 }
 
@@ -380,39 +396,24 @@ impl Capstone {
         }
     }
 
-    // todo(tmfink): integrate into regs_read()/regs_write() methods to avoid the need to call
-    /// Get the registers which are read and written
-    pub fn regs_access(&self, insn: &Insn) -> CsResult<RegAccess> {
-        let mut read = Vec::new();
-        let mut write = Vec::new();
-
-        self.regs_access_buf(insn, &mut read, &mut write)?;
-
-        Ok(RegAccess { read, write })
-    }
-
-    /// Get the registers are which are read and written.
-    /// The registers are pushed to the back of the provided buffers
-    pub(crate) fn regs_access_buf(
+    /// Get the registers are which are read and written
+    pub(crate) fn regs_access<'buf>(
         &self,
         insn: &Insn,
-        read: &mut Vec<RegId>,
-        write: &mut Vec<RegId>,
-    ) -> CsResult<()> {
+        regs_read: &'buf mut RegsAccessBuf,
+        regs_write: &'buf mut RegsAccessBuf,
+    ) -> CsResult<RegAccessRef<'buf>> {
         if cfg!(feature = "full") {
             let mut regs_read_count: u8 = 0;
             let mut regs_write_count: u8 = 0;
-
-            let mut regs_write: MaybeUninit<cs_regs> = MaybeUninit::uninit();
-            let mut regs_read: MaybeUninit<cs_regs> = MaybeUninit::uninit();
 
             let err = unsafe {
                 cs_regs_access(
                     self.csh(),
                     &insn.insn as *const cs_insn,
-                    regs_read.as_mut_ptr(),
+                    regs_read.as_mut_ptr() as *mut cs_regs,
                     &mut regs_read_count as *mut _,
-                    regs_write.as_mut_ptr(),
+                    regs_write.as_mut_ptr() as *mut cs_regs,
                     &mut regs_write_count as *mut _,
                 )
             };
@@ -423,23 +424,24 @@ impl Capstone {
 
             // SAFETY: count indicates how many elements are initialized;
             let regs_read_slice: &[RegId] = unsafe {
-                std::slice::from_raw_parts(
+                core::slice::from_raw_parts(
                     regs_read.as_mut_ptr() as *mut RegId,
                     regs_read_count as usize,
                 )
             };
-            read.extend_from_slice(regs_read_slice);
 
             // SAFETY: count indicates how many elements are initialized
             let regs_write_slice: &[RegId] = unsafe {
-                std::slice::from_raw_parts(
+                core::slice::from_raw_parts(
                     regs_write.as_mut_ptr() as *mut RegId,
                     regs_write_count as usize,
                 )
             };
-            write.extend_from_slice(regs_write_slice);
 
-            Ok(())
+            Ok(RegAccessRef {
+                read: regs_read_slice,
+                write: regs_write_slice,
+            })
         } else {
             Err(Error::DetailOff)
         }
@@ -472,7 +474,30 @@ impl Capstone {
         } else if insn.id().0 == 0 {
             Err(Error::IrrelevantDataInSkipData)
         } else {
-            Ok(unsafe { insn.detail(self.arch) })
+            // Call regs_access to get "extra" read/write registers for the instruction.
+            // Capstone only supports this for some architectures, so ignore errors if there are
+            // any.
+            //
+            // This *could* results in wasted effort if the read/write regs are not checked. As
+            // an optimization, we could call regs_access() lazily (i.e. only if InsnDetail
+            // regs_read()/regs_write() are called).
+            let partial_init_regs_access = {
+                let mut regs_buf = Box::new(crate::RWRegsAccessBuf::new());
+                match self.regs_access(insn, &mut regs_buf.read_buf, &mut regs_buf.write_buf) {
+                    Ok(regs_access) => {
+                        let read_len = regs_access.read.len() as u16;
+                        let write_len = regs_access.write.len() as u16;
+                        Some(PartialInitRegsAccess {
+                            regs_buf,
+                            read_len,
+                            write_len,
+                        })
+                    }
+                    Err(_) => None,
+                }
+            };
+
+            Ok(unsafe { insn.detail(self.arch, partial_init_regs_access) })
         }
     }
 

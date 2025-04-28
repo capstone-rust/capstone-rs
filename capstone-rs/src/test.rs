@@ -5,7 +5,7 @@
     clippy::upper_case_acronyms
 )]
 
-use core::{convert::TryInto, fmt::Debug};
+use core::{convert::TryInto, fmt::Debug, mem::MaybeUninit};
 
 use alloc::vec::Vec;
 #[cfg(feature = "full")]
@@ -219,7 +219,7 @@ fn test_instruction_helper(
     bytes: &[u8],
     has_default_syntax: bool,
 ) {
-    println!("{:?}", insn);
+    println!("{:x?}", insn);
 
     // Check mnemonic
     if has_default_syntax && cfg!(feature = "full") {
@@ -385,7 +385,7 @@ fn instructions_match_group<R: Copy + Debug + TryInto<RegIdInt>>(
     let insns: Vec<&Insn> = insns.iter().collect();
 
     // Check number of instructions
-    assert_eq!(insns.len(), expected_insns.len());
+    assert_eq!(insns.len(), expected_insns.len(), "number of insns");
 
     #[cfg(feature = "full")]
     for (
@@ -504,10 +504,28 @@ fn test_instruction_details() {
         ("ret", b"\xc3", &[RET], &[X86_REG_RSP], &[X86_REG_RSP]),
         ("syscall", b"\x0f\x05", &[INT], &[], &[]),
         ("iretd", b"\xcf", &[IRET], &[], &[]),
-        ("sub", b"\x48\x83\xec\x08", &[], &[], &[X86_REG_EFLAGS]),
-        ("test", b"\x48\x85\xc0", &[], &[], &[X86_REG_EFLAGS]),
-        ("mov", b"\x48\x8b\x05\x95\x4a\x4d\x00", &[], &[], &[]),
-        ("mov", b"\xb9\x04\x02\x00\x00", &[], &[], &[]),
+        (
+            "sub",
+            b"\x48\x83\xec\x08",
+            &[],
+            &[X86_REG_RSP],
+            &[X86_REG_RSP, X86_REG_EFLAGS],
+        ),
+        (
+            "test",
+            b"\x48\x85\xc0",
+            &[],
+            &[X86_REG_RAX],
+            &[X86_REG_EFLAGS],
+        ),
+        (
+            "mov",
+            b"\x48\x8b\x05\x95\x4a\x4d\x00",
+            &[],
+            &[X86_REG_RIP],
+            &[X86_REG_RAX],
+        ),
+        ("mov", b"\xb9\x04\x02\x00\x00", &[], &[], &[X86_REG_ECX]),
     ];
 
     let mut cs = Capstone::new()
@@ -674,15 +692,15 @@ fn test_syntax() {
             "subq",
             b"\x48\x83\xec\x08",
             &[],
-            &[],
-            &[X86_REG_EFLAGS],
+            &[X86_REG_RSP],
+            &[X86_REG_EFLAGS, X86_REG_RSP],
         ),
         (
             "test",
             "testq",
             b"\x48\x85\xc0",
             &[],
-            &[],
+            &[X86_REG_RAX],
             &[X86_REG_EFLAGS],
         ),
         (
@@ -690,10 +708,17 @@ fn test_syntax() {
             "movq",
             b"\x48\x8b\x05\x95\x4a\x4d\x00",
             &[],
-            &[],
-            &[],
+            &[X86_REG_RIP],
+            &[X86_REG_RAX],
         ),
-        ("mov", "movl", b"\xb9\x04\x02\x00\x00", &[], &[], &[]),
+        (
+            "mov",
+            "movl",
+            b"\xb9\x04\x02\x00\x00",
+            &[],
+            &[],
+            &[X86_REG_ECX],
+        ),
     ];
 
     let expected_insns_intel: Vec<ExpectedInsns<X86Reg::Type>> = expected_insns
@@ -3511,13 +3536,43 @@ fn test_arch_bpf_detail() {
     );
 }
 
+#[derive(Clone, Debug, PartialEq, Eq, Hash)]
+#[cfg(feature = "full")]
+struct RegAccessVec {
+    read: Vec<RegId>,
+    write: Vec<RegId>,
+}
+
+#[cfg(feature = "full")]
+impl RegAccessVec {
+    /// Sort read and write fields
+    fn sort(&mut self) {
+        self.read.sort_unstable();
+        self.write.sort_unstable();
+    }
+}
+
+/// Get the registers which are read and written
+#[cfg(feature = "full")]
+fn regs_access_vec(cs: &Capstone, insn: &Insn) -> CsResult<RegAccessVec> {
+    let mut regs_read = [MaybeUninit::uninit(); REGS_ACCESS_BUF_LEN];
+    let mut regs_write = [MaybeUninit::uninit(); REGS_ACCESS_BUF_LEN];
+
+    let reg_access = cs.regs_access(insn, &mut regs_read, &mut regs_write)?;
+
+    Ok(RegAccessVec {
+        read: reg_access.read.to_vec(),
+        write: reg_access.write.to_vec(),
+    })
+}
+
 #[cfg(feature = "full")]
 fn assert_regs_access_matches(
     cs: &mut Capstone,
     bytes: &[u8],
-    expected_regs_access: CsResult<&[RegAccess]>,
+    expected_regs_access: CsResult<&[RegAccessVec]>,
 ) {
-    let expected_regs_access = expected_regs_access.clone().map(|accesses: &[RegAccess]| {
+    let expected_regs_access = expected_regs_access.map(|accesses: &[RegAccessVec]| {
         accesses
             .iter()
             .map(|regs| {
@@ -3525,13 +3580,13 @@ fn assert_regs_access_matches(
                 regs.sort();
                 regs
             })
-            .collect::<Vec<RegAccess>>()
+            .collect::<Vec<RegAccessVec>>()
     });
     let insns = cs.disasm_all(bytes, 0x1000).unwrap();
-    let reg_access: CsResult<Vec<RegAccess>> = insns
+    let reg_access: CsResult<Vec<RegAccessVec>> = insns
         .iter()
         .map(|insn| {
-            cs.regs_access(insn).map(|mut regs| {
+            regs_access_vec(cs, insn).map(|mut regs| {
                 regs.sort();
                 regs
             })
@@ -3541,7 +3596,7 @@ fn assert_regs_access_matches(
     assert_eq!(reg_access, expected_regs_access.as_deref());
 }
 
-fn as_reg_access<T: TryInto<RegIdInt> + Copy + Debug>(read: &[T], write: &[T]) -> RegAccess {
+fn as_reg_access<T: TryInto<RegIdInt> + Copy + Debug>(read: &[T], write: &[T]) -> RegAccessVec {
     let as_reg_access = |input: &[T]| -> Vec<RegId> {
         input
             .iter()
@@ -3554,14 +3609,18 @@ fn as_reg_access<T: TryInto<RegIdInt> + Copy + Debug>(read: &[T], write: &[T]) -
             })
             .collect()
     };
-    RegAccess {
+    RegAccessVec {
         read: as_reg_access(read),
         write: as_reg_access(write),
     }
 }
 
 #[cfg(feature = "full")]
-fn test_regs_access(mut cs: Capstone, code: &[u8], expected_regs_access: CsResult<&[RegAccess]>) {
+fn test_regs_access(
+    mut cs: Capstone,
+    code: &[u8],
+    expected_regs_access: CsResult<&[RegAccessVec]>,
+) {
     // should always fail when not in debug mode
     assert_regs_access_matches(&mut cs, code, CsResult::Err(Error::DetailOff));
 
