@@ -261,6 +261,7 @@ fn write_bindgen_bindings(
         .constified_enum_module("cs_err|cs_group_type|cs_opt_value")
         .bitfield_enum("cs_mode|cs_ac_type")
         .rustified_enum(".*")
+        .array_pointers_in_arguments(true)
         .no_copy("cs_insn");
 
     // Whitelist cs_.* functions and types

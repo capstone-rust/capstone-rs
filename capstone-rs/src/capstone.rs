@@ -1,6 +1,7 @@
 use alloc::string::String;
 use core::convert::From;
 use core::marker::PhantomData;
+use core::mem::MaybeUninit;
 
 use libc::{c_int, c_void};
 
@@ -13,9 +14,6 @@ use crate::error::*;
 use crate::instruction::{Insn, InsnDetail, InsnGroupId, InsnId, Instructions, RegId};
 
 use {crate::ffi::str_from_cstr_ptr, alloc::string::ToString, libc::c_uint};
-
-/// taken from the [python bindings](https://github.com/capstone-engine/capstone/blob/5fb8a423d4455cade99b12912142fd3a0c10d957/bindings/python/capstone/__init__.py#L929)
-const MAX_NUM_REGISTERS: usize = 64;
 
 /// An instance of the capstone disassembler
 ///
@@ -405,16 +403,16 @@ impl Capstone {
             let mut regs_read_count: u8 = 0;
             let mut regs_write_count: u8 = 0;
 
-            let mut regs_write = [0u16; MAX_NUM_REGISTERS];
-            let mut regs_read = [0u16; MAX_NUM_REGISTERS];
+            let mut regs_write: MaybeUninit<cs_regs> = MaybeUninit::uninit();
+            let mut regs_read: MaybeUninit<cs_regs> = MaybeUninit::uninit();
 
             let err = unsafe {
                 cs_regs_access(
                     self.csh(),
                     &insn.insn as *const cs_insn,
-                    &mut regs_read as *mut _,
+                    regs_read.as_mut_ptr(),
                     &mut regs_read_count as *mut _,
-                    &mut regs_write as *mut _,
+                    regs_write.as_mut_ptr(),
                     &mut regs_write_count as *mut _,
                 )
             };
@@ -423,18 +421,23 @@ impl Capstone {
                 return Err(err.into());
             }
 
-            read.extend(
-                regs_read
-                    .iter()
-                    .take(regs_read_count as usize)
-                    .map(|x| RegId(*x)),
-            );
-            write.extend(
-                regs_write
-                    .iter()
-                    .take(regs_write_count as usize)
-                    .map(|x| RegId(*x)),
-            );
+            // SAFETY: count indicates how many elements are initialized;
+            let regs_read_slice: &[RegId] = unsafe {
+                std::slice::from_raw_parts(
+                    regs_read.as_mut_ptr() as *mut RegId,
+                    regs_read_count as usize,
+                )
+            };
+            read.extend_from_slice(regs_read_slice);
+
+            // SAFETY: count indicates how many elements are initialized
+            let regs_write_slice: &[RegId] = unsafe {
+                std::slice::from_raw_parts(
+                    regs_write.as_mut_ptr() as *mut RegId,
+                    regs_write_count as usize,
+                )
+            };
+            write.extend_from_slice(regs_write_slice);
 
             Ok(())
         } else {
