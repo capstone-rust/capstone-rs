@@ -8,11 +8,11 @@
 #[macro_use]
 extern crate alloc;
 
-#[cfg(any(test, not(feature = "std")))]
+#[cfg(all(test, not(feature = "std")))]
 #[macro_use]
 extern crate std;
 
-#[cfg(any(test, not(feature = "std")))]
+#[cfg(all(test, not(feature = "std")))]
 #[global_allocator]
 static ALLOCATOR: std::alloc::System = std::alloc::System;
 
