@@ -1,6 +1,7 @@
 /* Capstone Disassembler Engine */
 /* By Nguyen Anh Quynh <aquynh@gmail.com>, 2013-2019 */
 
+#include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -131,7 +132,7 @@ static void print_insn_detail(cs_insn *ins)
 		printf("\tUpdate-flags: True\n");
 
 	if (arm64->writeback)
-		printf("\tWrite-back: True\n");
+		printf("\tWrite-back: %s\n", arm64->post_index ? "Post" : "Pre");
 
 	if (arm64->cc)
 		printf("\tCode-condition: %u\n", arm64->cc);
@@ -162,7 +163,25 @@ static void print_insn_detail(cs_insn *ins)
 
 static void test()
 {
-#define ARM64_CODE "\x09\x00\x38\xd5\xbf\x40\x00\xd5\x0c\x05\x13\xd5\x20\x50\x02\x0e\x20\xe4\x3d\x0f\x00\x18\xa0\x5f\xa2\x00\xae\x9e\x9f\x37\x03\xd5\xbf\x33\x03\xd5\xdf\x3f\x03\xd5\x21\x7c\x02\x9b\x21\x7c\x00\x53\x00\x40\x21\x4b\xe1\x0b\x40\xb9\x20\x04\x81\xda\x20\x08\x02\x8b\x10\x5b\xe8\x3c"
+#define ARM64_CODE "\x09\x00\x38\xd5" \
+    "\xbf\x40\x00\xd5" \
+    "\x0c\x05\x13\xd5" \
+    "\x20\x50\x02\x0e" \
+    "\x20\xe4\x3d\x0f" \
+	"\x00\x18\xa0\x5f" \
+	"\xa2\x00\xae\x9e" \
+    "\x9f\x37\x03\xd5" \
+	"\xbf\x33\x03\xd5" \
+	"\xdf\x3f\x03\xd5" \
+	"\x21\x7c\x02\x9b" \
+	"\x21\x7c\x00\x53" \
+	"\x00\x40\x21\x4b" \
+	"\xe1\x0b\x40\xb9" \
+	"\x20\x04\x81\xda" \
+	"\x20\x08\x02\x8b" \
+	"\x10\x5b\xe8\x3c" \
+	"\xfd\x7b\xba\xa9" \
+	"\xfd\xc7\x43\xf8"
 
 	struct platform platforms[] = {
 		{
@@ -219,9 +238,27 @@ static void test()
 	}
 }
 
+void test_macros() {
+	assert(CS_AARCH64(_INS_BL) == ARM64_INS_BL);
+	assert(CS_AARCH64pre(CS_ARCH_) == CS_ARCH_ARM64);
+	assert(CS_AARCH64CC(_AL) == ARM64_CC_AL);
+	assert(CS_AARCH64_VL_(16B) == ARM64_VAS_16B);
+	cs_detail detail = { 0 };
+	CS_cs_aarch64() arm64_detail = { 0 };
+	detail.arm64 = arm64_detail;
+	CS_aarch64_op() op = { 0 };
+	detail.CS_aarch64_.operands[0] = op;
+	CS_aarch64_reg() reg = 1;
+	CS_aarch64_cc() cc = ARM64_CC_AL;
+	CS_aarch64_extender() arm64_extender = ARM64_EXT_SXTB;
+	CS_aarch64_shifter() arm64_shifter = ARM64_SFT_LSL;
+	CS_aarch64_vas() arm64_vas = ARM64_VAS_16B;
+}
+
 int main()
 {
 	test();
+	test_macros();
 
 	return 0;
 }

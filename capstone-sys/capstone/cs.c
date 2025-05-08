@@ -68,6 +68,8 @@
 #include "arch/RISCV/RISCVModule.h"
 #include "arch/MOS65XX/MOS65XXModule.h"
 #include "arch/BPF/BPFModule.h"
+#include "arch/SH/SHModule.h"
+#include "arch/TriCore/TriCoreModule.h"
 
 static const struct {
 	// constructor initialization
@@ -121,7 +123,7 @@ static const struct {
 		PPC_global_init,
 		PPC_option,
 		~(CS_MODE_LITTLE_ENDIAN | CS_MODE_32 | CS_MODE_64 | CS_MODE_BIG_ENDIAN
-				| CS_MODE_QPX),
+				| CS_MODE_QPX | CS_MODE_PS),
 	},
 #else
 	{ NULL, NULL, 0 },
@@ -167,7 +169,7 @@ static const struct {
 	{
 		TMS320C64x_global_init,
 		TMS320C64x_option,
-		~(CS_MODE_BIG_ENDIAN),
+		~(CS_MODE_LITTLE_ENDIAN | CS_MODE_BIG_ENDIAN),
 	},
 #else
 	{ NULL, NULL, 0 },
@@ -231,6 +233,28 @@ static const struct {
 #else
 	{ NULL, NULL, 0 },
 #endif
+#ifdef CAPSTONE_HAS_SH
+	{
+		SH_global_init,
+		SH_option,
+		~(CS_MODE_SH2 | CS_MODE_SH2A | CS_MODE_SH3 |
+		  CS_MODE_SH4 | CS_MODE_SH4A |
+		  CS_MODE_SHFPU | CS_MODE_SHDSP|CS_MODE_BIG_ENDIAN),
+	},
+#else
+	{ NULL, NULL, 0 },
+#endif
+#ifdef CAPSTONE_HAS_TRICORE
+	{
+		TRICORE_global_init,
+		TRICORE_option,
+		~(CS_MODE_TRICORE_110 | CS_MODE_TRICORE_120 | CS_MODE_TRICORE_130
+		| CS_MODE_TRICORE_131 | CS_MODE_TRICORE_160 | CS_MODE_TRICORE_161
+		| CS_MODE_TRICORE_162 | CS_MODE_LITTLE_ENDIAN),
+	},
+#else
+	{ NULL, NULL, 0 },
+#endif
 };
 
 // bitmask of enabled architectures
@@ -282,6 +306,12 @@ static const uint32_t all_arch = 0
 #endif
 #ifdef CAPSTONE_HAS_RISCV
 	| (1 << CS_ARCH_RISCV)
+#endif
+#ifdef CAPSTONE_HAS_SH
+	| (1 << CS_ARCH_SH)
+#endif
+#ifdef CAPSTONE_HAS_TRICORE
+	| (1 << CS_ARCH_TRICORE)
 #endif
 ;
 
@@ -354,8 +384,9 @@ bool CAPSTONE_API cs_support(int query)
 				    (1 << CS_ARCH_SYSZ)  | (1 << CS_ARCH_XCORE)      |
 				    (1 << CS_ARCH_M68K)  | (1 << CS_ARCH_TMS320C64X) |
 				    (1 << CS_ARCH_M680X) | (1 << CS_ARCH_EVM)        |
-				    (1 << CS_ARCH_RISCV) | (1 << CS_ARCH_MOS65XX)    | 
-				    (1 << CS_ARCH_WASM)  | (1 << CS_ARCH_BPF));
+				    (1 << CS_ARCH_RISCV) | (1 << CS_ARCH_MOS65XX)    |
+				    (1 << CS_ARCH_WASM)  | (1 << CS_ARCH_BPF)        |
+				    (1 << CS_ARCH_SH)    | (1 << CS_ARCH_TRICORE));
 
 	if ((unsigned int)query < CS_ARCH_MAX)
 		return all_arch & (1 << query);
@@ -556,6 +587,7 @@ static void fill_insn(struct cs_struct *handle, cs_insn *insn, char *buffer, MCI
 
 #ifndef CAPSTONE_DIET
 	mnem = insn->mnemonic;
+	// memset(mnem, 0, CS_MNEMONIC_SIZE);
 	for (sp = buffer; *sp; sp++) {
 		if (*sp == ' '|| *sp == '\t')
 			break;
@@ -657,6 +689,12 @@ static uint8_t skipdata_size(cs_struct *handle)
 			if (handle->mode & CS_MODE_RISCVC)
 				return 2;
 			return 4;
+		case CS_ARCH_SH:
+			return 2;
+		case CS_ARCH_TRICORE:
+			// TriCore instruction's length can be 2 or 4 bytes,
+			// so we just skip 2 bytes
+			return 2;
 	}
 }
 
@@ -860,7 +898,7 @@ size_t CAPSTONE_API cs_disasm(csh ud, const uint8_t *buffer, size_t size, uint64
 	size_org = size;
 
 	total_size = sizeof(cs_insn) * cache_size;
-	total = cs_mem_malloc(total_size);
+	total = cs_mem_calloc(sizeof(cs_insn), cache_size);
 	if (total == NULL) {
 		// insufficient memory
 		handle->errnum = CS_ERR_MEM;
@@ -907,7 +945,7 @@ size_t CAPSTONE_API cs_disasm(csh ud, const uint8_t *buffer, size_t size, uint64
 			fill_insn(handle, insn_cache, ss.buffer, &mci, handle->post_printer, buffer);
 
 			// adjust for pseudo opcode (X86)
-			if (handle->arch == CS_ARCH_X86)
+			if (handle->arch == CS_ARCH_X86 && insn_cache->id != X86_INS_VCMP)
 				insn_cache->id += mci.popcode_adjust;
 
 			next_offset = insn_size;
@@ -1162,7 +1200,7 @@ bool CAPSTONE_API cs_disasm_iter(csh ud, const uint8_t **code, size_t *size,
 	return true;
 }
 
-// return friendly name of regiser in a string
+// return friendly name of register in a string
 CAPSTONE_EXPORT
 const char * CAPSTONE_API cs_reg_name(csh ud, unsigned int reg)
 {
@@ -1388,6 +1426,11 @@ int CAPSTONE_API cs_op_count(csh ud, const cs_insn *insn, unsigned int op_type)
 				if (insn->detail->riscv.operands[i].type == (riscv_op_type)op_type)
 					count++;
 			break;
+		case CS_ARCH_TRICORE:
+			for (i = 0; i < insn->detail->tricore.op_count; i++)
+				if (insn->detail->tricore.operands[i].type == (tricore_op_type)op_type)
+					count++;
+			break;
 	}
 
 	return count;
@@ -1489,6 +1532,14 @@ int CAPSTONE_API cs_op_index(csh ud, const cs_insn *insn, unsigned int op_type,
 					return i;
 			}
 			break;
+		case CS_ARCH_TRICORE:
+			for (i = 0; i < insn->detail->tricore.op_count; i++) {
+				if (insn->detail->tricore.operands[i].type == (tricore_op_type)op_type)
+					count++;
+				if (count == post)
+					return i;
+			}
+			break;
 		case CS_ARCH_M68K:
 			for (i = 0; i < insn->detail->m68k.op_count; i++) {
 				if (insn->detail->m68k.operands[i].type == (m68k_op_type)op_type)
@@ -1550,6 +1601,14 @@ int CAPSTONE_API cs_op_index(csh ud, const cs_insn *insn, unsigned int op_type,
 		case CS_ARCH_RISCV:
 			for (i = 0; i < insn->detail->riscv.op_count; i++) {
 				if (insn->detail->riscv.operands[i].type == (riscv_op_type)op_type)
+					count++;
+				if (count == post)
+					return i;
+			}
+			break;
+		case CS_ARCH_SH:
+			for (i = 0; i < insn->detail->sh.op_count; i++) {
+				if (insn->detail->sh.operands[i].type == (sh_op_type)op_type)
 					count++;
 				if (count == post)
 					return i;

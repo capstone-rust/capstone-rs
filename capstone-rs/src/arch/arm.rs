@@ -349,6 +349,7 @@ mod test {
             cc: arm_cc::ARM_CC_INVALID,
             update_flags: false,
             writeback: false,
+            post_index: false,
             mem_barrier: arm_mem_barrier::ARM_MB_INVALID,
             op_count: 0,
             operands: [

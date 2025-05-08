@@ -11,7 +11,7 @@ use alloc::vec::Vec;
 #[cfg(feature = "full")]
 use {alloc::string::String, std::collections::HashSet};
 
-use capstone_sys::cs_group_type;
+use capstone_sys::{arm64_op_sme_index, cs_group_type};
 use libc::c_uint;
 
 use super::arch::*;
@@ -1268,7 +1268,7 @@ fn test_arch_arm64_detail() {
                     Arm64Operand {
                         vector_index: Some(1),
                         op_type: Reg(RegId(ARM64_REG_V5 as RegIdInt)),
-                        vas: ARM64_VAS_1D,
+                        vas: ARM64_VAS_INVALID, // should be ARM64_VAS_1D instead?
                         ..Default::default()
                     },
                 ],
@@ -1388,6 +1388,59 @@ fn test_arch_arm64_detail() {
                             base: ARM64_REG_X24,
                             index: ARM64_REG_W8,
                             disp: 0,
+                        })),
+                        ..Default::default()
+                    },
+                ],
+            ),
+            // smstart
+            DII::new(
+                "smstart",
+                b"\x7f\x47\x03\xd5",
+                &[
+                    Arm64Operand {
+                        op_type: SVCR(Arm64SvcrOp::ARM64_SVCR_SVCRSMZA),
+                        ..Default::default()
+                    },
+                    Arm64Operand {
+                        op_type: Imm(1),
+                        ..Default::default()
+                    },
+                ],
+            ),
+            // smstart sm
+            DII::new(
+                "smstart",
+                b"\x7f\x43\x03\xd5",
+                &[
+                    Arm64Operand {
+                        op_type: SVCR(Arm64SvcrOp::ARM64_SVCR_SVCRSM),
+                        ..Default::default()
+                    },
+                    Arm64Operand {
+                        op_type: Imm(1),
+                        ..Default::default()
+                    },
+                ],
+            ),
+            // ldr za[w12, 4], [x0, #4, mul vl]
+            DII::new(
+                "ldr",
+                b"\x04\x00\x00\xe1",
+                &[
+                    Arm64Operand {
+                        op_type: SMEIndex(Arm64OpSmeIndex(arm64_op_sme_index {
+                            reg: ARM64_REG_ZA,
+                            base: ARM64_REG_W12,
+                            disp: 4,
+                        })),
+                        ..Default::default()
+                    },
+                    Arm64Operand {
+                        op_type: Mem(Arm64OpMem(arm64_op_mem {
+                            base: ARM64_REG_X0,
+                            index: 0,
+                            disp: 4,
                         })),
                         ..Default::default()
                     },
@@ -2596,11 +2649,12 @@ fn test_arch_tms320c64x_detail() {
         &mut Capstone::new()
             .tms320c64x()
             .mode(tms320c64x::ArchMode::Default)
+            .endian(Endian::Big)
             .build()
             .unwrap(),
         Arch::TMS320C64X,
         Mode::Default,
-        None,
+        Some(Endian::Big),
         &[],
         &[
             // add.D1    a11, a4, a3

@@ -5,7 +5,7 @@ use libc::c_uint;
 pub use crate::arch::arch_builder::arm64::*;
 use crate::arch::DetailsArchInsn;
 use crate::instruction::{RegId, RegIdInt};
-use capstone_sys::{arm64_op_mem, arm64_op_type, cs_arm64, cs_arm64_op};
+use capstone_sys::{arm64_op_mem, arm64_op_sme_index, arm64_op_type, cs_arm64, cs_arm64_op};
 use core::convert::From;
 use core::{cmp, fmt, mem, slice};
 
@@ -19,6 +19,7 @@ pub use capstone_sys::arm64_insn_group as Arm64InsnGroup;
 pub use capstone_sys::arm64_prefetch_op as ArmPrefetchOp;
 pub use capstone_sys::arm64_pstate as Arm64Pstate;
 pub use capstone_sys::arm64_reg as Arm64Reg;
+pub use capstone_sys::arm64_svcr_op as Arm64SvcrOp;
 pub use capstone_sys::arm64_sys_op as Arm64SysOp;
 pub use capstone_sys::arm64_sysreg as Arm64Sysreg;
 pub use capstone_sys::arm64_vas as Arm64Vas;
@@ -51,7 +52,11 @@ pub enum Arm64Shift {
 }
 
 impl Arm64OperandType {
-    fn new(op_type: arm64_op_type, value: cs_arm64_op__bindgen_ty_2) -> Arm64OperandType {
+    fn new(
+        op_type: arm64_op_type,
+        value: cs_arm64_op__bindgen_ty_2,
+        svcr: Arm64SvcrOp,
+    ) -> Arm64OperandType {
         use self::arm64_op_type::*;
         use self::Arm64OperandType::*;
 
@@ -72,6 +77,8 @@ impl Arm64OperandType {
             ARM64_OP_SYS => Sys(unsafe { value.sys }),
             ARM64_OP_PREFETCH => Prefetch(unsafe { value.prefetch }),
             ARM64_OP_BARRIER => Barrier(unsafe { value.barrier }),
+            ARM64_OP_SVCR => SVCR(svcr),
+            ARM64_OP_SME_INDEX => SMEIndex(Arm64OpSmeIndex(unsafe { value.sme_index })),
         }
     }
 }
@@ -131,6 +138,12 @@ pub enum Arm64OperandType {
     /// Memory barrier operation (ISB/DMB/DSB instructions)
     Barrier(Arm64BarrierOp),
 
+    /// SMSTART/SMSTOP mode (Streaming SVE & ZA storage)
+    SVCR(Arm64SvcrOp),
+
+    /// SME index
+    SMEIndex(Arm64OpSmeIndex),
+
     /// Invalid
     Invalid,
 }
@@ -183,6 +196,31 @@ impl_PartialEq_repr_fields!(Arm64OpMem;
 
 impl cmp::Eq for Arm64OpMem {}
 
+/// ARM64 sme index operand
+#[derive(Debug, Copy, Clone)]
+pub struct Arm64OpSmeIndex(pub(crate) arm64_op_sme_index);
+
+impl Arm64OpSmeIndex {
+    /// Register being indexed
+    pub fn reg(&self) -> RegId {
+        RegId(self.0.reg as RegIdInt)
+    }
+
+    /// Base register
+    pub fn base(&self) -> RegId {
+        RegId(self.0.base as RegIdInt)
+    }
+
+    /// Disp value
+    pub fn disp(&self) -> i32 {
+        self.0.disp as i32
+    }
+}
+
+impl_PartialEq_repr_fields!(Arm64OpSmeIndex;
+    reg, base, disp
+);
+
 impl Default for Arm64Operand {
     fn default() -> Self {
         Arm64Operand {
@@ -227,7 +265,7 @@ impl Arm64Shift {
 impl From<&cs_arm64_op> for Arm64Operand {
     fn from(op: &cs_arm64_op) -> Arm64Operand {
         let shift = Arm64Shift::new(op.shift.type_, op.shift.value);
-        let op_type = Arm64OperandType::new(op.type_, op.__bindgen_anon_1);
+        let op_type = Arm64OperandType::new(op.type_, op.__bindgen_anon_1, op.svcr);
         let vector_index = if op.vector_index >= 0 {
             Some(op.vector_index as u32)
         } else {
@@ -279,27 +317,40 @@ mod test {
         use super::Arm64Sysreg::*;
         use capstone_sys::arm64_prefetch_op::*;
         use capstone_sys::arm64_pstate::*;
+        use capstone_sys::arm64_svcr_op::*;
         use capstone_sys::*;
 
         fn t(
-            op_type_value: (arm64_op_type, cs_arm64_op__bindgen_ty_2),
+            op_type_value: (arm64_op_type, cs_arm64_op__bindgen_ty_2, arm64_svcr_op),
             expected_op_type: Arm64OperandType,
         ) {
-            let (op_type, op_value) = op_type_value;
-            let op_type = Arm64OperandType::new(op_type, op_value);
+            let (op_type, op_value, op_svcr) = op_type_value;
+            let op_type = Arm64OperandType::new(op_type, op_value, op_svcr);
             assert_eq!(expected_op_type, op_type);
         }
 
         t(
-            (ARM64_OP_INVALID, cs_arm64_op__bindgen_ty_2 { reg: 0 }),
+            (
+                ARM64_OP_INVALID,
+                cs_arm64_op__bindgen_ty_2 { reg: 0 },
+                ARM64_SVCR_INVALID,
+            ),
             Invalid,
         );
         t(
-            (ARM64_OP_REG, cs_arm64_op__bindgen_ty_2 { reg: 0 }),
+            (
+                ARM64_OP_REG,
+                cs_arm64_op__bindgen_ty_2 { reg: 0 },
+                ARM64_SVCR_INVALID,
+            ),
             Reg(RegId(0)),
         );
         t(
-            (ARM64_OP_IMM, cs_arm64_op__bindgen_ty_2 { imm: 42 }),
+            (
+                ARM64_OP_IMM,
+                cs_arm64_op__bindgen_ty_2 { imm: 42 },
+                ARM64_SVCR_INVALID,
+            ),
             Imm(42),
         );
         t(
@@ -308,6 +359,7 @@ mod test {
                 cs_arm64_op__bindgen_ty_2 {
                     reg: ARM64_SYSREG_MDRAR_EL1 as arm64_reg::Type,
                 },
+                ARM64_SVCR_INVALID,
             ),
             RegMrs(ARM64_SYSREG_MDRAR_EL1),
         );
@@ -317,15 +369,24 @@ mod test {
                 cs_arm64_op__bindgen_ty_2 {
                     pstate: ARM64_PSTATE_SPSEL,
                 },
+                ARM64_SVCR_INVALID,
             ),
             Pstate(Arm64Pstate::ARM64_PSTATE_SPSEL),
         );
         t(
-            (ARM64_OP_FP, cs_arm64_op__bindgen_ty_2 { fp: 0.0 }),
+            (
+                ARM64_OP_FP,
+                cs_arm64_op__bindgen_ty_2 { fp: 0.0 },
+                ARM64_SVCR_INVALID,
+            ),
             Fp(0.0),
         );
         t(
-            (ARM64_OP_CIMM, cs_arm64_op__bindgen_ty_2 { imm: 42 }),
+            (
+                ARM64_OP_CIMM,
+                cs_arm64_op__bindgen_ty_2 { imm: 42 },
+                ARM64_SVCR_INVALID,
+            ),
             Cimm(42),
         );
         t(
@@ -334,6 +395,7 @@ mod test {
                 cs_arm64_op__bindgen_ty_2 {
                     reg: arm64_sysreg::ARM64_SYSREG_ICC_EOIR1_EL1 as arm64_reg::Type,
                 },
+                ARM64_SVCR_INVALID,
             ),
             RegMsr(arm64_sysreg::ARM64_SYSREG_ICC_EOIR1_EL1),
         );
@@ -343,6 +405,7 @@ mod test {
                 cs_arm64_op__bindgen_ty_2 {
                     sys: arm64_sys_op::ARM64_AT_S1E0R,
                 },
+                ARM64_SVCR_INVALID,
             ),
             Sys(arm64_sys_op::ARM64_AT_S1E0R),
         );
@@ -352,8 +415,35 @@ mod test {
                 cs_arm64_op__bindgen_ty_2 {
                     prefetch: ARM64_PRFM_PLDL2KEEP,
                 },
+                ARM64_SVCR_INVALID,
             ),
             Prefetch(ARM64_PRFM_PLDL2KEEP),
+        );
+        t(
+            (
+                ARM64_OP_SVCR,
+                cs_arm64_op__bindgen_ty_2 { reg: 0 },
+                ARM64_SVCR_SVCRSM,
+            ),
+            SVCR(ARM64_SVCR_SVCRSM),
+        );
+        t(
+            (
+                ARM64_OP_SME_INDEX,
+                cs_arm64_op__bindgen_ty_2 {
+                    sme_index: arm64_op_sme_index {
+                        reg: 1,
+                        base: 2,
+                        disp: 3,
+                    },
+                },
+                ARM64_SVCR_INVALID,
+            ),
+            SMEIndex(Arm64OpSmeIndex(arm64_op_sme_index {
+                reg: 1,
+                base: 2,
+                disp: 3,
+            })),
         );
     }
 }
