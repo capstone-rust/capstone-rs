@@ -10,7 +10,7 @@ V ?= 0
 
 OS := $(shell uname)
 ifeq ($(OS),Darwin)
-LIBARCHS ?= x86_64
+LIBARCHS ?= x86_64 arm64
 PREFIX ?= /usr/local
 endif
 
@@ -44,6 +44,9 @@ CFLAGS += -DCAPSTONE_DIET
 else
 CFLAGS ?= -O3
 endif
+
+# C99 has been enforced elsewhere like xcode
+CFLAGS += -std=gnu99
 
 ifneq (,$(findstring yes,$(CAPSTONE_X86_ATT_DISABLE)))
 CFLAGS += -DCAPSTONE_X86_ATT_DISABLE
@@ -155,6 +158,14 @@ ifneq (,$(findstring mips,$(CAPSTONE_ARCHS)))
 	LIBOBJ_MIPS += $(LIBSRC_MIPS:%.c=$(OBJDIR)/%.o)
 endif
 
+DEP_SH = $(wildcard arch/SH/SH*.inc)
+
+LIBOBJ_SH =
+ifneq (,$(findstring sh,$(CAPSTONE_ARCHS)))
+	CFLAGS += -DCAPSTONE_HAS_SH
+	LIBSRC_SH += $(wildcard arch/SH/SH*.c)
+	LIBOBJ_SH += $(LIBSRC_SH:%.c=$(OBJDIR)/%.o)
+endif
 
 DEP_PPC =
 DEP_PPC += $(wildcard arch/PowerPC/PPC*.inc)
@@ -303,12 +314,22 @@ ifneq (,$(findstring bpf,$(CAPSTONE_ARCHS)))
 	LIBOBJ_BPF += $(LIBSRC_BPF:%.c=$(OBJDIR)/%.o)
 endif
 
+DEP_TRICORE =
+DEP_TRICORE +=$(wildcard arch/TriCore/TriCore*.inc)
+
+LIBOBJ_TRICORE =
+ifneq (,$(findstring tricore,$(CAPSTONE_ARCHS)))
+	CFLAGS += -DCAPSTONE_HAS_TRICORE
+	LIBSRC_TRICORE += $(wildcard arch/TriCore/TriCore*.c)
+	LIBOBJ_TRICORE += $(LIBSRC_TRICORE:%.c=$(OBJDIR)/%.o)
+endif
+
 
 LIBOBJ =
-LIBOBJ += $(OBJDIR)/cs.o $(OBJDIR)/utils.o $(OBJDIR)/SStream.o $(OBJDIR)/MCInstrDesc.o $(OBJDIR)/MCRegisterInfo.o
-LIBOBJ += $(LIBOBJ_ARM) $(LIBOBJ_ARM64) $(LIBOBJ_M68K) $(LIBOBJ_MIPS) $(LIBOBJ_PPC) $(LIBOBJ_RISCV) $(LIBOBJ_SPARC) $(LIBOBJ_SYSZ)
+LIBOBJ += $(OBJDIR)/cs.o $(OBJDIR)/utils.o $(OBJDIR)/SStream.o $(OBJDIR)/MCInstrDesc.o $(OBJDIR)/MCRegisterInfo.o $(OBJDIR)/MCInst.o $(OBJDIR)/Mapping.o
+LIBOBJ += $(LIBOBJ_ARM) $(LIBOBJ_ARM64) $(LIBOBJ_M68K) $(LIBOBJ_MIPS) $(LIBOBJ_PPC) $(LIBOBJ_RISCV) $(LIBOBJ_SPARC) $(LIBOBJ_SYSZ) $(LIBOBJ_SH)
 LIBOBJ += $(LIBOBJ_X86) $(LIBOBJ_XCORE) $(LIBOBJ_TMS320C64X) $(LIBOBJ_M680X) $(LIBOBJ_EVM) $(LIBOBJ_MOS65XX) $(LIBOBJ_WASM) $(LIBOBJ_BPF)
-LIBOBJ += $(OBJDIR)/MCInst.o
+LIBOBJ += $(LIBOBJ_TRICORE)
 
 
 ifeq ($(PKG_EXTRA),)
@@ -431,6 +452,7 @@ $(LIBOBJ_ARM64): $(DEP_ARM64)
 $(LIBOBJ_M68K): $(DEP_M68K)
 $(LIBOBJ_MIPS): $(DEP_MIPS)
 $(LIBOBJ_PPC): $(DEP_PPC)
+$(LIBOBJ_SH): $(DEP_SH)
 $(LIBOBJ_SPARC): $(DEP_SPARC)
 $(LIBOBJ_SYSZ): $(DEP_SYSZ)
 $(LIBOBJ_X86): $(DEP_X86)
@@ -442,6 +464,7 @@ $(LIBOBJ_RISCV): $(DEP_RISCV)
 $(LIBOBJ_WASM): $(DEP_WASM)
 $(LIBOBJ_MOS65XX): $(DEP_MOS65XX)
 $(LIBOBJ_BPF): $(DEP_BPF)
+$(LIBOBJ_TRICORE): $(DEP_TRICORE)
 
 ifeq ($(CAPSTONE_STATIC),yes)
 $(ARCHIVE): $(LIBOBJ)
@@ -527,7 +550,7 @@ dist:
 	git archive --format=tar.gz --prefix=capstone-$(DIST_VERSION)/ $(TAG) > capstone-$(DIST_VERSION).tgz
 	git archive --format=zip --prefix=capstone-$(DIST_VERSION)/ $(TAG) > capstone-$(DIST_VERSION).zip
 
-TESTS  = test_basic test_detail test_arm test_arm64 test_m68k test_mips test_ppc test_sparc	
+TESTS  = test_basic test_detail test_arm test_arm64 test_m68k test_mips test_ppc test_sparc test_tricore
 TESTS += test_systemz test_x86 test_xcore test_iter test_evm test_riscv test_mos65xx test_wasm test_bpf
 TESTS += test_basic.static test_detail.static test_arm.static test_arm64.static
 TESTS += test_m68k.static test_mips.static test_ppc.static test_sparc.static
