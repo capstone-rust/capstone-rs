@@ -1,3 +1,63 @@
+!# issue 2062 repz Prefix
+!# CS_ARCH_X86, CS_MODE_64, CS_OPT_DETAIL
+0xf3,0xc3 == repz ret ; Prefix:0xf3 0x00 0x00 0x00
+
+!# issue 2007 RISCV64 instruction groups
+!# CS_ARCH_RISCV, CS_MODE_RISCV64, CS_OPT_DETAIL
+0x63,0x04,0x03,0x00 == beqz t1, 8 ; op_count: 2 ; operands[0].type: REG = t1 ; operands[1].type: IMM = 0x8 ; Groups: branch_relative jump
+
+!# issue 2007 RISCV64 instruction groups
+!# CS_ARCH_RISCV, CS_MODE_RISCV64, CS_OPT_DETAIL
+0x73,0x00,0x00,0x00 == ecall ; Groups: int
+
+!# issue 2007 RISCV64 instruction groups
+!# CS_ARCH_RISCV, CS_MODE_RISCV64, CS_OPT_DETAIL
+0xef,0x00,0x40,0x00 == jal 4 ; op_count: 1 ; operands[0].type: IMM = 0x4 ; Groups: call
+
+!# issue 2007 RISCV32 instruction groups
+!# CS_ARCH_RISCV, CS_MODE_RISCV32, CS_OPT_DETAIL
+0x63,0x04,0x03,0x00 == beqz t1, 8 ; op_count: 2 ; operands[0].type: REG = t1 ; operands[1].type: IMM = 0x8 ; Groups: branch_relative jump
+
+!# issue 2007 RISCV32 instruction groups
+!# CS_ARCH_RISCV, CS_MODE_RISCV32, CS_OPT_DETAIL
+0x73,0x00,0x00,0x00 == ecall ; Groups: int
+
+!# issue 2007 RISCV32 instruction groups
+!# CS_ARCH_RISCV, CS_MODE_RISCV32, CS_OPT_DETAIL
+0xef,0x00,0x40,0x00 == jal 4 ; op_count: 1 ; operands[0].type: IMM = 0x4 ; Groups: call
+
+!# issue 2007 RISCV32 instruction groups
+!# CS_ARCH_RISCV, CS_MODE_RISCV32 CS_MODE_RISCVC, CS_OPT_DETAIL
+0x11,0x20 == c.jal 4 ; op_count: 1 ; operands[0].type: IMM = 0x4 ; Groups: hasStdExtC isrv32 call
+
+!# issue 2007 RISCV32 instruction groups
+!# CS_ARCH_RISCV, CS_MODE_RISCV32 CS_MODE_RISCVC, CS_OPT_DETAIL
+0x91,0xc1 == c.beqz a1, 4 ; op_count: 2 ; operands[0].type: REG = a1 ; operands[1].type: IMM = 0x4 ; Groups: hasStdExtC branch_relative jump
+
+!# issue 1997 notrack jmp
+!# CS_ARCH_X86, CS_MODE_64, None
+0x3e,0xff,0xe0 == notrack jmp rax
+
+!# issue 1997 notrack call
+!# CS_ARCH_X86, CS_MODE_64, None
+0x3e,0xff,0xd0 == notrack call rax
+
+!# issue 1924 SME Index instruction alias printing is not always valid
+!# CS_ARCH_ARM64, CS_MODE_ARM, CS_OPT_DETAIL
+0x02,0x00,0x9f,0xe0 == ld1w	{za0h.s[w12, 2]}, p0/z, [x0] ; operands[0].type: REG = zas0 ; operands[0].index.base: REG = w12 ; operands[0].index.disp: 0x2 ; operands[1].type: REG = p0 ; operands[2].type: MEM ; operands[2].mem.base: REG = x0
+
+!# issue 1912 PPC register name
+!# CS_ARCH_PPC, CS_MODE_BIG_ENDIAN, None
+0x2d,0x03,0x00,0x80 == cmpwi cr2, r3, 0x80
+
+!# issue 1912 PPC no register name
+!# CS_ARCH_PPC, CS_MODE_BIG_ENDIAN, CS_OPT_SYNTAX_NOREGNAME
+0x2d,0x03,0x00,0x80 == cmpwi 2, 3, 0x80
+
+!# issue 1902 PPC psq_st negative displacement
+!# CS_ARCH_PPC, CS_MODE_32 | CS_MODE_BIG_ENDIAN | CS_MODE_PS, CS_OPT_DETAIL
+0xf3,0xec,0x0f,0xf8 == psq_st f31, -8(r12), 0, 0 ; op_count: 4 ; operands[0].type: REG = f31 ; operands[1].type: MEM ; operands[1].mem.base: REG = r12 ; operands[1].mem.disp: 0xfffffff8 ; operands[2].type: IMM = 0x0 ; operands[3].type: IMM = 0x0
+
 !# issue 1873 AArch64 missing VAS specifiers in aliased instructions
 !# CS_ARCH_ARM64, CS_MODE_ARM, CS_OPT_DETAIL
 0x21,0x04,0x03,0x5e == mov b1, v1.b[1] ; operands[1].vas: 0x4 ; operands[1].vector_index: 1
@@ -132,23 +192,23 @@
 
 !# issue 1856 AArch64 SYS instruction operands: tlbi 1 op
 !# CS_ARCH_ARM64, CS_MODE_ARM, CS_OPT_DETAIL
-0x1f,0x83,0x08,0xd5 == tlbi vmalle1is ; op_count: 1 ; operands[0].type: SYS = 0x3
+0x1f,0x83,0x08,0xd5 == tlbi vmalle1is ; op_count: 1 ; operands[0].type: SYS = 0x9a
 
 !# issue 1856 AArch64 SYS instruction operands: tlbi 2 op
 !# CS_ARCH_ARM64, CS_MODE_ARM, CS_OPT_DETAIL
-0x22,0x87,0x08,0xd5 == tlbi vae1, x2 ; op_count: 2 ; operands[0].type: SYS = 0x16
+0x22,0x87,0x08,0xd5 == tlbi vae1, x2 ; op_count: 2 ; operands[0].type: SYS = 0x75
 
 !# issue 1856 AArch64 SYS instruction operands: at
 !# CS_ARCH_ARM64, CS_MODE_ARM, CS_OPT_DETAIL
-0xc0,0x78,0x0c,0xd5 == at s12e0r, x0 ; op_count: 2 ; operands[0].type: SYS = 0x59
+0xc0,0x78,0x0c,0xd5 == at s12e0r, x0 ; op_count: 2 ; operands[0].type: SYS = 0xaf
 
 !# issue 1856 AArch64 SYS instruction operands: dc
 !# CS_ARCH_ARM64, CS_MODE_ARM, CS_OPT_DETAIL
-0x22,0x7b,0x0b,0xd5 == dc cvau, x2 ; op_count: 2 ; operands[0].type: SYS = 0x62
+0x22,0x7b,0x0b,0xd5 == dc cvau, x2 ; op_count: 2 ; operands[0].type: SYS = 0xc5
 
 !# issue 1856 AArch64 SYS instruction operands: ic
 !# CS_ARCH_ARM64, CS_MODE_ARM, CS_OPT_DETAIL
-0x20,0x75,0x0b,0xd5 == ic ivau, x0 ; op_count: 2 ; operands[0].type: SYS = 0x68
+0x20,0x75,0x0b,0xd5 == ic ivau, x0 ; op_count: 2 ; operands[0].type: SYS = 0xd1
 
 !# issue 1843 AArch64 missing VAS specifiers in aliased instructions: mov 16b
 !# CS_ARCH_ARM64, CS_MODE_ARM, CS_OPT_DETAIL
@@ -197,9 +257,9 @@
 !# CS_ARCH_M68K, CS_MODE_BIG_ENDIAN | CS_MODE_M68K_040, None
 0x4E,0x7A,0x00,0x02 == movec cacr, d0
 
-!# issue 1653 AArch64 wrong register access read/write flags on cmp instruction
-!# CS_ARCH_ARM64, CS_MODE_ARM, CS_OPT_DETAIL
-0x3F,0x00,0x02,0xEB == cmp x1, x2 ; operands[0].access: READ
+// !# issue 1653 AArch64 wrong register access read/write flags on cmp instruction
+// !# CS_ARCH_ARM64, CS_MODE_ARM, CS_OPT_DETAIL
+// 0x3F,0x00,0x02,0xEB == cmp x1, x2 ; operands[0].access: READ
 
 !# issue 1643 M68K incorrect read of 32-bit imm for bsr
 !# CS_ARCH_M68K, CS_MODE_BIG_ENDIAN | CS_MODE_M68K_040 , None
@@ -983,3 +1043,34 @@
 !# CS_ARCH_ARM64, CS_MODE_LITTLE_ENDIAN, None
 0x0: 0x00,0x00,0x00,0x4c == st4 {v0.16b, v1.16b, v2.16b, v3.16b}, [x0]
 
+!# issue 2128
+!# CS_ARCH_X86, CS_MODE_64, CS_OPT_DETAIL
+0x0: 0x4c,0x85,0x7d,0x30 == test	qword ptr [rbp + 0x30], r15 ; operands[1].type: REG = r15 ; operands[1].access: READ ; Registers read: rbp r15 ; Registers modified: rflags
+
+!# issue 2079
+!# CS_ARCH_X86, CS_MODE_32, CS_OPT_DETAIL
+0x0: 0xd1,0x10 == rcl	dword ptr [eax] ; operands[1].type: IMM = 0x1
+
+!# issue 2244
+!# CS_ARCH_X86, CS_MODE_64, CS_OPT_DETAIL
+0x0: 0xc5,0xfb,0xc2,0xda,0x06 == vcmpnlesd	xmm3, xmm0, xmm2 ; ID: 797
+
+!# issue 2419
+!# CS_ARCH_SPARC, CS_MODE_BIG_ENDIAN, CS_OPT_DETAIL
+0x0: 0x12,0xbf,0xff,0xff == bne -4 ; Code condition: 265
+
+!# issue 2418
+!# CS_ARCH_ARM, CS_MODE_THUMB, CS_OPT_DETAIL
+0x0: 0x86,0xf3,0x00,0x89 == msr cpsr_fc, r6 ; operands[0].type: SYSREG = 144
+
+!# issue 2424
+!# CS_ARCH_SH, CS_MODE_SH2A | CS_MODE_BIG_ENDIAN, CS_OPT_DETAIL
+0x0: 0x32,0x11,0x92,0x00 == movu.w @(1024,r1),r2 ; operands[0].type: MEM ; operands[0].mem.reg: REG = r1 ; operands[0].mem.disp: 0x400 ; address mode: Register Indirect with Predecrement ; operands[1].type: REG = r2
+
+!# issue 2646
+!# CS_ARCH_TMS320C64X, CS_MODE_LITTLE_ENDIAN, CS_OPT_DETAIL
+0x0: 0xa9,0xff,0x7f,0x02 == mvk.S1 -1, a4 ||
+
+!# issue 2646
+!# CS_ARCH_TMS320C64X, CS_MODE_BIG_ENDIAN, CS_OPT_DETAIL
+0x0: 0x02,0x7f,0xff,0xa9 == mvk.S1 -1, a4 ||

@@ -326,7 +326,7 @@ macro_rules! arch_info_base {
                     )
                 ( extra_modes: )
                 ( syntax: )
-                ( both_endian: false )
+                ( both_endian: true )
             ]
             [
                 ( x86, X86 )

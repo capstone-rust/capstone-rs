@@ -234,11 +234,13 @@ static DecodeStatus DecodeCRRCRegisterClass(MCInst *Inst, uint64_t RegNo,
 	return decodeRegisterClass(Inst, RegNo, CRRegs, sizeof(CRRegs));
 }
 
+#if 0
 static DecodeStatus DecodeCRRC0RegisterClass(MCInst *Inst, uint64_t RegNo,
 		uint64_t Address, const void *Decoder)
 {
 	return decodeRegisterClass(Inst, RegNo, CRRegs, sizeof(CRRegs));
 }
+#endif
 
 static DecodeStatus DecodeCRBITRCRegisterClass(MCInst *Inst, uint64_t RegNo,
 		uint64_t Address, const void *Decoder)
@@ -554,6 +556,16 @@ static DecodeStatus getInstruction(MCInst *MI,
 		MCInst_clear(MI);
 	} else if (MI->csh->mode & CS_MODE_SPE) {
 		result = decodeInstruction_4(DecoderTableSPE32, MI, insn, Address);
+		if (result != MCDisassembler_Fail) {
+			*Size = 4;
+
+			return result;
+		}
+
+		// failed to decode
+		MCInst_clear(MI);
+	} else if (MI->csh->mode & CS_MODE_PS) {
+		result = decodeInstruction_4(DecoderTablePS32, MI, insn, Address);
 		if (result != MCDisassembler_Fail) {
 			*Size = 4;
 
