@@ -80,13 +80,13 @@ void PPC_post_printer(csh ud, cs_insn *insn, char *insn_asm, MCInst *mci)
 		return;
 
 	// check if this insn has branch hint
-	if (strrchr(insn_asm, '+') != NULL && !strstr(insn_asm, ".+")) {
+	if (strrchr(insn->mnemonic, '+') != NULL && !strstr(insn_asm, ".+")) {
 		insn->detail->ppc.bh = PPC_BH_PLUS;
-	} else if (strrchr(insn_asm, '-') != NULL) {
+	} else if (strrchr(insn->mnemonic, '-') != NULL) {
 		insn->detail->ppc.bh = PPC_BH_MINUS;
 	}
 
-	if (strrchr(insn_asm, '.') != NULL) {
+	if (strrchr(insn->mnemonic, '.') != NULL) {
 		insn->detail->ppc.update_cr0 = true;
 	}
 }
@@ -410,6 +410,7 @@ void PPC_printInst(MCInst *MI, SStream *O, void *Info)
 {
 	char *mnem;
 	unsigned int opcode = MCInst_getOpcode(MI);
+	memset(O->buffer, 0, sizeof(O->buffer));
 
 	// printf("opcode = %u\n", opcode);
 
@@ -635,6 +636,16 @@ void PPC_printInst(MCInst *MI, SStream *O, void *Info)
 		cs_mem_free(mnem);
 	} else
 		printInstruction(MI, O);
+
+	const char *mnem_end = strchr(O->buffer, ' ');
+	unsigned mnem_len = 0;
+	if (mnem_end)
+		mnem_len = mnem_end - O->buffer;
+	if (!mnem_end || mnem_len >= sizeof(MI->flat_insn->mnemonic))
+		mnem_len = sizeof(MI->flat_insn->mnemonic) - 1;
+
+	memset(MI->flat_insn->mnemonic, 0, sizeof(MI->flat_insn->mnemonic));
+	memcpy(MI->flat_insn->mnemonic, O->buffer, mnem_len);
 }
 
 // FIXME
@@ -941,6 +952,27 @@ static void printU10ImmOperand(MCInst *MI, unsigned OpNo, SStream *O)
 	}
 }
 
+static void printS12ImmOperand(MCInst *MI, unsigned OpNo, SStream *O)
+{
+	if (MCOperand_isImm(MCInst_getOperand(MI, OpNo))) {
+		int Imm = (int)MCOperand_getImm(MCInst_getOperand(MI, OpNo));
+		Imm = SignExtend32(Imm, 12);
+
+		printInt32(O, Imm);
+
+		if (MI->csh->detail) {
+			if (MI->csh->doing_mem) {
+                MI->flat_insn->detail->ppc.operands[MI->flat_insn->detail->ppc.op_count].mem.disp = Imm;
+			} else {
+                MI->flat_insn->detail->ppc.operands[MI->flat_insn->detail->ppc.op_count].type = PPC_OP_IMM;
+                MI->flat_insn->detail->ppc.operands[MI->flat_insn->detail->ppc.op_count].imm = Imm;
+                MI->flat_insn->detail->ppc.op_count++;
+            }
+		}
+	} else
+		printOperand(MI, OpNo, O);
+}
+
 static void printU12ImmOperand(MCInst *MI, unsigned OpNo, SStream *O)
 {
 	unsigned short Value = (unsigned short)MCOperand_getImm(MCInst_getOperand(MI, OpNo));
@@ -1068,6 +1100,19 @@ static void printMemRegImm(MCInst *MI, unsigned OpNo, SStream *O)
 	set_mem_access(MI, false);
 }
 
+static void printPSMemRegImm(MCInst *MI, unsigned OpNo, SStream *O)
+{
+	set_mem_access(MI, true);
+
+	printS12ImmOperand(MI, OpNo, O);
+
+	SStream_concat0(O, "(");
+	printOperand(MI, OpNo + 1, O);
+	SStream_concat0(O, ")");
+
+	set_mem_access(MI, false);
+}
+
 static void printMemRegReg(MCInst *MI, unsigned OpNo, SStream *O)
 {
 	// When used as the base register, r0 reads constant zero rather than
@@ -1116,7 +1161,8 @@ static char *stripRegisterPrefix(const char *RegName)
 				char *name = cs_strdup(RegName + 2);
 
 				// also strip the last 2 letters
-				name[strlen(name) - 2] = '\0';
+				if(strlen(name) > 2)
+					name[strlen(name) - 2] = '\0';
 
 				return name;
 			}

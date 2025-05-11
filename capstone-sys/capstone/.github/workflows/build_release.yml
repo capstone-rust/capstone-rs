@@ -11,11 +11,11 @@ jobs:
     name: build
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v1
+    - uses: actions/checkout@v4
       with:
         submodules: true
 
-    - name: archive
+    - name: Create archive
       id: archive
       run: |
         VERSION=${{ github.event.release.tag_name }}
@@ -27,24 +27,40 @@ jobs:
         TARBALL=$PKGNAME.tar.xz
         tar cJf $TARBALL $PKGNAME
         sha256sum $TARBALL > $SHASUM
-        echo "::set-output name=tarball::$TARBALL"
-        echo "::set-output name=shasum::$SHASUM"
-    - name: upload tarball
-      uses: actions/upload-release-asset@v1
+        echo "tarball=$TARBALL" >> $GITHUB_OUTPUT
+        echo "shasum=$SHASUM" >> $GITHUB_OUTPUT
+      
+    - name: Upload tarball and shasum to release
+      uses: softprops/action-gh-release@v2
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        upload_url: ${{ github.event.release.upload_url }}
-        asset_path: ./${{ steps.archive.outputs.tarball }}
-        asset_name: ${{ steps.archive.outputs.tarball }}
-        asset_content_type: application/gzip
+        tag_name: ${{ github.event.release.tag_name }}
+        files: |
+          ${{ steps.archive.outputs.tarball }}
+          ${{ steps.archive.outputs.shasum }}
 
-    - name: upload shasum
-      uses: actions/upload-release-asset@v1
+    - name: Configure CMake and build the packages
+      run: |
+        cmake -B build \
+        -DPROJECT_VERSION=${{ github.event.release.tag_name }} \
+        -DCMAKE_BUILD_TYPE=Release \
+        -DBUILD_SHARED_LIBS=1 \
+        -DCMAKE_INSTALL_PREFIX=/usr
+        cmake --build build
+
+    - name: Package DEB and RPM package
+      run: |
+        cd build
+        cpack -G DEB
+        cpack -G RPM
+
+    - name: Upload debian package to release
+      uses: softprops/action-gh-release@v2
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        upload_url: ${{ github.event.release.upload_url }}
-        asset_path: ./${{ steps.archive.outputs.shasum }}
-        asset_name: ${{ steps.archive.outputs.shasum }}
-        asset_content_type: text/plain
+        tag_name: ${{ github.event.release.tag_name }}
+        files: |
+          ./build/*.deb
+          ./build/*.rpm

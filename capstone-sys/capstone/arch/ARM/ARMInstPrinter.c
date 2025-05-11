@@ -192,10 +192,10 @@ void ARM_getRegName(cs_struct *handle, int value)
 {
 	if (value == CS_OPT_SYNTAX_NOREGNAME) {
 		handle->get_regname = getRegisterName_digit;
-		handle->reg_name = ARM_reg_name2;;
+		handle->reg_name = ARM_reg_name2;
 	} else {
 		handle->get_regname = getRegisterName;
-		handle->reg_name = ARM_reg_name;;
+		handle->reg_name = ARM_reg_name;
 	}
 }
 
@@ -318,7 +318,8 @@ void ARM_post_printer(csh ud, cs_insn *insn, char *insn_asm, MCInst *mci)
 			case ARM_t2STRD_PRE:
 			case ARM_t2STRH_PRE:
 			case ARM_t2STR_PRE:
-
+				insn->detail->arm.writeback = true;
+				break;
 			case ARM_t2LDC2L_POST:
 			case ARM_t2LDC2_POST:
 			case ARM_t2LDCL_POST:
@@ -341,6 +342,7 @@ void ARM_post_printer(csh ud, cs_insn *insn, char *insn_asm, MCInst *mci)
 			case ARM_t2STRH_POST:
 			case ARM_t2STR_POST:
 				insn->detail->arm.writeback = true;
+				insn->detail->arm.post_index = true;
 				break;
 		}
 	} else {	// ARM mode
@@ -366,7 +368,8 @@ void ARM_post_printer(csh ud, cs_insn *insn, char *insn_asm, MCInst *mci)
 
 			case ARM_STRD_PRE:
 			case ARM_STRH_PRE:
-
+				insn->detail->arm.writeback = true;
+				break;
 			case ARM_LDC2L_POST:
 			case ARM_LDC2_POST:
 			case ARM_LDCL_POST:
@@ -394,8 +397,8 @@ void ARM_post_printer(csh ud, cs_insn *insn, char *insn_asm, MCInst *mci)
 
 			case ARM_STR_POST_IMM:
 			case ARM_STR_POST_REG:
-
 				insn->detail->arm.writeback = true;
+				insn->detail->arm.post_index = true;
 				break;
 		}
 	}
@@ -1802,22 +1805,22 @@ static void printMSRMaskOperand(MCInst *MI, unsigned OpNum, SStream *O)
 
 		if (Mask & 8) {
 			SStream_concat0(O, "f");
-			reg += ARM_SYSREG_SPSR_F;
+			reg += SpecRegRBit ? ARM_SYSREG_SPSR_F : ARM_SYSREG_CPSR_F;
 		}
 
 		if (Mask & 4) {
 			SStream_concat0(O, "s");
-			reg += ARM_SYSREG_SPSR_S;
+			reg += SpecRegRBit ? ARM_SYSREG_SPSR_S : ARM_SYSREG_CPSR_S;
 		}
 
 		if (Mask & 2) {
 			SStream_concat0(O, "x");
-			reg += ARM_SYSREG_SPSR_X;
+			reg += SpecRegRBit ? ARM_SYSREG_SPSR_X : ARM_SYSREG_CPSR_X;
 		}
 
 		if (Mask & 1) {
 			SStream_concat0(O, "c");
-			reg += ARM_SYSREG_SPSR_C;
+			reg += SpecRegRBit ? ARM_SYSREG_SPSR_C : ARM_SYSREG_CPSR_C;
 		}
 
 		ARM_addSysReg(MI, reg);
