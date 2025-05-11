@@ -70,6 +70,10 @@ pub static ARCH_INCLUDES: &[CapstoneArchInfo<'static>] = &[
         cs_name: "tms320c64x",
     },
     CapstoneArchInfo {
+        header_name: "tricore.h",
+        cs_name: "tricore",
+    },
+    CapstoneArchInfo {
         header_name: "x86.h",
         cs_name: "x86",
     },

@@ -216,6 +216,8 @@ define_cs_enum_wrapper!(
     => M68K = CS_ARCH_M68K;
     /// Texas Instruments TMS320C64x
     => TMS320C64X = CS_ARCH_TMS320C64X;
+    /// TriCore
+    => TriCore = CS_ARCH_TRICORE;
     /// Motorola 68000
     => M680X = CS_ARCH_M680X;
     /// EVM
@@ -293,6 +295,20 @@ define_cs_enum_wrapper!(
     => Cbpf = { cs_mode::CS_MODE_BPF_CLASSIC };
     /// Extended BPF mode
     => Ebpf = { cs_mode::CS_MODE_BPF_EXTENDED };
+    /// TriCore 1.1
+    => TriCore110 = { cs_mode::CS_MODE_TRICORE_110 };
+    /// TriCore 1.2
+    => TriCore120 = { cs_mode::CS_MODE_TRICORE_120 };
+    /// TriCore 1.3
+    => TriCore130 = { cs_mode::CS_MODE_TRICORE_130 };
+    /// TriCore 1.3.1
+    => TriCore131 = { cs_mode::CS_MODE_TRICORE_131 };
+    /// TriCore 1.6
+    => TriCore160 = { cs_mode::CS_MODE_TRICORE_160 };
+    /// TriCore 1.6.1
+    => TriCore161 = { cs_mode::CS_MODE_TRICORE_161 };
+    /// TriCore 1.6.2
+    => TriCore162 = { cs_mode::CS_MODE_TRICORE_162 };
     /// Default mode for little-endian
     => Default = { cs_mode::CS_MODE_LITTLE_ENDIAN };
 );

@@ -329,6 +329,21 @@ macro_rules! arch_info_base {
                 ( both_endian: true )
             ]
             [
+                ( tricore, TriCore )
+                ( mode:
+                    TriCore110,
+                    TriCore120,
+                    TriCore130,
+                    TriCore131,
+                    TriCore160,
+                    TriCore161,
+                    TriCore162,
+                    )
+                ( extra_modes: )
+                ( syntax: )
+                ( both_endian: true )
+            ]
+            [
                 ( x86, X86 )
                 ( mode:
                     Mode16,
@@ -529,6 +544,13 @@ macro_rules! detail_arch_base {
                 op = Tms320c64xOperand,
                 /// Returns the Tms320c64x details, if any
                 => arch_name = tms320c64x,
+            ]
+            [
+                detail = TriCoreDetail,
+                insn_detail = TriCoreInsnDetail<'a>,
+                op = TriCoreOperand,
+                /// Returns the TriCore details, if any
+                => arch_name = tricore,
             ]
             [
                 detail = X86Detail,
