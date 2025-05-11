@@ -3717,3 +3717,53 @@ fn test_regs_tms320c64x() {
         CsResult::Err(Error::UnsupportedArch),
     );
 }
+
+#[test]
+fn test_arch_tricore() {
+    test_arch_mode_endian_insns(
+        &mut Capstone::new()
+            .tricore()
+            .mode(tricore::ArchMode::TriCore162)
+            .build()
+            .unwrap(),
+        Arch::TriCore,
+        Mode::TriCore162,
+        None,
+        &[],
+        &[("ld.a", b"\x09\xcf\xbc\xf5")],
+    );
+}
+
+#[test]
+fn test_arch_tricore_detail() {
+    use crate::arch::tricore::TriCoreOpMem;
+    use crate::arch::tricore::TriCoreOperand;
+    use capstone_sys::tricore_op_mem;
+    use capstone_sys::tricore_reg::*;
+
+    test_arch_mode_endian_insns_detail(
+        &mut Capstone::new()
+            .tricore()
+            .mode(tricore::ArchMode::TriCore162)
+            .build()
+            .unwrap(),
+        Arch::TriCore,
+        Mode::TriCore162,
+        None,
+        &[],
+        &[
+            // ld.a a15, [+a12]#-4
+            DII::new(
+                "ld.a",
+                b"\x09\xcf\xbc\xf5",
+                &[
+                    TriCoreOperand::Reg(RegId(TRICORE_REG_A15 as RegIdInt)),
+                    TriCoreOperand::Mem(TriCoreOpMem(tricore_op_mem {
+                        base: TRICORE_REG_A12 as u8,
+                        disp: -4,
+                    })),
+                ],
+            ),
+        ],
+    );
+}
