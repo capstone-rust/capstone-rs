@@ -91,7 +91,7 @@ fn build_capstone_cc() {
                 .file_type()
                 .expect("Failed to read capstone source directory");
             let file_name = e.file_name().into_string().expect("Invalid filename");
-            file_type.is_file() && (file_name.ends_with(".c") || file_name.ends_with(".C"))
+            !file_type.is_dir() && (file_name.ends_with(".c") || file_name.ends_with(".C"))
         })
     }
 
