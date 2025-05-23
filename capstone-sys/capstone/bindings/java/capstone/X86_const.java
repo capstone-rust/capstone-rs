@@ -329,11 +329,10 @@ public class X86_const {
 	public static final int X86_FPU_FLAGS_TEST_C1 = 1<<17;
 	public static final int X86_FPU_FLAGS_TEST_C2 = 1<<18;
 	public static final int X86_FPU_FLAGS_TEST_C3 = 1<<19;
-
-	public static final int X86_OP_INVALID = 0;
-	public static final int X86_OP_REG = 1;
-	public static final int X86_OP_IMM = 2;
-	public static final int X86_OP_MEM = 3;
+	public static final int X86_OP_INVALID = CS_OP_INVALID;
+	public static final int X86_OP_REG = CS_OP_REG;
+	public static final int X86_OP_IMM = CS_OP_IMM;
+	public static final int X86_OP_MEM = CS_OP_MEM;
 
 	public static final int X86_XOP_CC_INVALID = 0;
 	public static final int X86_XOP_CC_LT = 1;
@@ -400,6 +399,7 @@ public class X86_const {
 	public static final int X86_AVX_RM_RD = 2;
 	public static final int X86_AVX_RM_RU = 3;
 	public static final int X86_AVX_RM_RZ = 4;
+	public static final int X86_PREFIX_0 = 0x0;
 	public static final int X86_PREFIX_LOCK = 0xf0;
 	public static final int X86_PREFIX_REP = 0xf3;
 	public static final int X86_PREFIX_REPE = 0xf3;

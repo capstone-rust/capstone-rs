@@ -3,7 +3,7 @@
 # Update the bundled capstone library
 
 # Modify value to update capstone
-CAPSTONE_REVISION="accf4df62f1fba6f92cae692985d27063552601c"
+CAPSTONE_REVISION="895f2f2e10c245a45880c07c2666d498e62d8ecf"
 
 set -eux
 
@@ -14,7 +14,7 @@ CAPSTONE_DIR=capstone
 TEMP_DIR="$(mktemp -d /tmp/capstone-sys.XXXXXXXXXX)"
 ARCHIVE="$TEMP_DIR/archive.zip"
 
-URL="https://github.com/aquynh/capstone/archive/$CAPSTONE_REVISION.zip"
+URL="https://github.com/capstone-engine/capstone/archive/$CAPSTONE_REVISION.zip"
 wget "$URL" -O "$ARCHIVE"
 
 CS_TEMP_DIR="$TEMP_DIR/capstone"

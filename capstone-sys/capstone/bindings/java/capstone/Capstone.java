@@ -84,7 +84,7 @@ public class Capstone {
     public short[] regs_write = new short[20];
     public byte regs_write_count;
     // list of semantic groups this instruction belongs to.
-    public byte[] groups = new byte[8];
+    public byte[] groups = new byte[16];
     public byte groups_count;
 
     public UnionArch arch;
@@ -490,13 +490,13 @@ public class Capstone {
     }
   }
 
-  // destructor automatically caled at destroyed time.
+  // destructor automatically called at destroyed time.
   protected void finalize() {
     // FIXME: crashed on Ubuntu 14.04 64bit, OpenJDK java 1.6.0_33
     // cs.cs_close(ns.handleRef);
   }
 
-  // destructor automatically caled at destroyed time.
+  // destructor automatically called at destroyed time.
   public int close() {
     return cs.cs_close(ns.handleRef);
   }

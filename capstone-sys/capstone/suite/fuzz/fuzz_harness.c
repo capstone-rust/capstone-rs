@@ -98,7 +98,7 @@ int main(int argc, char **argv)
       "SparcV9"
     },
     {
-      CS_ARCH_SYSZ,
+      CS_ARCH_SYSTEMZ,
       (cs_mode)0,
       "SystemZ"
     },
@@ -116,6 +116,21 @@ int main(int argc, char **argv)
       CS_ARCH_M680X,
       (cs_mode)CS_MODE_M680X_6809,
       "M680X_M6809"
+    },
+    {
+        CS_ARCH_XTENSA,
+        (cs_mode)CS_MODE_XTENSA_ESP32,
+        "Xtensa ESP32"
+    },
+    {
+        CS_ARCH_XTENSA,
+        (cs_mode)CS_MODE_XTENSA_ESP32S2,
+        "Xtensa ESP32S2"
+    },
+    {
+        CS_ARCH_XTENSA,
+        (cs_mode)CS_MODE_XTENSA_ESP8266,
+        "Xtensa ESP8266"
     },
   };
 

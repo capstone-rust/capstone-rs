@@ -1,11 +1,14 @@
 # Capstone Disassembler Engine
 # By Dang Hoang Vu, 2013
 from __future__ import print_function
-import sys, re
+import sys
+import re
 
 INCL_DIR = '../include/capstone/'
 
-include = [ 'arm.h', 'arm64.h', 'm68k.h', 'mips.h', 'x86.h', 'ppc.h', 'sparc.h', 'systemz.h', 'xcore.h', 'tms320c64x.h', 'm680x.h', 'evm.h', 'mos65xx.h', 'wasm.h', 'bpf.h' ,'riscv.h', 'sh.h', 'tricore.h' ]
+include = ['arm.h', 'aarch64.h', 'm68k.h', 'mips.h', 'x86.h', 'ppc.h', 'sparc.h', 'systemz.h', 'xcore.h',
+           'tms320c64x.h', 'm680x.h', 'evm.h', 'mos65xx.h', 'wasm.h', 'bpf.h', 'riscv.h', 'sh.h', 'tricore.h',
+           'alpha.h', 'hppa.h', 'loongarch.h', 'arc.h', 'xtensa.h']
 
 template = {
     'java': {
@@ -15,13 +18,12 @@ template = {
             'out_file': './java/capstone/%s_const.java',
             # prefixes for constant filenames of all archs - case sensitive
             'arm.h': 'Arm',
-            'arm64.h': 'Arm64',
             'm68k.h': 'M68k',
             'mips.h': 'Mips',
             'x86.h': 'X86',
             'ppc.h': 'Ppc',
             'sparc.h': 'Sparc',
-            'systemz.h': 'Sysz',
+            'systemz.h': 'Systemz',
             'xcore.h': 'Xcore',
             'tms320c64x.h': 'TMS320C64x',
             'm680x.h': 'M680x',
@@ -31,20 +33,22 @@ template = {
             'comment_close': '',
         },
     'python': {
-            'header': "from . import CS_OP_INVALID, CS_OP_REG, CS_OP_IMM, CS_OP_MEM\n"
-                      "# For Capstone Engine. AUTO-GENERATED FILE, DO NOT EDIT [%s_const.py]\n",
+            'header': (
+                "from . import CS_OP_INVALID, CS_OP_REG, CS_OP_IMM, CS_OP_FP, CS_OP_PRED, CS_OP_SPECIAL, CS_OP_MEM, CS_OP_MEM_REG, CS_OP_MEM_IMM, UINT16_MAX, UINT8_MAX\n"
+                "# For Capstone Engine. AUTO-GENERATED FILE, DO NOT EDIT [%s_const.py]\n"
+                ),
             'footer': "",
             'line_format': '%s = %s\n',
             'out_file': './python/capstone/%s_const.py',
             # prefixes for constant filenames of all archs - case sensitive
             'arm.h': 'arm',
-            'arm64.h': 'arm64',
+            'aarch64.h': ['AArch64', 'AARCH64'],
             'm68k.h': 'm68k',
             'mips.h': 'mips',
             'x86.h': 'x86',
             'ppc.h': 'ppc',
             'sparc.h': 'sparc',
-            'systemz.h': 'sysz',
+            'systemz.h': 'systemz',
             'xcore.h': 'xcore',
             'tms320c64x.h': 'tms320c64x',
             'm680x.h': 'm680x',
@@ -55,6 +59,11 @@ template = {
             'riscv.h': 'riscv',
             'sh.h': 'sh',
             'tricore.h': ['TRICORE', 'TriCore'],
+            'alpha.h': ['ALPHA', 'Alpha'],
+            'hppa.h': 'hppa',
+            'loongarch.h': 'loongarch',
+            'xtensa.h': 'xtensa',
+            'arc.h': 'arc',
             'comment_open': '#',
             'comment_close': '',
         },
@@ -65,13 +74,12 @@ template = {
             'out_file': './ocaml/%s_const.ml',
             # prefixes for constant filenames of all archs - case sensitive
             'arm.h': 'arm',
-            'arm64.h': 'arm64',
             'mips.h': 'mips',
             'm68k.h': 'm68k',
             'x86.h': 'x86',
             'ppc.h': 'ppc',
             'sparc.h': 'sparc',
-            'systemz.h': 'sysz',
+            'systemz.h': 'systemz',
             'xcore.h': 'xcore',
             'tms320c64x.h': 'tms320c64x',
             'm680x.h': 'm680x',
@@ -80,81 +88,11 @@ template = {
             'comment_open': '(*',
             'comment_close': ' *)',
         },
-    # 'swift': {
-    #         'header': "// For Capstone Engine. AUTO-GENERATED FILE, DO NOT EDIT (%s)\n\n",
-    #         'footer': "",
-    #         'enum_doc': '/// %s\n',
-    #         'enum_header': 'public enum %s: %s {\n',
-    #         'enum_default_type': 'UInt32',
-    #         'enum_types': {
-    #             'UInt16': r'^\w+Reg$',
-    #             'UInt8': r'^\w+Grp$'
-    #         },
-    #         'option_set_header': 'public struct %s: OptionSet {\n    public typealias RawValue = %s\n    public let rawValue: RawValue\n    public init(rawValue: RawValue) { self.rawValue = rawValue }\n',
-    #         'option_sets': {
-    #             'X86Eflags': 'UInt64',
-    #             'X86FpuFlags': 'UInt64',
-    #             'SparcHint': 'UInt32',
-    #             'M680xIdx': 'UInt8',
-    #             'M680xOpFlags': 'UInt8',
-    #         },
-    #         'rename': {
-    #             r'^M680X_(\w+_OP_IN_MNEM)$': r'M680X_OP_FLAGS_\1',
-    #         },
-    #         'option_format': '    public static let {option} = {type}(rawValue: {value})\n',
-    #         'enum_extra_options': {
-    #             # swift enum != OptionSet, so options must be specified
-    #             'ArmSysreg': {
-    #                 'spsrCx': 'spsrC + spsrX',
-    #                 'spsrCs': 'spsrC + spsrS',
-    #                 'spsrXs': 'spsrX + spsrS',
-    #                 'spsrCxs': 'spsrC + spsrX + spsrS',
-    #                 'spsrCf': 'spsrC + spsrF',
-    #                 'spsrXf': 'spsrX + spsrF',
-    #                 'spsrCxf': 'spsrC + spsrX + spsrF',
-    #                 'spsrSf': 'spsrS + spsrF',
-    #                 'spsrCsf': 'spsrC + spsrS + spsrF',
-    #                 'spsrXsf': 'spsrX + spsrS + spsrF',
-    #                 'spsrCxsf': 'spsrC + spsrX + spsrS + spsrF',
-    #                 'cpsrCx': 'cpsrC + cpsrX',
-    #                 'cpsrCs': 'cpsrC + cpsrS',
-    #                 'cpsrXs': 'cpsrX + cpsrS',
-    #                 'cpsrCxs': 'cpsrC + cpsrX + cpsrS',
-    #                 'cpsrCf': 'cpsrC + cpsrF',
-    #                 'cpsrXf': 'cpsrX + cpsrF',
-    #                 'cpsrCxf': 'cpsrC + cpsrX + cpsrF',
-    #                 'cpsrSf': 'cpsrS + cpsrF',
-    #                 'cpsrCsf': 'cpsrC + cpsrS + cpsrF',
-    #                 'cpsrXsf': 'cpsrX + cpsrS + cpsrF',
-    #                 'cpsrCxsf': 'cpsrC + cpsrX + cpsrS + cpsrF',
-    #             }
-    #         },
-    #         'enum_footer': '}\n\n',
-    #         'doc_line_format': '    /// %s\n',
-    #         'line_format': '    case %s = %s\n',
-    #         'dup_line_format': '    public static let %s = %s\n',
-    #         'out_file': './swift/Sources/Capstone/%sEnums.swift',
-    #         'reserved_words': [
-    #             'break', 'class', 'for', 'false', 'in', 'init', 'return', 'true'
-    #         ],
-    #         'reserved_word_format': '`%s`',
-    #         # prefixes for constant filenames of all archs - case sensitive
-    #         'arm.h': 'Arm',
-    #         'arm64.h': 'Arm64',
-    #         'm68k.h': 'M68k',
-    #         'mips.h': 'Mips',
-    #         'x86.h': 'X86',
-    #         'ppc.h': 'Ppc',
-    #         'sparc.h': 'Sparc',
-    #         'systemz.h': 'Sysz',
-    #         'xcore.h': 'Xcore',
-    #         'tms320c64x.h': 'TMS320C64x',
-    #         'm680x.h': 'M680x',
-    #         'evm.h': 'Evm',
-    #         'mos65xx.h': 'Mos65xx',
-    #         'comment_open': '\t//',
-    #         'comment_close': '',
-    #     },
+}
+
+excluded_prefixes = {
+    'arm.h': ["ARMCC_CondCodes", "ARMVCC_VPTCodes"],
+    'aarch64.h': ["AArch64CC_CondCode", "AArch64Layout_VectorLayout"],
 }
 
 # markup for comments to be added to autogen files
@@ -214,6 +152,7 @@ def gen(lang):
         enums = {}
         values = {}
         doc_lines = []
+        rhs = ""
 
         count = 0
         for line in lines:
@@ -231,13 +170,18 @@ def gen(lang):
             elif line.startswith('}') or line.startswith('#'):
                 doc_lines = []
                 pass
+            elif re.search(r"^(\s*typedef\s+)?enum", line):
+                # First new enum value should be 0.
+                # Because `rhs` is incremented later, it must be set to -1 here.
+                # Everything about this code is so broken -.-
+                rhs = "-1"
 
             if line == '' or line.startswith('//'):
                 continue
 
             if line.startswith('#define '):
                 line = line[8:]     #cut off define
-                xline = re.split(r'\s+', line, 1)     #split to at most 2 express
+                xline = re.split(r'\s+', line, maxsplit=1)     #split to at most 2 express
                 if len(xline) != 2:
                     continue
                 if '(' in xline[0] or ')' in xline[0]:      #does it look like a function
@@ -245,13 +189,15 @@ def gen(lang):
                 xline.insert(1, '=')            # insert an = so the expression below can parse it
                 line = ' '.join(xline)
 
-            def is_with_prefix(x):
+            def has_special_arch_prefix(x):
+                if target in excluded_prefixes and any(x.startswith(excl_pre) for excl_pre in excluded_prefixes[target]):
+                    return False
                 if prefixs:
                     return any(x.startswith(pre) for pre in prefixs)
                 else:
                     return x.startswith(prefix.upper())
 
-            if not is_with_prefix(line):
+            if not has_special_arch_prefix(line):
                 continue
 
             tmp = line.strip().split(',')
@@ -263,7 +209,7 @@ def gen(lang):
                 t = re.sub(r'\((\d+)ULL << (\d+)\)', r'\1 << \2', t)    # (1ULL<<1) to 1 << 1
                 f = re.split(r'\s+', t)
 
-                if not is_with_prefix(f[0]):
+                if not has_special_arch_prefix(f[0]):
                     continue
 
                 if len(f) > 1 and f[1] not in ('//', '///<', '='):
@@ -272,8 +218,25 @@ def gen(lang):
                 elif len(f) > 1 and f[1] == '=':
                     rhs = ''.join(f[2:])
                 else:
-                    rhs = str(count)
-                    count += 1
+                    # Dirty fix: This line is reached for enum values which
+                    # have no value assigned (as in `ARCH_SOMETHING,`).
+                    # Because the binding constants require a fixed value,
+                    # `count` was used (as it is now the `except` case).
+                    # Which is of course incorrect,
+                    # because it doesn't match the actual value in the C code.
+                    # So we just test here if the previous `rhs` was an actual number,
+                    # and set `rhs = rhs + 1`. If it wasn't a number, we just continue the incorrect design and
+                    # set it to `str(count)`.
+                    try:
+                        if "0x" in rhs:
+                            prev_val = int(rhs, 16)
+                        else:
+                            prev_val = int(rhs)
+                        prev_val += 1
+                        rhs = str(prev_val)
+                    except ValueError:
+                        rhs = str(count)
+                        count += 1
 
                 try:
                     count = int(rhs) + 1

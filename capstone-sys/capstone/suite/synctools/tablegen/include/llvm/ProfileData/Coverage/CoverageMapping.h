@@ -220,7 +220,7 @@ struct CounterMappingRegion {
     SkippedRegion,
 
     /// A GapRegion is like a CodeRegion, but its count is only set as the
-    /// line execution count when its the only region in the line.
+    /// line execution count when it's the only region in the line.
     GapRegion,
 
     /// A BranchRegion represents leaf-level boolean expressions and is
@@ -739,7 +739,7 @@ getLineCoverageStats(const coverage::CoverageData &CD) {
   return make_range(Begin, End);
 }
 
-// Coverage mappping data (V2) has the following layout:
+// Coverage mapping data (V2) has the following layout:
 // IPSK_covmap:
 //   [CoverageMapFileHeader]
 //   [ArrayStart]
@@ -749,7 +749,7 @@ getLineCoverageStats(const coverage::CoverageData &CD) {
 //   [ArrayEnd]
 //   [Encoded Filenames and Region Mapping Data]
 //
-// Coverage mappping data (V3) has the following layout:
+// Coverage mapping data (V3) has the following layout:
 // IPSK_covmap:
 //   [CoverageMapFileHeader]
 //   [Encoded Filenames]

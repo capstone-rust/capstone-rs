@@ -26,12 +26,12 @@ impl CapstoneArchInfo<'_> {
 
 pub static ARCH_INCLUDES: &[CapstoneArchInfo<'static>] = &[
     CapstoneArchInfo {
-        header_name: "arm.h",
-        cs_name: "arm",
+        header_name: "aarch64.h",
+        cs_name: "aarch64",
     },
     CapstoneArchInfo {
-        header_name: "arm64.h",
-        cs_name: "arm64",
+        header_name: "arm.h",
+        cs_name: "arm",
     },
     CapstoneArchInfo {
         header_name: "evm.h",
@@ -71,7 +71,7 @@ pub static ARCH_INCLUDES: &[CapstoneArchInfo<'static>] = &[
     },
     CapstoneArchInfo {
         header_name: "systemz.h",
-        cs_name: "sysz",
+        cs_name: "systemz",
     },
     CapstoneArchInfo {
         header_name: "tms320c64x.h",

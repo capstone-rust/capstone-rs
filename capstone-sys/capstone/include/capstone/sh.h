@@ -9,6 +9,7 @@ extern "C" {
 #endif
 
 #include "platform.h"
+#include "cs_operand.h"
 
 #ifdef _MSC_VER
 #pragma warning(disable:4201)
@@ -157,10 +158,10 @@ typedef enum {
 } sh_reg;
 
 typedef enum {
-	SH_OP_INVALID = 0,  ///< = CS_OP_INVALID (Uninitialized).
-	SH_OP_REG, ///< = CS_OP_REG (Register operand).
-	SH_OP_IMM, ///< = CS_OP_IMM (Immediate operand).
-	SH_OP_MEM, ///< = CS_OP_MEM (Memory operand).
+	SH_OP_INVALID = CS_OP_INVALID,  ///< = CS_OP_INVALID (Uninitialized).
+	SH_OP_REG = CS_OP_REG, ///< = CS_OP_REG (Register operand).
+	SH_OP_IMM = CS_OP_IMM, ///< = CS_OP_IMM (Immediate operand).
+	SH_OP_MEM = CS_OP_MEM, ///< = CS_OP_MEM (Memory operand).
 } sh_op_type;	
 
 typedef enum {
@@ -182,15 +183,8 @@ typedef struct sh_op_mem {
 	uint32_t disp;           /// <= displacement
 } sh_op_mem;
 
-// SH-DSP instcutions define
-typedef enum sh_dsp_insn_type {
-	SH_INS_DSP_INVALID,
-	SH_INS_DSP_DOUBLE,
-	SH_INS_DSP_SINGLE,
-	SH_INS_DSP_PARALLEL,
-} sh_dsp_insn_type;
-
 typedef enum sh_dsp_insn {
+	SH_INS_DSP_INVALID = 0,
 	SH_INS_DSP_NOP = 1,
 	SH_INS_DSP_MOV,
 	SH_INS_DSP_PSHL,

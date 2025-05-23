@@ -3,17 +3,6 @@
 
 #ifdef CAPSTONE_HAS_TMS320C64X
 
-#ifdef _MSC_VER
-// Disable security warnings for strcpy
-#ifndef _CRT_SECURE_NO_WARNINGS
-#define _CRT_SECURE_NO_WARNINGS
-#endif
-
-// Banned API Usage : strcpy is a Banned API as listed in dontuse.h for
-// security purposes.
-#pragma warning(disable:28719)
-#endif
-
 #include <ctype.h>
 #include <string.h>
 
@@ -33,15 +22,16 @@ static void printMemOperand(MCInst *MI, unsigned OpNo, SStream *O);
 static void printMemOperand2(MCInst *MI, unsigned OpNo, SStream *O);
 static void printRegPair(MCInst *MI, unsigned OpNo, SStream *O);
 
-void TMS320C64x_post_printer(csh ud, cs_insn *insn, char *insn_asm, MCInst *mci)
+void TMS320C64x_post_printer(csh ud, cs_insn *insn, SStream *insn_asm, MCInst *mci)
 {
 	SStream ss;
-	char *p, *p2, tmp[8];
+	const char *op_str_ptr, *p2;
+	char tmp[8] = { 0 };
 	unsigned int unit = 0;
 	int i;
 	cs_tms320c64x *tms320c64x;
 
-	if (mci->csh->detail) {
+	if (mci->csh->detail_opt) {
 		tms320c64x = &mci->flat_insn->detail->tms320c64x;
 
 		for (i = 0; i < insn->detail->groups_count; i++) {
@@ -71,50 +61,56 @@ void TMS320C64x_post_printer(csh ud, cs_insn *insn, char *insn_asm, MCInst *mci)
 		if (tms320c64x->condition.reg != TMS320C64X_REG_INVALID)
 			SStream_concat(&ss, "[%c%s]|", (tms320c64x->condition.zero == 1) ? '!' : '|', cs_reg_name(ud, tms320c64x->condition.reg));
 
-		p = strchr(insn_asm, '\t');
-		if (p != NULL)
-			*p++ = '\0';
+		// Sorry for all the fixes below. I don't have time to add more helper SStream functions.
+		// Before that they messed around with the private buffer of the stream.
+		// So it is better now. But still not efficient.
+		op_str_ptr = strchr(SStream_rbuf(insn_asm), '\t');
 
-		SStream_concat0(&ss, insn_asm);
-		if ((p != NULL) && (((p2 = strchr(p, '[')) != NULL) || ((p2 = strchr(p, '(')) != NULL))) {
-			while ((p2 > p) && ((*p2 != 'a') && (*p2 != 'b')))
+		if ((op_str_ptr != NULL) && (((p2 = strchr(op_str_ptr, '[')) != NULL) || ((p2 = strchr(op_str_ptr, '(')) != NULL))) {
+			while ((p2 > op_str_ptr) && ((*p2 != 'a') && (*p2 != 'b')))
 				p2--;
-			if (p2 == p) {
-				strcpy(insn_asm, "Invalid!");
+			if (p2 == op_str_ptr) {
+				SStream_Flush(insn_asm, NULL);
+				SStream_concat0(insn_asm, "Invalid!");
 				return;
 			}
 			if (*p2 == 'a')
-				strcpy(tmp, "1T");
+				strncpy(tmp, "1T", sizeof(tmp));
 			else
-				strcpy(tmp, "2T");
+				strncpy(tmp, "2T", sizeof(tmp));
 		} else {
 			tmp[0] = '\0';
 		}
+		SStream mnem_post = { 0 };
+		SStream_Init(&mnem_post);
 		switch(tms320c64x->funit.unit) {
 			case TMS320C64X_FUNIT_D:
-				SStream_concat(&ss, ".D%s%u", tmp, tms320c64x->funit.side);
+				SStream_concat(&mnem_post, ".D%s%u", tmp, tms320c64x->funit.side);
 				break;
 			case TMS320C64X_FUNIT_L:
-				SStream_concat(&ss, ".L%s%u", tmp, tms320c64x->funit.side);
+				SStream_concat(&mnem_post, ".L%s%u", tmp, tms320c64x->funit.side);
 				break;
 			case TMS320C64X_FUNIT_M:
-				SStream_concat(&ss, ".M%s%u", tmp, tms320c64x->funit.side);
+				SStream_concat(&mnem_post, ".M%s%u", tmp, tms320c64x->funit.side);
 				break;
 			case TMS320C64X_FUNIT_S:
-				SStream_concat(&ss, ".S%s%u", tmp, tms320c64x->funit.side);
+				SStream_concat(&mnem_post, ".S%s%u", tmp, tms320c64x->funit.side);
 				break;
 		}
 		if (tms320c64x->funit.crosspath > 0)
-			SStream_concat0(&ss, "X");
+			SStream_concat0(&mnem_post, "X");
 
-		if (p != NULL)
-			SStream_concat(&ss, "\t%s", p);
+		if (op_str_ptr != NULL) {
+			// There is an op_str
+			SStream_concat1(&mnem_post, '\t');
+			SStream_replc_str(insn_asm, '\t', SStream_rbuf(&mnem_post));
+		}
 
 		if (tms320c64x->parallel != 0)
-			SStream_concat0(&ss, "\t||");
-
-		/* insn_asm is a buffer from an SStream, so there should be enough space */
-		strcpy(insn_asm, ss.buffer);
+			SStream_concat0(insn_asm, "\t||");
+		SStream_concat0(&ss, SStream_rbuf(insn_asm));
+		SStream_Flush(insn_asm, NULL);
+		SStream_concat0(insn_asm, SStream_rbuf(&ss));
 	}
 }
 
@@ -147,7 +143,7 @@ static void printOperand(MCInst *MI, unsigned OpNo, SStream *O)
 			SStream_concat0(O, getRegisterName(reg));
 		}
 
-		if (MI->csh->detail) {
+		if (MI->csh->detail_opt) {
 			MI->flat_insn->detail->tms320c64x.operands[MI->flat_insn->detail->tms320c64x.op_count].type = TMS320C64X_OP_REG;
 			MI->flat_insn->detail->tms320c64x.operands[MI->flat_insn->detail->tms320c64x.op_count].reg = reg;
 			MI->flat_insn->detail->tms320c64x.op_count++;
@@ -167,7 +163,7 @@ static void printOperand(MCInst *MI, unsigned OpNo, SStream *O)
 				SStream_concat(O, "-%"PRIu64, -Imm);
 		}
 
-		if (MI->csh->detail) {
+		if (MI->csh->detail_opt) {
 			MI->flat_insn->detail->tms320c64x.operands[MI->flat_insn->detail->tms320c64x.op_count].type = TMS320C64X_OP_IMM;
 			MI->flat_insn->detail->tms320c64x.operands[MI->flat_insn->detail->tms320c64x.op_count].imm = Imm;
 			MI->flat_insn->detail->tms320c64x.op_count++;
@@ -236,7 +232,7 @@ static void printMemOperand(MCInst *MI, unsigned OpNo, SStream *O)
 			break;
 	}
 
-	if (MI->csh->detail) {
+	if (MI->csh->detail_opt) {
 		tms320c64x = &MI->flat_insn->detail->tms320c64x;
 
 		tms320c64x->operands[tms320c64x->op_count].type = TMS320C64X_OP_MEM;
@@ -322,7 +318,7 @@ static void printMemOperand2(MCInst *MI, unsigned OpNo, SStream *O)
 	offset = (Val >> 7) & 0x7fff;
 	SStream_concat(O, "*+%s[0x%x]", getRegisterName(basereg), offset);
 
-	if (MI->csh->detail) {
+	if (MI->csh->detail_opt) {
 		tms320c64x = &MI->flat_insn->detail->tms320c64x;
 
 		tms320c64x->operands[tms320c64x->op_count].type = TMS320C64X_OP_MEM;
@@ -344,7 +340,7 @@ static void printRegPair(MCInst *MI, unsigned OpNo, SStream *O)
 
 	SStream_concat(O, "%s:%s", getRegisterName(reg + 1), getRegisterName(reg));
 
-	if (MI->csh->detail) {
+	if (MI->csh->detail_opt) {
 		tms320c64x = &MI->flat_insn->detail->tms320c64x;
 
 		tms320c64x->operands[tms320c64x->op_count].type = TMS320C64X_OP_REGPAIR;

@@ -149,7 +149,7 @@ typedef struct insn_props {
 
 //////////////////////////////////////////////////////////////////////////////
 
-// M680X instuctions have 1 up to 8 bytes (CPU12: MOVW IDX2,IDX2).
+// M680X instructions have 1 up to 8 bytes (CPU12: MOVW IDX2,IDX2).
 // A reader is needed to read a byte or word from a given memory address.
 // See also X86 reader(...)
 static bool read_byte(const m680x_info *info, uint8_t *byte, uint16_t address)
@@ -209,7 +209,7 @@ static bool read_sdword(const m680x_info *info, int32_t *sdword,
 	return true;
 }
 
-// For PAGE2 and PAGE3 opcodes when using an an array of inst_page1 most
+// For PAGE2 and PAGE3 opcodes when using an array of inst_page1 most
 // entries have M680X_INS_ILLGL. To avoid wasting memory an inst_pageX is
 // used which contains the opcode. Using a binary search for the right opcode
 // is much faster (= O(log n) ) in comparison to a linear search ( = O(n) ).
@@ -627,7 +627,7 @@ typedef struct insn_desc {
 	uint16_t insn_size;
 } insn_desc;
 
-// If successfull return the additional byte size needed for M6809
+// If successful return the additional byte size needed for M6809
 // indexed addressing mode (including the indexed addressing post_byte).
 // On error return -1.
 static int get_indexed09_post_byte_size(const m680x_info *info,
@@ -681,7 +681,7 @@ static int get_indexed09_post_byte_size(const m680x_info *info,
 	return 1;
 }
 
-// If successfull return the additional byte size needed for CPU12
+// If successful return the additional byte size needed for CPU12
 // indexed addressing mode (including the indexed addressing post_byte).
 // On error return -1.
 static int get_indexed12_post_byte_size(const m680x_info *info,
@@ -750,7 +750,7 @@ static bool is_tfm_reg_valid(const m680x_info *info, uint8_t reg_nibble)
 	return reg_nibble <= 4;
 }
 
-// If successfull return the additional byte size needed for CPU12
+// If successful return the additional byte size needed for CPU12
 // loop instructions DBEQ/DBNE/IBEQ/IBNE/TBEQ/TBNE (including the post byte).
 // On error return -1.
 static int get_loop_post_byte_size(const m680x_info *info, uint16_t address)
@@ -772,7 +772,7 @@ static int get_loop_post_byte_size(const m680x_info *info, uint16_t address)
 	return 2;
 }
 
-// If successfull return the additional byte size needed for HD6309
+// If successful return the additional byte size needed for HD6309
 // bit move instructions BAND/BEOR/BIAND/BIEOR/BIOR/BOR/LDBT/STBT
 // (including the post byte).
 // On error return -1.
@@ -1125,7 +1125,7 @@ static void reg_bits_hdlr(MCInst *MI, m680x_info *info, uint16_t *address)
 		add_insn_group(MI->flat_insn->detail, M680X_GRP_RET);
 
 	for (bit_index = 0; bit_index < 8; ++bit_index) {
-		if (reg_bits & (1 << bit_index))
+		if (reg_bits & (1 << bit_index) && reg_to_reg_ids)
 			add_reg_operand(info, reg_to_reg_ids[bit_index]);
 	}
 }
@@ -1680,7 +1680,7 @@ static void indexedS16_hdlr(MCInst *MI, m680x_info *info, uint16_t *address)
 	uint16_t offset = 0;
 
 	read_word(info, &offset, *address);
-	address += 2;
+	*address += 2;
 
 	add_indexed_operand(info, M680X_REG_S, false, 0, M680X_OFFSET_BITS_16,
 		offset, false);
@@ -1774,7 +1774,7 @@ static void loop_hdlr(MCInst *MI, m680x_info *info, uint16_t *address)
 
 	op->type = M680X_OP_RELATIVE;
 
-	op->rel.offset = (post_byte & 0x10) ? 0xff00 | rel : rel;
+	op->rel.offset = (post_byte & 0x10) ? (int16_t) (0xff00 | rel) : rel;
 
 	op->rel.address = *address + op->rel.offset;
 
@@ -1885,7 +1885,7 @@ static unsigned int m680x_disassemble(MCInst *MI, m680x_info *info,
 
 		access_mode = g_insn_props[info->insn].access_mode;
 
-		// Fix for M6805 BSET/BCLR. It has a differnt operand order
+		// Fix for M6805 BSET/BCLR. It has a different operand order
 		// in comparison to the M6811
 		if ((info->cpu->insn_cc_not_modified[0] == info->insn) ||
 			(info->cpu->insn_cc_not_modified[1] == info->insn))

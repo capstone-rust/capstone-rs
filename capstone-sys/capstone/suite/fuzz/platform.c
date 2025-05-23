@@ -52,10 +52,10 @@ struct platform platforms[] = {
 		},
 		{
 				// item 7
-				CS_ARCH_ARM64,
+				CS_ARCH_AARCH64,
 				(cs_mode) 0,
-				"ARM-64",
-				"arm64"
+				"AARCH64",
+				"aarch64"
 		},
 		{
 				// item 8
@@ -122,8 +122,8 @@ struct platform platforms[] = {
 		},
 		{
 				//item 17
-				CS_ARCH_SYSZ,
-				(cs_mode) 0,
+				CS_ARCH_SYSTEMZ,
+				(cs_mode) CS_MODE_BIG_ENDIAN,
 				"SystemZ",
 				"systemz"
 		},
@@ -331,6 +331,13 @@ struct platform platforms[] = {
 				"ppc64beqpx"
 		},
 		{
+				//item 46
+				CS_ARCH_PPC,
+				CS_MODE_32 | CS_MODE_BIG_ENDIAN | CS_MODE_PS,
+				"ppc+ps",
+				"ppc32beps"
+		},
+		{
 				CS_ARCH_TRICORE,
 				CS_MODE_32 | CS_MODE_BIG_ENDIAN | CS_MODE_TRICORE_110,
 				"TRICORE",
@@ -372,8 +379,31 @@ struct platform platforms[] = {
 				"TRICORE",
 				"tc162"
 		},
-
-		// dummy entry to mark the end of this array.
+		{
+				CS_ARCH_TRICORE,
+				CS_MODE_32 | CS_MODE_BIG_ENDIAN | CS_MODE_TRICORE_180,
+				"TRICORE",
+				"tc180"
+		},
+		{
+				CS_ARCH_XTENSA,
+				CS_MODE_XTENSA_ESP32,
+				"XTENSA ESP32",
+				"esp32"
+		},
+		{
+				CS_ARCH_XTENSA,
+				CS_MODE_XTENSA_ESP32S2,
+				"XTENSA ESP32S2",
+				"esp32s2"
+		},
+		{
+				CS_ARCH_XTENSA,
+				CS_MODE_XTENSA_ESP8266,
+				"XTENSA ESP8266",
+				"esp8266"
+		},
+	// dummy entry to mark the end of this array.
 		// DO NOT DELETE THIS
 		{
 				0,
@@ -394,7 +424,11 @@ unsigned int platform_len(void) {
 
 // get platform entry encoded n (first byte for input data of OSS fuzz)
 unsigned int get_platform_entry(uint8_t n) {
-	return n % platform_len();
+	unsigned len = platform_len();
+	if (len == 0) {
+		return 0;
+	}
+	return n % len;
 }
 
 // get cstoolname from encoded n (first byte for input data of OSS fuzz)
