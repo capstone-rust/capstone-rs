@@ -4,6 +4,11 @@ Notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [UNRELEASED] - YYYY-MM-DD
+### Changed
+- Rename ARM64 to AARCH64, SYSZ to SYSTEMZ to follow upstream changes
+- Bump bundled capstone to 6.0.0-Alpha4
+
 ## [0.18.0] - 2026-01-04
 ### Added
 - Support for TriCore arch
