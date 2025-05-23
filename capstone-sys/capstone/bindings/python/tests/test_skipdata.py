@@ -1,10 +1,9 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 # Capstone Python bindings, by Nguyen Anh Quynnh <aquynh@gmail.com>
 
-from __future__ import print_function
 from capstone import *
-import binascii
+from xprint import to_hex
 
 
 X86_CODE32 = b"\x8d\x4c\x32\x08\x01\xd8\x81\xc6\x34\x12\x00\x00\x00\x91\x92"
@@ -24,10 +23,11 @@ def testcb(buffer, size, offset, userdata):
 
 # ## Test class Cs
 def test_class():
+    errors = []
     for (arch, mode, code, comment, syntax) in all_tests:
         print('*' * 16)
         print("Platform: %s" %comment)
-        print("Code: %s" % code.hex(' '))
+        print("Code: %s" % to_hex(code))
         print("Disasm:")
 
         try:
@@ -66,7 +66,11 @@ def test_class():
             print
         except CsError as e:
             print("ERROR: %s" % e)
+            errors.append(str(e))
+    return errors
 
 
 if __name__ == '__main__':
-    test_class()
+    if test_class():
+        print("Some errors happened. Please check the output")
+        exit(1)

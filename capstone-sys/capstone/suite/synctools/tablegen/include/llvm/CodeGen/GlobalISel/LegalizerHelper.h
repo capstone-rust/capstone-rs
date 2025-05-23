@@ -82,7 +82,7 @@ public:
   LegalizeResult legalizeInstrStep(MachineInstr &MI,
                                    LostDebugLocObserver &LocObserver);
 
-  /// Legalize an instruction by emiting a runtime library call instead.
+  /// Legalize an instruction by emitting a runtime library call instead.
   LegalizeResult libcall(MachineInstr &MI, LostDebugLocObserver &LocObserver);
 
   /// Legalize an instruction by reducing the width of the underlying scalar
@@ -238,7 +238,7 @@ private:
   /// needs to be widened to evenly cover \p DstReg, inserts high bits
   /// corresponding to the extension opcode \p PadStrategy.
   ///
-  /// \p VRegs will be cleared, and the the result \p NarrowTy register pieces
+  /// \p VRegs will be cleared, and the result \p NarrowTy register pieces
   /// will replace it. Returns The complete LCMTy that \p VRegs will cover when
   /// merged.
   LLT buildLCMMergePieces(LLT DstTy, LLT NarrowTy, LLT GCDTy,

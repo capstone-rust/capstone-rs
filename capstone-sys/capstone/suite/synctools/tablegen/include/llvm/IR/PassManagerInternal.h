@@ -52,7 +52,7 @@ struct PassConcept {
   /// Polymorphic method to access the name of a pass.
   virtual StringRef name() const = 0;
 
-  /// Polymorphic method to to let a pass optionally exempted from skipping by
+  /// Polymorphic method to let a pass optionally exempted from skipping by
   /// PassInstrumentation.
   /// To opt-in, pass should implement `static bool isRequired()`. It's no-op
   /// to have `isRequired` always return false since that is the default.
@@ -123,7 +123,7 @@ template <typename IRUnitT, typename PreservedAnalysesT, typename InvalidatorT>
 struct AnalysisResultConcept {
   virtual ~AnalysisResultConcept() = default;
 
-  /// Method to try and mark a result as invalid.
+  /// Method to try to mark a result as invalid.
   ///
   /// When the outer analysis manager detects a change in some underlying
   /// unit of the IR, it will call this method on all of the results cached.

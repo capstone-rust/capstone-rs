@@ -621,7 +621,7 @@ public:
     const Value *Val, ///< The value to cast
     bool SrcIsSigned, ///< Whether to treat the source as signed
     Type *Ty,   ///< The Type to which the value should be casted
-    bool DstIsSigned  ///< Whether to treate the dest. as signed
+    bool DstIsSigned  ///< Whether to treat the dest. as signed
   );
 
   /// There are several places where we need to know if a cast instruction
@@ -1699,7 +1699,7 @@ public:
            paramHasAttr(ArgNo, Attribute::DereferenceableOrNull);
   }
 
-  /// Determine if there are is an inalloca argument. Only the last argument can
+  /// Determine if there is an inalloca argument. Only the last argument can
   /// have the inalloca attribute.
   bool hasInAllocaArgument() const {
     return !arg_empty() && paramHasAttr(arg_size() - 1, Attribute::InAlloca);
@@ -1838,7 +1838,7 @@ public:
   }
   void setOnlyWritesMemory() { addFnAttr(Attribute::WriteOnly); }
 
-  /// Determine if the call can access memmory only using pointers based
+  /// Determine if the call can access memory only using pointers based
   /// on its arguments.
   bool onlyAccessesArgMemory() const {
     return hasFnAttr(Attribute::ArgMemOnly);

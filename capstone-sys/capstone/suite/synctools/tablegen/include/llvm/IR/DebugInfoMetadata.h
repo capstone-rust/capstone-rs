@@ -2235,7 +2235,7 @@ DILocation::cloneWithDiscriminator(unsigned Discriminator) const {
   DIScope *Scope = getScope();
   // Skip all parent DILexicalBlockFile that already have a discriminator
   // assigned. We do not want to have nested DILexicalBlockFiles that have
-  // mutliple discriminators because only the leaf DILexicalBlockFile's
+  // multiple discriminators because only the leaf DILexicalBlockFile's
   // dominator will be used.
   for (auto *LBF = dyn_cast<DILexicalBlockFile>(Scope);
        LBF && LBF->getDiscriminator() != 0;
@@ -2639,7 +2639,7 @@ public:
 
   enum SignedOrUnsignedConstant { SignedConstant, UnsignedConstant };
   /// Determine whether this represents a constant value, if so
-  // return it's sign information.
+  // return its sign information.
   llvm::Optional<SignedOrUnsignedConstant> isConstant() const;
 
   /// Return the number of unique location operands referred to (via

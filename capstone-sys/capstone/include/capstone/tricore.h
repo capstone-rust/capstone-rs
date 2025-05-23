@@ -12,6 +12,7 @@ extern "C" {
 #include <stdint.h>
 #endif
 
+#include "cs_operand.h"
 #include "platform.h"
 
 #ifdef _MSC_VER
@@ -30,7 +31,7 @@ typedef enum tricore_op_type {
 /// This is associated with TRICORE_OP_MEM operand type above
 typedef struct tricore_op_mem {
 	uint8_t base; ///< base register
-	int32_t disp; ///< displacement/offset value
+	int64_t disp; ///< displacement/offset value
 } tricore_op_mem;
 
 /// Instruction operand
@@ -38,7 +39,7 @@ typedef struct cs_tricore_op {
 	tricore_op_type type;	    ///< operand type
 	union {
 		unsigned int reg;   ///< register value for REG operand
-		int32_t imm;	    ///< immediate value for IMM operand
+		int64_t imm;	    ///< immediate value for IMM operand
 		tricore_op_mem mem; ///< base/disp value for MEM operand
 	};
 	/// This field is combined of cs_ac_type.
@@ -46,20 +47,20 @@ typedef struct cs_tricore_op {
 	uint8_t access; ///< How is this operand accessed? (READ, WRITE or READ|WRITE)
 } cs_tricore_op;
 
-#define TRICORE_OP_COUNT 8
+#define NUM_TRICORE_OPS 8
 
 /// Instruction structure
 typedef struct cs_tricore {
 	uint8_t op_count; ///< number of operands of this instruction.
 	cs_tricore_op
-		operands[TRICORE_OP_COUNT]; ///< operands for this instruction.
+		operands[NUM_TRICORE_OPS]; ///< operands for this instruction.
 	/// TODO: Mark the modified flags register in td files and regenerate inc files
 	bool update_flags; ///< whether the flags register is updated.
 } cs_tricore;
 
 /// TriCore registers
 typedef enum tricore_reg {
-	// generate content <TriCoreGenCSRegEnum.inc> begin
+	// generated content <TriCoreGenCSRegEnum.inc> begin
 	// clang-format off
 
 	TRICORE_REG_INVALID = 0,
@@ -126,16 +127,15 @@ typedef enum tricore_reg {
 	TRICORE_REG_ENDING, // 61
 
 	// clang-format on
-	// generate content <TriCoreGenCSRegEnum.inc> end
+	// generated content <TriCoreGenCSRegEnum.inc> end
 } tricore_reg;
 
 /// TriCore instruction
 typedef enum tricore_insn {
-	TRICORE_INS_INVALID = 0,
-	// generate content <TriCoreGenCSInsnEnum.inc> begin
+	// generated content <TriCoreGenCSInsnEnum.inc> begin
 	// clang-format off
 
-	TRICORE_INS_XOR_T,
+	TRICORE_INS_INVALID,
 	TRICORE_INS_ABSDIFS_B,
 	TRICORE_INS_ABSDIFS_H,
 	TRICORE_INS_ABSDIFS,
@@ -146,6 +146,8 @@ typedef enum tricore_insn {
 	TRICORE_INS_ABSS_H,
 	TRICORE_INS_ABSS,
 	TRICORE_INS_ABS_B,
+	TRICORE_INS_ABS_DF,
+	TRICORE_INS_ABS_F,
 	TRICORE_INS_ABS_H,
 	TRICORE_INS_ABS,
 	TRICORE_INS_ADDC,
@@ -163,6 +165,7 @@ typedef enum tricore_insn {
 	TRICORE_INS_ADDX,
 	TRICORE_INS_ADD_A,
 	TRICORE_INS_ADD_B,
+	TRICORE_INS_ADD_DF,
 	TRICORE_INS_ADD_F,
 	TRICORE_INS_ADD_H,
 	TRICORE_INS_ADD,
@@ -208,6 +211,7 @@ typedef enum tricore_insn {
 	TRICORE_INS_CMOVN,
 	TRICORE_INS_CMOV,
 	TRICORE_INS_CMPSWAP_W,
+	TRICORE_INS_CMP_DF,
 	TRICORE_INS_CMP_F,
 	TRICORE_INS_CRC32B_W,
 	TRICORE_INS_CRC32L_W,
@@ -219,8 +223,21 @@ typedef enum tricore_insn {
 	TRICORE_INS_CSUB,
 	TRICORE_INS_DEBUG,
 	TRICORE_INS_DEXTR,
+	TRICORE_INS_DFTOF,
+	TRICORE_INS_DFTOIN,
+	TRICORE_INS_DFTOIZ,
+	TRICORE_INS_DFTOI,
+	TRICORE_INS_DFTOLZ,
+	TRICORE_INS_DFTOL,
+	TRICORE_INS_DFTOULZ,
+	TRICORE_INS_DFTOUL,
+	TRICORE_INS_DFTOUZ,
+	TRICORE_INS_DFTOU,
 	TRICORE_INS_DIFSC_A,
 	TRICORE_INS_DISABLE,
+	TRICORE_INS_DIV64_U,
+	TRICORE_INS_DIV64,
+	TRICORE_INS_DIV_DF,
 	TRICORE_INS_DIV_F,
 	TRICORE_INS_DIV_U,
 	TRICORE_INS_DIV,
@@ -249,7 +266,9 @@ typedef enum tricore_insn {
 	TRICORE_INS_FCALLI,
 	TRICORE_INS_FCALL,
 	TRICORE_INS_FRET,
+	TRICORE_INS_FTODF,
 	TRICORE_INS_FTOHP,
+	TRICORE_INS_FTOIN,
 	TRICORE_INS_FTOIZ,
 	TRICORE_INS_FTOI,
 	TRICORE_INS_FTOQ31Z,
@@ -265,6 +284,7 @@ typedef enum tricore_insn {
 	TRICORE_INS_INSN_T,
 	TRICORE_INS_INS_T,
 	TRICORE_INS_ISYNC,
+	TRICORE_INS_ITODF,
 	TRICORE_INS_ITOF,
 	TRICORE_INS_IXMAX_U,
 	TRICORE_INS_IXMAX,
@@ -312,6 +332,7 @@ typedef enum tricore_insn {
 	TRICORE_INS_LHA,
 	TRICORE_INS_LOOPU,
 	TRICORE_INS_LOOP,
+	TRICORE_INS_LTODF,
 	TRICORE_INS_LT_A,
 	TRICORE_INS_LT_B,
 	TRICORE_INS_LT_BU,
@@ -342,6 +363,7 @@ typedef enum tricore_insn {
 	TRICORE_INS_MADDS_Q,
 	TRICORE_INS_MADDS_U,
 	TRICORE_INS_MADDS,
+	TRICORE_INS_MADD_DF,
 	TRICORE_INS_MADD_F,
 	TRICORE_INS_MADD_H,
 	TRICORE_INS_MADD_Q,
@@ -349,6 +371,8 @@ typedef enum tricore_insn {
 	TRICORE_INS_MADD,
 	TRICORE_INS_MAX_B,
 	TRICORE_INS_MAX_BU,
+	TRICORE_INS_MAX_DF,
+	TRICORE_INS_MAX_F,
 	TRICORE_INS_MAX_H,
 	TRICORE_INS_MAX_HU,
 	TRICORE_INS_MAX_U,
@@ -356,6 +380,8 @@ typedef enum tricore_insn {
 	TRICORE_INS_MFCR,
 	TRICORE_INS_MIN_B,
 	TRICORE_INS_MIN_BU,
+	TRICORE_INS_MIN_DF,
+	TRICORE_INS_MIN_F,
 	TRICORE_INS_MIN_H,
 	TRICORE_INS_MIN_HU,
 	TRICORE_INS_MIN_U,
@@ -389,6 +415,7 @@ typedef enum tricore_insn {
 	TRICORE_INS_MSUBS_Q,
 	TRICORE_INS_MSUBS_U,
 	TRICORE_INS_MSUBS,
+	TRICORE_INS_MSUB_DF,
 	TRICORE_INS_MSUB_F,
 	TRICORE_INS_MSUB_H,
 	TRICORE_INS_MSUB_Q,
@@ -403,6 +430,7 @@ typedef enum tricore_insn {
 	TRICORE_INS_MULR_Q,
 	TRICORE_INS_MULS_U,
 	TRICORE_INS_MULS,
+	TRICORE_INS_MUL_DF,
 	TRICORE_INS_MUL_F,
 	TRICORE_INS_MUL_H,
 	TRICORE_INS_MUL_Q,
@@ -410,6 +438,8 @@ typedef enum tricore_insn {
 	TRICORE_INS_MUL,
 	TRICORE_INS_NAND_T,
 	TRICORE_INS_NAND,
+	TRICORE_INS_NEG_DF,
+	TRICORE_INS_NEG_F,
 	TRICORE_INS_NEZ_A,
 	TRICORE_INS_NE_A,
 	TRICORE_INS_NE,
@@ -435,7 +465,10 @@ typedef enum tricore_insn {
 	TRICORE_INS_PARITY,
 	TRICORE_INS_POPCNT_W,
 	TRICORE_INS_Q31TOF,
+	TRICORE_INS_QSEED_DF,
 	TRICORE_INS_QSEED_F,
+	TRICORE_INS_REM64_U,
+	TRICORE_INS_REM64,
 	TRICORE_INS_RESTORE,
 	TRICORE_INS_RET,
 	TRICORE_INS_RFE,
@@ -496,6 +529,7 @@ typedef enum tricore_insn {
 	TRICORE_INS_SUBX,
 	TRICORE_INS_SUB_A,
 	TRICORE_INS_SUB_B,
+	TRICORE_INS_SUB_DF,
 	TRICORE_INS_SUB_F,
 	TRICORE_INS_SUB_H,
 	TRICORE_INS_SUB,
@@ -512,8 +546,10 @@ typedef enum tricore_insn {
 	TRICORE_INS_TLBPROBE_I,
 	TRICORE_INS_TRAPSV,
 	TRICORE_INS_TRAPV,
+	TRICORE_INS_ULTODF,
 	TRICORE_INS_UNPACK,
 	TRICORE_INS_UPDFL,
+	TRICORE_INS_UTODF,
 	TRICORE_INS_UTOF,
 	TRICORE_INS_WAIT,
 	TRICORE_INS_XNOR_T,
@@ -524,10 +560,11 @@ typedef enum tricore_insn {
 	TRICORE_INS_XOR_LT_U,
 	TRICORE_INS_XOR_LT,
 	TRICORE_INS_XOR_NE,
+	TRICORE_INS_XOR_T,
 	TRICORE_INS_XOR,
 
 	// clang-format on
-	// generate content <TriCoreGenCSInsnEnum.inc> end
+	// generated content <TriCoreGenCSInsnEnum.inc> end
 	TRICORE_INS_ENDING, // <-- mark the end of the list of instructions
 } tricore_insn;
 
@@ -542,21 +579,34 @@ typedef enum tricore_insn_group {
 
 typedef enum tricore_feature_t {
 	TRICORE_FEATURE_INVALID = 0,
-	// generate content <TriCoreGenCSFeatureEnum.inc> begin
+	// generated content <TriCoreGenCSFeatureEnum.inc> begin
 	// clang-format off
 
-	TRICORE_FEATURE_HasV110 = 128,
-	TRICORE_FEATURE_HasV120_UP,
-	TRICORE_FEATURE_HasV130_UP,
-	TRICORE_FEATURE_HasV161,
-	TRICORE_FEATURE_HasV160_UP,
-	TRICORE_FEATURE_HasV131_UP,
-	TRICORE_FEATURE_HasV161_UP,
-	TRICORE_FEATURE_HasV162,
-	TRICORE_FEATURE_HasV162_UP,
+	TRICORE_FEATURE_HASV110 = 128,
+	TRICORE_FEATURE_HASV120,
+	TRICORE_FEATURE_HASV130,
+	TRICORE_FEATURE_HASV131,
+	TRICORE_FEATURE_HASV160,
+	TRICORE_FEATURE_HASV161,
+	TRICORE_FEATURE_HASV162,
+	TRICORE_FEATURE_HASV180,
+	TRICORE_FEATURE_HASV120_UP,
+	TRICORE_FEATURE_HASV130_UP,
+	TRICORE_FEATURE_HASV131_UP,
+	TRICORE_FEATURE_HASV160_UP,
+	TRICORE_FEATURE_HASV161_UP,
+	TRICORE_FEATURE_HASV162_UP,
+	TRICORE_FEATURE_HASV180_UP,
+	TRICORE_FEATURE_HASV120_DN,
+	TRICORE_FEATURE_HASV130_DN,
+	TRICORE_FEATURE_HASV131_DN,
+	TRICORE_FEATURE_HASV160_DN,
+	TRICORE_FEATURE_HASV161_DN,
+	TRICORE_FEATURE_HASV162_DN,
+	TRICORE_FEATURE_HASV180_DN,
 
 	// clang-format on
-	// generate content <TriCoreGenCSFeatureEnum.inc> end
+	// generated content <TriCoreGenCSFeatureEnum.inc> end
 	TRICORE_FEATURE_ENDING, ///< mark the end of the list of features
 } tricore_feature;
 

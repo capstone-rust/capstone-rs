@@ -9,6 +9,7 @@ extern "C" {
 #endif
 
 #include "platform.h"
+#include "cs_operand.h"
 
 /// Calculate relative address for X86-64, given cs_insn structure
 #define X86_REL_ADDR(insn) (((insn).detail->x86.operands[0].type == X86_OP_IMM) \
@@ -157,10 +158,10 @@ typedef enum x86_reg {
 
 /// Operand type for instruction's operands
 typedef enum x86_op_type {
-	X86_OP_INVALID = 0, ///< = CS_OP_INVALID (Uninitialized).
-	X86_OP_REG, ///< = CS_OP_REG (Register operand).
-	X86_OP_IMM, ///< = CS_OP_IMM (Immediate operand).
-	X86_OP_MEM, ///< = CS_OP_MEM (Memory operand).
+	X86_OP_INVALID = CS_OP_INVALID, ///< = CS_OP_INVALID (Uninitialized).
+	X86_OP_REG = CS_OP_REG, ///< = CS_OP_REG (Register operand).
+	X86_OP_IMM = CS_OP_IMM, ///< = CS_OP_IMM (Immediate operand).
+	X86_OP_MEM = CS_OP_MEM, ///< = CS_OP_MEM (Memory operand).
 } x86_op_type;
 
 /// XOP Code Condition type
@@ -246,6 +247,7 @@ typedef enum x86_avx_rm {
 
 /// Instruction prefixes - to be used in cs_x86.prefix[]
 typedef enum x86_prefix {
+	X86_PREFIX_0		=	0x0,
 	X86_PREFIX_LOCK		= 	0xf0,	///< lock (cs_x86.prefix[0]
 	X86_PREFIX_REP		= 	0xf3,	///< rep (cs_x86.prefix[0]
 	X86_PREFIX_REPE		= 	0xf3,	///< repe/repz (cs_x86.prefix[0]

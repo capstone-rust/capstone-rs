@@ -16994,10 +16994,6 @@ static void printInstruction(MCInst *MI, SStream *O)
     14797U,	// XSHA256
     15071U,	// XSTORE
     15895U,	// XTEST
-    551902452U,	// MOVSX32rm32
-    551836916U,	// MOVSX32rr32
-    551902452U,	// MOVSX16rm32
-    551836916U,	// MOVSX16rr32
   };
 
   static const uint16_t OpInfo1[] = {
@@ -32286,10 +32282,6 @@ static void printInstruction(MCInst *MI, SStream *O)
     0U,	// XSHA256
     0U,	// XSTORE
     0U,	// XTEST
-    0U,	// MOVSX32rm32
-    0U,	// MOVSX32rr32
-    0U,	// MOVSX16rm32
-    0U,	// MOVSX16rr32
   };
 
   static const uint8_t OpInfo2[] = {
@@ -47578,10 +47570,6 @@ static void printInstruction(MCInst *MI, SStream *O)
     0U,	// XSHA256
     0U,	// XSTORE
     0U,	// XTEST
-    0U,	// MOVSX32rm32
-    0U,	// MOVSX32rr32
-    0U,	// MOVSX16rm32
-    0U,	// MOVSX16rr32
   };
 
   unsigned int opcode = MCInst_getOpcode(MI);
@@ -47597,7 +47585,7 @@ static void printInstruction(MCInst *MI, SStream *O)
 
   // Fragment 0 encoded into 7 bits for 103 unique commands.
   // printf("Fragment 0: %"PRIu64"\n", ((Bits >> 14) & 127));
-  switch ((Bits >> 14) & 127) {
+  switch ((uint32_t)((Bits >> 14) & 127)) {
   default: // unreachable
   case 0:
     // DBG_VALUE, DBG_LABEL, BUNDLE, LIFETIME_START, LIFETIME_END, FENTRY_CAL...
@@ -48147,7 +48135,7 @@ static void printInstruction(MCInst *MI, SStream *O)
 
   // Fragment 1 encoded into 7 bits for 99 unique commands.
   // printf("Fragment 1: %"PRIu64"\n", ((Bits >> 21) & 127));
-  switch ((Bits >> 21) & 127) {
+  switch ((uint32_t)((Bits >> 21) & 127)) {
   default: // unreachable
   case 0:
     // AAD8i8, AAM8i8, ADD_FPrST0, ADD_FST0r, ADD_FrST0, BSWAP16r_BAD, BSWAP3...
@@ -48650,7 +48638,7 @@ static void printInstruction(MCInst *MI, SStream *O)
 
   // Fragment 2 encoded into 6 bits for 54 unique commands.
   // printf("Fragment 2: %"PRIu64"\n", ((Bits >> 28) & 63));
-  switch ((Bits >> 28) & 63) {
+  switch ((uint32_t)((Bits >> 28) & 63)) {
   default: // unreachable
   case 0:
     // ADC16mi, ADC16mi8, ADC16mr, ADC16ri, ADC16ri8, ADC16rm, ADC16rr, ADC16...
@@ -48983,7 +48971,7 @@ static void printInstruction(MCInst *MI, SStream *O)
 
   // Fragment 3 encoded into 4 bits for 15 unique commands.
   // printf("Fragment 3: %"PRIu64"\n", ((Bits >> 34) & 15));
-  switch ((Bits >> 34) & 15) {
+  switch ((uint32_t)((Bits >> 34) & 15)) {
   default: // unreachable
   case 0:
     // ADC32rm, ADC64rm, ADCX32rm, ADCX64rm, ADD32rm, ADD64rm, ADDSDrm, ADDSD...
@@ -49061,7 +49049,7 @@ static void printInstruction(MCInst *MI, SStream *O)
 
   // Fragment 4 encoded into 4 bits for 10 unique commands.
   // printf("Fragment 4: %"PRIu64"\n", ((Bits >> 38) & 15));
-  switch ((Bits >> 38) & 15) {
+  switch ((uint32_t)((Bits >> 38) & 15)) {
   default: // unreachable
   case 0:
     // AESKEYGENASSIST128rm, ANDN32rr, ANDN64rr, BEXTR32rm, BEXTR32rr, BEXTR6...
@@ -49116,7 +49104,7 @@ static void printInstruction(MCInst *MI, SStream *O)
 
   // Fragment 5 encoded into 3 bits for 6 unique commands.
   // printf("Fragment 5: %"PRIu64"\n", ((Bits >> 42) & 7));
-  switch ((Bits >> 42) & 7) {
+  switch ((uint32_t)((Bits >> 42) & 7)) {
   default: // unreachable
   case 0:
     // VADDPDZ128rmbk, VADDPDZ256rmbk, VADDPDZrmbk, VADDPSZ128rmbk, VADDPSZ25...
@@ -49151,7 +49139,7 @@ static void printInstruction(MCInst *MI, SStream *O)
 
   // Fragment 6 encoded into 3 bits for 5 unique commands.
   // printf("Fragment 6: %"PRIu64"\n", ((Bits >> 45) & 7));
-  switch ((Bits >> 45) & 7) {
+  switch ((uint32_t)((Bits >> 45) & 7)) {
   default: // unreachable
   case 0:
     // VADDPDZ128rmbk, VADDPDZ256rmbk, VADDPDZrmbk, VADDPSZ128rmbk, VADDPSZ25...

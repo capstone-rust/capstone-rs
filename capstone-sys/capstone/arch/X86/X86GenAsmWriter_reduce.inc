@@ -2375,10 +2375,6 @@ static void printInstruction(MCInst *MI, SStream *O)
     4343U,	// XSHA1
     4396U,	// XSHA256
     4621U,	// XSTORE
-    83835U,	// MOVSX32rm32
-    39389051U,	// MOVSX32rr32
-    83835U,	// MOVSX16rm32
-    39389051U,	// MOVSX16rr32
   };
 
   unsigned int opcode = MCInst_getOpcode(MI);
@@ -2392,7 +2388,7 @@ static void printInstruction(MCInst *MI, SStream *O)
 
   // Fragment 0 encoded into 6 bits for 47 unique commands.
   // printf("Fragment 0: %"PRIu64"\n", ((Bits >> 13) & 63));
-  switch ((Bits >> 13) & 63) {
+  switch ((uint32_t)((Bits >> 13) & 63)) {
   default: // unreachable
   case 0:
     // DBG_VALUE, DBG_LABEL, BUNDLE, LIFETIME_START, LIFETIME_END, FENTRY_CAL...
@@ -2653,7 +2649,7 @@ static void printInstruction(MCInst *MI, SStream *O)
 
   // Fragment 1 encoded into 5 bits for 19 unique commands.
   // printf("Fragment 1: %"PRIu64"\n", ((Bits >> 19) & 31));
-  switch ((Bits >> 19) & 31) {
+  switch ((uint32_t)((Bits >> 19) & 31)) {
   default: // unreachable
   case 0:
     // AAD8i8, AAM8i8, BSWAP16r_BAD, BSWAP32r, BSWAP64r, CALL16r, CALL16r_NT,...
@@ -2764,7 +2760,7 @@ static void printInstruction(MCInst *MI, SStream *O)
 
   // Fragment 2 encoded into 5 bits for 17 unique commands.
   // printf("Fragment 2: %"PRIu64"\n", ((Bits >> 24) & 31));
-  switch ((Bits >> 24) & 31) {
+  switch ((uint32_t)((Bits >> 24) & 31)) {
   default: // unreachable
   case 0:
     // ADC16ri, ADC16ri8, ADC16rm, ADC16rr, ADC32ri, ADC32ri8, ADC32rm, ADC32...

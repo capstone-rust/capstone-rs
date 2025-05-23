@@ -34,8 +34,8 @@ full = []
 use_bindgen = ["bindgen", "regex"]  # Dynamically generate bindings with bindgen
 # arch specific features to reduce binary size
 support_all_archs = [
+    "arch_aarch64",
     "arch_arm",
-    "arch_arm64",
     "arch_bpf",
     "arch_evm",
     "arch_m680x",
@@ -46,15 +46,15 @@ support_all_archs = [
     "arch_riscv",
     "arch_sh",
     "arch_sparc",
-    "arch_sysz",
+    "arch_systemz",
     "arch_tms320c64x",
     "arch_tricore",
     "arch_wasm",
     "arch_x86",
     "arch_xcore",
 ]
+arch_aarch64 = []
 arch_arm = []
-arch_arm64 = []
 arch_bpf = []
 arch_evm = []
 arch_m680x = []
@@ -65,7 +65,7 @@ arch_powerpc = []
 arch_riscv = []
 arch_sh = []
 arch_sparc = []
-arch_sysz = []
+arch_systemz = []
 arch_tms320c64x = []
 arch_tricore = []
 arch_wasm = []

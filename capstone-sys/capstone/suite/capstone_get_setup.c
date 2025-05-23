@@ -22,7 +22,7 @@ int main()
 	if (cs_support(CS_ARCH_ARM)) {
 		printf("arm=1 ");
 	}
-	if (cs_support(CS_ARCH_ARM64)) {
+	if (cs_support(CS_ARCH_AARCH64)) {
 		printf("arm64=1 ");
 	}
 	if (cs_support(CS_ARCH_MIPS)) {
@@ -34,7 +34,7 @@ int main()
 	if (cs_support(CS_ARCH_SPARC)) {
 		printf("sparc=1 ");
 	}
-	if (cs_support(CS_ARCH_SYSZ)) {
+	if (cs_support(CS_ARCH_SYSTEMZ)) {
 		printf("sysz=1 ");
 	}
 	if (cs_support(CS_ARCH_XCORE)) {
@@ -72,6 +72,21 @@ int main()
 	}
 	if (cs_support(CS_ARCH_TRICORE)) {
 		printf("tricore=1 ");
+	}
+	if (cs_support(CS_ARCH_ALPHA)) {
+		printf("alpha=1 ");
+	}
+	if (cs_support(CS_ARCH_HPPA)) {
+		printf("hppa=1 ");
+	}
+	if (cs_support(CS_ARCH_LOONGARCH)) {
+		printf("loongarch=1 ");
+	}
+	if (cs_support(CS_ARCH_XTENSA)) {
+		printf("xtensa=1 ");
+	}
+	if (cs_support(CS_ARCH_ARC)) {
+		printf("arc=1 ");
 	}
 	printf("\n");
 

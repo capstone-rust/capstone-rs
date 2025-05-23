@@ -99,8 +99,7 @@ static int modRMRequired(OpcodeType type,
 	unsigned int index;
 
 	switch (type) {
-		default:
-			return false;
+		default: break;
 		case ONEBYTE:
 			decision = ONEBYTE_SYM;
 			indextable = index_x86DisassemblerOneByteOpcodes;
@@ -164,8 +163,7 @@ static InstrUID decode(OpcodeType type,
 	static const struct OpcodeDecision emptyDecision = { 0 };
 
 	switch (type) {
-		default:
-			return 0;
+		default: break;	// never reach
 		case ONEBYTE:
 			// dec = &ONEBYTE_SYM.opcodeDecisions[insnContext].modRMDecisions[opcode];
 			index = index_x86DisassemblerOneByteOpcodes[insnContext];
@@ -1157,8 +1155,8 @@ static int getID(struct InternalInstruction *insn)
 		}
 
 		/*
-		 * The tables can't distinquish between cases where the W-bit is used to
-		 * select register size and cases where its a required part of the opcode.
+		 * The tables can't distinguish between cases where the W-bit is used to
+		 * select register size and cases where it's a required part of the opcode.
 		 */
 		if ((insn->vectorExtensionType == TYPE_EVEX &&
 					wFromEVEX3of4(insn->vectorExtensionPrefix[2])) ||
