@@ -124,7 +124,7 @@ impl ArmOperandType {
             ARM_OP_CPSR => Cpsr(ArmSpsrCpsrBits(unsafe { value.sysop.psr_bits as u32 })),
             ARM_OP_SYSM => Sysm(unsafe { value.sysop.sysm }),
             ARM_OP_MEM => Mem(ArmOpMem(unsafe { value.mem })),
-            _ => panic!("Unexpected op type: {:?}", op_type),
+            _ => Invalid,
         }
     }
 }
