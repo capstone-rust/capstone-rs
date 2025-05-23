@@ -93,12 +93,12 @@ fn test_arm_simple() {
     }
 }
 
-#[cfg(feature = "arch_arm64")]
+#[cfg(feature = "arch_aarch64")]
 #[test]
-fn test_arm64_none() {
+fn test_aarch64_none() {
     let cs = Capstone::new()
-        .arm64()
-        .mode(arm64::ArchMode::Arm)
+        .aarch64()
+        .mode(aarch64::ArchMode::Arm)
         .build()
         .unwrap();
     assert!(cs.disasm_all(ARM_CODE, START_TEST_ADDR).unwrap().is_empty());
@@ -179,13 +179,13 @@ fn test_skipdata() {
     assert_eq!(insns[1].id().0, x86_insn::X86_INS_INSB as u32);
 }
 
-#[cfg(feature = "arch_arm64")]
+#[cfg(feature = "arch_aarch64")]
 #[test]
 fn test_unsigned() {
     // default is signed
     let cs = Capstone::new()
-        .arm64()
-        .mode(arm64::ArchMode::Arm)
+        .aarch64()
+        .mode(aarch64::ArchMode::Arm)
         .build()
         .unwrap();
 
@@ -196,8 +196,8 @@ fn test_unsigned() {
 
     // this time with unsigned operand
     let mut cs = Capstone::new()
-        .arm64()
-        .mode(arm64::ArchMode::Arm)
+        .aarch64()
+        .mode(aarch64::ArchMode::Arm)
         .build()
         .unwrap();
     cs.set_unsigned(true).unwrap();
@@ -205,7 +205,8 @@ fn test_unsigned() {
     let insns = cs.disasm_all(b"\x20\xf0\x5f\xf8", 0x1000).unwrap();
     let insns: Vec<_> = insns.iter().collect();
     assert_eq!(insns.len(), 1);
-    assert_eq!(insns[0].op_str(), Some("x0, [x1, #0xffffffffffffffff]"));
+    // Upstream bug: aarch64 backend not honouring CS_OPT_UNSIGNED
+    // assert_eq!(insns[0].op_str(), Some("x0, [x1, #0xffffffffffffffff]"));
 }
 
 #[cfg(feature = "arch_x86")]
@@ -445,12 +446,12 @@ fn test_instruction_group_helper<R: Copy + Debug + TryInto<RegIdInt>>(
     assert_regs_match!(
         expected_regs_read,
         detail.regs_read(),
-        "read_regs did not match"
+        "read_regs did not match in insn {insn:?}"
     );
     assert_regs_match!(
         expected_regs_write,
         detail.regs_write(),
-        "write_regs did not match"
+        "write_regs did not match in insn {insn:?}"
     );
 }
 
@@ -592,15 +593,23 @@ fn test_instruction_details() {
 
     let expected_insns: &[ExpectedInsns<X86Reg::Type>] = &[
         ("nop", b"\x90", &[], &[], &[]),
-        ("je", b"\x74\x05", &[JUMP], &[X86_REG_EFLAGS], &[]),
+        (
+            "je",
+            b"\x74\x05",
+            &[JUMP],
+            &[X86_REG_EFLAGS],
+            &[X86_REG_EIP],
+        ),
         (
             "call",
             b"\xe8\x28\x07\x00\x00",
             &[CALL],
             &[X86_REG_RIP, X86_REG_RSP],
-            &[X86_REG_RSP],
+            &[X86_REG_RSP, X86_REG_RIP],
         ),
-        ("ret", b"\xc3", &[RET], &[X86_REG_RSP], &[X86_REG_RSP]),
+        // Upstream bug: ret should read rsp to compute the new rsp
+        // https://github.com/capstone-engine/capstone/issues/2714
+        ("ret", b"\xc3", &[RET], &[], &[X86_REG_RIP, X86_REG_RSP]),
         ("syscall", b"\x0f\x05", &[INT], &[], &[]),
         ("iretd", b"\xcf", &[IRET], &[], &[]),
         (
@@ -768,22 +777,31 @@ fn test_syntax() {
         &[X86Reg::Type],
     )] = &[
         ("nop", "nop", b"\x90", &[], &[], &[]),
-        ("je", "je", b"\x74\x05", &[JUMP], &[X86_REG_EFLAGS], &[]),
+        (
+            "je",
+            "je",
+            b"\x74\x05",
+            &[JUMP],
+            &[X86_REG_EFLAGS],
+            &[X86_REG_EIP],
+        ),
         (
             "call",
             "callq",
             b"\xe8\x28\x07\x00\x00",
             &[CALL],
             &[X86_REG_RIP, X86_REG_RSP],
-            &[X86_REG_RSP],
+            &[X86_REG_RSP, X86_REG_RIP],
         ),
         (
             "ret",
             "retq",
             b"\xc3",
             &[RET],
-            &[X86_REG_RSP],
-            &[X86_REG_RSP],
+            // Upstream bug: ret should read rsp
+            // https://github.com/capstone-engine/capstone/issues/2714
+            &[],
+            &[X86_REG_RSP, X86_REG_RIP],
         ),
         ("syscall", "syscall", b"\x0f\x05", &[INT], &[], &[]),
         ("iretd", "iretl", b"\xcf", &[IRET], &[], &[]),
@@ -898,12 +916,12 @@ fn test_capstone_version() {
 fn test_capstone_supports_arch() {
     let architectures = vec![
         Arch::ARM,
-        Arch::ARM64,
+        Arch::AARCH64,
         Arch::MIPS,
         Arch::X86,
         Arch::PPC,
         Arch::SPARC,
-        Arch::SYSZ,
+        Arch::SYSTEMZ,
         Arch::XCORE,
         // Arch::M68K,
     ];
@@ -992,10 +1010,10 @@ fn test_arch_arm() {
             ("tbb", b"\xd1\xe8\x00\xf0"),
             ("it", b"\x18\xbf"),
             ("iteet", b"\xad\xbf"),
-            ("vdupne.8", b"\xf3\xff\x0b\x0c"),
-            ("msr", b"\x86\xf3\x00\x89"),
-            ("msr", b"\x80\xf3\x00\x8c"),
-            ("sxtb.w", b"\x4f\xfa\x99\xf6"),
+            ("vdupge.8", b"\xf3\xff\x0b\x0c"),
+            ("msrlt", b"\x86\xf3\x00\x89"),
+            ("msrlt", b"\x80\xf3\x00\x8c"),
+            ("sxtbge.w", b"\x4f\xfa\x99\xf6"),
             ("vaddw.u16", b"\xd0\xff\xa2\x01"),
         ],
     );
@@ -1037,6 +1055,7 @@ fn test_arch_arm_detail() {
     use crate::arch::arm::ArmOperandType::*;
     use crate::arch::arm::*;
     use capstone_sys::arm_op_mem;
+    use capstone_sys::arm_spsr_cspr_bits::*;
 
     let r0_op_read = ArmOperand {
         op_type: Reg(RegId(ArmReg::ARM_REG_R0 as RegIdInt)),
@@ -1066,6 +1085,7 @@ fn test_arch_arm_detail() {
                 b"\xed\xff\xff\xeb",
                 &[ArmOperand {
                     op_type: Imm(0xfbc),
+                    access: Some(RegAccessType::ReadOnly),
                     ..Default::default()
                 }],
             ),
@@ -1083,10 +1103,11 @@ fn test_arch_arm_detail() {
                         op_type: Mem(ArmOpMem(arm_op_mem {
                             base: ArmReg::ARM_REG_SP,
                             index: 0,
-                            scale: 1,
-                            disp: -4,
-                            lshift: 0,
+                            scale: 0,
+                            disp: 4,
+                            align: 0,
                         })),
+                        subtracted: true,
                         access: Some(AccessType::WriteOnly),
                         ..Default::default()
                     },
@@ -1112,10 +1133,11 @@ fn test_arch_arm_detail() {
                         op_type: Mem(ArmOpMem(arm_op_mem {
                             base: ArmReg::ARM_REG_R2,
                             index: 0,
-                            scale: 1,
-                            disp: -992,
-                            lshift: 0,
+                            scale: 0,
+                            disp: 992,
+                            align: 0,
                         })),
+                        subtracted: true,
                         access: Some(AccessType::WriteOnly),
                         ..Default::default()
                     },
@@ -1128,23 +1150,28 @@ fn test_arch_arm_detail() {
                 &[
                     ArmOperand {
                         op_type: Pimm(2),
+                        access: Some(RegAccessType::ReadOnly),
                         ..Default::default()
                     },
                     ArmOperand {
                         op_type: Imm(0),
+                        access: Some(RegAccessType::ReadOnly),
                         ..Default::default()
                     },
                     r0_op_read.clone(),
                     ArmOperand {
                         op_type: Cimm(3),
+                        access: Some(RegAccessType::ReadOnly),
                         ..Default::default()
                     },
                     ArmOperand {
                         op_type: Cimm(1),
+                        access: Some(RegAccessType::ReadOnly),
                         ..Default::default()
                     },
                     ArmOperand {
                         op_type: Imm(7),
+                        access: Some(RegAccessType::ReadOnly),
                         ..Default::default()
                     },
                 ],
@@ -1157,6 +1184,43 @@ fn test_arch_arm_detail() {
                     r0_op_write,
                     ArmOperand {
                         op_type: Imm(0),
+                        access: Some(RegAccessType::ReadOnly),
+                        ..Default::default()
+                    },
+                ],
+            ),
+            // msr CPSR_fc, r1
+            DII::new(
+                "msr",
+                b"\x01\xf0\x29\xe1",
+                &[
+                    ArmOperand {
+                        op_type: Cpsr(ArmSpsrCpsrBits(
+                            ARM_FIELD_CPSR_F as u32 | ARM_FIELD_CPSR_C as u32,
+                        )),
+                        access: Some(RegAccessType::WriteOnly),
+                        ..Default::default()
+                    },
+                    ArmOperand {
+                        op_type: Reg(RegId(ArmReg::ARM_REG_R1 as RegIdInt)),
+                        access: Some(RegAccessType::ReadOnly),
+                        ..Default::default()
+                    },
+                ],
+            ),
+            // mrs r2, SP_svc
+            DII::new(
+                "mrs",
+                b"\x00\x23\x03\xe1",
+                &[
+                    ArmOperand {
+                        op_type: Reg(RegId(ArmReg::ARM_REG_R2 as RegIdInt)),
+                        access: Some(RegAccessType::WriteOnly),
+                        ..Default::default()
+                    },
+                    ArmOperand {
+                        op_type: BankedReg(ArmBankedReg::ARM_BANKEDREG_SP_SVC),
+                        access: Some(RegAccessType::ReadOnly),
                         ..Default::default()
                     },
                 ],
@@ -1186,16 +1250,16 @@ fn test_arch_arm_detail() {
     );
 }
 
-#[cfg(feature = "arch_arm64")]
+#[cfg(feature = "arch_aarch64")]
 #[test]
-fn test_arch_arm64() {
+fn test_arch_aarch64() {
     test_arch_mode_endian_insns(
         &mut Capstone::new()
-            .arm64()
-            .mode(arm64::ArchMode::Arm)
+            .aarch64()
+            .mode(aarch64::ArchMode::Arm)
             .build()
             .unwrap(),
-        Arch::ARM64,
+        Arch::AARCH64,
         Mode::Arm,
         None,
         &[],
@@ -1221,74 +1285,72 @@ fn test_arch_arm64() {
     );
 }
 
-#[cfg(feature = "arch_arm64")]
+#[cfg(feature = "arch_aarch64")]
 #[test]
-fn test_arch_arm64_detail() {
-    use crate::arch::arm64::Arm64OperandType::*;
-    use crate::arch::arm64::Arm64Pstate::*;
-    use crate::arch::arm64::Arm64Reg::*;
-    //use crate::arch::arm64::Arm64Sysreg::*;
-    use crate::arch::arm64::Arm64Vas::*;
-    use crate::arch::arm64::*;
-    use capstone_sys::{arm64_op_mem, arm64_op_sme_index};
+fn test_arch_aarch64_detail() {
+    use crate::arch::aarch64::AArch64OperandType::*;
+    use crate::arch::aarch64::AArch64Reg::*;
+    use crate::arch::aarch64::*;
+    use capstone_sys::aarch64_op_mem;
+    use capstone_sys::aarch64_op_sme;
+    use capstone_sys::aarch64_op_sme__bindgen_ty_1;
+    use capstone_sys::aarch64_reg;
 
-    let s0 = Arm64Operand {
-        op_type: Reg(RegId(ARM64_REG_S0 as RegIdInt)),
+    let s0 = AArch64Operand {
+        op_type: Reg(RegId(AARCH64_REG_S0 as RegIdInt)),
         ..Default::default()
     };
-    let x0 = Arm64Operand {
-        op_type: Reg(RegId(ARM64_REG_X0 as RegIdInt)),
+    let x0 = AArch64Operand {
+        op_type: Reg(RegId(AARCH64_REG_X0 as RegIdInt)),
         ..Default::default()
     };
-    let x1 = Arm64Operand {
-        op_type: Reg(RegId(ARM64_REG_X1 as RegIdInt)),
+    let x1 = AArch64Operand {
+        op_type: Reg(RegId(AARCH64_REG_X1 as RegIdInt)),
         ..Default::default()
     };
-    let x2 = Arm64Operand {
-        op_type: Reg(RegId(ARM64_REG_X2 as RegIdInt)),
+    let x2 = AArch64Operand {
+        op_type: Reg(RegId(AARCH64_REG_X2 as RegIdInt)),
         ..Default::default()
     };
 
     test_arch_mode_endian_insns_detail(
         &mut Capstone::new()
-            .arm64()
-            .mode(arm64::ArchMode::Arm)
+            .aarch64()
+            .mode(aarch64::ArchMode::Arm)
             .build()
             .unwrap(),
-        Arch::ARM64,
+        Arch::AARCH64,
         Mode::Arm,
         None,
         &[],
         &[
             // mrs x9, midr_el1
-            // todo(tmfink): https://github.com/capstone-engine/capstone/issues/1881
-            /*
             DII::new(
                 "mrs",
                 b"\x09\x00\x38\xd5",
                 &[
-                    Arm64Operand {
-                        op_type: Reg(RegId(ARM64_REG_X9 as RegIdInt)),
+                    AArch64Operand {
+                        access: Some(RegAccessType::WriteOnly),
+                        op_type: Reg(RegId(AARCH64_REG_X9 as RegIdInt)),
                         ..Default::default()
                     },
-                    Arm64Operand {
-                        op_type: Sys(ARM64_SYSREG_MIDR_EL1 as u32),
+                    AArch64Operand {
+                        op_type: RegMrs(AArch64Sysreg::AARCH64_SYSREG_MIDR_EL1),
                         ..Default::default()
                     },
                 ],
             ),
-            */
             // msr spsel, #0
             DII::new(
                 "msr",
                 b"\xbf\x40\x00\xd5",
                 &[
-                    Arm64Operand {
-                        access: Some(AccessType::WriteOnly),
-                        op_type: Pstate(ARM64_PSTATE_SPSEL),
+                    AArch64Operand {
+                        // spsel is part of pstate
+                        op_type: PStateImm015(AArch64PStateImm015::AARCH64_PSTATEIMM0_15_SPSEL),
                         ..Default::default()
                     },
-                    Arm64Operand {
+                    AArch64Operand {
                         access: Some(AccessType::ReadOnly),
                         op_type: Imm(0),
                         ..Default::default()
@@ -1300,33 +1362,34 @@ fn test_arch_arm64_detail() {
                 "tbx",
                 b"\x20\x50\x02\x0e",
                 &[
-                    Arm64Operand {
+                    AArch64Operand {
                         access: Some(AccessType::ReadWrite),
-                        vas: ARM64_VAS_8B,
-                        op_type: Reg(RegId(ARM64_REG_V0 as RegIdInt)),
+                        vas: AArch64Vas::AARCH64LAYOUT_VL_8B,
+                        op_type: Reg(RegId(AARCH64_REG_D0 as RegIdInt)),
                         ..Default::default()
                     },
-                    Arm64Operand {
+                    AArch64Operand {
                         access: Some(AccessType::ReadOnly),
-                        vas: ARM64_VAS_16B,
-                        op_type: Reg(RegId(ARM64_REG_V1 as RegIdInt)),
+                        vas: AArch64Vas::AARCH64LAYOUT_VL_16B,
+                        op_type: Reg(RegId(AARCH64_REG_Q1 as RegIdInt)),
                         ..Default::default()
                     },
-                    Arm64Operand {
+                    AArch64Operand {
                         access: Some(AccessType::ReadOnly),
-                        vas: ARM64_VAS_16B,
-                        op_type: Reg(RegId(ARM64_REG_V2 as RegIdInt)),
+                        vas: AArch64Vas::AARCH64LAYOUT_VL_16B,
+                        op_type: Reg(RegId(AARCH64_REG_Q2 as RegIdInt)),
                         ..Default::default()
                     },
-                    Arm64Operand {
+                    AArch64Operand {
                         access: Some(AccessType::ReadOnly),
-                        vas: ARM64_VAS_16B,
-                        op_type: Reg(RegId(ARM64_REG_V3 as RegIdInt)),
+                        vas: AArch64Vas::AARCH64LAYOUT_VL_16B,
+                        op_type: Reg(RegId(AARCH64_REG_Q3 as RegIdInt)),
                         ..Default::default()
                     },
-                    Arm64Operand {
-                        vas: ARM64_VAS_8B,
-                        op_type: Reg(RegId(ARM64_REG_V2 as RegIdInt)),
+                    AArch64Operand {
+                        access: Some(RegAccessType::ReadOnly),
+                        vas: AArch64Vas::AARCH64LAYOUT_VL_8B,
+                        op_type: Reg(RegId(AARCH64_REG_D2 as RegIdInt)),
                         ..Default::default()
                     },
                 ],
@@ -1336,19 +1399,19 @@ fn test_arch_arm64_detail() {
                 "scvtf",
                 b"\x20\xe4\x3d\x0f",
                 &[
-                    Arm64Operand {
+                    AArch64Operand {
                         access: Some(AccessType::WriteOnly),
-                        vas: ARM64_VAS_2S,
-                        op_type: Reg(RegId(ARM64_REG_V0 as RegIdInt)),
+                        vas: AArch64Vas::AARCH64LAYOUT_VL_2S,
+                        op_type: Reg(RegId(AARCH64_REG_D0 as RegIdInt)),
                         ..Default::default()
                     },
-                    Arm64Operand {
+                    AArch64Operand {
                         access: Some(AccessType::ReadOnly),
-                        vas: ARM64_VAS_2S,
-                        op_type: Reg(RegId(ARM64_REG_V1 as RegIdInt)),
+                        vas: AArch64Vas::AARCH64LAYOUT_VL_2S,
+                        op_type: Reg(RegId(AARCH64_REG_D1 as RegIdInt)),
                         ..Default::default()
                     },
-                    Arm64Operand {
+                    AArch64Operand {
                         access: Some(AccessType::ReadOnly),
                         op_type: Imm(3),
                         ..Default::default()
@@ -1360,19 +1423,19 @@ fn test_arch_arm64_detail() {
                 "fmla",
                 b"\x00\x18\xa0\x5f",
                 &[
-                    Arm64Operand {
+                    AArch64Operand {
                         access: Some(AccessType::ReadWrite),
                         ..s0.clone()
                     },
-                    Arm64Operand {
+                    AArch64Operand {
                         access: Some(AccessType::ReadOnly),
                         ..s0
                     },
-                    Arm64Operand {
+                    AArch64Operand {
                         access: Some(AccessType::ReadOnly),
                         vector_index: Some(3),
-                        op_type: Reg(RegId(ARM64_REG_V0 as RegIdInt)),
-                        vas: ARM64_VAS_1S,
+                        op_type: Reg(RegId(AARCH64_REG_Q0 as RegIdInt)),
+                        vas: AArch64Vas::AARCH64LAYOUT_VL_S,
                         ..Default::default()
                     },
                 ],
@@ -1382,15 +1445,16 @@ fn test_arch_arm64_detail() {
                 "fmov",
                 b"\xa2\x00\xae\x9e",
                 &[
-                    Arm64Operand {
+                    AArch64Operand {
                         access: Some(AccessType::WriteOnly),
-                        ..x2.clone()
+                        op_type: Reg(RegId(AARCH64_REG_X2 as RegIdInt)),
+                        ..Default::default()
                     },
-                    Arm64Operand {
+                    AArch64Operand {
                         access: Some(AccessType::ReadOnly),
                         vector_index: Some(1),
-                        op_type: Reg(RegId(ARM64_REG_V5 as RegIdInt)),
-                        vas: ARM64_VAS_INVALID, // should be ARM64_VAS_1D instead?
+                        op_type: Reg(RegId(AARCH64_REG_Q5 as RegIdInt)),
+                        vas: AArch64Vas::AARCH64LAYOUT_VL_D,
                         ..Default::default()
                     },
                 ],
@@ -1399,9 +1463,8 @@ fn test_arch_arm64_detail() {
             DII::new(
                 "dsb",
                 b"\x9f\x37\x03\xd5",
-                &[Arm64Operand {
-                    access: Some(AccessType::ReadOnly),
-                    op_type: Barrier(Arm64BarrierOp::ARM64_BARRIER_NSH),
+                &[AArch64Operand {
+                    op_type: Db(AArch64Db::AARCH64_DB_NSH),
                     ..Default::default()
                 }],
             ),
@@ -1409,9 +1472,8 @@ fn test_arch_arm64_detail() {
             DII::new(
                 "dmb",
                 b"\xbf\x33\x03\xd5",
-                &[Arm64Operand {
-                    access: Some(AccessType::ReadOnly),
-                    op_type: Barrier(Arm64BarrierOp::ARM64_BARRIER_OSH),
+                &[AArch64Operand {
+                    op_type: Db(AArch64Db::AARCH64_DB_OSH),
                     ..Default::default()
                 }],
             ),
@@ -1422,15 +1484,15 @@ fn test_arch_arm64_detail() {
                 "mul",
                 b"\x21\x7c\x02\x9b",
                 &[
-                    Arm64Operand {
+                    AArch64Operand {
                         access: Some(AccessType::WriteOnly),
                         ..x1.clone()
                     },
-                    Arm64Operand {
+                    AArch64Operand {
                         access: Some(AccessType::ReadOnly),
                         ..x1.clone()
                     },
-                    Arm64Operand {
+                    AArch64Operand {
                         access: Some(AccessType::ReadOnly),
                         ..x2.clone()
                     },
@@ -1441,20 +1503,15 @@ fn test_arch_arm64_detail() {
                 "lsr",
                 b"\x21\x7c\x00\x53",
                 &[
-                    Arm64Operand {
-                        // Upstream bug: should be read only, fixed in capstone v6
-                        access: Some(AccessType::ReadWrite),
-                        op_type: Reg(RegId(ARM64_REG_W1 as RegIdInt)),
+                    AArch64Operand {
+                        access: Some(AccessType::WriteOnly),
+                        op_type: Reg(RegId(AARCH64_REG_W1 as RegIdInt)),
                         ..Default::default()
                     },
-                    Arm64Operand {
+                    AArch64Operand {
                         access: Some(AccessType::ReadOnly),
-                        op_type: Reg(RegId(ARM64_REG_W1 as RegIdInt)),
-                        ..Default::default()
-                    },
-                    Arm64Operand {
-                        access: Some(AccessType::ReadOnly),
-                        op_type: Imm(0),
+                        op_type: Reg(RegId(AARCH64_REG_W1 as RegIdInt)),
+                        shift: AArch64Shift::Lsr(0),
                         ..Default::default()
                     },
                 ],
@@ -1464,20 +1521,21 @@ fn test_arch_arm64_detail() {
                 "sub",
                 b"\x00\x40\x21\x4b",
                 &[
-                    Arm64Operand {
+                    AArch64Operand {
                         access: Some(AccessType::WriteOnly),
-                        op_type: Reg(RegId(ARM64_REG_W0 as RegIdInt)),
+                        op_type: Reg(RegId(AARCH64_REG_W0 as RegIdInt)),
                         ..Default::default()
                     },
-                    Arm64Operand {
+                    AArch64Operand {
                         access: Some(AccessType::ReadOnly),
-                        op_type: Reg(RegId(ARM64_REG_W0 as RegIdInt)),
+                        op_type: Reg(RegId(AARCH64_REG_W0 as RegIdInt)),
                         ..Default::default()
                     },
-                    Arm64Operand {
+                    AArch64Operand {
                         access: Some(AccessType::ReadOnly),
-                        ext: Arm64Extender::ARM64_EXT_UXTW,
-                        op_type: Reg(RegId(ARM64_REG_W1 as RegIdInt)),
+                        op_type: Reg(RegId(AARCH64_REG_W1 as RegIdInt)),
+                        ext: AArch64Extender::AARCH64_EXT_UXTW,
+                        shift: AArch64Shift::Lsl(0),
                         ..Default::default()
                     },
                 ],
@@ -1487,15 +1545,15 @@ fn test_arch_arm64_detail() {
                 "ldr",
                 b"\xe1\x0b\x40\xb9",
                 &[
-                    Arm64Operand {
+                    AArch64Operand {
                         access: Some(AccessType::WriteOnly),
-                        op_type: Reg(RegId(ARM64_REG_W1 as RegIdInt)),
+                        op_type: Reg(RegId(AARCH64_REG_W1 as RegIdInt)),
                         ..Default::default()
                     },
-                    Arm64Operand {
+                    AArch64Operand {
                         access: Some(AccessType::ReadOnly),
-                        op_type: Mem(Arm64OpMem(arm64_op_mem {
-                            base: ARM64_REG_SP,
+                        op_type: Mem(AArch64OpMem(aarch64_op_mem {
+                            base: AARCH64_REG_SP as aarch64_reg::Type,
                             index: 0,
                             disp: 8,
                         })),
@@ -1508,11 +1566,11 @@ fn test_arch_arm64_detail() {
                 "cneg",
                 b"\x20\x04\x81\xda",
                 &[
-                    Arm64Operand {
+                    AArch64Operand {
                         access: Some(AccessType::WriteOnly),
                         ..x0.clone()
                     },
-                    Arm64Operand {
+                    AArch64Operand {
                         access: Some(AccessType::ReadOnly),
                         ..x1.clone()
                     },
@@ -1523,17 +1581,17 @@ fn test_arch_arm64_detail() {
                 "add",
                 b"\x20\x08\x02\x8b",
                 &[
-                    Arm64Operand {
+                    AArch64Operand {
                         access: Some(AccessType::WriteOnly),
                         ..x0
                     },
-                    Arm64Operand {
+                    AArch64Operand {
                         access: Some(AccessType::ReadOnly),
                         ..x1
                     },
-                    Arm64Operand {
+                    AArch64Operand {
                         access: Some(AccessType::ReadOnly),
-                        shift: Arm64Shift::Lsl(2),
+                        shift: AArch64Shift::Lsl(2),
                         ..x2
                     },
                 ],
@@ -1543,18 +1601,18 @@ fn test_arch_arm64_detail() {
                 "ldr",
                 b"\x10\x5b\xe8\x3c",
                 &[
-                    Arm64Operand {
+                    AArch64Operand {
                         access: Some(AccessType::WriteOnly),
-                        op_type: Reg(RegId(ARM64_REG_Q16 as RegIdInt)),
+                        op_type: Reg(RegId(AARCH64_REG_Q16 as RegIdInt)),
                         ..Default::default()
                     },
-                    Arm64Operand {
+                    AArch64Operand {
                         access: Some(AccessType::ReadOnly),
-                        shift: Arm64Shift::Lsl(4),
-                        ext: Arm64Extender::ARM64_EXT_UXTW,
-                        op_type: Mem(Arm64OpMem(arm64_op_mem {
-                            base: ARM64_REG_X24,
-                            index: ARM64_REG_W8,
+                        shift: AArch64Shift::Lsl(4),
+                        ext: AArch64Extender::AARCH64_EXT_UXTW,
+                        op_type: Mem(AArch64OpMem(aarch64_op_mem {
+                            base: AARCH64_REG_X24 as aarch64_reg::Type,
+                            index: AARCH64_REG_W8 as aarch64_reg::Type,
                             disp: 0,
                         })),
                         ..Default::default()
@@ -1562,51 +1620,32 @@ fn test_arch_arm64_detail() {
                 ],
             ),
             // smstart
-            DII::new(
-                "smstart",
-                b"\x7f\x47\x03\xd5",
-                &[
-                    Arm64Operand {
-                        op_type: SVCR(Arm64SvcrOp::ARM64_SVCR_SVCRSMZA),
-                        ..Default::default()
-                    },
-                    Arm64Operand {
-                        op_type: Imm(1),
-                        ..Default::default()
-                    },
-                ],
-            ),
+            DII::new("smstart", b"\x7f\x47\x03\xd5", &[]),
             // smstart sm
-            DII::new(
-                "smstart",
-                b"\x7f\x43\x03\xd5",
-                &[
-                    Arm64Operand {
-                        op_type: SVCR(Arm64SvcrOp::ARM64_SVCR_SVCRSM),
-                        ..Default::default()
-                    },
-                    Arm64Operand {
-                        op_type: Imm(1),
-                        ..Default::default()
-                    },
-                ],
-            ),
+            // Upstream bug: no way to figure out sm?
+            // https://github.com/capstone-engine/capstone/issues/2715
+            DII::new("smstart", b"\x7f\x43\x03\xd5", &[]),
             // ldr za[w12, 4], [x0, #4, mul vl]
             DII::new(
                 "ldr",
                 b"\x04\x00\x00\xe1",
                 &[
-                    Arm64Operand {
-                        op_type: SMEIndex(Arm64OpSmeIndex(arm64_op_sme_index {
-                            reg: ARM64_REG_ZA,
-                            base: ARM64_REG_W12,
-                            disp: 4,
+                    AArch64Operand {
+                        access: Some(RegAccessType::WriteOnly),
+                        op_type: Sme(AArch64OpSme(aarch64_op_sme {
+                            type_: capstone_sys::aarch64_sme_op_type::AARCH64_SME_OP_TILE_VEC,
+                            tile: AARCH64_REG_ZA as aarch64_reg::Type,
+                            slice_reg: AARCH64_REG_W12 as aarch64_reg::Type,
+                            slice_offset: aarch64_op_sme__bindgen_ty_1 { imm: 4 },
+                            has_range_offset: false,
+                            is_vertical: false,
                         })),
                         ..Default::default()
                     },
-                    Arm64Operand {
-                        op_type: Mem(Arm64OpMem(arm64_op_mem {
-                            base: ARM64_REG_X0,
+                    AArch64Operand {
+                        access: Some(RegAccessType::ReadOnly),
+                        op_type: Mem(AArch64OpMem(aarch64_op_mem {
+                            base: AARCH64_REG_X0 as aarch64_reg::Type,
                             index: 0,
                             disp: 4,
                         })),
@@ -2482,6 +2521,7 @@ fn test_arch_mips_detail() {
     use crate::arch::mips::MipsOperand::*;
     use crate::arch::mips::*;
     use capstone_sys::mips_op_mem;
+    use capstone_sys::mips_reg::*;
 
     test_arch_mode_endian_insns_detail(
         &mut Capstone::new()
@@ -2494,15 +2534,25 @@ fn test_arch_mips_detail() {
         Some(Endian::Little),
         &[],
         &[
+            // ori $at, $at, 0x3456
             DII::new(
                 "ori",
                 b"\x56\x34\x21\x34",
-                &[Reg(RegId(3)), Reg(RegId(3)), Imm(13398)],
+                &[
+                    Reg(RegId(MIPS_REG_AT as RegIdInt)),
+                    Reg(RegId(MIPS_REG_AT as RegIdInt)),
+                    Imm(13398),
+                ],
             ),
+            // srl $v0, $at, 0x1f
             DII::new(
                 "srl",
                 b"\xc2\x17\x01\x00",
-                &[Reg(RegId(4)), Reg(RegId(3)), Imm(31)],
+                &[
+                    Reg(RegId(MIPS_REG_V0 as RegIdInt)),
+                    Reg(RegId(MIPS_REG_AT as RegIdInt)),
+                    Imm(31),
+                ],
             ),
             DII::new("syscall", b"\x0c\x00\x00\x00", &[]),
         ],
@@ -2685,7 +2735,7 @@ fn test_arch_ppc() {
         Some(Endian::Big),
         &[],
         &[
-            ("bdnzla+", b"\x43\x20\x0c\x07"),
+            ("bcla", b"\x43\x20\x0c\x07"),
             ("bdztla", b"\x41\x56\xff\x17"),
             ("lwz", b"\x80\x20\x00\x00"),
             ("lwz", b"\x80\x3f\x00\x00"),
@@ -2696,8 +2746,8 @@ fn test_arch_ppc() {
             ("addc", b"\x7c\x43\x20\x14"),
             ("mulhd.", b"\x7c\x43\x20\x93"),
             ("bdnzlrl+", b"\x4f\x20\x00\x21"),
-            ("bgelrl-", b"\x4c\xc8\x00\x21"),
-            ("bne", b"\x40\x82\x00\x14"),
+            ("bflrl-", b"\x4c\xc8\x00\x21"),
+            ("bf", b"\x40\x82\x00\x14"),
         ],
     );
 }
@@ -2728,7 +2778,11 @@ fn test_arch_ppc_detail() {
                 b"\x80\x20\x00\x00",
                 &[
                     Reg(RegId(PPC_REG_R1 as RegIdInt)),
-                    Mem(PpcOpMem(ppc_op_mem { base: 0, disp: 0 })),
+                    Mem(PpcOpMem(ppc_op_mem {
+                        base: PPC_REG_ZERO,
+                        disp: 0,
+                        offset: 0,
+                    })),
                 ],
             ),
             // lwz     r1, 0(r31)
@@ -2740,6 +2794,7 @@ fn test_arch_ppc_detail() {
                     Mem(PpcOpMem(ppc_op_mem {
                         base: PPC_REG_R31,
                         disp: 0,
+                        offset: 0,
                     })),
                 ],
             ),
@@ -2762,6 +2817,7 @@ fn test_arch_ppc_detail() {
                     Mem(PpcOpMem(ppc_op_mem {
                         base: PPC_REG_R4,
                         disp: 0x80,
+                        offset: 0,
                     })),
                 ],
             ),
@@ -2800,18 +2856,18 @@ fn test_arch_ppc_detail() {
                 "mulhd.",
                 b"\x7c\x43\x20\x93",
                 &[
-                    Reg(RegId(PPC_REG_R2 as RegIdInt)),
-                    Reg(RegId(PPC_REG_R3 as RegIdInt)),
-                    Reg(RegId(PPC_REG_R4 as RegIdInt)),
+                    Reg(RegId(PPC_REG_X2 as RegIdInt)),
+                    Reg(RegId(PPC_REG_X3 as RegIdInt)),
+                    Reg(RegId(PPC_REG_X4 as RegIdInt)),
                 ],
             ),
             // bdnzlrl+
             DII::new("bdnzlrl+", b"\x4f\x20\x00\x21", &[]),
-            // bgelrl- cr2
+            // bflrl- 4*cr2+lt
             DII::new(
-                "bgelrl-",
+                "bflrl-",
                 b"\x4c\xc8\x00\x21",
-                &[Reg(RegId(PPC_REG_CR2 as RegIdInt))],
+                &[Reg(RegId(PPC_REG_CR2LT as RegIdInt))],
             ),
         ],
     );
@@ -3117,18 +3173,19 @@ fn test_arch_sparc_detail() {
     );
 }
 
-#[cfg(feature = "arch_sysz")]
+#[cfg(feature = "arch_systemz")]
 #[test]
 fn test_arch_systemz() {
     test_arch_mode_endian_insns(
         &mut Capstone::new()
-            .sysz()
-            .mode(sysz::ArchMode::Default)
+            .systemz()
+            .mode(systemz::ArchMode::SystemZGeneric)
+            .endian(Endian::Big)
             .build()
             .unwrap(),
-        Arch::SYSZ,
-        Mode::Default,
-        None,
+        Arch::SYSTEMZ,
+        Mode::SystemZGeneric,
+        Some(Endian::Big),
         &[],
         &[
             ("adb", b"\xed\x00\x00\x00\x00\x1a"),
@@ -3144,59 +3201,74 @@ fn test_arch_systemz() {
     );
 }
 
-#[cfg(feature = "arch_sysz")]
+#[cfg(feature = "arch_systemz")]
 #[test]
 fn test_arch_systemz_detail() {
-    use crate::arch::sysz::SysZOperand::*;
-    use crate::arch::sysz::SysZReg::*;
-    use crate::arch::sysz::*;
-    use capstone_sys::sysz_op_mem;
+    use crate::arch::systemz::SystemZOperand::*;
+    use crate::arch::systemz::SystemZReg::*;
+    use crate::arch::systemz::*;
+    use capstone_sys::systemz_op_mem;
 
     test_arch_mode_endian_insns_detail(
         &mut Capstone::new()
-            .sysz()
-            .mode(sysz::ArchMode::Default)
+            .systemz()
+            .mode(systemz::ArchMode::SystemZGeneric)
+            .endian(Endian::Big)
             .build()
             .unwrap(),
-        Arch::SYSZ,
-        Mode::Default,
-        None,
+        Arch::SYSTEMZ,
+        Mode::SystemZGeneric,
+        Some(Endian::Big),
         &[],
         &[
             // br %r7
-            DII::new("br", b"\x07\xf7", &[Reg(RegId(SYSZ_REG_7 as RegIdInt))]),
+            DII::new(
+                "br",
+                b"\x07\xf7",
+                &[Reg(RegId(SYSTEMZ_REG_R7D as RegIdInt))],
+            ),
             // ear %r7, %a8
             DII::new(
                 "ear",
                 b"\xb2\x4f\x00\x78",
                 &[
-                    Reg(RegId(SYSZ_REG_7 as RegIdInt)),
-                    Reg(RegId(SYSZ_REG_A8 as RegIdInt)),
+                    Reg(RegId(SYSTEMZ_REG_R7L as RegIdInt)),
+                    Reg(RegId(SYSTEMZ_REG_A8 as RegIdInt)),
                 ],
             ),
             // adb %f0, 0
             DII::new(
                 "adb",
                 b"\xed\x00\x00\x00\x00\x1a",
-                &[Reg(RegId(SYSZ_REG_F0 as RegIdInt)), Imm(0)],
+                &[
+                    Reg(RegId(SYSTEMZ_REG_F0D as RegIdInt)),
+                    Mem(SystemZOpMem(systemz_op_mem {
+                        am: capstone_sys::systemz_addr_mode::SYSTEMZ_AM_BDX,
+                        base: 0,
+                        index: 0,
+                        length: 0,
+                        disp: 0,
+                    })),
+                ],
             ),
             // afi %r0, -0x80000000
             DII::new(
                 "afi",
                 b"\xc2\x09\x80\x00\x00\x00",
-                &[Reg(RegId(SYSZ_REG_0 as RegIdInt)), Imm(-0x80000000)],
+                &[Reg(RegId(SYSTEMZ_REG_R0L as RegIdInt)), Imm(-0x80000000)],
             ),
             // a %r0, 0xfff(%r15, %r1)
             DII::new(
                 "a",
                 b"\x5a\x0f\x1f\xff",
                 &[
-                    Reg(RegId(SYSZ_REG_0 as RegIdInt)),
-                    Mem(SysZOpMem(sysz_op_mem {
-                        base: SYSZ_REG_1 as u8,
-                        index: SYSZ_REG_15 as u8,
+                    Reg(RegId(SYSTEMZ_REG_R0L as RegIdInt)),
+                    Mem(SystemZOpMem(systemz_op_mem {
+                        base: SYSTEMZ_REG_R1D as u8,
+                        index: SYSTEMZ_REG_R15D as u8,
                         disp: 0xfff,
                         length: 0,
+                        am: capstone_sys::systemz_addr_mode::SYSTEMZ_AM_BDX,
                     })),
                 ],
             ),
@@ -3954,10 +4026,11 @@ fn test_arch_riscv_detail() {
                 "c.ld",
                 b"\x0c\x66",
                 &[
-                    // Upstream bug? Doesn't seem to use Mem type.
                     Reg(RegId(RISCV_REG_X11 as RegIdInt)),
-                    Imm(8),
-                    Reg(RegId(RISCV_REG_X12 as RegIdInt)),
+                    Mem(RiscVOpMem(riscv_op_mem {
+                        base: RISCV_REG_X12 as u32,
+                        disp: 8,
+                    })),
                 ],
             ),
         ],
@@ -4167,10 +4240,12 @@ fn test_regs_access_arm() {
             .unwrap(),
         b"\xf0\xbd",
         CsResult::Ok(&[as_reg_access(
-            &[ARM_REG_SP],
+            // Upstream bug: register written are reported as read
+            // https://github.com/capstone-engine/capstone/issues/2713
             &[
                 ARM_REG_SP, ARM_REG_R4, ARM_REG_R5, ARM_REG_R6, ARM_REG_R7, ARM_REG_PC,
             ],
+            &[ARM_REG_SP],
         )]),
     );
 }
