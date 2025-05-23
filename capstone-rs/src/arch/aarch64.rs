@@ -657,8 +657,8 @@ mod test {
                 cs_aarch64_op__bindgen_ty_2 {
                     sme: aarch64_op_sme {
                         type_: capstone_sys::aarch64_sme_op_type::AARCH64_SME_OP_TILE_VEC,
-                        tile: AARCH64_REG_ZA as u32,
-                        slice_reg: AARCH64_REG_W12 as u32,
+                        tile: AARCH64_REG_ZA as aarch64_reg::Type,
+                        slice_reg: AARCH64_REG_W12 as aarch64_reg::Type,
                         slice_offset: aarch64_op_sme__bindgen_ty_1 { imm: 4 },
                         has_range_offset: false,
                         is_vertical: false,
@@ -668,8 +668,8 @@ mod test {
             ),
             Sme(AArch64OpSme(aarch64_op_sme {
                 type_: capstone_sys::aarch64_sme_op_type::AARCH64_SME_OP_TILE_VEC,
-                tile: AARCH64_REG_ZA as u32,
-                slice_reg: AARCH64_REG_W12 as u32,
+                tile: AARCH64_REG_ZA as aarch64_reg::Type,
+                slice_reg: AARCH64_REG_W12 as aarch64_reg::Type,
                 slice_offset: aarch64_op_sme__bindgen_ty_1 { imm: 4 },
                 has_range_offset: false,
                 is_vertical: false,
