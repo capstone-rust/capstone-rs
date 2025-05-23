@@ -15987,28 +15987,27 @@ impl ::core::fmt::Debug for cs_wasm {
         write!(f, "cs_wasm {{ operands: {:?} }}", self.operands)
     }
 }
-#[repr(u32)]
-#[doc = " MOS65XX registers and special registers"]
-#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
-pub enum mos65xx_reg {
-    MOS65XX_REG_INVALID = 0,
+pub mod mos65xx_reg {
+    #[doc = " MOS65XX registers and special registers"]
+    pub type Type = libc::c_uint;
+    pub const MOS65XX_REG_INVALID: Type = 0;
     #[doc = "< accumulator"]
-    MOS65XX_REG_ACC = 1,
+    pub const MOS65XX_REG_ACC: Type = 1;
     #[doc = "< X index register"]
-    MOS65XX_REG_X = 2,
+    pub const MOS65XX_REG_X: Type = 2;
     #[doc = "< Y index register"]
-    MOS65XX_REG_Y = 3,
+    pub const MOS65XX_REG_Y: Type = 3;
     #[doc = "< status register"]
-    MOS65XX_REG_P = 4,
+    pub const MOS65XX_REG_P: Type = 4;
     #[doc = "< stack pointer register"]
-    MOS65XX_REG_SP = 5,
+    pub const MOS65XX_REG_SP: Type = 5;
     #[doc = "< direct page register"]
-    MOS65XX_REG_DP = 6,
+    pub const MOS65XX_REG_DP: Type = 6;
     #[doc = "< data bank register"]
-    MOS65XX_REG_B = 7,
+    pub const MOS65XX_REG_B: Type = 7;
     #[doc = "< program bank register"]
-    MOS65XX_REG_K = 8,
-    MOS65XX_REG_ENDING = 9,
+    pub const MOS65XX_REG_K: Type = 8;
+    pub const MOS65XX_REG_ENDING: Type = 9;
 }
 #[repr(u32)]
 #[doc = " MOS65XX Addressing Modes"]
@@ -16068,6 +16067,129 @@ pub enum mos65xx_address_mode {
     MOS65XX_AM_SR_IND_Y = 25,
 }
 #[repr(u32)]
+#[doc = " MOS65XX instruction"]
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
+pub enum mos65xx_insn {
+    MOS65XX_INS_INVALID = 0,
+    MOS65XX_INS_ADC = 1,
+    MOS65XX_INS_AND = 2,
+    MOS65XX_INS_ASL = 3,
+    MOS65XX_INS_BBR = 4,
+    MOS65XX_INS_BBS = 5,
+    MOS65XX_INS_BCC = 6,
+    MOS65XX_INS_BCS = 7,
+    MOS65XX_INS_BEQ = 8,
+    MOS65XX_INS_BIT = 9,
+    MOS65XX_INS_BMI = 10,
+    MOS65XX_INS_BNE = 11,
+    MOS65XX_INS_BPL = 12,
+    MOS65XX_INS_BRA = 13,
+    MOS65XX_INS_BRK = 14,
+    MOS65XX_INS_BRL = 15,
+    MOS65XX_INS_BVC = 16,
+    MOS65XX_INS_BVS = 17,
+    MOS65XX_INS_CLC = 18,
+    MOS65XX_INS_CLD = 19,
+    MOS65XX_INS_CLI = 20,
+    MOS65XX_INS_CLV = 21,
+    MOS65XX_INS_CMP = 22,
+    MOS65XX_INS_COP = 23,
+    MOS65XX_INS_CPX = 24,
+    MOS65XX_INS_CPY = 25,
+    MOS65XX_INS_DEC = 26,
+    MOS65XX_INS_DEX = 27,
+    MOS65XX_INS_DEY = 28,
+    MOS65XX_INS_EOR = 29,
+    MOS65XX_INS_INC = 30,
+    MOS65XX_INS_INX = 31,
+    MOS65XX_INS_INY = 32,
+    MOS65XX_INS_JML = 33,
+    MOS65XX_INS_JMP = 34,
+    MOS65XX_INS_JSL = 35,
+    MOS65XX_INS_JSR = 36,
+    MOS65XX_INS_LDA = 37,
+    MOS65XX_INS_LDX = 38,
+    MOS65XX_INS_LDY = 39,
+    MOS65XX_INS_LSR = 40,
+    MOS65XX_INS_MVN = 41,
+    MOS65XX_INS_MVP = 42,
+    MOS65XX_INS_NOP = 43,
+    MOS65XX_INS_ORA = 44,
+    MOS65XX_INS_PEA = 45,
+    MOS65XX_INS_PEI = 46,
+    MOS65XX_INS_PER = 47,
+    MOS65XX_INS_PHA = 48,
+    MOS65XX_INS_PHB = 49,
+    MOS65XX_INS_PHD = 50,
+    MOS65XX_INS_PHK = 51,
+    MOS65XX_INS_PHP = 52,
+    MOS65XX_INS_PHX = 53,
+    MOS65XX_INS_PHY = 54,
+    MOS65XX_INS_PLA = 55,
+    MOS65XX_INS_PLB = 56,
+    MOS65XX_INS_PLD = 57,
+    MOS65XX_INS_PLP = 58,
+    MOS65XX_INS_PLX = 59,
+    MOS65XX_INS_PLY = 60,
+    MOS65XX_INS_REP = 61,
+    MOS65XX_INS_RMB = 62,
+    MOS65XX_INS_ROL = 63,
+    MOS65XX_INS_ROR = 64,
+    MOS65XX_INS_RTI = 65,
+    MOS65XX_INS_RTL = 66,
+    MOS65XX_INS_RTS = 67,
+    MOS65XX_INS_SBC = 68,
+    MOS65XX_INS_SEC = 69,
+    MOS65XX_INS_SED = 70,
+    MOS65XX_INS_SEI = 71,
+    MOS65XX_INS_SEP = 72,
+    MOS65XX_INS_SMB = 73,
+    MOS65XX_INS_STA = 74,
+    MOS65XX_INS_STP = 75,
+    MOS65XX_INS_STX = 76,
+    MOS65XX_INS_STY = 77,
+    MOS65XX_INS_STZ = 78,
+    MOS65XX_INS_TAX = 79,
+    MOS65XX_INS_TAY = 80,
+    MOS65XX_INS_TCD = 81,
+    MOS65XX_INS_TCS = 82,
+    MOS65XX_INS_TDC = 83,
+    MOS65XX_INS_TRB = 84,
+    MOS65XX_INS_TSB = 85,
+    MOS65XX_INS_TSC = 86,
+    MOS65XX_INS_TSX = 87,
+    MOS65XX_INS_TXA = 88,
+    MOS65XX_INS_TXS = 89,
+    MOS65XX_INS_TXY = 90,
+    MOS65XX_INS_TYA = 91,
+    MOS65XX_INS_TYX = 92,
+    MOS65XX_INS_WAI = 93,
+    MOS65XX_INS_WDM = 94,
+    MOS65XX_INS_XBA = 95,
+    MOS65XX_INS_XCE = 96,
+    MOS65XX_INS_ENDING = 97,
+}
+#[repr(u32)]
+#[doc = " Group of MOS65XX instructions"]
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
+pub enum mos65xx_group_type {
+    #[doc = "< CS_GRP_INVALID"]
+    MOS65XX_GRP_INVALID = 0,
+    #[doc = "< = CS_GRP_JUMP"]
+    MOS65XX_GRP_JUMP = 1,
+    #[doc = "< = CS_GRP_RET"]
+    MOS65XX_GRP_CALL = 2,
+    #[doc = "< = CS_GRP_RET"]
+    MOS65XX_GRP_RET = 3,
+    #[doc = "< = CS_GRP_INT"]
+    MOS65XX_GRP_INT = 4,
+    #[doc = "< = CS_GRP_IRET"]
+    MOS65XX_GRP_IRET = 5,
+    #[doc = "< = CS_GRP_BRANCH_RELATIVE"]
+    MOS65XX_GRP_BRANCH_RELATIVE = 6,
+    MOS65XX_GRP_ENDING = 7,
+}
+#[repr(u32)]
 #[doc = " Operand type for instruction's operands"]
 #[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
 pub enum mos65xx_op_type {
@@ -16092,7 +16214,7 @@ pub struct cs_mos65xx_op {
 #[derive(Copy, Clone)]
 pub union cs_mos65xx_op__bindgen_ty_1 {
     #[doc = "< register value for REG operand"]
-    pub reg: mos65xx_reg,
+    pub reg: mos65xx_reg::Type,
     #[doc = "< immediate value for IMM operand"]
     pub imm: u16,
     #[doc = "< address for MEM operand"]
@@ -16366,133 +16488,132 @@ pub mod bpf_insn_group {
     pub const BPF_GRP_MISC: Type = 7;
     pub const BPF_GRP_ENDING: Type = 8;
 }
-#[repr(u32)]
-#[doc = " SH registers and special registers"]
-#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
-pub enum sh_reg {
-    SH_REG_INVALID = 0,
-    SH_REG_R0 = 1,
-    SH_REG_R1 = 2,
-    SH_REG_R2 = 3,
-    SH_REG_R3 = 4,
-    SH_REG_R4 = 5,
-    SH_REG_R5 = 6,
-    SH_REG_R6 = 7,
-    SH_REG_R7 = 8,
-    SH_REG_R8 = 9,
-    SH_REG_R9 = 10,
-    SH_REG_R10 = 11,
-    SH_REG_R11 = 12,
-    SH_REG_R12 = 13,
-    SH_REG_R13 = 14,
-    SH_REG_R14 = 15,
-    SH_REG_R15 = 16,
-    SH_REG_R0_BANK = 17,
-    SH_REG_R1_BANK = 18,
-    SH_REG_R2_BANK = 19,
-    SH_REG_R3_BANK = 20,
-    SH_REG_R4_BANK = 21,
-    SH_REG_R5_BANK = 22,
-    SH_REG_R6_BANK = 23,
-    SH_REG_R7_BANK = 24,
-    SH_REG_FR0 = 25,
-    SH_REG_FR1 = 26,
-    SH_REG_FR2 = 27,
-    SH_REG_FR3 = 28,
-    SH_REG_FR4 = 29,
-    SH_REG_FR5 = 30,
-    SH_REG_FR6 = 31,
-    SH_REG_FR7 = 32,
-    SH_REG_FR8 = 33,
-    SH_REG_FR9 = 34,
-    SH_REG_FR10 = 35,
-    SH_REG_FR11 = 36,
-    SH_REG_FR12 = 37,
-    SH_REG_FR13 = 38,
-    SH_REG_FR14 = 39,
-    SH_REG_FR15 = 40,
-    SH_REG_DR0 = 41,
-    SH_REG_DR2 = 42,
-    SH_REG_DR4 = 43,
-    SH_REG_DR6 = 44,
-    SH_REG_DR8 = 45,
-    SH_REG_DR10 = 46,
-    SH_REG_DR12 = 47,
-    SH_REG_DR14 = 48,
-    SH_REG_XD0 = 49,
-    SH_REG_XD2 = 50,
-    SH_REG_XD4 = 51,
-    SH_REG_XD6 = 52,
-    SH_REG_XD8 = 53,
-    SH_REG_XD10 = 54,
-    SH_REG_XD12 = 55,
-    SH_REG_XD14 = 56,
-    SH_REG_XF0 = 57,
-    SH_REG_XF1 = 58,
-    SH_REG_XF2 = 59,
-    SH_REG_XF3 = 60,
-    SH_REG_XF4 = 61,
-    SH_REG_XF5 = 62,
-    SH_REG_XF6 = 63,
-    SH_REG_XF7 = 64,
-    SH_REG_XF8 = 65,
-    SH_REG_XF9 = 66,
-    SH_REG_XF10 = 67,
-    SH_REG_XF11 = 68,
-    SH_REG_XF12 = 69,
-    SH_REG_XF13 = 70,
-    SH_REG_XF14 = 71,
-    SH_REG_XF15 = 72,
-    SH_REG_FV0 = 73,
-    SH_REG_FV4 = 74,
-    SH_REG_FV8 = 75,
-    SH_REG_FV12 = 76,
-    SH_REG_XMATRX = 77,
-    SH_REG_PC = 78,
-    SH_REG_PR = 79,
-    SH_REG_MACH = 80,
-    SH_REG_MACL = 81,
-    SH_REG_SR = 82,
-    SH_REG_GBR = 83,
-    SH_REG_SSR = 84,
-    SH_REG_SPC = 85,
-    SH_REG_SGR = 86,
-    SH_REG_DBR = 87,
-    SH_REG_VBR = 88,
-    SH_REG_TBR = 89,
-    SH_REG_RS = 90,
-    SH_REG_RE = 91,
-    SH_REG_MOD = 92,
-    SH_REG_FPUL = 93,
-    SH_REG_FPSCR = 94,
-    SH_REG_DSP_X0 = 95,
-    SH_REG_DSP_X1 = 96,
-    SH_REG_DSP_Y0 = 97,
-    SH_REG_DSP_Y1 = 98,
-    SH_REG_DSP_A0 = 99,
-    SH_REG_DSP_A1 = 100,
-    SH_REG_DSP_A0G = 101,
-    SH_REG_DSP_A1G = 102,
-    SH_REG_DSP_M0 = 103,
-    SH_REG_DSP_M1 = 104,
-    SH_REG_DSP_DSR = 105,
-    SH_REG_DSP_RSV0 = 106,
-    SH_REG_DSP_RSV1 = 107,
-    SH_REG_DSP_RSV2 = 108,
-    SH_REG_DSP_RSV3 = 109,
-    SH_REG_DSP_RSV4 = 110,
-    SH_REG_DSP_RSV5 = 111,
-    SH_REG_DSP_RSV6 = 112,
-    SH_REG_DSP_RSV7 = 113,
-    SH_REG_DSP_RSV8 = 114,
-    SH_REG_DSP_RSV9 = 115,
-    SH_REG_DSP_RSVA = 116,
-    SH_REG_DSP_RSVB = 117,
-    SH_REG_DSP_RSVC = 118,
-    SH_REG_DSP_RSVD = 119,
-    SH_REG_DSP_RSVE = 120,
-    SH_REG_DSP_RSVF = 121,
-    SH_REG_ENDING = 122,
+pub mod sh_reg {
+    #[doc = " SH registers and special registers"]
+    pub type Type = libc::c_uint;
+    pub const SH_REG_INVALID: Type = 0;
+    pub const SH_REG_R0: Type = 1;
+    pub const SH_REG_R1: Type = 2;
+    pub const SH_REG_R2: Type = 3;
+    pub const SH_REG_R3: Type = 4;
+    pub const SH_REG_R4: Type = 5;
+    pub const SH_REG_R5: Type = 6;
+    pub const SH_REG_R6: Type = 7;
+    pub const SH_REG_R7: Type = 8;
+    pub const SH_REG_R8: Type = 9;
+    pub const SH_REG_R9: Type = 10;
+    pub const SH_REG_R10: Type = 11;
+    pub const SH_REG_R11: Type = 12;
+    pub const SH_REG_R12: Type = 13;
+    pub const SH_REG_R13: Type = 14;
+    pub const SH_REG_R14: Type = 15;
+    pub const SH_REG_R15: Type = 16;
+    pub const SH_REG_R0_BANK: Type = 17;
+    pub const SH_REG_R1_BANK: Type = 18;
+    pub const SH_REG_R2_BANK: Type = 19;
+    pub const SH_REG_R3_BANK: Type = 20;
+    pub const SH_REG_R4_BANK: Type = 21;
+    pub const SH_REG_R5_BANK: Type = 22;
+    pub const SH_REG_R6_BANK: Type = 23;
+    pub const SH_REG_R7_BANK: Type = 24;
+    pub const SH_REG_FR0: Type = 25;
+    pub const SH_REG_FR1: Type = 26;
+    pub const SH_REG_FR2: Type = 27;
+    pub const SH_REG_FR3: Type = 28;
+    pub const SH_REG_FR4: Type = 29;
+    pub const SH_REG_FR5: Type = 30;
+    pub const SH_REG_FR6: Type = 31;
+    pub const SH_REG_FR7: Type = 32;
+    pub const SH_REG_FR8: Type = 33;
+    pub const SH_REG_FR9: Type = 34;
+    pub const SH_REG_FR10: Type = 35;
+    pub const SH_REG_FR11: Type = 36;
+    pub const SH_REG_FR12: Type = 37;
+    pub const SH_REG_FR13: Type = 38;
+    pub const SH_REG_FR14: Type = 39;
+    pub const SH_REG_FR15: Type = 40;
+    pub const SH_REG_DR0: Type = 41;
+    pub const SH_REG_DR2: Type = 42;
+    pub const SH_REG_DR4: Type = 43;
+    pub const SH_REG_DR6: Type = 44;
+    pub const SH_REG_DR8: Type = 45;
+    pub const SH_REG_DR10: Type = 46;
+    pub const SH_REG_DR12: Type = 47;
+    pub const SH_REG_DR14: Type = 48;
+    pub const SH_REG_XD0: Type = 49;
+    pub const SH_REG_XD2: Type = 50;
+    pub const SH_REG_XD4: Type = 51;
+    pub const SH_REG_XD6: Type = 52;
+    pub const SH_REG_XD8: Type = 53;
+    pub const SH_REG_XD10: Type = 54;
+    pub const SH_REG_XD12: Type = 55;
+    pub const SH_REG_XD14: Type = 56;
+    pub const SH_REG_XF0: Type = 57;
+    pub const SH_REG_XF1: Type = 58;
+    pub const SH_REG_XF2: Type = 59;
+    pub const SH_REG_XF3: Type = 60;
+    pub const SH_REG_XF4: Type = 61;
+    pub const SH_REG_XF5: Type = 62;
+    pub const SH_REG_XF6: Type = 63;
+    pub const SH_REG_XF7: Type = 64;
+    pub const SH_REG_XF8: Type = 65;
+    pub const SH_REG_XF9: Type = 66;
+    pub const SH_REG_XF10: Type = 67;
+    pub const SH_REG_XF11: Type = 68;
+    pub const SH_REG_XF12: Type = 69;
+    pub const SH_REG_XF13: Type = 70;
+    pub const SH_REG_XF14: Type = 71;
+    pub const SH_REG_XF15: Type = 72;
+    pub const SH_REG_FV0: Type = 73;
+    pub const SH_REG_FV4: Type = 74;
+    pub const SH_REG_FV8: Type = 75;
+    pub const SH_REG_FV12: Type = 76;
+    pub const SH_REG_XMATRX: Type = 77;
+    pub const SH_REG_PC: Type = 78;
+    pub const SH_REG_PR: Type = 79;
+    pub const SH_REG_MACH: Type = 80;
+    pub const SH_REG_MACL: Type = 81;
+    pub const SH_REG_SR: Type = 82;
+    pub const SH_REG_GBR: Type = 83;
+    pub const SH_REG_SSR: Type = 84;
+    pub const SH_REG_SPC: Type = 85;
+    pub const SH_REG_SGR: Type = 86;
+    pub const SH_REG_DBR: Type = 87;
+    pub const SH_REG_VBR: Type = 88;
+    pub const SH_REG_TBR: Type = 89;
+    pub const SH_REG_RS: Type = 90;
+    pub const SH_REG_RE: Type = 91;
+    pub const SH_REG_MOD: Type = 92;
+    pub const SH_REG_FPUL: Type = 93;
+    pub const SH_REG_FPSCR: Type = 94;
+    pub const SH_REG_DSP_X0: Type = 95;
+    pub const SH_REG_DSP_X1: Type = 96;
+    pub const SH_REG_DSP_Y0: Type = 97;
+    pub const SH_REG_DSP_Y1: Type = 98;
+    pub const SH_REG_DSP_A0: Type = 99;
+    pub const SH_REG_DSP_A1: Type = 100;
+    pub const SH_REG_DSP_A0G: Type = 101;
+    pub const SH_REG_DSP_A1G: Type = 102;
+    pub const SH_REG_DSP_M0: Type = 103;
+    pub const SH_REG_DSP_M1: Type = 104;
+    pub const SH_REG_DSP_DSR: Type = 105;
+    pub const SH_REG_DSP_RSV0: Type = 106;
+    pub const SH_REG_DSP_RSV1: Type = 107;
+    pub const SH_REG_DSP_RSV2: Type = 108;
+    pub const SH_REG_DSP_RSV3: Type = 109;
+    pub const SH_REG_DSP_RSV4: Type = 110;
+    pub const SH_REG_DSP_RSV5: Type = 111;
+    pub const SH_REG_DSP_RSV6: Type = 112;
+    pub const SH_REG_DSP_RSV7: Type = 113;
+    pub const SH_REG_DSP_RSV8: Type = 114;
+    pub const SH_REG_DSP_RSV9: Type = 115;
+    pub const SH_REG_DSP_RSVA: Type = 116;
+    pub const SH_REG_DSP_RSVB: Type = 117;
+    pub const SH_REG_DSP_RSVC: Type = 118;
+    pub const SH_REG_DSP_RSVD: Type = 119;
+    pub const SH_REG_DSP_RSVE: Type = 120;
+    pub const SH_REG_DSP_RSVF: Type = 121;
+    pub const SH_REG_ENDING: Type = 122;
 }
 #[repr(u32)]
 #[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
@@ -16534,9 +16655,17 @@ pub enum sh_op_mem_type {
 pub struct sh_op_mem {
     pub address: sh_op_mem_type,
     #[doc = " <= memory address"]
-    pub reg: sh_reg,
+    pub reg: sh_reg::Type,
     #[doc = " <= base register"]
     pub disp: u32,
+}
+#[repr(u32)]
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
+pub enum sh_dsp_insn_type {
+    SH_INS_DSP_INVALID = 0,
+    SH_INS_DSP_DOUBLE = 1,
+    SH_INS_DSP_SINGLE = 2,
+    SH_INS_DSP_PARALLEL = 3,
 }
 #[repr(u32)]
 #[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
@@ -16596,7 +16725,7 @@ pub enum sh_dsp_cc {
 pub struct sh_op_dsp {
     pub insn: sh_dsp_insn,
     pub operand: [sh_dsp_operand; 2usize],
-    pub r: [sh_reg; 6usize],
+    pub r: [sh_reg::Type; 6usize],
     pub cc: sh_dsp_cc,
     pub imm: u8,
     pub size: libc::c_int,
@@ -16614,7 +16743,7 @@ pub union cs_sh_op__bindgen_ty_1 {
     #[doc = "< immediate value for IMM operand"]
     pub imm: u64,
     #[doc = "< register value for REG operand"]
-    pub reg: sh_reg,
+    pub reg: sh_reg::Type,
     #[doc = "< data when operand is targeting memory"]
     pub mem: sh_op_mem,
     #[doc = "< dsp instruction"]
@@ -16816,6 +16945,37 @@ impl ::core::fmt::Debug for cs_sh {
             self.insn, self.operands
         )
     }
+}
+pub mod sh_insn_group {
+    #[doc = " Group of SH instructions"]
+    pub type Type = libc::c_uint;
+    #[doc = "< CS_GRUP_INVALID"]
+    pub const SH_GRP_INVALID: Type = 0;
+    #[doc = "< = CS_GRP_JUMP"]
+    pub const SH_GRP_JUMP: Type = 1;
+    #[doc = "< = CS_GRP_CALL"]
+    pub const SH_GRP_CALL: Type = 2;
+    #[doc = "< = CS_GRP_INT"]
+    pub const SH_GRP_INT: Type = 3;
+    #[doc = "< = CS_GRP_RET"]
+    pub const SH_GRP_RET: Type = 4;
+    #[doc = "< = CS_GRP_IRET"]
+    pub const SH_GRP_IRET: Type = 5;
+    #[doc = "< = CS_GRP_PRIVILEGE"]
+    pub const SH_GRP_PRIVILEGE: Type = 6;
+    #[doc = "< = CS_GRP_BRANCH_RELATIVE"]
+    pub const SH_GRP_BRANCH_RELATIVE: Type = 7;
+    pub const SH_GRP_SH1: Type = 8;
+    pub const SH_GRP_SH2: Type = 9;
+    pub const SH_GRP_SH2E: Type = 10;
+    pub const SH_GRP_SH2DSP: Type = 11;
+    pub const SH_GRP_SH2A: Type = 12;
+    pub const SH_GRP_SH2AFPU: Type = 13;
+    pub const SH_GRP_SH3: Type = 14;
+    pub const SH_GRP_SH3DSP: Type = 15;
+    pub const SH_GRP_SH4: Type = 16;
+    pub const SH_GRP_SH4A: Type = 17;
+    pub const SH_GRP_ENDING: Type = 18;
 }
 #[repr(u32)]
 #[doc = " Operand type for instruction's operands"]
