@@ -201,73 +201,70 @@ pub enum AArch64OperandType {
     /// SMSTART/SMSTOP mode (Streaming SVE & ZA storage)
     Svcr(AArch64Svcr),
 
-    ///
+    /// Address translate operand
     At(AArch64At),
 
-    ///
+    /// Data barrier operand
     Db(AArch64Db),
 
-    ///
+    /// Data cache operand
     Dc(AArch64Dc),
 
-    ///
+    /// Instruction synchronization barrier operand
     Isb(AArch64Isb),
 
-    ///
+    /// Trace synchronization barrier operand
     Tsb(AArch64Tsb),
 
-    ///
+    /// Prefetch operand
     Prfm(AArch64Prfm),
 
-    ///
+    /// SVE prefetch operand
     SvePrfm(AArch64SvePrfm),
 
-    ///
+    /// Range prefetch operand
     RPrfm(AArch64RPrfm),
 
-    ///
+    /// PState field operand
     PStateImm015(AArch64PStateImm015),
 
-    ///
+    /// PState field operand
     PStateImm01(AArch64PStateImm01),
 
-    ///
+    /// Profiling synchronization barrier operand
     Psb(AArch64Psb),
 
-    ///
+    /// Branch target identification operand
     Bti(AArch64Bti),
 
-    ///
+    /// SVE predication pattern operand
     SvePredPat(AArch64SvePredPat),
 
-    ///
+    /// SVE vector length specifier
     SveVecLenSpecifier(AArch64SveVecLenSpecifier),
 
-    ///
+    /// SME operand
     Sme(AArch64OpSme),
 
-    ///
+    /// Immediate range
     ImmRange(AArch64ImmRange),
 
-    ///
+    /// TLB invalidate operand
     Tlbi(AArch64Tlbi),
 
-    ///
+    /// Instruction cache operand
     Ic(AArch64Ic),
 
-    ///
+    /// Synchronization instructions operand
     Dbnxs(AArch64Dbnxs),
 
-    ///
+    /// Exact floating point immediate operand
     ExactFpImm(AArch64ExactFpImm),
 
-    ///
+    /// System register
     Sysreg(AArch64Sysreg),
 
-    ///
-    SysImm(i32),
-
-    ///
+    /// Predicate operand
     Pred(AArch64OpPred),
 
     /// Invalid
