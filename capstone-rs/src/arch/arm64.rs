@@ -4,9 +4,9 @@ use libc::c_uint;
 
 pub use crate::arch::arch_builder::arm64::*;
 use crate::arch::DetailsArchInsn;
-use crate::instruction::{RegId, RegIdInt};
-use capstone_sys::{arm64_op_mem, arm64_op_sme_index, arm64_op_type, cs_arm64, cs_arm64_op};
-use core::convert::From;
+use crate::instruction::{RegAccessType, RegId, RegIdInt};
+use capstone_sys::{arm64_op_mem, arm64_op_sme_index, arm64_op_type, cs_ac_type, cs_arm64, cs_arm64_op};
+use core::convert::{From, TryInto};
 use core::{cmp, fmt, mem, slice};
 
 // Re-exports
@@ -86,6 +86,11 @@ impl Arm64OperandType {
 /// ARM64 operand
 #[derive(Clone, Debug, PartialEq)]
 pub struct Arm64Operand {
+    /// How is this operand accessed?
+    ///
+    /// NOTE: this field is always `None` if the "full" feataure is not enabled.
+    pub access: Option<RegAccessType>,
+
     /// Vector Index for some vector operands
     pub vector_index: Option<u32>,
 
@@ -224,6 +229,7 @@ impl_PartialEq_repr_fields!(Arm64OpSmeIndex;
 impl Default for Arm64Operand {
     fn default() -> Self {
         Arm64Operand {
+            access: None,
             vector_index: None,
             vas: Arm64Vas::ARM64_VAS_INVALID,
             shift: Arm64Shift::Invalid,
@@ -272,6 +278,7 @@ impl From<&cs_arm64_op> for Arm64Operand {
             None
         };
         Arm64Operand {
+            access: cs_ac_type(op.access as _).try_into().ok(),
             vector_index,
             vas: op.vas,
             shift,

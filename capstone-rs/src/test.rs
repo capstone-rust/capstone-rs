@@ -1179,10 +1179,12 @@ fn test_arch_arm64_detail() {
                 b"\xbf\x40\x00\xd5",
                 &[
                     Arm64Operand {
+                        access: Some(RegAccessType::WriteOnly),
                         op_type: Pstate(ARM64_PSTATE_SPSEL),
                         ..Default::default()
                     },
                     Arm64Operand {
+                        access: Some(RegAccessType::ReadOnly),
                         op_type: Imm(0),
                         ..Default::default()
                     },
@@ -1194,21 +1196,25 @@ fn test_arch_arm64_detail() {
                 b"\x20\x50\x02\x0e",
                 &[
                     Arm64Operand {
+                        access: Some(RegAccessType::ReadWrite),
                         vas: ARM64_VAS_8B,
                         op_type: Reg(RegId(ARM64_REG_V0 as RegIdInt)),
                         ..Default::default()
                     },
                     Arm64Operand {
+                        access: Some(RegAccessType::ReadOnly),
                         vas: ARM64_VAS_16B,
                         op_type: Reg(RegId(ARM64_REG_V1 as RegIdInt)),
                         ..Default::default()
                     },
                     Arm64Operand {
+                        access: Some(RegAccessType::ReadOnly),
                         vas: ARM64_VAS_16B,
                         op_type: Reg(RegId(ARM64_REG_V2 as RegIdInt)),
                         ..Default::default()
                     },
                     Arm64Operand {
+                        access: Some(RegAccessType::ReadOnly),
                         vas: ARM64_VAS_16B,
                         op_type: Reg(RegId(ARM64_REG_V3 as RegIdInt)),
                         ..Default::default()
@@ -1226,16 +1232,19 @@ fn test_arch_arm64_detail() {
                 b"\x20\xe4\x3d\x0f",
                 &[
                     Arm64Operand {
+                        access: Some(RegAccessType::WriteOnly),
                         vas: ARM64_VAS_2S,
                         op_type: Reg(RegId(ARM64_REG_V0 as RegIdInt)),
                         ..Default::default()
                     },
                     Arm64Operand {
+                        access: Some(RegAccessType::ReadOnly),
                         vas: ARM64_VAS_2S,
                         op_type: Reg(RegId(ARM64_REG_V1 as RegIdInt)),
                         ..Default::default()
                     },
                     Arm64Operand {
+                        access: Some(RegAccessType::ReadOnly),
                         op_type: Imm(3),
                         ..Default::default()
                     },
@@ -1246,9 +1255,16 @@ fn test_arch_arm64_detail() {
                 "fmla",
                 b"\x00\x18\xa0\x5f",
                 &[
-                    s0.clone(),
-                    s0,
                     Arm64Operand {
+                        access: Some(RegAccessType::ReadWrite),
+                        ..s0.clone()
+                    },
+                    Arm64Operand {
+                        access: Some(RegAccessType::ReadOnly),
+                        ..s0
+                    },
+                    Arm64Operand {
+                        access: Some(RegAccessType::ReadOnly),
                         vector_index: Some(3),
                         op_type: Reg(RegId(ARM64_REG_V0 as RegIdInt)),
                         vas: ARM64_VAS_1S,
@@ -1262,10 +1278,11 @@ fn test_arch_arm64_detail() {
                 b"\xa2\x00\xae\x9e",
                 &[
                     Arm64Operand {
-                        op_type: Reg(RegId(ARM64_REG_X2 as RegIdInt)),
-                        ..Default::default()
+                        access: Some(RegAccessType::WriteOnly),
+                        ..x2.clone()
                     },
                     Arm64Operand {
+                        access: Some(RegAccessType::ReadOnly),
                         vector_index: Some(1),
                         op_type: Reg(RegId(ARM64_REG_V5 as RegIdInt)),
                         vas: ARM64_VAS_INVALID, // should be ARM64_VAS_1D instead?
@@ -1278,6 +1295,7 @@ fn test_arch_arm64_detail() {
                 "dsb",
                 b"\x9f\x37\x03\xd5",
                 &[Arm64Operand {
+                    access: Some(RegAccessType::ReadOnly),
                     op_type: Barrier(Arm64BarrierOp::ARM64_BARRIER_NSH),
                     ..Default::default()
                 }],
@@ -1287,6 +1305,7 @@ fn test_arch_arm64_detail() {
                 "dmb",
                 b"\xbf\x33\x03\xd5",
                 &[Arm64Operand {
+                    access: Some(RegAccessType::ReadOnly),
                     op_type: Barrier(Arm64BarrierOp::ARM64_BARRIER_OSH),
                     ..Default::default()
                 }],
@@ -1297,7 +1316,20 @@ fn test_arch_arm64_detail() {
             DII::new(
                 "mul",
                 b"\x21\x7c\x02\x9b",
-                &[x1.clone(), x1.clone(), x2.clone()],
+                &[
+                    Arm64Operand {
+                        access: Some(RegAccessType::WriteOnly),
+                        ..x1.clone()
+                    },
+                    Arm64Operand {
+                        access: Some(RegAccessType::ReadOnly),
+                        ..x1.clone()
+                    },
+                    Arm64Operand {
+                        access: Some(RegAccessType::ReadOnly),
+                        ..x2.clone()
+                    },
+                ],
             ),
             // lsr w1, w1, #0
             DII::new(
@@ -1305,14 +1337,18 @@ fn test_arch_arm64_detail() {
                 b"\x21\x7c\x00\x53",
                 &[
                     Arm64Operand {
+                        // Upstream bug: should be read only, fixed in capstone v6
+                        access: Some(RegAccessType::ReadWrite),
                         op_type: Reg(RegId(ARM64_REG_W1 as RegIdInt)),
                         ..Default::default()
                     },
                     Arm64Operand {
+                        access: Some(RegAccessType::ReadOnly),
                         op_type: Reg(RegId(ARM64_REG_W1 as RegIdInt)),
                         ..Default::default()
                     },
                     Arm64Operand {
+                        access: Some(RegAccessType::ReadOnly),
                         op_type: Imm(0),
                         ..Default::default()
                     },
@@ -1324,14 +1360,17 @@ fn test_arch_arm64_detail() {
                 b"\x00\x40\x21\x4b",
                 &[
                     Arm64Operand {
+                        access: Some(RegAccessType::WriteOnly),
                         op_type: Reg(RegId(ARM64_REG_W0 as RegIdInt)),
                         ..Default::default()
                     },
                     Arm64Operand {
+                        access: Some(RegAccessType::ReadOnly),
                         op_type: Reg(RegId(ARM64_REG_W0 as RegIdInt)),
                         ..Default::default()
                     },
                     Arm64Operand {
+                        access: Some(RegAccessType::ReadOnly),
                         ext: Arm64Extender::ARM64_EXT_UXTW,
                         op_type: Reg(RegId(ARM64_REG_W1 as RegIdInt)),
                         ..Default::default()
@@ -1344,10 +1383,12 @@ fn test_arch_arm64_detail() {
                 b"\xe1\x0b\x40\xb9",
                 &[
                     Arm64Operand {
+                        access: Some(RegAccessType::WriteOnly),
                         op_type: Reg(RegId(ARM64_REG_W1 as RegIdInt)),
                         ..Default::default()
                     },
                     Arm64Operand {
+                        access: Some(RegAccessType::ReadOnly),
                         op_type: Mem(Arm64OpMem(arm64_op_mem {
                             base: ARM64_REG_SP,
                             index: 0,
@@ -1358,15 +1399,35 @@ fn test_arch_arm64_detail() {
                 ],
             ),
             // cneg x0, x1, ne
-            DII::new("cneg", b"\x20\x04\x81\xda", &[x0.clone(), x1.clone()]),
+            DII::new(
+                "cneg",
+                b"\x20\x04\x81\xda",
+                &[
+                    Arm64Operand {
+                        access: Some(RegAccessType::WriteOnly),
+                        ..x0.clone()
+                    },
+                    Arm64Operand {
+                        access: Some(RegAccessType::ReadOnly),
+                        ..x1.clone()
+                    },
+                ],
+            ),
             // add x0, x1, x2, lsl #2
             DII::new(
                 "add",
                 b"\x20\x08\x02\x8b",
                 &[
-                    x0,
-                    x1,
                     Arm64Operand {
+                        access: Some(RegAccessType::WriteOnly),
+                        ..x0
+                    },
+                    Arm64Operand {
+                        access: Some(RegAccessType::ReadOnly),
+                        ..x1
+                    },
+                    Arm64Operand {
+                        access: Some(RegAccessType::ReadOnly),
                         shift: Arm64Shift::Lsl(2),
                         ..x2
                     },
@@ -1378,10 +1439,12 @@ fn test_arch_arm64_detail() {
                 b"\x10\x5b\xe8\x3c",
                 &[
                     Arm64Operand {
+                        access: Some(RegAccessType::WriteOnly),
                         op_type: Reg(RegId(ARM64_REG_Q16 as RegIdInt)),
                         ..Default::default()
                     },
                     Arm64Operand {
+                        access: Some(RegAccessType::ReadOnly),
                         shift: Arm64Shift::Lsl(4),
                         ext: Arm64Extender::ARM64_EXT_UXTW,
                         op_type: Mem(Arm64OpMem(arm64_op_mem {
