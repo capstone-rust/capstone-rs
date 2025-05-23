@@ -1,28 +1,28 @@
-//! Contains sysz-specific types
+//! Contains systemz-specific types
 
 use core::convert::From;
 use core::{cmp, fmt, slice};
 
 // XXX todo(garnt): create rusty versions
-pub use capstone_sys::sysz_insn_group as SysZInsnGroup;
-pub use capstone_sys::sysz_insn as SysZInsn;
-pub use capstone_sys::sysz_reg as SysZReg;
-use capstone_sys::{cs_sysz, cs_sysz_op, sysz_op_mem, sysz_op_type};
+pub use capstone_sys::systemz_insn as SystemZInsn;
+pub use capstone_sys::systemz_insn_group as SystemZInsnGroup;
+pub use capstone_sys::systemz_reg as SystemZReg;
+use capstone_sys::{cs_systemz, cs_systemz_op, systemz_op_mem, systemz_op_type};
 
-pub use crate::arch::arch_builder::sysz::*;
+pub use crate::arch::arch_builder::systemz::*;
 use crate::arch::DetailsArchInsn;
 use crate::instruction::{RegId, RegIdInt};
 
-/// Contains sysz-specific details for an instruction
-pub struct SysZInsnDetail<'a>(pub(crate) &'a cs_sysz);
+/// Contains systemz-specific details for an instruction
+pub struct SystemZInsnDetail<'a>(pub(crate) &'a cs_systemz);
 
-impl_PartialEq_repr_fields!(SysZInsnDetail<'a> [ 'a ];
+impl_PartialEq_repr_fields!(SystemZInsnDetail<'a> [ 'a ];
     operands
 );
 
-/// SysZ operand
+/// SystemZ operand
 #[derive(Clone, Debug, Eq, PartialEq)]
-pub enum SysZOperand {
+pub enum SystemZOperand {
     /// Register
     Reg(RegId),
 
@@ -30,26 +30,23 @@ pub enum SysZOperand {
     Imm(i64),
 
     /// Memory
-    Mem(SysZOpMem),
-
-    /// Access Register
-    AcReg(RegId),
+    Mem(SystemZOpMem),
 
     /// Invalid
     Invalid,
 }
 
-impl Default for SysZOperand {
+impl Default for SystemZOperand {
     fn default() -> Self {
-        SysZOperand::Invalid
+        SystemZOperand::Invalid
     }
 }
 
-/// SysZ memory operand
+/// SystemZ memory operand
 #[derive(Debug, Copy, Clone)]
-pub struct SysZOpMem(pub(crate) sysz_op_mem);
+pub struct SystemZOpMem(pub(crate) systemz_op_mem);
 
-impl SysZOpMem {
+impl SystemZOpMem {
     /// Base register
     pub fn base(&self) -> u8 {
         self.0.base
@@ -71,36 +68,35 @@ impl SysZOpMem {
     }
 }
 
-impl_PartialEq_repr_fields!(SysZOpMem;
+impl_PartialEq_repr_fields!(SystemZOpMem;
     base, index, length, disp
 );
 
-impl cmp::Eq for SysZOpMem {}
+impl cmp::Eq for SystemZOpMem {}
 
-impl  From<&cs_sysz_op> for SysZOperand {
-    fn from(insn: &cs_sysz_op) -> SysZOperand {
+impl From<&cs_systemz_op> for SystemZOperand {
+    fn from(insn: &cs_systemz_op) -> SystemZOperand {
         match insn.type_ {
-            sysz_op_type::SYSZ_OP_REG => {
-                SysZOperand::Reg(RegId(unsafe { insn.__bindgen_anon_1.reg } as RegIdInt))
-            },
-            sysz_op_type::SYSZ_OP_IMM => SysZOperand::Imm(unsafe { insn.__bindgen_anon_1.imm }),
-            sysz_op_type::SYSZ_OP_MEM => {
-                SysZOperand::Mem(SysZOpMem(unsafe { insn.__bindgen_anon_1.mem }))
-            },
-            sysz_op_type::SYSZ_OP_ACREG => {
-                SysZOperand::AcReg(RegId(unsafe { insn.__bindgen_anon_1.reg } as RegIdInt))
-            },
-            sysz_op_type::SYSZ_OP_INVALID => SysZOperand::Invalid,
+            systemz_op_type::SYSTEMZ_OP_REG => {
+                SystemZOperand::Reg(RegId(unsafe { insn.__bindgen_anon_1.reg } as RegIdInt))
+            }
+            systemz_op_type::SYSTEMZ_OP_IMM => {
+                SystemZOperand::Imm(unsafe { insn.__bindgen_anon_1.imm })
+            }
+            systemz_op_type::SYSTEMZ_OP_MEM => {
+                SystemZOperand::Mem(SystemZOpMem(unsafe { insn.__bindgen_anon_1.mem }))
+            }
+            systemz_op_type::SYSTEMZ_OP_INVALID => SystemZOperand::Invalid,
         }
     }
 }
 
 def_arch_details_struct!(
-    InsnDetail = SysZInsnDetail;
-    Operand = SysZOperand;
-    OperandIterator = SysZOperandIterator;
-    OperandIteratorLife = SysZOperandIterator<'a>;
-    [ pub struct SysZOperandIterator<'a>(slice::Iter<'a, cs_sysz_op>); ]
-    cs_arch_op = cs_sysz_op;
-    cs_arch = cs_sysz;
+    InsnDetail = SystemZInsnDetail;
+    Operand = SystemZOperand;
+    OperandIterator = SystemZOperandIterator;
+    OperandIteratorLife = SystemZOperandIterator<'a>;
+    [ pub struct SystemZOperandIterator<'a>(slice::Iter<'a, cs_systemz_op>); ]
+    cs_arch_op = cs_systemz_op;
+    cs_arch = cs_systemz;
 );

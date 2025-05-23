@@ -220,7 +220,7 @@ macro_rules! arch_info_base {
                 ( both_endian: true )
             ]
             [
-                ( arm64, ARM64, "arch_arm64" )
+                ( aarch64, AARCH64, "arch_aarch64" )
                 ( mode:
                     Arm,
                     )
@@ -349,13 +349,26 @@ macro_rules! arch_info_base {
                 ( both_endian: false )
             ]
             [
-                ( sysz, SYSZ, "arch_sysz" )
+                ( systemz, SYSTEMZ, "arch_systemz" )
                 ( mode:
-                    Default,
+                    SystemZArch8,
+                    SystemZArch9,
+                    SystemZArch10,
+                    SystemZArch11,
+                    SystemZArch12,
+                    SystemZArch13,
+                    SystemZZ10,
+                    SystemZZ196,
+                    SystemZZec12,
+                    SystemZZ13,
+                    SystemZZ14,
+                    SystemZZ15,
+                    SystemZZ16,
+                    SystemZGeneric,
                     )
                 ( extra_modes: )
                 ( syntax: )
-                ( both_endian: false )
+                ( both_endian: true )
             ]
             [
                 ( tms320c64x, TMS320C64X, "arch_tms320c64x" )
@@ -522,12 +535,12 @@ macro_rules! detail_arch_base {
                 => arch_name = arm,
             ]
             [
-                detail = Arm64Detail,
-                insn_detail = Arm64InsnDetail<'a>,
-                op = Arm64Operand,
-                feature = "arch_arm64",
-                /// Returns the ARM64 details, if any
-                => arch_name = arm64,
+                detail = AArch64Detail,
+                insn_detail = AArch64InsnDetail<'a>,
+                op = AArch64Operand,
+                feature = "arch_aarch64",
+                /// Returns the AARCH64 details, if any
+                => arch_name = aarch64,
             ]
             [
                 detail = EvmDetail,
@@ -642,12 +655,12 @@ macro_rules! detail_arch_base {
                 => arch_name = bpf,
             ]
             [
-                detail = SysZDetail,
-                insn_detail = SysZInsnDetail<'a>,
-                op = SysZOperand,
-                feature = "arch_sysz",
-                /// Returns the SysZ details, if any
-                => arch_name = sysz,
+                detail = SystemZDetail,
+                insn_detail = SystemZInsnDetail<'a>,
+                op = SystemZOperand,
+                feature = "arch_systemz",
+                /// Returns the SystemZ details, if any
+                => arch_name = systemz,
             ]
         );
     };

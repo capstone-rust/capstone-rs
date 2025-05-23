@@ -199,7 +199,7 @@ define_cs_enum_wrapper!(
     /// ARM (Advanced RISC Machine)
     => ARM = CS_ARCH_ARM;
     /// ARM 64-bit (also known as AArch64)
-    => ARM64 = CS_ARCH_ARM64;
+    => AARCH64 = CS_ARCH_AARCH64;
     /// MIPS
     => MIPS = CS_ARCH_MIPS;
     /// x86 family (includes 16, 32, and 64 bit modes)
@@ -211,7 +211,7 @@ define_cs_enum_wrapper!(
     /// SPARC
     => SPARC = CS_ARCH_SPARC;
     /// System z
-    => SYSZ = CS_ARCH_SYSZ;
+    => SYSTEMZ = CS_ARCH_SYSTEMZ;
     /// XCore
     => XCORE = CS_ARCH_XCORE;
     /// Motorolla 68K
@@ -341,6 +341,36 @@ define_cs_enum_wrapper!(
     => TriCore161 = { cs_mode::CS_MODE_TRICORE_161 };
     /// TriCore 1.6.2
     => TriCore162 = { cs_mode::CS_MODE_TRICORE_162 };
+    /// SystemZ ARCH8
+    => SystemZArch8 = { cs_mode::CS_MODE_SYSTEMZ_ARCH8 };
+    /// SystemZ ARCH9
+    => SystemZArch9 = { cs_mode::CS_MODE_SYSTEMZ_ARCH9 };
+    /// SystemZ ARCH10
+    => SystemZArch10 = { cs_mode::CS_MODE_SYSTEMZ_ARCH10 };
+    /// SystemZ ARCH11
+    => SystemZArch11 = { cs_mode::CS_MODE_SYSTEMZ_ARCH11 };
+    /// SystemZ ARCH12
+    => SystemZArch12 = { cs_mode::CS_MODE_SYSTEMZ_ARCH12 };
+    /// SystemZ ARCH13
+    => SystemZArch13 = { cs_mode::CS_MODE_SYSTEMZ_ARCH13 };
+    /// SystemZ ARCH14
+    => SystemZArch14 = { cs_mode::CS_MODE_SYSTEMZ_ARCH14 };
+    /// SystemZ Z10
+    => SystemZZ10 = { cs_mode::CS_MODE_SYSTEMZ_Z10 };
+    /// SystemZ Z196
+    => SystemZZ196 = { cs_mode::CS_MODE_SYSTEMZ_Z196 };
+    /// SystemZ ZEC12
+    => SystemZZec12 = { cs_mode::CS_MODE_SYSTEMZ_ZEC12 };
+    /// SystemZ Z13
+    => SystemZZ13 = { cs_mode::CS_MODE_SYSTEMZ_Z13 };
+    /// SystemZ Z14
+    => SystemZZ14 = { cs_mode::CS_MODE_SYSTEMZ_Z14 };
+    /// SystemZ Z15
+    => SystemZZ15 = { cs_mode::CS_MODE_SYSTEMZ_Z15 };
+    /// SystemZ Z16
+    => SystemZZ16 = { cs_mode::CS_MODE_SYSTEMZ_Z16 };
+    /// SystemZ Generic
+    => SystemZGeneric = { cs_mode::CS_MODE_SYSTEMZ_GENERIC };
     /// Default mode for little-endian
     => Default = { cs_mode::CS_MODE_LITTLE_ENDIAN };
 );
