@@ -3859,7 +3859,7 @@ fn test_arch_tricore() {
             .mode(tricore::ArchMode::TriCore162)
             .build()
             .unwrap(),
-        Arch::TriCore,
+        Arch::TRICORE,
         Mode::TriCore162,
         None,
         &[],
@@ -3880,7 +3880,7 @@ fn test_arch_tricore_detail() {
             .mode(tricore::ArchMode::TriCore162)
             .build()
             .unwrap(),
-        Arch::TriCore,
+        Arch::TRICORE,
         Mode::TriCore162,
         None,
         &[],

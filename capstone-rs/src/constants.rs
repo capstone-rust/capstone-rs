@@ -219,7 +219,7 @@ define_cs_enum_wrapper!(
     /// Texas Instruments TMS320C64x
     => TMS320C64X = CS_ARCH_TMS320C64X;
     /// TriCore
-    => TriCore = CS_ARCH_TRICORE;
+    => TRICORE = CS_ARCH_TRICORE;
     /// Motorola 68000
     => M680X = CS_ARCH_M680X;
     /// EVM

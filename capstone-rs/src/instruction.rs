@@ -498,7 +498,7 @@ impl InsnDetail<'_> {
             [SPARC, SparcDetail, SparcInsnDetail, sparc]
             [SYSZ, SysZDetail, SysZInsnDetail, sysz]
             [TMS320C64X, Tms320c64xDetail, Tms320c64xInsnDetail, tms320c64x]
-            [TriCore, TriCoreDetail, TriCoreInsnDetail, tricore]
+            [TRICORE, TriCoreDetail, TriCoreInsnDetail, tricore]
             [X86, X86Detail, X86InsnDetail, x86]
             [XCORE, XcoreDetail, XcoreInsnDetail, xcore]
         );

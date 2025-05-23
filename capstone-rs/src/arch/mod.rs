@@ -344,7 +344,7 @@ macro_rules! arch_info_base {
                 ( both_endian: true )
             ]
             [
-                ( tricore, TriCore )
+                ( tricore, TRICORE )
                 ( mode:
                     TriCore110,
                     TriCore120,
