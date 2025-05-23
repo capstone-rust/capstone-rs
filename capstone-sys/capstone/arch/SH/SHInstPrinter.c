@@ -2,6 +2,8 @@
 /* By Yoshinori Sato, 2022 */
 
 #include <string.h>
+
+#include "../../Mapping.h"
 #include "SHInstPrinter.h"
 
 
@@ -51,7 +53,7 @@ void SH_get_insn_id(cs_struct* h, cs_insn* insn, unsigned int id)
 
 #ifndef CAPSTONE_DIET
 static const char* const s_insn_names[] = {
-	"unknwon",
+	"unknown",
 	"add", "add", "addc", "addv", "and",
 	"band", "bandnot", "bclr",
 	"bf", "bf/s", "bld", "bldnot", "bor", "bornot", "bra", "braf",
