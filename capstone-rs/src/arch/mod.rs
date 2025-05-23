@@ -276,6 +276,21 @@ macro_rules! arch_info_base {
                 ( both_endian: true )
             ]
             [
+                ( mos65xx, MOS65XX )
+                ( mode:
+                    Mos65xx6502,
+                    Mos65xx65c02,
+                    Mos65xxW65c02,
+                    Mos65xx65816,
+                    Mos65xx65816LongM,
+                    Mos65xx65816LongX,
+                    Mos65xx65816LongMx,
+                    )
+                ( extra_modes: )
+                ( syntax: )
+                ( both_endian: false )
+            ]
+            [
                 ( ppc, PPC )
                 ( mode:
                     Mode32,
@@ -516,6 +531,13 @@ macro_rules! detail_arch_base {
                 op = MipsOperand,
                 /// Returns the MIPS details, if any
                 => arch_name = mips,
+            ]
+            [
+                detail = Mos65xxDetail,
+                insn_detail = Mos65xxInsnDetail<'a>,
+                op = Mos65xxOperand,
+                /// Returns the Mos65xx details, if any
+                => arch_name = mos65xx,
             ]
             [
                 detail = PpcDetail,

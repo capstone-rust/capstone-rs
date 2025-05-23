@@ -11,7 +11,7 @@ use alloc::vec::Vec;
 #[cfg(feature = "full")]
 use {alloc::string::String, std::collections::HashSet};
 
-use capstone_sys::{arm64_op_sme_index, cs_group_type};
+use capstone_sys::{arm64_op_sme_index, cs_group_type, mos65xx_reg::MOS65XX_REG_ACC};
 use libc::c_uint;
 
 use super::arch::*;
@@ -2185,6 +2185,139 @@ fn test_arch_mips_detail() {
                 })),
             ],
         )],
+    );
+}
+
+#[test]
+fn test_arch_mos65xx() {
+    test_arch_mode_endian_insns(
+        &mut Capstone::new()
+            .mos65xx()
+            .mode(mos65xx::ArchMode::Mos65xx6502)
+            .build()
+            .unwrap(),
+        Arch::MOS65XX,
+        Mode::Mos65xx6502,
+        None,
+        &[],
+        &[("lda", b"\xa1\xa2"), ("ora", b"\x0d\x34\x12")],
+    );
+
+    test_arch_mode_endian_insns(
+        &mut Capstone::new()
+            .mos65xx()
+            .mode(mos65xx::ArchMode::Mos65xx65c02)
+            .build()
+            .unwrap(),
+        Arch::MOS65XX,
+        Mode::Mos65xx65c02,
+        None,
+        &[],
+        &[
+            ("inc", b"\x1a"),
+            ("dec", b"\x3a"),
+            ("nop", b"\x02\x12"),
+            ("nop", b"\x03"),
+            ("nop", b"\x5c\x34\x12"),
+        ],
+    );
+
+    test_arch_mode_endian_insns(
+        &mut Capstone::new()
+            .mos65xx()
+            .mode(mos65xx::ArchMode::Mos65xxW65c02)
+            .build()
+            .unwrap(),
+        Arch::MOS65XX,
+        Mode::Mos65xxW65c02,
+        None,
+        &[],
+        &[("rmb0", b"\x07\x12"), ("rmb2", b"\x27\x12")],
+    );
+
+    test_arch_mode_endian_insns(
+        &mut Capstone::new()
+            .mos65xx()
+            .mode(mos65xx::ArchMode::Mos65xx65816LongMx)
+            .build()
+            .unwrap(),
+        Arch::MOS65XX,
+        Mode::Mos65xx65816LongMx,
+        None,
+        &[],
+        &[("lda", b"\xa9\x34\x12"), ("mvp", b"\x44\x34\x12")],
+    );
+}
+
+#[test]
+fn test_arch_mos65xx_detail() {
+    use crate::arch::mos65xx::Mos65xxOperand::*;
+
+    test_arch_mode_endian_insns_detail(
+        &mut Capstone::new()
+            .mos65xx()
+            .mode(mos65xx::ArchMode::Mos65xx6502)
+            .build()
+            .unwrap(),
+        Arch::MOS65XX,
+        Mode::Mos65xx6502,
+        None,
+        &[],
+        &[
+            DII::new("lda", b"\xa1\xa2", &[Mem(0xa2)]),
+            DII::new("ora", b"\x0d\x34\x12", &[Mem(0x1234)]),
+        ],
+    );
+
+    test_arch_mode_endian_insns_detail(
+        &mut Capstone::new()
+            .mos65xx()
+            .mode(mos65xx::ArchMode::Mos65xx65c02)
+            .build()
+            .unwrap(),
+        Arch::MOS65XX,
+        Mode::Mos65xx65c02,
+        None,
+        &[],
+        &[
+            DII::new("inc", b"\x1a", &[Reg(RegId(MOS65XX_REG_ACC as RegIdInt))]),
+            DII::new("dec", b"\x3a", &[Reg(RegId(MOS65XX_REG_ACC as RegIdInt))]),
+            DII::new("nop", b"\x02\x12", &[]),
+            DII::new("nop", b"\x03", &[]),
+            DII::new("nop", b"\x5c\x34\x12", &[]),
+        ],
+    );
+
+    test_arch_mode_endian_insns_detail(
+        &mut Capstone::new()
+            .mos65xx()
+            .mode(mos65xx::ArchMode::Mos65xxW65c02)
+            .build()
+            .unwrap(),
+        Arch::MOS65XX,
+        Mode::Mos65xxW65c02,
+        None,
+        &[],
+        &[
+            DII::new("rmb0", b"\x07\x12", &[Mem(0x12)]),
+            DII::new("rmb2", b"\x27\x12", &[Mem(0x12)]),
+        ],
+    );
+
+    test_arch_mode_endian_insns_detail(
+        &mut Capstone::new()
+            .mos65xx()
+            .mode(mos65xx::ArchMode::Mos65xx65816LongMx)
+            .build()
+            .unwrap(),
+        Arch::MOS65XX,
+        Mode::Mos65xx65816LongMx,
+        None,
+        &[],
+        &[
+            DII::new("lda", b"\xa9\x34\x12", &[Imm(0x1234)]),
+            DII::new("mvp", b"\x44\x34\x12", &[Mem(0x12), Mem(0x34)]),
+        ],
     );
 }
 
