@@ -487,19 +487,21 @@ impl InsnDetail<'_> {
         def_arch_detail_match!(
             [ARM, ArmDetail, ArmInsnDetail, arm]
             [ARM64, Arm64Detail, Arm64InsnDetail, arm64]
+            [BPF, BpfDetail, BpfInsnDetail, bpf]
             [EVM, EvmDetail, EvmInsnDetail, evm]
             [M680X, M680xDetail, M680xInsnDetail, m680x]
             [M68K, M68kDetail, M68kInsnDetail, m68k]
             [MIPS, MipsDetail, MipsInsnDetail, mips]
+            [MOS65XX, Mos65xxDetail, Mos65xxInsnDetail, mos65xx]
             [PPC, PpcDetail, PpcInsnDetail, ppc]
             [RISCV, RiscVDetail, RiscVInsnDetail, riscv]
+            [SH, ShDetail, ShInsnDetail, sh]
             [SPARC, SparcDetail, SparcInsnDetail, sparc]
+            [SYSZ, SysZDetail, SysZInsnDetail, sysz]
             [TMS320C64X, Tms320c64xDetail, Tms320c64xInsnDetail, tms320c64x]
-            [TriCore, TriCoreDetail, TriCoreInsnDetail, tricore]
+            [TRICORE, TriCoreDetail, TriCoreInsnDetail, tricore]
             [X86, X86Detail, X86InsnDetail, x86]
             [XCORE, XcoreDetail, XcoreInsnDetail, xcore]
-            [BPF, BpfDetail, BpfInsnDetail, bpf]
-            [SYSZ, SysZDetail, SysZInsnDetail, sysz]
         );
     }
 }

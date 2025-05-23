@@ -5,8 +5,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [UNRELEASED] - YYYY-MM-DD
+### Added
+- Support for TriCore arch
+- Support for MOS65XX arch
+- Support for SH arch
+
 ### Changed
-- change `cs_regs_access()` `regs_read`/`regs_write` args to take `*mut cs_regs` (instead of `*mut u16`)
+- Bump bundled capstone to 5.0.6
+- Change `cs_regs_access()` `regs_read`/`regs_write` args to take `*mut cs_regs` (instead of `*mut u16`)
     - makes it more clear that args should be fixed size arrays
 
 ## [0.17.0] - 2025-02-04

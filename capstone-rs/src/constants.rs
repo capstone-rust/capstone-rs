@@ -206,6 +206,8 @@ define_cs_enum_wrapper!(
     => X86 = CS_ARCH_X86;
     /// PowerPC
     => PPC = CS_ARCH_PPC;
+    /// SH
+    => SH = CS_ARCH_SH;
     /// SPARC
     => SPARC = CS_ARCH_SPARC;
     /// System z
@@ -214,10 +216,12 @@ define_cs_enum_wrapper!(
     => XCORE = CS_ARCH_XCORE;
     /// Motorolla 68K
     => M68K = CS_ARCH_M68K;
+    /// MOS65XX architecture (including MOS6502)
+    => MOS65XX = CS_ARCH_MOS65XX;
     /// Texas Instruments TMS320C64x
     => TMS320C64X = CS_ARCH_TMS320C64X;
     /// TriCore
-    => TriCore = CS_ARCH_TRICORE;
+    => TRICORE = CS_ARCH_TRICORE;
     /// Motorola 68000
     => M680X = CS_ARCH_M680X;
     /// EVM
@@ -287,6 +291,34 @@ define_cs_enum_wrapper!(
     => M680xCpu12 = { cs_mode::CS_MODE_M680X_CPU12 };
     /// M680X Freescale/NXP HCS08 mode
     => M680xHcs08 = { cs_mode::CS_MODE_M680X_HCS08 };
+    /// MOS65XXX MOS 6502
+    => Mos65xx6502 = { cs_mode::CS_MODE_MOS65XX_6502 };
+    /// MOS65XXX WDC 65c02
+    => Mos65xx65c02 = { cs_mode::CS_MODE_MOS65XX_65C02 };
+    /// MOS65XXX WDC W65c02
+    => Mos65xxW65c02 = { cs_mode::CS_MODE_MOS65XX_W65C02 };
+    /// MOS65XXX WDC 65816, 8-bit m/x
+    => Mos65xx65816 = { cs_mode::CS_MODE_MOS65XX_65816 };
+    /// MOS65XXX WDC 65816, 16-bit m, 8-bit x
+    => Mos65xx65816LongM = { cs_mode::CS_MODE_MOS65XX_65816_LONG_M };
+    /// MOS65XXX WDC 65816, 8-bit m, 16-bit x
+    => Mos65xx65816LongX = { cs_mode::CS_MODE_MOS65XX_65816_LONG_M };
+    /// MOS65XXX WDC 65816, 16-bit m, 16-bit x
+    => Mos65xx65816LongMx = { cs_mode::CS_MODE_MOS65XX_65816_LONG_MX };
+    /// SH2
+    => Sh2 = { cs_mode::CS_MODE_SH2 };
+    /// SH2A
+    => Sh2a = { cs_mode::CS_MODE_SH2A };
+    /// SH3
+    => Sh3 = { cs_mode::CS_MODE_SH3 };
+    /// SH4
+    => Sh4 = { cs_mode::CS_MODE_SH4 };
+    /// SH4A
+    => Sh4a = { cs_mode::CS_MODE_SH4A };
+    /// SH w/ FPU
+    => ShFpu = { cs_mode::CS_MODE_SHFPU };
+    /// SH w/ DSP
+    => ShDsp = { cs_mode::CS_MODE_SHDSP };
     /// RISC-V 32-bit mode
     => RiscV32 = { cs_mode::CS_MODE_RISCV32 };
     /// RISC-V 64-bit mode

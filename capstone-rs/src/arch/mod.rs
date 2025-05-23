@@ -276,6 +276,21 @@ macro_rules! arch_info_base {
                 ( both_endian: true )
             ]
             [
+                ( mos65xx, MOS65XX )
+                ( mode:
+                    Mos65xx6502,
+                    Mos65xx65c02,
+                    Mos65xxW65c02,
+                    Mos65xx65816,
+                    Mos65xx65816LongM,
+                    Mos65xx65816LongX,
+                    Mos65xx65816LongMx,
+                    )
+                ( extra_modes: )
+                ( syntax: )
+                ( both_endian: false )
+            ]
+            [
                 ( ppc, PPC )
                 ( mode:
                     Mode32,
@@ -299,6 +314,21 @@ macro_rules! arch_info_base {
                     )
                 ( syntax: )
                 ( both_endian: true )
+            ]
+            [
+                ( sh, SH )
+                ( mode:
+                    Sh2,
+                    Sh2a,
+                    Sh3,
+                    Sh4,
+                    Sh4a,
+                    ShFpu,
+                    ShDsp,
+                    )
+                ( extra_modes: )
+                ( syntax: )
+                ( both_endian: false )
             ]
             [
                 ( sparc, SPARC )
@@ -329,7 +359,7 @@ macro_rules! arch_info_base {
                 ( both_endian: true )
             ]
             [
-                ( tricore, TriCore )
+                ( tricore, TRICORE )
                 ( mode:
                     TriCore110,
                     TriCore120,
@@ -518,6 +548,13 @@ macro_rules! detail_arch_base {
                 => arch_name = mips,
             ]
             [
+                detail = Mos65xxDetail,
+                insn_detail = Mos65xxInsnDetail<'a>,
+                op = Mos65xxOperand,
+                /// Returns the Mos65xx details, if any
+                => arch_name = mos65xx,
+            ]
+            [
                 detail = PpcDetail,
                 insn_detail = PpcInsnDetail<'a>,
                 op = PpcOperand,
@@ -530,6 +567,13 @@ macro_rules! detail_arch_base {
                 op = RiscVOperand,
                 /// Returns the RISCV details, if any
                 => arch_name = riscv,
+            ]
+            [
+                detail = ShDetail,
+                insn_detail = ShInsnDetail<'a>,
+                op = ShOperand,
+                /// Returns the SH details, if any
+                => arch_name = sh,
             ]
             [
                 detail = SparcDetail,

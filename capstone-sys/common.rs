@@ -50,12 +50,20 @@ pub static ARCH_INCLUDES: &[CapstoneArchInfo<'static>] = &[
         cs_name: "mips",
     },
     CapstoneArchInfo {
+        header_name: "mos65xx.h",
+        cs_name: "mos65xx",
+    },
+    CapstoneArchInfo {
         header_name: "ppc.h",
         cs_name: "ppc",
     },
     CapstoneArchInfo {
         header_name: "riscv.h",
         cs_name: "riscv",
+    },
+    CapstoneArchInfo {
+        header_name: "sh.h",
+        cs_name: "sh",
     },
     CapstoneArchInfo {
         header_name: "sparc.h",
