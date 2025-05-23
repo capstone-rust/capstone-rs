@@ -1293,6 +1293,7 @@ fn test_arch_aarch64_detail() {
     use crate::arch::aarch64::*;
     use capstone_sys::aarch64_op_mem;
     use capstone_sys::aarch64_op_sme;
+    use capstone_sys::aarch64_reg;
     use capstone_sys::aarch64_op_sme__bindgen_ty_1;
     use capstone_sys::aarch64_reg;
 
