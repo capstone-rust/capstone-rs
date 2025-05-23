@@ -11,7 +11,7 @@ use alloc::vec::Vec;
 #[cfg(feature = "full")]
 use {alloc::string::String, std::collections::HashSet};
 
-use capstone_sys::{arm64_op_sme_index, cs_group_type, mos65xx_reg::MOS65XX_REG_ACC};
+use capstone_sys::cs_group_type;
 use libc::c_uint;
 
 use super::arch::*;
@@ -1125,7 +1125,7 @@ fn test_arch_arm64_detail() {
     //use crate::arch::arm64::Arm64Sysreg::*;
     use crate::arch::arm64::Arm64Vas::*;
     use crate::arch::arm64::*;
-    use capstone_sys::arm64_op_mem;
+    use capstone_sys::{arm64_op_mem, arm64_op_sme_index};
 
     let s0 = Arm64Operand {
         op_type: Reg(RegId(ARM64_REG_S0 as RegIdInt)),
@@ -2252,6 +2252,7 @@ fn test_arch_mos65xx() {
 #[test]
 fn test_arch_mos65xx_detail() {
     use crate::arch::mos65xx::Mos65xxOperand::*;
+    use capstone_sys::mos65xx_reg::*;
 
     test_arch_mode_endian_insns_detail(
         &mut Capstone::new()
@@ -2492,6 +2493,7 @@ fn test_arch_sh_detail() {
     use crate::arch::sh::ShOpMem;
     use crate::arch::sh::ShOperand;
     use capstone_sys::sh_op_mem;
+    use capstone_sys::sh_reg;
     use capstone_sys::sh_reg::*;
 
     test_arch_mode_endian_insns_detail(
@@ -2522,7 +2524,7 @@ fn test_arch_sh_detail() {
                     ShOperand::Reg(RegId(SH_REG_R1 as RegIdInt)),
                     ShOperand::Mem(ShOpMem(sh_op_mem {
                         address: capstone_sys::sh_op_mem_type::SH_OP_MEM_REG_IND,
-                        reg: SH_REG_R0 as c_uint,
+                        reg: SH_REG_R0 as sh_reg::Type,
                         disp: 0,
                     })),
                 ],
@@ -2534,7 +2536,7 @@ fn test_arch_sh_detail() {
                 &[
                     ShOperand::Mem(ShOpMem(sh_op_mem {
                         address: capstone_sys::sh_op_mem_type::SH_OP_MEM_REG_POST,
-                        reg: SH_REG_R3 as c_uint,
+                        reg: SH_REG_R3 as sh_reg::Type,
                         disp: 0,
                     })),
                     ShOperand::Reg(RegId(SH_REG_R4 as RegIdInt)),
