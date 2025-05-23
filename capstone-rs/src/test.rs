@@ -2468,6 +2468,83 @@ fn test_arch_ppc_detail() {
 }
 
 #[test]
+fn test_arch_sh() {
+    test_arch_mode_endian_insns(
+        &mut Capstone::new()
+            .sh()
+            .mode(sh::ArchMode::Sh4a)
+            .build()
+            .unwrap(),
+        Arch::SH,
+        Mode::Sh4a,
+        None,
+        &[],
+        &[
+            ("add", b"\x0c\x31"),
+            ("mov.b", b"\x10\x20"),
+            ("mov.l", b"\x22\x21"),
+        ],
+    );
+}
+
+#[test]
+fn test_arch_sh_detail() {
+    use crate::arch::sh::ShOpMem;
+    use crate::arch::sh::ShOperand;
+    use capstone_sys::sh_op_mem;
+    use capstone_sys::sh_reg::*;
+
+    test_arch_mode_endian_insns_detail(
+        &mut Capstone::new()
+            .sh()
+            .mode(sh::ArchMode::Sh4a)
+            .build()
+            .unwrap(),
+        Arch::SH,
+        Mode::Sh4a,
+        None,
+        &[],
+        &[
+            // add r0, r1
+            DII::new(
+                "add",
+                b"\x0c\x31",
+                &[
+                    ShOperand::Reg(RegId(SH_REG_R0 as RegIdInt)),
+                    ShOperand::Reg(RegId(SH_REG_R1 as RegIdInt)),
+                ],
+            ),
+            // mov.b r1,@r0
+            DII::new(
+                "mov.b",
+                b"\x10\x20",
+                &[
+                    ShOperand::Reg(RegId(SH_REG_R1 as RegIdInt)),
+                    ShOperand::Mem(ShOpMem(sh_op_mem {
+                        address: capstone_sys::sh_op_mem_type::SH_OP_MEM_REG_IND,
+                        reg: SH_REG_R0 as c_uint,
+                        disp: 0,
+                    })),
+                ],
+            ),
+            // mov.l @r3+,r4
+            DII::new(
+                "mov.l",
+                b"\x36\x64",
+                &[
+                    ShOperand::Mem(ShOpMem(sh_op_mem {
+                        address: capstone_sys::sh_op_mem_type::SH_OP_MEM_REG_POST,
+                        reg: SH_REG_R3 as c_uint,
+                        disp: 0,
+                    })),
+                    ShOperand::Reg(RegId(SH_REG_R4 as RegIdInt)),
+                ],
+            ),
+        ],
+    );
+}
+
+#[test]
 fn test_arch_sparc() {
     test_arch_mode_endian_insns(
         &mut Capstone::new()

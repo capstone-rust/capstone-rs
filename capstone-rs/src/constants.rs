@@ -206,6 +206,8 @@ define_cs_enum_wrapper!(
     => X86 = CS_ARCH_X86;
     /// PowerPC
     => PPC = CS_ARCH_PPC;
+    /// SH
+    => SH = CS_ARCH_SH;
     /// SPARC
     => SPARC = CS_ARCH_SPARC;
     /// System z
@@ -303,6 +305,20 @@ define_cs_enum_wrapper!(
     => Mos65xx65816LongX = { cs_mode::CS_MODE_MOS65XX_65816_LONG_M };
     /// MOS65XXX WDC 65816, 16-bit m, 16-bit x
     => Mos65xx65816LongMx = { cs_mode::CS_MODE_MOS65XX_65816_LONG_MX };
+    /// SH2
+    => Sh2 = { cs_mode::CS_MODE_SH2 };
+    /// SH2A
+    => Sh2a = { cs_mode::CS_MODE_SH2A };
+    /// SH3
+    => Sh3 = { cs_mode::CS_MODE_SH3 };
+    /// SH4
+    => Sh4 = { cs_mode::CS_MODE_SH4 };
+    /// SH4A
+    => Sh4a = { cs_mode::CS_MODE_SH4A };
+    /// SH w/ FPU
+    => ShFpu = { cs_mode::CS_MODE_SHFPU };
+    /// SH w/ DSP
+    => ShDsp = { cs_mode::CS_MODE_SHDSP };
     /// RISC-V 32-bit mode
     => RiscV32 = { cs_mode::CS_MODE_RISCV32 };
     /// RISC-V 64-bit mode

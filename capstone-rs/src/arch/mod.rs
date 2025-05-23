@@ -316,6 +316,21 @@ macro_rules! arch_info_base {
                 ( both_endian: true )
             ]
             [
+                ( sh, SH )
+                ( mode:
+                    Sh2,
+                    Sh2a,
+                    Sh3,
+                    Sh4,
+                    Sh4a,
+                    ShFpu,
+                    ShDsp,
+                    )
+                ( extra_modes: )
+                ( syntax: )
+                ( both_endian: false )
+            ]
+            [
                 ( sparc, SPARC )
                 ( mode:
                     Default,
@@ -552,6 +567,13 @@ macro_rules! detail_arch_base {
                 op = RiscVOperand,
                 /// Returns the RISCV details, if any
                 => arch_name = riscv,
+            ]
+            [
+                detail = ShDetail,
+                insn_detail = ShInsnDetail<'a>,
+                op = ShOperand,
+                /// Returns the SH details, if any
+                => arch_name = sh,
             ]
             [
                 detail = SparcDetail,

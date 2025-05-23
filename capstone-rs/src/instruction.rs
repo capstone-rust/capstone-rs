@@ -495,6 +495,7 @@ impl InsnDetail<'_> {
             [MOS65XX, Mos65xxDetail, Mos65xxInsnDetail, mos65xx]
             [PPC, PpcDetail, PpcInsnDetail, ppc]
             [RISCV, RiscVDetail, RiscVInsnDetail, riscv]
+            [SH, ShDetail, ShInsnDetail, sh]
             [SPARC, SparcDetail, SparcInsnDetail, sparc]
             [SYSZ, SysZDetail, SysZInsnDetail, sysz]
             [TMS320C64X, Tms320c64xDetail, Tms320c64xInsnDetail, tms320c64x]
