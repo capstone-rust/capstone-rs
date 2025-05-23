@@ -5,6 +5,8 @@
     clippy::upper_case_acronyms
 )]
 
+use core::{convert::TryInto, fmt::Debug, mem::MaybeUninit};
+
 use alloc::vec::Vec;
 #[cfg(feature = "full")]
 use {alloc::string::String, std::collections::HashSet};
@@ -17,6 +19,17 @@ use super::*;
 
 const X86_CODE: &[u8] = b"\x55\x48\x8b\x05\xb8\x13\x00\x00";
 const ARM_CODE: &[u8] = b"\x55\x48\x8b\x05\xb8\x13\x00\x00";
+const CBPF_CODE: &[u8] = b"\x94\x09\x00\x00\x37\x13\x03\x00\
+                          \x87\x00\x00\x00\x00\x00\x00\x00\
+                          \x07\x00\x00\x00\x00\x00\x00\x00\
+                          \x16\x00\x00\x00\x00\x00\x00\x00\
+                          \x80\x00\x00\x00\x00\x00\x00\x00";
+const EBPF_CODE: &[u8] = b"\x97\x09\x00\x00\x37\x13\x03\x00\
+                        \xdc\x02\x00\x00\x20\x00\x00\x00\
+                        \x30\x00\x00\x00\x00\x00\x00\x00\
+                        \xdb\x3a\x00\x01\x00\x00\x00\x00\
+                        \x84\x02\x00\x00\x00\x00\x00\x00\
+                        \x6d\x33\x17\x02\x00\x00\x00\x00";
 
 // Aliases for group types
 const JUMP: cs_group_type::Type = cs_group_type::CS_GRP_JUMP;
@@ -107,15 +120,13 @@ fn test_x86_names() {
             assert_eq!(cs.group_name(InsnGroupId(1)), Some(String::from("jump")));
 
             let reg_id = RegId(250);
-            match cs.reg_name(reg_id) {
-                Some(_) => panic!("invalid register worked"),
-                None => {}
+            if cs.reg_name(reg_id).is_some() {
+                panic!("invalid register worked")
             }
 
             let insn_id = InsnId(6000);
-            match cs.insn_name(insn_id) {
-                Some(_) => panic!("invalid instruction worked"),
-                None => {}
+            if cs.insn_name(insn_id).is_some() {
+                panic!("invalid instruction worked")
             }
 
             assert_eq!(cs.group_name(InsnGroupId(250)), None);
@@ -208,7 +219,7 @@ fn test_instruction_helper(
     bytes: &[u8],
     has_default_syntax: bool,
 ) {
-    println!("{:?}", insn);
+    println!("{:x?}", insn);
 
     // Check mnemonic
     if has_default_syntax && cfg!(feature = "full") {
@@ -277,7 +288,7 @@ fn test_instruction_detail_helper<T>(
 #[cfg(feature = "full")]
 /// Assert instruction belongs or does not belong to groups, testing both insn_belongs_to_group
 /// and insn_group_ids
-fn test_instruction_group_helper<R: Copy + Into<RegId>>(
+fn test_instruction_group_helper<R: Copy + Debug + TryInto<RegIdInt>>(
     cs: &Capstone,
     insn: &Insn,
     mnemonic_name: &str,
@@ -317,7 +328,15 @@ fn test_instruction_group_helper<R: Copy + Into<RegId>>(
 
     macro_rules! assert_regs_match {
         ($expected:expr, $actual_regs:expr, $msg:expr) => {{
-            let mut expected_regs: Vec<RegId> = $expected.iter().map(|&x| x.into()).collect();
+            let mut expected_regs: Vec<RegId> = $expected
+                .iter()
+                .map(|&x| {
+                    RegId(
+                        x.try_into()
+                            .unwrap_or_else(|_| panic!("Failed to convert {:?} to RegIdInt", x)),
+                    )
+                })
+                .collect();
             expected_regs.sort_unstable();
             let mut regs: Vec<RegId> = $actual_regs.iter().map(|&x| x.into()).collect();
             regs.sort_unstable();
@@ -346,7 +365,7 @@ type ExpectedInsns<'a, R> = (
 );
 
 #[allow(unused)]
-fn instructions_match_group<R: Copy + Into<RegId>>(
+fn instructions_match_group<R: Copy + Debug + TryInto<RegIdInt>>(
     cs: &mut Capstone,
     expected_insns: &[ExpectedInsns<R>],
     has_default_syntax: bool,
@@ -366,7 +385,7 @@ fn instructions_match_group<R: Copy + Into<RegId>>(
     let insns: Vec<&Insn> = insns.iter().collect();
 
     // Check number of instructions
-    assert_eq!(insns.len(), expected_insns.len());
+    assert_eq!(insns.len(), expected_insns.len(), "number of insns");
 
     #[cfg(feature = "full")]
     for (
@@ -485,10 +504,28 @@ fn test_instruction_details() {
         ("ret", b"\xc3", &[RET], &[X86_REG_RSP], &[X86_REG_RSP]),
         ("syscall", b"\x0f\x05", &[INT], &[], &[]),
         ("iretd", b"\xcf", &[IRET], &[], &[]),
-        ("sub", b"\x48\x83\xec\x08", &[], &[], &[X86_REG_EFLAGS]),
-        ("test", b"\x48\x85\xc0", &[], &[], &[X86_REG_EFLAGS]),
-        ("mov", b"\x48\x8b\x05\x95\x4a\x4d\x00", &[], &[], &[]),
-        ("mov", b"\xb9\x04\x02\x00\x00", &[], &[], &[]),
+        (
+            "sub",
+            b"\x48\x83\xec\x08",
+            &[],
+            &[X86_REG_RSP],
+            &[X86_REG_RSP, X86_REG_EFLAGS],
+        ),
+        (
+            "test",
+            b"\x48\x85\xc0",
+            &[],
+            &[X86_REG_RAX],
+            &[X86_REG_EFLAGS],
+        ),
+        (
+            "mov",
+            b"\x48\x8b\x05\x95\x4a\x4d\x00",
+            &[],
+            &[X86_REG_RIP],
+            &[X86_REG_RAX],
+        ),
+        ("mov", b"\xb9\x04\x02\x00\x00", &[], &[], &[X86_REG_ECX]),
     ];
 
     let mut cs = Capstone::new()
@@ -655,15 +692,15 @@ fn test_syntax() {
             "subq",
             b"\x48\x83\xec\x08",
             &[],
-            &[],
-            &[X86_REG_EFLAGS],
+            &[X86_REG_RSP],
+            &[X86_REG_EFLAGS, X86_REG_RSP],
         ),
         (
             "test",
             "testq",
             b"\x48\x85\xc0",
             &[],
-            &[],
+            &[X86_REG_RAX],
             &[X86_REG_EFLAGS],
         ),
         (
@@ -671,10 +708,17 @@ fn test_syntax() {
             "movq",
             b"\x48\x8b\x05\x95\x4a\x4d\x00",
             &[],
-            &[],
-            &[],
+            &[X86_REG_RIP],
+            &[X86_REG_RAX],
         ),
-        ("mov", "movl", b"\xb9\x04\x02\x00\x00", &[], &[], &[]),
+        (
+            "mov",
+            "movl",
+            b"\xb9\x04\x02\x00\x00",
+            &[],
+            &[],
+            &[X86_REG_ECX],
+        ),
     ];
 
     let expected_insns_intel: Vec<ExpectedInsns<X86Reg::Type>> = expected_insns
@@ -891,8 +935,14 @@ fn test_arch_arm_detail() {
     use crate::arch::arm::*;
     use capstone_sys::arm_op_mem;
 
-    let r0_op = ArmOperand {
+    let r0_op_read = ArmOperand {
         op_type: Reg(RegId(ArmReg::ARM_REG_R0 as RegIdInt)),
+        access: Some(RegAccessType::ReadOnly),
+        ..Default::default()
+    };
+    let r0_op_write = ArmOperand {
+        op_type: Reg(RegId(ArmReg::ARM_REG_R0 as RegIdInt)),
+        access: Some(RegAccessType::WriteOnly),
         ..Default::default()
     };
 
@@ -923,6 +973,7 @@ fn test_arch_arm_detail() {
                 &[
                     ArmOperand {
                         op_type: Reg(RegId(ArmReg::ARM_REG_LR as RegIdInt)),
+                        access: Some(RegAccessType::ReadOnly),
                         ..Default::default()
                     },
                     ArmOperand {
@@ -933,6 +984,7 @@ fn test_arch_arm_detail() {
                             disp: -4,
                             lshift: 0,
                         })),
+                        access: Some(RegAccessType::WriteOnly),
                         ..Default::default()
                     },
                 ],
@@ -941,7 +993,7 @@ fn test_arch_arm_detail() {
             DII::new(
                 "andeq",
                 b"\x00\x00\x00\x00",
-                &[r0_op.clone(), r0_op.clone(), r0_op.clone()],
+                &[r0_op_write.clone(), r0_op_read.clone(), r0_op_read.clone()],
             ),
             // str     r8, [r2, #-0x3e0]!
             DII::new(
@@ -950,6 +1002,7 @@ fn test_arch_arm_detail() {
                 &[
                     ArmOperand {
                         op_type: Reg(RegId(ArmReg::ARM_REG_R8 as RegIdInt)),
+                        access: Some(RegAccessType::ReadOnly),
                         ..Default::default()
                     },
                     ArmOperand {
@@ -960,6 +1013,7 @@ fn test_arch_arm_detail() {
                             disp: -992,
                             lshift: 0,
                         })),
+                        access: Some(RegAccessType::WriteOnly),
                         ..Default::default()
                     },
                 ],
@@ -977,7 +1031,7 @@ fn test_arch_arm_detail() {
                         op_type: Imm(0),
                         ..Default::default()
                     },
-                    r0_op.clone(),
+                    r0_op_read.clone(),
                     ArmOperand {
                         op_type: Cimm(3),
                         ..Default::default()
@@ -997,7 +1051,7 @@ fn test_arch_arm_detail() {
                 "mov",
                 b"\x00\x00\xa0\xe3",
                 &[
-                    r0_op,
+                    r0_op_write,
                     ArmOperand {
                         op_type: Imm(0),
                         ..Default::default()
@@ -1022,6 +1076,7 @@ fn test_arch_arm_detail() {
             b"\x70\x47",
             &[ArmOperand {
                 op_type: Reg(RegId(ArmReg::ARM_REG_LR as RegIdInt)),
+                access: Some(RegAccessType::ReadOnly),
                 ..Default::default()
             }],
         )],
@@ -1070,7 +1125,7 @@ fn test_arch_arm64_detail() {
     //use crate::arch::arm64::Arm64Sysreg::*;
     use crate::arch::arm64::Arm64Vas::*;
     use crate::arch::arm64::*;
-    use capstone_sys::arm64_op_mem;
+    use capstone_sys::{arm64_op_mem, arm64_op_sme_index};
 
     let s0 = Arm64Operand {
         op_type: Reg(RegId(ARM64_REG_S0 as RegIdInt)),
@@ -1213,7 +1268,7 @@ fn test_arch_arm64_detail() {
                     Arm64Operand {
                         vector_index: Some(1),
                         op_type: Reg(RegId(ARM64_REG_V5 as RegIdInt)),
-                        vas: ARM64_VAS_1D,
+                        vas: ARM64_VAS_INVALID, // should be ARM64_VAS_1D instead?
                         ..Default::default()
                     },
                 ],
@@ -1333,6 +1388,59 @@ fn test_arch_arm64_detail() {
                             base: ARM64_REG_X24,
                             index: ARM64_REG_W8,
                             disp: 0,
+                        })),
+                        ..Default::default()
+                    },
+                ],
+            ),
+            // smstart
+            DII::new(
+                "smstart",
+                b"\x7f\x47\x03\xd5",
+                &[
+                    Arm64Operand {
+                        op_type: SVCR(Arm64SvcrOp::ARM64_SVCR_SVCRSMZA),
+                        ..Default::default()
+                    },
+                    Arm64Operand {
+                        op_type: Imm(1),
+                        ..Default::default()
+                    },
+                ],
+            ),
+            // smstart sm
+            DII::new(
+                "smstart",
+                b"\x7f\x43\x03\xd5",
+                &[
+                    Arm64Operand {
+                        op_type: SVCR(Arm64SvcrOp::ARM64_SVCR_SVCRSM),
+                        ..Default::default()
+                    },
+                    Arm64Operand {
+                        op_type: Imm(1),
+                        ..Default::default()
+                    },
+                ],
+            ),
+            // ldr za[w12, 4], [x0, #4, mul vl]
+            DII::new(
+                "ldr",
+                b"\x04\x00\x00\xe1",
+                &[
+                    Arm64Operand {
+                        op_type: SMEIndex(Arm64OpSmeIndex(arm64_op_sme_index {
+                            reg: ARM64_REG_ZA,
+                            base: ARM64_REG_W12,
+                            disp: 4,
+                        })),
+                        ..Default::default()
+                    },
+                    Arm64Operand {
+                        op_type: Mem(Arm64OpMem(arm64_op_mem {
+                            base: ARM64_REG_X0,
+                            index: 0,
+                            disp: 4,
                         })),
                         ..Default::default()
                     },
@@ -2081,6 +2189,140 @@ fn test_arch_mips_detail() {
 }
 
 #[test]
+fn test_arch_mos65xx() {
+    test_arch_mode_endian_insns(
+        &mut Capstone::new()
+            .mos65xx()
+            .mode(mos65xx::ArchMode::Mos65xx6502)
+            .build()
+            .unwrap(),
+        Arch::MOS65XX,
+        Mode::Mos65xx6502,
+        None,
+        &[],
+        &[("lda", b"\xa1\xa2"), ("ora", b"\x0d\x34\x12")],
+    );
+
+    test_arch_mode_endian_insns(
+        &mut Capstone::new()
+            .mos65xx()
+            .mode(mos65xx::ArchMode::Mos65xx65c02)
+            .build()
+            .unwrap(),
+        Arch::MOS65XX,
+        Mode::Mos65xx65c02,
+        None,
+        &[],
+        &[
+            ("inc", b"\x1a"),
+            ("dec", b"\x3a"),
+            ("nop", b"\x02\x12"),
+            ("nop", b"\x03"),
+            ("nop", b"\x5c\x34\x12"),
+        ],
+    );
+
+    test_arch_mode_endian_insns(
+        &mut Capstone::new()
+            .mos65xx()
+            .mode(mos65xx::ArchMode::Mos65xxW65c02)
+            .build()
+            .unwrap(),
+        Arch::MOS65XX,
+        Mode::Mos65xxW65c02,
+        None,
+        &[],
+        &[("rmb0", b"\x07\x12"), ("rmb2", b"\x27\x12")],
+    );
+
+    test_arch_mode_endian_insns(
+        &mut Capstone::new()
+            .mos65xx()
+            .mode(mos65xx::ArchMode::Mos65xx65816LongMx)
+            .build()
+            .unwrap(),
+        Arch::MOS65XX,
+        Mode::Mos65xx65816LongMx,
+        None,
+        &[],
+        &[("lda", b"\xa9\x34\x12"), ("mvp", b"\x44\x34\x12")],
+    );
+}
+
+#[test]
+fn test_arch_mos65xx_detail() {
+    use crate::arch::mos65xx::Mos65xxOperand::*;
+    use capstone_sys::mos65xx_reg::*;
+
+    test_arch_mode_endian_insns_detail(
+        &mut Capstone::new()
+            .mos65xx()
+            .mode(mos65xx::ArchMode::Mos65xx6502)
+            .build()
+            .unwrap(),
+        Arch::MOS65XX,
+        Mode::Mos65xx6502,
+        None,
+        &[],
+        &[
+            DII::new("lda", b"\xa1\xa2", &[Mem(0xa2)]),
+            DII::new("ora", b"\x0d\x34\x12", &[Mem(0x1234)]),
+        ],
+    );
+
+    test_arch_mode_endian_insns_detail(
+        &mut Capstone::new()
+            .mos65xx()
+            .mode(mos65xx::ArchMode::Mos65xx65c02)
+            .build()
+            .unwrap(),
+        Arch::MOS65XX,
+        Mode::Mos65xx65c02,
+        None,
+        &[],
+        &[
+            DII::new("inc", b"\x1a", &[Reg(RegId(MOS65XX_REG_ACC as RegIdInt))]),
+            DII::new("dec", b"\x3a", &[Reg(RegId(MOS65XX_REG_ACC as RegIdInt))]),
+            DII::new("nop", b"\x02\x12", &[]),
+            DII::new("nop", b"\x03", &[]),
+            DII::new("nop", b"\x5c\x34\x12", &[]),
+        ],
+    );
+
+    test_arch_mode_endian_insns_detail(
+        &mut Capstone::new()
+            .mos65xx()
+            .mode(mos65xx::ArchMode::Mos65xxW65c02)
+            .build()
+            .unwrap(),
+        Arch::MOS65XX,
+        Mode::Mos65xxW65c02,
+        None,
+        &[],
+        &[
+            DII::new("rmb0", b"\x07\x12", &[Mem(0x12)]),
+            DII::new("rmb2", b"\x27\x12", &[Mem(0x12)]),
+        ],
+    );
+
+    test_arch_mode_endian_insns_detail(
+        &mut Capstone::new()
+            .mos65xx()
+            .mode(mos65xx::ArchMode::Mos65xx65816LongMx)
+            .build()
+            .unwrap(),
+        Arch::MOS65XX,
+        Mode::Mos65xx65816LongMx,
+        None,
+        &[],
+        &[
+            DII::new("lda", b"\xa9\x34\x12", &[Imm(0x1234)]),
+            DII::new("mvp", b"\x44\x34\x12", &[Mem(0x12), Mem(0x34)]),
+        ],
+    );
+}
+
+#[test]
 fn test_arch_ppc() {
     test_arch_mode_endian_insns(
         &mut Capstone::new()
@@ -2221,6 +2463,84 @@ fn test_arch_ppc_detail() {
                 "bgelrl-",
                 b"\x4c\xc8\x00\x21",
                 &[Reg(RegId(PPC_REG_CR2 as RegIdInt))],
+            ),
+        ],
+    );
+}
+
+#[test]
+fn test_arch_sh() {
+    test_arch_mode_endian_insns(
+        &mut Capstone::new()
+            .sh()
+            .mode(sh::ArchMode::Sh4a)
+            .build()
+            .unwrap(),
+        Arch::SH,
+        Mode::Sh4a,
+        None,
+        &[],
+        &[
+            ("add", b"\x0c\x31"),
+            ("mov.b", b"\x10\x20"),
+            ("mov.l", b"\x22\x21"),
+        ],
+    );
+}
+
+#[test]
+fn test_arch_sh_detail() {
+    use crate::arch::sh::ShOpMem;
+    use crate::arch::sh::ShOperand;
+    use capstone_sys::sh_op_mem;
+    use capstone_sys::sh_reg;
+    use capstone_sys::sh_reg::*;
+
+    test_arch_mode_endian_insns_detail(
+        &mut Capstone::new()
+            .sh()
+            .mode(sh::ArchMode::Sh4a)
+            .build()
+            .unwrap(),
+        Arch::SH,
+        Mode::Sh4a,
+        None,
+        &[],
+        &[
+            // add r0, r1
+            DII::new(
+                "add",
+                b"\x0c\x31",
+                &[
+                    ShOperand::Reg(RegId(SH_REG_R0 as RegIdInt)),
+                    ShOperand::Reg(RegId(SH_REG_R1 as RegIdInt)),
+                ],
+            ),
+            // mov.b r1,@r0
+            DII::new(
+                "mov.b",
+                b"\x10\x20",
+                &[
+                    ShOperand::Reg(RegId(SH_REG_R1 as RegIdInt)),
+                    ShOperand::Mem(ShOpMem(sh_op_mem {
+                        address: capstone_sys::sh_op_mem_type::SH_OP_MEM_REG_IND,
+                        reg: SH_REG_R0 as sh_reg::Type,
+                        disp: 0,
+                    })),
+                ],
+            ),
+            // mov.l @r3+,r4
+            DII::new(
+                "mov.l",
+                b"\x36\x64",
+                &[
+                    ShOperand::Mem(ShOpMem(sh_op_mem {
+                        address: capstone_sys::sh_op_mem_type::SH_OP_MEM_REG_POST,
+                        reg: SH_REG_R3 as sh_reg::Type,
+                        disp: 0,
+                    })),
+                    ShOperand::Reg(RegId(SH_REG_R4 as RegIdInt)),
+                ],
             ),
         ],
     );
@@ -2471,25 +2791,82 @@ fn test_arch_systemz() {
 }
 
 #[test]
+fn test_arch_systemz_detail() {
+    use crate::arch::sysz::SysZOperand::*;
+    use crate::arch::sysz::SysZReg::*;
+    use crate::arch::sysz::*;
+    use capstone_sys::sysz_op_mem;
+
+    test_arch_mode_endian_insns_detail(
+        &mut Capstone::new()
+            .sysz()
+            .mode(sysz::ArchMode::Default)
+            .build()
+            .unwrap(),
+        Arch::SYSZ,
+        Mode::Default,
+        None,
+        &[],
+        &[
+            // br %r7
+            DII::new("br", b"\x07\xf7", &[Reg(RegId(SYSZ_REG_7 as RegIdInt))]),
+            // ear %r7, %a8
+            DII::new(
+                "ear",
+                b"\xb2\x4f\x00\x78",
+                &[
+                    Reg(RegId(SYSZ_REG_7 as RegIdInt)),
+                    Reg(RegId(SYSZ_REG_A8 as RegIdInt)),
+                ],
+            ),
+            // adb %f0, 0
+            DII::new(
+                "adb",
+                b"\xed\x00\x00\x00\x00\x1a",
+                &[Reg(RegId(SYSZ_REG_F0 as RegIdInt)), Imm(0)],
+            ),
+            // afi %r0, -0x80000000
+            DII::new(
+                "afi",
+                b"\xc2\x09\x80\x00\x00\x00",
+                &[Reg(RegId(SYSZ_REG_0 as RegIdInt)), Imm(-0x80000000)],
+            ),
+            // a %r0, 0xfff(%r15, %r1)
+            DII::new(
+                "a",
+                b"\x5a\x0f\x1f\xff",
+                &[
+                    Reg(RegId(SYSZ_REG_0 as RegIdInt)),
+                    Mem(SysZOpMem(sysz_op_mem {
+                        base: SYSZ_REG_1 as u8,
+                        index: SYSZ_REG_15 as u8,
+                        disp: 0xfff,
+                        length: 0,
+                    })),
+                ],
+            ),
+        ],
+    );
+}
+
+#[test]
 fn test_arch_tms320c64x_detail() {
-    use crate::arch::tms320c64x::Tms320c64xOperand::*;
-    use crate::arch::tms320c64x::Tms320c64xReg::*;
-    use crate::arch::tms320c64x::*;
-    use capstone_sys::tms320c64x_funit::*;
-    use capstone_sys::tms320c64x_mem_dir::*;
-    use capstone_sys::tms320c64x_mem_disp::*;
-    use capstone_sys::tms320c64x_mem_mod::*;
+    use crate::arch::tms320c64x::{
+        Tms320c64xFuntionalUnit, Tms320c64xMemDirection, Tms320c64xMemDisplayType,
+        Tms320c64xMemModify, Tms320c64xOpMem, Tms320c64xOperand::*, Tms320c64xReg::*,
+    };
     use capstone_sys::tms320c64x_op_mem;
 
     test_arch_mode_endian_insns_detail(
         &mut Capstone::new()
             .tms320c64x()
             .mode(tms320c64x::ArchMode::Default)
+            .endian(Endian::Big)
             .build()
             .unwrap(),
         Arch::TMS320C64X,
         Mode::Default,
-        None,
+        Some(Endian::Big),
         &[],
         &[
             // add.D1    a11, a4, a3
@@ -2518,13 +2895,13 @@ fn test_arch_tms320c64x_detail() {
                 b"\x02\x80\x46\x9e",
                 &[
                     Mem(Tms320c64xOpMem(tms320c64x_op_mem {
-                        base: TMS320C64X_REG_B15,
+                        base: TMS320C64X_REG_B15 as c_uint,
                         disp: 0x46,
-                        unit: TMS320C64X_FUNIT_L as c_uint,
+                        unit: Tms320c64xFuntionalUnit::L as c_uint,
                         scaled: false as c_uint,
-                        disptype: TMS320C64X_MEM_DISP_CONSTANT as c_uint,
-                        direction: TMS320C64X_MEM_DIR_FW as c_uint,
-                        modify: TMS320C64X_MEM_MOD_NO as c_uint,
+                        disptype: Tms320c64xMemDisplayType::Constant as c_uint,
+                        direction: Tms320c64xMemDirection::Forward as c_uint,
+                        modify: Tms320c64xMemModify::No as c_uint,
                     })),
                     Reg(RegId(TMS320C64X_REG_B5 as RegIdInt)),
                 ],
@@ -2537,13 +2914,13 @@ fn test_arch_tms320c64x_detail() {
                 b"\x02\x90\x32\x96",
                 &[
                     Mem(Tms320c64xOpMem(tms320c64x_op_mem {
-                        base: TMS320C64X_REG_A4,
+                        base: TMS320C64X_REG_A4 as c_uint,
                         disp: 0x1,
-                        unit: TMS320C64X_FUNIT_L as c_uint,
+                        unit: Tms320c64xFuntionalUnit::L as c_uint,
                         scaled: true as c_uint,
-                        disptype: TMS320C64X_MEM_DISP_CONSTANT as c_uint,
-                        direction: TMS320C64X_MEM_DIR_FW as c_uint,
-                        modify: TMS320C64X_MEM_MOD_PRE as c_uint,
+                        disptype: Tms320c64xMemDisplayType::Constant as c_uint,
+                        direction: Tms320c64xMemDirection::Forward as c_uint,
+                        modify: Tms320c64xMemModify::Pre as c_uint,
                     })),
                     Reg(RegId(TMS320C64X_REG_B5 as RegIdInt)),
                 ],
@@ -2554,13 +2931,13 @@ fn test_arch_tms320c64x_detail() {
                 b"\x02\x80\x46\x9e",
                 &[
                     Mem(Tms320c64xOpMem(tms320c64x_op_mem {
-                        base: TMS320C64X_REG_B15,
+                        base: TMS320C64X_REG_B15 as c_uint,
                         disp: 0x46,
-                        unit: TMS320C64X_FUNIT_L as c_uint,
+                        unit: Tms320c64xFuntionalUnit::L as c_uint,
                         scaled: false as c_uint,
-                        disptype: TMS320C64X_MEM_DISP_CONSTANT as c_uint,
-                        direction: TMS320C64X_MEM_DIR_FW as c_uint,
-                        modify: TMS320C64X_MEM_MOD_NO as c_uint,
+                        disptype: Tms320c64xMemDisplayType::Constant as c_uint,
+                        direction: Tms320c64xMemDirection::Forward as c_uint,
+                        modify: Tms320c64xMemModify::No as c_uint,
                     })),
                     Reg(RegId(TMS320C64X_REG_B5 as RegIdInt)),
                 ],
@@ -2571,13 +2948,13 @@ fn test_arch_tms320c64x_detail() {
                 b"\x05\x3c\x83\xe6",
                 &[
                     Mem(Tms320c64xOpMem(tms320c64x_op_mem {
-                        base: TMS320C64X_REG_A15,
+                        base: TMS320C64X_REG_A15 as c_uint,
                         disp: 0x4,
-                        unit: TMS320C64X_FUNIT_L as c_uint,
+                        unit: Tms320c64xFuntionalUnit::L as c_uint,
                         scaled: true as c_uint,
-                        disptype: TMS320C64X_MEM_DISP_CONSTANT as c_uint,
-                        direction: TMS320C64X_MEM_DIR_FW as c_uint,
-                        modify: TMS320C64X_MEM_MOD_NO as c_uint,
+                        disptype: Tms320c64xMemDisplayType::Constant as c_uint,
+                        direction: Tms320c64xMemDirection::Forward as c_uint,
+                        modify: Tms320c64xMemModify::No as c_uint,
                     })),
                     RegPair(
                         RegId(TMS320C64X_REG_B11 as RegIdInt),
@@ -2591,13 +2968,13 @@ fn test_arch_tms320c64x_detail() {
                 b"\x0b\x0c\x8b\x24",
                 &[
                     Mem(Tms320c64xOpMem(tms320c64x_op_mem {
-                        base: TMS320C64X_REG_A3,
+                        base: TMS320C64X_REG_A3 as c_uint,
                         disp: TMS320C64X_REG_A4 as c_uint,
-                        unit: TMS320C64X_FUNIT_D as c_uint,
+                        unit: Tms320c64xFuntionalUnit::D as c_uint,
                         scaled: false as c_uint,
-                        disptype: TMS320C64X_MEM_DISP_REGISTER as c_uint,
-                        direction: TMS320C64X_MEM_DIR_FW as c_uint,
-                        modify: TMS320C64X_MEM_MOD_NO as c_uint,
+                        disptype: Tms320c64xMemDisplayType::Register as c_uint,
+                        direction: Tms320c64xMemDirection::Forward as c_uint,
+                        modify: Tms320c64xMemModify::No as c_uint,
                     })),
                     RegPair(
                         RegId(TMS320C64X_REG_A23 as RegIdInt),
@@ -3136,7 +3513,7 @@ fn test_arch_riscv_detail() {
                 &[
                     Reg(RegId(RISCV_REG_X4 as RegIdInt)),
                     Mem(RiscVOpMem(riscv_op_mem {
-                        base: RISCV_REG_X5,
+                        base: RISCV_REG_X5 as c_uint,
                         disp: 8,
                     })),
                 ],
@@ -3243,4 +3620,362 @@ fn test_owned_insn() {
     for (insn, owned) in insns.iter().zip(&owned) {
         assert_eq!(format!("{:?}", insn), format!("{:?}", owned));
     }
+}
+
+/// Print register names
+fn reg_names(cs: &Capstone, regs: &[RegId]) -> String {
+    let names: Vec<String> = regs.iter().map(|&x| cs.reg_name(x).unwrap()).collect();
+    names.join(", ")
+}
+
+/// Print instruction group names
+fn group_names(cs: &Capstone, regs: &[InsnGroupId]) -> String {
+    let names: Vec<String> = regs.iter().map(|&x| cs.group_name(x).unwrap()).collect();
+    names.join(", ")
+}
+
+#[test]
+fn test_cbpf() {
+    let cs = Capstone::new()
+        .bpf()
+        .mode(bpf::ArchMode::Cbpf)
+        .endian(Endian::Little)
+        .detail(true)
+        .build()
+        .unwrap();
+    let insns = cs.disasm_all(CBPF_CODE, 0x1000);
+    match insns {
+        Ok(ins) => {
+            for i in ins.as_ref() {
+                println!();
+                eprintln!("{}", i);
+
+                let detail: InsnDetail = cs.insn_detail(i).expect("Failed to get insn detail");
+                let arch_detail: ArchDetail = detail.arch_detail();
+                let ops = arch_detail.operands();
+
+                let output: &[(&str, String)] = &[
+                    ("insn id:", format!("{:?}", i.id().0)),
+                    ("bytes:", format!("{:?}", i.bytes())),
+                    ("read regs:", reg_names(&cs, detail.regs_read())),
+                    ("write regs:", reg_names(&cs, detail.regs_write())),
+                    ("insn groups:", group_names(&cs, detail.groups())),
+                ];
+
+                for (name, message) in output.iter() {
+                    eprintln!("{:4}{:12} {}", "", name, message);
+                }
+
+                println!("{:4}operands: {}", "", ops.len());
+                for op in ops {
+                    eprintln!("{:8}{:?}", "", op);
+                }
+            }
+        }
+
+        Err(e) => {
+            panic!("{:?}", e);
+        }
+    }
+}
+
+#[test]
+fn test_ebpf() {
+    let cs = Capstone::new()
+        .bpf()
+        .mode(bpf::ArchMode::Ebpf)
+        .endian(Endian::Little)
+        .detail(true)
+        .build()
+        .unwrap();
+    let insns = cs.disasm_all(EBPF_CODE, 0x1000);
+    match insns {
+        Ok(ins) => {
+            for i in ins.as_ref() {
+                println!();
+                eprintln!("{}", i);
+
+                let detail: InsnDetail = cs.insn_detail(i).expect("Failed to get insn detail");
+                let arch_detail: ArchDetail = detail.arch_detail();
+                let ops = arch_detail.operands();
+
+                let output: &[(&str, String)] = &[
+                    ("insn id:", format!("{:?}", i.id().0)),
+                    ("bytes:", format!("{:?}", i.bytes())),
+                    ("read regs:", reg_names(&cs, detail.regs_read())),
+                    ("write regs:", reg_names(&cs, detail.regs_write())),
+                    ("insn groups:", group_names(&cs, detail.groups())),
+                ];
+
+                for (name, message) in output.iter() {
+                    eprintln!("{:4}{:12} {}", "", name, message);
+                }
+
+                println!("{:4}operands: {}", "", ops.len());
+                for op in ops {
+                    eprintln!("{:8}{:?}", "", op);
+                }
+            }
+        }
+
+        Err(e) => {
+            panic!("{:?}", e);
+        }
+    }
+}
+
+#[test]
+fn test_arch_bpf_detail() {
+    use crate::arch::bpf::BpfOperand::*;
+    use crate::arch::bpf::BpfReg::*;
+    use crate::arch::bpf::*;
+    use capstone_sys::*;
+
+    test_arch_mode_endian_insns_detail(
+        &mut Capstone::new()
+            .bpf()
+            .mode(bpf::ArchMode::Ebpf)
+            .endian(Endian::Little)
+            .detail(true)
+            .build()
+            .unwrap(),
+        Arch::BPF,
+        Mode::Ebpf,
+        None,
+        &[],
+        &[
+            // r1 = 0x1
+            DII::new(
+                "mov64",
+                b"\xb7\x01\x00\x00\x01\x00\x00\x00",
+                &[Reg(RegId(BPF_REG_R1 as RegIdInt)), Imm(1)],
+            ),
+            // r0 = *(u32 *)(r10 - 0xc)
+            DII::new(
+                "ldxw",
+                b"\x61\xa0\xf4\xff\x00\x00\x00\x00",
+                &[
+                    Reg(RegId(BPF_REG_R0 as RegIdInt)),
+                    Mem(BpfOpMem(bpf_op_mem {
+                        base: BPF_REG_R10,
+                        disp: 0xfff4,
+                    })),
+                ],
+            ),
+            // *(u32 *)(r10 - 0xc) = r1
+            DII::new(
+                "stxw",
+                b"\x63\x1a\xf4\xff\x00\x00\x00\x00",
+                &[
+                    Mem(BpfOpMem(bpf_op_mem {
+                        base: BPF_REG_R10,
+                        disp: 0xfff4,
+                    })),
+                    Reg(RegId(BPF_REG_R1 as RegIdInt)),
+                ],
+            ),
+            // exit
+            DII::new("exit", b"\x95\x00\x00\x00\x00\x00\x00\x00", &[]),
+        ],
+    );
+
+    test_arch_mode_endian_insns_detail(
+        &mut Capstone::new()
+            .bpf()
+            .mode(bpf::ArchMode::Cbpf)
+            .endian(Endian::Little)
+            .detail(true)
+            .build()
+            .unwrap(),
+        Arch::BPF,
+        Mode::Cbpf,
+        None,
+        &[],
+        &[
+            DII::new("txa", b"\x87\x00\x00\x00\x00\x00\x00\x00", &[]),
+            DII::new(
+                "ret",
+                b"\x16\x00\x00\x00\x00\x00\x00\x00",
+                &[Reg(RegId(BPF_REG_A as RegIdInt))],
+            ),
+        ],
+    );
+}
+
+#[derive(Clone, Debug, PartialEq, Eq, Hash)]
+#[cfg(feature = "full")]
+struct RegAccessVec {
+    read: Vec<RegId>,
+    write: Vec<RegId>,
+}
+
+#[cfg(feature = "full")]
+impl RegAccessVec {
+    /// Sort read and write fields
+    fn sort(&mut self) {
+        self.read.sort_unstable();
+        self.write.sort_unstable();
+    }
+}
+
+/// Get the registers which are read and written
+#[cfg(feature = "full")]
+fn regs_access_vec(cs: &Capstone, insn: &Insn) -> CsResult<RegAccessVec> {
+    let mut regs_read = [MaybeUninit::uninit(); REGS_ACCESS_BUF_LEN];
+    let mut regs_write = [MaybeUninit::uninit(); REGS_ACCESS_BUF_LEN];
+
+    let reg_access = cs.regs_access(insn, &mut regs_read, &mut regs_write)?;
+
+    Ok(RegAccessVec {
+        read: reg_access.read.to_vec(),
+        write: reg_access.write.to_vec(),
+    })
+}
+
+#[cfg(feature = "full")]
+fn assert_regs_access_matches(
+    cs: &mut Capstone,
+    bytes: &[u8],
+    expected_regs_access: CsResult<&[RegAccessVec]>,
+) {
+    let expected_regs_access = expected_regs_access.map(|accesses: &[RegAccessVec]| {
+        accesses
+            .iter()
+            .map(|regs| {
+                let mut regs = regs.clone();
+                regs.sort();
+                regs
+            })
+            .collect::<Vec<RegAccessVec>>()
+    });
+    let insns = cs.disasm_all(bytes, 0x1000).unwrap();
+    let reg_access: CsResult<Vec<RegAccessVec>> = insns
+        .iter()
+        .map(|insn| {
+            regs_access_vec(cs, insn).map(|mut regs| {
+                regs.sort();
+                regs
+            })
+        })
+        .collect();
+    let reg_access = reg_access.as_ref().map(|access| access.as_slice());
+    assert_eq!(reg_access, expected_regs_access.as_deref());
+}
+
+fn as_reg_access<T: TryInto<RegIdInt> + Copy + Debug>(read: &[T], write: &[T]) -> RegAccessVec {
+    let as_reg_access = |input: &[T]| -> Vec<RegId> {
+        input
+            .iter()
+            .copied()
+            .map(|reg| {
+                RegId(
+                    reg.try_into()
+                        .unwrap_or_else(|_| panic!("Failed to create RegInt")),
+                )
+            })
+            .collect()
+    };
+    RegAccessVec {
+        read: as_reg_access(read),
+        write: as_reg_access(write),
+    }
+}
+
+#[cfg(feature = "full")]
+fn test_regs_access(
+    mut cs: Capstone,
+    code: &[u8],
+    expected_regs_access: CsResult<&[RegAccessVec]>,
+) {
+    // should always fail when not in debug mode
+    assert_regs_access_matches(&mut cs, code, CsResult::Err(Error::DetailOff));
+
+    // now detail is enabled, check for expected outcome
+    cs.set_detail(true).expect("failed to set detail");
+    assert_regs_access_matches(&mut cs, code, expected_regs_access);
+}
+
+#[cfg(feature = "full")]
+#[test]
+fn test_regs_access_arm() {
+    use crate::arch::arm::ArmReg::*;
+
+    test_regs_access(
+        Capstone::new()
+            .arm()
+            .mode(arm::ArchMode::Thumb)
+            .build()
+            .unwrap(),
+        b"\xf0\xbd",
+        CsResult::Ok(&[as_reg_access(
+            &[ARM_REG_SP],
+            &[
+                ARM_REG_SP, ARM_REG_R4, ARM_REG_R5, ARM_REG_R6, ARM_REG_R7, ARM_REG_PC,
+            ],
+        )]),
+    );
+}
+
+#[cfg(feature = "full")]
+#[test]
+fn test_regs_tms320c64x() {
+    test_regs_access(
+        Capstone::new()
+            .tms320c64x()
+            .mode(tms320c64x::ArchMode::Default)
+            .build()
+            .unwrap(),
+        b"\x01\xac\x88\x40",
+        CsResult::Err(Error::UnsupportedArch),
+    );
+}
+
+#[test]
+fn test_arch_tricore() {
+    test_arch_mode_endian_insns(
+        &mut Capstone::new()
+            .tricore()
+            .mode(tricore::ArchMode::TriCore162)
+            .build()
+            .unwrap(),
+        Arch::TRICORE,
+        Mode::TriCore162,
+        None,
+        &[],
+        &[("ld.a", b"\x09\xcf\xbc\xf5")],
+    );
+}
+
+#[test]
+fn test_arch_tricore_detail() {
+    use crate::arch::tricore::TriCoreOpMem;
+    use crate::arch::tricore::TriCoreOperand;
+    use capstone_sys::tricore_op_mem;
+    use capstone_sys::tricore_reg::*;
+
+    test_arch_mode_endian_insns_detail(
+        &mut Capstone::new()
+            .tricore()
+            .mode(tricore::ArchMode::TriCore162)
+            .build()
+            .unwrap(),
+        Arch::TRICORE,
+        Mode::TriCore162,
+        None,
+        &[],
+        &[
+            // ld.a a15, [+a12]#-4
+            DII::new(
+                "ld.a",
+                b"\x09\xcf\xbc\xf5",
+                &[
+                    TriCoreOperand::Reg(RegId(TRICORE_REG_A15 as RegIdInt)),
+                    TriCoreOperand::Mem(TriCoreOpMem(tricore_op_mem {
+                        base: TRICORE_REG_A12 as u8,
+                        disp: -4,
+                    })),
+                ],
+            ),
+        ],
+    );
 }

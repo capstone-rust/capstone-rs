@@ -1,7 +1,8 @@
 use alloc::{self, boxed::Box};
-use core::convert::{TryFrom, TryInto};
+use core::convert::TryFrom;
 use core::fmt::{self, Debug, Display, Error, Formatter};
 use core::marker::PhantomData;
+use core::mem::MaybeUninit;
 use core::ops::Deref;
 use core::slice;
 use core::str;
@@ -12,6 +13,7 @@ use crate::arch::ArchDetail;
 use crate::constants::Arch;
 
 use crate::ffi::str_from_cstr_ptr;
+use crate::{RegsAccessBuf, REGS_ACCESS_BUF_LEN};
 
 /// Represents a slice of [`Insn`] returned by [`Capstone`](crate::Capstone) `disasm*()` methods.
 ///
@@ -64,12 +66,6 @@ impl RegId {
     pub const INVALID_REG: Self = Self(0);
 }
 
-impl core::convert::From<u32> for RegId {
-    fn from(v: u32) -> RegId {
-        RegId(v.try_into().ok().unwrap_or(Self::INVALID_REG.0))
-    }
-}
-
 /// Represents how the register is accessed.
 #[derive(Copy, Clone, Debug, Hash, PartialEq, Eq)]
 pub enum RegAccessType {
@@ -106,13 +102,13 @@ impl TryFrom<cs_ac_type> for RegAccessType {
 
     fn try_from(access: cs_ac_type) -> Result<Self, Self::Error> {
         // Check for flags other than CS_AC_READ or CS_AC_WRITE.
-        let unknown_flag_mask = !(CS_AC_READ | CS_AC_WRITE).0;
+        let unknown_flag_mask = !(cs_ac_type::CS_AC_READ | cs_ac_type::CS_AC_WRITE).0;
         if (access.0 & unknown_flag_mask) != 0 {
             return Err(());
         }
 
-        let is_readable = (access & CS_AC_READ).0 != 0;
-        let is_writable = (access & CS_AC_WRITE).0 != 0;
+        let is_readable = (access & cs_ac_type::CS_AC_READ).0 != 0;
+        let is_writable = (access & cs_ac_type::CS_AC_WRITE).0 != 0;
         match (is_readable, is_writable) {
             (true, false) => Ok(RegAccessType::ReadOnly),
             (false, true) => Ok(RegAccessType::WriteOnly),
@@ -149,7 +145,7 @@ impl<'a> AsRef<[Insn<'a>]> for Instructions<'a> {
     }
 }
 
-impl<'a> Drop for Instructions<'a> {
+impl Drop for Instructions<'_> {
     fn drop(&mut self) {
         if !self.is_empty() {
             unsafe {
@@ -171,6 +167,50 @@ pub struct Insn<'a> {
 
     /// Adds lifetime
     pub(crate) _marker: PhantomData<&'a InsnDetail<'a>>,
+}
+
+pub(crate) struct RWRegsAccessBuf {
+    pub(crate) read_buf: RegsAccessBuf,
+    pub(crate) write_buf: RegsAccessBuf,
+}
+
+impl RWRegsAccessBuf {
+    pub(crate) fn new() -> Self {
+        Self {
+            read_buf: [MaybeUninit::uninit(); REGS_ACCESS_BUF_LEN],
+            write_buf: [MaybeUninit::uninit(); REGS_ACCESS_BUF_LEN],
+        }
+    }
+}
+
+/// Contains partially initialized buffer of registers
+#[cfg_attr(not(feature = "full"), allow(dead_code))]
+pub(crate) struct PartialInitRegsAccess {
+    pub(crate) regs_buf: Box<RWRegsAccessBuf>,
+    pub(crate) read_len: u16,
+    pub(crate) write_len: u16,
+}
+
+// make sure len fields can be stored as u16
+static_assertions::const_assert!(crate::REGS_ACCESS_BUF_LEN <= u16::MAX as usize);
+
+#[cfg_attr(not(feature = "full"), allow(dead_code))]
+impl PartialInitRegsAccess {
+    unsafe fn maybeuninit_slice_to_slice(buf: &[MaybeUninit<RegId>]) -> &[RegId] {
+        &*(buf as *const [MaybeUninit<RegId>] as *const [RegId])
+    }
+
+    pub(crate) fn read(&self) -> &[RegId] {
+        unsafe {
+            Self::maybeuninit_slice_to_slice(&self.regs_buf.read_buf[..self.read_len as usize])
+        }
+    }
+
+    pub(crate) fn write(&self) -> &[RegId] {
+        unsafe {
+            Self::maybeuninit_slice_to_slice(&self.regs_buf.write_buf[..self.write_len as usize])
+        }
+    }
 }
 
 /// Contains architecture-independent details about an [`Insn`].
@@ -202,10 +242,16 @@ pub struct Insn<'a> {
 /// To get additional architecture-specific information, use the
 /// [`.arch_detail()`](Self::arch_detail) method to get an `ArchDetail` enum.
 ///
-pub struct InsnDetail<'a>(pub(crate) &'a cs_detail, pub(crate) Arch);
+pub struct InsnDetail<'a> {
+    pub(crate) detail: &'a cs_detail,
+    pub(crate) arch: Arch,
+
+    #[cfg_attr(not(feature = "full"), allow(dead_code))]
+    partial_init_regs_access: Option<PartialInitRegsAccess>,
+}
 
 #[allow(clippy::len_without_is_empty)]
-impl<'a> Insn<'a> {
+impl Insn<'_> {
     /// Create an `Insn` from a raw pointer to a [`capstone_sys::cs_insn`].
     ///
     /// This function serves to allow integration with libraries which generate `capstone_sys::cs_insn`'s internally.
@@ -281,12 +327,20 @@ impl<'a> Insn<'a> {
     /// # Safety
     /// The [`cs_insn::detail`] pointer must be valid and non-null.
     #[inline]
-    pub(crate) unsafe fn detail(&self, arch: Arch) -> InsnDetail {
-        InsnDetail(&*self.insn.detail, arch)
+    pub(crate) unsafe fn detail(
+        &self,
+        arch: Arch,
+        partial_init_regs_access: Option<PartialInitRegsAccess>,
+    ) -> InsnDetail<'_> {
+        InsnDetail {
+            detail: &*self.insn.detail,
+            arch,
+            partial_init_regs_access,
+        }
     }
 }
 
-impl<'a> From<&Insn<'_>> for OwnedInsn<'a> {
+impl From<&Insn<'_>> for OwnedInsn<'_> {
     // SAFETY: assumes that `cs_detail` struct transitively only contains owned
     // types and no pointers, including the union over the architecture-specific
     // types.
@@ -330,7 +384,7 @@ pub struct OwnedInsn<'a> {
     pub(crate) _marker: PhantomData<&'a InsnDetail<'a>>,
 }
 
-impl<'a> Debug for Insn<'a> {
+impl Debug for Insn<'_> {
     fn fmt(&self, fmt: &mut Formatter) -> Result<(), Error> {
         fmt.debug_struct("Insn")
             .field("address", &self.address())
@@ -342,7 +396,7 @@ impl<'a> Debug for Insn<'a> {
     }
 }
 
-impl<'a> Display for Insn<'a> {
+impl Display for Insn<'_> {
     fn fmt(&self, fmt: &mut Formatter) -> fmt::Result {
         write!(fmt, "{:#x}: ", self.address())?;
         if let Some(mnemonic) = self.mnemonic() {
@@ -355,7 +409,7 @@ impl<'a> Display for Insn<'a> {
     }
 }
 
-impl<'a> Drop for OwnedInsn<'a> {
+impl Drop for OwnedInsn<'_> {
     fn drop(&mut self) {
         if let Some(ptr) = core::ptr::NonNull::new(self.insn.detail) {
             unsafe { drop(Box::from_raw(ptr.as_ptr())) }
@@ -363,38 +417,42 @@ impl<'a> Drop for OwnedInsn<'a> {
     }
 }
 
-impl<'a> Debug for OwnedInsn<'a> {
+impl Debug for OwnedInsn<'_> {
     fn fmt(&self, fmt: &mut Formatter) -> Result<(), Error> {
         Debug::fmt(&self.deref(), fmt)
     }
 }
 
-impl<'a> Display for OwnedInsn<'a> {
+impl Display for OwnedInsn<'_> {
     fn fmt(&self, fmt: &mut Formatter) -> fmt::Result {
         Display::fmt(&self.deref(), fmt)
     }
 }
 
-/// Iterator over instruction group ids
-#[derive(Debug, Clone)]
-pub struct InsnGroupIter<'a>(slice::Iter<'a, InsnGroupIdInt>);
-
-impl<'a> InsnDetail<'a> {
+impl InsnDetail<'_> {
     #[cfg(feature = "full")]
-    /// Returns the implicit read registers
+    /// Returns the read registers
     pub fn regs_read(&self) -> &[RegId] {
-        unsafe {
-            &*(&self.0.regs_read[..self.0.regs_read_count as usize] as *const [RegIdInt]
-                as *const [RegId])
+        if let Some(partial) = self.partial_init_regs_access.as_ref() {
+            partial.read()
+        } else {
+            unsafe {
+                &*(&self.detail.regs_read[..self.detail.regs_read_count as usize]
+                    as *const [RegIdInt] as *const [RegId])
+            }
         }
     }
 
     #[cfg(feature = "full")]
-    /// Returns the implicit write registers
+    /// Returns the written to registers
     pub fn regs_write(&self) -> &[RegId] {
-        unsafe {
-            &*(&self.0.regs_write[..self.0.regs_write_count as usize] as *const [RegIdInt]
-                as *const [RegId])
+        if let Some(partial) = self.partial_init_regs_access.as_ref() {
+            partial.write()
+        } else {
+            unsafe {
+                &*(&self.detail.regs_write[..self.detail.regs_write_count as usize]
+                    as *const [RegIdInt] as *const [RegId])
+            }
         }
     }
 
@@ -402,7 +460,7 @@ impl<'a> InsnDetail<'a> {
     /// Returns the groups to which this instruction belongs
     pub fn groups(&self) -> &[InsnGroupId] {
         unsafe {
-            &*(&self.0.groups[..self.0.groups_count as usize] as *const [InsnGroupIdInt]
+            &*(&self.detail.groups[..self.detail.groups_count as usize] as *const [InsnGroupIdInt]
                 as *const [InsnGroupId])
         }
     }
@@ -417,27 +475,31 @@ impl<'a> InsnDetail<'a> {
                 use crate::Arch::*;
                 $( use crate::arch::$arch::$insn_detail; )*
 
-                return match self.1 {
+                return match self.arch {
                     $(
                         $ARCH => {
-                            $detail($insn_detail(unsafe { &self.0.__bindgen_anon_1.$arch }))
+                            $detail($insn_detail(unsafe { &self.detail.__bindgen_anon_1.$arch }))
                         }
                     )*
-                    _ => panic!("Unsupported detail arch"),
                 }
             }
         }
         def_arch_detail_match!(
             [ARM, ArmDetail, ArmInsnDetail, arm]
             [ARM64, Arm64Detail, Arm64InsnDetail, arm64]
+            [BPF, BpfDetail, BpfInsnDetail, bpf]
             [EVM, EvmDetail, EvmInsnDetail, evm]
             [M680X, M680xDetail, M680xInsnDetail, m680x]
             [M68K, M68kDetail, M68kInsnDetail, m68k]
             [MIPS, MipsDetail, MipsInsnDetail, mips]
+            [MOS65XX, Mos65xxDetail, Mos65xxInsnDetail, mos65xx]
             [PPC, PpcDetail, PpcInsnDetail, ppc]
             [RISCV, RiscVDetail, RiscVInsnDetail, riscv]
+            [SH, ShDetail, ShInsnDetail, sh]
             [SPARC, SparcDetail, SparcInsnDetail, sparc]
+            [SYSZ, SysZDetail, SysZInsnDetail, sysz]
             [TMS320C64X, Tms320c64xDetail, Tms320c64xInsnDetail, tms320c64x]
+            [TRICORE, TriCoreDetail, TriCoreInsnDetail, tricore]
             [X86, X86Detail, X86InsnDetail, x86]
             [XCORE, XcoreDetail, XcoreInsnDetail, xcore]
         );
@@ -445,7 +507,7 @@ impl<'a> InsnDetail<'a> {
 }
 
 #[cfg(feature = "full")]
-impl<'a> Debug for InsnDetail<'a> {
+impl Debug for InsnDetail<'_> {
     fn fmt(&self, fmt: &mut Formatter) -> fmt::Result {
         fmt.debug_struct("Detail")
             .field("regs_read", &self.regs_read())
@@ -462,7 +524,7 @@ impl<'a> Debug for InsnDetail<'a> {
     }
 }
 
-impl<'a> Display for Instructions<'a> {
+impl Display for Instructions<'_> {
     fn fmt(&self, fmt: &mut Formatter) -> fmt::Result {
         for instruction in self.iter() {
             write!(fmt, "{:x}:\t", instruction.address())?;

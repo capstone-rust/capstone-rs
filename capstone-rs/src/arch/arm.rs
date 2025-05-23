@@ -1,16 +1,16 @@
 //! Contains arm-specific types
 
-use core::convert::From;
+use core::convert::{From, TryInto};
 use core::{cmp, fmt, slice};
 
 use capstone_sys::{
-    arm_op_mem, arm_op_type, cs_arm, cs_arm_op, arm_shifter,
-    cs_arm_op__bindgen_ty_2};
+    arm_op_mem, arm_op_type, arm_shifter, cs_ac_type, cs_arm, cs_arm_op, cs_arm_op__bindgen_ty_2};
 use libc::c_uint;
 
 pub use crate::arch::arch_builder::arm::*;
 use crate::arch::DetailsArchInsn;
 use crate::instruction::{RegId, RegIdInt};
+use crate::RegAccessType;
 
 pub use capstone_sys::arm_insn_group as ArmInsnGroup;
 pub use capstone_sys::arm_insn as ArmInsn;
@@ -129,6 +129,11 @@ pub struct ArmOperand {
 
     /// Operand type
     pub op_type: ArmOperandType,
+
+    /// How is this operand accessed?
+    ///
+    /// NOTE: this field is always `None` if the "full" feataure is not enabled.
+    pub access: Option<RegAccessType>
 }
 
 /// ARM operand
@@ -166,7 +171,7 @@ pub enum ArmOperandType {
 #[derive(Debug, Copy, Clone)]
 pub struct ArmOpMem(pub(crate) arm_op_mem);
 
-impl<'a> ArmInsnDetail<'a> {
+impl ArmInsnDetail<'_> {
     /// Whether the instruction is a user mode
     pub fn usermode(&self) -> bool {
         self.0.usermode
@@ -252,12 +257,13 @@ impl Default for ArmOperand {
             vector_index: None,
             subtracted: false,
             shift: ArmShift::Invalid,
-            op_type: ArmOperandType::Invalid
+            op_type: ArmOperandType::Invalid,
+            access: None
         }
     }
 }
 
-impl<'a> From<&'a cs_arm_op> for ArmOperand {
+impl From<&cs_arm_op> for ArmOperand {
     fn from(op: &cs_arm_op) -> ArmOperand {
         let shift = ArmShift::new(op.shift.type_, op.shift.value);
         let op_type = ArmOperandType::new(op.type_, op.__bindgen_anon_1);
@@ -271,6 +277,7 @@ impl<'a> From<&'a cs_arm_op> for ArmOperand {
             shift,
             op_type,
             subtracted: op.subtracted,
+            access: cs_ac_type(op.access as _).try_into().ok(),
         }
     }
 }
@@ -342,6 +349,7 @@ mod test {
             cc: arm_cc::ARM_CC_INVALID,
             update_flags: false,
             writeback: false,
+            post_index: false,
             mem_barrier: arm_mem_barrier::ARM_MB_INVALID,
             op_count: 0,
             operands: [

@@ -47,8 +47,9 @@ pub struct X86Operand {
     /// Operand size
     pub size: u8,
 
-    /// How is this operand accessed? NOTE: this field is irrelevant if engine
-    /// is compiled in DIET mode.
+    /// How is this operand accessed?
+    ///
+    /// NOTE: this field is always `None` if the "full" feataure is not enabled.
     pub access: Option<RegAccessType>,
 
     /// AVX broadcast
@@ -81,7 +82,7 @@ pub enum X86OperandType {
 #[derive(Debug, Copy, Clone)]
 pub struct X86OpMem(pub(crate) x86_op_mem);
 
-impl<'a> X86InsnDetail<'a> {
+impl X86InsnDetail<'_> {
     /// Instruction prefix, which can be up to 4 bytes.
     /// A prefix byte gets value 0 when irrelevant.
     /// See `X86Prefix` for details.
@@ -226,7 +227,7 @@ impl Default for X86Operand {
     }
 }
 
-impl<'a> From<&'a cs_x86_op> for X86Operand {
+impl From<&cs_x86_op> for X86Operand {
     fn from(op: &cs_x86_op) -> X86Operand {
         let op_type = X86OperandType::new(op.type_, op.__bindgen_anon_1);
         X86Operand {

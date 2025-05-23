@@ -1,7 +1,7 @@
 #!/bin/sh
 #
 # Builds README.md as html with GitHub style
-# tested with pandoc 2.1.1
+# tested with comrak 0.19.0
 
 set -eux
 
@@ -16,10 +16,8 @@ build() {
         return
     fi
 
-    pandoc \
-        -f gfm -t html5 \
-        --css scripts/github-md.css -Vpagetitle="${INPUT_MD}" \
-        --standalone \
+    comrak \
+        --gfm \
         "$INPUT_MD" -o "$OUTPUT_HTML"
 }
 

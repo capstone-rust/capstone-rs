@@ -11,10 +11,20 @@
 //!
 //! * `arm`: ARM
 //! * `arm64`: ARM64 (also known as AArch64)
+//! * `bpf`: Berkeley Packet Filter
+//! * `evm`: Ethereum VM
+//! * `m680x`: M680X
+//! * `m68k`: M68K
 //! * `mips`: MIPS
+//! * `mos65xx`: MOS65XX
 //! * `ppc`: PowerPC
+//! * `riscv`: RISC-V
+//! * `sh`: SH
 //! * `sparc`: SPARC
 //! * `sysz`: System z
+//! * `tms320c64x`: TMS320C64X
+//! * `tricore`: TriCore
+//! * `wasm`: WebAssembly
 //! * `x86`: x86 family (includes 16, 32, and 64 bit modes)
 //! * `xcore`: XCore
 //!

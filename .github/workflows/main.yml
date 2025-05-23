@@ -6,15 +6,20 @@ name: main
 
 jobs:
   test:
-    runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
         rust:
-          - 1.60.0
-          - stable
-          - beta
-          - nightly
+          - version: 1.70.0 # MSRV
+            env: SKIP_CARGO_UPDATE=1
+          - version: stable
+          - version: beta
+          - version: nightly
+        os:
+          - ubuntu-latest
+          - windows-latest
+          - macos-latest
+    runs-on: ${{ matrix.os }}
 
     steps:
       - uses: actions/checkout@v2
@@ -22,11 +27,15 @@ jobs:
       - uses: actions-rs/toolchain@v1
         with:
           profile: minimal
-          toolchain: ${{ matrix.rust }}
+          toolchain: ${{ matrix.rust.version }}
           override: true
 
+      - name: install recent bash on macos
+        if: ${{ startsWith(matrix.os, 'macos') }}
+        run: brew install bash
+
       - name: test
-        run: ./capstone-rs/ci/test.sh
+        run: env ${{ matrix.rust.env }} ./capstone-rs/ci/test.sh
 
       - name: test (all features)
-        run: ALL_FEATURES=1 ./capstone-rs/ci/test.sh
+        run: env ${{ matrix.rust.env }} ALL_FEATURES=1 ./capstone-rs/ci/test.sh

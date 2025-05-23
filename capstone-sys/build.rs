@@ -91,7 +91,7 @@ fn build_capstone_cc() {
                 .file_type()
                 .expect("Failed to read capstone source directory");
             let file_name = e.file_name().into_string().expect("Invalid filename");
-            file_type.is_file() && (file_name.ends_with(".c") || file_name.ends_with(".C"))
+            !file_type.is_dir() && (file_name.ends_with(".c") || file_name.ends_with(".C"))
         })
     }
 
@@ -108,7 +108,8 @@ fn build_capstone_cc() {
     for arch_dir in find_arch_dirs().into_iter() {
         files.append(&mut find_c_source_files(&arch_dir));
     }
-
+    // keep build reproducible
+    files.sort();
     let use_static_crt = {
         let target_features = env::var("CARGO_CFG_TARGET_FEATURE").unwrap_or_default();
         target_features.split(',').any(|f| f == "crt-static")
@@ -120,15 +121,19 @@ fn build_capstone_cc() {
         .define("CAPSTONE_USE_SYS_DYN_MEM", None)
         .define("CAPSTONE_HAS_ARM", None)
         .define("CAPSTONE_HAS_ARM64", None)
+        .define("CAPSTONE_HAS_BPF", None)
         .define("CAPSTONE_HAS_EVM", None)
         .define("CAPSTONE_HAS_M680X", None)
         .define("CAPSTONE_HAS_M68K", None)
         .define("CAPSTONE_HAS_MIPS", None)
+        .define("CAPSTONE_HAS_MOS65XX", None)
         .define("CAPSTONE_HAS_POWERPC", None)
         .define("CAPSTONE_HAS_RISCV", None)
+        .define("CAPSTONE_HAS_SH", None)
         .define("CAPSTONE_HAS_SPARC", None)
         .define("CAPSTONE_HAS_SYSZ", None)
         .define("CAPSTONE_HAS_TMS320C64X", None)
+        .define("CAPSTONE_HAS_TRICORE", None)
         .define("CAPSTONE_HAS_WASM", None)
         .define("CAPSTONE_HAS_X86", None)
         .define("CAPSTONE_HAS_XCORE", None)
@@ -239,8 +244,9 @@ fn write_bindgen_bindings(
     out_bindings_path: PathBuf,
     out_impl_path: PathBuf,
 ) {
+    #[allow(deprecated)]
     let mut builder = bindgen::Builder::default()
-        .rust_target(bindgen::RustTarget::Stable_1_19)
+        .rust_target(bindgen::RustTarget::Stable_1_28)
         .size_t_is_usize(true)
         .use_core()
         .ctypes_prefix("libc")
@@ -258,6 +264,7 @@ fn write_bindgen_bindings(
         .constified_enum_module("cs_err|cs_group_type|cs_opt_value")
         .bitfield_enum("cs_mode|cs_ac_type")
         .rustified_enum(".*")
+        .array_pointers_in_arguments(true)
         .no_copy("cs_insn");
 
     // Whitelist cs_.* functions and types
