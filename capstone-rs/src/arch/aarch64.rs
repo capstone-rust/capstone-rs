@@ -108,12 +108,12 @@ impl AArch64OperandType {
                 AARCH64_OP_SYSREG => Sysreg(unsafe { op_sys.reg.sysreg }),
                 AARCH64_OP_TLBI => Tlbi(unsafe { op_sys.reg.tlbi }),
                 AARCH64_OP_IC => Ic(unsafe { op_sys.reg.ic }),
-                _ => panic!("Unexpected op sub type: {:?}", op_sys.sub_type),
+                _ => Invalid,
             },
             AARCH64_OP_SYSIMM => match op_sys.sub_type {
                 AARCH64_OP_DBNXS => Dbnxs(unsafe { op_sys.imm.dbnxs }),
                 AARCH64_OP_EXACTFPIMM => ExactFpImm(unsafe { op_sys.imm.exactfpimm }),
-                _ => panic!("Unexpected op sub type: {:?}", op_sys.sub_type),
+                _ => Invalid,
             },
             AARCH64_OP_SYSALIAS => match op_sys.sub_type {
                 AARCH64_OP_SVCR => Svcr(unsafe { op_sys.alias.svcr }),
@@ -133,10 +133,10 @@ impl AArch64OperandType {
                 AARCH64_OP_SVEVECLENSPECIFIER => {
                     SveVecLenSpecifier(unsafe { op_sys.alias.sveveclenspecifier })
                 }
-                _ => panic!("Unexpected op sub type: {:?}", op_sys.sub_type),
+                _ => Invalid,
             },
             AARCH64_OP_PRED => Pred(AArch64OpPred(unsafe { value.pred })),
-            _ => panic!("Unexpected op type: {:?}", op_type),
+            _ => Invalid,
         }
     }
 }
