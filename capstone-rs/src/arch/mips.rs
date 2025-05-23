@@ -6,8 +6,8 @@ use core::{cmp, fmt, slice};
 use capstone_sys::{cs_mips, cs_mips_op, mips_op_mem, mips_op_type};
 
 // XXX todo(tmfink): create rusty versions
-pub use capstone_sys::mips_insn_group as MipsInsnGroup;
 pub use capstone_sys::mips_insn as MipsInsn;
+pub use capstone_sys::mips_insn_group as MipsInsnGroup;
 pub use capstone_sys::mips_reg as MipsReg;
 
 pub use crate::arch::arch_builder::mips::*;
@@ -100,6 +100,9 @@ mod test {
         let op = cs_mips_op {
             type_: mips_op_type::MIPS_OP_INVALID,
             __bindgen_anon_1: cs_mips_op__bindgen_ty_1 { reg: 0 },
+            is_reglist: false,
+            is_unsigned: false,
+            access: 0,
         };
         assert_eq!(MipsOperand::from(&op), MipsOperand::Invalid);
     }
