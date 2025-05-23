@@ -5,19 +5,20 @@ use core::convert::TryInto;
 use core::{cmp, fmt, slice};
 
 use capstone_sys::cs_x86_encoding;
+pub use capstone_sys::x86_avx_bcast as X86AvxBcast;
+pub use capstone_sys::x86_avx_cc as X86AvxCC;
+pub use capstone_sys::x86_avx_rm as X86AvxRm;
+pub use capstone_sys::x86_insn as X86Insn;
+pub use capstone_sys::x86_insn_group as X86InsnGroup;
+pub use capstone_sys::x86_prefix as X86Prefix;
+pub use capstone_sys::x86_reg as X86Reg;
+pub use capstone_sys::x86_sse_cc as X86SseCC;
+pub use capstone_sys::x86_xop_cc as X86XopCC;
 use capstone_sys::{
     cs_ac_type, cs_x86, cs_x86_op, cs_x86_op__bindgen_ty_1, x86_op_mem, x86_op_type,
 };
-pub use capstone_sys::x86_insn_group as X86InsnGroup;
-pub use capstone_sys::x86_insn as X86Insn;
-pub use capstone_sys::x86_reg as X86Reg;
-pub use capstone_sys::x86_prefix as X86Prefix;
-pub use capstone_sys::x86_avx_bcast as X86AvxBcast;
-pub use capstone_sys::x86_sse_cc as X86SseCC;
-pub use capstone_sys::x86_avx_cc as X86AvxCC;
-pub use capstone_sys::x86_xop_cc as X86XopCC;
-pub use capstone_sys::x86_avx_rm as X86AvxRm;
 
+use super::InsnOffsetSpan;
 pub use crate::arch::arch_builder::x86::*;
 use crate::arch::DetailsArchInsn;
 use crate::instruction::{RegAccessType, RegId, RegIdInt};
@@ -107,8 +108,8 @@ impl X86InsnDetail<'_> {
     }
 
     /// Instruction encoding information, e.g. displacement offset, size.
-    pub fn encoding(&self) -> cs_x86_encoding {
-        self.0.encoding
+    pub fn encoding(&self) -> X86Encoding {
+        self.0.encoding.into()
     }
 
     /// REX prefix: only a non-zero value is relevant for x86_64
@@ -240,6 +241,38 @@ impl From<&cs_x86_op> for X86Operand {
     }
 }
 
+/// X86 instruction encoding infomation
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub struct X86Encoding {
+    pub modrm_offset: u8,
+    pub disp: Option<InsnOffsetSpan>,
+    pub imm: Option<InsnOffsetSpan>,
+}
+
+impl From<cs_x86_encoding> for X86Encoding {
+    fn from(encoding: cs_x86_encoding) -> Self {
+        Self {
+            modrm_offset: encoding.modrm_offset,
+            disp: if encoding.disp_offset == 0 {
+                None
+            } else {
+                Some(InsnOffsetSpan {
+                    offset: encoding.disp_offset,
+                    size: encoding.disp_size,
+                })
+            },
+            imm: if encoding.imm_offset == 0 {
+                None
+            } else {
+                Some(InsnOffsetSpan {
+                    offset: encoding.imm_offset,
+                    size: encoding.imm_size,
+                })
+            },
+        }
+    }
+}
+
 def_arch_details_struct!(
     InsnDetail = X86InsnDetail;
     Operand = X86Operand;
@@ -319,9 +352,7 @@ mod test {
             avx_sae: false,
             avx_rm: x86_avx_rm::X86_AVX_RM_INVALID,
             op_count: 0,
-            __bindgen_anon_1: cs_x86__bindgen_ty_1 {
-                eflags: 0,
-            },
+            __bindgen_anon_1: cs_x86__bindgen_ty_1 { eflags: 0 },
             encoding: cs_x86_encoding {
                 modrm_offset: 0,
                 disp_offset: 0,
@@ -330,30 +361,22 @@ mod test {
                 imm_size: 0,
             },
             xop_cc: x86_xop_cc::X86_XOP_CC_INVALID,
-            operands: [ cs_x86_op {
+            operands: [cs_x86_op {
                 type_: x86_op_type::X86_OP_INVALID,
-                __bindgen_anon_1: cs_x86_op__bindgen_ty_1 { reg: x86_reg::X86_REG_INVALID },
+                __bindgen_anon_1: cs_x86_op__bindgen_ty_1 {
+                    reg: x86_reg::X86_REG_INVALID,
+                },
                 size: 0,
                 avx_bcast: x86_avx_bcast::X86_AVX_BCAST_INVALID,
                 avx_zero_opmask: false,
                 access: 0,
-            }
-            ; 8],
-
+            }; 8],
         };
         let mut a2 = a1;
         a2.operands[1].type_ = x86_op_type::X86_OP_REG;
-        let a1_clone = cs_x86 {
-            ..a1
-        };
-        let a3 = cs_x86 {
-            rex: 1,
-            ..a1
-        };
-        let op_count_differ = cs_x86 {
-            op_count: 1,
-            ..a1
-        };
+        let a1_clone = cs_x86 { ..a1 };
+        let a3 = cs_x86 { rex: 1, ..a1 };
+        let op_count_differ = cs_x86 { op_count: 1, ..a1 };
         let mut op1_differ = op_count_differ;
         op1_differ.operands[0].avx_bcast = x86_avx_bcast::X86_AVX_BCAST_2;
 
@@ -363,5 +386,38 @@ mod test {
         t_ne(&a1, &a3);
         t_ne(&a1, &op_count_differ);
         t_ne(&op_count_differ, &op1_differ);
+    }
+
+    #[test]
+    fn test_x86_insn_encoding() {
+        assert_eq!(
+            X86Encoding::from(cs_x86_encoding {
+                modrm_offset: 0,
+                disp_offset: 0,
+                disp_size: 0,
+                imm_offset: 0,
+                imm_size: 0,
+            }),
+            X86Encoding {
+                modrm_offset: 0,
+                disp: None,
+                imm: None
+            }
+        );
+
+        assert_eq!(
+            X86Encoding::from(cs_x86_encoding {
+                modrm_offset: 1,
+                disp_offset: 2,
+                disp_size: 3,
+                imm_offset: 4,
+                imm_size: 5,
+            }),
+            X86Encoding {
+                modrm_offset: 1,
+                disp: Some(InsnOffsetSpan { offset: 2, size: 3 }),
+                imm: Some(InsnOffsetSpan { offset: 4, size: 5 }),
+            }
+        );
     }
 }

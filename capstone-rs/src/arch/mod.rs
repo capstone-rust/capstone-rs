@@ -12,6 +12,12 @@ use crate::capstone::Capstone;
 use crate::constants::Endian;
 use crate::error::CsResult;
 
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub struct InsnOffsetSpan {
+    pub offset: u8,
+    pub size: u8,
+}
+
 macro_rules! define_subset_enum {
     ( [
         $subset_enum:ident = $base_enum:ident
