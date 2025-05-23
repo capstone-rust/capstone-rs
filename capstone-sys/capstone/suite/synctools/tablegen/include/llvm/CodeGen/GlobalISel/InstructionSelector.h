@@ -474,7 +474,7 @@ protected:
     /// Named operands that predicate with 'let PredicateCodeUsesOperands = 1'
     /// referenced in its argument list. Operands are inserted at index set by
     /// emitter, it corresponds to the order in which names appear in argument
-    /// list. Currently such predicates don't have more then 3 arguments.
+    /// list. Currently such predicates don't have more than 3 arguments.
     std::array<const MachineOperand *, 3> RecordedOperands;
 
     MatcherState(unsigned MaxRenderers);
@@ -560,7 +560,7 @@ protected:
 
   /// Return true if MI can obviously be folded into IntoMI.
   /// MI and IntoMI do not need to be in the same basic blocks, but MI must
-  /// preceed IntoMI.
+  /// precede IntoMI.
   bool isObviouslySafeToFold(MachineInstr &MI, MachineInstr &IntoMI) const;
 };
 

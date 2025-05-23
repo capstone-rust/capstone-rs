@@ -140,7 +140,7 @@ protected:
   /// set, this hook lets the target specify whether the instruction is actually
   /// trivially rematerializable, taking into consideration its operands. This
   /// predicate must return false if the instruction has any side effects other
-  /// than producing a value, or if it requres any address registers that are
+  /// than producing a value, or if it requires any address registers that are
   /// not always available.
   /// Requirements must be check as stated in isTriviallyReMaterializable() .
   virtual bool isReallyTriviallyReMaterializable(const MachineInstr &MI,
@@ -981,7 +981,7 @@ public:
 
 protected:
   /// Target-dependent implementation for IsCopyInstr.
-  /// If the specific machine instruction is a instruction that moves/copies
+  /// If the specific machine instruction is an instruction that moves/copies
   /// value from one register to another register return destination and source
   /// registers as machine operands.
   virtual Optional<DestSourcePair>
@@ -1001,7 +1001,7 @@ protected:
   }
 
 public:
-  /// If the specific machine instruction is a instruction that moves/copies
+  /// If the specific machine instruction is an instruction that moves/copies
   /// value from one register to another register return destination and source
   /// registers as machine operands.
   /// For COPY-instruction the method naturally returns destination and source

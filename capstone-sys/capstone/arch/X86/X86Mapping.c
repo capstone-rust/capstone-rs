@@ -12,6 +12,8 @@
 #include <stdlib.h>
 #endif
 
+#include "../../Mapping.h"
+#include "../../MCInstPrinter.h"
 #include "X86Mapping.h"
 #include "X86DisassemblerDecoder.h"
 
@@ -1016,7 +1018,7 @@ void X86_get_insn_id(cs_struct *h, cs_insn *insn, unsigned int id)
 	if (i != -1) {
 		insn->id = insns[i].mapid;
 
-		if (h->detail) {
+		if (h->detail_opt) {
 #ifndef CAPSTONE_DIET
 			memcpy(insn->detail->regs_read, insns[i].regs_use, sizeof(insns[i].regs_use));
 			insn->detail->regs_read_count = (uint8_t)count_positive(insns[i].regs_use);
@@ -1150,25 +1152,6 @@ void X86_get_insn_id(cs_struct *h, cs_insn *insn, unsigned int id)
 							arr_replace(insn->detail->regs_write, insn->detail->regs_write_count, X86_REG_ESI, X86_REG_RSI);
 							break;
 					}
-					break;
-
-				case X86_INS_RET:
-					switch(h->mode) {
-						case CS_MODE_16:
-							insn->detail->regs_write[0] = X86_REG_SP;
-							insn->detail->regs_read[0] = X86_REG_SP;
-							break;
-						case CS_MODE_32:
-							insn->detail->regs_write[0] = X86_REG_ESP;
-							insn->detail->regs_read[0] = X86_REG_ESP;
-							break;
-						default:	// 64-bit
-							insn->detail->regs_write[0] = X86_REG_RSP;
-							insn->detail->regs_read[0] = X86_REG_RSP;
-							break;
-					}
-					insn->detail->regs_write_count = 1;
-					insn->detail->regs_read_count = 1;
 					break;
 			}
 
@@ -1710,7 +1693,6 @@ static bool valid_bnd(cs_struct *h, unsigned int opcode)
 	// not found
 	return false;
 }
-#endif
 
 // return true if the opcode is XCHG [mem]
 static bool xchg_mem(unsigned int opcode)
@@ -1725,6 +1707,7 @@ static bool xchg_mem(unsigned int opcode)
 				 return true;
 	}
 }
+#endif
 
 // given MCInst's id, find out if this insn is valid for REP prefix
 static bool valid_rep(cs_struct *h, unsigned int opcode)
@@ -1781,6 +1764,7 @@ static bool valid_rep(cs_struct *h, unsigned int opcode)
 	return false;
 }
 
+#ifndef CAPSTONE_DIET
 // given MCInst's id, find if this is a "repz ret" instruction
 // gcc generates "repz ret" (f3 c3) instructions in some cases as an
 // optimization for AMD platforms, see:
@@ -1798,6 +1782,7 @@ static bool valid_ret_repz(cs_struct *h, unsigned int opcode)
 	// not found
 	return false;
 }
+#endif
 
 // given MCInst's id, find out if this insn is valid for REPE prefix
 static bool valid_repe(cs_struct *h, unsigned int opcode)
@@ -1862,7 +1847,7 @@ static bool valid_notrack(cs_struct *h, unsigned int opcode)
 // add *CX register to regs_read[] & regs_write[]
 static void add_cx(MCInst *MI)
 {
-	if (MI->csh->detail) {
+	if (MI->csh->detail_opt) {
 		x86_reg cx;
 
 		if (MI->csh->mode & CS_MODE_16)
@@ -2000,7 +1985,7 @@ bool X86_lockrep(MCInst *MI, SStream *O)
 	}
 
 	// copy normalized prefix[] back to x86.prefix[]
-	if (MI->csh->detail)
+	if (MI->csh->detail_opt)
 		memcpy(MI->flat_insn->detail->x86.prefix, MI->x86_prefix, ARR_SIZE(MI->x86_prefix));
 
 	return res;
@@ -2008,7 +1993,7 @@ bool X86_lockrep(MCInst *MI, SStream *O)
 
 void op_addReg(MCInst *MI, int reg)
 {
-	if (MI->csh->detail) {
+	if (MI->csh->detail_opt) {
 		MI->flat_insn->detail->x86.operands[MI->flat_insn->detail->x86.op_count].type = X86_OP_REG;
 		MI->flat_insn->detail->x86.operands[MI->flat_insn->detail->x86.op_count].reg = reg;
 		MI->flat_insn->detail->x86.operands[MI->flat_insn->detail->x86.op_count].size = MI->csh->regsize_map[reg];
@@ -2021,7 +2006,7 @@ void op_addReg(MCInst *MI, int reg)
 
 void op_addImm(MCInst *MI, int v)
 {
-	if (MI->csh->detail) {
+	if (MI->csh->detail_opt) {
 		MI->flat_insn->detail->x86.operands[MI->flat_insn->detail->x86.op_count].type = X86_OP_IMM;
 		MI->flat_insn->detail->x86.operands[MI->flat_insn->detail->x86.op_count].imm = v;
 		// if op_count > 0, then this operand's size is taken from the destination op
@@ -2041,28 +2026,28 @@ void op_addImm(MCInst *MI, int v)
 
 void op_addXopCC(MCInst *MI, int v)
 {
-	if (MI->csh->detail) {
+	if (MI->csh->detail_opt) {
 		MI->flat_insn->detail->x86.xop_cc = v;
 	}
 }
 
 void op_addSseCC(MCInst *MI, int v)
 {
-	if (MI->csh->detail) {
+	if (MI->csh->detail_opt) {
 		MI->flat_insn->detail->x86.sse_cc = v;
 	}
 }
 
 void op_addAvxCC(MCInst *MI, int v)
 {
-	if (MI->csh->detail) {
+	if (MI->csh->detail_opt) {
 		MI->flat_insn->detail->x86.avx_cc = v;
 	}
 }
 
 void op_addAvxRoundingMode(MCInst *MI, int v)
 {
-	if (MI->csh->detail) {
+	if (MI->csh->detail_opt) {
 		MI->flat_insn->detail->x86.avx_rm = v;
 	}
 }
@@ -2070,7 +2055,7 @@ void op_addAvxRoundingMode(MCInst *MI, int v)
 // below functions supply details to X86GenAsmWriter*.inc
 void op_addAvxZeroOpmask(MCInst *MI)
 {
-	if (MI->csh->detail) {
+	if (MI->csh->detail_opt) {
 		// link with the previous operand
 		MI->flat_insn->detail->x86.operands[MI->flat_insn->detail->x86.op_count - 1].avx_zero_opmask = true;
 	}
@@ -2078,14 +2063,14 @@ void op_addAvxZeroOpmask(MCInst *MI)
 
 void op_addAvxSae(MCInst *MI)
 {
-	if (MI->csh->detail) {
+	if (MI->csh->detail_opt) {
 		MI->flat_insn->detail->x86.avx_sae = true;
 	}
 }
 
 void op_addAvxBroadcast(MCInst *MI, x86_avx_bcast v)
 {
-	if (MI->csh->detail) {
+	if (MI->csh->detail_opt) {
 		// link with the previous operand
 		MI->flat_insn->detail->x86.operands[MI->flat_insn->detail->x86.op_count - 1].avx_bcast = v;
 	}
@@ -2094,7 +2079,7 @@ void op_addAvxBroadcast(MCInst *MI, x86_avx_bcast v)
 #ifndef CAPSTONE_DIET
 // map instruction to its characteristics
 typedef struct insn_op {
-	uint64_t flags;	// how this instruction update EFLAGS(arithmetic instrcutions) of FPU FLAGS(for FPU instructions)
+	uint64_t flags;	// how this instruction update EFLAGS(arithmetic instructions) of FPU FLAGS(for FPU instructions)
 	uint8_t access[6];
 } insn_op;
 
@@ -2242,7 +2227,7 @@ unsigned short X86_register_map(unsigned short id)
 
 /// The post-printer function. Used to fixup flaws in the disassembly information
 /// of certain instructions.
-void X86_postprinter(csh handle, cs_insn *insn, char *mnem, MCInst *mci) {
+void X86_postprinter(csh handle, cs_insn *insn, SStream *mnem, MCInst *mci) {
 	if (!insn || !insn->detail) {
 		return;
 	}

@@ -829,14 +829,14 @@ static void printInstruction(MCInst *MI, SStream *O, const MCRegisterInfo *MRI)
   // Emit the opcode for the instruction.
   uint32_t Bits = OpInfo[MCInst_getOpcode(MI)];
 #ifndef CAPSTONE_DIET
-  // assert(Bits != 0 && "Cannot print this instruction.");
+  CS_ASSERT_RET(Bits != 0 && "Cannot print this instruction.");
   SStream_concat0(O, AsmStrs+(Bits & 4095)-1);
 #endif
 
 
   // Fragment 0 encoded into 4 bits for 12 unique commands.
   // printf("Frag-0: %u\n", (Bits >> 12) & 15);
-  switch ((Bits >> 12) & 15) {
+  switch ((uint32_t)((Bits >> 12) & 15)) {
   default:   // unreachable.
   case 0:
     // DBG_VALUE, BUNDLE, LIFETIME_START, LIFETIME_END, FLUSHW, NOP, SELECT_C...
@@ -907,7 +907,7 @@ static void printInstruction(MCInst *MI, SStream *O, const MCRegisterInfo *MRI)
 
   // Fragment 1 encoded into 4 bits for 16 unique commands.
   // printf("Frag-1: %u\n", (Bits >> 16) & 15);
-  switch ((Bits >> 16) & 15) {
+  switch ((uint32_t)((Bits >> 16) & 15)) {
   default:   // unreachable.
   case 0:
     // ADDCCri, ADDCCrr, ADDCri, ADDCrr, ADDEri, ADDErr, ADDXC, ADDXCCC, ADDX...
@@ -1020,7 +1020,7 @@ static void printInstruction(MCInst *MI, SStream *O, const MCRegisterInfo *MRI)
 
   // Fragment 2 encoded into 2 bits for 3 unique commands.
   // printf("Frag-2: %u\n", (Bits >> 20) & 3);
-  switch ((Bits >> 20) & 3) {
+  switch ((uint32_t)((Bits >> 20) & 3)) {
   default:   // unreachable.
   case 0:
     // ADDCCri, ADDCCrr, ADDCri, ADDCrr, ADDEri, ADDErr, ADDXC, ADDXCCC, ADDX...
@@ -1041,7 +1041,7 @@ static void printInstruction(MCInst *MI, SStream *O, const MCRegisterInfo *MRI)
 
   // Fragment 3 encoded into 2 bits for 4 unique commands.
   // printf("Frag-3: %u\n", (Bits >> 22) & 3);
-  switch ((Bits >> 22) & 3) {
+  switch ((uint32_t)((Bits >> 22) & 3)) {
   default:   // unreachable.
   case 0:
     // ADDCCri, ADDCCrr, ADDCri, ADDCrr, ADDEri, ADDErr, ADDXC, ADDXCCC, ADDX...
@@ -1068,7 +1068,7 @@ static void printInstruction(MCInst *MI, SStream *O, const MCRegisterInfo *MRI)
 
   // Fragment 4 encoded into 2 bits for 3 unique commands.
   // printf("Frag-4: %u\n", (Bits >> 24) & 3);
-  switch ((Bits >> 24) & 3) {
+  switch ((uint32_t)((Bits >> 24) & 3)) {
   default:   // unreachable.
   case 0:
     // FLCMPD, FLCMPS, V9FCMPD, V9FCMPED, V9FCMPEQ, V9FCMPES, V9FCMPQ, V9FCMP...
@@ -1094,7 +1094,7 @@ static void printInstruction(MCInst *MI, SStream *O, const MCRegisterInfo *MRI)
 /// for the specified register.
 static const char *getRegisterName(unsigned RegNo)
 {
-  // assert(RegNo && RegNo < 119 && "Invalid register number!");
+  CS_ASSERT_RET_VAL(RegNo && RegNo < 119 && "Invalid register number!", NULL);
 
 #ifndef CAPSTONE_DIET
   static const char AsmStrs[] = {

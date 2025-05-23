@@ -10,11 +10,7 @@
 //! # Supported disassembly architectures
 //!
 //! * `arm`: ARM
-//! * `arm64`: ARM64 (also known as AArch64)
-//! * `bpf`: Berkeley Packet Filter
-//! * `evm`: Ethereum VM
-//! * `m680x`: M680X
-//! * `m68k`: M68K
+//! * `aarch64`: AArch64
 //! * `mips`: MIPS
 //! * `mos65xx`: MOS65XX
 //! * `ppc`: PowerPC

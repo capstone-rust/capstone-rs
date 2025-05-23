@@ -108,7 +108,7 @@ public:
   static ConstantInt *get(IntegerType *Ty, uint64_t V, bool IsSigned = false);
 
   /// Return a ConstantInt with the specified value for the specified type. The
-  /// value V will be canonicalized to a an unsigned APInt. Accessing it with
+  /// value V will be canonicalized to an unsigned APInt. Accessing it with
   /// either getSExtValue() or getZExtValue() will yield a correctly sized and
   /// signed value for the type Ty.
   /// Get a ConstantInt for a specific signed value.
@@ -986,7 +986,7 @@ protected:
 
 public:
   // Static methods to construct a ConstantExpr of different kinds.  Note that
-  // these methods may return a object that is not an instance of the
+  // these methods may return an object that is not an instance of the
   // ConstantExpr class, because they will attempt to fold the constant
   // expression into something simpler if possible.
 

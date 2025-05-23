@@ -136,8 +136,8 @@ fn build_capstone_cc() {
     }
 
     arch_define!(
+        "arch_aarch64" = CAPSTONE_HAS_AARCH64,
         "arch_arm" = CAPSTONE_HAS_ARM,
-        "arch_arm64" = CAPSTONE_HAS_ARM64,
         "arch_bpf" = CAPSTONE_HAS_BPF,
         "arch_evm" = CAPSTONE_HAS_EVM,
         "arch_m680x" = CAPSTONE_HAS_M680X,
@@ -148,7 +148,7 @@ fn build_capstone_cc() {
         "arch_riscv" = CAPSTONE_HAS_RISCV,
         "arch_sh" = CAPSTONE_HAS_SH,
         "arch_sparc" = CAPSTONE_HAS_SPARC,
-        "arch_sysz" = CAPSTONE_HAS_SYSZ,
+        "arch_systemz" = CAPSTONE_HAS_SYSTEMZ,
         "arch_tms320c64x" = CAPSTONE_HAS_TMS320C64X,
         "arch_tricore" = CAPSTONE_HAS_TRICORE,
         "arch_wasm" = CAPSTONE_HAS_WASM,

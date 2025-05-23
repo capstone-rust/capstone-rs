@@ -9,6 +9,7 @@ extern "C" {
 #endif
 
 #include "platform.h"
+#include "cs_operand.h"
 
 #ifdef _MSC_VER
 #pragma warning(disable:4201)
@@ -110,15 +111,15 @@ typedef enum m68k_address_mode {
 
 /// Operand type for instruction's operands
 typedef enum m68k_op_type {
-	M68K_OP_INVALID = 0, ///< = CS_OP_INVALID (Uninitialized).
-	M68K_OP_REG,         ///< = CS_OP_REG (Register operand).
-	M68K_OP_IMM,         ///< = CS_OP_IMM (Immediate operand).
-	M68K_OP_MEM,         ///< = CS_OP_MEM (Memory operand).
-	M68K_OP_FP_SINGLE,   ///< single precision Floating-Point operand
-	M68K_OP_FP_DOUBLE,   ///< double precision Floating-Point operand
-	M68K_OP_REG_BITS,    ///< Register bits move
-	M68K_OP_REG_PAIR,    ///< Register pair in the same op (upper 4 bits for first reg, lower for second)
-	M68K_OP_BR_DISP,     ///< Branch displacement
+	M68K_OP_INVALID = CS_OP_INVALID, ///< = CS_OP_INVALID (Uninitialized).
+	M68K_OP_REG = CS_OP_REG,         ///< = CS_OP_REG (Register operand).
+	M68K_OP_IMM = CS_OP_IMM,         ///< = CS_OP_IMM (Immediate operand).
+	M68K_OP_FP_SINGLE = CS_OP_SPECIAL + 0,   ///< single precision Floating-Point operand
+	M68K_OP_FP_DOUBLE = CS_OP_SPECIAL + 1,   ///< double precision Floating-Point operand
+	M68K_OP_REG_BITS = CS_OP_SPECIAL + 2,    ///< Register bits move
+	M68K_OP_REG_PAIR = CS_OP_SPECIAL + 3,    ///< Register pair in the same op (upper 4 bits for first reg, lower for second)
+	M68K_OP_BR_DISP = CS_OP_SPECIAL + 4,     ///< Branch displacement
+	M68K_OP_MEM = CS_OP_MEM,         ///< = CS_OP_MEM (Memory operand).
 } m68k_op_type;
 
 /// Instruction's operand referring to memory
@@ -206,7 +207,7 @@ typedef struct m68k_op_size {
 	};
 } m68k_op_size;
 
-/// The M68K instruction and it's operands
+/// The M68K instruction and its operands
 typedef struct cs_m68k {
 	// Number of operands of this instruction or 0 when instruction has no operand.
 	cs_m68k_op operands[M68K_OPERAND_COUNT]; ///< operands for this instruction.

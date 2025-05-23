@@ -9,6 +9,7 @@ extern "C" {
 #endif
 
 #include "platform.h"
+#include "cs_operand.h"
 
 /// MOS65XX registers and special registers
 typedef enum mos65xx_reg {
@@ -170,10 +171,10 @@ typedef enum mos65xx_group_type {
 
 /// Operand type for instruction's operands
 typedef enum mos65xx_op_type {
-	MOS65XX_OP_INVALID = 0, ///< = CS_OP_INVALID (Uninitialized).
-	MOS65XX_OP_REG, ///< = CS_OP_REG (Register operand).
-	MOS65XX_OP_IMM, ///< = CS_OP_IMM (Immediate operand).
-	MOS65XX_OP_MEM, ///< = CS_OP_MEM (Memory operand).
+	MOS65XX_OP_INVALID = CS_OP_INVALID, ///< = CS_OP_INVALID (Uninitialized).
+	MOS65XX_OP_REG = CS_OP_REG, ///< = CS_OP_REG (Register operand).
+	MOS65XX_OP_IMM = CS_OP_IMM, ///< = CS_OP_IMM (Immediate operand).
+	MOS65XX_OP_MEM = CS_OP_MEM, ///< = CS_OP_MEM (Memory operand).
 } mos65xx_op_type;
 
 /// Instruction operand
@@ -186,7 +187,7 @@ typedef struct cs_mos65xx_op {
 	};
 } cs_mos65xx_op;
 
-/// The MOS65XX address mode and it's operands
+/// The MOS65XX address mode and its operands
 typedef struct cs_mos65xx {
 	mos65xx_address_mode am;
 	bool modifies_flags;

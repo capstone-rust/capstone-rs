@@ -177,7 +177,7 @@ enum class SecCommonFlags : uint32_t {
 };
 
 // Section specific flags are defined here.
-// !!!Note: Everytime a new enum class is created here, please add
+// !!!Note: Every time a new enum class is created here, please add
 // a new check in verifySecFlag.
 enum class SecNameTableFlags : uint32_t {
   SecFlagInValid = 0,
@@ -1157,7 +1157,7 @@ private:
   SamplesWithLocList V;
 };
 
-/// SampleContextTrimmer impelements helper functions to trim, merge cold
+/// SampleContextTrimmer implements helper functions to trim, merge cold
 /// context profiles. It also supports context profile canonicalization to make
 /// sure ProfileMap's key is consistent with FunctionSample's name/context.
 class SampleContextTrimmer {
@@ -1167,8 +1167,8 @@ public:
   // should only be effective when TrimColdContext is true. On top of
   // TrimColdContext, TrimBaseProfileOnly can be used to specify to trim all
   // cold profiles or only cold base profiles. Trimming base profiles only is
-  // mainly to honor the preinliner decsion. Note that when MergeColdContext is
-  // true, preinliner decsion is not honored anyway so TrimBaseProfileOnly will
+  // mainly to honor the preinliner decision. Note that when MergeColdContext is
+  // true, preinliner decision is not honored anyway so TrimBaseProfileOnly will
   // be ignored.
   void trimAndMergeColdContextProfiles(uint64_t ColdCountThreshold,
                                        bool TrimColdContext,

@@ -1,7 +1,6 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 # Capstone Python bindings, by Nguyen Anh Quynnh <aquynh@gmail.com>
-from __future__ import print_function
 from capstone import *
 from xprint import to_hex
 
@@ -19,7 +18,7 @@ MIPS_CODE = b"\x0C\x10\x00\x97\x00\x00\x00\x00\x24\x02\x00\x0c\x8f\xa2\x00\x00\x
 MIPS_CODE2 = b"\x56\x34\x21\x34\xc2\x17\x01\x00"
 MIPS_32R6M = b"\x00\x07\x00\x07\x00\x11\x93\x7c\x01\x8c\x8b\x7c\x00\xc7\x48\xd0"
 MIPS_32R6 = b"\xec\x80\x00\x19\x7c\x43\x22\xa0"
-ARM64_CODE = b"\x21\x7c\x02\x9b\x21\x7c\x00\x53\x00\x40\x21\x4b\xe1\x0b\x40\xb9"
+AARCH64_CODE = b"\x21\x7c\x02\x9b\x21\x7c\x00\x53\x00\x40\x21\x4b\xe1\x0b\x40\xb9"
 PPC_CODE = b"\x80\x20\x00\x00\x80\x3f\x00\x00\x10\x43\x23\x0e\xd0\x44\x00\x80\x4c\x43\x22\x02\x2d\x03\x00\x80\x7c\x43\x20\x14\x7c\x43\x20\x93\x4f\x20\x00\x21\x4c\xc8\x00\x21"
 PPC_CODE2 = b"\x10\x60\x2a\x10\x10\x64\x28\x88\x7c\x4a\x5d\x0f"
 SPARC_CODE = b"\x80\xa0\x40\x02\x85\xc2\x60\x08\x85\xe8\x20\x01\x81\xe8\x00\x00\x90\x10\x20\x01\xd5\xf6\x10\x16\x21\x00\x00\x0a\x86\x00\x40\x02\x01\x00\x00\x00\x12\xbf\xff\xff\x10\xbf\xff\xff\xa0\x02\x00\x09\x0d\xbf\xff\xff\xd4\x20\x60\x00\xd4\x4e\x00\x16\x2a\xc2\x80\x03"
@@ -28,6 +27,8 @@ SYSZ_CODE = b"\xed\x00\x00\x00\x00\x1a\x5a\x0f\x1f\xff\xc2\x09\x80\x00\x00\x00\x
 XCORE_CODE = b"\xfe\x0f\xfe\x17\x13\x17\xc6\xfe\xec\x17\x97\xf8\xec\x4f\x1f\xfd\xec\x37\x07\xf2\x45\x5b\xf9\xfa\x02\x06\x1b\x10"
 M68K_CODE = b"\xd4\x40\x87\x5a\x4e\x71\x02\xb4\xc0\xde\xc0\xde\x5c\x00\x1d\x80\x71\x12\x01\x23\xf2\x3c\x44\x22\x40\x49\x0e\x56\x54\xc5\xf2\x3c\x44\x00\x44\x7a\x00\x00\xf2\x00\x0a\x28\x4E\xB9\x00\x00\x00\x12\x4E\x75"
 M680X_CODE = b"\x06\x10\x19\x1a\x55\x1e\x01\x23\xe9\x31\x06\x34\x55\xa6\x81\xa7\x89\x7f\xff\xa6\x9d\x10\x00\xa7\x91\xa6\x9f\x10\x00\x11\xac\x99\x10\x00\x39"
+ARC_CODE = b"\x04\x11\x00\x00\x04\x11\x00\x02\x04\x11\x00\x04\x04\x11\x00\x01\x04\x11\x00\x03\x04\x11\x00\x05\x04\x11\x80\x00\x04\x11\x80\x02\x04\x11\x80\x04"
+
 
 all_tests = (
         (CS_ARCH_X86, CS_MODE_16, X86_CODE16, "X86 16bit (Intel syntax)", None),
@@ -45,16 +46,17 @@ all_tests = (
         (CS_ARCH_MIPS, CS_MODE_MIPS64 + CS_MODE_LITTLE_ENDIAN, MIPS_CODE2, "MIPS-64-EL (Little-endian)", None),
         (CS_ARCH_MIPS, CS_MODE_MIPS32R6 + CS_MODE_MICRO + CS_MODE_BIG_ENDIAN, MIPS_32R6M, "MIPS-32R6 | Micro (Big-endian)", None),
         (CS_ARCH_MIPS, CS_MODE_MIPS32R6 + CS_MODE_BIG_ENDIAN, MIPS_32R6, "MIPS-32R6 (Big-endian)", None),
-        (CS_ARCH_ARM64, CS_MODE_ARM, ARM64_CODE, "ARM-64", None),
+        (CS_ARCH_AARCH64, CS_MODE_ARM, AARCH64_CODE, "AARCH64", None),
         (CS_ARCH_PPC, CS_MODE_BIG_ENDIAN, PPC_CODE, "PPC-64", None),
         (CS_ARCH_PPC, CS_MODE_BIG_ENDIAN, PPC_CODE, "PPC-64, print register with number only", CS_OPT_SYNTAX_NOREGNAME),
         (CS_ARCH_PPC, CS_MODE_BIG_ENDIAN + CS_MODE_QPX, PPC_CODE2, "PPC-64 + QPX", CS_OPT_SYNTAX_NOREGNAME),
         (CS_ARCH_SPARC, CS_MODE_BIG_ENDIAN, SPARC_CODE, "Sparc", None),
         (CS_ARCH_SPARC, CS_MODE_BIG_ENDIAN + CS_MODE_V9, SPARCV9_CODE, "SparcV9", None),
-        (CS_ARCH_SYSZ, 0, SYSZ_CODE, "SystemZ", None),
+        (CS_ARCH_SYSTEMZ, CS_MODE_BIG_ENDIAN, SYSZ_CODE, "SystemZ", None),
         (CS_ARCH_XCORE, 0, XCORE_CODE, "XCore", None),
         (CS_ARCH_M68K, CS_MODE_BIG_ENDIAN | CS_MODE_M68K_040, M68K_CODE, "M68K (68040)", None),
         (CS_ARCH_M680X, CS_MODE_M680X_6809, M680X_CODE, "M680X_M6809", None),
+        (CS_ARCH_ARC, CS_MODE_LITTLE_ENDIAN, ARC_CODE, "ARC", None),
         )
 
 
@@ -72,6 +74,7 @@ def test_cs_disasm_quick():
 
 # ## Test class Cs
 def test_class():
+    errors = []
     for (arch, mode, code, comment, syntax) in all_tests:
         print('*' * 16)
         print("Platform: %s" % comment)
@@ -91,9 +94,13 @@ def test_class():
             print()
         except CsError as e:
             print("ERROR: %s" % e)
+            errors.append(str(e))
+    return errors
 
 
 # test_cs_disasm_quick()
 # print "*" * 40
 if __name__ == '__main__':
-    test_class()
+    if test_class():
+        print("Some errors happened. Please check the output")
+        exit(1)

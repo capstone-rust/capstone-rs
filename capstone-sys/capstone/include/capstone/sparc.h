@@ -9,6 +9,7 @@ extern "C" {
 #endif
 
 #include "platform.h"
+#include "cs_operand.h"
 
 // GCC SPARC toolchain has a default macro called "sparc" which breaks
 // compilation
@@ -64,14 +65,16 @@ typedef enum sparc_hint {
 	SPARC_HINT_A	= 1 << 0,	///< annul delay slot instruction
 	SPARC_HINT_PT	= 1 << 1,	///< branch taken
 	SPARC_HINT_PN	= 1 << 2,	///< branch NOT taken
+	SPARC_HINT_A_PN	= SPARC_HINT_A | SPARC_HINT_PN,
+	SPARC_HINT_A_PT	= SPARC_HINT_A | SPARC_HINT_PT,
 } sparc_hint;
 
 /// Operand type for instruction's operands
 typedef enum sparc_op_type {
-	SPARC_OP_INVALID = 0, ///< = CS_OP_INVALID (Uninitialized).
-	SPARC_OP_REG, ///< = CS_OP_REG (Register operand).
-	SPARC_OP_IMM, ///< = CS_OP_IMM (Immediate operand).
-	SPARC_OP_MEM, ///< = CS_OP_MEM (Memory operand).
+	SPARC_OP_INVALID = CS_OP_INVALID, ///< = CS_OP_INVALID (Uninitialized).
+	SPARC_OP_REG = CS_OP_REG, ///< = CS_OP_REG (Register operand).
+	SPARC_OP_IMM = CS_OP_IMM, ///< = CS_OP_IMM (Immediate operand).
+	SPARC_OP_MEM = CS_OP_MEM, ///< = CS_OP_MEM (Memory operand).
 } sparc_op_type;
 
 /// SPARC registers
