@@ -268,6 +268,16 @@ macro_rules! arch_info_base {
                 ( both_endian: true )
             ]
             [
+                ( loongarch, LOONGARCH, "arch_loongarch" )
+                ( mode:
+                    LoongArch32,
+                    LoongArch64,
+                    )
+                ( extra_modes: )
+                ( syntax: )
+                ( both_endian: false )
+            ]
+            [
                 ( m680x, M680X, "arch_m680x" )
                 ( mode:
                     M680x6301,
@@ -593,6 +603,14 @@ macro_rules! detail_arch_base {
                 feature = "arch_hppa",
                 /// Returns the HPPA details, if any
                 => arch_name = hppa,
+            ]
+            [
+                detail = LoongArchDetail,
+                insn_detail = LoongArchInsnDetail<'a>,
+                op = LoongArchOperand,
+                feature = "arch_loongarch",
+                /// Returns the LoongArch details, if any
+                => arch_name = loongarch,
             ]
             [
                 detail = M680xDetail,
