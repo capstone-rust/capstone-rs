@@ -93,7 +93,7 @@ fn test_arm_simple() {
     }
 }
 
-#[cfg(feature = "arch_arm64")]
+#[cfg(feature = "arch_aarch64")]
 #[test]
 fn test_aarch64_none() {
     let cs = Capstone::new()
@@ -1158,7 +1158,7 @@ fn test_arch_arm_detail() {
     );
 }
 
-#[cfg(feature = "arch_arm64")]
+#[cfg(feature = "arch_aarch64")]
 #[test]
 fn test_arch_aarch64() {
     test_arch_mode_endian_insns(
@@ -1193,7 +1193,7 @@ fn test_arch_aarch64() {
     );
 }
 
-#[cfg(feature = "arch_arm64")]
+#[cfg(feature = "arch_aarch64")]
 #[test]
 fn test_arch_aarch64_detail() {
     use crate::arch::aarch64::AArch64OperandType::*;
@@ -3081,7 +3081,7 @@ fn test_arch_sparc_detail() {
     );
 }
 
-#[cfg(feature = "arch_sysz")]
+#[cfg(feature = "arch_systemz")]
 #[test]
 fn test_arch_systemz() {
     test_arch_mode_endian_insns(
@@ -3109,7 +3109,7 @@ fn test_arch_systemz() {
     );
 }
 
-#[cfg(feature = "arch_sysz")]
+#[cfg(feature = "arch_systemz")]
 #[test]
 fn test_arch_systemz_detail() {
     use crate::arch::systemz::SystemZOperand::*;
