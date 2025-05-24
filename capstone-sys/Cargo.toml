@@ -59,6 +59,7 @@ support_all_archs = [
     "arch_wasm",
     "arch_x86",
     "arch_xcore",
+    "arch_xtensa",
 ]
 arch_aarch64 = []
 arch_alpha = []
@@ -81,3 +82,4 @@ arch_tricore = []
 arch_wasm = []
 arch_x86 = []
 arch_xcore = []
+arch_xtensa = []
