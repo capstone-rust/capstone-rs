@@ -30,6 +30,10 @@ pub static ARCH_INCLUDES: &[CapstoneArchInfo<'static>] = &[
         cs_name: "aarch64",
     },
     CapstoneArchInfo {
+        header_name: "alpha.h",
+        cs_name: "alpha",
+    },
+    CapstoneArchInfo {
         header_name: "arm.h",
         cs_name: "arm",
     },
