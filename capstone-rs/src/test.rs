@@ -179,6 +179,35 @@ fn test_skipdata() {
     assert_eq!(insns[1].id().0, x86_insn::X86_INS_INSB as u32);
 }
 
+#[cfg(feature = "arch_arm64")]
+#[test]
+fn test_unsigned() {
+    // default is signed
+    let cs = Capstone::new()
+        .arm64()
+        .mode(arm64::ArchMode::Arm)
+        .build()
+        .unwrap();
+
+    let insns = cs.disasm_all(b"\x20\xf0\x5f\xf8", 0x1000).unwrap();
+    let insns: Vec<_> = insns.iter().collect();
+    assert_eq!(insns.len(), 1);
+    assert_eq!(insns[0].op_str(), Some("x0, [x1, #-1]"));
+
+    // this time with unsigned operand
+    let mut cs = Capstone::new()
+        .arm64()
+        .mode(arm64::ArchMode::Arm)
+        .build()
+        .unwrap();
+    cs.set_unsigned(true).unwrap();
+
+    let insns = cs.disasm_all(b"\x20\xf0\x5f\xf8", 0x1000).unwrap();
+    let insns: Vec<_> = insns.iter().collect();
+    assert_eq!(insns.len(), 1);
+    assert_eq!(insns[0].op_str(), Some("x0, [x1, #0xffffffffffffffff]"));
+}
+
 #[cfg(all(feature = "full", feature = "arch_x86"))]
 #[test]
 fn test_detail_true() {
