@@ -200,6 +200,8 @@ define_cs_enum_wrapper!(
     => ARM = CS_ARCH_ARM;
     /// ARM 64-bit (also known as AArch64)
     => AARCH64 = CS_ARCH_AARCH64;
+    /// Alpha
+    => ALPHA = CS_ARCH_ALPHA;
     /// MIPS
     => MIPS = CS_ARCH_MIPS;
     /// x86 family (includes 16, 32, and 64 bit modes)
