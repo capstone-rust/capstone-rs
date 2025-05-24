@@ -56,6 +56,9 @@ pub struct Capstone {
     /// Whether to skipdata when disassembling
     skipdata_enabled: bool,
 
+    /// Whether to print unsigned immediate
+    unsigned_enabled: bool,
+
     /// We *must* set `mode`, `extra_mode`, and `endian` at once because `capstone`
     /// handles them inside the arch-specific handler. We store the bitwise OR of these flags that
     /// can be passed directly to `cs_option()`.
@@ -177,7 +180,8 @@ impl Capstone {
             let syntax = CS_OPT_SYNTAX_DEFAULT;
             let raw_mode = cs_mode(0);
             let detail_enabled = false;
-            let skipdata_enabled = detail_enabled;
+            let skipdata_enabled = false;
+            let unsigned_enabled = false;
 
             let mut cs = Capstone {
                 csh: handle as *mut c_void,
@@ -187,6 +191,7 @@ impl Capstone {
                 extra_mode,
                 detail_enabled,
                 skipdata_enabled,
+                unsigned_enabled,
                 raw_mode,
                 arch,
             };
@@ -361,6 +366,21 @@ impl Capstone {
         // Only update internal state on success
         if result.is_ok() {
             self.skipdata_enabled = enable_skipdata;
+        }
+
+        result
+    }
+
+    /// Controls whether capstone will print immediate operands in unsigned form.
+    ///
+    /// Pass `true` to enable unsigned or `false` to disable unsigned.
+    pub fn set_unsigned(&mut self, enable_unsigned: bool) -> CsResult<()> {
+        let option_value: usize = OptValue::from(enable_unsigned).0 as usize;
+        let result = self._set_cs_option(cs_opt_type::CS_OPT_UNSIGNED, option_value);
+
+        // Only update internal state on success
+        if result.is_ok() {
+            self.unsigned_enabled = enable_unsigned;
         }
 
         result

@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Expose X86 instruction encoding info via `X86InsnDetail::encoding()`
 - Make RegAccessType available for ARM64
 - Rename RegAccessType to AccessType while keeping type alias
+- Expose `CS_OPT_UNSIGNED` via `Capstone::set_unsigned`
 
 ### Changed
 - `InsnDetail::regs_read()`/`InsnDetail::regs_write()` return more of the accessed registers
