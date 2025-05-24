@@ -141,6 +141,7 @@ fn build_capstone_cc() {
         "arch_arm" = CAPSTONE_HAS_ARM,
         "arch_bpf" = CAPSTONE_HAS_BPF,
         "arch_evm" = CAPSTONE_HAS_EVM,
+        "arch_hppa" = CAPSTONE_HAS_HPPA,
         "arch_m680x" = CAPSTONE_HAS_M680X,
         "arch_m68k" = CAPSTONE_HAS_M68K,
         "arch_mips" = CAPSTONE_HAS_MIPS,
@@ -221,9 +222,7 @@ fn impl_insid_to_insenum(bindings: &str) -> String {
             writeln!(
                 impl_arch_enum,
                 "{} => {}_insn::{},",
-                &cap_ins_id["id"],
-                &arch,
-                &cap_ins_id["ins"]
+                &cap_ins_id["id"], &arch, &cap_ins_id["ins"]
             )
             .unwrap();
         }
@@ -242,9 +241,7 @@ fn impl_insid_to_insenum(bindings: &str) -> String {
         write!(
             impl_arch_enum,
             "_ => {}_insn::{}_INS_{},",
-            &arch,
-            arch_str,
-            invalid_str,
+            &arch, arch_str, invalid_str,
         )
         .unwrap();
 
