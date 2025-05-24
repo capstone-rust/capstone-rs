@@ -32,11 +32,11 @@ pub struct HppaOperand {
 }
 
 impl From<&cs_hppa_op> for HppaOperand {
-    fn from(insn: &cs_hppa_op) -> HppaOperand {
-        let op_type = HppaOperandType::new(insn.type_, insn.__bindgen_anon_1);
+    fn from(op: &cs_hppa_op) -> HppaOperand {
+        let op_type = HppaOperandType::new(op.type_, op.__bindgen_anon_1);
         HppaOperand {
             op_type,
-            access: insn.access.try_into().ok(),
+            access: op.access.try_into().ok(),
         }
     }
 }
