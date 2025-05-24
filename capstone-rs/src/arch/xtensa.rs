@@ -71,7 +71,7 @@ pub enum XtensaOperandType {
 
 impl XtensaOperandType {
     fn new(op_type: u8, value: cs_xtensa_operand__bindgen_ty_1) -> XtensaOperandType {
-        match op_type as u32 {
+        match op_type as cs_xtensa_op_type::Type {
             cs_xtensa_op_type::XTENSA_OP_REG => {
                 XtensaOperandType::Reg(RegId(unsafe { value.reg } as RegIdInt))
             }
