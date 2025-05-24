@@ -138,6 +138,7 @@ fn build_capstone_cc() {
     arch_define!(
         "arch_aarch64" = CAPSTONE_HAS_AARCH64,
         "arch_alpha" = CAPSTONE_HAS_ALPHA,
+        "arch_arc" = CAPSTONE_HAS_ARC,
         "arch_arm" = CAPSTONE_HAS_ARM,
         "arch_bpf" = CAPSTONE_HAS_BPF,
         "arch_evm" = CAPSTONE_HAS_EVM,
