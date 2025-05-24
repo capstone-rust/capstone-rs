@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Support for TriCore arch
 - Support for MOS65XX arch
 - Support for SH arch
+- Support for Alpha arch
 - Arch-specific features flags to enable/disable arch support
 - Add `check_only` feature to speed up `cargo check` by building without native code
 
