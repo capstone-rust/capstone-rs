@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - HPPA arch support
 - LoongArch arch support
 - Xtensa arch support
+- ARC arch support
 - Arch-specific features flags to enable/disable arch support
 - Expose X86 instruction encoding info via `X86InsnDetail::encoding()`
 - Make RegAccessType available for ARM64
