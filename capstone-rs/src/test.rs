@@ -2071,6 +2071,126 @@ fn test_arch_hppa_detail() {
     );
 }
 
+#[cfg(feature = "arch_loongarch")]
+#[test]
+fn test_arch_loongarch() {
+    test_arch_mode_endian_insns(
+        &mut Capstone::new()
+            .loongarch()
+            .mode(loongarch::ArchMode::LoongArch32)
+            .build()
+            .unwrap(),
+        Arch::LOONGARCH,
+        Mode::LoongArch32,
+        None,
+        &[],
+        &[
+            ("lu12i.w", b"\x0c\x00\x08\x14"),
+            ("addi.w", b"\x8c\xfd\xbf\x02"),
+        ],
+    );
+}
+
+#[cfg(feature = "arch_loongarch")]
+#[test]
+fn test_arch_loongarch_detail() {
+    use crate::arch::loongarch::{LoongArchOpMem, LoongArchOperand};
+    use capstone_sys::{loongarch_op_mem, loongarch_reg::*};
+
+    test_arch_mode_endian_insns_detail(
+        &mut Capstone::new()
+            .loongarch()
+            .mode(loongarch::ArchMode::LoongArch32)
+            .build()
+            .unwrap(),
+        Arch::LOONGARCH,
+        Mode::LoongArch32,
+        None,
+        &[],
+        &[
+            // lu12i.w $t0, 0x4000
+            DII::new(
+                "lu12i.w",
+                b"\x0c\x00\x08\x14",
+                &[
+                    LoongArchOperand {
+                        op_type: loongarch::LoongArchOperandType::Reg(RegId(
+                            LOONGARCH_REG_T0 as RegIdInt,
+                        )),
+                        access: Some(RegAccessType::WriteOnly),
+                    },
+                    LoongArchOperand {
+                        op_type: loongarch::LoongArchOperandType::Imm(0x4000),
+                        access: Some(RegAccessType::ReadOnly),
+                    },
+                ],
+            ),
+            // addi.w $t0, $t0, -1
+            DII::new(
+                "addi.w",
+                b"\x8c\xfd\xbf\x02",
+                &[
+                    LoongArchOperand {
+                        op_type: loongarch::LoongArchOperandType::Reg(RegId(
+                            LOONGARCH_REG_T0 as RegIdInt,
+                        )),
+                        access: Some(RegAccessType::WriteOnly),
+                    },
+                    LoongArchOperand {
+                        op_type: loongarch::LoongArchOperandType::Reg(RegId(
+                            LOONGARCH_REG_T0 as RegIdInt,
+                        )),
+                        access: Some(RegAccessType::ReadOnly),
+                    },
+                    LoongArchOperand {
+                        op_type: loongarch::LoongArchOperandType::Imm(-1),
+                        access: Some(RegAccessType::ReadOnly),
+                    },
+                ],
+            ),
+        ],
+    );
+
+    test_arch_mode_endian_insns_detail(
+        &mut Capstone::new()
+            .loongarch()
+            .mode(loongarch::ArchMode::LoongArch64)
+            .build()
+            .unwrap(),
+        Arch::LOONGARCH,
+        Mode::LoongArch64,
+        None,
+        &[],
+        &[
+            // st.d $s1, $sp, 8
+            DII::new(
+                "st.d",
+                b"\x78\x20\xc0\x29",
+                &[
+                    LoongArchOperand {
+                        op_type: loongarch::LoongArchOperandType::Reg(RegId(
+                            LOONGARCH_REG_S1 as RegIdInt,
+                        )),
+                        // Upstream bug: should be read only
+                        // https://github.com/capstone-engine/capstone/issues/2700
+                        access: Some(RegAccessType::WriteOnly),
+                    },
+                    LoongArchOperand {
+                        op_type: loongarch::LoongArchOperandType::Mem(LoongArchOpMem(
+                            loongarch_op_mem {
+                                base: LOONGARCH_REG_SP,
+                                index: 0,
+                                disp: 8,
+                            },
+                        )),
+                        access: Some(RegAccessType::WriteOnly),
+                    },
+                ],
+            ),
+        ],
+    );
+}
+
 #[cfg(feature = "arch_m680x")]
 #[test]
 fn test_arch_m680x_detail() {
