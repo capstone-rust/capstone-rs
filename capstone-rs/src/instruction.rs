@@ -518,6 +518,7 @@ impl InsnDetail<'_> {
             [TRICORE, TriCoreDetail, TriCoreInsnDetail, tricore, "arch_tricore"]
             [X86, X86Detail, X86InsnDetail, x86, "arch_x86"]
             [XCORE, XcoreDetail, XcoreInsnDetail, xcore, "arch_xcore"]
+            [XTENSA, XtensaDetail, XtensaInsnDetail, xtensa, "arch_xtensa"]
         );
     }
 }
