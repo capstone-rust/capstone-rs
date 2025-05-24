@@ -25,7 +25,7 @@ Instead, consider using [capstone-rs](https://github.com/capstone-rust/capstone-
 You can specify the following [features](https://doc.rust-lang.org/cargo/reference/manifest.html#the-features-section) in `Cargo.toml`:
 * `use_bindgen`: instead of using the pre-generated Capstone bindings, dynamically generate bindings with [`bindgen`][bindgen].
 * `full` (enabled by default): enable full capstone build instead of diet.
-* `arch_$ARCH` (enabled by default): enable arch `$ARCH` support in capstone, e.g. `arch_arm64` enables arch arm64 support.
+* `arch_$ARCH` (enabled by default): enable arch `$ARCH` support in capstone, e.g. `arch_aarch64` enables arch arm64 support.
 * `support_all_archs` (enabled by default): enable all archs available in capstone, imply all `arch_$ARCH` features.
 
 [bindgen]: https://github.com/rust-lang-nursery/rust-bindgen
