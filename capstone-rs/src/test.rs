@@ -13,6 +13,7 @@ use {alloc::string::String, std::collections::HashSet};
 
 use capstone_sys::cs_group_type;
 use libc::c_uint;
+use pretty_assertions::{assert_eq};
 
 use super::arch::*;
 use super::*;
