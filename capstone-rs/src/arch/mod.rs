@@ -458,6 +458,15 @@ macro_rules! arch_info_base {
                 ( syntax: )
                 ( both_endian: false  )
             ]
+            [
+                ( xtensa, XTENSA, "arch_xtensa" )
+                ( mode:
+                    Default,
+                    )
+                ( extra_modes: )
+                ( syntax: )
+                ( both_endian: false )
+            ]
         );
     };
 }
@@ -677,6 +686,14 @@ macro_rules! detail_arch_base {
                 => arch_name = sparc,
             ]
             [
+                detail = SystemZDetail,
+                insn_detail = SystemZInsnDetail<'a>,
+                op = SystemZOperand,
+                feature = "arch_systemz",
+                /// Returns the SystemZ details, if any
+                => arch_name = systemz,
+            ]
+            [
                 detail = Tms320c64xDetail,
                 insn_detail = Tms320c64xInsnDetail<'a>,
                 op = Tms320c64xOperand,
@@ -709,12 +726,12 @@ macro_rules! detail_arch_base {
                 => arch_name = xcore,
             ]
             [
-                detail = SystemZDetail,
-                insn_detail = SystemZInsnDetail<'a>,
-                op = SystemZOperand,
-                feature = "arch_systemz",
-                /// Returns the SystemZ details, if any
-                => arch_name = systemz,
+                detail = XtensaDetail,
+                insn_detail = XtensaInsnDetail<'a>,
+                op = XtensaOperand,
+                feature = "arch_xtensa",
+                /// Returns the HPPA details, if any
+                => arch_name = xtensa,
             ]
         );
     };

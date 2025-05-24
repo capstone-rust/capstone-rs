@@ -27867,23 +27867,22 @@ pub enum xtensa_insn_form {
 pub struct xtensa_suppl_info {
     pub form: xtensa_insn_form,
 }
-#[repr(u32)]
-#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
-pub enum cs_xtensa_op_type {
+pub mod cs_xtensa_op_type {
+    pub type Type = libc::c_uint;
     #[doc = "< = (Uninitialized)."]
-    XTENSA_OP_INVALID = 0,
+    pub const XTENSA_OP_INVALID: Type = 0;
     #[doc = "< = (Register operand)."]
-    XTENSA_OP_REG = 1,
+    pub const XTENSA_OP_REG: Type = 1;
     #[doc = "< = (Immediate operand)."]
-    XTENSA_OP_IMM = 2,
+    pub const XTENSA_OP_IMM: Type = 2;
     #[doc = "< = (Memory operand)."]
-    XTENSA_OP_MEM = 128,
+    pub const XTENSA_OP_MEM: Type = 128;
     #[doc = "< = (Memory Register operand)."]
-    XTENSA_OP_MEM_REG = 129,
+    pub const XTENSA_OP_MEM_REG: Type = 129;
     #[doc = "< = (Memory Immediate operand)."]
-    XTENSA_OP_MEM_IMM = 130,
+    pub const XTENSA_OP_MEM_IMM: Type = 130;
     #[doc = "< = (L32R Target)"]
-    XTENSA_OP_L32R = 16,
+    pub const XTENSA_OP_L32R: Type = 16;
 }
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
