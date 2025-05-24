@@ -157,6 +157,7 @@ fn build_capstone_cc() {
         "arch_wasm" = CAPSTONE_HAS_WASM,
         "arch_x86" = CAPSTONE_HAS_X86,
         "arch_xcore" = CAPSTONE_HAS_XCORE,
+        "arch_xtensa" = CAPSTONE_HAS_XTENSA,
     );
 
     if !cfg!(feature = "full") {

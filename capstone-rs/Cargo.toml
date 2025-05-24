@@ -57,6 +57,7 @@ support_all_archs = [
     "arch_wasm",
     "arch_x86",
     "arch_xcore",
+    "arch_xtensa",
     "capstone-sys/support_all_archs",
 ]
 arch_aarch64 = ["capstone-sys/arch_aarch64"]
@@ -79,5 +80,6 @@ arch_tricore = ["capstone-sys/arch_tricore"]
 arch_wasm = ["capstone-sys/arch_wasm"]
 arch_x86 = ["capstone-sys/arch_x86"]
 arch_xcore = ["capstone-sys/arch_xcore"]
+arch_xtensa = ["capstone-sys/arch_xtensa"]
 # Can be used to accelerate check builds by not building C code
 check_only = ["capstone-sys/check_only"]
