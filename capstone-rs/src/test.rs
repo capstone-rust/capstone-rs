@@ -2184,7 +2184,7 @@ fn test_arch_loongarch_detail() {
                     LoongArchOperand {
                         op_type: loongarch::LoongArchOperandType::Mem(LoongArchOpMem(
                             loongarch_op_mem {
-                                base: LOONGARCH_REG_SP,
+                                base: LOONGARCH_REG_SP as c_uint,
                                 index: 0,
                                 disp: 8,
                             },
