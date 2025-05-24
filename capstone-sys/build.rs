@@ -119,27 +119,42 @@ fn build_capstone_cc() {
         .files(files)
         .include(format!("{}/{}", CAPSTONE_DIR, "include"))
         .define("CAPSTONE_USE_SYS_DYN_MEM", None)
-        .define("CAPSTONE_HAS_ARM", None)
-        .define("CAPSTONE_HAS_ARM64", None)
-        .define("CAPSTONE_HAS_BPF", None)
-        .define("CAPSTONE_HAS_EVM", None)
-        .define("CAPSTONE_HAS_M680X", None)
-        .define("CAPSTONE_HAS_M68K", None)
-        .define("CAPSTONE_HAS_MIPS", None)
-        .define("CAPSTONE_HAS_MOS65XX", None)
-        .define("CAPSTONE_HAS_POWERPC", None)
-        .define("CAPSTONE_HAS_RISCV", None)
-        .define("CAPSTONE_HAS_SH", None)
-        .define("CAPSTONE_HAS_SPARC", None)
-        .define("CAPSTONE_HAS_SYSZ", None)
-        .define("CAPSTONE_HAS_TMS320C64X", None)
-        .define("CAPSTONE_HAS_TRICORE", None)
-        .define("CAPSTONE_HAS_WASM", None)
-        .define("CAPSTONE_HAS_X86", None)
-        .define("CAPSTONE_HAS_XCORE", None)
         // No need to display any warnings from the C library
         .flag_if_supported("-w")
         .static_crt(use_static_crt);
+
+    macro_rules! arch_define {
+        (
+            $( $feature:literal = $define:ident, )*
+        ) => {
+            $(
+                if cfg!(feature = $feature) {
+                    builder.define(stringify!($define), None);
+                }
+            )*
+        }
+    }
+
+    arch_define!(
+        "arch_arm" = CAPSTONE_HAS_ARM,
+        "arch_arm64" = CAPSTONE_HAS_ARM64,
+        "arch_bpf" = CAPSTONE_HAS_BPF,
+        "arch_evm" = CAPSTONE_HAS_EVM,
+        "arch_m680x" = CAPSTONE_HAS_M680X,
+        "arch_m68k" = CAPSTONE_HAS_M68K,
+        "arch_mips" = CAPSTONE_HAS_MIPS,
+        "arch_mos65xx" = CAPSTONE_HAS_MOS65XX,
+        "arch_powerpc" = CAPSTONE_HAS_POWERPC,
+        "arch_riscv" = CAPSTONE_HAS_RISCV,
+        "arch_sh" = CAPSTONE_HAS_SH,
+        "arch_sparc" = CAPSTONE_HAS_SPARC,
+        "arch_sysz" = CAPSTONE_HAS_SYSZ,
+        "arch_tms320c64x" = CAPSTONE_HAS_TMS320C64X,
+        "arch_tricore" = CAPSTONE_HAS_TRICORE,
+        "arch_wasm" = CAPSTONE_HAS_WASM,
+        "arch_x86" = CAPSTONE_HAS_X86,
+        "arch_xcore" = CAPSTONE_HAS_XCORE,
+    );
 
     if !cfg!(feature = "full") {
         builder.define("CAPSTONE_DIET", "yes");
