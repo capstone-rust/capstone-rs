@@ -61,12 +61,14 @@ fn arch_example(cs: &mut Capstone, code: &[u8]) -> CsResult<()> {
 }
 
 fn example() -> CsResult<()> {
+    #[cfg(feature = "arch_mips")]
     let cs_mips: Capstone = Capstone::new()
         .mips()
         .mode(arch::mips::ArchMode::Mips32R6)
         .detail(true)
         .build()?;
 
+    #[cfg(feature = "arch_x86")]
     let cs_x86 = Capstone::new()
         .x86()
         .mode(arch::x86::ArchMode::Mode64)
@@ -74,7 +76,12 @@ fn example() -> CsResult<()> {
         .detail(true)
         .build()?;
 
-    let mut examples = [("MIPS", cs_mips, MIPS_CODE), ("X86", cs_x86, X86_CODE)];
+    let mut examples = [
+        #[cfg(feature = "arch_mips")]
+        ("MIPS", cs_mips, MIPS_CODE),
+        #[cfg(feature = "arch_x86")]
+        ("X86", cs_x86, X86_CODE),
+    ];
 
     for &mut (arch, ref mut cs, code) in examples.iter_mut() {
         println!("\n*************************************");
