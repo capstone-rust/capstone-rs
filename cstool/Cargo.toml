@@ -6,7 +6,7 @@ license = "MIT"
 edition = "2018"
 
 [dependencies]
-capstone = { path = "../capstone-rs", version = "0.13.0" }
+capstone = { path = "../capstone-rs", version = "0.13.0", default-features = false, features = ["std"] }
 log = "0.4"
 stderrlog = "0.6"
 
@@ -16,5 +16,45 @@ default-features = false
 features = ["error-context", "help", "std", "string", "usage"]
 
 [features]
-default = ["full"]
+default = ["full", "support_all_archs"]
 full = ["capstone/full"]
+
+support_all_archs = [
+    "arch_arm",
+    "arch_arm64",
+    "arch_bpf",
+    "arch_evm",
+    "arch_m680x",
+    "arch_m68k",
+    "arch_mips",
+    "arch_mos65xx",
+    "arch_powerpc",
+    "arch_riscv",
+    "arch_sh",
+    "arch_sparc",
+    "arch_sysz",
+    "arch_tms320c64x",
+    "arch_tricore",
+    "arch_wasm",
+    "arch_x86",
+    "arch_xcore",
+    "capstone/support_all_archs",
+]
+arch_arm = ["capstone/arch_arm"]
+arch_arm64 = ["capstone/arch_arm64"]
+arch_bpf = ["capstone/arch_bpf"]
+arch_evm = ["capstone/arch_evm"]
+arch_m680x = ["capstone/arch_m680x"]
+arch_m68k = ["capstone/arch_m68k"]
+arch_mips = ["capstone/arch_mips"]
+arch_mos65xx = ["capstone/arch_mos65xx"]
+arch_powerpc = ["capstone/arch_powerpc"]
+arch_riscv = ["capstone/arch_riscv"]
+arch_sh = ["capstone/arch_sh"]
+arch_sparc = ["capstone/arch_sparc"]
+arch_sysz = ["capstone/arch_sysz"]
+arch_tms320c64x = ["capstone/arch_tms320c64x"]
+arch_tricore = ["capstone/arch_tricore"]
+arch_wasm = ["capstone/arch_wasm"]
+arch_x86 = ["capstone/arch_x86"]
+arch_xcore = ["capstone/arch_xcore"]
