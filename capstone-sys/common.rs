@@ -102,6 +102,10 @@ pub static ARCH_INCLUDES: &[CapstoneArchInfo<'static>] = &[
         cs_name: "xcore",
     },
     CapstoneArchInfo {
+        header_name: "xtensa.h",
+        cs_name: "xtensa",
+    },
+    CapstoneArchInfo {
         header_name: "bpf.h",
         cs_name: "bpf"
     }
