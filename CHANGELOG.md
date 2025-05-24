@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 ### Added
 - Implement `Send` for `Capstone`, `Instructions`, and `OwnedInsn`
+- Alpha arch support
 
 ### Changed
 - Bump bundled capstone to 6.0.0-Alpha4

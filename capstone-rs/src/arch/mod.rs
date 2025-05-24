@@ -205,6 +205,15 @@ macro_rules! arch_info_base {
     ($x_macro:ident) => {
         $x_macro!(
             [
+                ( aarch64, AARCH64, "arch_aarch64" )
+                ( mode:
+                    Arm,
+                    )
+                ( extra_modes: )
+                ( syntax: )
+                ( both_endian: true )
+            ]
+            [
                 ( arm, ARM, "arch_arm" )
                 ( mode:
                     Arm,
@@ -220,13 +229,23 @@ macro_rules! arch_info_base {
                 ( both_endian: true )
             ]
             [
-                ( aarch64, AARCH64, "arch_aarch64" )
+                ( alpha, ALPHA, "arch_alpha" )
                 ( mode:
-                    Arm,
+                    Default,
                     )
                 ( extra_modes: )
                 ( syntax: )
                 ( both_endian: true )
+            ]
+            [
+                ( bpf, BPF, "arch_bpf" )
+                ( mode:
+                    Cbpf,
+                    Ebpf,
+                )
+                ( extra_modes: )
+                ( syntax: )
+                ( both_endian: true  )
             ]
             [
                 ( evm, EVM, "arch_evm" )
@@ -418,16 +437,6 @@ macro_rules! arch_info_base {
                 ( syntax: )
                 ( both_endian: false  )
             ]
-            [
-                ( bpf, BPF, "arch_bpf" )
-                ( mode:
-                    Cbpf,
-                    Ebpf,
-                )
-                ( extra_modes: )
-                ( syntax: )
-                ( both_endian: true  )
-            ]
         );
     };
 }
@@ -527,6 +536,22 @@ macro_rules! detail_arch_base {
     ($x_macro:ident) => {
         $x_macro!(
             [
+                detail = AArch64Detail,
+                insn_detail = AArch64InsnDetail<'a>,
+                op = AArch64Operand,
+                feature = "arch_aarch64",
+                /// Returns the AARCH64 details, if any
+                => arch_name = aarch64,
+            ]
+            [
+                detail = AlphaDetail,
+                insn_detail = AlphaInsnDetail<'a>,
+                op = AlphaOperand,
+                feature = "arch_alpha",
+                /// Returns the Alpha details, if any
+                => arch_name = alpha,
+            ]
+            [
                 detail = ArmDetail,
                 insn_detail = ArmInsnDetail<'a>,
                 op = ArmOperand,
@@ -535,12 +560,12 @@ macro_rules! detail_arch_base {
                 => arch_name = arm,
             ]
             [
-                detail = AArch64Detail,
-                insn_detail = AArch64InsnDetail<'a>,
-                op = AArch64Operand,
-                feature = "arch_aarch64",
-                /// Returns the AARCH64 details, if any
-                => arch_name = aarch64,
+                detail = BpfDetail,
+                insn_detail = BpfInsnDetail<'a>,
+                op = BpfOperand,
+                feature = "arch_bpf",
+                /// Returns the BPF details, if any
+                => arch_name = bpf,
             ]
             [
                 detail = EvmDetail,
@@ -645,14 +670,6 @@ macro_rules! detail_arch_base {
                 feature = "arch_xcore",
                 /// Returns the XCore details, if any
                 => arch_name = xcore,
-            ]
-            [
-                detail = BpfDetail,
-                insn_detail = BpfInsnDetail<'a>,
-                op = BpfOperand,
-                feature = "arch_bpf",
-                /// Returns the BPF details, if any
-                => arch_name = bpf,
             ]
             [
                 detail = SystemZDetail,
