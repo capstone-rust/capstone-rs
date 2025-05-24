@@ -238,8 +238,8 @@ fn impl_insid_to_insenum(bindings: &str) -> String {
         };
         // special case for alpha, which has `Alpha` instead of `ALPHA`
         let arch_str = match arch {
-            "alpha" => "Alpha",
-            _ => &arch.to_uppercase(),
+            "alpha" => "Alpha".to_string(),
+            _ => arch.to_uppercase(),
         };
         write!(
             impl_arch_enum,
