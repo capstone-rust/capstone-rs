@@ -631,7 +631,7 @@ mod test {
         );
     }
 
-    #[cfg(feature = "full")]
+    #[cfg(all(feature = "full", feature = "arch_m68k"))]
     #[test]
     fn extra_info() {
         use alloc::vec::Vec;

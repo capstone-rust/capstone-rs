@@ -42,6 +42,7 @@ const IRET: cs_group_type::Type = cs_group_type::CS_GRP_IRET;
 /// Used as start address for testing
 const START_TEST_ADDR: u64 = 0x1000;
 
+#[cfg(feature = "arch_x86")]
 #[test]
 fn test_x86_simple() {
     match Capstone::new().x86().mode(x86::ArchMode::Mode64).build() {
@@ -68,6 +69,7 @@ fn test_x86_simple() {
     }
 }
 
+#[cfg(feature = "arch_arm")]
 #[test]
 fn test_arm_simple() {
     match Capstone::new().arm().mode(arm::ArchMode::Arm).build() {
@@ -91,6 +93,7 @@ fn test_arm_simple() {
     }
 }
 
+#[cfg(feature = "arch_arm64")]
 #[test]
 fn test_arm64_none() {
     let cs = Capstone::new()
@@ -101,7 +104,7 @@ fn test_arm64_none() {
     assert!(cs.disasm_all(ARM_CODE, START_TEST_ADDR).unwrap().is_empty());
 }
 
-#[cfg(feature = "full")]
+#[cfg(all(feature = "full", feature = "arch_x86"))]
 #[test]
 fn test_x86_names() {
     match Capstone::new().x86().mode(x86::ArchMode::Mode32).build() {
@@ -138,6 +141,7 @@ fn test_x86_names() {
     }
 }
 
+#[cfg(feature = "arch_x86")]
 #[test]
 fn test_detail_false_fail() {
     let mut cs = Capstone::new()
@@ -153,6 +157,7 @@ fn test_detail_false_fail() {
     assert_eq!(cs.insn_detail(insns[1]).unwrap_err(), Error::DetailOff);
 }
 
+#[cfg(feature = "arch_x86")]
 #[test]
 fn test_skipdata() {
     use capstone_sys::x86_insn;
@@ -174,7 +179,7 @@ fn test_skipdata() {
     assert_eq!(insns[1].id().0, x86_insn::X86_INS_INSB as u32);
 }
 
-#[cfg(feature = "full")]
+#[cfg(all(feature = "full", feature = "arch_x86"))]
 #[test]
 fn test_detail_true() {
     let mut cs1 = Capstone::new()
@@ -487,6 +492,7 @@ fn instructions_match_detail<T>(
     }
 }
 
+#[cfg(feature = "arch_x86")]
 #[test]
 fn test_instruction_details() {
     use crate::arch::x86::X86Reg;
@@ -571,6 +577,7 @@ fn test_extra_mode_helper(
     test_insns_match(&mut cs, valid_extra_mode);
 }
 
+#[cfg(feature = "arch_arm")]
 #[test]
 fn test_extra_mode() {
     test_extra_mode_helper(
@@ -654,7 +661,7 @@ fn test_arch_mode_endian_insns_detail<T>(
     instructions_match_detail(cs, insns, true);
 }
 
-#[cfg(feature = "full")]
+#[cfg(all(feature = "full", feature = "arch_x86"))]
 #[test]
 fn test_syntax() {
     use crate::arch::x86::X86Reg;
@@ -755,6 +762,7 @@ fn test_syntax() {
 }
 
 // @todo(tmfink) test invalid syntax once we check for invalid options
+#[cfg(feature = "arch_arm")]
 #[test]
 fn test_invalid_syntax() {
     // These do no support any syntax change
@@ -820,6 +828,7 @@ fn test_capstone_is_diet() {
     println!("Capstone is diet: {}", Capstone::is_diet());
 }
 
+#[cfg(feature = "arch_arm")]
 #[test]
 fn test_arch_arm() {
     test_arch_mode_endian_insns(
@@ -930,6 +939,7 @@ fn test_arch_arm() {
     );
 }
 
+#[cfg(feature = "arch_arm")]
 #[test]
 fn test_arch_arm_detail() {
     use crate::arch::arm::ArmOperandType::*;
@@ -1084,6 +1094,7 @@ fn test_arch_arm_detail() {
     );
 }
 
+#[cfg(feature = "arch_arm64")]
 #[test]
 fn test_arch_arm64() {
     test_arch_mode_endian_insns(
@@ -1118,6 +1129,7 @@ fn test_arch_arm64() {
     );
 }
 
+#[cfg(feature = "arch_arm64")]
 #[test]
 fn test_arch_arm64_detail() {
     use crate::arch::arm64::Arm64OperandType::*;
@@ -1514,6 +1526,7 @@ fn test_arch_arm64_detail() {
     );
 }
 
+#[cfg(feature = "arch_bpf")]
 #[test]
 fn test_arch_bpf_cbpf() {
     let cs = Capstone::new()
@@ -1559,6 +1572,7 @@ fn test_arch_bpf_cbpf() {
     }
 }
 
+#[cfg(feature = "arch_bpf")]
 #[test]
 fn test_arch_bpf_ebpf() {
     let cs = Capstone::new()
@@ -1604,6 +1618,7 @@ fn test_arch_bpf_ebpf() {
     }
 }
 
+#[cfg(feature = "arch_bpf")]
 #[test]
 fn test_arch_bpf_detail() {
     use crate::arch::bpf::BpfOperand::*;
@@ -1682,6 +1697,7 @@ fn test_arch_bpf_detail() {
     );
 }
 
+#[cfg(feature = "arch_evm")]
 #[test]
 fn test_arch_evm() {
     test_arch_mode_endian_insns(
@@ -1698,6 +1714,7 @@ fn test_arch_evm() {
     );
 }
 
+#[cfg(feature = "arch_evm")]
 #[test]
 fn test_arch_evm_detail() {
     let ops: &[arch::m68k::M68kOperand] = &[];
@@ -1715,6 +1732,7 @@ fn test_arch_evm_detail() {
     );
 }
 
+#[cfg(feature = "arch_m680x")]
 #[test]
 fn test_arch_m680x_detail() {
     use crate::arch::m680x::M680xOperandType::*;
@@ -2109,6 +2127,7 @@ fn test_arch_m680x_detail() {
     );
 }
 
+#[cfg(feature = "arch_m68k")]
 #[test]
 fn test_arch_m68k_detail() {
     use crate::arch::m68k::M68kOperand::*;
@@ -2307,6 +2326,7 @@ fn test_arch_m68k_detail() {
     );
 }
 
+#[cfg(feature = "arch_mips")]
 #[test]
 fn test_arch_mips() {
     test_arch_mode_endian_insns(
@@ -2364,6 +2384,7 @@ fn test_arch_mips() {
     );
 }
 
+#[cfg(feature = "arch_mips")]
 #[test]
 fn test_arch_mips_detail() {
     use crate::arch::mips::MipsOperand::*;
@@ -2420,6 +2441,7 @@ fn test_arch_mips_detail() {
     );
 }
 
+#[cfg(feature = "arch_mos65xx")]
 #[test]
 fn test_arch_mos65xx() {
     test_arch_mode_endian_insns(
@@ -2481,6 +2503,7 @@ fn test_arch_mos65xx() {
     );
 }
 
+#[cfg(feature = "arch_mos65xx")]
 #[test]
 fn test_arch_mos65xx_detail() {
     use crate::arch::mos65xx::Mos65xxOperand::*;
@@ -2554,6 +2577,7 @@ fn test_arch_mos65xx_detail() {
     );
 }
 
+#[cfg(feature = "arch_powerpc")]
 #[test]
 fn test_arch_ppc() {
     test_arch_mode_endian_insns(
@@ -2586,6 +2610,7 @@ fn test_arch_ppc() {
     );
 }
 
+#[cfg(feature = "arch_powerpc")]
 #[test]
 fn test_arch_ppc_detail() {
     use crate::arch::ppc::PpcOperand::*;
@@ -2700,6 +2725,7 @@ fn test_arch_ppc_detail() {
     );
 }
 
+#[cfg(feature = "arch_sh")]
 #[test]
 fn test_arch_sh() {
     test_arch_mode_endian_insns(
@@ -2720,6 +2746,7 @@ fn test_arch_sh() {
     );
 }
 
+#[cfg(feature = "arch_sh")]
 #[test]
 fn test_arch_sh_detail() {
     use crate::arch::sh::ShOpMem;
@@ -2778,6 +2805,7 @@ fn test_arch_sh_detail() {
     );
 }
 
+#[cfg(feature = "arch_sparc")]
 #[test]
 fn test_arch_sparc() {
     test_arch_mode_endian_insns(
@@ -2829,6 +2857,7 @@ fn test_arch_sparc() {
     );
 }
 
+#[cfg(feature = "arch_sparc")]
 #[test]
 fn test_arch_sparc_detail() {
     use crate::arch::sparc::SparcOperand::*;
@@ -2996,6 +3025,7 @@ fn test_arch_sparc_detail() {
     );
 }
 
+#[cfg(feature = "arch_sysz")]
 #[test]
 fn test_arch_systemz() {
     test_arch_mode_endian_insns(
@@ -3022,6 +3052,7 @@ fn test_arch_systemz() {
     );
 }
 
+#[cfg(feature = "arch_sysz")]
 #[test]
 fn test_arch_systemz_detail() {
     use crate::arch::sysz::SysZOperand::*;
@@ -3081,6 +3112,7 @@ fn test_arch_systemz_detail() {
     );
 }
 
+#[cfg(feature = "arch_tms320c64x")]
 #[test]
 fn test_arch_tms320c64x_detail() {
     use crate::arch::tms320c64x::{
@@ -3218,6 +3250,7 @@ fn test_arch_tms320c64x_detail() {
     );
 }
 
+#[cfg(feature = "arch_tricore")]
 #[test]
 fn test_arch_tricore() {
     test_arch_mode_endian_insns(
@@ -3234,6 +3267,7 @@ fn test_arch_tricore() {
     );
 }
 
+#[cfg(feature = "arch_tricore")]
 #[test]
 fn test_arch_tricore_detail() {
     use crate::arch::tricore::TriCoreOpMem;
@@ -3268,6 +3302,7 @@ fn test_arch_tricore_detail() {
     );
 }
 
+#[cfg(feature = "arch_x86")]
 #[test]
 fn test_arch_x86() {
     test_arch_mode_endian_insns(
@@ -3336,6 +3371,7 @@ fn test_arch_x86() {
     );
 }
 
+#[cfg(feature = "arch_x86")]
 #[test]
 fn test_arch_x86_detail() {
     use crate::arch::x86::X86OperandType::*;
@@ -3580,6 +3616,7 @@ fn test_arch_x86_detail() {
     );
 }
 
+#[cfg(feature = "arch_xcore")]
 #[test]
 fn test_arch_xcore() {
     test_arch_mode_endian_insns(
@@ -3608,6 +3645,7 @@ fn test_arch_xcore() {
 }
 
 // XXX todo(tmfink) investigate upstream xcore operand bugs
+#[cfg(feature = "arch_xcore")]
 #[test]
 fn test_arch_xcore_detail() {
     use crate::arch::xcore::XcoreOperand::*;
@@ -3724,6 +3762,7 @@ fn test_arch_xcore_detail() {
     );
 }
 
+#[cfg(feature = "arch_riscv")]
 #[test]
 fn test_arch_riscv() {
     test_arch_mode_endian_insns(
@@ -3749,6 +3788,7 @@ fn test_arch_riscv() {
     );
 }
 
+#[cfg(feature = "arch_riscv")]
 #[test]
 fn test_arch_riscv_detail() {
     use crate::arch::riscv::RiscVOperand::*;
@@ -3832,6 +3872,7 @@ fn test_arch_riscv_detail() {
     );
 }
 
+#[cfg(feature = "arch_x86")]
 #[test]
 fn test_insn_size_and_alignment() {
     use capstone_sys::cs_insn;
@@ -3870,6 +3911,7 @@ fn test_insn_size_and_alignment() {
     }
 }
 
+#[cfg(feature = "arch_x86")]
 #[test]
 fn test_insn_from_raw() {
     use capstone_sys::cs_insn;
@@ -3888,6 +3930,7 @@ fn test_insn_from_raw() {
     }
 }
 
+#[cfg(feature = "arch_x86")]
 #[test]
 fn test_owned_insn() {
     let cs = Capstone::new()
@@ -4009,7 +4052,7 @@ fn test_regs_access(
     assert_regs_access_matches(&mut cs, code, expected_regs_access);
 }
 
-#[cfg(feature = "full")]
+#[cfg(all(feature = "full", feature = "arch_arm"))]
 #[test]
 fn test_regs_access_arm() {
     use crate::arch::arm::ArmReg::*;
@@ -4030,7 +4073,7 @@ fn test_regs_access_arm() {
     );
 }
 
-#[cfg(feature = "full")]
+#[cfg(all(feature = "full", feature = "arch_tms320c64x"))]
 #[test]
 fn test_regs_tms320c64x() {
     test_regs_access(
