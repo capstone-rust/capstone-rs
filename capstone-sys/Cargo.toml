@@ -32,7 +32,46 @@ regex = { optional = true, version = "1.10.4" }
 cc = "1.0"
 
 [features]
-default = ["full"]
+default = ["full", "support_all_archs"]
 full = []
 # use pre-generated bindings instead of dynamically with bindgen
 use_bindgen = ["bindgen", "regex"]  # Dynamically generate bindings with bindgen
+# arch specific features to reduce binary size
+support_all_archs = [
+    "arch_arm",
+    "arch_arm64",
+    "arch_bpf",
+    "arch_evm",
+    "arch_m680x",
+    "arch_m68k",
+    "arch_mips",
+    "arch_mos65xx",
+    "arch_powerpc",
+    "arch_riscv",
+    "arch_sh",
+    "arch_sparc",
+    "arch_sysz",
+    "arch_tms320c64x",
+    "arch_tricore",
+    "arch_wasm",
+    "arch_x86",
+    "arch_xcore",
+]
+arch_arm = []
+arch_arm64 = []
+arch_bpf = []
+arch_evm = []
+arch_m680x = []
+arch_m68k = []
+arch_mips = []
+arch_mos65xx = []
+arch_powerpc = []
+arch_riscv = []
+arch_sh = []
+arch_sparc = []
+arch_sysz = []
+arch_tms320c64x = []
+arch_tricore = []
+arch_wasm = []
+arch_x86 = []
+arch_xcore = []
