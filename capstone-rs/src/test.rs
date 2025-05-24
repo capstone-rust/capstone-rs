@@ -1055,7 +1055,7 @@ fn test_arch_arm_detail() {
     use crate::arch::arm::ArmOperandType::*;
     use crate::arch::arm::*;
     use capstone_sys::arm_op_mem;
-    use capstone_sys::arm_spsr_cspr_bits::*;
+    use capstone_sys::arm_spsr_cspr_bits;
 
     let r0_op_read = ArmOperand {
         op_type: Reg(RegId(ArmReg::ARM_REG_R0 as RegIdInt)),
@@ -1195,9 +1195,10 @@ fn test_arch_arm_detail() {
                 b"\x01\xf0\x29\xe1",
                 &[
                     ArmOperand {
-                        op_type: Cpsr(ArmSpsrCpsrBits(
-                            ARM_FIELD_CPSR_F as u32 | ARM_FIELD_CPSR_C as u32,
-                        )),
+                        op_type: Cpsr(
+                            arm_spsr_cspr_bits::ARM_FIELD_CPSR_F
+                                | arm_spsr_cspr_bits::ARM_FIELD_CPSR_C,
+                        ),
                         access: Some(RegAccessType::WriteOnly),
                         ..Default::default()
                     },
