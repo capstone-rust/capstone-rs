@@ -469,39 +469,46 @@ impl InsnDetail<'_> {
     pub fn arch_detail(&self) -> ArchDetail {
         macro_rules! def_arch_detail_match {
             (
-                $( [ $ARCH:ident, $detail:ident, $insn_detail:ident, $arch:ident ] )*
+                $( [ $ARCH:ident, $detail:ident, $insn_detail:ident, $arch:ident, $feature:literal ] )*
             ) => {
                 use self::ArchDetail::*;
                 use crate::Arch::*;
-                $( use crate::arch::$arch::$insn_detail; )*
+                $(
+                    #[cfg(feature = $feature)]
+                    use crate::arch::$arch::$insn_detail;
+                )*
 
                 return match self.arch {
                     $(
+                        #[cfg(feature = $feature)]
                         $ARCH => {
                             $detail($insn_detail(unsafe { &self.detail.__bindgen_anon_1.$arch }))
                         }
-                    )*
+                    )*,
+                    // handle disabled archs if not all archs are enabled
+                    #[allow(unreachable_patterns)]
+                    _ => panic!("Cannot convert to arch-specific detail of disabled arch ")
                 }
             }
         }
         def_arch_detail_match!(
-            [ARM, ArmDetail, ArmInsnDetail, arm]
-            [ARM64, Arm64Detail, Arm64InsnDetail, arm64]
-            [BPF, BpfDetail, BpfInsnDetail, bpf]
-            [EVM, EvmDetail, EvmInsnDetail, evm]
-            [M680X, M680xDetail, M680xInsnDetail, m680x]
-            [M68K, M68kDetail, M68kInsnDetail, m68k]
-            [MIPS, MipsDetail, MipsInsnDetail, mips]
-            [MOS65XX, Mos65xxDetail, Mos65xxInsnDetail, mos65xx]
-            [PPC, PpcDetail, PpcInsnDetail, ppc]
-            [RISCV, RiscVDetail, RiscVInsnDetail, riscv]
-            [SH, ShDetail, ShInsnDetail, sh]
-            [SPARC, SparcDetail, SparcInsnDetail, sparc]
-            [SYSZ, SysZDetail, SysZInsnDetail, sysz]
-            [TMS320C64X, Tms320c64xDetail, Tms320c64xInsnDetail, tms320c64x]
-            [TRICORE, TriCoreDetail, TriCoreInsnDetail, tricore]
-            [X86, X86Detail, X86InsnDetail, x86]
-            [XCORE, XcoreDetail, XcoreInsnDetail, xcore]
+            [ARM, ArmDetail, ArmInsnDetail, arm, "arch_arm"]
+            [ARM64, Arm64Detail, Arm64InsnDetail, arm64, "arch_arm64"]
+            [BPF, BpfDetail, BpfInsnDetail, bpf, "arch_bpf"]
+            [EVM, EvmDetail, EvmInsnDetail, evm, "arch_evm"]
+            [M680X, M680xDetail, M680xInsnDetail, m680x, "arch_m680x"]
+            [M68K, M68kDetail, M68kInsnDetail, m68k, "arch_m68k"]
+            [MIPS, MipsDetail, MipsInsnDetail, mips, "arch_mips"]
+            [MOS65XX, Mos65xxDetail, Mos65xxInsnDetail, mos65xx, "arch_mos65xx"]
+            [PPC, PpcDetail, PpcInsnDetail, ppc, "arch_powerpc"]
+            [RISCV, RiscVDetail, RiscVInsnDetail, riscv, "arch_riscv"]
+            [SH, ShDetail, ShInsnDetail, sh, "arch_sh"]
+            [SPARC, SparcDetail, SparcInsnDetail, sparc, "arch_sparc"]
+            [SYSZ, SysZDetail, SysZInsnDetail, sysz, "arch_sysz"]
+            [TMS320C64X, Tms320c64xDetail, Tms320c64xInsnDetail, tms320c64x, "arch_tms320c64x"]
+            [TRICORE, TriCoreDetail, TriCoreInsnDetail, tricore, "arch_tricore"]
+            [X86, X86Detail, X86InsnDetail, x86, "arch_x86"]
+            [XCORE, XcoreDetail, XcoreInsnDetail, xcore, "arch_xcore"]
         );
     }
 }

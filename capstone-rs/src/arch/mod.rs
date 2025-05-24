@@ -82,7 +82,7 @@ macro_rules! define_arch_builder {
     // Entrance rule
     (
         $( [
-            ( $arch:ident, $arch_variant:ident )
+            ( $arch:ident, $arch_variant:ident, $feature:literal )
             ( mode: $( $mode:ident, )+ )
             ( extra_modes: $( $extra_mode:ident, )* )
             ( syntax: $( $syntax:ident, )* )
@@ -94,6 +94,7 @@ macro_rules! define_arch_builder {
 
         $(
             /// Architecture-specific build code
+            #[cfg(feature = $feature)]
             pub mod $arch {
                 use alloc::vec::Vec;
 
@@ -185,6 +186,7 @@ macro_rules! define_arch_builder {
 
         impl CapstoneBuilder {
             $(
+                #[cfg(feature = $feature)]
                 pub fn $arch(self) -> $arch::ArchCapstoneBuilder {
                     Default::default()
                 }
@@ -203,7 +205,7 @@ macro_rules! arch_info_base {
     ($x_macro:ident) => {
         $x_macro!(
             [
-                ( arm, ARM )
+                ( arm, ARM, "arch_arm" )
                 ( mode:
                     Arm,
                     Thumb,
@@ -218,7 +220,7 @@ macro_rules! arch_info_base {
                 ( both_endian: true )
             ]
             [
-                ( arm64, ARM64 )
+                ( arm64, ARM64, "arch_arm64" )
                 ( mode:
                     Arm,
                     )
@@ -227,7 +229,7 @@ macro_rules! arch_info_base {
                 ( both_endian: true )
             ]
             [
-                ( evm, EVM )
+                ( evm, EVM, "arch_evm" )
                 ( mode:
                     Default,
                     )
@@ -236,7 +238,7 @@ macro_rules! arch_info_base {
                 ( both_endian: false )
             ]
             [
-                ( m680x, M680X )
+                ( m680x, M680X, "arch_m680x" )
                 ( mode:
                     M680x6301,
                     M680x6309,
@@ -254,7 +256,7 @@ macro_rules! arch_info_base {
                 ( both_endian: false )
             ]
             [
-                ( m68k, M68K )
+                ( m68k, M68K, "arch_m68k" )
                 ( mode:
                     M68k000,
                     M68k010,
@@ -267,7 +269,7 @@ macro_rules! arch_info_base {
                 ( both_endian: false )
             ]
             [
-                ( mips, MIPS )
+                ( mips, MIPS, "arch_mips" )
                 ( mode:
                     Mips32,
                     Mips64,
@@ -282,7 +284,7 @@ macro_rules! arch_info_base {
                 ( both_endian: true )
             ]
             [
-                ( mos65xx, MOS65XX )
+                ( mos65xx, MOS65XX, "arch_mos65xx" )
                 ( mode:
                     Mos65xx6502,
                     Mos65xx65c02,
@@ -297,7 +299,7 @@ macro_rules! arch_info_base {
                 ( both_endian: false )
             ]
             [
-                ( ppc, PPC )
+                ( ppc, PPC, "arch_powerpc" )
                 ( mode:
                     Mode32,
                     Mode64,
@@ -310,7 +312,7 @@ macro_rules! arch_info_base {
                 ( both_endian: true )
             ]
             [
-                ( riscv, RISCV )
+                ( riscv, RISCV, "arch_riscv" )
                 ( mode:
                     RiscV32,
                     RiscV64,
@@ -322,7 +324,7 @@ macro_rules! arch_info_base {
                 ( both_endian: true )
             ]
             [
-                ( sh, SH )
+                ( sh, SH, "arch_sh" )
                 ( mode:
                     Sh2,
                     Sh2a,
@@ -337,7 +339,7 @@ macro_rules! arch_info_base {
                 ( both_endian: false )
             ]
             [
-                ( sparc, SPARC )
+                ( sparc, SPARC, "arch_sparc" )
                 ( mode:
                     Default,
                     V9,
@@ -347,7 +349,7 @@ macro_rules! arch_info_base {
                 ( both_endian: false )
             ]
             [
-                ( sysz, SYSZ )
+                ( sysz, SYSZ, "arch_sysz" )
                 ( mode:
                     Default,
                     )
@@ -356,7 +358,7 @@ macro_rules! arch_info_base {
                 ( both_endian: false )
             ]
             [
-                ( tms320c64x, TMS320C64X )
+                ( tms320c64x, TMS320C64X, "arch_tms320c64x" )
                 ( mode:
                     Default,
                     )
@@ -365,7 +367,7 @@ macro_rules! arch_info_base {
                 ( both_endian: true )
             ]
             [
-                ( tricore, TRICORE )
+                ( tricore, TRICORE, "arch_tricore" )
                 ( mode:
                     TriCore110,
                     TriCore120,
@@ -380,7 +382,7 @@ macro_rules! arch_info_base {
                 ( both_endian: true )
             ]
             [
-                ( x86, X86 )
+                ( x86, X86, "arch_x86" )
                 ( mode:
                     Mode16,
                     Mode32,
@@ -395,7 +397,7 @@ macro_rules! arch_info_base {
                 ( both_endian: false )
             ]
             [
-                ( xcore, XCORE )
+                ( xcore, XCORE, "arch_xcore" )
                 ( mode:
                     Default,
                     )
@@ -404,7 +406,7 @@ macro_rules! arch_info_base {
                 ( both_endian: false  )
             ]
             [
-                ( bpf, BPF )
+                ( bpf, BPF, "arch_bpf" )
                 ( mode:
                     Cbpf,
                     Ebpf,
@@ -515,6 +517,7 @@ macro_rules! detail_arch_base {
                 detail = ArmDetail,
                 insn_detail = ArmInsnDetail<'a>,
                 op = ArmOperand,
+                feature = "arch_arm",
                 /// Returns the ARM details, if any
                 => arch_name = arm,
             ]
@@ -522,6 +525,7 @@ macro_rules! detail_arch_base {
                 detail = Arm64Detail,
                 insn_detail = Arm64InsnDetail<'a>,
                 op = Arm64Operand,
+                feature = "arch_arm64",
                 /// Returns the ARM64 details, if any
                 => arch_name = arm64,
             ]
@@ -529,6 +533,7 @@ macro_rules! detail_arch_base {
                 detail = EvmDetail,
                 insn_detail = EvmInsnDetail<'a>,
                 op = EvmOperand,
+                feature = "arch_evm",
                 /// Returns the EVM details, if any
                 => arch_name = evm,
             ]
@@ -536,6 +541,7 @@ macro_rules! detail_arch_base {
                 detail = M680xDetail,
                 insn_detail = M680xInsnDetail<'a>,
                 op = M680xOperand,
+                feature = "arch_m680x",
                 /// Returns the M680X details, if any
                 => arch_name = m680x,
             ]
@@ -543,6 +549,7 @@ macro_rules! detail_arch_base {
                 detail = M68kDetail,
                 insn_detail = M68kInsnDetail<'a>,
                 op = M68kOperand,
+                feature = "arch_m68k",
                 /// Returns the M68K details, if any
                 => arch_name = m68k,
             ]
@@ -550,6 +557,7 @@ macro_rules! detail_arch_base {
                 detail = MipsDetail,
                 insn_detail = MipsInsnDetail<'a>,
                 op = MipsOperand,
+                feature = "arch_mips",
                 /// Returns the MIPS details, if any
                 => arch_name = mips,
             ]
@@ -557,6 +565,7 @@ macro_rules! detail_arch_base {
                 detail = Mos65xxDetail,
                 insn_detail = Mos65xxInsnDetail<'a>,
                 op = Mos65xxOperand,
+                feature = "arch_mos65xx",
                 /// Returns the Mos65xx details, if any
                 => arch_name = mos65xx,
             ]
@@ -564,6 +573,7 @@ macro_rules! detail_arch_base {
                 detail = PpcDetail,
                 insn_detail = PpcInsnDetail<'a>,
                 op = PpcOperand,
+                feature = "arch_powerpc",
                 /// Returns the PPC details, if any
                 => arch_name = ppc,
             ]
@@ -571,6 +581,7 @@ macro_rules! detail_arch_base {
                 detail = RiscVDetail,
                 insn_detail = RiscVInsnDetail<'a>,
                 op = RiscVOperand,
+                feature = "arch_riscv",
                 /// Returns the RISCV details, if any
                 => arch_name = riscv,
             ]
@@ -578,6 +589,7 @@ macro_rules! detail_arch_base {
                 detail = ShDetail,
                 insn_detail = ShInsnDetail<'a>,
                 op = ShOperand,
+                feature = "arch_sh",
                 /// Returns the SH details, if any
                 => arch_name = sh,
             ]
@@ -585,6 +597,7 @@ macro_rules! detail_arch_base {
                 detail = SparcDetail,
                 insn_detail = SparcInsnDetail<'a>,
                 op = SparcOperand,
+                feature = "arch_sparc",
                 /// Returns the SPARC details, if any
                 => arch_name = sparc,
             ]
@@ -592,6 +605,7 @@ macro_rules! detail_arch_base {
                 detail = Tms320c64xDetail,
                 insn_detail = Tms320c64xInsnDetail<'a>,
                 op = Tms320c64xOperand,
+                feature = "arch_tms320c64x",
                 /// Returns the Tms320c64x details, if any
                 => arch_name = tms320c64x,
             ]
@@ -599,6 +613,7 @@ macro_rules! detail_arch_base {
                 detail = TriCoreDetail,
                 insn_detail = TriCoreInsnDetail<'a>,
                 op = TriCoreOperand,
+                feature = "arch_tricore",
                 /// Returns the TriCore details, if any
                 => arch_name = tricore,
             ]
@@ -606,6 +621,7 @@ macro_rules! detail_arch_base {
                 detail = X86Detail,
                 insn_detail = X86InsnDetail<'a>,
                 op = X86Operand,
+                feature = "arch_x86",
                 /// Returns the X86 details, if any
                 => arch_name = x86,
             ]
@@ -613,6 +629,7 @@ macro_rules! detail_arch_base {
                 detail = XcoreDetail,
                 insn_detail = XcoreInsnDetail<'a>,
                 op = XcoreOperand,
+                feature = "arch_xcore",
                 /// Returns the XCore details, if any
                 => arch_name = xcore,
             ]
@@ -620,6 +637,7 @@ macro_rules! detail_arch_base {
                 detail = BpfDetail,
                 insn_detail = BpfInsnDetail<'a>,
                 op = BpfOperand,
+                feature = "arch_bpf",
                 /// Returns the BPF details, if any
                 => arch_name = bpf,
             ]
@@ -627,6 +645,7 @@ macro_rules! detail_arch_base {
                 detail = SysZDetail,
                 insn_detail = SysZInsnDetail<'a>,
                 op = SysZOperand,
+                feature = "arch_sysz",
                 /// Returns the SysZ details, if any
                 => arch_name = sysz,
             ]
@@ -641,11 +660,13 @@ macro_rules! detail_defs {
             detail = $Detail:tt,
             insn_detail = $InsnDetail:ty,
             op = $Operand:tt,
+            feature = $feature:literal,
             $( #[$func_attr:meta] )+
             => arch_name = $arch_name:ident,
         ] )+
     ) => {
         $(
+            #[cfg(feature = $feature)]
             use self::$arch_name::*;
         )+
 
@@ -656,13 +677,19 @@ macro_rules! detail_defs {
         /// instead of a match statement.
         #[derive(Debug)]
         pub enum ArchDetail<'a> {
-            $( $Detail($InsnDetail), )+
+            $(
+                #[cfg(feature = $feature)]
+                $Detail($InsnDetail),
+            )+
         }
 
         /// Architecture-independent enum of operands
         #[derive(Clone, Debug, PartialEq)]
         pub enum ArchOperand {
-            $( $Operand($Operand), )+
+            $(
+                #[cfg(feature = $feature)]
+                $Operand($Operand),
+            )+
         }
 
         impl<'a> ArchDetail<'a> {
@@ -670,6 +697,7 @@ macro_rules! detail_defs {
             pub fn operands(&'a self) -> Vec<ArchOperand> {
                 match *self {
                     $(
+                        #[cfg(feature = $feature)]
                         ArchDetail::$Detail(ref detail) => {
                             let ops = detail.operands();
                             let map = ops.map(ArchOperand::from);
@@ -682,7 +710,10 @@ macro_rules! detail_defs {
 
             $(
                 $( #[$func_attr] )+
+                #[cfg(feature = $feature)]
                 pub fn $arch_name(&'a self) -> Option<&'a $InsnDetail> {
+                    // disable warnings when only one arch is enabled
+                    #[allow(irrefutable_let_patterns)]
                     if let ArchDetail::$Detail(ref arch_detail) = *self {
                         Some(arch_detail)
                     } else {
@@ -693,6 +724,7 @@ macro_rules! detail_defs {
         }
 
         $(
+            #[cfg(feature = $feature)]
             impl From<$Operand> for ArchOperand {
                 fn from(op: $Operand) -> ArchOperand {
                     ArchOperand::$Operand(op)
@@ -780,14 +812,17 @@ detail_arch_base!(detail_defs);
 macro_rules! define_arch_mods {
     (
         $( [
-            ( $arch:ident, $arch_variant:ident )
+            ( $arch:ident, $arch_variant:ident, $feature:literal )
             ( mode: $( $mode:ident, )+ )
             ( extra_modes: $( $extra_mode:ident, )* )
             ( syntax: $( $syntax:ident, )* )
             ( both_endian: $( $endian:expr )* )
         ] )+
     ) => {
-        $( pub mod $arch; )+
+        $(
+            #[cfg(feature = $feature)]
+            pub mod $arch;
+        )+
     }
 }
 
