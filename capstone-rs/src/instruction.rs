@@ -503,6 +503,7 @@ impl InsnDetail<'_> {
             [ARM, ArmDetail, ArmInsnDetail, arm, "arch_arm"]
             [BPF, BpfDetail, BpfInsnDetail, bpf, "arch_bpf"]
             [EVM, EvmDetail, EvmInsnDetail, evm, "arch_evm"]
+            [HPPA, HppaDetail, HppaInsnDetail, hppa, "arch_hppa"]
             [M680X, M680xDetail, M680xInsnDetail, m680x, "arch_m680x"]
             [M68K, M68kDetail, M68kInsnDetail, m68k, "arch_m68k"]
             [MIPS, MipsDetail, MipsInsnDetail, mips, "arch_mips"]

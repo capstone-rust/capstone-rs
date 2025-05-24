@@ -1704,7 +1704,7 @@ fn test_arch_alpha_detail() {
                     },
                     AlphaOperand {
                         access: Some(RegAccessType::ReadOnly),
-                        op_type: AlphaOperandType::Imm(2)
+                        op_type: AlphaOperandType::Imm(2),
                     },
                     AlphaOperand {
                         access: Some(RegAccessType::ReadOnly),
@@ -1723,7 +1723,7 @@ fn test_arch_alpha_detail() {
                     },
                     AlphaOperand {
                         access: Some(RegAccessType::ReadOnly),
-                        op_type: AlphaOperandType::Imm(0x7a50)
+                        op_type: AlphaOperandType::Imm(0x7a50),
                     },
                     AlphaOperand {
                         access: Some(RegAccessType::ReadOnly),
@@ -1757,7 +1757,7 @@ fn test_arch_alpha_detail() {
                     },
                     AlphaOperand {
                         access: Some(RegAccessType::ReadOnly),
-                        op_type: AlphaOperandType::Imm(2)
+                        op_type: AlphaOperandType::Imm(2),
                     },
                     AlphaOperand {
                         access: Some(RegAccessType::ReadOnly),
@@ -1776,7 +1776,7 @@ fn test_arch_alpha_detail() {
                     },
                     AlphaOperand {
                         access: Some(RegAccessType::ReadOnly),
-                        op_type: AlphaOperandType::Imm(0x7a50)
+                        op_type: AlphaOperandType::Imm(0x7a50),
                     },
                     AlphaOperand {
                         access: Some(RegAccessType::ReadOnly),
@@ -1991,6 +1991,83 @@ fn test_arch_evm_detail() {
         None,
         &[],
         &[DII::new("push1", b"\x60\x61", ops)],
+    );
+}
+
+#[cfg(feature = "arch_hppa")]
+#[test]
+fn test_arch_hppa() {
+    test_arch_mode_endian_insns(
+        &mut Capstone::new()
+            .hppa()
+            .mode(hppa::ArchMode::Hppa20)
+            .endian(Endian::Big)
+            .build()
+            .unwrap(),
+        Arch::HPPA,
+        Mode::Hppa20,
+        Some(Endian::Big),
+        &[],
+        &[
+            ("ldsid", b"\x00\x20\x50\xa2"),
+            ("mtsp", b"\x00\x01\x58\x20"),
+        ],
+    );
+}
+
+#[cfg(feature = "arch_hppa")]
+#[test]
+fn test_arch_hppa_detail() {
+    use crate::arch::hppa::{HppaMem, HppaOperand};
+    use capstone_sys::{cs_ac_type, hppa_mem, hppa_reg::*};
+
+    test_arch_mode_endian_insns_detail(
+        &mut Capstone::new()
+            .hppa()
+            .mode(hppa::ArchMode::Hppa20)
+            .endian(Endian::Big)
+            .build()
+            .unwrap(),
+        Arch::HPPA,
+        Mode::Hppa20,
+        Some(Endian::Big),
+        &[],
+        &[
+            // ldsid (sr1, r1), rp
+            DII::new(
+                "ldsid",
+                b"\x00\x20\x50\xa2",
+                &[
+                    HppaOperand {
+                        op_type: hppa::HppaOperandType::Mem(HppaMem(hppa_mem {
+                            base: HPPA_REG_GR1,
+                            space: HPPA_REG_SR1,
+                            base_access: cs_ac_type::CS_AC_READ,
+                        })),
+                        access: None,
+                    },
+                    HppaOperand {
+                        op_type: hppa::HppaOperandType::Reg(RegId(HPPA_REG_GR2 as RegIdInt)),
+                        access: Some(RegAccessType::WriteOnly),
+                    },
+                ],
+            ),
+            // mtsp r1, sr1
+            DII::new(
+                "mtsp",
+                b"\x00\x01\x58\x20",
+                &[
+                    HppaOperand {
+                        op_type: hppa::HppaOperandType::Reg(RegId(HPPA_REG_GR1 as RegIdInt)),
+                        access: Some(RegAccessType::ReadOnly),
+                    },
+                    HppaOperand {
+                        op_type: hppa::HppaOperandType::Reg(RegId(HPPA_REG_SR1 as RegIdInt)),
+                        access: Some(RegAccessType::WriteOnly),
+                    },
+                ],
+            ),
+        ],
     );
 }
 

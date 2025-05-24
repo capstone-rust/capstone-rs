@@ -257,6 +257,17 @@ macro_rules! arch_info_base {
                 ( both_endian: false )
             ]
             [
+                ( hppa, HPPA, "arch_hppa" )
+                ( mode:
+                    Hppa11,
+                    Hppa20,
+                    Hppa20W,
+                    )
+                ( extra_modes: )
+                ( syntax: )
+                ( both_endian: true )
+            ]
+            [
                 ( m680x, M680X, "arch_m680x" )
                 ( mode:
                     M680x6301,
@@ -574,6 +585,14 @@ macro_rules! detail_arch_base {
                 feature = "arch_evm",
                 /// Returns the EVM details, if any
                 => arch_name = evm,
+            ]
+            [
+                detail = HppaDetail,
+                insn_detail = HppaInsnDetail<'a>,
+                op = HppaOperand,
+                feature = "arch_hppa",
+                /// Returns the HPPA details, if any
+                => arch_name = hppa,
             ]
             [
                 detail = M680xDetail,
