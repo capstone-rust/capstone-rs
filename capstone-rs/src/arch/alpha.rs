@@ -32,11 +32,11 @@ pub struct AlphaOperand {
 }
 
 impl From<&cs_alpha_op> for AlphaOperand {
-    fn from(insn: &cs_alpha_op) -> AlphaOperand {
-        let op_type = AlphaOperandType::new(insn.type_, insn.__bindgen_anon_1);
+    fn from(op: &cs_alpha_op) -> AlphaOperand {
+        let op_type = AlphaOperandType::new(op.type_, op.__bindgen_anon_1);
         AlphaOperand {
             op_type,
-            access: insn.access.try_into().ok(),
+            access: op.access.try_into().ok(),
         }
     }
 }
