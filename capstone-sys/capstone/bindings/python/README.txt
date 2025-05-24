@@ -1,12 +1,12 @@
 To install Capstone, you should run `pip install capstone`.
 
-If you would like to build Capstone with just the source distribution, without
-pip, just run `python setup.py install` in the folder with setup.py in it.
+If you would like to build and install Capstone with just the source distribution,
+just run `python -m pip install .`, considering you are in the folder with setup.py in it.
 
 In order to use this source distribution, you will need an environment that can
 compile C code. On Linux, this is usually easy, but on Windows, this involves
 installing Visual Studio and using the "Developer Command Prompt" to perform the
-installation. See BUILDING.txt for more information.
+installation. See BUILDING.md for more information.
 
 By default, attempting to install the python bindings will trigger a build of
 the capstone native core. If this is undesirable for whatever reason, for
@@ -19,8 +19,7 @@ specific version of libcapstone you would like to use.
 If you don't want to build your own copy of Capstone, you can use a precompiled
 binary distribution from PyPI. Saying `pip install capstone` should
 automatically obtain an appropriate copy for your system. If it does not, please
-open an issue at https://github.com/aquynh/capstone and tag @rhelmot - she
-will fix this, probably!
+open an issue at https://github.com/capstone-engine/capstone.
 
 --------------------------------------------------------------------------------
 
@@ -30,7 +29,7 @@ disasm engine for binary analysis and reversing in the security community.
 Created by Nguyen Anh Quynh, then developed and maintained by a small community,
 Capstone offers some unparalleled features:
 
-- Support multiple hardware architectures: ARM, ARM64 (ARMv8), Mips, PPC, Sparc,
+- Support multiple hardware architectures: ARM, AARCH64 (ARMv8), Mips, PPC, Sparc,
   SystemZ, XCore and X86 (including X86_64).
 
 - Having clean/simple/lightweight/intuitive architecture-neutral API.
