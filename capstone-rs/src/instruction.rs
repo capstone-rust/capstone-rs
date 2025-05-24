@@ -66,9 +66,9 @@ impl RegId {
     pub const INVALID_REG: Self = Self(0);
 }
 
-/// Represents how the register is accessed.
+/// Represents how the operand is accessed.
 #[derive(Copy, Clone, Debug, Hash, PartialEq, Eq)]
-pub enum RegAccessType {
+pub enum AccessType {
     /// Operand read from memory or register.
     ReadOnly,
     /// Operand write from memory or register.
@@ -77,14 +77,14 @@ pub enum RegAccessType {
     ReadWrite,
 }
 
-impl RegAccessType {
+impl AccessType {
     /// Returns whether the instruction reads from the operand.
     ///
     /// Note that an instruction may read and write to the register
     /// simultaneously. In this case, the operand is also considered as
     /// readable.
     pub fn is_readable(self) -> bool {
-        self == RegAccessType::ReadOnly || self == RegAccessType::ReadWrite
+        self == AccessType::ReadOnly || self == AccessType::ReadWrite
     }
 
     /// Returns whether the instruction writes from the operand.
@@ -93,11 +93,11 @@ impl RegAccessType {
     /// simultaneously. In this case, the operand is also considered as
     /// writable.
     pub fn is_writable(self) -> bool {
-        self == RegAccessType::WriteOnly || self == RegAccessType::ReadWrite
+        self == AccessType::WriteOnly || self == AccessType::ReadWrite
     }
 }
 
-impl TryFrom<cs_ac_type> for RegAccessType {
+impl TryFrom<cs_ac_type> for AccessType {
     type Error = ();
 
     fn try_from(access: cs_ac_type) -> Result<Self, Self::Error> {
@@ -110,13 +110,17 @@ impl TryFrom<cs_ac_type> for RegAccessType {
         let is_readable = (access & cs_ac_type::CS_AC_READ).0 != 0;
         let is_writable = (access & cs_ac_type::CS_AC_WRITE).0 != 0;
         match (is_readable, is_writable) {
-            (true, false) => Ok(RegAccessType::ReadOnly),
-            (false, true) => Ok(RegAccessType::WriteOnly),
-            (true, true) => Ok(RegAccessType::ReadWrite),
+            (true, false) => Ok(AccessType::ReadOnly),
+            (false, true) => Ok(AccessType::WriteOnly),
+            (true, true) => Ok(AccessType::ReadWrite),
             _ => Err(()),
         }
     }
 }
+
+/// Previously the enum was called RegAccessType, see issue #135
+/// Maintain compatibility with legacy code
+pub type RegAccessType = AccessType;
 
 impl<'a> Instructions<'a> {
     pub(crate) unsafe fn from_raw_parts(ptr: *mut cs_insn, len: usize) -> Instructions<'a> {

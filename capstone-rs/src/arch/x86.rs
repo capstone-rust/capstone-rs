@@ -21,7 +21,7 @@ use capstone_sys::{
 use super::InsnOffsetSpan;
 pub use crate::arch::arch_builder::x86::*;
 use crate::arch::DetailsArchInsn;
-use crate::instruction::{RegAccessType, RegId, RegIdInt};
+use crate::instruction::{AccessType, RegId, RegIdInt};
 
 /// Contains X86-specific details for an instruction
 pub struct X86InsnDetail<'a>(pub(crate) &'a cs_x86);
@@ -51,7 +51,7 @@ pub struct X86Operand {
     /// How is this operand accessed?
     ///
     /// NOTE: this field is always `None` if the "full" feataure is not enabled.
-    pub access: Option<RegAccessType>,
+    pub access: Option<AccessType>,
 
     /// AVX broadcast
     pub avx_bcast: X86AvxBcast,
