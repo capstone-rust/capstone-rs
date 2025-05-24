@@ -42,6 +42,7 @@ support_all_archs = [
     "arch_bpf",
     "arch_evm",
     "arch_hppa",
+    "arch_loongarch",
     "arch_m680x",
     "arch_m68k",
     "arch_mips",
@@ -63,6 +64,7 @@ arch_arm = ["capstone-sys/arch_arm"]
 arch_bpf = ["capstone-sys/arch_bpf"]
 arch_evm = ["capstone-sys/arch_evm"]
 arch_hppa = ["capstone-sys/arch_hppa"]
+arch_loongarch = ["capstone-sys/arch_loongarch"]
 arch_m680x = ["capstone-sys/arch_m680x"]
 arch_m68k = ["capstone-sys/arch_m68k"]
 arch_mips = ["capstone-sys/arch_mips"]

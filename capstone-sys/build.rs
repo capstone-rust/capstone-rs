@@ -142,6 +142,7 @@ fn build_capstone_cc() {
         "arch_bpf" = CAPSTONE_HAS_BPF,
         "arch_evm" = CAPSTONE_HAS_EVM,
         "arch_hppa" = CAPSTONE_HAS_HPPA,
+        "arch_loongarch" = CAPSTONE_HAS_LOONGARCH,
         "arch_m680x" = CAPSTONE_HAS_M680X,
         "arch_m68k" = CAPSTONE_HAS_M68K,
         "arch_mips" = CAPSTONE_HAS_MIPS,

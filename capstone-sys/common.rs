@@ -46,6 +46,10 @@ pub static ARCH_INCLUDES: &[CapstoneArchInfo<'static>] = &[
         cs_name: "hppa",
     },
     CapstoneArchInfo {
+        header_name: "loongarch.h",
+        cs_name: "loongarch",
+    },
+    CapstoneArchInfo {
         header_name: "m680x.h",
         cs_name: "m680x",
     },
