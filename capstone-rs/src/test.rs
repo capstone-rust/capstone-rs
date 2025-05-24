@@ -1658,6 +1658,136 @@ fn test_arch_aarch64_detail() {
     );
 }
 
+#[cfg(feature = "arch_alpha")]
+#[test]
+fn test_arch_alpha() {
+    test_arch_mode_endian_insns(
+        &mut Capstone::new()
+            .alpha()
+            .mode(alpha::ArchMode::Default)
+            .build()
+            .unwrap(),
+        Arch::ALPHA,
+        Mode::Default,
+        None,
+        &[],
+        &[("ldah", b"\x02\x00\xbb\x27"), ("lda", b"\x50\x7a\xbd\x23")],
+    );
+}
+
+#[cfg(feature = "arch_alpha")]
+#[test]
+fn test_arch_alpha_detail() {
+    use crate::arch::alpha::AlphaOperand;
+    use crate::arch::alpha::AlphaOperandType;
+    use capstone_sys::alpha_reg::*;
+
+    test_arch_mode_endian_insns_detail(
+        &mut Capstone::new()
+            .alpha()
+            .mode(alpha::ArchMode::Default)
+            .build()
+            .unwrap(),
+        Arch::ALPHA,
+        Mode::Arm,
+        None,
+        &[],
+        &[
+            // ldah $15, 2($13)
+            DII::new(
+                "ldah",
+                b"\x02\x00\xbb\x27",
+                &[
+                    AlphaOperand {
+                        access: Some(RegAccessType::WriteOnly),
+                        op_type: AlphaOperandType::Reg(RegId(Alpha_REG_R15 as RegIdInt)),
+                    },
+                    AlphaOperand {
+                        access: Some(RegAccessType::ReadOnly),
+                        op_type: AlphaOperandType::Imm(2)
+                    },
+                    AlphaOperand {
+                        access: Some(RegAccessType::ReadOnly),
+                        op_type: AlphaOperandType::Reg(RegId(Alpha_REG_R13 as RegIdInt)),
+                    },
+                ],
+            ),
+            // lda $15, 0x7a50($15)
+            DII::new(
+                "lda",
+                b"\x50\x7a\xbd\x23",
+                &[
+                    AlphaOperand {
+                        access: Some(RegAccessType::WriteOnly),
+                        op_type: AlphaOperandType::Reg(RegId(Alpha_REG_R15 as RegIdInt)),
+                    },
+                    AlphaOperand {
+                        access: Some(RegAccessType::ReadOnly),
+                        op_type: AlphaOperandType::Imm(0x7a50)
+                    },
+                    AlphaOperand {
+                        access: Some(RegAccessType::ReadOnly),
+                        op_type: AlphaOperandType::Reg(RegId(Alpha_REG_R15 as RegIdInt)),
+                    },
+                ],
+            ),
+        ],
+    );
+
+    test_arch_mode_endian_insns_detail(
+        &mut Capstone::new()
+            .alpha()
+            .mode(alpha::ArchMode::Default)
+            .endian(Endian::Big)
+            .build()
+            .unwrap(),
+        Arch::ALPHA,
+        Mode::Arm,
+        Some(Endian::Big),
+        &[],
+        &[
+            // ldah $15, 2($13)
+            DII::new(
+                "ldah",
+                b"\x27\xbb\x00\x02",
+                &[
+                    AlphaOperand {
+                        access: Some(RegAccessType::WriteOnly),
+                        op_type: AlphaOperandType::Reg(RegId(Alpha_REG_R15 as RegIdInt)),
+                    },
+                    AlphaOperand {
+                        access: Some(RegAccessType::ReadOnly),
+                        op_type: AlphaOperandType::Imm(2)
+                    },
+                    AlphaOperand {
+                        access: Some(RegAccessType::ReadOnly),
+                        op_type: AlphaOperandType::Reg(RegId(Alpha_REG_R13 as RegIdInt)),
+                    },
+                ],
+            ),
+            // lda $15, 0x7a50($15)
+            DII::new(
+                "lda",
+                b"\x23\xbd\x7a\x50",
+                &[
+                    AlphaOperand {
+                        access: Some(RegAccessType::WriteOnly),
+                        op_type: AlphaOperandType::Reg(RegId(Alpha_REG_R15 as RegIdInt)),
+                    },
+                    AlphaOperand {
+                        access: Some(RegAccessType::ReadOnly),
+                        op_type: AlphaOperandType::Imm(0x7a50)
+                    },
+                    AlphaOperand {
+                        access: Some(RegAccessType::ReadOnly),
+                        op_type: AlphaOperandType::Reg(RegId(Alpha_REG_R15 as RegIdInt)),
+                    },
+                ],
+            ),
+        ],
+    );
+}
+
 #[cfg(feature = "arch_bpf")]
 #[test]
 fn test_arch_bpf_cbpf() {

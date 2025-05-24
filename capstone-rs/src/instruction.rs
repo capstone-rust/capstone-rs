@@ -498,8 +498,9 @@ impl InsnDetail<'_> {
             }
         }
         def_arch_detail_match!(
-            [ARM, ArmDetail, ArmInsnDetail, arm, "arch_arm"]
             [AARCH64, AArch64Detail, AArch64InsnDetail, aarch64, "arch_aarch64"]
+            [ALPHA, AlphaDetail, AlphaInsnDetail, alpha, "arch_alpha"]
+            [ARM, ArmDetail, ArmInsnDetail, arm, "arch_arm"]
             [BPF, BpfDetail, BpfInsnDetail, bpf, "arch_bpf"]
             [EVM, EvmDetail, EvmInsnDetail, evm, "arch_evm"]
             [M680X, M680xDetail, M680xInsnDetail, m680x, "arch_m680x"]
