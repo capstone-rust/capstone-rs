@@ -938,6 +938,82 @@ fn test_capstone_is_diet() {
     println!("Capstone is diet: {}", Capstone::is_diet());
 }
 
+#[cfg(feature = "arch_arc")]
+#[test]
+fn test_arch_arc() {
+    test_arch_mode_endian_insns(
+        &mut Capstone::new()
+            .arc()
+            .mode(arc::ArchMode::Default)
+            .build()
+            .unwrap(),
+        Arch::ARC,
+        Mode::Default,
+        None,
+        &[],
+        &[("ld", b"\x04\x11\x00\x00"), ("ld.aw", b"\x04\x11\x00\x02")],
+    );
+}
+
+#[cfg(feature = "arch_arc")]
+#[test]
+fn test_arch_arc_detail() {
+    use crate::arch::arc::ArcOperand;
+    use capstone_sys::arc_reg::*;
+
+    test_arch_mode_endian_insns_detail(
+        &mut Capstone::new()
+            .arc()
+            .mode(arc::ArchMode::Default)
+            .build()
+            .unwrap(),
+        Arch::ARC,
+        Mode::Default,
+        None,
+        &[],
+        &[
+            // ld %r0, [%r1, 4]
+            DII::new(
+                "ld",
+                b"\x04\x11\x00\x00",
+                &[
+                    ArcOperand {
+                        op_type: arc::ArcOperandType::Reg(RegId(ARC_REG_R0 as RegIdInt)),
+                        access: Some(RegAccessType::WriteOnly),
+                    },
+                    ArcOperand {
+                        op_type: arc::ArcOperandType::Reg(RegId(ARC_REG_R1 as RegIdInt)),
+                        access: Some(RegAccessType::ReadOnly),
+                    },
+                    ArcOperand {
+                        op_type: arc::ArcOperandType::Imm(4),
+                        access: Some(RegAccessType::ReadOnly),
+                    },
+                ],
+            ),
+            // ld.aw %r0, [%r1, 4]
+            DII::new(
+                "ld.aw",
+                b"\x04\x11\x00\x02",
+                &[
+                    ArcOperand {
+                        op_type: arc::ArcOperandType::Reg(RegId(ARC_REG_R0 as RegIdInt)),
+                        access: Some(RegAccessType::WriteOnly),
+                    },
+                    ArcOperand {
+                        op_type: arc::ArcOperandType::Reg(RegId(ARC_REG_R1 as RegIdInt)),
+                        access: Some(RegAccessType::ReadOnly),
+                    },
+                    ArcOperand {
+                        op_type: arc::ArcOperandType::Imm(4),
+                        access: Some(RegAccessType::ReadOnly),
+                    },
+                ],
+            ),
+        ],
+    );
+}
+
 #[cfg(feature = "arch_arm")]
 #[test]
 fn test_arch_arm() {

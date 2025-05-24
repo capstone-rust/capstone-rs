@@ -198,6 +198,8 @@ define_cs_enum_wrapper!(
     ]
     /// ARM (Advanced RISC Machine)
     => ARM = CS_ARCH_ARM;
+    /// ARC
+    => ARC = CS_ARCH_ARC;
     /// ARM 64-bit (also known as AArch64)
     => AARCH64 = CS_ARCH_AARCH64;
     /// Alpha
