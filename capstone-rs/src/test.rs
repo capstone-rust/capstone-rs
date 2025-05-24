@@ -2020,8 +2020,8 @@ fn test_arch_hppa() {
 #[cfg(feature = "arch_hppa")]
 #[test]
 fn test_arch_hppa_detail() {
-    use crate::arch::hppa::{HppaMem, HppaOperand};
-    use capstone_sys::{cs_ac_type, hppa_mem, hppa_reg::*};
+    use crate::arch::hppa::HppaOperand;
+    use capstone_sys::hppa_reg::*;
 
     test_arch_mode_endian_insns_detail(
         &mut Capstone::new()
@@ -4254,6 +4254,96 @@ fn test_arch_xcore_detail() {
                     Reg(RegId(XCORE_REG_R0 as RegIdInt)),
                     Reg(RegId(XCORE_REG_R8 as RegIdInt)),
                     Imm(9),
+                ],
+            ),
+        ],
+    );
+}
+
+#[cfg(feature = "arch_xtensa")]
+#[test]
+fn test_arch_xtensa() {
+    test_arch_mode_endian_insns(
+        &mut Capstone::new()
+            .xtensa()
+            .mode(xtensa::ArchMode::Default)
+            .build()
+            .unwrap(),
+        Arch::XTENSA,
+        Mode::Default,
+        None,
+        &[],
+        &[("abs", b"\x60\x51\x60"), ("add.n", b"\x1a\x23")],
+    );
+}
+
+#[cfg(feature = "arch_xtensa")]
+#[test]
+fn test_arch_xtensa_detail() {
+    use crate::arch::xtensa::{XtensaOpMem, XtensaOperand};
+    use capstone_sys::{cs_xtensa_op_mem, xtensa_reg::*};
+
+    test_arch_mode_endian_insns_detail(
+        &mut Capstone::new()
+            .xtensa()
+            .mode(xtensa::ArchMode::Default)
+            .build()
+            .unwrap(),
+        Arch::XTENSA,
+        Mode::Default,
+        None,
+        &[],
+        &[
+            // abs a5, a6
+            DII::new(
+                "abs",
+                b"\x60\x51\x60",
+                &[
+                    XtensaOperand {
+                        op_type: xtensa::XtensaOperandType::Reg(RegId(XTENSA_REG_A5 as RegIdInt)),
+                        access: Some(RegAccessType::WriteOnly),
+                    },
+                    XtensaOperand {
+                        op_type: xtensa::XtensaOperandType::Reg(RegId(XTENSA_REG_A6 as RegIdInt)),
+                        access: Some(RegAccessType::ReadOnly),
+                    },
+                ],
+            ),
+            // add.n a2, a3, a1
+            DII::new(
+                "add.n",
+                b"\x1a\x23",
+                &[
+                    XtensaOperand {
+                        op_type: xtensa::XtensaOperandType::Reg(RegId(XTENSA_REG_A2 as RegIdInt)),
+                        access: Some(RegAccessType::WriteOnly),
+                    },
+                    XtensaOperand {
+                        op_type: xtensa::XtensaOperandType::Reg(RegId(XTENSA_REG_A3 as RegIdInt)),
+                        access: Some(RegAccessType::ReadOnly),
+                    },
+                    XtensaOperand {
+                        op_type: xtensa::XtensaOperandType::Reg(RegId(XTENSA_REG_SP as RegIdInt)),
+                        access: Some(RegAccessType::ReadOnly),
+                    },
+                ],
+            ),
+            // l32i.n a1, a3, 8
+            DII::new(
+                "l32i.n",
+                b"\x18\x23",
+                &[
+                    XtensaOperand {
+                        op_type: xtensa::XtensaOperandType::Reg(RegId(XTENSA_REG_SP as RegIdInt)),
+                        access: Some(RegAccessType::WriteOnly),
+                    },
+                    XtensaOperand {
+                        op_type: xtensa::XtensaOperandType::Mem(XtensaOpMem(cs_xtensa_op_mem {
+                            base: XTENSA_REG_A3 as u8,
+                            disp: 8,
+                        })),
+                        access: Some(RegAccessType::ReadOnly),
+                    },
                 ],
             ),
         ],
