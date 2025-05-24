@@ -137,6 +137,7 @@ fn build_capstone_cc() {
 
     arch_define!(
         "arch_aarch64" = CAPSTONE_HAS_AARCH64,
+        "arch_alpha" = CAPSTONE_HAS_ALPHA,
         "arch_arm" = CAPSTONE_HAS_ARM,
         "arch_bpf" = CAPSTONE_HAS_BPF,
         "arch_evm" = CAPSTONE_HAS_EVM,
@@ -201,8 +202,8 @@ fn impl_insid_to_insenum(bindings: &str) -> String {
 
         // find instructions and their id
         let re_ins_ids = Regex::new(&format!(
-            "{}_INS_(?P<ins>[A-Z0-9_]+) = (?P<id>\\d+)",
-            &arch.to_uppercase()
+            "(?P<ins>(?i){}(?-i)_INS_[A-Z0-9_]+) = (?P<id>\\d+)",
+            &arch
         ))
         .expect("Unable to compile regex");
 
@@ -219,10 +220,9 @@ fn impl_insid_to_insenum(bindings: &str) -> String {
         for cap_ins_id in re_ins_ids.captures_iter(cap_enum_def) {
             writeln!(
                 impl_arch_enum,
-                "{} => {}_insn::{}_INS_{},",
+                "{} => {}_insn::{},",
                 &cap_ins_id["id"],
                 &arch,
-                &arch.to_uppercase(),
                 &cap_ins_id["ins"]
             )
             .unwrap();
@@ -234,11 +234,16 @@ fn impl_insid_to_insenum(bindings: &str) -> String {
             "m680x" => "INVLD",
             _ => "INVALID",
         };
+        // special case for alpha, which has `Alpha` instead of `ALPHA`
+        let arch_str = match arch {
+            "alpha" => "Alpha",
+            _ => &arch.to_uppercase(),
+        };
         write!(
             impl_arch_enum,
             "_ => {}_insn::{}_INS_{},",
             &arch,
-            &arch.to_uppercase(),
+            arch_str,
             invalid_str,
         )
         .unwrap();
