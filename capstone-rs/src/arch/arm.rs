@@ -10,7 +10,7 @@ use libc::c_uint;
 pub use crate::arch::arch_builder::arm::*;
 use crate::arch::DetailsArchInsn;
 use crate::instruction::{RegId, RegIdInt};
-use crate::RegAccessType;
+use crate::AccessType;
 
 pub use capstone_sys::arm_insn_group as ArmInsnGroup;
 pub use capstone_sys::arm_insn as ArmInsn;
@@ -133,7 +133,7 @@ pub struct ArmOperand {
     /// How is this operand accessed?
     ///
     /// NOTE: this field is always `None` if the "full" feataure is not enabled.
-    pub access: Option<RegAccessType>
+    pub access: Option<AccessType>
 }
 
 /// ARM operand

@@ -4,7 +4,7 @@ use libc::c_uint;
 
 pub use crate::arch::arch_builder::arm64::*;
 use crate::arch::DetailsArchInsn;
-use crate::instruction::{RegAccessType, RegId, RegIdInt};
+use crate::instruction::{AccessType, RegId, RegIdInt};
 use capstone_sys::{arm64_op_mem, arm64_op_sme_index, arm64_op_type, cs_ac_type, cs_arm64, cs_arm64_op};
 use core::convert::{From, TryInto};
 use core::{cmp, fmt, mem, slice};
@@ -89,7 +89,7 @@ pub struct Arm64Operand {
     /// How is this operand accessed?
     ///
     /// NOTE: this field is always `None` if the "full" feataure is not enabled.
-    pub access: Option<RegAccessType>,
+    pub access: Option<AccessType>,
 
     /// Vector Index for some vector operands
     pub vector_index: Option<u32>,
