@@ -24,6 +24,8 @@ pub use capstone_sys::arm_setend_type as ArmSetendType;
 pub use capstone_sys::arm_spsr_cspr_bits;
 pub use capstone_sys::arm_sysreg as ArmSysreg;
 pub use capstone_sys::arm_vectordata_type as ArmVectorData;
+// Upstream typo: cspr -> cpsr
+pub use capstone_sys::arm_spsr_cspr_bits as ArmSpsrCpsrBits;
 pub use capstone_sys::ARMCC_CondCodes as ArmCC;
 
 /// Contains ARM-specific details for an instruction
@@ -120,8 +122,8 @@ impl ArmOperandType {
             ARM_OP_SETEND => Setend(unsafe { value.setend }),
             ARM_OP_SYSREG => SysReg(unsafe { value.sysop.reg.mclasssysreg }),
             ARM_OP_BANKEDREG => BankedReg(unsafe { value.sysop.reg.bankedreg }),
-            ARM_OP_SPSR => Spsr(ArmSpsrCpsrBits(unsafe { value.sysop.psr_bits as u32 })),
-            ARM_OP_CPSR => Cpsr(ArmSpsrCpsrBits(unsafe { value.sysop.psr_bits as u32 })),
+            ARM_OP_SPSR => Spsr(unsafe { value.sysop.psr_bits }),
+            ARM_OP_CPSR => Cpsr(unsafe { value.sysop.psr_bits }),
             ARM_OP_SYSM => Sysm(unsafe { value.sysop.sysm }),
             ARM_OP_MEM => Mem(ArmOpMem(unsafe { value.mem })),
             _ => Invalid,
@@ -310,10 +312,6 @@ impl From<&cs_arm_op> for ArmOperand {
         }
     }
 }
-
-/// Contains spsr/cpsr bits
-#[derive(Clone, Copy, Debug, PartialEq, Eq)]
-pub struct ArmSpsrCpsrBits(pub(crate) u32);
 
 def_arch_details_struct!(
     InsnDetail = ArmInsnDetail;
