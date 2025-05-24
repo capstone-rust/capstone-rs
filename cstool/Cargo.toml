@@ -40,6 +40,7 @@ support_all_archs = [
     "arch_wasm",
     "arch_x86",
     "arch_xcore",
+    "arch_xtensa",
     "capstone/support_all_archs",
 ]
 arch_aarch64 = ["capstone/arch_aarch64"]
@@ -62,3 +63,4 @@ arch_tricore = ["capstone/arch_tricore"]
 arch_wasm = ["capstone/arch_wasm"]
 arch_x86 = ["capstone/arch_x86"]
 arch_xcore = ["capstone/arch_xcore"]
+arch_xtensa = ["capstone/arch_xtensa"]

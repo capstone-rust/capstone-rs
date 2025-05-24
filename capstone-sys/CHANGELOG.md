@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Support for Alpha arch
 - Support for HPPA arch
 - Support for LoongArch arch
+- Support for Xtensa arch
 - Arch-specific features flags to enable/disable arch support
 - Rename ARM64 to AARCH64, SYSZ to SYSTEMZ to follow upstream changes
 
