@@ -500,6 +500,7 @@ impl InsnDetail<'_> {
         def_arch_detail_match!(
             [AARCH64, AArch64Detail, AArch64InsnDetail, aarch64, "arch_aarch64"]
             [ALPHA, AlphaDetail, AlphaInsnDetail, alpha, "arch_alpha"]
+            [ARC, ArcDetail, ArcInsnDetail, arc, "arch_arc"]
             [ARM, ArmDetail, ArmInsnDetail, arm, "arch_arm"]
             [BPF, BpfDetail, BpfInsnDetail, bpf, "arch_bpf"]
             [EVM, EvmDetail, EvmInsnDetail, evm, "arch_evm"]

@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - HPPA arch support
 - LoongArch arch support
 - Xtensa arch support
+- ARC arch support
 
 ### Changed
 - Bump bundled capstone to 6.0.0-Alpha4
