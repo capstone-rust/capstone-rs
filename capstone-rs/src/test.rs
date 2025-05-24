@@ -4264,3 +4264,24 @@ fn test_regs_tms320c64x() {
         CsResult::Err(Error::UnsupportedArch),
     );
 }
+
+// regression tests
+#[cfg(feature = "arch_aarch64")]
+#[test]
+fn test_issue_175() {
+    let cs = Capstone::new()
+        .aarch64()
+        .detail(true)
+        .mode(aarch64::ArchMode::Arm)
+        .build()
+        .unwrap();
+
+    let insns = cs.disasm_all(&[0x0c, 0x44, 0x3b, 0xd5], 0).unwrap();
+    for i in insns.as_ref() {
+        let id = cs.insn_detail(&i).unwrap();
+        let ad = id.arch_detail();
+        let aarch = ad.aarch64().unwrap();
+
+        println!("{i} (dt: {:?})", aarch.operands().collect::<Vec<_>>());
+    }
+}
