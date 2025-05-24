@@ -122,6 +122,10 @@ More complex demos welcome!
   [`Error` trait](https://doc.rust-lang.org/std/error/trait.Error.html)
 - `use_bindgen`: run `bindgen` to generate Rust bindings to Capstone C library
   instead of using pre-generated bindings (not recommended).
+- `arch_$ARCH`<sup>&dagger;</sup>: enable arch `$ARCH` support in capstone,
+  e.g. `arch_arm64` enables arch arm64 support.
+- `support_all_archs`<sup>&dagger;</sup>: enable all archs available
+  in capstone, imply all `arch_$ARCH` features.
 
 <sup>&dagger;</sup>: enabled by default
 
