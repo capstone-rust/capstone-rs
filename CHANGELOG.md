@@ -10,6 +10,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - TriCore arch support
 - MOS65XX arch support
 - SH arch support
+- Arch-specific features flags to enable/disable arch support
+- Expose X86 instruction encoding info via `X86InsnDetail::encoding()`
+- Make RegAccessType available for ARM64
 
 ### Changed
 - `InsnDetail::regs_read()`/`InsnDetail::regs_write()` return more of the accessed registers
