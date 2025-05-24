@@ -831,18 +831,59 @@ pub enum MemBOpt {
 }
 #[doc = " The memory barrier constants map directly to the 4-bit encoding of\n the option field for Memory Barrier operations."]
 pub use self::MemBOpt as arm_mem_bo_opt;
-#[repr(u32)]
-#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
-pub enum arm_spsr_cspr_bits {
-    ARM_FIELD_SPSR_C = 1,
-    ARM_FIELD_SPSR_X = 2,
-    ARM_FIELD_SPSR_S = 4,
-    ARM_FIELD_SPSR_F = 8,
-    ARM_FIELD_CPSR_C = 16,
-    ARM_FIELD_CPSR_X = 32,
-    ARM_FIELD_CPSR_S = 64,
-    ARM_FIELD_CPSR_F = 128,
+impl arm_spsr_cspr_bits {
+    pub const ARM_FIELD_SPSR_C: arm_spsr_cspr_bits = arm_spsr_cspr_bits(1);
 }
+impl arm_spsr_cspr_bits {
+    pub const ARM_FIELD_SPSR_X: arm_spsr_cspr_bits = arm_spsr_cspr_bits(2);
+}
+impl arm_spsr_cspr_bits {
+    pub const ARM_FIELD_SPSR_S: arm_spsr_cspr_bits = arm_spsr_cspr_bits(4);
+}
+impl arm_spsr_cspr_bits {
+    pub const ARM_FIELD_SPSR_F: arm_spsr_cspr_bits = arm_spsr_cspr_bits(8);
+}
+impl arm_spsr_cspr_bits {
+    pub const ARM_FIELD_CPSR_C: arm_spsr_cspr_bits = arm_spsr_cspr_bits(16);
+}
+impl arm_spsr_cspr_bits {
+    pub const ARM_FIELD_CPSR_X: arm_spsr_cspr_bits = arm_spsr_cspr_bits(32);
+}
+impl arm_spsr_cspr_bits {
+    pub const ARM_FIELD_CPSR_S: arm_spsr_cspr_bits = arm_spsr_cspr_bits(64);
+}
+impl arm_spsr_cspr_bits {
+    pub const ARM_FIELD_CPSR_F: arm_spsr_cspr_bits = arm_spsr_cspr_bits(128);
+}
+impl ::core::ops::BitOr<arm_spsr_cspr_bits> for arm_spsr_cspr_bits {
+    type Output = Self;
+    #[inline]
+    fn bitor(self, other: Self) -> Self {
+        arm_spsr_cspr_bits(self.0 | other.0)
+    }
+}
+impl ::core::ops::BitOrAssign for arm_spsr_cspr_bits {
+    #[inline]
+    fn bitor_assign(&mut self, rhs: arm_spsr_cspr_bits) {
+        self.0 |= rhs.0;
+    }
+}
+impl ::core::ops::BitAnd<arm_spsr_cspr_bits> for arm_spsr_cspr_bits {
+    type Output = Self;
+    #[inline]
+    fn bitand(self, other: Self) -> Self {
+        arm_spsr_cspr_bits(self.0 & other.0)
+    }
+}
+impl ::core::ops::BitAndAssign for arm_spsr_cspr_bits {
+    #[inline]
+    fn bitand_assign(&mut self, rhs: arm_spsr_cspr_bits) {
+        self.0 &= rhs.0;
+    }
+}
+#[repr(transparent)]
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
+pub struct arm_spsr_cspr_bits(pub libc::c_uint);
 #[repr(u32)]
 #[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
 pub enum arm_bankedreg {
