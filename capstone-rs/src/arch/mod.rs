@@ -214,6 +214,15 @@ macro_rules! arch_info_base {
                 ( both_endian: true )
             ]
             [
+                ( arc, ARC, "arch_arc" )
+                ( mode:
+                    Default,
+                    )
+                ( extra_modes: )
+                ( syntax: )
+                ( both_endian: true )
+            ]
+            [
                 ( arm, ARM, "arch_arm" )
                 ( mode:
                     Arm,
@@ -580,6 +589,14 @@ macro_rules! detail_arch_base {
                 feature = "arch_alpha",
                 /// Returns the Alpha details, if any
                 => arch_name = alpha,
+            ]
+            [
+                detail = ArcDetail,
+                insn_detail = ArcInsnDetail<'a>,
+                op = ArcOperand,
+                feature = "arch_arc",
+                /// Returns the ARC details, if any
+                => arch_name = arc,
             ]
             [
                 detail = ArmDetail,
