@@ -21,6 +21,7 @@ full = ["capstone/full"]
 
 support_all_archs = [
     "arch_aarch64",
+    "arch_arc",
     "arch_arm",
     "arch_bpf",
     "arch_evm",
@@ -44,6 +45,7 @@ support_all_archs = [
     "capstone/support_all_archs",
 ]
 arch_aarch64 = ["capstone/arch_aarch64"]
+arch_arc = ["capstone/arch_arc"]
 arch_arm = ["capstone/arch_arm"]
 arch_bpf = ["capstone/arch_bpf"]
 arch_evm = ["capstone/arch_evm"]

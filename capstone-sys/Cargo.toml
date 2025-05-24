@@ -36,6 +36,7 @@ use_bindgen = ["bindgen", "regex"]  # Dynamically generate bindings with bindgen
 support_all_archs = [
     "arch_aarch64",
     "arch_alpha",
+    "arch_arc",
     "arch_arm",
     "arch_bpf",
     "arch_evm",
@@ -59,6 +60,7 @@ support_all_archs = [
 ]
 arch_aarch64 = []
 arch_alpha = []
+arch_arc = []
 arch_arm = []
 arch_bpf = []
 arch_evm = []
