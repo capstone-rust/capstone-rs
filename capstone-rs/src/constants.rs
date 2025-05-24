@@ -202,6 +202,8 @@ define_cs_enum_wrapper!(
     => AARCH64 = CS_ARCH_AARCH64;
     /// Alpha
     => ALPHA = CS_ARCH_ALPHA;
+    /// HPPA
+    => HPPA = CS_ARCH_HPPA;
     /// MIPS
     => MIPS = CS_ARCH_MIPS;
     /// x86 family (includes 16, 32, and 64 bit modes)
@@ -373,6 +375,12 @@ define_cs_enum_wrapper!(
     => SystemZZ16 = { cs_mode::CS_MODE_SYSTEMZ_Z16 };
     /// SystemZ Generic
     => SystemZGeneric = { cs_mode::CS_MODE_SYSTEMZ_GENERIC };
+    /// HPPA 1.1
+    => Hppa11 = { cs_mode::CS_MODE_HPPA_11 };
+    /// HPPA 2.0
+    => Hppa20 = { cs_mode::CS_MODE_HPPA_20 };
+    /// HPPA 2.0 wide
+    => Hppa20W = { cs_mode::CS_MODE_HPPA_20W };
     /// Default mode for little-endian
     => Default = { cs_mode::CS_MODE_LITTLE_ENDIAN };
 );
