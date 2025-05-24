@@ -236,6 +236,8 @@ define_cs_enum_wrapper!(
     => RISCV = CS_ARCH_RISCV;
     /// BPF
     => BPF = CS_ARCH_BPF;
+    /// XTENSA
+    => XTENSA = CS_ARCH_XTENSA;
 );
 
 define_cs_enum_wrapper!(
