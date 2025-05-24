@@ -39,6 +39,7 @@ support_all_archs = [
     "arch_arm",
     "arch_bpf",
     "arch_evm",
+    "arch_hppa",
     "arch_m680x",
     "arch_m68k",
     "arch_mips",
@@ -59,6 +60,7 @@ arch_alpha = []
 arch_arm = []
 arch_bpf = []
 arch_evm = []
+arch_hppa = []
 arch_m680x = []
 arch_m68k = []
 arch_mips = []
