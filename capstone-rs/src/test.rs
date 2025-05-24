@@ -2009,7 +2009,9 @@ fn test_arch_hppa() {
         Some(Endian::Big),
         &[],
         &[
-            ("ldsid", b"\x00\x20\x50\xa2"),
+            // Upstream bug: access to uninitialized value
+            // https://github.com/capstone-engine/capstone/issues/2717
+            // ("ldsid", b"\x00\x20\x50\xa2"),
             ("mtsp", b"\x00\x01\x58\x20"),
         ],
     );
@@ -2033,7 +2035,10 @@ fn test_arch_hppa_detail() {
         Some(Endian::Big),
         &[],
         &[
+            // Upstream bug: access to uninitialized value
+            // https://github.com/capstone-engine/capstone/issues/2717
             // ldsid (sr1, r1), rp
+            /*
             DII::new(
                 "ldsid",
                 b"\x00\x20\x50\xa2",
@@ -2052,6 +2057,7 @@ fn test_arch_hppa_detail() {
                     },
                 ],
             ),
+            */
             // mtsp r1, sr1
             DII::new(
                 "mtsp",
