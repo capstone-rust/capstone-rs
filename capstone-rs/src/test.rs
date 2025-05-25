@@ -208,6 +208,69 @@ fn test_unsigned() {
     assert_eq!(insns[0].op_str(), Some("x0, [x1, #0xffffffffffffffff]"));
 }
 
+#[cfg(feature = "arch_x86")]
+#[test]
+fn test_mnemonic() {
+    use capstone_sys::x86_insn;
+
+    let x86_code: &[u8] = b"\x6c";
+
+    // default mnemonic
+    let cs = Capstone::new()
+        .x86()
+        .mode(x86::ArchMode::Mode64)
+        .build()
+        .unwrap();
+    let insns = cs.disasm_all(x86_code, 0x1000).unwrap();
+    let insns: Vec<_> = insns.iter().collect();
+    assert_eq!(insns.len(), 1);
+    assert_eq!(insns[0].id().0, x86_insn::X86_INS_INSB as u32);
+    assert_eq!(insns[0].mnemonic(), Some("insb"));
+
+    // override mnemonic
+    let mut cs = Capstone::new()
+        .x86()
+        .mode(x86::ArchMode::Mode64)
+        .build()
+        .unwrap();
+    cs.set_mnemonic(InsnId(x86_insn::X86_INS_INSB as InsnIdInt), Some("abcd"))
+        .unwrap();
+    let insns = cs.disasm_all(x86_code, 0x1000).unwrap();
+    let insns: Vec<_> = insns.iter().collect();
+    assert_eq!(insns.len(), 1);
+    assert_eq!(insns[0].id().0, x86_insn::X86_INS_INSB as u32);
+    assert_eq!(insns[0].mnemonic(), Some("abcd"));
+
+    // revert override
+    let mut cs = Capstone::new()
+        .x86()
+        .mode(x86::ArchMode::Mode64)
+        .build()
+        .unwrap();
+    cs.set_mnemonic(InsnId(x86_insn::X86_INS_INSB as InsnIdInt), Some("abcd"))
+        .unwrap();
+    cs.set_mnemonic(InsnId(x86_insn::X86_INS_INSB as InsnIdInt), None)
+        .unwrap();
+    let insns = cs.disasm_all(x86_code, 0x1000).unwrap();
+    let insns: Vec<_> = insns.iter().collect();
+    assert_eq!(insns.len(), 1);
+    assert_eq!(insns[0].id().0, x86_insn::X86_INS_INSB as u32);
+    assert_eq!(insns[0].mnemonic(), Some("insb"));
+
+    // override with invalid mnemonic should fail
+    let mut cs = Capstone::new()
+        .x86()
+        .mode(x86::ArchMode::Mode64)
+        .build()
+        .unwrap();
+    assert!(cs
+        .set_mnemonic(
+            InsnId(x86_insn::X86_INS_INSB as InsnIdInt),
+            Some("\x00abcd")
+        )
+        .is_err());
+}
+
 #[cfg(all(feature = "full", feature = "arch_x86"))]
 #[test]
 fn test_detail_true() {
