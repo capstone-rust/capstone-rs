@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Make RegAccessType available for ARM64
 - Rename RegAccessType to AccessType while keeping type alias
 - Expose `CS_OPT_UNSIGNED` via `Capstone::set_unsigned`
+- Expose `CS_OPT_MNEMONIC` via `Capstone::set_mnemonic`
 
 ### Changed
 - `InsnDetail::regs_read()`/`InsnDetail::regs_write()` return more of the accessed registers

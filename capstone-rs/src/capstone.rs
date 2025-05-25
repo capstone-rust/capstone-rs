@@ -1,8 +1,11 @@
 use alloc::boxed::Box;
 use alloc::string::String;
 use core::convert::From;
+use core::ffi::CStr;
 use core::marker::PhantomData;
 use core::mem::MaybeUninit;
+#[cfg(feature = "std")]
+use std::ffi::CString;
 
 use libc::{c_int, c_void};
 
@@ -384,6 +387,42 @@ impl Capstone {
         }
 
         result
+    }
+
+    /// Customize mnemonic for instructions with alternative name.
+    ///
+    /// Pass `Some(mnemonic)` to enable custom mnemonic or `None` to revert to default.
+    #[cfg(feature = "std")]
+    pub fn set_mnemonic(&mut self, insn_id: InsnId, mnemonic: Option<&str>) -> CsResult<()> {
+        let mnemonic_cstr = match mnemonic {
+            Some(s) => Some(CString::new(s).map_err(|_err| {
+                Error::CustomError(
+                    "Failed to convert mnemonic to C-String due to internal NUL characters",
+                )
+            })?),
+            None => None,
+        };
+        self.set_mnemonic_cstr(insn_id, mnemonic_cstr.as_deref())
+    }
+
+    /// Customize mnemonic for instructions with alternative name, passing a core::ffi::CStr.
+    ///
+    /// Pass `Some(mnemonic)` to enable custom mnemonic or `None` to revert to default.
+    pub fn set_mnemonic_cstr(
+        &mut self,
+        insn_id: InsnId,
+        mnemonic_cstr: Option<&CStr>,
+    ) -> CsResult<()> {
+        let option_value: cs_opt_mnem = cs_opt_mnem {
+            id: insn_id.0,
+            mnemonic: mnemonic_cstr
+                .map(|s| s.as_ptr())
+                .unwrap_or(core::ptr::null()),
+        };
+        self._set_cs_option(
+            cs_opt_type::CS_OPT_MNEMONIC,
+            &option_value as *const cs_opt_mnem as usize,
+        )
     }
 
     /// Converts a register id `reg_id` to a `String` containing the register name.

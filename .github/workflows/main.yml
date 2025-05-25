@@ -41,4 +41,4 @@ jobs:
         run: env ${{ matrix.rust.env }} ALL_FEATURES=1 ./capstone-rs/ci/test.sh
 
       - name: test (only enable x86 and arm64)
-        run: env ${{ matrix.rust.env }} FEATURES=full,arch_x86,arch_arm64 NO_DEFAULT_FEATURES=1 ./capstone-rs/ci/test.sh
+        run: env ${{ matrix.rust.env }} FEATURES=std,full,arch_x86,arch_arm64 NO_DEFAULT_FEATURES=1 ./capstone-rs/ci/test.sh
