@@ -21,11 +21,9 @@ pub use capstone_sys::arm_insn_group as ArmInsnGroup;
 pub use capstone_sys::arm_mem_bo_opt as ArmMemBarrier;
 pub use capstone_sys::arm_reg as ArmReg;
 pub use capstone_sys::arm_setend_type as ArmSetendType;
-pub use capstone_sys::arm_spsr_cspr_bits;
 pub use capstone_sys::arm_sysreg as ArmSysreg;
 pub use capstone_sys::arm_vectordata_type as ArmVectorData;
-// Upstream typo: cspr -> cpsr
-pub use capstone_sys::arm_spsr_cspr_bits as ArmSpsrCpsrBits;
+pub use capstone_sys::arm_spsr_cpsr_bits as ArmSpsrCpsrBits;
 pub use capstone_sys::ARMCC_CondCodes as ArmCC;
 
 /// Contains ARM-specific details for an instruction

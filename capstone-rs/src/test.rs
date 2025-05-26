@@ -607,9 +607,13 @@ fn test_instruction_details() {
             &[X86_REG_RIP, X86_REG_RSP],
             &[X86_REG_RSP, X86_REG_RIP],
         ),
-        // Upstream bug: ret should read rsp to compute the new rsp
-        // https://github.com/capstone-engine/capstone/issues/2714
-        ("ret", b"\xc3", &[RET], &[], &[X86_REG_RIP, X86_REG_RSP]),
+        (
+            "ret",
+            b"\xc3",
+            &[RET],
+            &[X86_REG_RSP],
+            &[X86_REG_RIP, X86_REG_RSP],
+        ),
         ("syscall", b"\x0f\x05", &[INT], &[], &[]),
         ("iretd", b"\xcf", &[IRET], &[], &[]),
         (
@@ -798,9 +802,7 @@ fn test_syntax() {
             "retq",
             b"\xc3",
             &[RET],
-            // Upstream bug: ret should read rsp
-            // https://github.com/capstone-engine/capstone/issues/2714
-            &[],
+            &[X86_REG_RSP],
             &[X86_REG_RSP, X86_REG_RIP],
         ),
         ("syscall", "syscall", b"\x0f\x05", &[INT], &[], &[]),
@@ -1131,7 +1133,7 @@ fn test_arch_arm_detail() {
     use crate::arch::arm::ArmOperandType::*;
     use crate::arch::arm::*;
     use capstone_sys::arm_op_mem;
-    use capstone_sys::arm_spsr_cspr_bits;
+    use capstone_sys::arm_spsr_cpsr_bits;
 
     let r0_op_read = ArmOperand {
         op_type: Reg(RegId(ArmReg::ARM_REG_R0 as RegIdInt)),
@@ -1272,8 +1274,8 @@ fn test_arch_arm_detail() {
                 &[
                     ArmOperand {
                         op_type: Cpsr(
-                            arm_spsr_cspr_bits::ARM_FIELD_CPSR_F
-                                | arm_spsr_cspr_bits::ARM_FIELD_CPSR_C,
+                            arm_spsr_cpsr_bits::ARM_FIELD_CPSR_F
+                                | arm_spsr_cpsr_bits::ARM_FIELD_CPSR_C,
                         ),
                         access: Some(RegAccessType::WriteOnly),
                         ..Default::default()
@@ -1699,9 +1701,14 @@ fn test_arch_aarch64_detail() {
             // smstart
             DII::new("smstart", b"\x7f\x47\x03\xd5", &[]),
             // smstart sm
-            // Upstream bug: no way to figure out sm?
-            // https://github.com/capstone-engine/capstone/issues/2715
-            DII::new("smstart", b"\x7f\x43\x03\xd5", &[]),
+            DII::new(
+                "smstart",
+                b"\x7f\x43\x03\xd5",
+                &[AArch64Operand {
+                    op_type: Svcr(AArch64Svcr::AARCH64_SVCR_SVCRSM),
+                    ..Default::default()
+                }],
+            ),
             // ldr za[w12, 4], [x0, #4, mul vl]
             DII::new(
                 "ldr",
@@ -2253,9 +2260,7 @@ fn test_arch_loongarch_detail() {
                         op_type: loongarch::LoongArchOperandType::Reg(RegId(
                             LOONGARCH_REG_S1 as RegIdInt,
                         )),
-                        // Upstream bug: should be read only
-                        // https://github.com/capstone-engine/capstone/issues/2700
-                        access: Some(RegAccessType::WriteOnly),
+                        access: Some(RegAccessType::ReadOnly),
                     },
                     LoongArchOperand {
                         op_type: loongarch::LoongArchOperandType::Mem(LoongArchOpMem(
@@ -4740,12 +4745,10 @@ fn test_regs_access_arm() {
             .unwrap(),
         b"\xf0\xbd",
         CsResult::Ok(&[as_reg_access(
-            // Upstream bug: register written are reported as read
-            // https://github.com/capstone-engine/capstone/issues/2713
+            &[ARM_REG_SP],
             &[
                 ARM_REG_SP, ARM_REG_R4, ARM_REG_R5, ARM_REG_R6, ARM_REG_R7, ARM_REG_PC,
             ],
-            &[ARM_REG_SP],
         )]),
     );
 }
