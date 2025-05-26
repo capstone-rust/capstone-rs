@@ -47,6 +47,7 @@
   "asrd", // AARCH64_INS_ASRD
   "asrr", // AARCH64_INS_ASRR
   "asr", // AARCH64_INS_ASR
+  "at_as1elx", // AARCH64_INS_AT_AS1ELX
   "autda", // AARCH64_INS_AUTDA
   "autdb", // AARCH64_INS_AUTDB
   "autdza", // AARCH64_INS_AUTDZA
@@ -158,6 +159,7 @@
   "cfinv", // AARCH64_INS_CFINV
   "clasta", // AARCH64_INS_CLASTA
   "clastb", // AARCH64_INS_CLASTB
+  "clr", // AARCH64_INS_CLR
   "clrex", // AARCH64_INS_CLREX
   "cls", // AARCH64_INS_CLS
   "clz", // AARCH64_INS_CLZ
@@ -329,6 +331,8 @@
   "extq", // AARCH64_INS_EXTQ
   "mova", // AARCH64_INS_MOVA
   "extr", // AARCH64_INS_EXTR
+  "extrx", // AARCH64_INS_EXTRX
+  "extry", // AARCH64_INS_EXTRY
   "ext", // AARCH64_INS_EXT
   "f1cvtl2", // AARCH64_INS_F1CVTL2
   "f1cvtlt", // AARCH64_INS_F1CVTLT
@@ -394,6 +398,9 @@
   "fexpa", // AARCH64_INS_FEXPA
   "fjcvtzs", // AARCH64_INS_FJCVTZS
   "flogb", // AARCH64_INS_FLOGB
+  "fma16", // AARCH64_INS_FMA16
+  "fma32", // AARCH64_INS_FMA32
+  "fma64", // AARCH64_INS_FMA64
   "fmadd", // AARCH64_INS_FMADD
   "fmad", // AARCH64_INS_FMAD
   "fmax", // AARCH64_INS_FMAX
@@ -431,6 +438,9 @@
   "fmopa", // AARCH64_INS_FMOPA
   "fmops", // AARCH64_INS_FMOPS
   "fmov", // AARCH64_INS_FMOV
+  "fms16", // AARCH64_INS_FMS16
+  "fms32", // AARCH64_INS_FMS32
+  "fms64", // AARCH64_INS_FMS64
   "fmsb", // AARCH64_INS_FMSB
   "fmsub", // AARCH64_INS_FMSUB
   "fmul", // AARCH64_INS_FMUL
@@ -478,6 +488,9 @@
   "gcsss2", // AARCH64_INS_GCSSS2
   "gcsstr", // AARCH64_INS_GCSSTR
   "gcssttr", // AARCH64_INS_GCSSTTR
+  "genlut", // AARCH64_INS_GENLUT
+  "genter", // AARCH64_INS_GENTER
+  "gexit", // AARCH64_INS_GEXIT
   "ld1b", // AARCH64_INS_LD1B
   "ld1d", // AARCH64_INS_LD1D
   "ld1h", // AARCH64_INS_LD1H
@@ -713,21 +726,28 @@
   "ldursb", // AARCH64_INS_LDURSB
   "ldursh", // AARCH64_INS_LDURSH
   "ldursw", // AARCH64_INS_LDURSW
+  "ldx", // AARCH64_INS_LDX
   "ldxp", // AARCH64_INS_LDXP
   "ldxrb", // AARCH64_INS_LDXRB
   "ldxrh", // AARCH64_INS_LDXRH
   "ldxr", // AARCH64_INS_LDXR
+  "ldy", // AARCH64_INS_LDY
+  "ldz", // AARCH64_INS_LDZ
+  "ldzi", // AARCH64_INS_LDZI
   "lslr", // AARCH64_INS_LSLR
   "lsl", // AARCH64_INS_LSL
   "lsrr", // AARCH64_INS_LSRR
   "lsr", // AARCH64_INS_LSR
   "luti2", // AARCH64_INS_LUTI2
   "luti4", // AARCH64_INS_LUTI4
+  "mac16", // AARCH64_INS_MAC16
   "maddpt", // AARCH64_INS_MADDPT
   "madd", // AARCH64_INS_MADD
   "madpt", // AARCH64_INS_MADPT
   "mad", // AARCH64_INS_MAD
   "match", // AARCH64_INS_MATCH
+  "matfp", // AARCH64_INS_MATFP
+  "matint", // AARCH64_INS_MATINT
   "mlapt", // AARCH64_INS_MLAPT
   "mla", // AARCH64_INS_MLA
   "mls", // AARCH64_INS_MLS
@@ -749,6 +769,8 @@
   "msrr", // AARCH64_INS_MSRR
   "msubpt", // AARCH64_INS_MSUBPT
   "msub", // AARCH64_INS_MSUB
+  "mul53hi", // AARCH64_INS_MUL53HI
+  "mul53lo", // AARCH64_INS_MUL53LO
   "mul", // AARCH64_INS_MUL
   "mvni", // AARCH64_INS_MVNI
   "nands", // AARCH64_INS_NANDS
@@ -934,7 +956,9 @@
   "sdivr", // AARCH64_INS_SDIVR
   "sdiv", // AARCH64_INS_SDIV
   "sdot", // AARCH64_INS_SDOT
+  "sdsb", // AARCH64_INS_SDSB
   "sel", // AARCH64_INS_SEL
+  "set", // AARCH64_INS_SET
   "sete", // AARCH64_INS_SETE
   "seten", // AARCH64_INS_SETEN
   "setet", // AARCH64_INS_SETET
@@ -1177,13 +1201,17 @@
   "sturb", // AARCH64_INS_STURB
   "stur", // AARCH64_INS_STUR
   "sturh", // AARCH64_INS_STURH
+  "stx", // AARCH64_INS_STX
   "stxp", // AARCH64_INS_STXP
   "stxrb", // AARCH64_INS_STXRB
   "stxrh", // AARCH64_INS_STXRH
   "stxr", // AARCH64_INS_STXR
+  "sty", // AARCH64_INS_STY
+  "stz", // AARCH64_INS_STZ
   "stz2g", // AARCH64_INS_STZ2G
   "stzgm", // AARCH64_INS_STZGM
   "stzg", // AARCH64_INS_STZG
+  "stzi", // AARCH64_INS_STZI
   "subg", // AARCH64_INS_SUBG
   "subhnb", // AARCH64_INS_SUBHNB
   "subhnt", // AARCH64_INS_SUBHNT
@@ -1376,6 +1404,8 @@
   "uzpq1", // AARCH64_INS_UZPQ1
   "uzpq2", // AARCH64_INS_UZPQ2
   "uzp", // AARCH64_INS_UZP
+  "vecfp", // AARCH64_INS_VECFP
+  "vecint", // AARCH64_INS_VECINT
   "wfet", // AARCH64_INS_WFET
   "wfit", // AARCH64_INS_WFIT
   "whilege", // AARCH64_INS_WHILEGE
@@ -1388,6 +1418,8 @@
   "whilelt", // AARCH64_INS_WHILELT
   "whilerw", // AARCH64_INS_WHILERW
   "whilewr", // AARCH64_INS_WHILEWR
+  "wkdmc", // AARCH64_INS_WKDMC
+  "wkdmd", // AARCH64_INS_WKDMD
   "wrffr", // AARCH64_INS_WRFFR
   "xaflag", // AARCH64_INS_XAFLAG
   "xar", // AARCH64_INS_XAR
