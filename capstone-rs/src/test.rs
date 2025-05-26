@@ -179,34 +179,33 @@ fn test_skipdata() {
     assert_eq!(insns[1].id().0, x86_insn::X86_INS_INSB as u32);
 }
 
-#[cfg(feature = "arch_aarch64")]
+#[cfg(feature = "arch_x86")]
 #[test]
 fn test_unsigned() {
     // default is signed
     let cs = Capstone::new()
-        .aarch64()
-        .mode(aarch64::ArchMode::Arm)
+        .x86()
+        .mode(x86::ArchMode::Mode64)
         .build()
         .unwrap();
 
-    let insns = cs.disasm_all(b"\x20\xf0\x5f\xf8", 0x1000).unwrap();
+    let insns = cs.disasm_all(b"\x66\x83\xc0\x80", 0x1000).unwrap();
     let insns: Vec<_> = insns.iter().collect();
     assert_eq!(insns.len(), 1);
-    assert_eq!(insns[0].op_str(), Some("x0, [x1, #-1]"));
+    assert_eq!(insns[0].op_str(), Some("ax, -0x80"));
 
     // this time with unsigned operand
     let mut cs = Capstone::new()
-        .aarch64()
-        .mode(aarch64::ArchMode::Arm)
+        .x86()
+        .mode(x86::ArchMode::Mode64)
         .build()
         .unwrap();
     cs.set_unsigned(true).unwrap();
 
-    let insns = cs.disasm_all(b"\x20\xf0\x5f\xf8", 0x1000).unwrap();
+    let insns = cs.disasm_all(b"\x66\x83\xc0\x80", 0x1000).unwrap();
     let insns: Vec<_> = insns.iter().collect();
     assert_eq!(insns.len(), 1);
-    // Upstream bug: aarch64 backend not honouring CS_OPT_UNSIGNED
-    // assert_eq!(insns[0].op_str(), Some("x0, [x1, #0xffffffffffffffff]"));
+    assert_eq!(insns[0].op_str(), Some("ax, 0xff80"));
 }
 
 #[cfg(feature = "arch_x86")]
