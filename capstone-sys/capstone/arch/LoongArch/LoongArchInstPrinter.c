@@ -91,7 +91,7 @@ static void printRegName(MCInst *MI, SStream *O, MCRegister Reg)
 
 static void printOperand(MCInst *MI, unsigned OpNo, SStream *O)
 {
-	add_cs_detail(MI, LOONGARCH_OP_GROUP_OPERAND, OpNo);
+	add_cs_detail(MI, LoongArch_OP_GROUP_Operand, OpNo);
 	MCOperand *MO = MCInst_getOperand(MI, (OpNo));
 
 	if (MCOperand_isReg(MO)) {
@@ -100,6 +100,31 @@ static void printOperand(MCInst *MI, unsigned OpNo, SStream *O)
 	}
 
 	if (MCOperand_isImm(MO)) {
+		// rewrite offset immediate operand to absolute address in direct branch instructions
+		// convert e.g.
+		// 0x1000: beqz	$t0, 0xc
+		// to:
+		// 0x1000: beqz	$t0, 0x100c
+		switch (MI->flat_insn->id) {
+		case LOONGARCH_INS_B:
+		case LOONGARCH_INS_BCEQZ:
+		case LOONGARCH_INS_BCNEZ:
+		case LOONGARCH_INS_BEQ:
+		case LOONGARCH_INS_BEQZ:
+		case LOONGARCH_INS_BGE:
+		case LOONGARCH_INS_BGEU:
+		case LOONGARCH_INS_BL:
+		case LOONGARCH_INS_BLT:
+		case LOONGARCH_INS_BLTU:
+		case LOONGARCH_INS_BNE:
+		case LOONGARCH_INS_BNEZ:
+			printInt64(O, MCOperand_getImm(MO) + MI->address);
+			return;
+
+		default:
+			break;
+		}
+
 		printInt64(O, MCOperand_getImm(MO));
 		return;
 	}
@@ -109,7 +134,7 @@ static void printOperand(MCInst *MI, unsigned OpNo, SStream *O)
 
 static void printAtomicMemOp(MCInst *MI, unsigned OpNo, SStream *O)
 {
-	add_cs_detail(MI, LOONGARCH_OP_GROUP_ATOMICMEMOP, OpNo);
+	add_cs_detail(MI, LoongArch_OP_GROUP_AtomicMemOp, OpNo);
 	MCOperand *MO = MCInst_getOperand(MI, (OpNo));
 
 	printRegName(MI, O, MCOperand_getReg(MO));
