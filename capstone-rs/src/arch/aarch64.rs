@@ -5,7 +5,7 @@ use crate::arch::DetailsArchInsn;
 use crate::instruction::{AccessType, RegId, RegIdInt};
 use capstone_sys::{
     aarch64_imm_range, aarch64_op_mem, aarch64_op_pred, aarch64_op_sme, aarch64_op_type,
-    aarch64_sme_op_type, aarch64_sysop, cs_aarch64, cs_aarch64_op, cs_ac_type,
+    aarch64_sme_op_type, aarch64_sysop, cs_aarch64, cs_aarch64_op,
 };
 use core::convert::{From, TryInto};
 use core::{cmp, fmt, slice};
@@ -473,7 +473,7 @@ impl From<&cs_aarch64_op> for AArch64Operand {
             None
         };
         AArch64Operand {
-            access: cs_ac_type(op.access as _).try_into().ok(),
+            access: op.access.try_into().ok(),
             vector_index,
             vas: op.vas,
             shift,

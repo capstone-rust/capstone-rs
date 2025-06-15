@@ -15,7 +15,7 @@ pub use capstone_sys::x86_reg as X86Reg;
 pub use capstone_sys::x86_sse_cc as X86SseCC;
 pub use capstone_sys::x86_xop_cc as X86XopCC;
 use capstone_sys::{
-    cs_ac_type, cs_x86, cs_x86_op, cs_x86_op__bindgen_ty_1, x86_op_mem, x86_op_type,
+    cs_x86, cs_x86_op, cs_x86_op__bindgen_ty_1, x86_op_mem, x86_op_type,
 };
 
 use super::InsnOffsetSpan;
@@ -233,7 +233,7 @@ impl From<&cs_x86_op> for X86Operand {
         let op_type = X86OperandType::new(op.type_, op.__bindgen_anon_1);
         X86Operand {
             size: op.size,
-            access: cs_ac_type(op.access as _).try_into().ok(),
+            access: op.access.try_into().ok(),
             avx_bcast: op.avx_bcast,
             avx_zero_opmask: op.avx_zero_opmask,
             op_type,
@@ -369,7 +369,7 @@ mod test {
                 size: 0,
                 avx_bcast: x86_avx_bcast::X86_AVX_BCAST_INVALID,
                 avx_zero_opmask: false,
-                access: 0,
+                access: cs_ac_type(0),
             }; 8],
         };
         let mut a2 = a1;
