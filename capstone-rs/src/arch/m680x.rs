@@ -254,7 +254,7 @@ mod test {
             type_: m680x_op_type::M680X_OP_INVALID,
             __bindgen_anon_1: cs_m680x_op__bindgen_ty_1 { reg: 0 },
             size: 1,
-            access: 0,
+            access: cs_ac_type(0),
         };
 
         assert_eq!(

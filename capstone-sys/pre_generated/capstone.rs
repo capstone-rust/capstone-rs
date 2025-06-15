@@ -1479,7 +1479,7 @@ pub struct cs_arm_op {
     #[doc = " in some instructions, an operand can be subtracted or added to\n the base register,\n if TRUE, this operand is subtracted. otherwise, it is added."]
     pub subtracted: bool,
     #[doc = " How is this operand accessed? (READ, WRITE or READ|WRITE)\n This field is combined of cs_ac_type.\n NOTE: this field is irrelevant if engine is compiled in DIET mode."]
-    pub access: u8,
+    pub access: cs_ac_type,
     #[doc = " Neon lane index for NEON instructions (or -1 if irrelevant)"]
     pub neon_lane: i8,
 }
@@ -1516,7 +1516,7 @@ impl ::core::fmt::Debug for cs_arm_op__bindgen_ty_2 {
 }
 impl ::core::fmt::Debug for cs_arm_op {
     fn fmt(&self, f: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
-        write ! (f , "cs_arm_op {{ vector_index: {:?}, shift: {:?}, type: {:?}, __bindgen_anon_1: {:?}, subtracted: {:?} }}" , self . vector_index , self . shift , self . type_ , self . __bindgen_anon_1 , self . subtracted)
+        write ! (f , "cs_arm_op {{ vector_index: {:?}, shift: {:?}, type: {:?}, __bindgen_anon_1: {:?}, subtracted: {:?}, access: {:?} }}" , self . vector_index , self . shift , self . type_ , self . __bindgen_anon_1 , self . subtracted , self . access)
     }
 }
 #[repr(C)]
@@ -5005,7 +5005,7 @@ pub struct cs_aarch64_op {
     #[doc = "< System operand"]
     pub sysop: aarch64_sysop,
     #[doc = " How is this operand accessed? (READ, WRITE or READ|WRITE)\n This field is combined of cs_ac_type.\n NOTE: this field is irrelevant if engine is compiled in DIET mode."]
-    pub access: u8,
+    pub access: cs_ac_type,
     #[doc = "< True if this operand is part of a register or vector list."]
     pub is_list_member: bool,
 }
@@ -5042,7 +5042,7 @@ impl ::core::fmt::Debug for cs_aarch64_op__bindgen_ty_2 {
 }
 impl ::core::fmt::Debug for cs_aarch64_op {
     fn fmt(&self, f: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
-        write ! (f , "cs_aarch64_op {{ vector_index: {:?}, vas: {:?}, shift: {:?}, ext: {:?}, type: {:?}, is_vreg: {:?}, __bindgen_anon_1: {:?}, sysop: {:?}, is_list_member: {:?} }}" , self . vector_index , self . vas , self . shift , self . ext , self . type_ , self . is_vreg , self . __bindgen_anon_1 , self . sysop , self . is_list_member)
+        write ! (f , "cs_aarch64_op {{ vector_index: {:?}, vas: {:?}, shift: {:?}, ext: {:?}, type: {:?}, is_vreg: {:?}, __bindgen_anon_1: {:?}, sysop: {:?}, access: {:?}, is_list_member: {:?} }}" , self . vector_index , self . vas , self . shift , self . ext , self . type_ , self . is_vreg , self . __bindgen_anon_1 , self . sysop , self . access , self . is_list_member)
     }
 }
 #[repr(C)]
@@ -8391,7 +8391,7 @@ pub struct cs_mips_op {
     #[doc = "< when true, the immediate value is unsigned"]
     pub is_unsigned: bool,
     #[doc = " How is this operand accessed? (READ, WRITE or READ|WRITE)\n NOTE: this field is irrelevant if engine is compiled in DIET mode."]
-    pub access: u8,
+    pub access: cs_ac_type,
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
@@ -8412,7 +8412,7 @@ impl ::core::fmt::Debug for cs_mips_op__bindgen_ty_1 {
 }
 impl ::core::fmt::Debug for cs_mips_op {
     fn fmt(&self, f: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
-        write ! (f , "cs_mips_op {{ type: {:?}, __bindgen_anon_1: {:?}, is_reglist: {:?}, is_unsigned: {:?} }}" , self . type_ , self . __bindgen_anon_1 , self . is_reglist , self . is_unsigned)
+        write ! (f , "cs_mips_op {{ type: {:?}, __bindgen_anon_1: {:?}, is_reglist: {:?}, is_unsigned: {:?}, access: {:?} }}" , self . type_ , self . __bindgen_anon_1 , self . is_reglist , self . is_unsigned , self . access)
     }
 }
 #[doc = " Instruction structure"]
@@ -17407,7 +17407,7 @@ pub struct cs_x86_op {
     #[doc = " size of this operand (in bytes)."]
     pub size: u8,
     #[doc = " How is this operand accessed? (READ, WRITE or READ|WRITE)\n This field is combined of cs_ac_type.\n NOTE: this field is irrelevant if engine is compiled in DIET mode."]
-    pub access: u8,
+    pub access: cs_ac_type,
     #[doc = " AVX broadcast type, or 0 if irrelevant"]
     pub avx_bcast: x86_avx_bcast,
     #[doc = " AVX zero opmask {z}"]
@@ -17430,7 +17430,7 @@ impl ::core::fmt::Debug for cs_x86_op__bindgen_ty_1 {
 }
 impl ::core::fmt::Debug for cs_x86_op {
     fn fmt(&self, f: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
-        write ! (f , "cs_x86_op {{ type: {:?}, __bindgen_anon_1: {:?}, avx_bcast: {:?}, avx_zero_opmask: {:?} }}" , self . type_ , self . __bindgen_anon_1 , self . avx_bcast , self . avx_zero_opmask)
+        write ! (f , "cs_x86_op {{ type: {:?}, __bindgen_anon_1: {:?}, access: {:?}, avx_bcast: {:?}, avx_zero_opmask: {:?} }}" , self . type_ , self . __bindgen_anon_1 , self . access , self . avx_bcast , self . avx_zero_opmask)
     }
 }
 #[repr(C)]
@@ -19842,7 +19842,7 @@ pub struct cs_m680x_op {
     #[doc = "< size of this operand (in bytes)"]
     pub size: u8,
     #[doc = " How is this operand accessed? (READ, WRITE or READ|WRITE)\n This field is combined of cs_ac_type.\n NOTE: this field is irrelevant if engine is compiled in DIET"]
-    pub access: u8,
+    pub access: cs_ac_type,
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
@@ -19871,8 +19871,8 @@ impl ::core::fmt::Debug for cs_m680x_op {
     fn fmt(&self, f: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
         write!(
             f,
-            "cs_m680x_op {{ type: {:?}, __bindgen_anon_1: {:?} }}",
-            self.type_, self.__bindgen_anon_1
+            "cs_m680x_op {{ type: {:?}, __bindgen_anon_1: {:?}, access: {:?} }}",
+            self.type_, self.__bindgen_anon_1, self.access
         )
     }
 }
@@ -20524,7 +20524,7 @@ pub struct cs_riscv_op {
     pub type_: riscv_op_type,
     pub __bindgen_anon_1: cs_riscv_op__bindgen_ty_1,
     #[doc = "< How is this operand accessed? (READ, WRITE or READ|WRITE)"]
-    pub access: u8,
+    pub access: cs_ac_type,
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
@@ -20542,8 +20542,8 @@ impl ::core::fmt::Debug for cs_riscv_op {
     fn fmt(&self, f: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
         write!(
             f,
-            "cs_riscv_op {{ type: {:?}, __bindgen_anon_1: {:?} }}",
-            self.type_, self.__bindgen_anon_1
+            "cs_riscv_op {{ type: {:?}, __bindgen_anon_1: {:?}, access: {:?} }}",
+            self.type_, self.__bindgen_anon_1, self.access
         )
     }
 }
@@ -21394,7 +21394,7 @@ pub struct cs_bpf_op {
     #[doc = "< is this operand referring to packet data? It is set for memory operands."]
     pub is_pkt: bool,
     #[doc = " How is this operand accessed? (READ, WRITE or READ|WRITE)\n This field is combined of cs_ac_type.\n NOTE: this field is irrelevant if engine is compiled in DIET mode."]
-    pub access: u8,
+    pub access: cs_ac_type,
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
@@ -21421,11 +21421,7 @@ impl ::core::fmt::Debug for cs_bpf_op__bindgen_ty_1 {
 }
 impl ::core::fmt::Debug for cs_bpf_op {
     fn fmt(&self, f: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
-        write!(
-            f,
-            "cs_bpf_op {{ type: {:?}, __bindgen_anon_1: {:?}, is_signed: {:?}, is_pkt: {:?} }}",
-            self.type_, self.__bindgen_anon_1, self.is_signed, self.is_pkt
-        )
+        write ! (f , "cs_bpf_op {{ type: {:?}, __bindgen_anon_1: {:?}, is_signed: {:?}, is_pkt: {:?}, access: {:?} }}" , self . type_ , self . __bindgen_anon_1 , self . is_signed , self . is_pkt , self . access)
     }
 }
 #[doc = " Instruction structure"]
@@ -22139,7 +22135,7 @@ pub struct cs_tricore_op {
     pub type_: tricore_op_type,
     pub __bindgen_anon_1: cs_tricore_op__bindgen_ty_1,
     #[doc = "< How is this operand accessed? (READ, WRITE or READ|WRITE)"]
-    pub access: u8,
+    pub access: cs_ac_type,
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
@@ -22160,8 +22156,8 @@ impl ::core::fmt::Debug for cs_tricore_op {
     fn fmt(&self, f: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
         write!(
             f,
-            "cs_tricore_op {{ type: {:?}, __bindgen_anon_1: {:?} }}",
-            self.type_, self.__bindgen_anon_1
+            "cs_tricore_op {{ type: {:?}, __bindgen_anon_1: {:?}, access: {:?} }}",
+            self.type_, self.__bindgen_anon_1, self.access
         )
     }
 }
@@ -23774,7 +23770,7 @@ pub struct cs_loongarch_op {
     pub type_: loongarch_op_type,
     pub __bindgen_anon_1: cs_loongarch_op__bindgen_ty_1,
     #[doc = " How is this operand accessed? (READ, WRITE or READ|WRITE)\n NOTE: this field is irrelevant if engine is compiled in DIET mode."]
-    pub access: u8,
+    pub access: cs_ac_type,
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
@@ -23794,8 +23790,8 @@ impl ::core::fmt::Debug for cs_loongarch_op {
     fn fmt(&self, f: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
         write!(
             f,
-            "cs_loongarch_op {{ type: {:?}, __bindgen_anon_1: {:?} }}",
-            self.type_, self.__bindgen_anon_1
+            "cs_loongarch_op {{ type: {:?}, __bindgen_anon_1: {:?}, access: {:?} }}",
+            self.type_, self.__bindgen_anon_1, self.access
         )
     }
 }
@@ -27919,48 +27915,50 @@ pub mod cs_xtensa_op_type {
     pub const XTENSA_OP_IMM: Type = 2;
     #[doc = "< = (Memory operand)."]
     pub const XTENSA_OP_MEM: Type = 128;
-    #[doc = "< = (Memory Register operand)."]
-    pub const XTENSA_OP_MEM_REG: Type = 129;
-    #[doc = "< = (Memory Immediate operand)."]
-    pub const XTENSA_OP_MEM_IMM: Type = 130;
     #[doc = "< = (L32R Target)"]
     pub const XTENSA_OP_L32R: Type = 16;
 }
+#[doc = " Instruction's operand referring to memory\n This is associated with XTENSA_OP_MEM operand type above"]
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
 pub struct cs_xtensa_op_mem {
+    #[doc = "< base register"]
     pub base: u8,
+    #[doc = "< displacement/offset value"]
     pub disp: i32,
 }
+#[doc = " Instruction operand"]
 #[repr(C)]
 #[derive(Copy, Clone)]
-pub struct cs_xtensa_operand {
-    pub type_: u8,
-    pub access: u8,
-    pub __bindgen_anon_1: cs_xtensa_operand__bindgen_ty_1,
+pub struct cs_xtensa_op {
+    pub type_: cs_xtensa_op_type::Type,
+    #[doc = " How is this operand accessed? (READ, WRITE or READ|WRITE)\n NOTE: this field is irrelevant if engine is compiled in DIET mode."]
+    pub access: cs_ac_type,
+    pub __bindgen_anon_1: cs_xtensa_op__bindgen_ty_1,
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
-pub union cs_xtensa_operand__bindgen_ty_1 {
+pub union cs_xtensa_op__bindgen_ty_1 {
     pub reg: u8,
+    #[doc = " register value for REG operand"]
     pub imm: i32,
+    #[doc = " immediate value for IMM operand"]
     pub mem: cs_xtensa_op_mem,
 }
-impl ::core::fmt::Debug for cs_xtensa_operand__bindgen_ty_1 {
+impl ::core::fmt::Debug for cs_xtensa_op__bindgen_ty_1 {
     fn fmt(&self, f: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
-        write!(f, "cs_xtensa_operand__bindgen_ty_1 {{ union }}")
+        write!(f, "cs_xtensa_op__bindgen_ty_1 {{ union }}")
     }
 }
-impl ::core::fmt::Debug for cs_xtensa_operand {
+impl ::core::fmt::Debug for cs_xtensa_op {
     fn fmt(&self, f: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
         write!(
             f,
-            "cs_xtensa_operand {{ __bindgen_anon_1: {:?} }}",
-            self.__bindgen_anon_1
+            "cs_xtensa_op {{ type: {:?}, access: {:?}, __bindgen_anon_1: {:?} }}",
+            self.type_, self.access, self.__bindgen_anon_1
         )
     }
 }
-pub type cs_xtensa_op = cs_xtensa_operand;
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub struct cs_xtensa {
@@ -28413,12 +28411,14 @@ pub struct cs_insn {
     pub is_alias: bool,
     #[doc = " True: The operands are the ones of the alias instructions.\n False: The detail operands are from the real instruction."]
     pub usesAliasDetails: bool,
+    #[doc = " True: The bytes disassemble to a valid instruction, but it is illegal by ISA definitions.\n For example the instruction uses a register which is not allowed or it appears in\n an invalid context.\n\n False: The instruction decoded correctly and is valid."]
+    pub illegal: bool,
     #[doc = " Pointer to cs_detail.\n NOTE: detail pointer is only valid when both requirements below are met:\n (1) CS_OP_DETAIL = CS_OPT_ON\n (2) Engine is not in Skipdata mode (CS_OP_SKIPDATA option set to CS_OPT_ON)\n\n NOTE 2: when in Skipdata mode, or when detail mode is OFF, even if this pointer\n     is not NULL, its content is still irrelevant."]
     pub detail: *mut cs_detail,
 }
 impl ::core::fmt::Debug for cs_insn {
     fn fmt(&self, f: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
-        write ! (f , "cs_insn {{ id: {:?}, bytes: {:?}, mnemonic: [...], op_str: [...], is_alias: {:?}, usesAliasDetails: {:?}, detail: {:?} }}" , self . id , self . bytes , self . is_alias , self . usesAliasDetails , self . detail)
+        write ! (f , "cs_insn {{ id: {:?}, bytes: {:?}, mnemonic: [...], op_str: [...], is_alias: {:?}, usesAliasDetails: {:?}, illegal: {:?}, detail: {:?} }}" , self . id , self . bytes , self . is_alias , self . usesAliasDetails , self . illegal , self . detail)
     }
 }
 pub mod cs_err {

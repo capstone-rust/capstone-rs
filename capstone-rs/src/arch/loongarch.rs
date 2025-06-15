@@ -6,7 +6,7 @@ use core::{cmp, fmt, slice};
 pub use capstone_sys::loongarch_insn as LoongArchInsn;
 pub use capstone_sys::loongarch_reg as LoongArchReg;
 use capstone_sys::{
-    cs_ac_type, cs_loongarch, cs_loongarch_op, cs_loongarch_op__bindgen_ty_1, loongarch_op_mem,
+    cs_loongarch, cs_loongarch_op, cs_loongarch_op__bindgen_ty_1, loongarch_op_mem,
     loongarch_op_type,
 };
 
@@ -39,7 +39,7 @@ impl From<&cs_loongarch_op> for LoongArchOperand {
         let op_type = LoongArchOperandType::new(op.type_, op.__bindgen_anon_1);
         LoongArchOperand {
             op_type,
-            access: cs_ac_type(op.access as _).try_into().ok(),
+            access: op.access.try_into().ok(),
         }
     }
 }
