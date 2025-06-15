@@ -10,16 +10,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - TriCore arch support
 - MOS65XX arch support
 - SH arch support
+- Alpha arch support
+- HPPA arch support
+- LoongArch arch support
+- Xtensa arch support
+- ARC arch support
 - Arch-specific features flags to enable/disable arch support
 - Expose X86 instruction encoding info via `X86InsnDetail::encoding()`
 - Make RegAccessType available for ARM64
 - Rename RegAccessType to AccessType while keeping type alias
 - Expose `CS_OPT_UNSIGNED` via `Capstone::set_unsigned`
 - Expose `CS_OPT_MNEMONIC` via `Capstone::set_mnemonic`
+- Rename ARM64 to AARCH64, SYSZ to SYSTEMZ to follow upstream changes
 
 ### Changed
 - `InsnDetail::regs_read()`/`InsnDetail::regs_write()` return more of the accessed registers
-- Bump bundled capstone to 5.0.6
+- Bump bundled capstone to 6.0.0-Alpha4
 
 ## [0.13.0] - 2025-02-04
 ### Added
