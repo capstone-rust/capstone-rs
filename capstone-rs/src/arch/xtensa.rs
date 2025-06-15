@@ -6,8 +6,8 @@ use core::{cmp, fmt, slice};
 pub use capstone_sys::xtensa_insn as XtensaInsn;
 pub use capstone_sys::xtensa_reg as XtensaReg;
 use capstone_sys::{
-    cs_ac_type, cs_xtensa, cs_xtensa_op, cs_xtensa_op_mem, cs_xtensa_op_type,
-    cs_xtensa_operand__bindgen_ty_1,
+    cs_xtensa, cs_xtensa_op, cs_xtensa_op_mem, cs_xtensa_op_type,
+    cs_xtensa_op__bindgen_ty_1,
 };
 
 pub use crate::arch::arch_builder::xtensa::*;
@@ -39,7 +39,7 @@ impl From<&cs_xtensa_op> for XtensaOperand {
         let op_type = XtensaOperandType::new(op.type_, op.__bindgen_anon_1);
         XtensaOperand {
             op_type,
-            access: cs_ac_type(op.access as _).try_into().ok(),
+            access: op.access.try_into().ok(),
         }
     }
 }
@@ -56,12 +56,6 @@ pub enum XtensaOperandType {
     /// Memory
     Mem(XtensaOpMem),
 
-    /// Memory register
-    MemReg(RegId),
-
-    /// Memory immediate
-    MemImm(i32),
-
     /// L32R target
     L32R(i32),
 
@@ -70,7 +64,7 @@ pub enum XtensaOperandType {
 }
 
 impl XtensaOperandType {
-    fn new(op_type: u8, value: cs_xtensa_operand__bindgen_ty_1) -> XtensaOperandType {
+    fn new(op_type: cs_xtensa_op_type::Type, value: cs_xtensa_op__bindgen_ty_1) -> XtensaOperandType {
         match op_type as cs_xtensa_op_type::Type {
             cs_xtensa_op_type::XTENSA_OP_REG => {
                 XtensaOperandType::Reg(RegId(unsafe { value.reg } as RegIdInt))
@@ -79,10 +73,6 @@ impl XtensaOperandType {
             cs_xtensa_op_type::XTENSA_OP_MEM => {
                 XtensaOperandType::Mem(XtensaOpMem(unsafe { value.mem }))
             }
-            cs_xtensa_op_type::XTENSA_OP_MEM_REG => {
-                XtensaOperandType::MemReg(RegId(unsafe { value.reg } as RegIdInt))
-            }
-            cs_xtensa_op_type::XTENSA_OP_MEM_IMM => XtensaOperandType::MemImm(unsafe { value.imm }),
             cs_xtensa_op_type::XTENSA_OP_L32R => XtensaOperandType::L32R(unsafe { value.imm }),
             _ => XtensaOperandType::Invalid,
         }
