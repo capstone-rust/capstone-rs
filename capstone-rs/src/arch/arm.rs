@@ -5,7 +5,7 @@ use core::ffi::c_uint;
 use core::{cmp, fmt, slice};
 
 use capstone_sys::{
-    arm_op_mem, arm_op_type, arm_shifter, cs_ac_type, cs_arm, cs_arm_op, cs_arm_op__bindgen_ty_2,
+    arm_op_mem, arm_op_type, arm_shifter, cs_arm, cs_arm_op, cs_arm_op__bindgen_ty_2,
 };
 
 pub use crate::arch::arch_builder::arm::*;
@@ -306,7 +306,7 @@ impl From<&cs_arm_op> for ArmOperand {
             shift,
             op_type,
             subtracted: op.subtracted,
-            access: cs_ac_type(op.access as _).try_into().ok(),
+            access: op.access.try_into().ok(),
         }
     }
 }
@@ -388,7 +388,7 @@ mod test {
                 type_: arm_op_type::ARM_OP_INVALID,
                 __bindgen_anon_1: cs_arm_op__bindgen_ty_2 { imm: 0 },
                 subtracted: false,
-                access: 0,
+                access: cs_ac_type(0),
                 neon_lane: 0,
             }; 36],
             vcc: VPTCodes::ARMVCC_None,

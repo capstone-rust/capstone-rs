@@ -102,7 +102,7 @@ mod test {
             __bindgen_anon_1: cs_mips_op__bindgen_ty_1 { reg: 0 },
             is_reglist: false,
             is_unsigned: false,
-            access: 0,
+            access: cs_ac_type(0),
         };
         assert_eq!(MipsOperand::from(&op), MipsOperand::Invalid);
     }
