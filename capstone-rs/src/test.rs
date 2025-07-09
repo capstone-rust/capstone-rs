@@ -4719,7 +4719,7 @@ fn test_arch_riscv_detail() {
                 &[
                     Reg(RegId(RISCV_REG_X11 as RegIdInt)),
                     Mem(RiscVOpMem(riscv_op_mem {
-                        base: RISCV_REG_X12 as u32,
+                        base: RISCV_REG_X12,
                         disp: 8,
                     })),
                 ],
@@ -4966,7 +4966,7 @@ fn test_issue_175() {
 
     let insns = cs.disasm_all(&[0x0c, 0x44, 0x3b, 0xd5], 0).unwrap();
     for i in insns.as_ref() {
-        let id = cs.insn_detail(&i).unwrap();
+        let id = cs.insn_detail(i).unwrap();
         let ad = id.arch_detail();
         let aarch = ad.aarch64().unwrap();
 
