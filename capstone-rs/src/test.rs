@@ -4719,7 +4719,7 @@ fn test_arch_riscv_detail() {
                 &[
                     Reg(RegId(RISCV_REG_X11 as RegIdInt)),
                     Mem(RiscVOpMem(riscv_op_mem {
-                        base: RISCV_REG_X12,
+                        base: RISCV_REG_X12 as libc::c_uint,
                         disp: 8,
                     })),
                 ],
