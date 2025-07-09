@@ -404,9 +404,9 @@ impl Display for Insn<'_> {
     fn fmt(&self, fmt: &mut Formatter) -> fmt::Result {
         write!(fmt, "{:#x}: ", self.address())?;
         if let Some(mnemonic) = self.mnemonic() {
-            write!(fmt, "{} ", mnemonic)?;
+            write!(fmt, "{mnemonic} ")?;
             if let Some(op_str) = self.op_str() {
-                write!(fmt, "{}", op_str)?;
+                write!(fmt, "{op_str}")?;
             }
         }
         Ok(())
@@ -496,10 +496,14 @@ impl InsnDetail<'_> {
             }
         }
         def_arch_detail_match!(
+            [AARCH64, AArch64Detail, AArch64InsnDetail, aarch64, "arch_aarch64"]
+            [ALPHA, AlphaDetail, AlphaInsnDetail, alpha, "arch_alpha"]
+            [ARC, ArcDetail, ArcInsnDetail, arc, "arch_arc"]
             [ARM, ArmDetail, ArmInsnDetail, arm, "arch_arm"]
-            [ARM64, Arm64Detail, Arm64InsnDetail, arm64, "arch_arm64"]
             [BPF, BpfDetail, BpfInsnDetail, bpf, "arch_bpf"]
             [EVM, EvmDetail, EvmInsnDetail, evm, "arch_evm"]
+            [HPPA, HppaDetail, HppaInsnDetail, hppa, "arch_hppa"]
+            [LOONGARCH, LoongArchDetail, LoongArchInsnDetail, loongarch, "arch_loongarch"]
             [M680X, M680xDetail, M680xInsnDetail, m680x, "arch_m680x"]
             [M68K, M68kDetail, M68kInsnDetail, m68k, "arch_m68k"]
             [MIPS, MipsDetail, MipsInsnDetail, mips, "arch_mips"]
@@ -508,11 +512,12 @@ impl InsnDetail<'_> {
             [RISCV, RiscVDetail, RiscVInsnDetail, riscv, "arch_riscv"]
             [SH, ShDetail, ShInsnDetail, sh, "arch_sh"]
             [SPARC, SparcDetail, SparcInsnDetail, sparc, "arch_sparc"]
-            [SYSZ, SysZDetail, SysZInsnDetail, sysz, "arch_sysz"]
+            [SYSTEMZ, SystemZDetail, SystemZInsnDetail, systemz, "arch_systemz"]
             [TMS320C64X, Tms320c64xDetail, Tms320c64xInsnDetail, tms320c64x, "arch_tms320c64x"]
             [TRICORE, TriCoreDetail, TriCoreInsnDetail, tricore, "arch_tricore"]
             [X86, X86Detail, X86InsnDetail, x86, "arch_x86"]
             [XCORE, XcoreDetail, XcoreInsnDetail, xcore, "arch_xcore"]
+            [XTENSA, XtensaDetail, XtensaInsnDetail, xtensa, "arch_xtensa"]
         );
     }
 }
@@ -540,16 +545,16 @@ impl Display for Instructions<'_> {
         for instruction in self.iter() {
             write!(fmt, "{:x}:\t", instruction.address())?;
             for byte in instruction.bytes() {
-                write!(fmt, " {:02x}", byte)?;
+                write!(fmt, " {byte:02x}")?;
             }
             let remainder = 16 * 3 - instruction.bytes().len() * 3;
             for _ in 0..remainder {
                 write!(fmt, " ")?;
             }
             if let Some(mnemonic) = instruction.mnemonic() {
-                write!(fmt, " {}", mnemonic)?;
+                write!(fmt, " {mnemonic}")?;
                 if let Some(op_str) = instruction.op_str() {
-                    write!(fmt, " {}", op_str)?;
+                    write!(fmt, " {op_str}")?;
                 }
             }
             writeln!(fmt)?;

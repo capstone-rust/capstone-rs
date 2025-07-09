@@ -28,7 +28,7 @@ where
         match self {
             Ok(t) => t,
             Err(e) => {
-                eprintln!("error: {}", e);
+                eprintln!("error: {e}");
                 exit(1);
             }
         }
@@ -58,7 +58,7 @@ fn unhexed_bytes(input: Vec<u8>) -> Vec<u8> {
         }
 
         if curr_byte_str.len() == 2 {
-            debug!("  curr_byte_str={:?}", curr_byte_str);
+            debug!("  curr_byte_str={curr_byte_str:?}");
             let byte = u8::from_str_radix(&curr_byte_str, 16).expect("Unexpect hex parse error");
             output.push(byte);
             curr_byte_str.clear();
@@ -66,8 +66,8 @@ fn unhexed_bytes(input: Vec<u8>) -> Vec<u8> {
     }
 
     if log::max_level() >= log::LevelFilter::Info {
-        let output_hex: Vec<String> = output.iter().map(|x| format!("{:02x}", x)).collect();
-        info!("unhexed_output = {:?}", output_hex);
+        let output_hex: Vec<String> = output.iter().map(|x| format!("{x:02x}")).collect();
+        info!("unhexed_output = {output_hex:?}");
     }
 
     output
@@ -93,7 +93,7 @@ fn disasm<T: Iterator<Item = ExtraMode>>(
     let mut handle = stdout.lock();
 
     for i in cs.disasm_all(code, addr).expect_exit().iter() {
-        let bytes: Vec<_> = i.bytes().iter().map(|x| format!("{:02x}", x)).collect();
+        let bytes: Vec<_> = i.bytes().iter().map(|x| format!("{x:02x}")).collect();
         let bytes = bytes.join(" ");
         let _ = writeln!(
             &mut handle,
@@ -148,19 +148,19 @@ fn main() {
     // Lowercase arches
     let arches: Vec<Str> = Arch::variants()
         .iter()
-        .map(|x| format!("{}", x).to_lowercase().into())
+        .map(|x| format!("{x}").to_lowercase().into())
         .collect();
 
     // Lowercase modes
     let modes: Vec<Str> = Mode::variants()
         .iter()
-        .map(|x| format!("{}", x).to_lowercase().into())
+        .map(|x| format!("{x}").to_lowercase().into())
         .collect();
 
     // Lowercase extra modes
     let extra_modes: Vec<Str> = ExtraMode::variants()
         .iter()
-        .map(|x| format!("{}", x).to_lowercase().into())
+        .map(|x| format!("{x}").to_lowercase().into())
         .collect();
 
     let matches = Command::new("capstone-rs disassembler tool")
@@ -281,27 +281,27 @@ fn main() {
         .unwrap();
 
     let is_hex = matches.get_flag(HEX_ARG) || matches.get_one::<String>(CODE_ARG).is_some();
-    info!("is_hex = {:?}", is_hex);
+    info!("is_hex = {is_hex:?}");
 
     let show_detail = matches.get_flag(DETAIL_ARG);
-    info!("show_detail = {:?}", show_detail);
+    info!("show_detail = {show_detail:?}");
 
     let arch: Arch = Arch::from_str(matches.get_one::<String>(ARCH_ARG).unwrap()).unwrap();
-    info!("Arch = {:?}", arch);
+    info!("Arch = {arch:?}");
 
     let mode: Mode = Mode::from_str(matches.get_one::<String>(MODE_ARG).unwrap()).unwrap();
-    info!("Mode = {:?}", mode);
+    info!("Mode = {mode:?}");
 
     let extra_mode: Vec<_> = match matches.get_many::<String>(EXTRA_MODE_ARG) {
         None => Vec::with_capacity(0),
         Some(x) => x.map(|x| ExtraMode::from_str(x).unwrap()).collect(),
     };
-    info!("ExtraMode = {:?}", extra_mode);
+    info!("ExtraMode = {extra_mode:?}");
 
     let endian: Option<Endian> = matches
         .get_one::<String>(ENDIAN_ARG)
         .map(|x| Endian::from_str(x).expect_exit());
-    info!("Endian = {:?}", endian);
+    info!("Endian = {endian:?}");
 
     let address = u64::from_str_radix(
         matches
@@ -310,7 +310,7 @@ fn main() {
         16,
     )
     .expect_exit();
-    info!("Address = 0x{:x}", address);
+    info!("Address = 0x{address:x}");
 
     let input_bytes = if is_hex {
         unhexed_bytes(direct_input_bytes)

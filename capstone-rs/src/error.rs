@@ -129,7 +129,7 @@ mod test {
         ];
 
         for error in errors.iter() {
-            println!("{}", error);
+            println!("{error}");
         }
     }
 }
