@@ -2171,9 +2171,7 @@ fn test_arch_hppa() {
         Some(Endian::Big),
         &[],
         &[
-            // Upstream bug: access to uninitialized value
-            // https://github.com/capstone-engine/capstone/issues/2717
-            // ("ldsid", b"\x00\x20\x50\xa2"),
+            ("ldsid", b"\x00\x20\x50\xa2"),
             ("mtsp", b"\x00\x01\x58\x20"),
         ],
     );
@@ -2182,8 +2180,8 @@ fn test_arch_hppa() {
 #[cfg(feature = "arch_hppa")]
 #[test]
 fn test_arch_hppa_detail() {
-    use crate::arch::hppa::HppaOperand;
-    use capstone_sys::hppa_reg::*;
+    use crate::arch::hppa::{HppaMem, HppaOperand};
+    use capstone_sys::{hppa_mem, hppa_reg::*};
 
     test_arch_mode_endian_insns_detail(
         &mut Capstone::new()
@@ -2197,10 +2195,6 @@ fn test_arch_hppa_detail() {
         Some(Endian::Big),
         &[],
         &[
-            // Upstream bug: access to uninitialized value
-            // https://github.com/capstone-engine/capstone/issues/2717
-            // ldsid (sr1, r1), rp
-            /*
             DII::new(
                 "ldsid",
                 b"\x00\x20\x50\xa2",
@@ -2209,9 +2203,8 @@ fn test_arch_hppa_detail() {
                         op_type: hppa::HppaOperandType::Mem(HppaMem(hppa_mem {
                             base: HPPA_REG_GR1,
                             space: HPPA_REG_SR1,
-                            base_access: cs_ac_type::CS_AC_READ,
                         })),
-                        access: None,
+                        access: Some(RegAccessType::ReadOnly),
                     },
                     HppaOperand {
                         op_type: hppa::HppaOperandType::Reg(RegId(HPPA_REG_GR2 as RegIdInt)),
@@ -2219,7 +2212,6 @@ fn test_arch_hppa_detail() {
                     },
                 ],
             ),
-            */
             // mtsp r1, sr1
             DII::new(
                 "mtsp",
@@ -3453,12 +3445,13 @@ fn test_arch_sparc() {
     test_arch_mode_endian_insns(
         &mut Capstone::new()
             .sparc()
-            .mode(sparc::ArchMode::Default)
+            .mode(sparc::ArchMode::V9)
+            .endian(Endian::Big)
             .build()
             .unwrap(),
         Arch::SPARC,
-        Mode::Default,
-        None,
+        Mode::V9,
+        Some(Endian::Big),
         &[],
         &[
             ("cmp", b"\x80\xa0\x40\x02"),
@@ -3484,6 +3477,7 @@ fn test_arch_sparc() {
         &mut Capstone::new()
             .sparc()
             .mode(sparc::ArchMode::V9)
+            .endian(Endian::Big)
             .build()
             .unwrap(),
         Arch::SPARC,
@@ -3510,12 +3504,13 @@ fn test_arch_sparc_detail() {
     test_arch_mode_endian_insns_detail(
         &mut Capstone::new()
             .sparc()
-            .mode(sparc::ArchMode::Default)
+            .mode(sparc::ArchMode::V9)
+            .endian(Endian::Big)
             .build()
             .unwrap(),
         Arch::SPARC,
-        Mode::Default,
-        None,
+        Mode::V9,
+        Some(Endian::Big),
         &[],
         &[
             // cmp     %g1, %g2
@@ -3533,7 +3528,7 @@ fn test_arch_sparc_detail() {
                 b"\x85\xc2\x60\x08",
                 &[
                     Mem(SparcOpMem(sparc_op_mem {
-                        base: SPARC_REG_O1 as u8,
+                        base: SPARC_REG_O1,
                         index: 0,
                         disp: 8,
                     })),
@@ -3562,7 +3557,7 @@ fn test_arch_sparc_detail() {
                 b"\xd5\xf6\x10\x16",
                 &[
                     Mem(SparcOpMem(sparc_op_mem {
-                        base: SPARC_REG_I0 as u8,
+                        base: SPARC_REG_I0,
                         index: 0,
                         disp: 0,
                     })),
@@ -3611,7 +3606,7 @@ fn test_arch_sparc_detail() {
                 &[
                     Reg(RegId(SPARC_REG_O2 as RegIdInt)),
                     Mem(SparcOpMem(sparc_op_mem {
-                        base: SPARC_REG_G1 as u8,
+                        base: SPARC_REG_G1,
                         index: 0,
                         disp: 0,
                     })),
@@ -3623,8 +3618,8 @@ fn test_arch_sparc_detail() {
                 b"\xd4\x4e\x00\x16",
                 &[
                     Mem(SparcOpMem(sparc_op_mem {
-                        base: SPARC_REG_I0 as u8,
-                        index: SPARC_REG_L6 as u8,
+                        base: SPARC_REG_I0,
+                        index: SPARC_REG_L6,
                         disp: 0,
                     })),
                     Reg(RegId(SPARC_REG_O2 as RegIdInt)),
@@ -3635,6 +3630,26 @@ fn test_arch_sparc_detail() {
                 "brnz,a,pn",
                 b"\x2a\xc2\x80\x03",
                 &[Reg(RegId(SPARC_REG_O2 as RegIdInt)), Imm(0x1044)],
+            ),
+            // membar #LoadLoad
+            DII::new(
+                "membar",
+                b"\x81\x43\xe0\x01",
+                &[MembarTag(SparcMembarTag::SPARC_MEMBAR_TAG_LOADLOAD)],
+            ),
+            // ldstuba [%i0+%l6] 4, %o2
+            DII::new(
+                "ldstuba",
+                b"\xd4\xee\x00\x96",
+                &[
+                    Mem(SparcOpMem(sparc_op_mem {
+                        base: SPARC_REG_I0,
+                        index: SPARC_REG_L6,
+                        disp: 0,
+                    })),
+                    Asi(SparcAsi::SPARC_ASITAG_ASI_N),
+                    Reg(RegId(SPARC_REG_O2 as RegIdInt)),
+                ],
             ),
         ],
     );
@@ -3648,21 +3663,24 @@ fn test_arch_sparc_detail() {
         &mut Capstone::new()
             .sparc()
             .mode(sparc::ArchMode::V9)
+            .endian(Endian::Big)
             .build()
             .unwrap(),
         Arch::SPARC,
         Mode::V9,
-        None,
+        Some(Endian::Big),
         &[],
         &[
             // fcmps   %f0, %f4
             DII::new("fcmps", b"\x81\xa8\x0a\x24", &f0_f4),
+            // Upstream bug
+            // https://github.com/capstone-engine/capstone/issues/2749
             // fstox   %f0, %f4
-            DII::new("fstox", b"\x89\xa0\x10\x20", &f0_f4),
+            // DII::new("fstox", b"\x89\xa0\x10\x20", &f0_f4),
             // fqtoi   %f0, %f4
-            DII::new("fqtoi", b"\x89\xa0\x1a\x60", &f0_f4),
+            // DII::new("fqtoi", b"\x89\xa0\x1a\x60", &f0_f4),
             // fnegq   %f0, %f4
-            DII::new("fnegq", b"\x89\xa0\x00\xe0", &f0_f4),
+            // DII::new("fnegq", b"\x89\xa0\x00\xe0", &f0_f4),
         ],
     );
 }

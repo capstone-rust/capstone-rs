@@ -13853,18 +13853,59 @@ pub enum sparc_asi {
     SPARC_ASITAG_ASI_SNF_L = 139,
     SPARC_ASITAG_ASI_S_L = 137,
 }
-#[repr(u32)]
-#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
-pub enum sparc_membar_tag {
-    SPARC_MEMBAR_TAG_NONE = 0,
-    SPARC_MEMBAR_TAG_LOADLOAD = 1,
-    SPARC_MEMBAR_TAG_STORELOAD = 2,
-    SPARC_MEMBAR_TAG_LOADSTORE = 4,
-    SPARC_MEMBAR_TAG_STORESTORE = 8,
-    SPARC_MEMBAR_TAG_LOOKASIDE = 16,
-    SPARC_MEMBAR_TAG_MEMISSUE = 32,
-    SPARC_MEMBAR_TAG_SYNC = 64,
+impl sparc_membar_tag {
+    pub const SPARC_MEMBAR_TAG_NONE: sparc_membar_tag = sparc_membar_tag(0);
 }
+impl sparc_membar_tag {
+    pub const SPARC_MEMBAR_TAG_LOADLOAD: sparc_membar_tag = sparc_membar_tag(1);
+}
+impl sparc_membar_tag {
+    pub const SPARC_MEMBAR_TAG_STORELOAD: sparc_membar_tag = sparc_membar_tag(2);
+}
+impl sparc_membar_tag {
+    pub const SPARC_MEMBAR_TAG_LOADSTORE: sparc_membar_tag = sparc_membar_tag(4);
+}
+impl sparc_membar_tag {
+    pub const SPARC_MEMBAR_TAG_STORESTORE: sparc_membar_tag = sparc_membar_tag(8);
+}
+impl sparc_membar_tag {
+    pub const SPARC_MEMBAR_TAG_LOOKASIDE: sparc_membar_tag = sparc_membar_tag(16);
+}
+impl sparc_membar_tag {
+    pub const SPARC_MEMBAR_TAG_MEMISSUE: sparc_membar_tag = sparc_membar_tag(32);
+}
+impl sparc_membar_tag {
+    pub const SPARC_MEMBAR_TAG_SYNC: sparc_membar_tag = sparc_membar_tag(64);
+}
+impl ::core::ops::BitOr<sparc_membar_tag> for sparc_membar_tag {
+    type Output = Self;
+    #[inline]
+    fn bitor(self, other: Self) -> Self {
+        sparc_membar_tag(self.0 | other.0)
+    }
+}
+impl ::core::ops::BitOrAssign for sparc_membar_tag {
+    #[inline]
+    fn bitor_assign(&mut self, rhs: sparc_membar_tag) {
+        self.0 |= rhs.0;
+    }
+}
+impl ::core::ops::BitAnd<sparc_membar_tag> for sparc_membar_tag {
+    type Output = Self;
+    #[inline]
+    fn bitand(self, other: Self) -> Self {
+        sparc_membar_tag(self.0 & other.0)
+    }
+}
+impl ::core::ops::BitAndAssign for sparc_membar_tag {
+    #[inline]
+    fn bitand_assign(&mut self, rhs: sparc_membar_tag) {
+        self.0 &= rhs.0;
+    }
+}
+#[repr(transparent)]
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
+pub struct sparc_membar_tag(pub libc::c_uint);
 #[doc = " Instruction's operand referring to memory\n This is associated with SPARC_OP_MEM operand type above"]
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
