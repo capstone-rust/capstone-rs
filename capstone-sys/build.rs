@@ -282,7 +282,7 @@ fn write_bindgen_bindings(
         .layout_tests(false) // eliminate test failures on platforms with different pointer sizes
         .impl_debug(true)
         .constified_enum_module("cs_err|cs_group_type|cs_opt_value|cs_xtensa_op_type")
-        .bitfield_enum("cs_mode|cs_ac_type|arm_spsr_cpsr_bits")
+        .bitfield_enum("cs_mode|cs_ac_type|arm_spsr_cpsr_bits|sparc_membar_tag")
         .rustified_enum(".*")
         .array_pointers_in_arguments(true)
         .no_copy("cs_insn");

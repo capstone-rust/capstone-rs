@@ -106,15 +106,10 @@ impl HppaMem {
     pub fn space(&self) -> RegId {
         RegId(self.0.space as RegIdInt)
     }
-
-    /// Base access
-    pub fn base_access(&self) -> Option<RegAccessType> {
-        self.0.base_access.try_into().ok()
-    }
 }
 
 impl_PartialEq_repr_fields!(HppaMem;
-    base, space, base_access
+    base, space
 );
 
 impl cmp::Eq for HppaMem {}
