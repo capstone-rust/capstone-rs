@@ -90,6 +90,8 @@ For `v7` we can then focus on other big features, like [SAIL](https://github.com
 
 - `clang-tidy` is now run on all files changed by a PR.
 - ASAN: All tests are now run with the address sanitizer enabled. This includes checking for leaks.
+- Many more asserts were added. They are only enabled for debug builds (with a few exceptions).
+  Enabling the option `CAPSTONE_ASSERTION_WARNINGS` for a release build will print warnings but won't abort the program.
 
 **Instruction formats for PPC, SystemZ, LoongArch**
 
@@ -171,6 +173,24 @@ Nonetheless, we hope this additional information is useful to you.
   It is also possible to disable floating point support by adding `CS_MODE_MIPS_NOFLOAT`.
 
 - **`CS_MODE_MIPS_PTR64` is now required to decode 64-bit pointers**, like jumps and calls (for example: `jal $t0`).
+
+**Sparc**
+
+- Updated to LLVM-18
+- V9 must be enabled explicitly now.
+- Added Little Endian support. Big endian mode must be enabled explicitly now.
+- Alias support added. It is possible to choose between real and alias details.
+- ASI operands are now distinct from immediates.
+- Memory barriers are now distinct from immediates.
+- Operands have now read/write access information.
+- The instruction format was added as detail.
+- Instruction groups and modes changed to LLVM defined ones. Most notably: `64bit -> HasV9`.
+- The condition codes are now separate between normal, fp, cp or register conditional flags.
+  The flags can be normalized by unsetting the `SPARC_CC_..._BEGIN` bits.
+- The CC fields and instruction uses is encoded now consistently in `cs_sparc::cc_field`.
+  This might lead to confusions for instructions which list the cc field explicitly in their
+  asm text. For example the instruction `fcmpeq	%fcc2, %f0, %f4` has 2 not 3 operands.
+  Operands are the two registers `f0` and `f4` and the `cc_field` is set to `SPARC_CC_FIELD_FCC0`.
 
 **RISCV**
 
@@ -308,7 +328,7 @@ Such an instruction is ill-defined in LLVM and should be fixed upstream.
 | Instruction groups| Instruction groups, which actually were CPU features, were renamed to reflect that. | Names now match the ones in LLVM. Better for code generation. | Replace IDs with macros. |
 | CPU features | CPU features get checked more strictly (`MCLASS`, `V8` etc.) | With many new supported extensions, some instruction bytes decode to a different instruction, depending on the enabled features. Hence, it becomes necessary. | None. |
 | `writeback` | `writeback` member was moved to detail. | More architectures need a `writeback` flag. This is a simplification. | None. |
-| Register alias | Register alias (`r15 = pc` etc.) are not printed if LLVM doesn't do it. Old Capstone register alias can be enabled by `CS_OPT_SYNTAX_CS_REG_ALIAS`. | Mimic LLVM as close as possible. | Enable `CS_OPT_SYNTAX_CS_REG_ALIAS` option. |
+| Register alias | Register alias (`r15 = pc` etc.) are not printed if LLVM doesn't do it. Old Capstone register alias can be enabled by `CS_OPT_SYNTAX_CS_REG_ALIAS`. WARNING: This option uses a naive search and replace strategy to patch the register names in the asm text. And hence adds significant runtime at scale, if enabled. | Mimic LLVM as close as possible. | Enable `CS_OPT_SYNTAX_CS_REG_ALIAS` option. |
 | Immediate | Immediate values (`arm_op.imm`) type changed to `int64_t` | Prevent loss of precision in some cases. | None. |
 | `mem.lshift` | The `mem.lshift` field was removed. It was not set properly before and just duplicates information in `shift` | Remove faulty and duplicate code. | None. |
 | Instr. alias | Capstone now clearly separates real instructions and their aliases. Previously many aliases were treated as real instructions. See above for details. | This became a simple necessity because CS operates with a copy of the LLVMs decoder without changes to the decoder logic. |
@@ -328,7 +348,7 @@ Such an instruction is ill-defined in LLVM and should be fixed upstream.
 | Instruction groups| Instruction groups, which actually were CPU features, were renamed to reflect that. | Names now match the ones in LLVM. Better for code generation. |
 | CPU features | CPU features get checked more strictly (`MCLASS`, `V8` etc.) | With many new supported extensions, some instruction bytes decode to a different instruction, depending on the enabled features. Hence, it becomes necessary. |
 | `writeback` | `writeback` member was moved to detail. | More architectures need a `writeback` flag. This is a simplification. |
-| Register alias | Register alias (`r15 = pc` etc.) are not printed if LLVM doesn't do it. Old Capstone register alias can be enabled by `CS_OPT_SYNTAX_CS_REG_ALIAS`. | Mimic LLVM as close as possible. |
+| Register alias | Register alias (`r15 = pc` etc.) are not printed if LLVM doesn't do it. Old Capstone register alias can be enabled by `CS_OPT_SYNTAX_CS_REG_ALIAS`. WARNING: This option uses a naive search and replace strategy to patch the register names in the asm text. And hence adds significant runtime at scale, if enabled. | Mimic LLVM as close as possible. |
 | Immediate | Immediate values (`arm_op.imm`) type changed to `int64_t` | Prevent loss of precision in some cases. |
 
 **AArch64 (formerly ARM64)**
@@ -341,7 +361,7 @@ Such an instruction is ill-defined in LLVM and should be fixed upstream.
 | System operands | System Operands are separated into different types now. | System operands follow a special encoding. Some byte sequences match two different operands. Hence, a more detailed concept was necessary. |
 | `writeback` | `writeback` member was moved to detail. | See ARM explanation. |
 | `arm64_vas` | `arm64_vas` renamed to `AArch64Layout_VectorLayout` | LLVM compatibility. |
-| Register alias | Register alias (`x29 = fp` etc.) are not printed if LLVM doesn't do it. Old Capstone register alias can be enabled by `CS_OPT_SYNTAX_CS_REG_ALIAS`. | Mimic LLVM as close as possible. |
+| Register alias | Register alias (`x29 = fp` etc.) are not printed if LLVM doesn't do it. Old Capstone register alias can be enabled by `CS_OPT_SYNTAX_CS_REG_ALIAS`. WARNING: This option uses a naive search and replace strategy to patch the register names in the asm text. And hence adds significant runtime at scale, if enabled. | Mimic LLVM as close as possible. |
 | `AArch64CC_*` | `AArch64CC_EQ == 0` but `AArch64CC_INVALID != 0` | They match the LLVM enum. Better for LLVM compatibility and code generation. |
 
 **PPC**

@@ -887,7 +887,7 @@ impl ::core::ops::BitAndAssign for arm_spsr_cpsr_bits {
 }
 #[repr(transparent)]
 #[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
-pub struct arm_spsr_cpsr_bits(pub libc::c_uint);
+pub struct arm_spsr_cpsr_bits(pub ::core::ffi::c_uint);
 #[repr(u32)]
 #[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
 pub enum arm_bankedreg {
@@ -13407,76 +13407,111 @@ impl ::core::fmt::Debug for cs_ppc {
         )
     }
 }
+impl sparc_cc {
+    pub const SPARC_CC_FCC_N: sparc_cc = sparc_cc::SPARC_CC_FCC_BEGIN;
+}
+impl sparc_cc {
+    pub const SPARC_CC_CPCC_N: sparc_cc = sparc_cc::SPARC_CC_CPCC_BEGIN;
+}
 #[repr(u32)]
 #[doc = " Enums corresponding to Sparc condition codes, both icc's and fcc's."]
 #[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
 pub enum sparc_cc {
-    #[doc = "< invalid CC (default)"]
-    SPARC_CC_INVALID = 0,
-    #[doc = "< Always"]
-    SPARC_CC_ICC_A = 264,
-    #[doc = "< Never"]
-    SPARC_CC_ICC_N = 256,
-    #[doc = "< Not Equal"]
-    SPARC_CC_ICC_NE = 265,
-    #[doc = "< Equal"]
-    SPARC_CC_ICC_E = 257,
-    #[doc = "< Greater"]
-    SPARC_CC_ICC_G = 266,
-    #[doc = "< Less or Equal"]
-    SPARC_CC_ICC_LE = 258,
-    #[doc = "< Greater or Equal"]
-    SPARC_CC_ICC_GE = 267,
-    #[doc = "< Less"]
-    SPARC_CC_ICC_L = 259,
-    #[doc = "< Greater Unsigned"]
-    SPARC_CC_ICC_GU = 268,
-    #[doc = "< Less or Equal Unsigned"]
-    SPARC_CC_ICC_LEU = 260,
-    #[doc = "< Carry Clear/Great or Equal Unsigned"]
-    SPARC_CC_ICC_CC = 269,
-    #[doc = "< Carry Set/Less Unsigned"]
-    SPARC_CC_ICC_CS = 261,
-    #[doc = "< Positive"]
-    SPARC_CC_ICC_POS = 270,
-    #[doc = "< Negative"]
-    SPARC_CC_ICC_NEG = 262,
-    #[doc = "< Overflow Clear"]
-    SPARC_CC_ICC_VC = 271,
-    #[doc = "< Overflow Set"]
-    SPARC_CC_ICC_VS = 263,
-    #[doc = "< Always"]
-    SPARC_CC_FCC_A = 280,
-    #[doc = "< Never"]
-    SPARC_CC_FCC_N = 272,
-    #[doc = "< Unordered"]
-    SPARC_CC_FCC_U = 279,
-    #[doc = "< Greater"]
-    SPARC_CC_FCC_G = 278,
-    #[doc = "< Unordered or Greater"]
-    SPARC_CC_FCC_UG = 277,
-    #[doc = "< Less"]
-    SPARC_CC_FCC_L = 276,
-    #[doc = "< Unordered or Less"]
-    SPARC_CC_FCC_UL = 275,
-    #[doc = "< Less or Greater"]
-    SPARC_CC_FCC_LG = 274,
-    #[doc = "< Not Equal"]
-    SPARC_CC_FCC_NE = 273,
-    #[doc = "< Equal"]
-    SPARC_CC_FCC_E = 281,
-    #[doc = "< Unordered or Equal"]
-    SPARC_CC_FCC_UE = 282,
-    #[doc = "< Greater or Equal"]
-    SPARC_CC_FCC_GE = 283,
-    #[doc = "< Unordered or Greater or Equal"]
-    SPARC_CC_FCC_UGE = 284,
-    #[doc = "< Less or Equal"]
-    SPARC_CC_FCC_LE = 285,
-    #[doc = "< Unordered or Less or Equal"]
-    SPARC_CC_FCC_ULE = 286,
-    #[doc = "< Ordered"]
-    SPARC_CC_FCC_O = 287,
+    SPARC_CC_ICC_A = 8,
+    SPARC_CC_ICC_N = 0,
+    SPARC_CC_ICC_NE = 9,
+    SPARC_CC_ICC_E = 1,
+    SPARC_CC_ICC_G = 10,
+    SPARC_CC_ICC_LE = 2,
+    SPARC_CC_ICC_GE = 11,
+    SPARC_CC_ICC_L = 3,
+    SPARC_CC_ICC_GU = 12,
+    SPARC_CC_ICC_LEU = 4,
+    SPARC_CC_ICC_CC = 13,
+    SPARC_CC_ICC_CS = 5,
+    SPARC_CC_ICC_POS = 14,
+    SPARC_CC_ICC_NEG = 6,
+    SPARC_CC_ICC_VC = 15,
+    SPARC_CC_ICC_VS = 7,
+    SPARC_CC_FCC_BEGIN = 16,
+    SPARC_CC_FCC_A = 24,
+    SPARC_CC_FCC_U = 23,
+    SPARC_CC_FCC_G = 22,
+    SPARC_CC_FCC_UG = 21,
+    SPARC_CC_FCC_L = 20,
+    SPARC_CC_FCC_UL = 19,
+    SPARC_CC_FCC_LG = 18,
+    SPARC_CC_FCC_NE = 17,
+    SPARC_CC_FCC_E = 25,
+    SPARC_CC_FCC_UE = 26,
+    SPARC_CC_FCC_GE = 27,
+    SPARC_CC_FCC_UGE = 28,
+    SPARC_CC_FCC_LE = 29,
+    SPARC_CC_FCC_ULE = 30,
+    SPARC_CC_FCC_O = 31,
+    #[doc = "< Co-processor conditional branches"]
+    SPARC_CC_CPCC_BEGIN = 32,
+    SPARC_CC_CPCC_A = 40,
+    SPARC_CC_CPCC_3 = 39,
+    SPARC_CC_CPCC_2 = 38,
+    SPARC_CC_CPCC_23 = 37,
+    SPARC_CC_CPCC_1 = 36,
+    SPARC_CC_CPCC_13 = 35,
+    SPARC_CC_CPCC_12 = 34,
+    SPARC_CC_CPCC_123 = 33,
+    SPARC_CC_CPCC_0 = 41,
+    SPARC_CC_CPCC_03 = 42,
+    SPARC_CC_CPCC_02 = 43,
+    SPARC_CC_CPCC_023 = 44,
+    SPARC_CC_CPCC_01 = 45,
+    SPARC_CC_CPCC_013 = 46,
+    SPARC_CC_CPCC_012 = 47,
+    SPARC_CC_REG_BEGIN = 48,
+    SPARC_CC_REG_Z = 49,
+    SPARC_CC_REG_LEZ = 50,
+    SPARC_CC_REG_LZ = 51,
+    SPARC_CC_REG_NZ = 53,
+    SPARC_CC_REG_GZ = 54,
+    SPARC_CC_REG_GEZ = 55,
+    SPARC_CC_UNDEF = 65535,
+}
+#[repr(u32)]
+#[doc = " The cc field values encoded in the cc0, cc1, cc2 bits or opf_cc.\n They are equivalent to ISA Sparc v9 - Table 41 - Chapter E.2 Tables - Page 281."]
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
+pub enum sparc_cc_field {
+    SPARC_CC_FIELD_FCC0 = 0,
+    SPARC_CC_FIELD_FCC1 = 1,
+    SPARC_CC_FIELD_FCC2 = 2,
+    SPARC_CC_FIELD_FCC3 = 3,
+    SPARC_CC_FIELD_ICC = 4,
+    SPARC_CC_FIELD_RESERVED_I = 5,
+    SPARC_CC_FIELD_XCC = 6,
+    SPARC_CC_FIELD_RESERVED_II = 7,
+    SPARC_CC_FIELD_NONE = 255,
+}
+#[repr(u32)]
+#[doc = " The instruction formats.\n They are only loosely equivalent to the one in the ISA.\n Because in LLVM they are not defined one to one."]
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
+pub enum sparc_insn_form {
+    SPARC_INSN_FORM_ASMPSEUDOINST = 0,
+    SPARC_INSN_FORM_F3_2 = 1,
+    SPARC_INSN_FORM_F3_1_ASI = 2,
+    SPARC_INSN_FORM_F3_3 = 3,
+    SPARC_INSN_FORM_F2_2 = 4,
+    SPARC_INSN_FORM_F2_3 = 5,
+    SPARC_INSN_FORM_F2_4 = 6,
+    SPARC_INSN_FORM_F1 = 7,
+    SPARC_INSN_FORM_F3_3U = 8,
+    SPARC_INSN_FORM_F4_3 = 9,
+    SPARC_INSN_FORM_F4_4R = 10,
+    SPARC_INSN_FORM_F4_2 = 11,
+    SPARC_INSN_FORM_F4_1 = 12,
+    SPARC_INSN_FORM_F4_4I = 13,
+    SPARC_INSN_FORM_F2_1 = 14,
+    SPARC_INSN_FORM_F3_SI = 15,
+    SPARC_INSN_FORM_F3_SR = 16,
+    SPARC_INSN_FORM_TRAPSP = 17,
+    SPARC_INSN_FORM_F3_3C = 18,
 }
 #[repr(u32)]
 #[doc = " Branch hint"]
@@ -13505,110 +13540,339 @@ pub enum sparc_op_type {
     SPARC_OP_IMM = 2,
     #[doc = "< = CS_OP_MEM (Memory operand)."]
     SPARC_OP_MEM = 128,
+    SPARC_OP_MEMBAR_TAG = 16,
+    SPARC_OP_ASI = 17,
 }
 pub mod sparc_reg {
     #[doc = " SPARC registers"]
     pub type Type = ::core::ffi::c_uint;
     pub const SPARC_REG_INVALID: Type = 0;
-    pub const SPARC_REG_F0: Type = 1;
-    pub const SPARC_REG_F1: Type = 2;
-    pub const SPARC_REG_F2: Type = 3;
-    pub const SPARC_REG_F3: Type = 4;
-    pub const SPARC_REG_F4: Type = 5;
-    pub const SPARC_REG_F5: Type = 6;
-    pub const SPARC_REG_F6: Type = 7;
-    pub const SPARC_REG_F7: Type = 8;
-    pub const SPARC_REG_F8: Type = 9;
-    pub const SPARC_REG_F9: Type = 10;
-    pub const SPARC_REG_F10: Type = 11;
-    pub const SPARC_REG_F11: Type = 12;
-    pub const SPARC_REG_F12: Type = 13;
-    pub const SPARC_REG_F13: Type = 14;
-    pub const SPARC_REG_F14: Type = 15;
-    pub const SPARC_REG_F15: Type = 16;
-    pub const SPARC_REG_F16: Type = 17;
-    pub const SPARC_REG_F17: Type = 18;
-    pub const SPARC_REG_F18: Type = 19;
-    pub const SPARC_REG_F19: Type = 20;
-    pub const SPARC_REG_F20: Type = 21;
-    pub const SPARC_REG_F21: Type = 22;
-    pub const SPARC_REG_F22: Type = 23;
-    pub const SPARC_REG_F23: Type = 24;
-    pub const SPARC_REG_F24: Type = 25;
-    pub const SPARC_REG_F25: Type = 26;
-    pub const SPARC_REG_F26: Type = 27;
-    pub const SPARC_REG_F27: Type = 28;
-    pub const SPARC_REG_F28: Type = 29;
-    pub const SPARC_REG_F29: Type = 30;
-    pub const SPARC_REG_F30: Type = 31;
-    pub const SPARC_REG_F31: Type = 32;
-    pub const SPARC_REG_F32: Type = 33;
-    pub const SPARC_REG_F34: Type = 34;
-    pub const SPARC_REG_F36: Type = 35;
-    pub const SPARC_REG_F38: Type = 36;
-    pub const SPARC_REG_F40: Type = 37;
-    pub const SPARC_REG_F42: Type = 38;
-    pub const SPARC_REG_F44: Type = 39;
-    pub const SPARC_REG_F46: Type = 40;
-    pub const SPARC_REG_F48: Type = 41;
-    pub const SPARC_REG_F50: Type = 42;
-    pub const SPARC_REG_F52: Type = 43;
-    pub const SPARC_REG_F54: Type = 44;
-    pub const SPARC_REG_F56: Type = 45;
-    pub const SPARC_REG_F58: Type = 46;
-    pub const SPARC_REG_F60: Type = 47;
-    pub const SPARC_REG_F62: Type = 48;
-    pub const SPARC_REG_FCC0: Type = 49;
-    pub const SPARC_REG_FCC1: Type = 50;
-    pub const SPARC_REG_FCC2: Type = 51;
-    pub const SPARC_REG_FCC3: Type = 52;
-    pub const SPARC_REG_FP: Type = 53;
-    pub const SPARC_REG_G0: Type = 54;
-    pub const SPARC_REG_G1: Type = 55;
-    pub const SPARC_REG_G2: Type = 56;
-    pub const SPARC_REG_G3: Type = 57;
-    pub const SPARC_REG_G4: Type = 58;
-    pub const SPARC_REG_G5: Type = 59;
-    pub const SPARC_REG_G6: Type = 60;
-    pub const SPARC_REG_G7: Type = 61;
-    pub const SPARC_REG_I0: Type = 62;
-    pub const SPARC_REG_I1: Type = 63;
-    pub const SPARC_REG_I2: Type = 64;
-    pub const SPARC_REG_I3: Type = 65;
-    pub const SPARC_REG_I4: Type = 66;
-    pub const SPARC_REG_I5: Type = 67;
-    pub const SPARC_REG_I7: Type = 68;
-    pub const SPARC_REG_ICC: Type = 69;
-    pub const SPARC_REG_L0: Type = 70;
-    pub const SPARC_REG_L1: Type = 71;
-    pub const SPARC_REG_L2: Type = 72;
-    pub const SPARC_REG_L3: Type = 73;
-    pub const SPARC_REG_L4: Type = 74;
-    pub const SPARC_REG_L5: Type = 75;
-    pub const SPARC_REG_L6: Type = 76;
-    pub const SPARC_REG_L7: Type = 77;
-    pub const SPARC_REG_O0: Type = 78;
-    pub const SPARC_REG_O1: Type = 79;
-    pub const SPARC_REG_O2: Type = 80;
-    pub const SPARC_REG_O3: Type = 81;
-    pub const SPARC_REG_O4: Type = 82;
-    pub const SPARC_REG_O5: Type = 83;
-    pub const SPARC_REG_O7: Type = 84;
-    pub const SPARC_REG_SP: Type = 85;
-    pub const SPARC_REG_Y: Type = 86;
-    pub const SPARC_REG_XCC: Type = 87;
-    pub const SPARC_REG_ENDING: Type = 88;
-    pub const SPARC_REG_O6: Type = 85;
-    pub const SPARC_REG_I6: Type = 53;
+    pub const SPARC_REG_CANRESTORE: Type = 1;
+    pub const SPARC_REG_CANSAVE: Type = 2;
+    pub const SPARC_REG_CLEANWIN: Type = 3;
+    pub const SPARC_REG_CPQ: Type = 4;
+    pub const SPARC_REG_CPSR: Type = 5;
+    pub const SPARC_REG_CWP: Type = 6;
+    pub const SPARC_REG_FQ: Type = 7;
+    pub const SPARC_REG_FSR: Type = 8;
+    pub const SPARC_REG_GL: Type = 9;
+    pub const SPARC_REG_ICC: Type = 10;
+    pub const SPARC_REG_OTHERWIN: Type = 11;
+    pub const SPARC_REG_PIL: Type = 12;
+    pub const SPARC_REG_PSR: Type = 13;
+    pub const SPARC_REG_PSTATE: Type = 14;
+    pub const SPARC_REG_TBA: Type = 15;
+    pub const SPARC_REG_TBR: Type = 16;
+    pub const SPARC_REG_TICK: Type = 17;
+    pub const SPARC_REG_TL: Type = 18;
+    pub const SPARC_REG_TNPC: Type = 19;
+    pub const SPARC_REG_TPC: Type = 20;
+    pub const SPARC_REG_TSTATE: Type = 21;
+    pub const SPARC_REG_TT: Type = 22;
+    pub const SPARC_REG_VER: Type = 23;
+    pub const SPARC_REG_WIM: Type = 24;
+    pub const SPARC_REG_WSTATE: Type = 25;
+    pub const SPARC_REG_Y: Type = 26;
+    pub const SPARC_REG_ASR1: Type = 27;
+    pub const SPARC_REG_ASR2: Type = 28;
+    pub const SPARC_REG_ASR3: Type = 29;
+    pub const SPARC_REG_ASR4: Type = 30;
+    pub const SPARC_REG_ASR5: Type = 31;
+    pub const SPARC_REG_ASR6: Type = 32;
+    pub const SPARC_REG_ASR7: Type = 33;
+    pub const SPARC_REG_ASR8: Type = 34;
+    pub const SPARC_REG_ASR9: Type = 35;
+    pub const SPARC_REG_ASR10: Type = 36;
+    pub const SPARC_REG_ASR11: Type = 37;
+    pub const SPARC_REG_ASR12: Type = 38;
+    pub const SPARC_REG_ASR13: Type = 39;
+    pub const SPARC_REG_ASR14: Type = 40;
+    pub const SPARC_REG_ASR15: Type = 41;
+    pub const SPARC_REG_ASR16: Type = 42;
+    pub const SPARC_REG_ASR17: Type = 43;
+    pub const SPARC_REG_ASR18: Type = 44;
+    pub const SPARC_REG_ASR19: Type = 45;
+    pub const SPARC_REG_ASR20: Type = 46;
+    pub const SPARC_REG_ASR21: Type = 47;
+    pub const SPARC_REG_ASR22: Type = 48;
+    pub const SPARC_REG_ASR23: Type = 49;
+    pub const SPARC_REG_ASR24: Type = 50;
+    pub const SPARC_REG_ASR25: Type = 51;
+    pub const SPARC_REG_ASR26: Type = 52;
+    pub const SPARC_REG_ASR27: Type = 53;
+    pub const SPARC_REG_ASR28: Type = 54;
+    pub const SPARC_REG_ASR29: Type = 55;
+    pub const SPARC_REG_ASR30: Type = 56;
+    pub const SPARC_REG_ASR31: Type = 57;
+    pub const SPARC_REG_C0: Type = 58;
+    pub const SPARC_REG_C1: Type = 59;
+    pub const SPARC_REG_C2: Type = 60;
+    pub const SPARC_REG_C3: Type = 61;
+    pub const SPARC_REG_C4: Type = 62;
+    pub const SPARC_REG_C5: Type = 63;
+    pub const SPARC_REG_C6: Type = 64;
+    pub const SPARC_REG_C7: Type = 65;
+    pub const SPARC_REG_C8: Type = 66;
+    pub const SPARC_REG_C9: Type = 67;
+    pub const SPARC_REG_C10: Type = 68;
+    pub const SPARC_REG_C11: Type = 69;
+    pub const SPARC_REG_C12: Type = 70;
+    pub const SPARC_REG_C13: Type = 71;
+    pub const SPARC_REG_C14: Type = 72;
+    pub const SPARC_REG_C15: Type = 73;
+    pub const SPARC_REG_C16: Type = 74;
+    pub const SPARC_REG_C17: Type = 75;
+    pub const SPARC_REG_C18: Type = 76;
+    pub const SPARC_REG_C19: Type = 77;
+    pub const SPARC_REG_C20: Type = 78;
+    pub const SPARC_REG_C21: Type = 79;
+    pub const SPARC_REG_C22: Type = 80;
+    pub const SPARC_REG_C23: Type = 81;
+    pub const SPARC_REG_C24: Type = 82;
+    pub const SPARC_REG_C25: Type = 83;
+    pub const SPARC_REG_C26: Type = 84;
+    pub const SPARC_REG_C27: Type = 85;
+    pub const SPARC_REG_C28: Type = 86;
+    pub const SPARC_REG_C29: Type = 87;
+    pub const SPARC_REG_C30: Type = 88;
+    pub const SPARC_REG_C31: Type = 89;
+    pub const SPARC_REG_D0: Type = 90;
+    pub const SPARC_REG_D1: Type = 91;
+    pub const SPARC_REG_D2: Type = 92;
+    pub const SPARC_REG_D3: Type = 93;
+    pub const SPARC_REG_D4: Type = 94;
+    pub const SPARC_REG_D5: Type = 95;
+    pub const SPARC_REG_D6: Type = 96;
+    pub const SPARC_REG_D7: Type = 97;
+    pub const SPARC_REG_D8: Type = 98;
+    pub const SPARC_REG_D9: Type = 99;
+    pub const SPARC_REG_D10: Type = 100;
+    pub const SPARC_REG_D11: Type = 101;
+    pub const SPARC_REG_D12: Type = 102;
+    pub const SPARC_REG_D13: Type = 103;
+    pub const SPARC_REG_D14: Type = 104;
+    pub const SPARC_REG_D15: Type = 105;
+    pub const SPARC_REG_D16: Type = 106;
+    pub const SPARC_REG_D17: Type = 107;
+    pub const SPARC_REG_D18: Type = 108;
+    pub const SPARC_REG_D19: Type = 109;
+    pub const SPARC_REG_D20: Type = 110;
+    pub const SPARC_REG_D21: Type = 111;
+    pub const SPARC_REG_D22: Type = 112;
+    pub const SPARC_REG_D23: Type = 113;
+    pub const SPARC_REG_D24: Type = 114;
+    pub const SPARC_REG_D25: Type = 115;
+    pub const SPARC_REG_D26: Type = 116;
+    pub const SPARC_REG_D27: Type = 117;
+    pub const SPARC_REG_D28: Type = 118;
+    pub const SPARC_REG_D29: Type = 119;
+    pub const SPARC_REG_D30: Type = 120;
+    pub const SPARC_REG_D31: Type = 121;
+    pub const SPARC_REG_F0: Type = 122;
+    pub const SPARC_REG_F1: Type = 123;
+    pub const SPARC_REG_F2: Type = 124;
+    pub const SPARC_REG_F3: Type = 125;
+    pub const SPARC_REG_F4: Type = 126;
+    pub const SPARC_REG_F5: Type = 127;
+    pub const SPARC_REG_F6: Type = 128;
+    pub const SPARC_REG_F7: Type = 129;
+    pub const SPARC_REG_F8: Type = 130;
+    pub const SPARC_REG_F9: Type = 131;
+    pub const SPARC_REG_F10: Type = 132;
+    pub const SPARC_REG_F11: Type = 133;
+    pub const SPARC_REG_F12: Type = 134;
+    pub const SPARC_REG_F13: Type = 135;
+    pub const SPARC_REG_F14: Type = 136;
+    pub const SPARC_REG_F15: Type = 137;
+    pub const SPARC_REG_F16: Type = 138;
+    pub const SPARC_REG_F17: Type = 139;
+    pub const SPARC_REG_F18: Type = 140;
+    pub const SPARC_REG_F19: Type = 141;
+    pub const SPARC_REG_F20: Type = 142;
+    pub const SPARC_REG_F21: Type = 143;
+    pub const SPARC_REG_F22: Type = 144;
+    pub const SPARC_REG_F23: Type = 145;
+    pub const SPARC_REG_F24: Type = 146;
+    pub const SPARC_REG_F25: Type = 147;
+    pub const SPARC_REG_F26: Type = 148;
+    pub const SPARC_REG_F27: Type = 149;
+    pub const SPARC_REG_F28: Type = 150;
+    pub const SPARC_REG_F29: Type = 151;
+    pub const SPARC_REG_F30: Type = 152;
+    pub const SPARC_REG_F31: Type = 153;
+    pub const SPARC_REG_FCC0: Type = 154;
+    pub const SPARC_REG_FCC1: Type = 155;
+    pub const SPARC_REG_FCC2: Type = 156;
+    pub const SPARC_REG_FCC3: Type = 157;
+    pub const SPARC_REG_G0: Type = 158;
+    pub const SPARC_REG_G1: Type = 159;
+    pub const SPARC_REG_G2: Type = 160;
+    pub const SPARC_REG_G3: Type = 161;
+    pub const SPARC_REG_G4: Type = 162;
+    pub const SPARC_REG_G5: Type = 163;
+    pub const SPARC_REG_G6: Type = 164;
+    pub const SPARC_REG_G7: Type = 165;
+    pub const SPARC_REG_I0: Type = 166;
+    pub const SPARC_REG_I1: Type = 167;
+    pub const SPARC_REG_I2: Type = 168;
+    pub const SPARC_REG_I3: Type = 169;
+    pub const SPARC_REG_I4: Type = 170;
+    pub const SPARC_REG_I5: Type = 171;
+    pub const SPARC_REG_I6: Type = 172;
+    pub const SPARC_REG_I7: Type = 173;
+    pub const SPARC_REG_L0: Type = 174;
+    pub const SPARC_REG_L1: Type = 175;
+    pub const SPARC_REG_L2: Type = 176;
+    pub const SPARC_REG_L3: Type = 177;
+    pub const SPARC_REG_L4: Type = 178;
+    pub const SPARC_REG_L5: Type = 179;
+    pub const SPARC_REG_L6: Type = 180;
+    pub const SPARC_REG_L7: Type = 181;
+    pub const SPARC_REG_O0: Type = 182;
+    pub const SPARC_REG_O1: Type = 183;
+    pub const SPARC_REG_O2: Type = 184;
+    pub const SPARC_REG_O3: Type = 185;
+    pub const SPARC_REG_O4: Type = 186;
+    pub const SPARC_REG_O5: Type = 187;
+    pub const SPARC_REG_O6: Type = 188;
+    pub const SPARC_REG_O7: Type = 189;
+    pub const SPARC_REG_Q0: Type = 190;
+    pub const SPARC_REG_Q1: Type = 191;
+    pub const SPARC_REG_Q2: Type = 192;
+    pub const SPARC_REG_Q3: Type = 193;
+    pub const SPARC_REG_Q4: Type = 194;
+    pub const SPARC_REG_Q5: Type = 195;
+    pub const SPARC_REG_Q6: Type = 196;
+    pub const SPARC_REG_Q7: Type = 197;
+    pub const SPARC_REG_Q8: Type = 198;
+    pub const SPARC_REG_Q9: Type = 199;
+    pub const SPARC_REG_Q10: Type = 200;
+    pub const SPARC_REG_Q11: Type = 201;
+    pub const SPARC_REG_Q12: Type = 202;
+    pub const SPARC_REG_Q13: Type = 203;
+    pub const SPARC_REG_Q14: Type = 204;
+    pub const SPARC_REG_Q15: Type = 205;
+    pub const SPARC_REG_C0_C1: Type = 206;
+    pub const SPARC_REG_C2_C3: Type = 207;
+    pub const SPARC_REG_C4_C5: Type = 208;
+    pub const SPARC_REG_C6_C7: Type = 209;
+    pub const SPARC_REG_C8_C9: Type = 210;
+    pub const SPARC_REG_C10_C11: Type = 211;
+    pub const SPARC_REG_C12_C13: Type = 212;
+    pub const SPARC_REG_C14_C15: Type = 213;
+    pub const SPARC_REG_C16_C17: Type = 214;
+    pub const SPARC_REG_C18_C19: Type = 215;
+    pub const SPARC_REG_C20_C21: Type = 216;
+    pub const SPARC_REG_C22_C23: Type = 217;
+    pub const SPARC_REG_C24_C25: Type = 218;
+    pub const SPARC_REG_C26_C27: Type = 219;
+    pub const SPARC_REG_C28_C29: Type = 220;
+    pub const SPARC_REG_C30_C31: Type = 221;
+    pub const SPARC_REG_G0_G1: Type = 222;
+    pub const SPARC_REG_G2_G3: Type = 223;
+    pub const SPARC_REG_G4_G5: Type = 224;
+    pub const SPARC_REG_G6_G7: Type = 225;
+    pub const SPARC_REG_I0_I1: Type = 226;
+    pub const SPARC_REG_I2_I3: Type = 227;
+    pub const SPARC_REG_I4_I5: Type = 228;
+    pub const SPARC_REG_I6_I7: Type = 229;
+    pub const SPARC_REG_L0_L1: Type = 230;
+    pub const SPARC_REG_L2_L3: Type = 231;
+    pub const SPARC_REG_L4_L5: Type = 232;
+    pub const SPARC_REG_L6_L7: Type = 233;
+    pub const SPARC_REG_O0_O1: Type = 234;
+    pub const SPARC_REG_O2_O3: Type = 235;
+    pub const SPARC_REG_O4_O5: Type = 236;
+    pub const SPARC_REG_O6_O7: Type = 237;
+    pub const SPARC_REG_ENDING: Type = 238;
+    pub const SPARC_REG_SP: Type = 188;
+    pub const SPARC_REG_FP: Type = 172;
+}
+impl sparc_asi {
+    pub const SPARC_ASITAG_ASI_AS_IF_USER_PRIMARY: sparc_asi = sparc_asi::SPARC_ASITAG_ASI_AIUP;
+}
+impl sparc_asi {
+    pub const SPARC_ASITAG_ASI_AS_IF_USER_PRIMARY_LITTLE: sparc_asi =
+        sparc_asi::SPARC_ASITAG_ASI_AIUP_L;
+}
+impl sparc_asi {
+    pub const SPARC_ASITAG_ASI_AS_IF_USER_SECONDARY: sparc_asi = sparc_asi::SPARC_ASITAG_ASI_AIUS;
+}
+impl sparc_asi {
+    pub const SPARC_ASITAG_ASI_AS_IF_USER_SECONDARY_LITTLE: sparc_asi =
+        sparc_asi::SPARC_ASITAG_ASI_AIUS_L;
+}
+impl sparc_asi {
+    pub const SPARC_ASITAG_ASI_NUCLEUS: sparc_asi = sparc_asi::SPARC_ASITAG_ASI_N;
+}
+impl sparc_asi {
+    pub const SPARC_ASITAG_ASI_NUCLEUS_LITTLE: sparc_asi = sparc_asi::SPARC_ASITAG_ASI_N_L;
+}
+impl sparc_asi {
+    pub const SPARC_ASITAG_ASI_PRIMARY: sparc_asi = sparc_asi::SPARC_ASITAG_ASI_P;
+}
+impl sparc_asi {
+    pub const SPARC_ASITAG_ASI_PRIMARY_NOFAULT: sparc_asi = sparc_asi::SPARC_ASITAG_ASI_PNF;
+}
+impl sparc_asi {
+    pub const SPARC_ASITAG_ASI_PRIMARY_NOFAULT_LITTLE: sparc_asi =
+        sparc_asi::SPARC_ASITAG_ASI_PNF_L;
+}
+impl sparc_asi {
+    pub const SPARC_ASITAG_ASI_PRIMARY_LITTLE: sparc_asi = sparc_asi::SPARC_ASITAG_ASI_P_L;
+}
+impl sparc_asi {
+    pub const SPARC_ASITAG_ASI_SECONDARY: sparc_asi = sparc_asi::SPARC_ASITAG_ASI_S;
+}
+impl sparc_asi {
+    pub const SPARC_ASITAG_ASI_SECONDARY_NOFAULT: sparc_asi = sparc_asi::SPARC_ASITAG_ASI_SNF;
+}
+impl sparc_asi {
+    pub const SPARC_ASITAG_ASI_SECONDARY_NOFAULT_LITTLE: sparc_asi =
+        sparc_asi::SPARC_ASITAG_ASI_SNF_L;
+}
+impl sparc_asi {
+    pub const SPARC_ASITAG_ASI_SECONDARY_LITTLE: sparc_asi = sparc_asi::SPARC_ASITAG_ASI_S_L;
+}
+#[repr(u32)]
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
+pub enum sparc_asi {
+    SPARC_ASITAG_ASI_INVALID = 0,
+    SPARC_ASITAG_ASI_AIUP = 16,
+    SPARC_ASITAG_ASI_AIUP_L = 24,
+    SPARC_ASITAG_ASI_AIUS = 17,
+    SPARC_ASITAG_ASI_AIUS_L = 25,
+    SPARC_ASITAG_ASI_N = 4,
+    SPARC_ASITAG_ASI_N_L = 12,
+    SPARC_ASITAG_ASI_P = 128,
+    SPARC_ASITAG_ASI_PNF = 130,
+    SPARC_ASITAG_ASI_PNF_L = 138,
+    SPARC_ASITAG_ASI_P_L = 136,
+    SPARC_ASITAG_ASI_S = 129,
+    SPARC_ASITAG_ASI_SNF = 131,
+    SPARC_ASITAG_ASI_SNF_L = 139,
+    SPARC_ASITAG_ASI_S_L = 137,
+}
+#[repr(u32)]
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
+pub enum sparc_membar_tag {
+    SPARC_MEMBAR_TAG_NONE = 0,
+    SPARC_MEMBAR_TAG_LOADLOAD = 1,
+    SPARC_MEMBAR_TAG_STORELOAD = 2,
+    SPARC_MEMBAR_TAG_LOADSTORE = 4,
+    SPARC_MEMBAR_TAG_STORESTORE = 8,
+    SPARC_MEMBAR_TAG_LOOKASIDE = 16,
+    SPARC_MEMBAR_TAG_MEMISSUE = 32,
+    SPARC_MEMBAR_TAG_SYNC = 64,
 }
 #[doc = " Instruction's operand referring to memory\n This is associated with SPARC_OP_MEM operand type above"]
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
 pub struct sparc_op_mem {
     #[doc = "< base register, can be safely interpreted as\n< a value of type `sparc_reg`, but it is only\n< one byte wide"]
-    pub base: u8,
+    pub base: sparc_reg::Type,
     #[doc = "< index register, same conditions apply here"]
-    pub index: u8,
+    pub index: sparc_reg::Type,
     #[doc = "< displacement/offset value"]
     pub disp: i32,
 }
@@ -13619,6 +13883,8 @@ pub struct cs_sparc_op {
     #[doc = "< operand type"]
     pub type_: sparc_op_type,
     pub __bindgen_anon_1: cs_sparc_op__bindgen_ty_1,
+    #[doc = "< The way the operand is accessed."]
+    pub access: cs_ac_type,
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
@@ -13629,6 +13895,10 @@ pub union cs_sparc_op__bindgen_ty_1 {
     pub imm: i64,
     #[doc = "< base/disp value for MEM operand"]
     pub mem: sparc_op_mem,
+    #[doc = "< Tag of the MEMBAR instruction."]
+    pub membar_tag: sparc_membar_tag,
+    #[doc = "< Address space identifier."]
+    pub asi: sparc_asi,
 }
 impl ::core::fmt::Debug for cs_sparc_op__bindgen_ty_1 {
     fn fmt(&self, f: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
@@ -13639,8 +13909,8 @@ impl ::core::fmt::Debug for cs_sparc_op {
     fn fmt(&self, f: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
         write!(
             f,
-            "cs_sparc_op {{ type: {:?}, __bindgen_anon_1: {:?} }}",
-            self.type_, self.__bindgen_anon_1
+            "cs_sparc_op {{ type: {:?}, __bindgen_anon_1: {:?}, access: {:?} }}",
+            self.type_, self.__bindgen_anon_1, self.access
         )
     }
 }
@@ -13648,10 +13918,14 @@ impl ::core::fmt::Debug for cs_sparc_op {
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub struct cs_sparc {
-    #[doc = "< code condition for this insn"]
+    #[doc = "< Condition code: only SPARC_CC_ICC_* are set here."]
     pub cc: sparc_cc,
+    #[doc = "< The CC field the instruction uses."]
+    pub cc_field: sparc_cc_field,
     #[doc = "< branch hint: encoding as bitwise OR of sparc_hint."]
     pub hint: sparc_hint,
+    #[doc = "< The instruction format."]
+    pub format: sparc_insn_form,
     #[doc = " Number of operands of this instruction,\n or 0 when instruction has no operand."]
     pub op_count: u8,
     #[doc = "< operands for this instruction."]
@@ -13661,311 +13935,720 @@ impl ::core::fmt::Debug for cs_sparc {
     fn fmt(&self, f: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
         write!(
             f,
-            "cs_sparc {{ cc: {:?}, hint: {:?}, operands: {:?} }}",
-            self.cc, self.hint, self.operands
+            "cs_sparc {{ cc: {:?}, cc_field: {:?}, hint: {:?}, format: {:?}, operands: {:?} }}",
+            self.cc, self.cc_field, self.hint, self.format, self.operands
         )
     }
+}
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct sparc_suppl_info {
+    #[doc = "< The instruction format."]
+    pub form: sparc_insn_form,
 }
 #[repr(u32)]
 #[doc = " SPARC instruction"]
 #[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
 pub enum sparc_insn {
     SPARC_INS_INVALID = 0,
-    SPARC_INS_ADDCC = 1,
-    SPARC_INS_ADDX = 2,
-    SPARC_INS_ADDXCC = 3,
-    SPARC_INS_ADDXC = 4,
-    SPARC_INS_ADDXCCC = 5,
-    SPARC_INS_ADD = 6,
-    SPARC_INS_ALIGNADDR = 7,
-    SPARC_INS_ALIGNADDRL = 8,
-    SPARC_INS_ANDCC = 9,
-    SPARC_INS_ANDNCC = 10,
-    SPARC_INS_ANDN = 11,
-    SPARC_INS_AND = 12,
-    SPARC_INS_ARRAY16 = 13,
-    SPARC_INS_ARRAY32 = 14,
-    SPARC_INS_ARRAY8 = 15,
-    SPARC_INS_B = 16,
-    SPARC_INS_JMP = 17,
-    SPARC_INS_BMASK = 18,
-    SPARC_INS_FB = 19,
-    SPARC_INS_BRGEZ = 20,
-    SPARC_INS_BRGZ = 21,
-    SPARC_INS_BRLEZ = 22,
-    SPARC_INS_BRLZ = 23,
-    SPARC_INS_BRNZ = 24,
-    SPARC_INS_BRZ = 25,
-    SPARC_INS_BSHUFFLE = 26,
-    SPARC_INS_CALL = 27,
-    SPARC_INS_CASX = 28,
-    SPARC_INS_CAS = 29,
-    SPARC_INS_CMASK16 = 30,
-    SPARC_INS_CMASK32 = 31,
-    SPARC_INS_CMASK8 = 32,
-    SPARC_INS_CMP = 33,
-    SPARC_INS_EDGE16 = 34,
-    SPARC_INS_EDGE16L = 35,
-    SPARC_INS_EDGE16LN = 36,
-    SPARC_INS_EDGE16N = 37,
-    SPARC_INS_EDGE32 = 38,
-    SPARC_INS_EDGE32L = 39,
-    SPARC_INS_EDGE32LN = 40,
-    SPARC_INS_EDGE32N = 41,
-    SPARC_INS_EDGE8 = 42,
-    SPARC_INS_EDGE8L = 43,
-    SPARC_INS_EDGE8LN = 44,
-    SPARC_INS_EDGE8N = 45,
-    SPARC_INS_FABSD = 46,
-    SPARC_INS_FABSQ = 47,
-    SPARC_INS_FABSS = 48,
-    SPARC_INS_FADDD = 49,
-    SPARC_INS_FADDQ = 50,
-    SPARC_INS_FADDS = 51,
-    SPARC_INS_FALIGNDATA = 52,
-    SPARC_INS_FAND = 53,
-    SPARC_INS_FANDNOT1 = 54,
-    SPARC_INS_FANDNOT1S = 55,
-    SPARC_INS_FANDNOT2 = 56,
-    SPARC_INS_FANDNOT2S = 57,
-    SPARC_INS_FANDS = 58,
-    SPARC_INS_FCHKSM16 = 59,
-    SPARC_INS_FCMPD = 60,
-    SPARC_INS_FCMPEQ16 = 61,
-    SPARC_INS_FCMPEQ32 = 62,
-    SPARC_INS_FCMPGT16 = 63,
-    SPARC_INS_FCMPGT32 = 64,
-    SPARC_INS_FCMPLE16 = 65,
-    SPARC_INS_FCMPLE32 = 66,
-    SPARC_INS_FCMPNE16 = 67,
-    SPARC_INS_FCMPNE32 = 68,
-    SPARC_INS_FCMPQ = 69,
-    SPARC_INS_FCMPS = 70,
-    SPARC_INS_FDIVD = 71,
-    SPARC_INS_FDIVQ = 72,
-    SPARC_INS_FDIVS = 73,
-    SPARC_INS_FDMULQ = 74,
-    SPARC_INS_FDTOI = 75,
-    SPARC_INS_FDTOQ = 76,
-    SPARC_INS_FDTOS = 77,
-    SPARC_INS_FDTOX = 78,
-    SPARC_INS_FEXPAND = 79,
-    SPARC_INS_FHADDD = 80,
-    SPARC_INS_FHADDS = 81,
-    SPARC_INS_FHSUBD = 82,
-    SPARC_INS_FHSUBS = 83,
-    SPARC_INS_FITOD = 84,
-    SPARC_INS_FITOQ = 85,
-    SPARC_INS_FITOS = 86,
-    SPARC_INS_FLCMPD = 87,
-    SPARC_INS_FLCMPS = 88,
-    SPARC_INS_FLUSHW = 89,
-    SPARC_INS_FMEAN16 = 90,
-    SPARC_INS_FMOVD = 91,
-    SPARC_INS_FMOVQ = 92,
-    SPARC_INS_FMOVRDGEZ = 93,
-    SPARC_INS_FMOVRQGEZ = 94,
-    SPARC_INS_FMOVRSGEZ = 95,
-    SPARC_INS_FMOVRDGZ = 96,
-    SPARC_INS_FMOVRQGZ = 97,
-    SPARC_INS_FMOVRSGZ = 98,
-    SPARC_INS_FMOVRDLEZ = 99,
-    SPARC_INS_FMOVRQLEZ = 100,
-    SPARC_INS_FMOVRSLEZ = 101,
-    SPARC_INS_FMOVRDLZ = 102,
-    SPARC_INS_FMOVRQLZ = 103,
-    SPARC_INS_FMOVRSLZ = 104,
-    SPARC_INS_FMOVRDNZ = 105,
-    SPARC_INS_FMOVRQNZ = 106,
-    SPARC_INS_FMOVRSNZ = 107,
-    SPARC_INS_FMOVRDZ = 108,
-    SPARC_INS_FMOVRQZ = 109,
-    SPARC_INS_FMOVRSZ = 110,
-    SPARC_INS_FMOVS = 111,
-    SPARC_INS_FMUL8SUX16 = 112,
-    SPARC_INS_FMUL8ULX16 = 113,
-    SPARC_INS_FMUL8X16 = 114,
-    SPARC_INS_FMUL8X16AL = 115,
-    SPARC_INS_FMUL8X16AU = 116,
-    SPARC_INS_FMULD = 117,
-    SPARC_INS_FMULD8SUX16 = 118,
-    SPARC_INS_FMULD8ULX16 = 119,
-    SPARC_INS_FMULQ = 120,
-    SPARC_INS_FMULS = 121,
-    SPARC_INS_FNADDD = 122,
-    SPARC_INS_FNADDS = 123,
-    SPARC_INS_FNAND = 124,
-    SPARC_INS_FNANDS = 125,
-    SPARC_INS_FNEGD = 126,
-    SPARC_INS_FNEGQ = 127,
-    SPARC_INS_FNEGS = 128,
-    SPARC_INS_FNHADDD = 129,
-    SPARC_INS_FNHADDS = 130,
-    SPARC_INS_FNOR = 131,
-    SPARC_INS_FNORS = 132,
-    SPARC_INS_FNOT1 = 133,
-    SPARC_INS_FNOT1S = 134,
-    SPARC_INS_FNOT2 = 135,
-    SPARC_INS_FNOT2S = 136,
-    SPARC_INS_FONE = 137,
-    SPARC_INS_FONES = 138,
-    SPARC_INS_FOR = 139,
-    SPARC_INS_FORNOT1 = 140,
-    SPARC_INS_FORNOT1S = 141,
-    SPARC_INS_FORNOT2 = 142,
-    SPARC_INS_FORNOT2S = 143,
-    SPARC_INS_FORS = 144,
-    SPARC_INS_FPACK16 = 145,
-    SPARC_INS_FPACK32 = 146,
-    SPARC_INS_FPACKFIX = 147,
-    SPARC_INS_FPADD16 = 148,
-    SPARC_INS_FPADD16S = 149,
-    SPARC_INS_FPADD32 = 150,
-    SPARC_INS_FPADD32S = 151,
-    SPARC_INS_FPADD64 = 152,
-    SPARC_INS_FPMERGE = 153,
-    SPARC_INS_FPSUB16 = 154,
-    SPARC_INS_FPSUB16S = 155,
-    SPARC_INS_FPSUB32 = 156,
-    SPARC_INS_FPSUB32S = 157,
-    SPARC_INS_FQTOD = 158,
-    SPARC_INS_FQTOI = 159,
-    SPARC_INS_FQTOS = 160,
-    SPARC_INS_FQTOX = 161,
-    SPARC_INS_FSLAS16 = 162,
-    SPARC_INS_FSLAS32 = 163,
-    SPARC_INS_FSLL16 = 164,
-    SPARC_INS_FSLL32 = 165,
-    SPARC_INS_FSMULD = 166,
-    SPARC_INS_FSQRTD = 167,
-    SPARC_INS_FSQRTQ = 168,
-    SPARC_INS_FSQRTS = 169,
-    SPARC_INS_FSRA16 = 170,
-    SPARC_INS_FSRA32 = 171,
-    SPARC_INS_FSRC1 = 172,
-    SPARC_INS_FSRC1S = 173,
-    SPARC_INS_FSRC2 = 174,
-    SPARC_INS_FSRC2S = 175,
-    SPARC_INS_FSRL16 = 176,
-    SPARC_INS_FSRL32 = 177,
-    SPARC_INS_FSTOD = 178,
-    SPARC_INS_FSTOI = 179,
-    SPARC_INS_FSTOQ = 180,
-    SPARC_INS_FSTOX = 181,
-    SPARC_INS_FSUBD = 182,
-    SPARC_INS_FSUBQ = 183,
-    SPARC_INS_FSUBS = 184,
-    SPARC_INS_FXNOR = 185,
-    SPARC_INS_FXNORS = 186,
-    SPARC_INS_FXOR = 187,
-    SPARC_INS_FXORS = 188,
-    SPARC_INS_FXTOD = 189,
-    SPARC_INS_FXTOQ = 190,
-    SPARC_INS_FXTOS = 191,
-    SPARC_INS_FZERO = 192,
-    SPARC_INS_FZEROS = 193,
-    SPARC_INS_JMPL = 194,
-    SPARC_INS_LDD = 195,
-    SPARC_INS_LD = 196,
-    SPARC_INS_LDQ = 197,
-    SPARC_INS_LDSB = 198,
-    SPARC_INS_LDSH = 199,
-    SPARC_INS_LDSW = 200,
-    SPARC_INS_LDUB = 201,
-    SPARC_INS_LDUH = 202,
-    SPARC_INS_LDX = 203,
-    SPARC_INS_LZCNT = 204,
-    SPARC_INS_MEMBAR = 205,
-    SPARC_INS_MOVDTOX = 206,
-    SPARC_INS_MOV = 207,
-    SPARC_INS_MOVRGEZ = 208,
-    SPARC_INS_MOVRGZ = 209,
-    SPARC_INS_MOVRLEZ = 210,
-    SPARC_INS_MOVRLZ = 211,
-    SPARC_INS_MOVRNZ = 212,
-    SPARC_INS_MOVRZ = 213,
-    SPARC_INS_MOVSTOSW = 214,
-    SPARC_INS_MOVSTOUW = 215,
-    SPARC_INS_MULX = 216,
-    SPARC_INS_NOP = 217,
-    SPARC_INS_ORCC = 218,
-    SPARC_INS_ORNCC = 219,
-    SPARC_INS_ORN = 220,
-    SPARC_INS_OR = 221,
-    SPARC_INS_PDIST = 222,
-    SPARC_INS_PDISTN = 223,
-    SPARC_INS_POPC = 224,
-    SPARC_INS_RD = 225,
-    SPARC_INS_RESTORE = 226,
-    SPARC_INS_RETT = 227,
-    SPARC_INS_SAVE = 228,
-    SPARC_INS_SDIVCC = 229,
-    SPARC_INS_SDIVX = 230,
-    SPARC_INS_SDIV = 231,
-    SPARC_INS_SETHI = 232,
-    SPARC_INS_SHUTDOWN = 233,
-    SPARC_INS_SIAM = 234,
-    SPARC_INS_SLLX = 235,
-    SPARC_INS_SLL = 236,
-    SPARC_INS_SMULCC = 237,
-    SPARC_INS_SMUL = 238,
-    SPARC_INS_SRAX = 239,
-    SPARC_INS_SRA = 240,
-    SPARC_INS_SRLX = 241,
-    SPARC_INS_SRL = 242,
-    SPARC_INS_STBAR = 243,
-    SPARC_INS_STB = 244,
-    SPARC_INS_STD = 245,
-    SPARC_INS_ST = 246,
-    SPARC_INS_STH = 247,
+    SPARC_INS_SET = 1,
+    SPARC_INS_SETX = 2,
+    SPARC_INS_ADDCC = 3,
+    SPARC_INS_ADDX = 4,
+    SPARC_INS_ADDXCC = 5,
+    SPARC_INS_ADDXC = 6,
+    SPARC_INS_ADDXCCC = 7,
+    SPARC_INS_ADD = 8,
+    SPARC_INS_ALIGNADDR = 9,
+    SPARC_INS_ALIGNADDRL = 10,
+    SPARC_INS_ANDCC = 11,
+    SPARC_INS_ANDNCC = 12,
+    SPARC_INS_ANDN = 13,
+    SPARC_INS_AND = 14,
+    SPARC_INS_ARRAY16 = 15,
+    SPARC_INS_ARRAY32 = 16,
+    SPARC_INS_ARRAY8 = 17,
+    SPARC_INS_B = 18,
+    SPARC_INS_BMASK = 19,
+    SPARC_INS_FB = 20,
+    SPARC_INS_BR = 21,
+    SPARC_INS_BSHUFFLE = 22,
+    SPARC_INS_CALL = 23,
+    SPARC_INS_CASA = 24,
+    SPARC_INS_CASXA = 25,
+    SPARC_INS_CB = 26,
+    SPARC_INS_CMASK16 = 27,
+    SPARC_INS_CMASK32 = 28,
+    SPARC_INS_CMASK8 = 29,
+    SPARC_INS_DONE = 30,
+    SPARC_INS_EDGE16 = 31,
+    SPARC_INS_EDGE16L = 32,
+    SPARC_INS_EDGE16LN = 33,
+    SPARC_INS_EDGE16N = 34,
+    SPARC_INS_EDGE32 = 35,
+    SPARC_INS_EDGE32L = 36,
+    SPARC_INS_EDGE32LN = 37,
+    SPARC_INS_EDGE32N = 38,
+    SPARC_INS_EDGE8 = 39,
+    SPARC_INS_EDGE8L = 40,
+    SPARC_INS_EDGE8LN = 41,
+    SPARC_INS_EDGE8N = 42,
+    SPARC_INS_FABSD = 43,
+    SPARC_INS_FABSQ = 44,
+    SPARC_INS_FABSS = 45,
+    SPARC_INS_FADDD = 46,
+    SPARC_INS_FADDQ = 47,
+    SPARC_INS_FADDS = 48,
+    SPARC_INS_FALIGNDATA = 49,
+    SPARC_INS_FAND = 50,
+    SPARC_INS_FANDNOT1 = 51,
+    SPARC_INS_FANDNOT1S = 52,
+    SPARC_INS_FANDNOT2 = 53,
+    SPARC_INS_FANDNOT2S = 54,
+    SPARC_INS_FANDS = 55,
+    SPARC_INS_FCHKSM16 = 56,
+    SPARC_INS_FCMPEQ16 = 57,
+    SPARC_INS_FCMPEQ32 = 58,
+    SPARC_INS_FCMPGT16 = 59,
+    SPARC_INS_FCMPGT32 = 60,
+    SPARC_INS_FCMPLE16 = 61,
+    SPARC_INS_FCMPLE32 = 62,
+    SPARC_INS_FCMPNE16 = 63,
+    SPARC_INS_FCMPNE32 = 64,
+    SPARC_INS_FDIVD = 65,
+    SPARC_INS_FDIVQ = 66,
+    SPARC_INS_FDIVS = 67,
+    SPARC_INS_FDMULQ = 68,
+    SPARC_INS_FDTOI = 69,
+    SPARC_INS_FDTOQ = 70,
+    SPARC_INS_FDTOS = 71,
+    SPARC_INS_FDTOX = 72,
+    SPARC_INS_FEXPAND = 73,
+    SPARC_INS_FHADDD = 74,
+    SPARC_INS_FHADDS = 75,
+    SPARC_INS_FHSUBD = 76,
+    SPARC_INS_FHSUBS = 77,
+    SPARC_INS_FITOD = 78,
+    SPARC_INS_FITOQ = 79,
+    SPARC_INS_FITOS = 80,
+    SPARC_INS_FLCMPD = 81,
+    SPARC_INS_FLCMPS = 82,
+    SPARC_INS_FLUSH = 83,
+    SPARC_INS_FLUSHW = 84,
+    SPARC_INS_FMEAN16 = 85,
+    SPARC_INS_FMOVD = 86,
+    SPARC_INS_FMOVQ = 87,
+    SPARC_INS_FMOVRD = 88,
+    SPARC_INS_FMOVRQ = 89,
+    SPARC_INS_FMOVRS = 90,
+    SPARC_INS_FMOVS = 91,
+    SPARC_INS_FMUL8SUX16 = 92,
+    SPARC_INS_FMUL8ULX16 = 93,
+    SPARC_INS_FMUL8X16 = 94,
+    SPARC_INS_FMUL8X16AL = 95,
+    SPARC_INS_FMUL8X16AU = 96,
+    SPARC_INS_FMULD = 97,
+    SPARC_INS_FMULD8SUX16 = 98,
+    SPARC_INS_FMULD8ULX16 = 99,
+    SPARC_INS_FMULQ = 100,
+    SPARC_INS_FMULS = 101,
+    SPARC_INS_FNADDD = 102,
+    SPARC_INS_FNADDS = 103,
+    SPARC_INS_FNAND = 104,
+    SPARC_INS_FNANDS = 105,
+    SPARC_INS_FNEGD = 106,
+    SPARC_INS_FNEGQ = 107,
+    SPARC_INS_FNEGS = 108,
+    SPARC_INS_FNHADDD = 109,
+    SPARC_INS_FNHADDS = 110,
+    SPARC_INS_FNOR = 111,
+    SPARC_INS_FNORS = 112,
+    SPARC_INS_FNOT1 = 113,
+    SPARC_INS_FNOT1S = 114,
+    SPARC_INS_FNOT2 = 115,
+    SPARC_INS_FNOT2S = 116,
+    SPARC_INS_FONE = 117,
+    SPARC_INS_FONES = 118,
+    SPARC_INS_FOR = 119,
+    SPARC_INS_FORNOT1 = 120,
+    SPARC_INS_FORNOT1S = 121,
+    SPARC_INS_FORNOT2 = 122,
+    SPARC_INS_FORNOT2S = 123,
+    SPARC_INS_FORS = 124,
+    SPARC_INS_FPACK16 = 125,
+    SPARC_INS_FPACK32 = 126,
+    SPARC_INS_FPACKFIX = 127,
+    SPARC_INS_FPADD16 = 128,
+    SPARC_INS_FPADD16S = 129,
+    SPARC_INS_FPADD32 = 130,
+    SPARC_INS_FPADD32S = 131,
+    SPARC_INS_FPADD64 = 132,
+    SPARC_INS_FPMERGE = 133,
+    SPARC_INS_FPSUB16 = 134,
+    SPARC_INS_FPSUB16S = 135,
+    SPARC_INS_FPSUB32 = 136,
+    SPARC_INS_FPSUB32S = 137,
+    SPARC_INS_FQTOD = 138,
+    SPARC_INS_FQTOI = 139,
+    SPARC_INS_FQTOS = 140,
+    SPARC_INS_FQTOX = 141,
+    SPARC_INS_FSLAS16 = 142,
+    SPARC_INS_FSLAS32 = 143,
+    SPARC_INS_FSLL16 = 144,
+    SPARC_INS_FSLL32 = 145,
+    SPARC_INS_FSMULD = 146,
+    SPARC_INS_FSQRTD = 147,
+    SPARC_INS_FSQRTQ = 148,
+    SPARC_INS_FSQRTS = 149,
+    SPARC_INS_FSRA16 = 150,
+    SPARC_INS_FSRA32 = 151,
+    SPARC_INS_FSRC1 = 152,
+    SPARC_INS_FSRC1S = 153,
+    SPARC_INS_FSRC2 = 154,
+    SPARC_INS_FSRC2S = 155,
+    SPARC_INS_FSRL16 = 156,
+    SPARC_INS_FSRL32 = 157,
+    SPARC_INS_FSTOD = 158,
+    SPARC_INS_FSTOI = 159,
+    SPARC_INS_FSTOQ = 160,
+    SPARC_INS_FSTOX = 161,
+    SPARC_INS_FSUBD = 162,
+    SPARC_INS_FSUBQ = 163,
+    SPARC_INS_FSUBS = 164,
+    SPARC_INS_FXNOR = 165,
+    SPARC_INS_FXNORS = 166,
+    SPARC_INS_FXOR = 167,
+    SPARC_INS_FXORS = 168,
+    SPARC_INS_FXTOD = 169,
+    SPARC_INS_FXTOQ = 170,
+    SPARC_INS_FXTOS = 171,
+    SPARC_INS_FZERO = 172,
+    SPARC_INS_FZEROS = 173,
+    SPARC_INS_LDX = 174,
+    SPARC_INS_LD = 175,
+    SPARC_INS_JMPL = 176,
+    SPARC_INS_LDA = 177,
+    SPARC_INS_LDDA = 178,
+    SPARC_INS_LDD = 179,
+    SPARC_INS_LDQA = 180,
+    SPARC_INS_LDQ = 181,
+    SPARC_INS_LDSBA = 182,
+    SPARC_INS_LDSB = 183,
+    SPARC_INS_LDSHA = 184,
+    SPARC_INS_LDSH = 185,
+    SPARC_INS_LDSTUBA = 186,
+    SPARC_INS_LDSTUB = 187,
+    SPARC_INS_LDSWA = 188,
+    SPARC_INS_LDSW = 189,
+    SPARC_INS_LDUBA = 190,
+    SPARC_INS_LDUB = 191,
+    SPARC_INS_LDUHA = 192,
+    SPARC_INS_LDUH = 193,
+    SPARC_INS_LDXA = 194,
+    SPARC_INS_LZCNT = 195,
+    SPARC_INS_MEMBAR = 196,
+    SPARC_INS_MOVDTOX = 197,
+    SPARC_INS_MOV = 198,
+    SPARC_INS_MOVR = 199,
+    SPARC_INS_MOVSTOSW = 200,
+    SPARC_INS_MOVSTOUW = 201,
+    SPARC_INS_MULSCC = 202,
+    SPARC_INS_MULX = 203,
+    SPARC_INS_NOP = 204,
+    SPARC_INS_ORCC = 205,
+    SPARC_INS_ORNCC = 206,
+    SPARC_INS_ORN = 207,
+    SPARC_INS_OR = 208,
+    SPARC_INS_PDIST = 209,
+    SPARC_INS_PDISTN = 210,
+    SPARC_INS_POPC = 211,
+    SPARC_INS_PREFETCH = 212,
+    SPARC_INS_PWR = 213,
+    SPARC_INS_RD = 214,
+    SPARC_INS_RDPR = 215,
+    SPARC_INS_RESTORED = 216,
+    SPARC_INS_RESTORE = 217,
+    SPARC_INS_RETRY = 218,
+    SPARC_INS_RETT = 219,
+    SPARC_INS_SAVED = 220,
+    SPARC_INS_SAVE = 221,
+    SPARC_INS_SDIVCC = 222,
+    SPARC_INS_SDIVX = 223,
+    SPARC_INS_SDIV = 224,
+    SPARC_INS_SETHI = 225,
+    SPARC_INS_SHUTDOWN = 226,
+    SPARC_INS_SIAM = 227,
+    SPARC_INS_SIR = 228,
+    SPARC_INS_SLLX = 229,
+    SPARC_INS_SLL = 230,
+    SPARC_INS_SMAC = 231,
+    SPARC_INS_SMULCC = 232,
+    SPARC_INS_SMUL = 233,
+    SPARC_INS_SRAX = 234,
+    SPARC_INS_SRA = 235,
+    SPARC_INS_SRLX = 236,
+    SPARC_INS_SRL = 237,
+    SPARC_INS_STA = 238,
+    SPARC_INS_STBAR = 239,
+    SPARC_INS_STBA = 240,
+    SPARC_INS_STB = 241,
+    SPARC_INS_ST = 242,
+    SPARC_INS_STDA = 243,
+    SPARC_INS_STD = 244,
+    SPARC_INS_STHA = 245,
+    SPARC_INS_STH = 246,
+    SPARC_INS_STQA = 247,
     SPARC_INS_STQ = 248,
-    SPARC_INS_STX = 249,
-    SPARC_INS_SUBCC = 250,
-    SPARC_INS_SUBX = 251,
-    SPARC_INS_SUBXCC = 252,
-    SPARC_INS_SUB = 253,
-    SPARC_INS_SWAP = 254,
-    SPARC_INS_TADDCCTV = 255,
-    SPARC_INS_TADDCC = 256,
-    SPARC_INS_T = 257,
-    SPARC_INS_TSUBCCTV = 258,
-    SPARC_INS_TSUBCC = 259,
-    SPARC_INS_UDIVCC = 260,
-    SPARC_INS_UDIVX = 261,
-    SPARC_INS_UDIV = 262,
-    SPARC_INS_UMULCC = 263,
-    SPARC_INS_UMULXHI = 264,
-    SPARC_INS_UMUL = 265,
-    SPARC_INS_UNIMP = 266,
-    SPARC_INS_FCMPED = 267,
-    SPARC_INS_FCMPEQ = 268,
-    SPARC_INS_FCMPES = 269,
-    SPARC_INS_WR = 270,
-    SPARC_INS_XMULX = 271,
-    SPARC_INS_XMULXHI = 272,
-    SPARC_INS_XNORCC = 273,
-    SPARC_INS_XNOR = 274,
-    SPARC_INS_XORCC = 275,
-    SPARC_INS_XOR = 276,
-    SPARC_INS_RET = 277,
-    SPARC_INS_RETL = 278,
-    SPARC_INS_ENDING = 279,
+    SPARC_INS_STXA = 249,
+    SPARC_INS_STX = 250,
+    SPARC_INS_SUBCC = 251,
+    SPARC_INS_SUBX = 252,
+    SPARC_INS_SUBXCC = 253,
+    SPARC_INS_SUB = 254,
+    SPARC_INS_SWAPA = 255,
+    SPARC_INS_SWAP = 256,
+    SPARC_INS_TA = 257,
+    SPARC_INS_TADDCCTV = 258,
+    SPARC_INS_TADDCC = 259,
+    SPARC_INS_T = 260,
+    SPARC_INS_TSUBCCTV = 261,
+    SPARC_INS_TSUBCC = 262,
+    SPARC_INS_UDIVCC = 263,
+    SPARC_INS_UDIVX = 264,
+    SPARC_INS_UDIV = 265,
+    SPARC_INS_UMAC = 266,
+    SPARC_INS_UMULCC = 267,
+    SPARC_INS_UMULXHI = 268,
+    SPARC_INS_UMUL = 269,
+    SPARC_INS_UNIMP = 270,
+    SPARC_INS_FCMPD = 271,
+    SPARC_INS_FCMPED = 272,
+    SPARC_INS_FCMPEQ = 273,
+    SPARC_INS_FCMPES = 274,
+    SPARC_INS_FCMPQ = 275,
+    SPARC_INS_FCMPS = 276,
+    SPARC_INS_WR = 277,
+    SPARC_INS_WRPR = 278,
+    SPARC_INS_XMULX = 279,
+    SPARC_INS_XMULXHI = 280,
+    SPARC_INS_XNORCC = 281,
+    SPARC_INS_XNOR = 282,
+    SPARC_INS_XORCC = 283,
+    SPARC_INS_XOR = 284,
+    SPARC_INS_ENDING = 285,
+    SPARC_INS_ALIAS_BEGIN = 286,
+    SPARC_INS_ALIAS_MOVA = 287,
+    SPARC_INS_ALIAS_FMOVSA = 288,
+    SPARC_INS_ALIAS_FMOVDA = 289,
+    SPARC_INS_ALIAS_MOVRZ = 290,
+    SPARC_INS_ALIAS_FMOVRSZ = 291,
+    SPARC_INS_ALIAS_FMOVRDZ = 292,
+    SPARC_INS_ALIAS_FMOVRQZ = 293,
+    SPARC_INS_ALIAS_BA = 294,
+    SPARC_INS_ALIAS_BA_A = 295,
+    SPARC_INS_ALIAS_BA_PT = 296,
+    SPARC_INS_ALIAS_BA_A_PT = 297,
+    SPARC_INS_ALIAS_BA_PN = 298,
+    SPARC_INS_ALIAS_BA_A_PN = 299,
+    SPARC_INS_ALIAS_FMOVQA = 300,
+    SPARC_INS_ALIAS_TA = 301,
+    SPARC_INS_ALIAS_FBA = 302,
+    SPARC_INS_ALIAS_FBA_PT = 303,
+    SPARC_INS_ALIAS_FBA_A = 304,
+    SPARC_INS_ALIAS_FBA_A_PT = 305,
+    SPARC_INS_ALIAS_FBA_PN = 306,
+    SPARC_INS_ALIAS_FBA_A_PN = 307,
+    SPARC_INS_ALIAS_BRZ = 308,
+    SPARC_INS_ALIAS_BRZ_PT = 309,
+    SPARC_INS_ALIAS_BRZ_PN = 310,
+    SPARC_INS_ALIAS_BRZ_A = 311,
+    SPARC_INS_ALIAS_BRZ_A_PT = 312,
+    SPARC_INS_ALIAS_BRZ_A_PN = 313,
+    SPARC_INS_ALIAS_BN = 314,
+    SPARC_INS_ALIAS_BN_A = 315,
+    SPARC_INS_ALIAS_BN_PT = 316,
+    SPARC_INS_ALIAS_BN_A_PT = 317,
+    SPARC_INS_ALIAS_BN_PN = 318,
+    SPARC_INS_ALIAS_BN_A_PN = 319,
+    SPARC_INS_ALIAS_MOVN = 320,
+    SPARC_INS_ALIAS_FMOVSN = 321,
+    SPARC_INS_ALIAS_FMOVDN = 322,
+    SPARC_INS_ALIAS_FMOVQN = 323,
+    SPARC_INS_ALIAS_TN = 324,
+    SPARC_INS_ALIAS_BNE = 325,
+    SPARC_INS_ALIAS_BNE_A = 326,
+    SPARC_INS_ALIAS_BNE_PT = 327,
+    SPARC_INS_ALIAS_BNE_A_PT = 328,
+    SPARC_INS_ALIAS_BNE_PN = 329,
+    SPARC_INS_ALIAS_BNE_A_PN = 330,
+    SPARC_INS_ALIAS_MOVNE = 331,
+    SPARC_INS_ALIAS_FMOVSNE = 332,
+    SPARC_INS_ALIAS_FMOVDNE = 333,
+    SPARC_INS_ALIAS_FMOVQNE = 334,
+    SPARC_INS_ALIAS_TNE = 335,
+    SPARC_INS_ALIAS_BE = 336,
+    SPARC_INS_ALIAS_BE_A = 337,
+    SPARC_INS_ALIAS_BE_PT = 338,
+    SPARC_INS_ALIAS_BE_A_PT = 339,
+    SPARC_INS_ALIAS_BE_PN = 340,
+    SPARC_INS_ALIAS_BE_A_PN = 341,
+    SPARC_INS_ALIAS_MOVE = 342,
+    SPARC_INS_ALIAS_FMOVSE = 343,
+    SPARC_INS_ALIAS_FMOVDE = 344,
+    SPARC_INS_ALIAS_FMOVQE = 345,
+    SPARC_INS_ALIAS_TE = 346,
+    SPARC_INS_ALIAS_BG = 347,
+    SPARC_INS_ALIAS_BG_A = 348,
+    SPARC_INS_ALIAS_BG_PT = 349,
+    SPARC_INS_ALIAS_BG_A_PT = 350,
+    SPARC_INS_ALIAS_BG_PN = 351,
+    SPARC_INS_ALIAS_BG_A_PN = 352,
+    SPARC_INS_ALIAS_MOVG = 353,
+    SPARC_INS_ALIAS_FMOVSG = 354,
+    SPARC_INS_ALIAS_FMOVDG = 355,
+    SPARC_INS_ALIAS_FMOVQG = 356,
+    SPARC_INS_ALIAS_TG = 357,
+    SPARC_INS_ALIAS_BLE = 358,
+    SPARC_INS_ALIAS_BLE_A = 359,
+    SPARC_INS_ALIAS_BLE_PT = 360,
+    SPARC_INS_ALIAS_BLE_A_PT = 361,
+    SPARC_INS_ALIAS_BLE_PN = 362,
+    SPARC_INS_ALIAS_BLE_A_PN = 363,
+    SPARC_INS_ALIAS_MOVLE = 364,
+    SPARC_INS_ALIAS_FMOVSLE = 365,
+    SPARC_INS_ALIAS_FMOVDLE = 366,
+    SPARC_INS_ALIAS_FMOVQLE = 367,
+    SPARC_INS_ALIAS_TLE = 368,
+    SPARC_INS_ALIAS_BGE = 369,
+    SPARC_INS_ALIAS_BGE_A = 370,
+    SPARC_INS_ALIAS_BGE_PT = 371,
+    SPARC_INS_ALIAS_BGE_A_PT = 372,
+    SPARC_INS_ALIAS_BGE_PN = 373,
+    SPARC_INS_ALIAS_BGE_A_PN = 374,
+    SPARC_INS_ALIAS_MOVGE = 375,
+    SPARC_INS_ALIAS_FMOVSGE = 376,
+    SPARC_INS_ALIAS_FMOVDGE = 377,
+    SPARC_INS_ALIAS_FMOVQGE = 378,
+    SPARC_INS_ALIAS_TGE = 379,
+    SPARC_INS_ALIAS_BL = 380,
+    SPARC_INS_ALIAS_BL_A = 381,
+    SPARC_INS_ALIAS_BL_PT = 382,
+    SPARC_INS_ALIAS_BL_A_PT = 383,
+    SPARC_INS_ALIAS_BL_PN = 384,
+    SPARC_INS_ALIAS_BL_A_PN = 385,
+    SPARC_INS_ALIAS_MOVL = 386,
+    SPARC_INS_ALIAS_FMOVSL = 387,
+    SPARC_INS_ALIAS_FMOVDL = 388,
+    SPARC_INS_ALIAS_FMOVQL = 389,
+    SPARC_INS_ALIAS_TL = 390,
+    SPARC_INS_ALIAS_BGU = 391,
+    SPARC_INS_ALIAS_BGU_A = 392,
+    SPARC_INS_ALIAS_BGU_PT = 393,
+    SPARC_INS_ALIAS_BGU_A_PT = 394,
+    SPARC_INS_ALIAS_BGU_PN = 395,
+    SPARC_INS_ALIAS_BGU_A_PN = 396,
+    SPARC_INS_ALIAS_MOVGU = 397,
+    SPARC_INS_ALIAS_FMOVSGU = 398,
+    SPARC_INS_ALIAS_FMOVDGU = 399,
+    SPARC_INS_ALIAS_FMOVQGU = 400,
+    SPARC_INS_ALIAS_TGU = 401,
+    SPARC_INS_ALIAS_BLEU = 402,
+    SPARC_INS_ALIAS_BLEU_A = 403,
+    SPARC_INS_ALIAS_BLEU_PT = 404,
+    SPARC_INS_ALIAS_BLEU_A_PT = 405,
+    SPARC_INS_ALIAS_BLEU_PN = 406,
+    SPARC_INS_ALIAS_BLEU_A_PN = 407,
+    SPARC_INS_ALIAS_MOVLEU = 408,
+    SPARC_INS_ALIAS_FMOVSLEU = 409,
+    SPARC_INS_ALIAS_FMOVDLEU = 410,
+    SPARC_INS_ALIAS_FMOVQLEU = 411,
+    SPARC_INS_ALIAS_TLEU = 412,
+    SPARC_INS_ALIAS_BCC = 413,
+    SPARC_INS_ALIAS_BCC_A = 414,
+    SPARC_INS_ALIAS_BCC_PT = 415,
+    SPARC_INS_ALIAS_BCC_A_PT = 416,
+    SPARC_INS_ALIAS_BCC_PN = 417,
+    SPARC_INS_ALIAS_BCC_A_PN = 418,
+    SPARC_INS_ALIAS_MOVCC = 419,
+    SPARC_INS_ALIAS_FMOVSCC = 420,
+    SPARC_INS_ALIAS_FMOVDCC = 421,
+    SPARC_INS_ALIAS_FMOVQCC = 422,
+    SPARC_INS_ALIAS_TCC = 423,
+    SPARC_INS_ALIAS_BCS = 424,
+    SPARC_INS_ALIAS_BCS_A = 425,
+    SPARC_INS_ALIAS_BCS_PT = 426,
+    SPARC_INS_ALIAS_BCS_A_PT = 427,
+    SPARC_INS_ALIAS_BCS_PN = 428,
+    SPARC_INS_ALIAS_BCS_A_PN = 429,
+    SPARC_INS_ALIAS_MOVCS = 430,
+    SPARC_INS_ALIAS_FMOVSCS = 431,
+    SPARC_INS_ALIAS_FMOVDCS = 432,
+    SPARC_INS_ALIAS_FMOVQCS = 433,
+    SPARC_INS_ALIAS_TCS = 434,
+    SPARC_INS_ALIAS_BPOS = 435,
+    SPARC_INS_ALIAS_BPOS_A = 436,
+    SPARC_INS_ALIAS_BPOS_PT = 437,
+    SPARC_INS_ALIAS_BPOS_A_PT = 438,
+    SPARC_INS_ALIAS_BPOS_PN = 439,
+    SPARC_INS_ALIAS_BPOS_A_PN = 440,
+    SPARC_INS_ALIAS_MOVPOS = 441,
+    SPARC_INS_ALIAS_FMOVSPOS = 442,
+    SPARC_INS_ALIAS_FMOVDPOS = 443,
+    SPARC_INS_ALIAS_FMOVQPOS = 444,
+    SPARC_INS_ALIAS_TPOS = 445,
+    SPARC_INS_ALIAS_BNEG = 446,
+    SPARC_INS_ALIAS_BNEG_A = 447,
+    SPARC_INS_ALIAS_BNEG_PT = 448,
+    SPARC_INS_ALIAS_BNEG_A_PT = 449,
+    SPARC_INS_ALIAS_BNEG_PN = 450,
+    SPARC_INS_ALIAS_BNEG_A_PN = 451,
+    SPARC_INS_ALIAS_MOVNEG = 452,
+    SPARC_INS_ALIAS_FMOVSNEG = 453,
+    SPARC_INS_ALIAS_FMOVDNEG = 454,
+    SPARC_INS_ALIAS_FMOVQNEG = 455,
+    SPARC_INS_ALIAS_TNEG = 456,
+    SPARC_INS_ALIAS_BVC = 457,
+    SPARC_INS_ALIAS_BVC_A = 458,
+    SPARC_INS_ALIAS_BVC_PT = 459,
+    SPARC_INS_ALIAS_BVC_A_PT = 460,
+    SPARC_INS_ALIAS_BVC_PN = 461,
+    SPARC_INS_ALIAS_BVC_A_PN = 462,
+    SPARC_INS_ALIAS_MOVVC = 463,
+    SPARC_INS_ALIAS_FMOVSVC = 464,
+    SPARC_INS_ALIAS_FMOVDVC = 465,
+    SPARC_INS_ALIAS_FMOVQVC = 466,
+    SPARC_INS_ALIAS_TVC = 467,
+    SPARC_INS_ALIAS_BVS = 468,
+    SPARC_INS_ALIAS_BVS_A = 469,
+    SPARC_INS_ALIAS_BVS_PT = 470,
+    SPARC_INS_ALIAS_BVS_A_PT = 471,
+    SPARC_INS_ALIAS_BVS_PN = 472,
+    SPARC_INS_ALIAS_BVS_A_PN = 473,
+    SPARC_INS_ALIAS_MOVVS = 474,
+    SPARC_INS_ALIAS_FMOVSVS = 475,
+    SPARC_INS_ALIAS_FMOVDVS = 476,
+    SPARC_INS_ALIAS_FMOVQVS = 477,
+    SPARC_INS_ALIAS_TVS = 478,
+    SPARC_INS_ALIAS_FBN = 479,
+    SPARC_INS_ALIAS_FBN_PT = 480,
+    SPARC_INS_ALIAS_FBN_A = 481,
+    SPARC_INS_ALIAS_FBN_A_PT = 482,
+    SPARC_INS_ALIAS_FBN_PN = 483,
+    SPARC_INS_ALIAS_FBN_A_PN = 484,
+    SPARC_INS_ALIAS_FBU = 485,
+    SPARC_INS_ALIAS_FBU_PT = 486,
+    SPARC_INS_ALIAS_FBU_A = 487,
+    SPARC_INS_ALIAS_FBU_A_PT = 488,
+    SPARC_INS_ALIAS_FBU_PN = 489,
+    SPARC_INS_ALIAS_FBU_A_PN = 490,
+    SPARC_INS_ALIAS_MOVU = 491,
+    SPARC_INS_ALIAS_FMOVSU = 492,
+    SPARC_INS_ALIAS_FMOVDU = 493,
+    SPARC_INS_ALIAS_FMOVQU = 494,
+    SPARC_INS_ALIAS_FBG = 495,
+    SPARC_INS_ALIAS_FBG_PT = 496,
+    SPARC_INS_ALIAS_FBG_A = 497,
+    SPARC_INS_ALIAS_FBG_A_PT = 498,
+    SPARC_INS_ALIAS_FBG_PN = 499,
+    SPARC_INS_ALIAS_FBG_A_PN = 500,
+    SPARC_INS_ALIAS_FBUG = 501,
+    SPARC_INS_ALIAS_FBUG_PT = 502,
+    SPARC_INS_ALIAS_FBUG_A = 503,
+    SPARC_INS_ALIAS_FBUG_A_PT = 504,
+    SPARC_INS_ALIAS_FBUG_PN = 505,
+    SPARC_INS_ALIAS_FBUG_A_PN = 506,
+    SPARC_INS_ALIAS_MOVUG = 507,
+    SPARC_INS_ALIAS_FMOVSUG = 508,
+    SPARC_INS_ALIAS_FMOVDUG = 509,
+    SPARC_INS_ALIAS_FMOVQUG = 510,
+    SPARC_INS_ALIAS_FBL = 511,
+    SPARC_INS_ALIAS_FBL_PT = 512,
+    SPARC_INS_ALIAS_FBL_A = 513,
+    SPARC_INS_ALIAS_FBL_A_PT = 514,
+    SPARC_INS_ALIAS_FBL_PN = 515,
+    SPARC_INS_ALIAS_FBL_A_PN = 516,
+    SPARC_INS_ALIAS_FBUL = 517,
+    SPARC_INS_ALIAS_FBUL_PT = 518,
+    SPARC_INS_ALIAS_FBUL_A = 519,
+    SPARC_INS_ALIAS_FBUL_A_PT = 520,
+    SPARC_INS_ALIAS_FBUL_PN = 521,
+    SPARC_INS_ALIAS_FBUL_A_PN = 522,
+    SPARC_INS_ALIAS_MOVUL = 523,
+    SPARC_INS_ALIAS_FMOVSUL = 524,
+    SPARC_INS_ALIAS_FMOVDUL = 525,
+    SPARC_INS_ALIAS_FMOVQUL = 526,
+    SPARC_INS_ALIAS_FBLG = 527,
+    SPARC_INS_ALIAS_FBLG_PT = 528,
+    SPARC_INS_ALIAS_FBLG_A = 529,
+    SPARC_INS_ALIAS_FBLG_A_PT = 530,
+    SPARC_INS_ALIAS_FBLG_PN = 531,
+    SPARC_INS_ALIAS_FBLG_A_PN = 532,
+    SPARC_INS_ALIAS_MOVLG = 533,
+    SPARC_INS_ALIAS_FMOVSLG = 534,
+    SPARC_INS_ALIAS_FMOVDLG = 535,
+    SPARC_INS_ALIAS_FMOVQLG = 536,
+    SPARC_INS_ALIAS_FBNE = 537,
+    SPARC_INS_ALIAS_FBNE_PT = 538,
+    SPARC_INS_ALIAS_FBNE_A = 539,
+    SPARC_INS_ALIAS_FBNE_A_PT = 540,
+    SPARC_INS_ALIAS_FBNE_PN = 541,
+    SPARC_INS_ALIAS_FBNE_A_PN = 542,
+    SPARC_INS_ALIAS_FBE = 543,
+    SPARC_INS_ALIAS_FBE_PT = 544,
+    SPARC_INS_ALIAS_FBE_A = 545,
+    SPARC_INS_ALIAS_FBE_A_PT = 546,
+    SPARC_INS_ALIAS_FBE_PN = 547,
+    SPARC_INS_ALIAS_FBE_A_PN = 548,
+    SPARC_INS_ALIAS_FBUE = 549,
+    SPARC_INS_ALIAS_FBUE_PT = 550,
+    SPARC_INS_ALIAS_FBUE_A = 551,
+    SPARC_INS_ALIAS_FBUE_A_PT = 552,
+    SPARC_INS_ALIAS_FBUE_PN = 553,
+    SPARC_INS_ALIAS_FBUE_A_PN = 554,
+    SPARC_INS_ALIAS_MOVUE = 555,
+    SPARC_INS_ALIAS_FMOVSUE = 556,
+    SPARC_INS_ALIAS_FMOVDUE = 557,
+    SPARC_INS_ALIAS_FMOVQUE = 558,
+    SPARC_INS_ALIAS_FBGE = 559,
+    SPARC_INS_ALIAS_FBGE_PT = 560,
+    SPARC_INS_ALIAS_FBGE_A = 561,
+    SPARC_INS_ALIAS_FBGE_A_PT = 562,
+    SPARC_INS_ALIAS_FBGE_PN = 563,
+    SPARC_INS_ALIAS_FBGE_A_PN = 564,
+    SPARC_INS_ALIAS_FBUGE = 565,
+    SPARC_INS_ALIAS_FBUGE_PT = 566,
+    SPARC_INS_ALIAS_FBUGE_A = 567,
+    SPARC_INS_ALIAS_FBUGE_A_PT = 568,
+    SPARC_INS_ALIAS_FBUGE_PN = 569,
+    SPARC_INS_ALIAS_FBUGE_A_PN = 570,
+    SPARC_INS_ALIAS_MOVUGE = 571,
+    SPARC_INS_ALIAS_FMOVSUGE = 572,
+    SPARC_INS_ALIAS_FMOVDUGE = 573,
+    SPARC_INS_ALIAS_FMOVQUGE = 574,
+    SPARC_INS_ALIAS_FBLE = 575,
+    SPARC_INS_ALIAS_FBLE_PT = 576,
+    SPARC_INS_ALIAS_FBLE_A = 577,
+    SPARC_INS_ALIAS_FBLE_A_PT = 578,
+    SPARC_INS_ALIAS_FBLE_PN = 579,
+    SPARC_INS_ALIAS_FBLE_A_PN = 580,
+    SPARC_INS_ALIAS_FBULE = 581,
+    SPARC_INS_ALIAS_FBULE_PT = 582,
+    SPARC_INS_ALIAS_FBULE_A = 583,
+    SPARC_INS_ALIAS_FBULE_A_PT = 584,
+    SPARC_INS_ALIAS_FBULE_PN = 585,
+    SPARC_INS_ALIAS_FBULE_A_PN = 586,
+    SPARC_INS_ALIAS_MOVULE = 587,
+    SPARC_INS_ALIAS_FMOVSULE = 588,
+    SPARC_INS_ALIAS_FMOVDULE = 589,
+    SPARC_INS_ALIAS_FMOVQULE = 590,
+    SPARC_INS_ALIAS_FBO = 591,
+    SPARC_INS_ALIAS_FBO_PT = 592,
+    SPARC_INS_ALIAS_FBO_A = 593,
+    SPARC_INS_ALIAS_FBO_A_PT = 594,
+    SPARC_INS_ALIAS_FBO_PN = 595,
+    SPARC_INS_ALIAS_FBO_A_PN = 596,
+    SPARC_INS_ALIAS_MOVO = 597,
+    SPARC_INS_ALIAS_FMOVSO = 598,
+    SPARC_INS_ALIAS_FMOVDO = 599,
+    SPARC_INS_ALIAS_FMOVQO = 600,
+    SPARC_INS_ALIAS_BRLEZ = 601,
+    SPARC_INS_ALIAS_BRLEZ_PT = 602,
+    SPARC_INS_ALIAS_BRLEZ_PN = 603,
+    SPARC_INS_ALIAS_BRLEZ_A = 604,
+    SPARC_INS_ALIAS_BRLEZ_A_PT = 605,
+    SPARC_INS_ALIAS_BRLEZ_A_PN = 606,
+    SPARC_INS_ALIAS_MOVRLEZ = 607,
+    SPARC_INS_ALIAS_FMOVRSLEZ = 608,
+    SPARC_INS_ALIAS_FMOVRDLEZ = 609,
+    SPARC_INS_ALIAS_FMOVRQLEZ = 610,
+    SPARC_INS_ALIAS_BRLZ = 611,
+    SPARC_INS_ALIAS_BRLZ_PT = 612,
+    SPARC_INS_ALIAS_BRLZ_PN = 613,
+    SPARC_INS_ALIAS_BRLZ_A = 614,
+    SPARC_INS_ALIAS_BRLZ_A_PT = 615,
+    SPARC_INS_ALIAS_BRLZ_A_PN = 616,
+    SPARC_INS_ALIAS_MOVRLZ = 617,
+    SPARC_INS_ALIAS_FMOVRSLZ = 618,
+    SPARC_INS_ALIAS_FMOVRDLZ = 619,
+    SPARC_INS_ALIAS_FMOVRQLZ = 620,
+    SPARC_INS_ALIAS_BRNZ = 621,
+    SPARC_INS_ALIAS_BRNZ_PT = 622,
+    SPARC_INS_ALIAS_BRNZ_PN = 623,
+    SPARC_INS_ALIAS_BRNZ_A = 624,
+    SPARC_INS_ALIAS_BRNZ_A_PT = 625,
+    SPARC_INS_ALIAS_BRNZ_A_PN = 626,
+    SPARC_INS_ALIAS_MOVRNZ = 627,
+    SPARC_INS_ALIAS_FMOVRSNZ = 628,
+    SPARC_INS_ALIAS_FMOVRDNZ = 629,
+    SPARC_INS_ALIAS_FMOVRQNZ = 630,
+    SPARC_INS_ALIAS_BRGZ = 631,
+    SPARC_INS_ALIAS_BRGZ_PT = 632,
+    SPARC_INS_ALIAS_BRGZ_PN = 633,
+    SPARC_INS_ALIAS_BRGZ_A = 634,
+    SPARC_INS_ALIAS_BRGZ_A_PT = 635,
+    SPARC_INS_ALIAS_BRGZ_A_PN = 636,
+    SPARC_INS_ALIAS_MOVRGZ = 637,
+    SPARC_INS_ALIAS_FMOVRSGZ = 638,
+    SPARC_INS_ALIAS_FMOVRDGZ = 639,
+    SPARC_INS_ALIAS_FMOVRQGZ = 640,
+    SPARC_INS_ALIAS_BRGEZ = 641,
+    SPARC_INS_ALIAS_BRGEZ_PT = 642,
+    SPARC_INS_ALIAS_BRGEZ_PN = 643,
+    SPARC_INS_ALIAS_BRGEZ_A = 644,
+    SPARC_INS_ALIAS_BRGEZ_A_PT = 645,
+    SPARC_INS_ALIAS_BRGEZ_A_PN = 646,
+    SPARC_INS_ALIAS_MOVRGEZ = 647,
+    SPARC_INS_ALIAS_FMOVRSGEZ = 648,
+    SPARC_INS_ALIAS_FMOVRDGEZ = 649,
+    SPARC_INS_ALIAS_FMOVRQGEZ = 650,
+    SPARC_INS_ALIAS_CMP = 651,
+    SPARC_INS_ALIAS_TST = 652,
+    SPARC_INS_ALIAS_RET = 653,
+    SPARC_INS_ALIAS_RETL = 654,
+    SPARC_INS_ALIAS_RESTORE = 655,
+    SPARC_INS_ALIAS_SAVE = 656,
+    SPARC_INS_ALIAS_CAS = 657,
+    SPARC_INS_ALIAS_CASL = 658,
+    SPARC_INS_ALIAS_CASX = 659,
+    SPARC_INS_ALIAS_CASXL = 660,
+    SPARC_INS_ALIAS_MOV = 661,
+    SPARC_INS_ALIAS_FCMPS = 662,
+    SPARC_INS_ALIAS_FCMPD = 663,
+    SPARC_INS_ALIAS_FCMPQ = 664,
+    SPARC_INS_ALIAS_FCMPES = 665,
+    SPARC_INS_ALIAS_FCMPED = 666,
+    SPARC_INS_ALIAS_FCMPEQ = 667,
+    SPARC_INS_ALIAS_CALL = 668,
+    SPARC_INS_ALIAS_END = 669,
 }
 pub mod sparc_insn_group {
     #[doc = " Group of SPARC instructions"]
     pub type Type = ::core::ffi::c_uint;
-    #[doc = "< = CS_GRP_INVALID"]
+    #[doc = "< = CS_GRP_INVALID = 0"]
     pub const SPARC_GRP_INVALID: Type = 0;
     #[doc = "< = CS_GRP_JUMP"]
     pub const SPARC_GRP_JUMP: Type = 1;
-    pub const SPARC_GRP_HARDQUAD: Type = 128;
-    pub const SPARC_GRP_V9: Type = 129;
-    pub const SPARC_GRP_VIS: Type = 130;
-    pub const SPARC_GRP_VIS2: Type = 131;
-    pub const SPARC_GRP_VIS3: Type = 132;
-    pub const SPARC_GRP_32BIT: Type = 133;
-    pub const SPARC_GRP_64BIT: Type = 134;
-    pub const SPARC_GRP_ENDING: Type = 135;
+    #[doc = "< = CS_GRP_CALL"]
+    pub const SPARC_GRP_CALL: Type = 2;
+    #[doc = "< = CS_GRP_RET"]
+    pub const SPARC_GRP_RET: Type = 3;
+    #[doc = "< = CS_GRP_INT"]
+    pub const SPARC_GRP_INT: Type = 4;
+    #[doc = "< = CS_GRP_IRET"]
+    pub const SPARC_GRP_IRET: Type = 5;
+    #[doc = "< = CS_GRP_PRIVILEGE"]
+    pub const SPARC_GRP_PRIVILEGE: Type = 6;
+    #[doc = "< = CS_GRP_BRANCH_RELATIVE"]
+    pub const SPARC_GRP_BRANCH_RELATIVE: Type = 7;
+    pub const SPARC_FEATURE_IS64BIT: Type = 128;
+    pub const SPARC_FEATURE_USESOFTMULDIV: Type = 129;
+    pub const SPARC_FEATURE_HASV9: Type = 130;
+    pub const SPARC_FEATURE_HASVIS: Type = 131;
+    pub const SPARC_FEATURE_HASVIS2: Type = 132;
+    pub const SPARC_FEATURE_HASVIS3: Type = 133;
+    pub const SPARC_FEATURE_HASCASA: Type = 134;
+    pub const SPARC_FEATURE_HASPWRPSR: Type = 135;
+    pub const SPARC_GRP_ENDING: Type = 136;
 }
 #[repr(u32)]
 #[doc = " Enums corresponding to SystemZ condition codes"]
@@ -22771,7 +23454,7 @@ impl ::core::fmt::Debug for cs_alpha {
     }
 }
 pub mod alpha_reg {
-    pub type Type = libc::c_uint;
+    pub type Type = ::core::ffi::c_uint;
     pub const Alpha_REG_INVALID: Type = 0;
     pub const Alpha_REG_F0: Type = 1;
     pub const Alpha_REG_F1: Type = 2;
@@ -22996,7 +23679,7 @@ pub enum alpha_insn {
     ALPHA_INS_ENDING = 151,
 }
 pub mod alpha_insn_group {
-    pub type Type = libc::c_uint;
+    pub type Type = ::core::ffi::c_uint;
     #[doc = "< = CS_GRP_INVALID"]
     pub const Alpha_GRP_INVALID: Type = 0;
     #[doc = "< = CS_GRP_CALL"]
@@ -23021,7 +23704,7 @@ pub enum hppa_op_type {
     HPPA_OP_MEM = 128,
 }
 pub mod hppa_reg {
-    pub type Type = libc::c_uint;
+    pub type Type = ::core::ffi::c_uint;
     pub const HPPA_REG_INVALID: Type = 0;
     #[doc = "> General registers"]
     pub const HPPA_REG_GR0: Type = 1;
@@ -23624,7 +24307,6 @@ pub enum hppa_insn {
 pub struct hppa_mem {
     pub base: hppa_reg::Type,
     pub space: hppa_reg::Type,
-    pub base_access: cs_ac_type,
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
@@ -23686,7 +24368,7 @@ pub struct hppa_modifier {
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub union hppa_modifier__bindgen_ty_1 {
-    pub str_mod: [libc::c_char; 8usize],
+    pub str_mod: [::core::ffi::c_char; 8usize],
     pub int_mod: u32,
 }
 impl ::core::fmt::Debug for hppa_modifier__bindgen_ty_1 {
@@ -23725,7 +24407,7 @@ impl ::core::fmt::Debug for hppa_ext {
     }
 }
 pub mod hppa_insn_group {
-    pub type Type = libc::c_uint;
+    pub type Type = ::core::ffi::c_uint;
     #[doc = "< = CS_GRP_INVALID"]
     pub const HPPA_GRP_INVALID: Type = 0;
     pub const HPPA_GRP_COMPUTATION: Type = 128;
@@ -23944,7 +24626,7 @@ impl ::core::fmt::Debug for cs_loongarch {
 }
 pub mod loongarch_reg {
     #[doc = " LoongArch registers"]
-    pub type Type = libc::c_uint;
+    pub type Type = ::core::ffi::c_uint;
     pub const LOONGARCH_REG_INVALID: Type = 0;
     pub const LOONGARCH_REG_F0: Type = 1;
     pub const LOONGARCH_REG_F1: Type = 2;
@@ -26223,7 +26905,7 @@ pub enum loongarch_insn {
     LOONGARCH_INS_ALIAS_END = 2060,
 }
 pub mod loongarch_insn_group {
-    pub type Type = libc::c_uint;
+    pub type Type = ::core::ffi::c_uint;
     #[doc = "< = CS_GRP_INVALID"]
     pub const LOONGARCH_GRP_INVALID: Type = 0;
     #[doc = "< = CS_GRP_JUMP"]
@@ -26249,7 +26931,7 @@ pub mod loongarch_insn_group {
 }
 pub mod xtensa_reg {
     #[doc = " Xtensa registers"]
-    pub type Type = libc::c_uint;
+    pub type Type = ::core::ffi::c_uint;
     pub const XTENSA_REG_INVALID: Type = 0;
     pub const XTENSA_REG_ACCHI: Type = 1;
     pub const XTENSA_REG_ACCLO: Type = 2;
@@ -27906,7 +28588,7 @@ pub struct xtensa_suppl_info {
     pub form: xtensa_insn_form,
 }
 pub mod cs_xtensa_op_type {
-    pub type Type = libc::c_uint;
+    pub type Type = ::core::ffi::c_uint;
     #[doc = "< = (Uninitialized)."]
     pub const XTENSA_OP_INVALID: Type = 0;
     #[doc = "< = (Register operand)."]
@@ -28032,7 +28714,7 @@ impl ::core::fmt::Debug for cs_arc {
 }
 pub mod arc_reg {
     #[doc = " ARC registers"]
-    pub type Type = libc::c_uint;
+    pub type Type = ::core::ffi::c_uint;
     pub const ARC_REG_INVALID: Type = 0;
     pub const ARC_REG_BLINK: Type = 1;
     pub const ARC_REG_FP: Type = 2;
@@ -28298,7 +28980,7 @@ pub enum arc_insn {
     ARC_INS_XOR_F = 190,
 }
 pub mod arc_insn_group {
-    pub type Type = libc::c_uint;
+    pub type Type = ::core::ffi::c_uint;
     #[doc = "< = CS_GRP_INVALID"]
     pub const ARC_GRP_INVALID: Type = 0;
     #[doc = "< = CS_GRP_JUMP"]
