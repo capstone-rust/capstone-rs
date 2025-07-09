@@ -3904,7 +3904,7 @@ test_cases:
       name: "issue 426"
       bytes: [ 0xbb,0x70,0x00,0x00 ]
       arch: "CS_ARCH_SPARC"
-      options: [ CS_MODE_BIG_ENDIAN ]
+      options: [ CS_MODE_BIG_ENDIAN, CS_MODE_V9 ]
       address: 0x0
     expected:
       insns:
@@ -6227,3 +6227,57 @@ test_cases:
     expected:
       insns:
       - asm_text: "ldur x0, [x1, #0xffffffffffffffff]"
+  -
+    input:
+      name: "issue 2737 AArch64 RET misses implicit x32 read."
+      bytes: [ 0xc0, 0x03, 0x5f, 0xd6 ]
+      arch: "CS_ARCH_AARCH64"
+      options: [ CS_MODE_ARM, CS_OPT_DETAIL ]
+      address: 0x0
+    expected:
+      insns:
+      -
+        asm_text: "ret"
+        is_alias: 1
+        details:
+          aarch64:
+            operands: []
+          regs_read: [ x30 ]
+  -
+    input:
+      name: "issue #2731 - Should not disassemble"
+      bytes: [ 0x15, 0x93 ]
+      arch: "CS_ARCH_RISCV"
+      options: [ CS_MODE_LITTLE_ENDIAN, CS_MODE_32 ]
+      address: 0x0
+    expected:
+      insns: []
+  -
+    input:
+      name: "issue #2731 - Should disassemble"
+      bytes: [ 0x15, 0x83 ]
+      arch: "CS_ARCH_RISCV"
+      options: [ CS_MODE_LITTLE_ENDIAN, CS_MODE_32 ]
+      address: 0x0
+    expected:
+      insns:
+        -
+          asm_text: "c.srli a4, 5"
+  -
+    input:
+      name: "issue 2741 - SystemZ addresses with 0 operand."
+      bytes: [ 0xc6,0x00,0x00,0x00,0x00,0x05 ]
+      arch: "CS_ARCH_SYSTEMZ"
+      options: [ CS_OPT_DETAIL, CS_MODE_BIG_ENDIAN ]
+      address: 0x0
+    expected:
+      insns:
+      -
+        asm_text: "exrl	0, 0xa"
+        details:
+          systemz:
+            operands:
+              - type: SYSTEMZ_OP_IMM
+                imm: 0
+              - type: SYSTEMZ_OP_IMM
+                imm: 0xa

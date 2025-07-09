@@ -94,6 +94,34 @@ class MCTest:
         self.encoding.append(encoding)
         self.asm_text.append(asm_text)
 
+    def get_legacy_mc_test_triple(self):
+        """
+        Returns the legacy triple for the old MC test files:
+        <ARCH>, <MODE>, None
+        Should only be used to generate fuzzing tests.
+        """
+        triple = "# "
+        if self.arch.startswith("CS_ARCH"):
+            triple += self.arch
+        else:
+            triple += f"CS_ARCH_{self.arch.upper()}"
+        opts = "|".join([f'"{o}"' for o in self.opts if o.startswith("CS_MODE_")])
+        if not opts:
+            opts = "0"
+        triple += f", {opts}, None"
+        return triple
+
+    def fuzz_test_str(self):
+        old_mc_tcase = ""
+        for enc, asm_text in zip(self.encoding, self.asm_text):
+            if old_mc_tcase:
+                old_mc_tcase += "\n"
+            encoding = re.sub(r"[\[\]]", "", enc)
+            encoding = encoding.strip()
+            encoding = re.sub(r"[\s,]+", ",", encoding)
+            old_mc_tcase += f"{encoding} == {asm_text}"
+        return old_mc_tcase
+
     def __str__(self):
         encoding = ",".join(self.encoding)
         encoding = re.sub(r"[\[\]]", "", encoding)
@@ -155,7 +183,7 @@ class TestFile:
                 text_section += 1
                 continue
             match = re.search(
-                rf"^\s*{asm_pat}\s*(#|//|@)\s*encoding:\s*{enc_pat}", line
+                rf"^\s*{asm_pat}\s*(#|//|@|!|;)\s*encoding:\s*{enc_pat}", line
             )
             if not match:
                 continue
@@ -191,10 +219,20 @@ class TestFile:
     def has_tests(self) -> bool:
         return len(self.tests) != 0
 
-    def get_cs_testfile_content(self, only_test: bool) -> str:
-        content = "\n" if only_test else "test_cases:\n"
+    def get_cs_testfile_content(self, only_tests: bool) -> str:
+        content = "\n" if only_tests else "test_cases:\n"
         for tl in self.tests.values():
             content += "\n".join([str(t) for t in tl])
+        return content
+
+    def get_fuzz_test_file_content(self, only_tests: bool) -> str:
+        content = ""
+        for tl in self.tests.values():
+            if not content:
+                content = (
+                    "\n" if only_tests else tl[0].get_legacy_mc_test_triple() + "\n"
+                )
+            content += "\n".join([t.fuzz_test_str() for t in tl])
         return content
 
     def num_test_cases(self) -> int:
@@ -312,7 +350,7 @@ class MCUpdater:
                 f"Could not find '{llvm_lit_cfg}'. Check {{LLVM_LIT_TEST_DIR}} in path_vars.json."
             )
 
-    def write_to_build_dir(self):
+    def write_to_build_dir(self, fuzzer_tests: bool = False):
         no_tests_file = 0
         file_cnt = 0
         test_cnt = 0
@@ -339,7 +377,13 @@ class MCUpdater:
                 )
 
             filename = re.sub(rf"{self.test_dir_link_prefix}\d+", ".", rel_path)
-            filename = get_path("{MCUPDATER_OUT_DIR}").joinpath(f"{filename}.yaml")
+            if fuzzer_tests:
+                filename = get_path("{MCUPDATER_OUT_FUZZ_DIR}").joinpath(
+                    f"{filename}.cs"
+                )
+            else:
+                filename = get_path("{MCUPDATER_OUT_DIR}").joinpath(f"{filename}.yaml")
+
             if filename in files_written:
                 write_mode = "a"
             else:
@@ -347,19 +391,27 @@ class MCUpdater:
             filename.parent.mkdir(parents=True, exist_ok=True)
             if self.multi_mode and filename.exists():
                 log.warning(
-                    f"The following file exists already: {filename}. This is might indicate a blind spot in testing."
+                    f"The following file exists already: {filename}. This indicates a blind spot in testing."
                 )
                 overwritten += 1
             elif not self.multi_mode and filename.exists():
                 log.debug(f"Overwrite: {filename}")
                 overwritten += 1
             with open(filename, write_mode) as f:
-                f.write(test.get_cs_testfile_content(only_test=(write_mode == "a")))
+                if fuzzer_tests:
+                    content = test.get_fuzz_test_file_content(
+                        only_tests=(write_mode == "a")
+                    )
+                else:
+                    content = test.get_cs_testfile_content(
+                        only_tests=(write_mode == "a")
+                    )
+                f.write(content)
                 log.debug(f"Write {filename}")
             files_written.add(filename)
         print()
         log.info(
-            f"Got {len(self.test_files)} test files.\n"
+            f"Got {len(self.test_files)} {'fuzzing ' if fuzzer_tests else ''}test files.\n"
             f"\t\tProcessed {file_cnt} files with {test_cnt} test cases.\n"
             f"\t\tIgnored {no_tests_file} without tests.\n"
             f"\t\tGenerated {len(files_written)} files"
@@ -370,8 +422,8 @@ class MCUpdater:
                 f"These files contain instructions of several different cpu features.\n"
                 f"You have to use multi-mode to write them into distinct files.\n"
                 f"The current setting will only keep the last one written.\n"
-                f"See also: https://github.com/capstone-engine/capstone/issues/1992"
-                "If you already used multi-mode, there possibly is a blind spot for testing."
+                f"See also: https://github.com/capstone-engine/capstone/issues/1992\n"
+                "If you already used multi-mode (default = yes), there might be a blind spot in testing."
             )
 
     def build_test_options(self, options):
@@ -499,14 +551,14 @@ class MCUpdater:
 
     def gen_all(self):
         log.info("Check prerequisites")
-        disas_tests = self.mc_dir.joinpath(f"Disassembler/{self.arch_dir_name}")
-        test_paths = [disas_tests]
-        # Xtensa only defines assembly tests.
-        if self.arch == "Xtensa":
+        test_paths = list()
+        if self.arch in self.conf["use_assembly_tests"]:
+            log.info(f"Add assembly tests for {self.arch}")
             test_paths.append(self.mc_dir.joinpath(self.arch))
-        # TriCore defines nothing.
-        elif self.arch == "TriCore":
-            return
+        if self.arch not in self.conf["exclude_disassembly_tests"]:
+            log.info(f"Add disassembly tests for {self.arch}")
+            disas_tests = self.mc_dir.joinpath(f"Disassembler/{self.arch_dir_name}")
+            test_paths.append(disas_tests)
         self.check_prerequisites(test_paths)
         log.info("Generate MC regression tests")
         llvm_mc_cmds = self.run_llvm_lit(
@@ -517,7 +569,6 @@ class MCUpdater:
         for slink in self.symbolic_links:
             log.debug(f"Unlink {slink}")
             slink.unlink()
-        self.write_to_build_dir()
 
 
 def parse_args() -> argparse.Namespace:
