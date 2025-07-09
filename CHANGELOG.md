@@ -17,7 +17,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - ARC arch support
 - Arch-specific features flags to enable/disable arch support
 - Expose X86 instruction encoding info via `X86InsnDetail::encoding()`
-- Make RegAccessType available for ARM64
+- Make AccessType available for ARM64 & Sparc
+- New operands types are added to `ArmOperandType`
 - Rename RegAccessType to AccessType while keeping type alias
 - Expose `CS_OPT_UNSIGNED` via `Capstone::set_unsigned`
 - Expose `CS_OPT_MNEMONIC` via `Capstone::set_mnemonic`
@@ -28,6 +29,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - `InsnDetail::regs_read()`/`InsnDetail::regs_write()` return more of the accessed registers
 - Bump bundled capstone to 6.0.0-Alpha4
+- Rename ARM64 to AARCH64, SYSZ to SYSTEMZ to follow upstream changes
+- AArch64 support is rewritten to follow upstream changes
+- Endian must be specified for Sparc/SystemZ, since little endian support is added
 
 ### Fixed
 - `impl Display for Insn<'_>` now avoids to print trailing space
