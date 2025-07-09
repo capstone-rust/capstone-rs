@@ -106,6 +106,13 @@ extern cs_vsnprintf_t cs_vsnprintf;
 /// For the release build the @expr is not included.
 #ifdef CAPSTONE_DEBUG
 #define CS_ASSERT(expr) assert(expr)
+#elif CAPSTONE_ASSERTION_WARNINGS
+#define CS_ASSERT(expr) \
+do { \
+	if (!(expr)) { \
+		fprintf(stderr, "Capstone hit the assert: \"" #expr "\": %s:%" PRIu32 "\n", __FILE__, __LINE__); \
+	} \
+} while(0)
 #else
 #define CS_ASSERT(expr)
 #endif
@@ -114,28 +121,32 @@ extern cs_vsnprintf_t cs_vsnprintf;
 /// In the release build it will check the @expr and return @val if false.
 #ifdef CAPSTONE_DEBUG
 #define CS_ASSERT_RET_VAL(expr, val) assert(expr)
-#else
+#elif CAPSTONE_ASSERTION_WARNINGS
 #define CS_ASSERT_RET_VAL(expr, val) \
 do { \
 	if (!(expr)) { \
-		fprintf(stderr, "Hit assert: " #expr "\n"); \
+		fprintf(stderr, "Capstone hit the assert: \"" #expr "\": %s:%" PRIu32 "\n", __FILE__, __LINE__); \
 		return val; \
 	} \
 } while(0)
+#else
+#define CS_ASSERT_RET_VAL(expr, val)
 #endif
 
 /// If compiled in debug mode it will assert(@expr).
 /// In the release build it will check the @expr and return if false.
 #ifdef CAPSTONE_DEBUG
 #define CS_ASSERT_RET(expr) assert(expr)
-#else
+#elif CAPSTONE_ASSERTION_WARNINGS
 #define CS_ASSERT_RET(expr) \
 do { \
 	if (!(expr)) { \
-		fprintf(stderr, "Hit assert: " #expr "\n"); \
+		fprintf(stderr, "Capstone hit the assert: \"" #expr "\": %s:%" PRIu32 "\n", __FILE__, __LINE__); \
 		return; \
 	} \
 } while(0)
+#else
+#define CS_ASSERT_RET(expr)
 #endif
 
 #endif
