@@ -3416,7 +3416,7 @@ fn test_arch_sparc() {
 #[cfg(feature = "arch_sparc")]
 #[test]
 fn test_arch_sparc_detail() {
-    use crate::arch::sparc::SparcOperand::*;
+    use crate::arch::sparc::SparcOperandType::*;
     use crate::arch::sparc::SparcReg::*;
     use crate::arch::sparc::*;
     use capstone_sys::sparc_op_mem;
@@ -3438,8 +3438,14 @@ fn test_arch_sparc_detail() {
                 "cmp",
                 b"\x80\xa0\x40\x02",
                 &[
-                    Reg(RegId(SPARC_REG_G1 as RegIdInt)),
-                    Reg(RegId(SPARC_REG_G2 as RegIdInt)),
+                    SparcOperand {
+                        op_type: Reg(RegId(SPARC_REG_G1 as RegIdInt)),
+                        access: Some(AccessType::ReadOnly),
+                    },
+                    SparcOperand {
+                        op_type: Reg(RegId(SPARC_REG_G2 as RegIdInt)),
+                        access: Some(AccessType::ReadOnly),
+                    },
                 ],
             ),
             // jmpl    %o1+8, %g2
@@ -3447,12 +3453,18 @@ fn test_arch_sparc_detail() {
                 "jmpl",
                 b"\x85\xc2\x60\x08",
                 &[
-                    Mem(SparcOpMem(sparc_op_mem {
-                        base: SPARC_REG_O1,
-                        index: 0,
-                        disp: 8,
-                    })),
-                    Reg(RegId(SPARC_REG_G2 as RegIdInt)),
+                    SparcOperand {
+                        op_type: Mem(SparcOpMem(sparc_op_mem {
+                            base: SPARC_REG_O1,
+                            index: 0,
+                            disp: 8,
+                        })),
+                        access: None,
+                    },
+                    SparcOperand {
+                        op_type: Reg(RegId(SPARC_REG_G2 as RegIdInt)),
+                        access: Some(AccessType::WriteOnly),
+                    },
                 ],
             ),
             // restore %g0, 1, %g2
@@ -3460,76 +3472,157 @@ fn test_arch_sparc_detail() {
                 "restore",
                 b"\x85\xe8\x20\x01",
                 &[
-                    Reg(RegId(SPARC_REG_G0 as RegIdInt)),
-                    Imm(1),
-                    Reg(RegId(SPARC_REG_G2 as RegIdInt)),
+                    SparcOperand {
+                        op_type: Reg(RegId(SPARC_REG_G0 as RegIdInt)),
+                        access: Some(AccessType::ReadOnly),
+                    },
+                    SparcOperand {
+                        op_type: Imm(1),
+                        access: Some(AccessType::ReadOnly),
+                    },
+                    SparcOperand {
+                        op_type: Reg(RegId(SPARC_REG_G2 as RegIdInt)),
+                        access: Some(AccessType::WriteOnly),
+                    },
                 ],
             ),
             // mov     1, %o0
             DII::new(
                 "mov",
                 b"\x90\x10\x20\x01",
-                &[Imm(1), Reg(RegId(SPARC_REG_O0 as RegIdInt))],
+                &[
+                    SparcOperand {
+                        op_type: Imm(1),
+                        access: Some(AccessType::ReadOnly),
+                    },
+                    SparcOperand {
+                        op_type: Reg(RegId(SPARC_REG_O0 as RegIdInt)),
+                        access: Some(AccessType::WriteOnly),
+                    },
+                ],
             ),
             // casx    [%i0], %l6, %o2
             DII::new(
                 "casx",
                 b"\xd5\xf6\x10\x16",
                 &[
-                    Mem(SparcOpMem(sparc_op_mem {
-                        base: SPARC_REG_I0,
-                        index: 0,
-                        disp: 0,
-                    })),
-                    Reg(RegId(SPARC_REG_L6 as RegIdInt)),
-                    Reg(RegId(SPARC_REG_O2 as RegIdInt)),
+                    SparcOperand {
+                        op_type: Mem(SparcOpMem(sparc_op_mem {
+                            base: SPARC_REG_I0,
+                            index: 0,
+                            disp: 0,
+                        })),
+                        access: None,
+                    },
+                    SparcOperand {
+                        op_type: Reg(RegId(SPARC_REG_L6 as RegIdInt)),
+                        access: Some(AccessType::ReadOnly),
+                    },
+                    SparcOperand {
+                        op_type: Reg(RegId(SPARC_REG_O2 as RegIdInt)),
+                        access: Some(AccessType::WriteOnly),
+                    },
                 ],
             ),
             // sethi   0xa, %l0
             DII::new(
                 "sethi",
                 b"\x21\x00\x00\x0a",
-                &[Imm(0xa), Reg(RegId(SPARC_REG_L0 as RegIdInt))],
+                &[
+                    SparcOperand {
+                        op_type: Imm(0xa),
+                        access: Some(AccessType::ReadOnly),
+                    },
+                    SparcOperand {
+                        op_type: Reg(RegId(SPARC_REG_L0 as RegIdInt)),
+                        access: Some(AccessType::WriteOnly),
+                    },
+                ],
             ),
             // add     %g1, %g2, %g3
             DII::new(
                 "add",
                 b"\x86\x00\x40\x02",
                 &[
-                    Reg(RegId(SPARC_REG_G1 as RegIdInt)),
-                    Reg(RegId(SPARC_REG_G2 as RegIdInt)),
-                    Reg(RegId(SPARC_REG_G3 as RegIdInt)),
+                    SparcOperand {
+                        op_type: Reg(RegId(SPARC_REG_G1 as RegIdInt)),
+                        access: Some(AccessType::ReadOnly),
+                    },
+                    SparcOperand {
+                        op_type: Reg(RegId(SPARC_REG_G2 as RegIdInt)),
+                        access: Some(AccessType::ReadOnly),
+                    },
+                    SparcOperand {
+                        op_type: Reg(RegId(SPARC_REG_G3 as RegIdInt)),
+                        access: Some(AccessType::WriteOnly),
+                    },
                 ],
             ),
             // nop
             DII::new("nop", b"\x01\x00\x00\x00", &[]),
             // bne     0x1020
-            DII::new("bne", b"\x12\xbf\xff\xff", &[Imm(0x101c)]),
+            DII::new(
+                "bne",
+                b"\x12\xbf\xff\xff",
+                &[SparcOperand {
+                    op_type: Imm(0x101c),
+                    access: Some(AccessType::ReadOnly),
+                }],
+            ),
             // ba      0x1024
-            DII::new("ba", b"\x10\xbf\xff\xff", &[Imm(0x1020)]),
+            DII::new(
+                "ba",
+                b"\x10\xbf\xff\xff",
+                &[SparcOperand {
+                    op_type: Imm(0x1020),
+                    access: Some(AccessType::ReadOnly),
+                }],
+            ),
             // add     %o0, %o1, %l0
             DII::new(
                 "add",
                 b"\xa0\x02\x00\x09",
                 &[
-                    Reg(RegId(SPARC_REG_O0 as RegIdInt)),
-                    Reg(RegId(SPARC_REG_O1 as RegIdInt)),
-                    Reg(RegId(SPARC_REG_L0 as RegIdInt)),
+                    SparcOperand {
+                        op_type: Reg(RegId(SPARC_REG_O0 as RegIdInt)),
+                        access: Some(AccessType::ReadOnly),
+                    },
+                    SparcOperand {
+                        op_type: Reg(RegId(SPARC_REG_O1 as RegIdInt)),
+                        access: Some(AccessType::ReadOnly),
+                    },
+                    SparcOperand {
+                        op_type: Reg(RegId(SPARC_REG_L0 as RegIdInt)),
+                        access: Some(AccessType::WriteOnly),
+                    },
                 ],
             ),
             // fbg     0x102c
-            DII::new("fbg", b"\x0d\xbf\xff\xff", &[Imm(0x1028)]),
+            DII::new(
+                "fbg",
+                b"\x0d\xbf\xff\xff",
+                &[SparcOperand {
+                    op_type: Imm(0x1028),
+                    access: Some(AccessType::ReadOnly),
+                }],
+            ),
             // st      %o2, [%g1]
             DII::new(
                 "st",
                 b"\xd4\x20\x60\x00",
                 &[
-                    Reg(RegId(SPARC_REG_O2 as RegIdInt)),
-                    Mem(SparcOpMem(sparc_op_mem {
-                        base: SPARC_REG_G1,
-                        index: 0,
-                        disp: 0,
-                    })),
+                    SparcOperand {
+                        op_type: Reg(RegId(SPARC_REG_O2 as RegIdInt)),
+                        access: Some(AccessType::ReadOnly),
+                    },
+                    SparcOperand {
+                        op_type: Mem(SparcOpMem(sparc_op_mem {
+                            base: SPARC_REG_G1,
+                            index: 0,
+                            disp: 0,
+                        })),
+                        access: Some(AccessType::WriteOnly),
+                    },
                 ],
             ),
             // ldsb    [%i0+%l6], %o2
@@ -3537,46 +3630,79 @@ fn test_arch_sparc_detail() {
                 "ldsb",
                 b"\xd4\x4e\x00\x16",
                 &[
-                    Mem(SparcOpMem(sparc_op_mem {
-                        base: SPARC_REG_I0,
-                        index: SPARC_REG_L6,
-                        disp: 0,
-                    })),
-                    Reg(RegId(SPARC_REG_O2 as RegIdInt)),
+                    SparcOperand {
+                        op_type: Mem(SparcOpMem(sparc_op_mem {
+                            base: SPARC_REG_I0,
+                            index: SPARC_REG_L6,
+                            disp: 0,
+                        })),
+                        access: Some(AccessType::ReadOnly),
+                    },
+                    SparcOperand {
+                        op_type: Reg(RegId(SPARC_REG_O2 as RegIdInt)),
+                        access: Some(AccessType::WriteOnly),
+                    },
                 ],
             ),
             // brnz,a,pn       %o2, 0x1048
             DII::new(
                 "brnz,a,pn",
                 b"\x2a\xc2\x80\x03",
-                &[Reg(RegId(SPARC_REG_O2 as RegIdInt)), Imm(0x1044)],
+                &[
+                    SparcOperand {
+                        op_type: Reg(RegId(SPARC_REG_O2 as RegIdInt)),
+                        access: Some(AccessType::ReadOnly),
+                    },
+                    SparcOperand {
+                        op_type: Imm(0x1044),
+                        access: Some(AccessType::ReadOnly),
+                    },
+                ],
             ),
             // membar #LoadLoad
             DII::new(
                 "membar",
                 b"\x81\x43\xe0\x01",
-                &[MembarTag(SparcMembarTag::SPARC_MEMBAR_TAG_LOADLOAD)],
+                &[SparcOperand {
+                    op_type: MembarTag(SparcMembarTag::SPARC_MEMBAR_TAG_LOADLOAD),
+                    access: Some(AccessType::ReadOnly),
+                }],
             ),
             // ldstuba [%i0+%l6] 4, %o2
             DII::new(
                 "ldstuba",
                 b"\xd4\xee\x00\x96",
                 &[
-                    Mem(SparcOpMem(sparc_op_mem {
-                        base: SPARC_REG_I0,
-                        index: SPARC_REG_L6,
-                        disp: 0,
-                    })),
-                    Asi(SparcAsi::SPARC_ASITAG_ASI_N),
-                    Reg(RegId(SPARC_REG_O2 as RegIdInt)),
+                    SparcOperand {
+                        op_type: Mem(SparcOpMem(sparc_op_mem {
+                            base: SPARC_REG_I0,
+                            index: SPARC_REG_L6,
+                            disp: 0,
+                        })),
+                        access: Some(AccessType::ReadWrite),
+                    },
+                    SparcOperand {
+                        op_type: Asi(SparcAsi::SPARC_ASITAG_ASI_N),
+                        access: Some(AccessType::ReadOnly),
+                    },
+                    SparcOperand {
+                        op_type: Reg(RegId(SPARC_REG_O2 as RegIdInt)),
+                        access: Some(AccessType::WriteOnly),
+                    },
                 ],
             ),
         ],
     );
 
     let f0_f4 = [
-        Reg(RegId(SPARC_REG_F0 as RegIdInt)),
-        Reg(RegId(SPARC_REG_F4 as RegIdInt)),
+        SparcOperand {
+            op_type: Reg(RegId(SPARC_REG_F0 as RegIdInt)),
+            access: Some(AccessType::ReadOnly),
+        },
+        SparcOperand {
+            op_type: Reg(RegId(SPARC_REG_F4 as RegIdInt)),
+            access: Some(AccessType::ReadOnly),
+        },
     ];
 
     test_arch_mode_endian_insns_detail(
