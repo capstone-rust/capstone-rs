@@ -306,7 +306,7 @@ static void set_op_mem(cs_hppa *hppa, uint32_t base, uint32_t space,
 	op->type = HPPA_OP_MEM;
 	op->mem.base = base;
 	op->mem.space = space;
-	op->mem.base_access = base_access;
+	op->access = base_access;
 }
 /* HPPA instruction formats (access)
    i - imm arguments
@@ -822,7 +822,7 @@ void HPPA_printInst(MCInst *MI, SStream *O, void *Info)
 		print_operand(MI, O, op);
 		if (op->type != HPPA_OP_IDX_REG && op->type != HPPA_OP_DISP &&
 		    i != hppa.op_count - 1) {
-			SStream_concat(O, ",");
+			SStream_concat(O, ", ");
 		}
 	}
 
