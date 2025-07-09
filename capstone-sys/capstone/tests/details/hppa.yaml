@@ -8,7 +8,7 @@ test_cases:
     expected:
       insns:
       -
-        asm_text: "ldsid (sr1,r1),rp"
+        asm_text: "ldsid (sr1,r1), rp"
         details:
           hppa:
             operands:
@@ -16,64 +16,76 @@ test_cases:
                 type: HPPA_OP_MEM
                 mem_space: sr1
                 mem_base: r1
+                access: CS_AC_READ
               -
                 type: HPPA_OP_REG
                 reg: rp
+                access: CS_AC_WRITE
       -
-        asm_text: "mtsp r1,sr1"
+        asm_text: "mtsp r1, sr1"
         details:
           hppa:
             operands:
               -
                 type: HPPA_OP_REG
                 reg: r1
+                access: CS_AC_READ
               -
                 type: HPPA_OP_REG
                 reg: sr1
+                access: CS_AC_WRITE
       -
-        asm_text: "mfsp sr1,r1"
+        asm_text: "mfsp sr1, r1"
         details:
           hppa:
             operands:
               -
                 type: HPPA_OP_REG
                 reg: sr1
+                access: CS_AC_READ
               -
                 type: HPPA_OP_REG
                 reg: r1
+                access: CS_AC_WRITE
       -
-        asm_text: "mtctl r1,cr2"
+        asm_text: "mtctl r1, cr2"
         details:
           hppa:
             operands:
               -
                 type: HPPA_OP_REG
                 reg: r1
+                access: CS_AC_READ
               -
                 type: HPPA_OP_REG
                 reg: cr2
+                access: CS_AC_WRITE
       -
-        asm_text: "mfctl cr1,rp"
+        asm_text: "mfctl cr1, rp"
         details:
           hppa:
             operands:
               -
                 type: HPPA_OP_REG
                 reg: cr1
+                access: CS_AC_READ
               -
                 type: HPPA_OP_REG
                 reg: rp
+                access: CS_AC_WRITE
       -
-        asm_text: "mfctl,w sar,r1"
+        asm_text: "mfctl,w sar, r1"
         details:
           hppa:
             operands:
               -
                 type: HPPA_OP_REG
                 reg: sar
+                access: CS_AC_READ
               -
                 type: HPPA_OP_REG
                 reg: r1
+                access: CS_AC_WRITE
       -
         asm_text: "mtsarcm r1"
         details:
@@ -82,6 +94,7 @@ test_cases:
               -
                 type: HPPA_OP_REG
                 reg: r1
+                access: CS_AC_READ
       -
         asm_text: "mfia r1"
         details:
@@ -90,8 +103,9 @@ test_cases:
               -
                 type: HPPA_OP_REG
                 reg: r1
+                access: CS_AC_WRITE
       -
-        asm_text: "ssm 0xf,r1"
+        asm_text: "ssm 0xf, r1"
         details:
           hppa:
             operands:
@@ -101,8 +115,9 @@ test_cases:
               -
                 type: HPPA_OP_REG
                 reg: r1
+                access: CS_AC_WRITE
       -
-        asm_text: "rsm 0xf,r1"
+        asm_text: "rsm 0xf, r1"
         details:
           hppa:
             operands:
@@ -112,6 +127,7 @@ test_cases:
               -
                 type: HPPA_OP_REG
                 reg: r1
+                access: CS_AC_WRITE
       -
         asm_text: "mtsm r1"
         details:
@@ -120,12 +136,13 @@ test_cases:
               -
                 type: HPPA_OP_REG
                 reg: r1
+                access: CS_AC_READ
       -
         asm_text: "rfi"
       -
         asm_text: "rfi,r"
       -
-        asm_text: "break 0x1f,0x1ffe"
+        asm_text: "break 0x1f, 0x1ffe"
         details:
           hppa:
             operands:
@@ -140,7 +157,7 @@ test_cases:
       -
         asm_text: "syncdma"
       -
-        asm_text: "probe,r (sr1,r1),rp,r3"
+        asm_text: "probe,r (sr1,r1), rp, r3"
         details:
           hppa:
             operands:
@@ -148,14 +165,17 @@ test_cases:
                 type: HPPA_OP_MEM
                 mem_space: sr1
                 mem_base: r1
+                access: CS_AC_READ
               -
                 type: HPPA_OP_REG
                 reg: rp
+                access: CS_AC_READ
               -
                 type: HPPA_OP_REG
                 reg: r3
+                access: CS_AC_WRITE
       -
-        asm_text: "probe,w (sr1,r1),rp,r3"
+        asm_text: "probe,w (sr1,r1), rp, r3"
         details:
           hppa:
             operands:
@@ -163,14 +183,17 @@ test_cases:
                 type: HPPA_OP_MEM
                 mem_space: sr1
                 mem_base: r1
+                access: CS_AC_READ
               -
                 type: HPPA_OP_REG
                 reg: rp
+                access: CS_AC_READ
               -
                 type: HPPA_OP_REG
                 reg: r3
+                access: CS_AC_WRITE
       -
-        asm_text: "probe,r (sr1,r1),rp,r3"
+        asm_text: "probe,r (sr1,r1), rp, r3"
         details:
           hppa:
             operands:
@@ -178,14 +201,17 @@ test_cases:
                 type: HPPA_OP_MEM
                 mem_space: sr1
                 mem_base: r1
+                access: CS_AC_READ
               -
                 type: HPPA_OP_REG
                 reg: rp
+                access: CS_AC_READ
               -
                 type: HPPA_OP_REG
                 reg: r3
+                access: CS_AC_WRITE
       -
-        asm_text: "probei,r (sr1,r1),0xf,r3"
+        asm_text: "probei,r (sr1,r1), 0xf, r3"
         details:
           hppa:
             operands:
@@ -193,14 +219,16 @@ test_cases:
                 type: HPPA_OP_MEM
                 mem_space: sr1
                 mem_base: r1
+                access: CS_AC_READ
               -
                 type: HPPA_OP_IMM
                 imm: 0xf
               -
                 type: HPPA_OP_REG
                 reg: r3
+                access: CS_AC_WRITE
       -
-        asm_text: "probei,w (sr1,r1),0xf,r3"
+        asm_text: "probei,w (sr1,r1), 0xf, r3"
         details:
           hppa:
             operands:
@@ -208,14 +236,16 @@ test_cases:
                 type: HPPA_OP_MEM
                 mem_space: sr1
                 mem_base: r1
+                access: CS_AC_READ
               -
                 type: HPPA_OP_IMM
                 imm: 0xf
               -
                 type: HPPA_OP_REG
                 reg: r3
+                access: CS_AC_WRITE
       -
-        asm_text: "probei,r (sr1,r1),0xf,r3"
+        asm_text: "probei,r (sr1,r1), 0xf, r3"
         details:
           hppa:
             operands:
@@ -223,57 +253,68 @@ test_cases:
                 type: HPPA_OP_MEM
                 mem_space: sr1
                 mem_base: r1
+                access: CS_AC_READ
               -
                 type: HPPA_OP_IMM
                 imm: 0xf
               -
                 type: HPPA_OP_REG
                 reg: r3
+                access: CS_AC_WRITE
       -
-        asm_text: "lpa r1(sr1,rp),r3"
+        asm_text: "lpa r1(sr1,rp), r3"
         details:
           hppa:
             operands:
               -
                 type: HPPA_OP_IDX_REG
                 reg: r1
+                access: CS_AC_READ
               -
                 type: HPPA_OP_MEM
                 mem_space: sr1
                 mem_base: rp
+                access: CS_AC_READ
               -
                 type: HPPA_OP_REG
                 reg: r3
+                access: CS_AC_WRITE
       -
-        asm_text: "lpa,m r1(sr1,rp),r3"
+        asm_text: "lpa,m r1(sr1,rp), r3"
         details:
           hppa:
             operands:
               -
                 type: HPPA_OP_IDX_REG
                 reg: r1
+                access: CS_AC_READ
               -
                 type: HPPA_OP_MEM
                 mem_space: sr1
                 mem_base: rp
+                access: CS_AC_READ_WRITE
               -
                 type: HPPA_OP_REG
                 reg: r3
+                access: CS_AC_WRITE
       -
-        asm_text: "lci r1(sr1,rp),r3"
+        asm_text: "lci r1(sr1,rp), r3"
         details:
           hppa:
             operands:
               -
                 type: HPPA_OP_IDX_REG
                 reg: r1
+                access: CS_AC_READ
               -
                 type: HPPA_OP_MEM
                 mem_space: sr1
                 mem_base: rp
+                access: CS_AC_READ
               -
                 type: HPPA_OP_REG
                 reg: r3
+                access: CS_AC_WRITE
       -
         asm_text: "pdtlb r1(rp)"
         details:
@@ -282,10 +323,12 @@ test_cases:
               -
                 type: HPPA_OP_IDX_REG
                 reg: r1
+                access: CS_AC_READ
               -
                 type: HPPA_OP_MEM
                 mem_space: sr0
                 mem_base: rp
+                access: CS_AC_READ
       -
         asm_text: "pdtlb,l r1(rp)"
         details:
@@ -294,10 +337,12 @@ test_cases:
               -
                 type: HPPA_OP_IDX_REG
                 reg: r1
+                access: CS_AC_READ
               -
                 type: HPPA_OP_MEM
                 mem_space: sr0
                 mem_base: rp
+                access: CS_AC_READ
       -
         asm_text: "pdtlb,l,m r1(rp)"
         details:
@@ -306,10 +351,12 @@ test_cases:
               -
                 type: HPPA_OP_IDX_REG
                 reg: r1
+                access: CS_AC_READ
               -
                 type: HPPA_OP_MEM
                 mem_space: sr0
                 mem_base: rp
+                access: CS_AC_READ_WRITE
       -
         asm_text: "pitlb r1(sr1,rp)"
         details:
@@ -318,10 +365,12 @@ test_cases:
               -
                 type: HPPA_OP_IDX_REG
                 reg: r1
+                access: CS_AC_READ
               -
                 type: HPPA_OP_MEM
                 mem_space: sr1
                 mem_base: rp
+                access: CS_AC_READ
       -
         asm_text: "pitlb,l r1(sr1,rp)"
         details:
@@ -330,10 +379,12 @@ test_cases:
               -
                 type: HPPA_OP_IDX_REG
                 reg: r1
+                access: CS_AC_READ
               -
                 type: HPPA_OP_MEM
                 mem_space: sr1
                 mem_base: rp
+                access: CS_AC_READ
       -
         asm_text: "pitlb,l,m r1(sr1,rp)"
         details:
@@ -342,10 +393,12 @@ test_cases:
               -
                 type: HPPA_OP_IDX_REG
                 reg: r1
+                access: CS_AC_READ
               -
                 type: HPPA_OP_MEM
                 mem_space: sr1
                 mem_base: rp
+                access: CS_AC_READ_WRITE
       -
         asm_text: "pdtlbe r1(rp)"
         details:
@@ -354,10 +407,12 @@ test_cases:
               -
                 type: HPPA_OP_IDX_REG
                 reg: r1
+                access: CS_AC_READ
               -
                 type: HPPA_OP_MEM
                 mem_space: sr0
                 mem_base: rp
+                access: CS_AC_READ
       -
         asm_text: "pdtlbe,m r1(rp)"
         details:
@@ -366,10 +421,12 @@ test_cases:
               -
                 type: HPPA_OP_IDX_REG
                 reg: r1
+                access: CS_AC_READ
               -
                 type: HPPA_OP_MEM
                 mem_space: sr0
                 mem_base: rp
+                access: CS_AC_READ_WRITE
       -
         asm_text: "pitlbe r1(sr1,rp)"
         details:
@@ -378,10 +435,12 @@ test_cases:
               -
                 type: HPPA_OP_IDX_REG
                 reg: r1
+                access: CS_AC_READ
               -
                 type: HPPA_OP_MEM
                 mem_space: sr1
                 mem_base: rp
+                access: CS_AC_READ
       -
         asm_text: "pitlbe,m r1(sr1,rp)"
         details:
@@ -390,32 +449,38 @@ test_cases:
               -
                 type: HPPA_OP_IDX_REG
                 reg: r1
+                access: CS_AC_READ
               -
                 type: HPPA_OP_MEM
                 mem_space: sr1
                 mem_base: rp
+                access: CS_AC_READ_WRITE
       -
-        asm_text: "idtlbt r1,rp"
+        asm_text: "idtlbt r1, rp"
         details:
           hppa:
             operands:
               -
                 type: HPPA_OP_REG
                 reg: r1
+                access: CS_AC_READ
               -
                 type: HPPA_OP_REG
                 reg: rp
+                access: CS_AC_READ
       -
-        asm_text: "iitlbt r1,rp"
+        asm_text: "iitlbt r1, rp"
         details:
           hppa:
             operands:
               -
                 type: HPPA_OP_REG
                 reg: r1
+                access: CS_AC_READ
               -
                 type: HPPA_OP_REG
                 reg: rp
+                access: CS_AC_READ
       -
         asm_text: "pdc r1(rp)"
         details:
@@ -424,10 +489,12 @@ test_cases:
               -
                 type: HPPA_OP_IDX_REG
                 reg: r1
+                access: CS_AC_READ
               -
                 type: HPPA_OP_MEM
                 mem_space: sr0
                 mem_base: rp
+                access: CS_AC_READ
       -
         asm_text: "pdc,m r1(rp)"
         details:
@@ -436,10 +503,12 @@ test_cases:
               -
                 type: HPPA_OP_IDX_REG
                 reg: r1
+                access: CS_AC_READ
               -
                 type: HPPA_OP_MEM
                 mem_space: sr0
                 mem_base: rp
+                access: CS_AC_READ_WRITE
       -
         asm_text: "fdc r1(sr1,rp)"
         details:
@@ -448,10 +517,12 @@ test_cases:
               -
                 type: HPPA_OP_IDX_REG
                 reg: r1
+                access: CS_AC_READ
               -
                 type: HPPA_OP_MEM
                 mem_space: sr1
                 mem_base: rp
+                access: CS_AC_READ
       -
         asm_text: "fdc,m r1(sr1,rp)"
         details:
@@ -460,10 +531,12 @@ test_cases:
               -
                 type: HPPA_OP_IDX_REG
                 reg: r1
+                access: CS_AC_READ
               -
                 type: HPPA_OP_MEM
                 mem_space: sr1
                 mem_base: rp
+                access: CS_AC_READ_WRITE
       -
         asm_text: "fdc 0xf(sr1,rp)"
         details:
@@ -476,6 +549,7 @@ test_cases:
                 type: HPPA_OP_MEM
                 mem_space: sr1
                 mem_base: rp
+                access: CS_AC_READ
       -
         asm_text: "fic r1(sr1,rp)"
         details:
@@ -484,10 +558,12 @@ test_cases:
               -
                 type: HPPA_OP_IDX_REG
                 reg: r1
+                access: CS_AC_READ
               -
                 type: HPPA_OP_MEM
                 mem_space: sr1
                 mem_base: rp
+                access: CS_AC_READ
       -
         asm_text: "fdce r1(sr1,rp)"
         details:
@@ -496,10 +572,12 @@ test_cases:
               -
                 type: HPPA_OP_IDX_REG
                 reg: r1
+                access: CS_AC_READ
               -
                 type: HPPA_OP_MEM
                 mem_space: sr1
                 mem_base: rp
+                access: CS_AC_READ
       -
         asm_text: "fdce,m r1(sr1,rp)"
         details:
@@ -508,10 +586,12 @@ test_cases:
               -
                 type: HPPA_OP_IDX_REG
                 reg: r1
+                access: CS_AC_READ
               -
                 type: HPPA_OP_MEM
                 mem_space: sr1
                 mem_base: rp
+                access: CS_AC_READ_WRITE
       -
         asm_text: "fice r1(sr1,rp)"
         details:
@@ -520,10 +600,12 @@ test_cases:
               -
                 type: HPPA_OP_IDX_REG
                 reg: r1
+                access: CS_AC_READ
               -
                 type: HPPA_OP_MEM
                 mem_space: sr1
                 mem_base: rp
+                access: CS_AC_READ
       -
         asm_text: "fice,m r1(sr1,rp)"
         details:
@@ -532,10 +614,12 @@ test_cases:
               -
                 type: HPPA_OP_IDX_REG
                 reg: r1
+                access: CS_AC_READ
               -
                 type: HPPA_OP_MEM
                 mem_space: sr1
                 mem_base: rp
+                access: CS_AC_READ_WRITE
       -
         asm_text: "diag 0xdead"
         details:
@@ -553,7 +637,7 @@ test_cases:
     expected:
       insns:
       -
-        asm_text: "ldsid (sr1,r1),rp"
+        asm_text: "ldsid (sr1,r1), rp"
         details:
           hppa:
             operands:
@@ -561,64 +645,76 @@ test_cases:
                 type: HPPA_OP_MEM
                 mem_space: sr1
                 mem_base: r1
+                access: CS_AC_READ
               -
                 type: HPPA_OP_REG
                 reg: rp
+                access: CS_AC_WRITE
       -
-        asm_text: "mtsp r1,sr1"
+        asm_text: "mtsp r1, sr1"
         details:
           hppa:
             operands:
               -
                 type: HPPA_OP_REG
                 reg: r1
+                access: CS_AC_READ
               -
                 type: HPPA_OP_REG
                 reg: sr1
+                access: CS_AC_WRITE
       -
-        asm_text: "mfsp sr1,r1"
+        asm_text: "mfsp sr1, r1"
         details:
           hppa:
             operands:
               -
                 type: HPPA_OP_REG
                 reg: sr1
+                access: CS_AC_READ
               -
                 type: HPPA_OP_REG
                 reg: r1
+                access: CS_AC_WRITE
       -
-        asm_text: "mtctl r1,cr2"
+        asm_text: "mtctl r1, cr2"
         details:
           hppa:
             operands:
               -
                 type: HPPA_OP_REG
                 reg: r1
+                access: CS_AC_READ
               -
                 type: HPPA_OP_REG
                 reg: cr2
+                access: CS_AC_WRITE
       -
-        asm_text: "mfctl cr1,rp"
+        asm_text: "mfctl cr1, rp"
         details:
           hppa:
             operands:
               -
                 type: HPPA_OP_REG
                 reg: cr1
+                access: CS_AC_READ
               -
                 type: HPPA_OP_REG
                 reg: rp
+                access: CS_AC_WRITE
       -
-        asm_text: "mfctl,w sar,r1"
+        asm_text: "mfctl,w sar, r1"
         details:
           hppa:
             operands:
               -
                 type: HPPA_OP_REG
                 reg: sar
+                access: CS_AC_READ
               -
                 type: HPPA_OP_REG
                 reg: r1
+                access: CS_AC_WRITE
       -
         asm_text: "mtsarcm r1"
         details:
@@ -627,6 +723,7 @@ test_cases:
               -
                 type: HPPA_OP_REG
                 reg: r1
+                access: CS_AC_READ
       -
         asm_text: "mfia r1"
         details:
@@ -635,8 +732,9 @@ test_cases:
               -
                 type: HPPA_OP_REG
                 reg: r1
+                access: CS_AC_WRITE
       -
-        asm_text: "ssm 0xf,r1"
+        asm_text: "ssm 0xf, r1"
         details:
           hppa:
             operands:
@@ -646,8 +744,9 @@ test_cases:
               -
                 type: HPPA_OP_REG
                 reg: r1
+                access: CS_AC_WRITE
       -
-        asm_text: "rsm 0xf,r1"
+        asm_text: "rsm 0xf, r1"
         details:
           hppa:
             operands:
@@ -657,6 +756,7 @@ test_cases:
               -
                 type: HPPA_OP_REG
                 reg: r1
+                access: CS_AC_WRITE
       -
         asm_text: "mtsm r1"
         details:
@@ -665,12 +765,13 @@ test_cases:
               -
                 type: HPPA_OP_REG
                 reg: r1
+                access: CS_AC_READ
       -
         asm_text: "rfi"
       -
         asm_text: "rfi,r"
       -
-        asm_text: "break 0x1f,0x1ffe"
+        asm_text: "break 0x1f, 0x1ffe"
         details:
           hppa:
             operands:
@@ -685,7 +786,7 @@ test_cases:
       -
         asm_text: "syncdma"
       -
-        asm_text: "probe,r (sr1,r1),rp,r3"
+        asm_text: "probe,r (sr1,r1), rp, r3"
         details:
           hppa:
             operands:
@@ -693,14 +794,17 @@ test_cases:
                 type: HPPA_OP_MEM
                 mem_space: sr1
                 mem_base: r1
+                access: CS_AC_READ
               -
                 type: HPPA_OP_REG
                 reg: rp
+                access: CS_AC_READ
               -
                 type: HPPA_OP_REG
                 reg: r3
+                access: CS_AC_WRITE
       -
-        asm_text: "probe,w (sr1,r1),rp,r3"
+        asm_text: "probe,w (sr1,r1), rp, r3"
         details:
           hppa:
             operands:
@@ -708,14 +812,17 @@ test_cases:
                 type: HPPA_OP_MEM
                 mem_space: sr1
                 mem_base: r1
+                access: CS_AC_READ
               -
                 type: HPPA_OP_REG
                 reg: rp
+                access: CS_AC_READ
               -
                 type: HPPA_OP_REG
                 reg: r3
+                access: CS_AC_WRITE
       -
-        asm_text: "probe,r (sr1,r1),rp,r3"
+        asm_text: "probe,r (sr1,r1), rp, r3"
         details:
           hppa:
             operands:
@@ -723,14 +830,17 @@ test_cases:
                 type: HPPA_OP_MEM
                 mem_space: sr1
                 mem_base: r1
+                access: CS_AC_READ
               -
                 type: HPPA_OP_REG
                 reg: rp
+                access: CS_AC_READ
               -
                 type: HPPA_OP_REG
                 reg: r3
+                access: CS_AC_WRITE
       -
-        asm_text: "probei,r (sr1,r1),0xf,r3"
+        asm_text: "probei,r (sr1,r1), 0xf, r3"
         details:
           hppa:
             operands:
@@ -738,14 +848,16 @@ test_cases:
                 type: HPPA_OP_MEM
                 mem_space: sr1
                 mem_base: r1
+                access: CS_AC_READ
               -
                 type: HPPA_OP_IMM
                 imm: 0xf
               -
                 type: HPPA_OP_REG
                 reg: r3
+                access: CS_AC_WRITE
       -
-        asm_text: "probei,w (sr1,r1),0xf,r3"
+        asm_text: "probei,w (sr1,r1), 0xf, r3"
         details:
           hppa:
             operands:
@@ -753,14 +865,16 @@ test_cases:
                 type: HPPA_OP_MEM
                 mem_space: sr1
                 mem_base: r1
+                access: CS_AC_READ
               -
                 type: HPPA_OP_IMM
                 imm: 0xf
               -
                 type: HPPA_OP_REG
                 reg: r3
+                access: CS_AC_WRITE
       -
-        asm_text: "probei,r (sr1,r1),0xf,r3"
+        asm_text: "probei,r (sr1,r1), 0xf, r3"
         details:
           hppa:
             operands:
@@ -768,57 +882,68 @@ test_cases:
                 type: HPPA_OP_MEM
                 mem_space: sr1
                 mem_base: r1
+                access: CS_AC_READ
               -
                 type: HPPA_OP_IMM
                 imm: 0xf
               -
                 type: HPPA_OP_REG
                 reg: r3
+                access: CS_AC_WRITE
       -
-        asm_text: "lpa r1(sr1,rp),r3"
+        asm_text: "lpa r1(sr1,rp), r3"
         details:
           hppa:
             operands:
               -
                 type: HPPA_OP_IDX_REG
                 reg: r1
+                access: CS_AC_READ
               -
                 type: HPPA_OP_MEM
                 mem_space: sr1
                 mem_base: rp
+                access: CS_AC_READ
               -
                 type: HPPA_OP_REG
                 reg: r3
+                access: CS_AC_WRITE
       -
-        asm_text: "lpa,m r1(sr1,rp),r3"
+        asm_text: "lpa,m r1(sr1,rp), r3"
         details:
           hppa:
             operands:
               -
                 type: HPPA_OP_IDX_REG
                 reg: r1
+                access: CS_AC_READ
               -
                 type: HPPA_OP_MEM
                 mem_space: sr1
                 mem_base: rp
+                access: CS_AC_READ_WRITE
               -
                 type: HPPA_OP_REG
                 reg: r3
+                access: CS_AC_WRITE
       -
-        asm_text: "lci r1(sr1,rp),r3"
+        asm_text: "lci r1(sr1,rp), r3"
         details:
           hppa:
             operands:
               -
                 type: HPPA_OP_IDX_REG
                 reg: r1
+                access: CS_AC_READ
               -
                 type: HPPA_OP_MEM
                 mem_space: sr1
                 mem_base: rp
+                access: CS_AC_READ
               -
                 type: HPPA_OP_REG
                 reg: r3
+                access: CS_AC_WRITE
       -
         asm_text: "pdtlb r1(rp)"
         details:
@@ -827,10 +952,12 @@ test_cases:
               -
                 type: HPPA_OP_IDX_REG
                 reg: r1
+                access: CS_AC_READ
               -
                 type: HPPA_OP_MEM
                 mem_space: sr0
                 mem_base: rp
+                access: CS_AC_READ
       -
         asm_text: "pdtlb,l r1(rp)"
         details:
@@ -839,10 +966,12 @@ test_cases:
               -
                 type: HPPA_OP_IDX_REG
                 reg: r1
+                access: CS_AC_READ
               -
                 type: HPPA_OP_MEM
                 mem_space: sr0
                 mem_base: rp
+                access: CS_AC_READ
       -
         asm_text: "pdtlb,l,m r1(rp)"
         details:
@@ -851,10 +980,12 @@ test_cases:
               -
                 type: HPPA_OP_IDX_REG
                 reg: r1
+                access: CS_AC_READ
               -
                 type: HPPA_OP_MEM
                 mem_space: sr0
                 mem_base: rp
+                access: CS_AC_READ_WRITE
       -
         asm_text: "pitlb r1(sr1,rp)"
         details:
@@ -863,10 +994,12 @@ test_cases:
               -
                 type: HPPA_OP_IDX_REG
                 reg: r1
+                access: CS_AC_READ
               -
                 type: HPPA_OP_MEM
                 mem_space: sr1
                 mem_base: rp
+                access: CS_AC_READ
       -
         asm_text: "pitlb,l r1(sr1,rp)"
         details:
@@ -875,10 +1008,12 @@ test_cases:
               -
                 type: HPPA_OP_IDX_REG
                 reg: r1
+                access: CS_AC_READ
               -
                 type: HPPA_OP_MEM
                 mem_space: sr1
                 mem_base: rp
+                access: CS_AC_READ
       -
         asm_text: "pitlb,l,m r1(sr1,rp)"
         details:
@@ -887,10 +1022,12 @@ test_cases:
               -
                 type: HPPA_OP_IDX_REG
                 reg: r1
+                access: CS_AC_READ
               -
                 type: HPPA_OP_MEM
                 mem_space: sr1
                 mem_base: rp
+                access: CS_AC_READ_WRITE
       -
         asm_text: "pdtlbe r1(rp)"
         details:
@@ -899,10 +1036,12 @@ test_cases:
               -
                 type: HPPA_OP_IDX_REG
                 reg: r1
+                access: CS_AC_READ
               -
                 type: HPPA_OP_MEM
                 mem_space: sr0
                 mem_base: rp
+                access: CS_AC_READ
       -
         asm_text: "pdtlbe,m r1(rp)"
         details:
@@ -911,10 +1050,12 @@ test_cases:
               -
                 type: HPPA_OP_IDX_REG
                 reg: r1
+                access: CS_AC_READ
               -
                 type: HPPA_OP_MEM
                 mem_space: sr0
                 mem_base: rp
+                access: CS_AC_READ_WRITE
       -
         asm_text: "pitlbe r1(sr1,rp)"
         details:
@@ -923,10 +1064,12 @@ test_cases:
               -
                 type: HPPA_OP_IDX_REG
                 reg: r1
+                access: CS_AC_READ
               -
                 type: HPPA_OP_MEM
                 mem_space: sr1
                 mem_base: rp
+                access: CS_AC_READ
       -
         asm_text: "pitlbe,m r1(sr1,rp)"
         details:
@@ -935,32 +1078,38 @@ test_cases:
               -
                 type: HPPA_OP_IDX_REG
                 reg: r1
+                access: CS_AC_READ
               -
                 type: HPPA_OP_MEM
                 mem_space: sr1
                 mem_base: rp
+                access: CS_AC_READ_WRITE
       -
-        asm_text: "idtlbt r1,rp"
+        asm_text: "idtlbt r1, rp"
         details:
           hppa:
             operands:
               -
                 type: HPPA_OP_REG
                 reg: r1
+                access: CS_AC_READ
               -
                 type: HPPA_OP_REG
                 reg: rp
+                access: CS_AC_READ
       -
-        asm_text: "iitlbt r1,rp"
+        asm_text: "iitlbt r1, rp"
         details:
           hppa:
             operands:
               -
                 type: HPPA_OP_REG
                 reg: r1
+                access: CS_AC_READ
               -
                 type: HPPA_OP_REG
                 reg: rp
+                access: CS_AC_READ
       -
         asm_text: "pdc r1(rp)"
         details:
@@ -969,10 +1118,12 @@ test_cases:
               -
                 type: HPPA_OP_IDX_REG
                 reg: r1
+                access: CS_AC_READ
               -
                 type: HPPA_OP_MEM
                 mem_space: sr0
                 mem_base: rp
+                access: CS_AC_READ
       -
         asm_text: "pdc,m r1(rp)"
         details:
@@ -981,10 +1132,12 @@ test_cases:
               -
                 type: HPPA_OP_IDX_REG
                 reg: r1
+                access: CS_AC_READ
               -
                 type: HPPA_OP_MEM
                 mem_space: sr0
                 mem_base: rp
+                access: CS_AC_READ_WRITE
       -
         asm_text: "fdc r1(sr1,rp)"
         details:
@@ -993,10 +1146,12 @@ test_cases:
               -
                 type: HPPA_OP_IDX_REG
                 reg: r1
+                access: CS_AC_READ
               -
                 type: HPPA_OP_MEM
                 mem_space: sr1
                 mem_base: rp
+                access: CS_AC_READ
       -
         asm_text: "fdc,m r1(sr1,rp)"
         details:
@@ -1005,10 +1160,12 @@ test_cases:
               -
                 type: HPPA_OP_IDX_REG
                 reg: r1
+                access: CS_AC_READ
               -
                 type: HPPA_OP_MEM
                 mem_space: sr1
                 mem_base: rp
+                access: CS_AC_READ_WRITE
       -
         asm_text: "fdc 0xf(sr1,rp)"
         details:
@@ -1021,6 +1178,7 @@ test_cases:
                 type: HPPA_OP_MEM
                 mem_space: sr1
                 mem_base: rp
+                access: CS_AC_READ
       -
         asm_text: "fic r1(sr1,rp)"
         details:
@@ -1029,10 +1187,12 @@ test_cases:
               -
                 type: HPPA_OP_IDX_REG
                 reg: r1
+                access: CS_AC_READ
               -
                 type: HPPA_OP_MEM
                 mem_space: sr1
                 mem_base: rp
+                access: CS_AC_READ
       -
         asm_text: "fdce r1(sr1,rp)"
         details:
@@ -1041,10 +1201,12 @@ test_cases:
               -
                 type: HPPA_OP_IDX_REG
                 reg: r1
+                access: CS_AC_READ
               -
                 type: HPPA_OP_MEM
                 mem_space: sr1
                 mem_base: rp
+                access: CS_AC_READ
       -
         asm_text: "fdce,m r1(sr1,rp)"
         details:
@@ -1053,10 +1215,12 @@ test_cases:
               -
                 type: HPPA_OP_IDX_REG
                 reg: r1
+                access: CS_AC_READ
               -
                 type: HPPA_OP_MEM
                 mem_space: sr1
                 mem_base: rp
+                access: CS_AC_READ_WRITE
       -
         asm_text: "fice r1(sr1,rp)"
         details:
@@ -1065,10 +1229,12 @@ test_cases:
               -
                 type: HPPA_OP_IDX_REG
                 reg: r1
+                access: CS_AC_READ
               -
                 type: HPPA_OP_MEM
                 mem_space: sr1
                 mem_base: rp
+                access: CS_AC_READ
       -
         asm_text: "fice,m r1(sr1,rp)"
         details:
@@ -1077,10 +1243,12 @@ test_cases:
               -
                 type: HPPA_OP_IDX_REG
                 reg: r1
+                access: CS_AC_READ
               -
                 type: HPPA_OP_MEM
                 mem_space: sr1
                 mem_base: rp
+                access: CS_AC_READ_WRITE
       -
         asm_text: "diag 0xdead"
         details:
@@ -1098,337 +1266,403 @@ test_cases:
     expected:
       insns:
       -
-        asm_text: "cldwx,3 r1(sr1,rp),r3"
+        asm_text: "cldwx,3 r1(sr1,rp), r3"
         details:
           hppa:
             operands:
               -
                 type: HPPA_OP_IDX_REG
                 reg: r1
+                access: CS_AC_READ
               -
                 type: HPPA_OP_MEM
                 mem_space: sr1
                 mem_base: rp
+                access: CS_AC_READ
               -
                 type: HPPA_OP_REG
                 reg: r3
+                access: CS_AC_WRITE
       -
-        asm_text: "cldwx,3,s r1(sr1,rp),r3"
+        asm_text: "cldwx,3,s r1(sr1,rp), r3"
         details:
           hppa:
             operands:
               -
                 type: HPPA_OP_IDX_REG
                 reg: r1
+                access: CS_AC_READ
               -
                 type: HPPA_OP_MEM
                 mem_space: sr1
                 mem_base: rp
+                access: CS_AC_READ
               -
                 type: HPPA_OP_REG
                 reg: r3
+                access: CS_AC_WRITE
       -
-        asm_text: "cldwx,3,m r1(sr1,rp),r3"
+        asm_text: "cldwx,3,m r1(sr1,rp), r3"
         details:
           hppa:
             operands:
               -
                 type: HPPA_OP_IDX_REG
                 reg: r1
+                access: CS_AC_READ
               -
                 type: HPPA_OP_MEM
                 mem_space: sr1
                 mem_base: rp
+                access: CS_AC_READ_WRITE
               -
                 type: HPPA_OP_REG
                 reg: r3
+                access: CS_AC_WRITE
       -
-        asm_text: "cldwx,3,sm r1(sr1,rp),r3"
+        asm_text: "cldwx,3,sm r1(sr1,rp), r3"
         details:
           hppa:
             operands:
               -
                 type: HPPA_OP_IDX_REG
                 reg: r1
+                access: CS_AC_READ
               -
                 type: HPPA_OP_MEM
                 mem_space: sr1
                 mem_base: rp
+                access: CS_AC_READ_WRITE
               -
                 type: HPPA_OP_REG
                 reg: r3
+                access: CS_AC_WRITE
       -
-        asm_text: "cldwx,3,sm,sl r1(sr1,rp),r3"
+        asm_text: "cldwx,3,sm,sl r1(sr1,rp), r3"
         details:
           hppa:
             operands:
               -
                 type: HPPA_OP_IDX_REG
                 reg: r1
+                access: CS_AC_READ
               -
                 type: HPPA_OP_MEM
                 mem_space: sr1
                 mem_base: rp
+                access: CS_AC_READ_WRITE
               -
                 type: HPPA_OP_REG
                 reg: r3
+                access: CS_AC_WRITE
       -
-        asm_text: "clddx,3 r1(sr1,rp),r3"
+        asm_text: "clddx,3 r1(sr1,rp), r3"
         details:
           hppa:
             operands:
               -
                 type: HPPA_OP_IDX_REG
                 reg: r1
+                access: CS_AC_READ
               -
                 type: HPPA_OP_MEM
                 mem_space: sr1
                 mem_base: rp
+                access: CS_AC_READ
               -
                 type: HPPA_OP_REG
                 reg: r3
+                access: CS_AC_WRITE
       -
-        asm_text: "clddx,3,s r1(sr1,rp),r3"
+        asm_text: "clddx,3,s r1(sr1,rp), r3"
         details:
           hppa:
             operands:
               -
                 type: HPPA_OP_IDX_REG
                 reg: r1
+                access: CS_AC_READ
               -
                 type: HPPA_OP_MEM
                 mem_space: sr1
                 mem_base: rp
+                access: CS_AC_READ
               -
                 type: HPPA_OP_REG
                 reg: r3
+                access: CS_AC_WRITE
       -
-        asm_text: "clddx,3,m r1(sr1,rp),r3"
+        asm_text: "clddx,3,m r1(sr1,rp), r3"
         details:
           hppa:
             operands:
               -
                 type: HPPA_OP_IDX_REG
                 reg: r1
+                access: CS_AC_READ
               -
                 type: HPPA_OP_MEM
                 mem_space: sr1
                 mem_base: rp
+                access: CS_AC_READ_WRITE
               -
                 type: HPPA_OP_REG
                 reg: r3
+                access: CS_AC_WRITE
       -
-        asm_text: "clddx,3,sm r1(sr1,rp),r3"
+        asm_text: "clddx,3,sm r1(sr1,rp), r3"
         details:
           hppa:
             operands:
               -
                 type: HPPA_OP_IDX_REG
                 reg: r1
+                access: CS_AC_READ
               -
                 type: HPPA_OP_MEM
                 mem_space: sr1
                 mem_base: rp
+                access: CS_AC_READ_WRITE
               -
                 type: HPPA_OP_REG
                 reg: r3
+                access: CS_AC_WRITE
       -
-        asm_text: "clddx,3,sm,sl r1(sr1,rp),r3"
+        asm_text: "clddx,3,sm,sl r1(sr1,rp), r3"
         details:
           hppa:
             operands:
               -
                 type: HPPA_OP_IDX_REG
                 reg: r1
+                access: CS_AC_READ
               -
                 type: HPPA_OP_MEM
                 mem_space: sr1
                 mem_base: rp
+                access: CS_AC_READ_WRITE
               -
                 type: HPPA_OP_REG
                 reg: r3
+                access: CS_AC_WRITE
       -
-        asm_text: "cstwx,3 r1,rp(sr1,r3)"
+        asm_text: "cstwx,3 r1, rp(sr1,r3)"
         details:
           hppa:
             operands:
               -
                 type: HPPA_OP_REG
                 reg: r1
+                access: CS_AC_READ
               -
                 type: HPPA_OP_IDX_REG
                 reg: rp
+                access: CS_AC_READ
               -
                 type: HPPA_OP_MEM
                 mem_space: sr1
                 mem_base: r3
+                access: CS_AC_READ
       -
-        asm_text: "cstwx,3,s r1,rp(sr1,r3)"
+        asm_text: "cstwx,3,s r1, rp(sr1,r3)"
         details:
           hppa:
             operands:
               -
                 type: HPPA_OP_REG
                 reg: r1
+                access: CS_AC_READ
               -
                 type: HPPA_OP_IDX_REG
                 reg: rp
+                access: CS_AC_READ
               -
                 type: HPPA_OP_MEM
                 mem_space: sr1
                 mem_base: r3
+                access: CS_AC_READ
       -
-        asm_text: "cstwx,3,m r1,rp(sr1,r3)"
+        asm_text: "cstwx,3,m r1, rp(sr1,r3)"
         details:
           hppa:
             operands:
               -
                 type: HPPA_OP_REG
                 reg: r1
+                access: CS_AC_READ
               -
                 type: HPPA_OP_IDX_REG
                 reg: rp
+                access: CS_AC_READ
               -
                 type: HPPA_OP_MEM
                 mem_space: sr1
                 mem_base: r3
+                access: CS_AC_READ_WRITE
       -
-        asm_text: "cstwx,3,m,bc r1,rp(sr1,r3)"
+        asm_text: "cstwx,3,m,bc r1, rp(sr1,r3)"
         details:
           hppa:
             operands:
               -
                 type: HPPA_OP_REG
                 reg: r1
+                access: CS_AC_READ
               -
                 type: HPPA_OP_IDX_REG
                 reg: rp
+                access: CS_AC_READ
               -
                 type: HPPA_OP_MEM
                 mem_space: sr1
                 mem_base: r3
+                access: CS_AC_READ_WRITE
       -
-        asm_text: "cstwx,3,sm r1,rp(sr1,r3)"
+        asm_text: "cstwx,3,sm r1, rp(sr1,r3)"
         details:
           hppa:
             operands:
               -
                 type: HPPA_OP_REG
                 reg: r1
+                access: CS_AC_READ
               -
                 type: HPPA_OP_IDX_REG
                 reg: rp
+                access: CS_AC_READ
               -
                 type: HPPA_OP_MEM
                 mem_space: sr1
                 mem_base: r3
+                access: CS_AC_READ_WRITE
       -
-        asm_text: "cstwx,3,sm,sl r1,rp(sr1,r3)"
+        asm_text: "cstwx,3,sm,sl r1, rp(sr1,r3)"
         details:
           hppa:
             operands:
               -
                 type: HPPA_OP_REG
                 reg: r1
+                access: CS_AC_READ
               -
                 type: HPPA_OP_IDX_REG
                 reg: rp
+                access: CS_AC_READ
               -
                 type: HPPA_OP_MEM
                 mem_space: sr1
                 mem_base: r3
+                access: CS_AC_READ_WRITE
       -
-        asm_text: "cstdx,3 r1,rp(sr1,r3)"
+        asm_text: "cstdx,3 r1, rp(sr1,r3)"
         details:
           hppa:
             operands:
               -
                 type: HPPA_OP_REG
                 reg: r1
+                access: CS_AC_READ
               -
                 type: HPPA_OP_IDX_REG
                 reg: rp
+                access: CS_AC_READ
               -
                 type: HPPA_OP_MEM
                 mem_space: sr1
                 mem_base: r3
+                access: CS_AC_READ
       -
-        asm_text: "cstdx,3,s r1,rp(sr1,r3)"
+        asm_text: "cstdx,3,s r1, rp(sr1,r3)"
         details:
           hppa:
             operands:
               -
                 type: HPPA_OP_REG
                 reg: r1
+                access: CS_AC_READ
               -
                 type: HPPA_OP_IDX_REG
                 reg: rp
+                access: CS_AC_READ
               -
                 type: HPPA_OP_MEM
                 mem_space: sr1
                 mem_base: r3
+                access: CS_AC_READ
       -
-        asm_text: "cstdx,3,m r1,rp(sr1,r3)"
+        asm_text: "cstdx,3,m r1, rp(sr1,r3)"
         details:
           hppa:
             operands:
               -
                 type: HPPA_OP_REG
                 reg: r1
+                access: CS_AC_READ
               -
                 type: HPPA_OP_IDX_REG
                 reg: rp
+                access: CS_AC_READ
               -
                 type: HPPA_OP_MEM
                 mem_space: sr1
                 mem_base: r3
+                access: CS_AC_READ_WRITE
       -
-        asm_text: "cstdx,3,m,bc r1,rp(sr1,r3)"
+        asm_text: "cstdx,3,m,bc r1, rp(sr1,r3)"
         details:
           hppa:
             operands:
               -
                 type: HPPA_OP_REG
                 reg: r1
+                access: CS_AC_READ
               -
                 type: HPPA_OP_IDX_REG
                 reg: rp
+                access: CS_AC_READ
               -
                 type: HPPA_OP_MEM
                 mem_space: sr1
                 mem_base: r3
+                access: CS_AC_READ_WRITE
       -
-        asm_text: "cstdx,3,sm r1,rp(sr1,r3)"
+        asm_text: "cstdx,3,sm r1, rp(sr1,r3)"
         details:
           hppa:
             operands:
               -
                 type: HPPA_OP_REG
                 reg: r1
+                access: CS_AC_READ
               -
                 type: HPPA_OP_IDX_REG
                 reg: rp
+                access: CS_AC_READ
               -
                 type: HPPA_OP_MEM
                 mem_space: sr1
                 mem_base: r3
+                access: CS_AC_READ_WRITE
       -
-        asm_text: "cstdx,3,sm,sl r1,rp(sr1,r3)"
+        asm_text: "cstdx,3,sm,sl r1, rp(sr1,r3)"
         details:
           hppa:
             operands:
               -
                 type: HPPA_OP_REG
                 reg: r1
+                access: CS_AC_READ
               -
                 type: HPPA_OP_IDX_REG
                 reg: rp
+                access: CS_AC_READ
               -
                 type: HPPA_OP_MEM
                 mem_space: sr1
                 mem_base: r3
+                access: CS_AC_READ_WRITE
       -
-        asm_text: "cldws,3 0xf(sr1,r1),rp"
+        asm_text: "cldws,3 0xf(sr1,r1), rp"
         details:
           hppa:
             operands:
@@ -1439,11 +1673,13 @@ test_cases:
                 type: HPPA_OP_MEM
                 mem_space: sr1
                 mem_base: r1
+                access: CS_AC_READ
               -
                 type: HPPA_OP_REG
                 reg: rp
+                access: CS_AC_WRITE
       -
-        asm_text: "cldws,3,ma 0xf(sr1,r1),rp"
+        asm_text: "cldws,3,ma 0xf(sr1,r1), rp"
         details:
           hppa:
             operands:
@@ -1454,11 +1690,13 @@ test_cases:
                 type: HPPA_OP_MEM
                 mem_space: sr1
                 mem_base: r1
+                access: CS_AC_READ_WRITE
               -
                 type: HPPA_OP_REG
                 reg: rp
+                access: CS_AC_WRITE
       -
-        asm_text: "cldws,3,mb 0xf(sr1,r1),rp"
+        asm_text: "cldws,3,mb 0xf(sr1,r1), rp"
         details:
           hppa:
             operands:
@@ -1469,11 +1707,13 @@ test_cases:
                 type: HPPA_OP_MEM
                 mem_space: sr1
                 mem_base: r1
+                access: CS_AC_READ_WRITE
               -
                 type: HPPA_OP_REG
                 reg: rp
+                access: CS_AC_WRITE
       -
-        asm_text: "cldws,3,mb,sl 0xf(sr1,r1),rp"
+        asm_text: "cldws,3,mb,sl 0xf(sr1,r1), rp"
         details:
           hppa:
             operands:
@@ -1484,11 +1724,13 @@ test_cases:
                 type: HPPA_OP_MEM
                 mem_space: sr1
                 mem_base: r1
+                access: CS_AC_READ_WRITE
               -
                 type: HPPA_OP_REG
                 reg: rp
+                access: CS_AC_WRITE
       -
-        asm_text: "cldds,3 0xf(sr1,r1),rp"
+        asm_text: "cldds,3 0xf(sr1,r1), rp"
         details:
           hppa:
             operands:
@@ -1499,11 +1741,13 @@ test_cases:
                 type: HPPA_OP_MEM
                 mem_space: sr1
                 mem_base: r1
+                access: CS_AC_READ
               -
                 type: HPPA_OP_REG
                 reg: rp
+                access: CS_AC_WRITE
       -
-        asm_text: "cldds,3,ma 0xf(sr1,r1),rp"
+        asm_text: "cldds,3,ma 0xf(sr1,r1), rp"
         details:
           hppa:
             operands:
@@ -1514,11 +1758,13 @@ test_cases:
                 type: HPPA_OP_MEM
                 mem_space: sr1
                 mem_base: r1
+                access: CS_AC_READ_WRITE
               -
                 type: HPPA_OP_REG
                 reg: rp
+                access: CS_AC_WRITE
       -
-        asm_text: "cldds,3,mb 0xf(sr1,r1),rp"
+        asm_text: "cldds,3,mb 0xf(sr1,r1), rp"
         details:
           hppa:
             operands:
@@ -1529,11 +1775,13 @@ test_cases:
                 type: HPPA_OP_MEM
                 mem_space: sr1
                 mem_base: r1
+                access: CS_AC_READ_WRITE
               -
                 type: HPPA_OP_REG
                 reg: rp
+                access: CS_AC_WRITE
       -
-        asm_text: "cldds,3,mb,sl 0xf(sr1,r1),rp"
+        asm_text: "cldds,3,mb,sl 0xf(sr1,r1), rp"
         details:
           hppa:
             operands:
@@ -1544,17 +1792,20 @@ test_cases:
                 type: HPPA_OP_MEM
                 mem_space: sr1
                 mem_base: r1
+                access: CS_AC_READ_WRITE
               -
                 type: HPPA_OP_REG
                 reg: rp
+                access: CS_AC_WRITE
       -
-        asm_text: "cstws,3 r1,0xf(sr1,rp)"
+        asm_text: "cstws,3 r1, 0xf(sr1,rp)"
         details:
           hppa:
             operands:
               -
                 type: HPPA_OP_REG
                 reg: r1
+                access: CS_AC_READ
               -
                 type: HPPA_OP_DISP
                 imm: 0xf
@@ -1562,14 +1813,16 @@ test_cases:
                 type: HPPA_OP_MEM
                 mem_space: sr1
                 mem_base: rp
+                access: CS_AC_READ
       -
-        asm_text: "cstws,3,ma r1,0xf(sr1,rp)"
+        asm_text: "cstws,3,ma r1, 0xf(sr1,rp)"
         details:
           hppa:
             operands:
               -
                 type: HPPA_OP_REG
                 reg: r1
+                access: CS_AC_READ
               -
                 type: HPPA_OP_DISP
                 imm: 0xf
@@ -1577,14 +1830,16 @@ test_cases:
                 type: HPPA_OP_MEM
                 mem_space: sr1
                 mem_base: rp
+                access: CS_AC_READ_WRITE
       -
-        asm_text: "cstws,3,ma,bc r1,0xf(sr1,rp)"
+        asm_text: "cstws,3,ma,bc r1, 0xf(sr1,rp)"
         details:
           hppa:
             operands:
               -
                 type: HPPA_OP_REG
                 reg: r1
+                access: CS_AC_READ
               -
                 type: HPPA_OP_DISP
                 imm: 0xf
@@ -1592,14 +1847,16 @@ test_cases:
                 type: HPPA_OP_MEM
                 mem_space: sr1
                 mem_base: rp
+                access: CS_AC_READ_WRITE
       -
-        asm_text: "cstws,3,mb r1,0xf(sr1,rp)"
+        asm_text: "cstws,3,mb r1, 0xf(sr1,rp)"
         details:
           hppa:
             operands:
               -
                 type: HPPA_OP_REG
                 reg: r1
+                access: CS_AC_READ
               -
                 type: HPPA_OP_DISP
                 imm: 0xf
@@ -1607,14 +1864,16 @@ test_cases:
                 type: HPPA_OP_MEM
                 mem_space: sr1
                 mem_base: rp
+                access: CS_AC_READ_WRITE
       -
-        asm_text: "cstws,3,mb,sl r1,0xf(sr1,rp)"
+        asm_text: "cstws,3,mb,sl r1, 0xf(sr1,rp)"
         details:
           hppa:
             operands:
               -
                 type: HPPA_OP_REG
                 reg: r1
+                access: CS_AC_READ
               -
                 type: HPPA_OP_DISP
                 imm: 0xf
@@ -1622,14 +1881,16 @@ test_cases:
                 type: HPPA_OP_MEM
                 mem_space: sr1
                 mem_base: rp
+                access: CS_AC_READ_WRITE
       -
-        asm_text: "cstds,3 r1,0xf(sr1,rp)"
+        asm_text: "cstds,3 r1, 0xf(sr1,rp)"
         details:
           hppa:
             operands:
               -
                 type: HPPA_OP_REG
                 reg: r1
+                access: CS_AC_READ
               -
                 type: HPPA_OP_DISP
                 imm: 0xf
@@ -1637,14 +1898,16 @@ test_cases:
                 type: HPPA_OP_MEM
                 mem_space: sr1
                 mem_base: rp
+                access: CS_AC_READ
       -
-        asm_text: "cstds,3,ma r1,0xf(sr1,rp)"
+        asm_text: "cstds,3,ma r1, 0xf(sr1,rp)"
         details:
           hppa:
             operands:
               -
                 type: HPPA_OP_REG
                 reg: r1
+                access: CS_AC_READ
               -
                 type: HPPA_OP_DISP
                 imm: 0xf
@@ -1652,14 +1915,16 @@ test_cases:
                 type: HPPA_OP_MEM
                 mem_space: sr1
                 mem_base: rp
+                access: CS_AC_READ_WRITE
       -
-        asm_text: "cstds,3,ma,bc r1,0xf(sr1,rp)"
+        asm_text: "cstds,3,ma,bc r1, 0xf(sr1,rp)"
         details:
           hppa:
             operands:
               -
                 type: HPPA_OP_REG
                 reg: r1
+                access: CS_AC_READ
               -
                 type: HPPA_OP_DISP
                 imm: 0xf
@@ -1667,14 +1932,16 @@ test_cases:
                 type: HPPA_OP_MEM
                 mem_space: sr1
                 mem_base: rp
+                access: CS_AC_READ_WRITE
       -
-        asm_text: "cstds,3,mb r1,0xf(sr1,rp)"
+        asm_text: "cstds,3,mb r1, 0xf(sr1,rp)"
         details:
           hppa:
             operands:
               -
                 type: HPPA_OP_REG
                 reg: r1
+                access: CS_AC_READ
               -
                 type: HPPA_OP_DISP
                 imm: 0xf
@@ -1682,14 +1949,16 @@ test_cases:
                 type: HPPA_OP_MEM
                 mem_space: sr1
                 mem_base: rp
+                access: CS_AC_READ_WRITE
       -
-        asm_text: "cstds,3,mb,sl r1,0xf(sr1,rp)"
+        asm_text: "cstds,3,mb,sl r1, 0xf(sr1,rp)"
         details:
           hppa:
             operands:
               -
                 type: HPPA_OP_REG
                 reg: r1
+                access: CS_AC_READ
               -
                 type: HPPA_OP_DISP
                 imm: 0xf
@@ -1697,6 +1966,7 @@ test_cases:
                 type: HPPA_OP_MEM
                 mem_space: sr1
                 mem_base: rp
+                access: CS_AC_READ_WRITE
   -
     input:
       bytes: [ 0xc3, 0x40, 0x41, 0x24, 0xc3, 0x60, 0x41, 0x24, 0xe3, 0x40, 0x41, 0x24, 0xe3, 0x60, 0x41, 0x24, 0xe3, 0x68, 0x41, 0x24, 0xc3, 0x40, 0x41, 0x2c, 0xc3, 0x60, 0x41, 0x2c, 0xe3, 0x40, 0x41, 0x2c, 0xe3, 0x60, 0x41, 0x2c, 0xe3, 0x68, 0x41, 0x2c, 0xc1, 0x42, 0x62, 0x24, 0xc1, 0x62, 0x62, 0x24, 0xe1, 0x42, 0x62, 0x24, 0xe1, 0x46, 0x62, 0x24, 0xe1, 0x62, 0x62, 0x24, 0xe1, 0x6a, 0x62, 0x24, 0xc1, 0x42, 0x62, 0x2c, 0xc1, 0x62, 0x62, 0x2c, 0xe1, 0x42, 0x62, 0x2c, 0xe1, 0x46, 0x62, 0x2c, 0xe1, 0x62, 0x62, 0x2c, 0xe1, 0x6a, 0x62, 0x2c, 0xc2, 0x50, 0x3e, 0x24, 0xe2, 0x50, 0x3e, 0x24, 0xe2, 0x70, 0x3e, 0x24, 0xe2, 0x78, 0x3e, 0x24, 0xc2, 0x50, 0x3e, 0x2c, 0xe2, 0x50, 0x3e, 0x2c, 0xe2, 0x70, 0x3e, 0x2c, 0xe2, 0x78, 0x3e, 0x2c, 0xc1, 0x52, 0x5e, 0x24, 0xe1, 0x52, 0x5e, 0x24, 0xe1, 0x56, 0x5e, 0x24, 0xe1, 0x72, 0x5e, 0x24, 0xe1, 0x7a, 0x5e, 0x24, 0xc1, 0x52, 0x5e, 0x2c, 0xe1, 0x52, 0x5e, 0x2c, 0xe1, 0x56, 0x5e, 0x2c, 0xe1, 0x72, 0x5e, 0x2c, 0xe1, 0x7a, 0x5e, 0x2c  ]
@@ -1706,337 +1976,403 @@ test_cases:
     expected:
       insns:
       -
-        asm_text: "cldwx,3 r1(sr1,rp),r3"
+        asm_text: "cldwx,3 r1(sr1,rp), r3"
         details:
           hppa:
             operands:
               -
                 type: HPPA_OP_IDX_REG
                 reg: r1
+                access: CS_AC_READ
               -
                 type: HPPA_OP_MEM
                 mem_space: sr1
                 mem_base: rp
+                access: CS_AC_READ
               -
                 type: HPPA_OP_REG
                 reg: r3
+                access: CS_AC_WRITE
       -
-        asm_text: "cldwx,3,s r1(sr1,rp),r3"
+        asm_text: "cldwx,3,s r1(sr1,rp), r3"
         details:
           hppa:
             operands:
               -
                 type: HPPA_OP_IDX_REG
                 reg: r1
+                access: CS_AC_READ
               -
                 type: HPPA_OP_MEM
                 mem_space: sr1
                 mem_base: rp
+                access: CS_AC_READ
               -
                 type: HPPA_OP_REG
                 reg: r3
+                access: CS_AC_WRITE
       -
-        asm_text: "cldwx,3,m r1(sr1,rp),r3"
+        asm_text: "cldwx,3,m r1(sr1,rp), r3"
         details:
           hppa:
             operands:
               -
                 type: HPPA_OP_IDX_REG
                 reg: r1
+                access: CS_AC_READ
               -
                 type: HPPA_OP_MEM
                 mem_space: sr1
                 mem_base: rp
+                access: CS_AC_READ_WRITE
               -
                 type: HPPA_OP_REG
                 reg: r3
+                access: CS_AC_WRITE
       -
-        asm_text: "cldwx,3,sm r1(sr1,rp),r3"
+        asm_text: "cldwx,3,sm r1(sr1,rp), r3"
         details:
           hppa:
             operands:
               -
                 type: HPPA_OP_IDX_REG
                 reg: r1
+                access: CS_AC_READ
               -
                 type: HPPA_OP_MEM
                 mem_space: sr1
                 mem_base: rp
+                access: CS_AC_READ_WRITE
               -
                 type: HPPA_OP_REG
                 reg: r3
+                access: CS_AC_WRITE
       -
-        asm_text: "cldwx,3,sm,sl r1(sr1,rp),r3"
+        asm_text: "cldwx,3,sm,sl r1(sr1,rp), r3"
         details:
           hppa:
             operands:
               -
                 type: HPPA_OP_IDX_REG
                 reg: r1
+                access: CS_AC_READ
               -
                 type: HPPA_OP_MEM
                 mem_space: sr1
                 mem_base: rp
+                access: CS_AC_READ_WRITE
               -
                 type: HPPA_OP_REG
                 reg: r3
+                access: CS_AC_WRITE
       -
-        asm_text: "clddx,3 r1(sr1,rp),r3"
+        asm_text: "clddx,3 r1(sr1,rp), r3"
         details:
           hppa:
             operands:
               -
                 type: HPPA_OP_IDX_REG
                 reg: r1
+                access: CS_AC_READ
               -
                 type: HPPA_OP_MEM
                 mem_space: sr1
                 mem_base: rp
+                access: CS_AC_READ
               -
                 type: HPPA_OP_REG
                 reg: r3
+                access: CS_AC_WRITE
       -
-        asm_text: "clddx,3,s r1(sr1,rp),r3"
+        asm_text: "clddx,3,s r1(sr1,rp), r3"
         details:
           hppa:
             operands:
               -
                 type: HPPA_OP_IDX_REG
                 reg: r1
+                access: CS_AC_READ
               -
                 type: HPPA_OP_MEM
                 mem_space: sr1
                 mem_base: rp
+                access: CS_AC_READ
               -
                 type: HPPA_OP_REG
                 reg: r3
+                access: CS_AC_WRITE
       -
-        asm_text: "clddx,3,m r1(sr1,rp),r3"
+        asm_text: "clddx,3,m r1(sr1,rp), r3"
         details:
           hppa:
             operands:
               -
                 type: HPPA_OP_IDX_REG
                 reg: r1
+                access: CS_AC_READ
               -
                 type: HPPA_OP_MEM
                 mem_space: sr1
                 mem_base: rp
+                access: CS_AC_READ_WRITE
               -
                 type: HPPA_OP_REG
                 reg: r3
+                access: CS_AC_WRITE
       -
-        asm_text: "clddx,3,sm r1(sr1,rp),r3"
+        asm_text: "clddx,3,sm r1(sr1,rp), r3"
         details:
           hppa:
             operands:
               -
                 type: HPPA_OP_IDX_REG
                 reg: r1
+                access: CS_AC_READ
               -
                 type: HPPA_OP_MEM
                 mem_space: sr1
                 mem_base: rp
+                access: CS_AC_READ_WRITE
               -
                 type: HPPA_OP_REG
                 reg: r3
+                access: CS_AC_WRITE
       -
-        asm_text: "clddx,3,sm,sl r1(sr1,rp),r3"
+        asm_text: "clddx,3,sm,sl r1(sr1,rp), r3"
         details:
           hppa:
             operands:
               -
                 type: HPPA_OP_IDX_REG
                 reg: r1
+                access: CS_AC_READ
               -
                 type: HPPA_OP_MEM
                 mem_space: sr1
                 mem_base: rp
+                access: CS_AC_READ_WRITE
               -
                 type: HPPA_OP_REG
                 reg: r3
+                access: CS_AC_WRITE
       -
-        asm_text: "cstwx,3 r1,rp(sr1,r3)"
+        asm_text: "cstwx,3 r1, rp(sr1,r3)"
         details:
           hppa:
             operands:
               -
                 type: HPPA_OP_REG
                 reg: r1
+                access: CS_AC_READ
               -
                 type: HPPA_OP_IDX_REG
                 reg: rp
+                access: CS_AC_READ
               -
                 type: HPPA_OP_MEM
                 mem_space: sr1
                 mem_base: r3
+                access: CS_AC_READ
       -
-        asm_text: "cstwx,3,s r1,rp(sr1,r3)"
+        asm_text: "cstwx,3,s r1, rp(sr1,r3)"
         details:
           hppa:
             operands:
               -
                 type: HPPA_OP_REG
                 reg: r1
+                access: CS_AC_READ
               -
                 type: HPPA_OP_IDX_REG
                 reg: rp
+                access: CS_AC_READ
               -
                 type: HPPA_OP_MEM
                 mem_space: sr1
                 mem_base: r3
+                access: CS_AC_READ
       -
-        asm_text: "cstwx,3,m r1,rp(sr1,r3)"
+        asm_text: "cstwx,3,m r1, rp(sr1,r3)"
         details:
           hppa:
             operands:
               -
                 type: HPPA_OP_REG
                 reg: r1
+                access: CS_AC_READ
               -
                 type: HPPA_OP_IDX_REG
                 reg: rp
+                access: CS_AC_READ
               -
                 type: HPPA_OP_MEM
                 mem_space: sr1
                 mem_base: r3
+                access: CS_AC_READ_WRITE
       -
-        asm_text: "cstwx,3,m,bc r1,rp(sr1,r3)"
+        asm_text: "cstwx,3,m,bc r1, rp(sr1,r3)"
         details:
           hppa:
             operands:
               -
                 type: HPPA_OP_REG
                 reg: r1
+                access: CS_AC_READ
               -
                 type: HPPA_OP_IDX_REG
                 reg: rp
+                access: CS_AC_READ
               -
                 type: HPPA_OP_MEM
                 mem_space: sr1
                 mem_base: r3
+                access: CS_AC_READ_WRITE
       -
-        asm_text: "cstwx,3,sm r1,rp(sr1,r3)"
+        asm_text: "cstwx,3,sm r1, rp(sr1,r3)"
         details:
           hppa:
             operands:
               -
                 type: HPPA_OP_REG
                 reg: r1
+                access: CS_AC_READ
               -
                 type: HPPA_OP_IDX_REG
                 reg: rp
+                access: CS_AC_READ
               -
                 type: HPPA_OP_MEM
                 mem_space: sr1
                 mem_base: r3
+                access: CS_AC_READ_WRITE
       -
-        asm_text: "cstwx,3,sm,sl r1,rp(sr1,r3)"
+        asm_text: "cstwx,3,sm,sl r1, rp(sr1,r3)"
         details:
           hppa:
             operands:
               -
                 type: HPPA_OP_REG
                 reg: r1
+                access: CS_AC_READ
               -
                 type: HPPA_OP_IDX_REG
                 reg: rp
+                access: CS_AC_READ
               -
                 type: HPPA_OP_MEM
                 mem_space: sr1
                 mem_base: r3
+                access: CS_AC_READ_WRITE
       -
-        asm_text: "cstdx,3 r1,rp(sr1,r3)"
+        asm_text: "cstdx,3 r1, rp(sr1,r3)"
         details:
           hppa:
             operands:
               -
                 type: HPPA_OP_REG
                 reg: r1
+                access: CS_AC_READ
               -
                 type: HPPA_OP_IDX_REG
                 reg: rp
+                access: CS_AC_READ
               -
                 type: HPPA_OP_MEM
                 mem_space: sr1
                 mem_base: r3
+                access: CS_AC_READ
       -
-        asm_text: "cstdx,3,s r1,rp(sr1,r3)"
+        asm_text: "cstdx,3,s r1, rp(sr1,r3)"
         details:
           hppa:
             operands:
               -
                 type: HPPA_OP_REG
                 reg: r1
+                access: CS_AC_READ
               -
                 type: HPPA_OP_IDX_REG
                 reg: rp
+                access: CS_AC_READ
               -
                 type: HPPA_OP_MEM
                 mem_space: sr1
                 mem_base: r3
+                access: CS_AC_READ
       -
-        asm_text: "cstdx,3,m r1,rp(sr1,r3)"
+        asm_text: "cstdx,3,m r1, rp(sr1,r3)"
         details:
           hppa:
             operands:
               -
                 type: HPPA_OP_REG
                 reg: r1
+                access: CS_AC_READ
               -
                 type: HPPA_OP_IDX_REG
                 reg: rp
+                access: CS_AC_READ
               -
                 type: HPPA_OP_MEM
                 mem_space: sr1
                 mem_base: r3
+                access: CS_AC_READ_WRITE
       -
-        asm_text: "cstdx,3,m,bc r1,rp(sr1,r3)"
+        asm_text: "cstdx,3,m,bc r1, rp(sr1,r3)"
         details:
           hppa:
             operands:
               -
                 type: HPPA_OP_REG
                 reg: r1
+                access: CS_AC_READ
               -
                 type: HPPA_OP_IDX_REG
                 reg: rp
+                access: CS_AC_READ
               -
                 type: HPPA_OP_MEM
                 mem_space: sr1
                 mem_base: r3
+                access: CS_AC_READ_WRITE
       -
-        asm_text: "cstdx,3,sm r1,rp(sr1,r3)"
+        asm_text: "cstdx,3,sm r1, rp(sr1,r3)"
         details:
           hppa:
             operands:
               -
                 type: HPPA_OP_REG
                 reg: r1
+                access: CS_AC_READ
               -
                 type: HPPA_OP_IDX_REG
                 reg: rp
+                access: CS_AC_READ
               -
                 type: HPPA_OP_MEM
                 mem_space: sr1
                 mem_base: r3
+                access: CS_AC_READ_WRITE
       -
-        asm_text: "cstdx,3,sm,sl r1,rp(sr1,r3)"
+        asm_text: "cstdx,3,sm,sl r1, rp(sr1,r3)"
         details:
           hppa:
             operands:
               -
                 type: HPPA_OP_REG
                 reg: r1
+                access: CS_AC_READ
               -
                 type: HPPA_OP_IDX_REG
                 reg: rp
+                access: CS_AC_READ
               -
                 type: HPPA_OP_MEM
                 mem_space: sr1
                 mem_base: r3
+                access: CS_AC_READ_WRITE
       -
-        asm_text: "cldws,3 0xf(sr1,r1),rp"
+        asm_text: "cldws,3 0xf(sr1,r1), rp"
         details:
           hppa:
             operands:
@@ -2047,11 +2383,13 @@ test_cases:
                 type: HPPA_OP_MEM
                 mem_space: sr1
                 mem_base: r1
+                access: CS_AC_READ
               -
                 type: HPPA_OP_REG
                 reg: rp
+                access: CS_AC_WRITE
       -
-        asm_text: "cldws,3,ma 0xf(sr1,r1),rp"
+        asm_text: "cldws,3,ma 0xf(sr1,r1), rp"
         details:
           hppa:
             operands:
@@ -2062,11 +2400,13 @@ test_cases:
                 type: HPPA_OP_MEM
                 mem_space: sr1
                 mem_base: r1
+                access: CS_AC_READ_WRITE
               -
                 type: HPPA_OP_REG
                 reg: rp
+                access: CS_AC_WRITE
       -
-        asm_text: "cldws,3,mb 0xf(sr1,r1),rp"
+        asm_text: "cldws,3,mb 0xf(sr1,r1), rp"
         details:
           hppa:
             operands:
@@ -2077,11 +2417,13 @@ test_cases:
                 type: HPPA_OP_MEM
                 mem_space: sr1
                 mem_base: r1
+                access: CS_AC_READ_WRITE
               -
                 type: HPPA_OP_REG
                 reg: rp
+                access: CS_AC_WRITE
       -
-        asm_text: "cldws,3,mb,sl 0xf(sr1,r1),rp"
+        asm_text: "cldws,3,mb,sl 0xf(sr1,r1), rp"
         details:
           hppa:
             operands:
@@ -2092,11 +2434,13 @@ test_cases:
                 type: HPPA_OP_MEM
                 mem_space: sr1
                 mem_base: r1
+                access: CS_AC_READ_WRITE
               -
                 type: HPPA_OP_REG
                 reg: rp
+                access: CS_AC_WRITE
       -
-        asm_text: "cldds,3 0xf(sr1,r1),rp"
+        asm_text: "cldds,3 0xf(sr1,r1), rp"
         details:
           hppa:
             operands:
@@ -2107,11 +2451,13 @@ test_cases:
                 type: HPPA_OP_MEM
                 mem_space: sr1
                 mem_base: r1
+                access: CS_AC_READ
               -
                 type: HPPA_OP_REG
                 reg: rp
+                access: CS_AC_WRITE
       -
-        asm_text: "cldds,3,ma 0xf(sr1,r1),rp"
+        asm_text: "cldds,3,ma 0xf(sr1,r1), rp"
         details:
           hppa:
             operands:
@@ -2122,11 +2468,13 @@ test_cases:
                 type: HPPA_OP_MEM
                 mem_space: sr1
                 mem_base: r1
+                access: CS_AC_READ_WRITE
               -
                 type: HPPA_OP_REG
                 reg: rp
+                access: CS_AC_WRITE
       -
-        asm_text: "cldds,3,mb 0xf(sr1,r1),rp"
+        asm_text: "cldds,3,mb 0xf(sr1,r1), rp"
         details:
           hppa:
             operands:
@@ -2137,11 +2485,13 @@ test_cases:
                 type: HPPA_OP_MEM
                 mem_space: sr1
                 mem_base: r1
+                access: CS_AC_READ_WRITE
               -
                 type: HPPA_OP_REG
                 reg: rp
+                access: CS_AC_WRITE
       -
-        asm_text: "cldds,3,mb,sl 0xf(sr1,r1),rp"
+        asm_text: "cldds,3,mb,sl 0xf(sr1,r1), rp"
         details:
           hppa:
             operands:
@@ -2152,17 +2502,20 @@ test_cases:
                 type: HPPA_OP_MEM
                 mem_space: sr1
                 mem_base: r1
+                access: CS_AC_READ_WRITE
               -
                 type: HPPA_OP_REG
                 reg: rp
+                access: CS_AC_WRITE
       -
-        asm_text: "cstws,3 r1,0xf(sr1,rp)"
+        asm_text: "cstws,3 r1, 0xf(sr1,rp)"
         details:
           hppa:
             operands:
               -
                 type: HPPA_OP_REG
                 reg: r1
+                access: CS_AC_READ
               -
                 type: HPPA_OP_DISP
                 imm: 0xf
@@ -2170,14 +2523,16 @@ test_cases:
                 type: HPPA_OP_MEM
                 mem_space: sr1
                 mem_base: rp
+                access: CS_AC_READ
       -
-        asm_text: "cstws,3,ma r1,0xf(sr1,rp)"
+        asm_text: "cstws,3,ma r1, 0xf(sr1,rp)"
         details:
           hppa:
             operands:
               -
                 type: HPPA_OP_REG
                 reg: r1
+                access: CS_AC_READ
               -
                 type: HPPA_OP_DISP
                 imm: 0xf
@@ -2185,14 +2540,16 @@ test_cases:
                 type: HPPA_OP_MEM
                 mem_space: sr1
                 mem_base: rp
+                access: CS_AC_READ_WRITE
       -
-        asm_text: "cstws,3,ma,bc r1,0xf(sr1,rp)"
+        asm_text: "cstws,3,ma,bc r1, 0xf(sr1,rp)"
         details:
           hppa:
             operands:
               -
                 type: HPPA_OP_REG
                 reg: r1
+                access: CS_AC_READ
               -
                 type: HPPA_OP_DISP
                 imm: 0xf
@@ -2200,14 +2557,16 @@ test_cases:
                 type: HPPA_OP_MEM
                 mem_space: sr1
                 mem_base: rp
+                access: CS_AC_READ_WRITE
       -
-        asm_text: "cstws,3,mb r1,0xf(sr1,rp)"
+        asm_text: "cstws,3,mb r1, 0xf(sr1,rp)"
         details:
           hppa:
             operands:
               -
                 type: HPPA_OP_REG
                 reg: r1
+                access: CS_AC_READ
               -
                 type: HPPA_OP_DISP
                 imm: 0xf
@@ -2215,14 +2574,16 @@ test_cases:
                 type: HPPA_OP_MEM
                 mem_space: sr1
                 mem_base: rp
+                access: CS_AC_READ_WRITE
       -
-        asm_text: "cstws,3,mb,sl r1,0xf(sr1,rp)"
+        asm_text: "cstws,3,mb,sl r1, 0xf(sr1,rp)"
         details:
           hppa:
             operands:
               -
                 type: HPPA_OP_REG
                 reg: r1
+                access: CS_AC_READ
               -
                 type: HPPA_OP_DISP
                 imm: 0xf
@@ -2230,14 +2591,16 @@ test_cases:
                 type: HPPA_OP_MEM
                 mem_space: sr1
                 mem_base: rp
+                access: CS_AC_READ_WRITE
       -
-        asm_text: "cstds,3 r1,0xf(sr1,rp)"
+        asm_text: "cstds,3 r1, 0xf(sr1,rp)"
         details:
           hppa:
             operands:
               -
                 type: HPPA_OP_REG
                 reg: r1
+                access: CS_AC_READ
               -
                 type: HPPA_OP_DISP
                 imm: 0xf
@@ -2245,14 +2608,16 @@ test_cases:
                 type: HPPA_OP_MEM
                 mem_space: sr1
                 mem_base: rp
+                access: CS_AC_READ
       -
-        asm_text: "cstds,3,ma r1,0xf(sr1,rp)"
+        asm_text: "cstds,3,ma r1, 0xf(sr1,rp)"
         details:
           hppa:
             operands:
               -
                 type: HPPA_OP_REG
                 reg: r1
+                access: CS_AC_READ
               -
                 type: HPPA_OP_DISP
                 imm: 0xf
@@ -2260,14 +2625,16 @@ test_cases:
                 type: HPPA_OP_MEM
                 mem_space: sr1
                 mem_base: rp
+                access: CS_AC_READ_WRITE
       -
-        asm_text: "cstds,3,ma,bc r1,0xf(sr1,rp)"
+        asm_text: "cstds,3,ma,bc r1, 0xf(sr1,rp)"
         details:
           hppa:
             operands:
               -
                 type: HPPA_OP_REG
                 reg: r1
+                access: CS_AC_READ
               -
                 type: HPPA_OP_DISP
                 imm: 0xf
@@ -2275,14 +2642,16 @@ test_cases:
                 type: HPPA_OP_MEM
                 mem_space: sr1
                 mem_base: rp
+                access: CS_AC_READ_WRITE
       -
-        asm_text: "cstds,3,mb r1,0xf(sr1,rp)"
+        asm_text: "cstds,3,mb r1, 0xf(sr1,rp)"
         details:
           hppa:
             operands:
               -
                 type: HPPA_OP_REG
                 reg: r1
+                access: CS_AC_READ
               -
                 type: HPPA_OP_DISP
                 imm: 0xf
@@ -2290,14 +2659,16 @@ test_cases:
                 type: HPPA_OP_MEM
                 mem_space: sr1
                 mem_base: rp
+                access: CS_AC_READ_WRITE
       -
-        asm_text: "cstds,3,mb,sl r1,0xf(sr1,rp)"
+        asm_text: "cstds,3,mb,sl r1, 0xf(sr1,rp)"
         details:
           hppa:
             operands:
               -
                 type: HPPA_OP_REG
                 reg: r1
+                access: CS_AC_READ
               -
                 type: HPPA_OP_DISP
                 imm: 0xf
@@ -2305,4 +2676,4 @@ test_cases:
                 type: HPPA_OP_MEM
                 mem_space: sr1
                 mem_base: rp
-
+                access: CS_AC_READ_WRITE
