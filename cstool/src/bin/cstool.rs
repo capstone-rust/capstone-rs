@@ -28,7 +28,7 @@ where
         match self {
             Ok(t) => t,
             Err(e) => {
-                eprintln!("error: {}", e);
+                eprintln!("error: {e}");
                 exit(1);
             }
         }
@@ -66,7 +66,7 @@ fn unhexed_bytes(input: Vec<u8>) -> Vec<u8> {
     }
 
     if log::max_level() >= log::LevelFilter::Info {
-        let output_hex: Vec<String> = output.iter().map(|x| format!("{:02x}", x)).collect();
+        let output_hex: Vec<String> = output.iter().map(|x| format!("{x:02x}")).collect();
         info!("unhexed_output = {:?}", output_hex);
     }
 
@@ -93,7 +93,7 @@ fn disasm<T: Iterator<Item = ExtraMode>>(
     let mut handle = stdout.lock();
 
     for i in cs.disasm_all(code, addr).expect_exit().iter() {
-        let bytes: Vec<_> = i.bytes().iter().map(|x| format!("{:02x}", x)).collect();
+        let bytes: Vec<_> = i.bytes().iter().map(|x| format!("{x:02x}")).collect();
         let bytes = bytes.join(" ");
         let _ = writeln!(
             &mut handle,
@@ -148,19 +148,19 @@ fn main() {
     // Lowercase arches
     let arches: Vec<Str> = Arch::variants()
         .iter()
-        .map(|x| format!("{}", x).to_lowercase().into())
+        .map(|x| format!("{x}").to_lowercase().into())
         .collect();
 
     // Lowercase modes
     let modes: Vec<Str> = Mode::variants()
         .iter()
-        .map(|x| format!("{}", x).to_lowercase().into())
+        .map(|x| format!("{x}").to_lowercase().into())
         .collect();
 
     // Lowercase extra modes
     let extra_modes: Vec<Str> = ExtraMode::variants()
         .iter()
-        .map(|x| format!("{}", x).to_lowercase().into())
+        .map(|x| format!("{x}").to_lowercase().into())
         .collect();
 
     let matches = Command::new("capstone-rs disassembler tool")

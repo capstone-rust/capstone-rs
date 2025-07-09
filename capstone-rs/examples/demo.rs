@@ -27,7 +27,7 @@ fn arch_example(cs: &mut Capstone, code: &[u8]) -> CsResult<()> {
     println!("Found {} instructions", insns.len());
     for i in insns.iter() {
         println!();
-        println!("{}", i);
+        println!("{i}");
 
         let detail: InsnDetail = cs.insn_detail(i)?;
         let arch_detail: ArchDetail = detail.arch_detail();
@@ -85,7 +85,7 @@ fn example() -> CsResult<()> {
 
     for &mut (arch, ref mut cs, code) in examples.iter_mut() {
         println!("\n*************************************");
-        println!("Architecture {}:", arch);
+        println!("Architecture {arch}:");
         arch_example(cs, code)?;
     }
 
@@ -94,6 +94,6 @@ fn example() -> CsResult<()> {
 
 fn main() {
     if let Err(err) = example() {
-        println!("Error: {}", err);
+        println!("Error: {err}");
     }
 }

@@ -317,7 +317,7 @@ fn test_instruction_helper(
     bytes: &[u8],
     has_default_syntax: bool,
 ) {
-    println!("{:x?}", insn);
+    println!("{insn:x?}");
 
     // Check mnemonic
     if has_default_syntax && cfg!(feature = "full") {
@@ -908,7 +908,7 @@ fn test_invalid_mode() {
 #[test]
 fn test_capstone_version() {
     let (major, minor) = Capstone::lib_version();
-    println!("Capstone lib version: ({}, {})", major, minor);
+    println!("Capstone lib version: ({major}, {minor})");
     assert!(major > 0 && major < 100, "Invalid major version {}", major);
     assert!(minor < 500, "Invalid minor version {}", minor);
 }
@@ -1885,7 +1885,7 @@ fn test_arch_bpf_cbpf() {
         Ok(ins) => {
             for i in ins.as_ref() {
                 println!();
-                eprintln!("{}", i);
+                eprintln!("{i}");
 
                 let detail: InsnDetail = cs.insn_detail(i).expect("Failed to get insn detail");
                 let arch_detail: ArchDetail = detail.arch_detail();
@@ -1931,7 +1931,7 @@ fn test_arch_bpf_ebpf() {
         Ok(ins) => {
             for i in ins.as_ref() {
                 println!();
-                eprintln!("{}", i);
+                eprintln!("{i}");
 
                 let detail: InsnDetail = cs.insn_detail(i).expect("Failed to get insn detail");
                 let arch_detail: ArchDetail = detail.arch_detail();
@@ -4719,7 +4719,7 @@ fn test_arch_riscv_detail() {
                 &[
                     Reg(RegId(RISCV_REG_X11 as RegIdInt)),
                     Mem(RiscVOpMem(riscv_op_mem {
-                        base: RISCV_REG_X12 as u32,
+                        base: RISCV_REG_X12,
                         disp: 8,
                     })),
                 ],
@@ -4956,7 +4956,7 @@ fn test_issue_175() {
 
     let insns = cs.disasm_all(&[0x0c, 0x44, 0x3b, 0xd5], 0).unwrap();
     for i in insns.as_ref() {
-        let id = cs.insn_detail(&i).unwrap();
+        let id = cs.insn_detail(i).unwrap();
         let ad = id.arch_detail();
         let aarch = ad.aarch64().unwrap();
 
