@@ -3694,17 +3694,6 @@ fn test_arch_sparc_detail() {
         ],
     );
 
-    let f0_f4 = [
-        SparcOperand {
-            op_type: Reg(RegId(SPARC_REG_F0 as RegIdInt)),
-            access: Some(AccessType::ReadOnly),
-        },
-        SparcOperand {
-            op_type: Reg(RegId(SPARC_REG_F4 as RegIdInt)),
-            access: Some(AccessType::ReadOnly),
-        },
-    ];
-
     test_arch_mode_endian_insns_detail(
         &mut Capstone::new()
             .sparc()
@@ -3718,15 +3707,69 @@ fn test_arch_sparc_detail() {
         &[],
         &[
             // fcmps   %f0, %f4
-            DII::new("fcmps", b"\x81\xa8\x0a\x24", &f0_f4),
-            // Upstream bug
-            // https://github.com/capstone-engine/capstone/issues/2749
+            DII::new(
+                "fcmps",
+                b"\x81\xa8\x0a\x24",
+                &[
+                    SparcOperand {
+                        op_type: Reg(RegId(SPARC_REG_F0 as RegIdInt)),
+                        access: Some(AccessType::ReadOnly),
+                    },
+                    SparcOperand {
+                        op_type: Reg(RegId(SPARC_REG_F4 as RegIdInt)),
+                        access: Some(AccessType::ReadOnly),
+                    },
+                ],
+            ),
             // fstox   %f0, %f4
-            // DII::new("fstox", b"\x89\xa0\x10\x20", &f0_f4),
+            DII::new(
+                "fstox",
+                b"\x89\xa0\x10\x20",
+                &[
+                    SparcOperand {
+                        op_type: Reg(RegId(SPARC_REG_F0 as RegIdInt)),
+                        access: Some(AccessType::ReadOnly),
+                    },
+                    // writes to f4-f5, aka d2
+                    SparcOperand {
+                        op_type: Reg(RegId(SPARC_REG_D2 as RegIdInt)),
+                        access: Some(AccessType::WriteOnly),
+                    },
+                ],
+            ),
             // fqtoi   %f0, %f4
-            // DII::new("fqtoi", b"\x89\xa0\x1a\x60", &f0_f4),
+            DII::new(
+                "fqtoi",
+                b"\x89\xa0\x1a\x60",
+                &[
+                    // reads from f0-f3, aka q0
+                    SparcOperand {
+                        op_type: Reg(RegId(SPARC_REG_Q0 as RegIdInt)),
+                        access: Some(AccessType::ReadOnly),
+                    },
+                    SparcOperand {
+                        op_type: Reg(RegId(SPARC_REG_F4 as RegIdInt)),
+                        access: Some(AccessType::WriteOnly),
+                    },
+                ],
+            ),
             // fnegq   %f0, %f4
-            // DII::new("fnegq", b"\x89\xa0\x00\xe0", &f0_f4),
+            DII::new(
+                "fnegq",
+                b"\x89\xa0\x00\xe0",
+                &[
+                    // reads from f0-f3, aka q0
+                    SparcOperand {
+                        op_type: Reg(RegId(SPARC_REG_Q0 as RegIdInt)),
+                        access: Some(AccessType::ReadOnly),
+                    },
+                    // writes to f4-f7, aka q1
+                    SparcOperand {
+                        op_type: Reg(RegId(SPARC_REG_Q1 as RegIdInt)),
+                        access: Some(AccessType::WriteOnly),
+                    },
+                ],
+            ),
         ],
     );
 }
