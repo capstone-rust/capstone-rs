@@ -402,11 +402,13 @@ impl Debug for Insn<'_> {
 
 impl Display for Insn<'_> {
     fn fmt(&self, fmt: &mut Formatter) -> fmt::Result {
-        write!(fmt, "{:#x}: ", self.address())?;
+        write!(fmt, "{:#x}:", self.address())?;
         if let Some(mnemonic) = self.mnemonic() {
-            write!(fmt, "{} ", mnemonic)?;
+            write!(fmt, " {}", mnemonic)?;
             if let Some(op_str) = self.op_str() {
-                write!(fmt, "{}", op_str)?;
+                if !op_str.is_empty() {
+                    write!(fmt, " {}", op_str)?;
+                }
             }
         }
         Ok(())
