@@ -404,10 +404,10 @@ impl Display for Insn<'_> {
     fn fmt(&self, fmt: &mut Formatter) -> fmt::Result {
         write!(fmt, "{:#x}:", self.address())?;
         if let Some(mnemonic) = self.mnemonic() {
-            write!(fmt, " {}", mnemonic)?;
+            write!(fmt, " {mnemonic}")?;
             if let Some(op_str) = self.op_str() {
                 if !op_str.is_empty() {
-                    write!(fmt, " {}", op_str)?;
+                    write!(fmt, " {op_str}")?;
                 }
             }
         }
@@ -542,16 +542,16 @@ impl Display for Instructions<'_> {
         for instruction in self.iter() {
             write!(fmt, "{:x}:\t", instruction.address())?;
             for byte in instruction.bytes() {
-                write!(fmt, " {:02x}", byte)?;
+                write!(fmt, " {byte:02x}")?;
             }
             let remainder = 16 * 3 - instruction.bytes().len() * 3;
             for _ in 0..remainder {
                 write!(fmt, " ")?;
             }
             if let Some(mnemonic) = instruction.mnemonic() {
-                write!(fmt, " {}", mnemonic)?;
+                write!(fmt, " {mnemonic}")?;
                 if let Some(op_str) = instruction.op_str() {
-                    write!(fmt, " {}", op_str)?;
+                    write!(fmt, " {op_str}")?;
                 }
             }
             writeln!(fmt)?;

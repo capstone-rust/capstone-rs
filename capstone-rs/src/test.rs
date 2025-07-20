@@ -317,7 +317,7 @@ fn test_instruction_helper(
     bytes: &[u8],
     has_default_syntax: bool,
 ) {
-    println!("{:x?}", insn);
+    println!("{insn:x?}");
 
     // Check mnemonic
     if has_default_syntax && cfg!(feature = "full") {
@@ -889,7 +889,7 @@ fn test_invalid_mode() {
 #[test]
 fn test_capstone_version() {
     let (major, minor) = Capstone::lib_version();
-    println!("Capstone lib version: ({}, {})", major, minor);
+    println!("Capstone lib version: ({major}, {minor})");
     assert!(major > 0 && major < 100, "Invalid major version {}", major);
     assert!(minor < 500, "Invalid minor version {}", minor);
 }
@@ -1633,7 +1633,7 @@ fn test_arch_bpf_cbpf() {
         Ok(ins) => {
             for i in ins.as_ref() {
                 println!();
-                eprintln!("{}", i);
+                eprintln!("{i}");
 
                 let detail: InsnDetail = cs.insn_detail(i).expect("Failed to get insn detail");
                 let arch_detail: ArchDetail = detail.arch_detail();
@@ -1679,7 +1679,7 @@ fn test_arch_bpf_ebpf() {
         Ok(ins) => {
             for i in ins.as_ref() {
                 println!();
-                eprintln!("{}", i);
+                eprintln!("{i}");
 
                 let detail: InsnDetail = cs.insn_detail(i).expect("Failed to get insn detail");
                 let arch_detail: ArchDetail = detail.arch_detail();
