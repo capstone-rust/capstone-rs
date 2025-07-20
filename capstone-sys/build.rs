@@ -193,7 +193,7 @@ fn impl_insid_to_insenum(bindings: &str) -> String {
         let arch = cs_arch.cs_name();
 
         // find architecture instructions enum declaration
-        let re_enum_def = Regex::new(&format!("pub enum {}_insn (?s)\\{{.*?\\}}", arch))
+        let re_enum_def = Regex::new(&format!("pub enum {arch}_insn (?s)\\{{.*?\\}}"))
             .expect("Unable to compile regex");
         let cap_enum_def = &re_enum_def
             .captures(bindings)
