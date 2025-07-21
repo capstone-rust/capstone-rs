@@ -205,9 +205,20 @@ impl Capstone {
         }
     }
 
-    /// Creates an instance of DisasmIter structure
+    /// Disassemble and iterate instructions from user-provided buffer using `cs_disasm_iter`.
+    /// It uses less memory and reduces memory allocations.
     ///
-    pub fn get_disasm_iter<'a>(&'a self) -> CsResult<DisasmIter<'a>> {
+    /// ```
+    /// # use capstone::prelude::*;
+    /// # let cs = Capstone::new().x86().mode(arch::x86::ArchMode::Mode32).build().unwrap();
+    /// let mut iter = cs.disasm_iter(b"\x90", 0x1000).unwrap();
+    /// assert_eq!(iter.next().unwrap().mnemonic(), Some("nop"));
+    /// ```
+    pub fn disasm_iter<'a, 'b>(
+        &'a self,
+        code: &'b [u8],
+        addr: u64,
+    ) -> CsResult<DisasmIter<'a, 'b>> {
         let insn = unsafe { cs_malloc(self.csh()) };
         if insn.is_null() {
             return Err(Error::OutOfMemory);
@@ -215,9 +226,11 @@ impl Capstone {
         Ok(DisasmIter {
             insn,
             csh: self.csh,
-            _covariant: PhantomData,
-            offset: 0,
-            addr: 0,
+            code: code.as_ptr(),
+            size: code.len(),
+            addr,
+            _data1: PhantomData,
+            _data2: PhantomData,
         })
     }
 
@@ -611,58 +624,69 @@ impl Drop for Capstone {
 ///
 /// Create with a capstone instance `get_disasm_iter()`
 ///
-pub struct DisasmIter<'a> {
-    insn: *mut cs_insn, // space for current instruction to be processed
-    csh: *mut c_void,   // reference to the the capstone handle required by disasm_iter
-    offset: usize,
-    addr: u64,
-    _covariant: PhantomData<&'a ()>, // used to make sure DIasmIter lifetime doesn't exceed Capstone's lifetime
+pub struct DisasmIter<'a, 'b> {
+    insn: *mut cs_insn,          // space for current instruction to be processed
+    csh: *mut c_void,            // reference to the the capstone handle required by disasm_iter
+    code: *const u8,             // pointer to the code buffer
+    size: usize,                 // size of the code buffer
+    addr: u64,                   // current address
+    _data1: PhantomData<&'a ()>, // used to make sure DisasmIter lifetime doesn't exceed Capstone's lifetime
+    _data2: PhantomData<&'b ()>, // used to make sure code lifetime doesn't exceed user provided array
 }
 
-impl<'a> Drop for DisasmIter<'a> {
+impl<'a, 'b> Drop for DisasmIter<'a, 'b> {
     fn drop(&mut self) {
         unsafe { cs_free(self.insn, 1) };
     }
 }
 
-impl<'a> DisasmIter<'a> {
-    /// Used to continue to the next instruction without jumping
-    ///
-    /// usage shown in examples/recursive.rs
-    pub fn disasm_iter_continue(&mut self, code: &[u8]) -> CsResult<Insn> {
-        self.disasm_iter(code, self.offset, self.addr)
-    }
+impl<'a, 'b> Iterator for DisasmIter<'a, 'b> {
+    type Item = Insn<'a>;
 
-    /// Used to start the iterative disassembly
-    ///
-    /// usage shown in examples/recursive.rs
-    pub fn disasm_iter(&mut self, code: &[u8], offset: usize, addr: u64) -> CsResult<Insn> {
-        let code_len = code.len();
-        let code_ptr = &mut code[offset..].as_ptr();
-        let mut count = code_len - offset;
-        let mut local_addr = addr;
-        let ret = unsafe {
-            cs_disasm_iter(
-                self.csh as csh, // capstone handle
-                code_ptr,        // double pointer to code to disassemble; automatically incremented
-                &mut count,      // number of bytes left to disassemble; automatically decremented
-                &mut local_addr, // automatically incremented address
-                self.insn,       // pointer to cs_insn object
-            )
-        };
-        if ret {
-            self.offset = code_len - count;
-            self.addr = local_addr;
-            let insn = unsafe { Insn::from_raw(self.insn) };
-            Ok(insn)
-        } else {
-            Err(Error::CustomError("not disasm"))
+    fn next(&mut self) -> Option<Self::Item> {
+        unsafe {
+            if cs_disasm_iter(
+                self.csh as csh,
+                &mut self.code,
+                &mut self.size,
+                &mut self.addr,
+                self.insn,
+            ) {
+                return Some(Insn::from_raw(self.insn));
+            }
         }
+
+        None
+    }
+}
+
+impl<'a, 'b> DisasmIter<'a, 'b> {
+    /// Get the slice of the code yet to be disassembled
+    ///
+    /// ```
+    /// # use capstone::prelude::*;
+    /// # let cs = Capstone::new().x86().mode(arch::x86::ArchMode::Mode32).build().unwrap();
+    /// let code = b"\x90";
+    /// let mut iter = cs.disasm_iter(code, 0x1000).unwrap();
+    /// assert_eq!(iter.code(), code);
+    /// iter.next();
+    /// assert_eq!(iter.code(), b"");
+    /// ```
+    pub fn code(&self) -> &[u8] {
+        unsafe { core::slice::from_raw_parts(self.code, self.size) }
     }
 
-    pub fn offset(&self) -> usize {
-        self.offset
-    }
+    /// Get the address of the next instruction to be disassembled
+    ///
+    /// ```
+    /// # use capstone::prelude::*;
+    /// # let cs = Capstone::new().x86().mode(arch::x86::ArchMode::Mode32).build().unwrap();
+    /// let code = b"\x90";
+    /// let mut iter = cs.disasm_iter(code, 0x1000).unwrap();
+    /// assert_eq!(iter.addr(), 0x1000);
+    /// iter.next();
+    /// assert_eq!(iter.addr(), 0x1001);
+    /// ```
     pub fn addr(&self) -> u64 {
         self.addr
     }
