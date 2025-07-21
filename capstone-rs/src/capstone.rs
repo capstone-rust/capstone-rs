@@ -703,4 +703,27 @@ impl<'cs, 'buf> DisasmIter<'cs, 'buf> {
     pub fn addr(&self) -> u64 {
         self.addr
     }
+
+    /// Reset the iterator to disassemble in the specified code buffer
+    ///
+    /// ```
+    /// # use capstone::prelude::*;
+    /// # let cs = Capstone::new().x86().mode(arch::x86::ArchMode::Mode32).build().unwrap();
+    /// let code = b"\x90";
+    /// let mut iter = cs.disasm_iter(code, 0x1000).unwrap();
+    /// assert_eq!(iter.addr(), 0x1000);
+    /// assert_eq!(iter.code(), code);
+    /// iter.next();
+    /// assert_eq!(iter.addr(), 0x1001);
+    /// assert_eq!(iter.code(), b"");
+    /// let new_code = b"\xc3";
+    /// iter.reset(new_code, 0x2000);
+    /// assert_eq!(iter.addr(), 0x2000);
+    /// assert_eq!(iter.code(), new_code);
+    /// ```
+    pub fn reset(&mut self, code: &'buf [u8], addr: u64) {
+        self.code = code.as_ptr();
+        self.size = code.len();
+        self.addr = addr;
+    }
 }
