@@ -7,21 +7,22 @@ keywords = ["disassemble"]
 license = "MIT"
 name = "capstone"
 repository = "https://github.com/capstone-rust/capstone-rs"
-readme = "README.md"
+readme = "../README.md"
 edition = "2018"
-version = "0.10.0"
+version = "0.13.0"
+rust-version.workspace = true
 
 [badges]
 travis-ci = { repository = "capstone-rust/capstone-rs" }
 
 [dependencies]
-capstone-sys = { path = "../capstone-sys", version = "0.14.0" }
+capstone-sys = { path = "../capstone-sys", version = "0.17.0",  default-features = false }
 libc = { version = "0.2", default-features = false }
+static_assertions = "1.1.0"
 
 [dev-dependencies]
-macho = "0.*"
-criterion = "0.3"
-rayon = "1.1"
+criterion = "0.5"
+pretty_assertions = "1.4.1"
 object = "0.26.2"
 
 [[bench]]
@@ -29,6 +30,50 @@ name = "my_benchmark"
 harness = false
 
 [features]
-default = []
-
+default = ["full", "std", "support_all_archs"]
+std = []
+# The 'full' feature, enabled by default, compiles Capstone normally. When disabled,
+# Capstone will be built in Diet mode (https://www.capstone-engine.org/diet.html).
+# This disables some features to reduce the size of the library
+full = ["capstone-sys/full"]
 use_bindgen = ["capstone-sys/use_bindgen"]
+# arch specific features to reduce binary size
+support_all_archs = [
+    "arch_arm",
+    "arch_arm64",
+    "arch_bpf",
+    "arch_evm",
+    "arch_m680x",
+    "arch_m68k",
+    "arch_mips",
+    "arch_mos65xx",
+    "arch_powerpc",
+    "arch_riscv",
+    "arch_sh",
+    "arch_sparc",
+    "arch_sysz",
+    "arch_tms320c64x",
+    "arch_tricore",
+    "arch_wasm",
+    "arch_x86",
+    "arch_xcore",
+    "capstone-sys/support_all_archs",
+]
+arch_arm = ["capstone-sys/arch_arm"]
+arch_arm64 = ["capstone-sys/arch_arm64"]
+arch_bpf = ["capstone-sys/arch_bpf"]
+arch_evm = ["capstone-sys/arch_evm"]
+arch_m680x = ["capstone-sys/arch_m680x"]
+arch_m68k = ["capstone-sys/arch_m68k"]
+arch_mips = ["capstone-sys/arch_mips"]
+arch_mos65xx = ["capstone-sys/arch_mos65xx"]
+arch_powerpc = ["capstone-sys/arch_powerpc"]
+arch_riscv = ["capstone-sys/arch_riscv"]
+arch_sh = ["capstone-sys/arch_sh"]
+arch_sparc = ["capstone-sys/arch_sparc"]
+arch_sysz = ["capstone-sys/arch_sysz"]
+arch_tms320c64x = ["capstone-sys/arch_tms320c64x"]
+arch_tricore = ["capstone-sys/arch_tricore"]
+arch_wasm = ["capstone-sys/arch_wasm"]
+arch_x86 = ["capstone-sys/arch_x86"]
+arch_xcore = ["capstone-sys/arch_xcore"]

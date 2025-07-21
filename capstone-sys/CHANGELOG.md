@@ -4,10 +4,46 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## UNRELEASED - YYYY-MM-DD
+## [UNRELEASED] - YYYY-MM-DD
+### Added
+- Support for TriCore arch
+- Support for MOS65XX arch
+- Support for SH arch
+- Arch-specific features flags to enable/disable arch support
+
+### Changed
+- Bump bundled capstone to 5.0.6
+- Change `cs_regs_access()` `regs_read`/`regs_write` args to take `*mut cs_regs` (instead of `*mut u16`)
+    - makes it more clear that args should be fixed size arrays
+
+## [0.17.0] - 2025-02-04
+### Fixed
+- Segfault when running on s390x (AKA SystemZ)
+
+### Added
+- Support for BPF arch
+
+### Changed
+- Bump MSRV to 1.70
+
+## [0.16.0] - 2024-02-25
+### Fixed
+- Make builds more reproducible
+
+### Added
+- `full` feature (enabled by default) which disables [diet mode] for the Capstone C library
+
+[diet mode]: https://www.capstone-engine.org/diet.html
+
+### Changed
+- Upgraded bundled capstone to from [f278de39 to 3b298421](https://github.com/aquynh/capstone/compare/f278de39...3b298421)
+- Merged enums `arm64_tlbi_op`, `arm64_at_op`, `arm64_dc_op`, `arm64_ic_op` into single enum `arm64_sys_op` (based on upstream [`3e23b60af0`](https://github.com/capstone-engine/capstone/commit/3e23b60af04aa75eb17c14ba33d6ed139a2c405c))
+
+## [0.15.0] - 2022-05-01
 ### Fixed
 - Document that minimum supported Rust version is actually 1.50.0
     - Improperly documented as 1.40.0 in 0.14.0 release
+- Suppress C compiler warning
 
 ## [0.14.0] - 2021-08-09
 
@@ -99,6 +135,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Removed
 - Dependency
 
+[UNRELEASED]: https://github.com/capstone-rust/capstone-rs/compare/capstone-sys-v0.17.0...master
+[0.17.0]: https://github.com/capstone-rust/capstone-rs/compare/capstone-sys-v0.16.0...capstone-sys-v0.17.0
+[0.16.0]: https://github.com/capstone-rust/capstone-rs/compare/capstone-sys-v0.15.0...capstone-sys-v0.16.0
+[0.15.0]: https://github.com/capstone-rust/capstone-rs/compare/capstone-sys-v0.14.0...capstone-sys-v0.15.0
 [0.14.0]: https://github.com/capstone-rust/capstone-rs/compare/capstone-sys-v0.13.0...capstone-sys-v0.14.0
 [0.13.0]: https://github.com/capstone-rust/capstone-rs/compare/capstone-sys-v0.12.0...capstone-sys-v0.13.0
 [0.12.0]: https://github.com/capstone-rust/capstone-rs/compare/capstone-sys-v0.11.0...capstone-sys-v0.12.0

@@ -72,7 +72,10 @@ capstone_error_def!(
     => UnsupportedX86Masm = CS_ERR_X86_MASM;
 );
 
-#[must_use]
+// Required until https://github.com/rust-lang/rust/issues/103765 is resolved
+#[cfg(feature = "std")]
+impl std::error::Error for Error {}
+
 pub type CsResult<T> = result::Result<T, Error>;
 
 impl fmt::Display for Error {
@@ -126,7 +129,7 @@ mod test {
         ];
 
         for error in errors.iter() {
-            println!("{}", error);
+            println!("{error}");
         }
     }
 }

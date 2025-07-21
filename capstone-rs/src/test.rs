@@ -1,15 +1,36 @@
-use alloc::string::String;
+#![allow(
+    clippy::approx_constant,
+    clippy::too_many_arguments,
+    clippy::type_complexity,
+    clippy::upper_case_acronyms
+)]
+
+use core::{convert::TryInto, fmt::Debug, mem::MaybeUninit};
+
 use alloc::vec::Vec;
-use std::collections::HashSet;
+#[cfg(feature = "full")]
+use {alloc::string::String, std::collections::HashSet};
 
 use capstone_sys::cs_group_type;
 use libc::c_uint;
+use pretty_assertions::assert_eq;
 
 use super::arch::*;
 use super::*;
 
-const X86_CODE: &'static [u8] = b"\x55\x48\x8b\x05\xb8\x13\x00\x00";
-const ARM_CODE: &'static [u8] = b"\x55\x48\x8b\x05\xb8\x13\x00\x00";
+const X86_CODE: &[u8] = b"\x55\x48\x8b\x05\xb8\x13\x00\x00";
+const ARM_CODE: &[u8] = b"\x55\x48\x8b\x05\xb8\x13\x00\x00";
+const CBPF_CODE: &[u8] = b"\x94\x09\x00\x00\x37\x13\x03\x00\
+                          \x87\x00\x00\x00\x00\x00\x00\x00\
+                          \x07\x00\x00\x00\x00\x00\x00\x00\
+                          \x16\x00\x00\x00\x00\x00\x00\x00\
+                          \x80\x00\x00\x00\x00\x00\x00\x00";
+const EBPF_CODE: &[u8] = b"\x97\x09\x00\x00\x37\x13\x03\x00\
+                        \xdc\x02\x00\x00\x20\x00\x00\x00\
+                        \x30\x00\x00\x00\x00\x00\x00\x00\
+                        \xdb\x3a\x00\x01\x00\x00\x00\x00\
+                        \x84\x02\x00\x00\x00\x00\x00\x00\
+                        \x6d\x33\x17\x02\x00\x00\x00\x00";
 
 // Aliases for group types
 const JUMP: cs_group_type::Type = cs_group_type::CS_GRP_JUMP;
@@ -21,6 +42,7 @@ const IRET: cs_group_type::Type = cs_group_type::CS_GRP_IRET;
 /// Used as start address for testing
 const START_TEST_ADDR: u64 = 0x1000;
 
+#[cfg(feature = "arch_x86")]
 #[test]
 fn test_x86_simple() {
     match Capstone::new().x86().mode(x86::ArchMode::Mode64).build() {
@@ -28,23 +50,26 @@ fn test_x86_simple() {
             Ok(insns) => {
                 assert_eq!(insns.len(), 2);
                 let is: Vec<_> = insns.iter().collect();
-                assert_eq!(is[0].mnemonic().unwrap(), "push");
-                assert_eq!(is[1].mnemonic().unwrap(), "mov");
-
+                #[cfg(feature = "full")]
+                {
+                    assert_eq!(is[0].mnemonic().unwrap(), "push");
+                    assert_eq!(is[1].mnemonic().unwrap(), "mov");
+                }
                 assert_eq!(is[0].address(), START_TEST_ADDR);
                 assert_eq!(is[1].address(), START_TEST_ADDR + 1);
 
                 assert_eq!(is[0].bytes(), b"\x55");
                 assert_eq!(is[1].bytes(), b"\x48\x8b\x05\xb8\x13\x00\x00");
             }
-            Err(err) => assert!(false, "Couldn't disasm instructions: {}", err),
+            Err(err) => panic!("Couldn't disasm instructions: {}", err),
         },
         Err(e) => {
-            assert!(false, "Couldn't create a cs engine: {}", e);
+            panic!("Couldn't create a cs engine: {}", e);
         }
     }
 }
 
+#[cfg(feature = "arch_arm")]
 #[test]
 fn test_arm_simple() {
     match Capstone::new().arm().mode(arm::ArchMode::Arm).build() {
@@ -52,20 +77,23 @@ fn test_arm_simple() {
             Ok(insns) => {
                 assert_eq!(insns.len(), 2);
                 let is: Vec<_> = insns.iter().collect();
-                assert_eq!(is[0].mnemonic().unwrap(), "streq");
-                assert_eq!(is[1].mnemonic().unwrap(), "strheq");
-
+                #[cfg(feature = "full")]
+                {
+                    assert_eq!(is[0].mnemonic().unwrap(), "streq");
+                    assert_eq!(is[1].mnemonic().unwrap(), "strheq");
+                }
                 assert_eq!(is[0].address(), START_TEST_ADDR);
                 assert_eq!(is[1].address(), START_TEST_ADDR + 4);
             }
-            Err(err) => assert!(false, "Couldn't disasm instructions: {}", err),
+            Err(err) => panic!("Couldn't disasm instructions: {}", err),
         },
         Err(e) => {
-            assert!(false, "Couldn't create a cs engine: {}", e);
+            panic!("Couldn't create a cs engine: {}", e);
         }
     }
 }
 
+#[cfg(feature = "arch_arm64")]
 #[test]
 fn test_arm64_none() {
     let cs = Capstone::new()
@@ -76,6 +104,7 @@ fn test_arm64_none() {
     assert!(cs.disasm_all(ARM_CODE, START_TEST_ADDR).unwrap().is_empty());
 }
 
+#[cfg(all(feature = "full", feature = "arch_x86"))]
 #[test]
 fn test_x86_names() {
     match Capstone::new().x86().mode(x86::ArchMode::Mode32).build() {
@@ -83,37 +112,36 @@ fn test_x86_names() {
             let reg_id = RegId(1);
             match cs.reg_name(reg_id) {
                 Some(reg_name) => assert_eq!(reg_name, "ah"),
-                None => assert!(false, "Couldn't get register name"),
+                None => panic!("Couldn't get register name"),
             }
 
             let insn_id = InsnId(1);
             match cs.insn_name(insn_id) {
                 Some(insn_name) => assert_eq!(insn_name, "aaa"),
-                None => assert!(false, "Couldn't get instruction name"),
+                None => panic!("Couldn't get instruction name"),
             }
 
             assert_eq!(cs.group_name(InsnGroupId(1)), Some(String::from("jump")));
 
             let reg_id = RegId(250);
-            match cs.reg_name(reg_id) {
-                Some(_) => assert!(false, "invalid register worked"),
-                None => {}
+            if cs.reg_name(reg_id).is_some() {
+                panic!("invalid register worked")
             }
 
             let insn_id = InsnId(6000);
-            match cs.insn_name(insn_id) {
-                Some(_) => assert!(false, "invalid instruction worked"),
-                None => {}
+            if cs.insn_name(insn_id).is_some() {
+                panic!("invalid instruction worked")
             }
 
             assert_eq!(cs.group_name(InsnGroupId(250)), None);
         }
         Err(e) => {
-            assert!(false, "Couldn't create a cs engine: {}", e);
+            panic!("Couldn't create a cs engine: {}", e);
         }
     }
 }
 
+#[cfg(feature = "arch_x86")]
 #[test]
 fn test_detail_false_fail() {
     let mut cs = Capstone::new()
@@ -125,10 +153,11 @@ fn test_detail_false_fail() {
     let insns = cs.disasm_all(X86_CODE, START_TEST_ADDR).unwrap();
     let insns: Vec<_> = insns.iter().collect();
 
-    assert_eq!(cs.insn_detail(&insns[0]).unwrap_err(), Error::DetailOff);
-    assert_eq!(cs.insn_detail(&insns[1]).unwrap_err(), Error::DetailOff);
+    assert_eq!(cs.insn_detail(insns[0]).unwrap_err(), Error::DetailOff);
+    assert_eq!(cs.insn_detail(insns[1]).unwrap_err(), Error::DetailOff);
 }
 
+#[cfg(feature = "arch_x86")]
 #[test]
 fn test_skipdata() {
     use capstone_sys::x86_insn;
@@ -150,6 +179,99 @@ fn test_skipdata() {
     assert_eq!(insns[1].id().0, x86_insn::X86_INS_INSB as u32);
 }
 
+#[cfg(feature = "arch_arm64")]
+#[test]
+fn test_unsigned() {
+    // default is signed
+    let cs = Capstone::new()
+        .arm64()
+        .mode(arm64::ArchMode::Arm)
+        .build()
+        .unwrap();
+
+    let insns = cs.disasm_all(b"\x20\xf0\x5f\xf8", 0x1000).unwrap();
+    let insns: Vec<_> = insns.iter().collect();
+    assert_eq!(insns.len(), 1);
+    assert_eq!(insns[0].op_str(), Some("x0, [x1, #-1]"));
+
+    // this time with unsigned operand
+    let mut cs = Capstone::new()
+        .arm64()
+        .mode(arm64::ArchMode::Arm)
+        .build()
+        .unwrap();
+    cs.set_unsigned(true).unwrap();
+
+    let insns = cs.disasm_all(b"\x20\xf0\x5f\xf8", 0x1000).unwrap();
+    let insns: Vec<_> = insns.iter().collect();
+    assert_eq!(insns.len(), 1);
+    assert_eq!(insns[0].op_str(), Some("x0, [x1, #0xffffffffffffffff]"));
+}
+
+#[cfg(feature = "arch_x86")]
+#[test]
+fn test_mnemonic() {
+    use capstone_sys::x86_insn;
+
+    let x86_code: &[u8] = b"\x6c";
+
+    // default mnemonic
+    let cs = Capstone::new()
+        .x86()
+        .mode(x86::ArchMode::Mode64)
+        .build()
+        .unwrap();
+    let insns = cs.disasm_all(x86_code, 0x1000).unwrap();
+    let insns: Vec<_> = insns.iter().collect();
+    assert_eq!(insns.len(), 1);
+    assert_eq!(insns[0].id().0, x86_insn::X86_INS_INSB as u32);
+    assert_eq!(insns[0].mnemonic(), Some("insb"));
+
+    // override mnemonic
+    let mut cs = Capstone::new()
+        .x86()
+        .mode(x86::ArchMode::Mode64)
+        .build()
+        .unwrap();
+    cs.set_mnemonic(InsnId(x86_insn::X86_INS_INSB as InsnIdInt), Some("abcd"))
+        .unwrap();
+    let insns = cs.disasm_all(x86_code, 0x1000).unwrap();
+    let insns: Vec<_> = insns.iter().collect();
+    assert_eq!(insns.len(), 1);
+    assert_eq!(insns[0].id().0, x86_insn::X86_INS_INSB as u32);
+    assert_eq!(insns[0].mnemonic(), Some("abcd"));
+
+    // revert override
+    let mut cs = Capstone::new()
+        .x86()
+        .mode(x86::ArchMode::Mode64)
+        .build()
+        .unwrap();
+    cs.set_mnemonic(InsnId(x86_insn::X86_INS_INSB as InsnIdInt), Some("abcd"))
+        .unwrap();
+    cs.set_mnemonic(InsnId(x86_insn::X86_INS_INSB as InsnIdInt), None)
+        .unwrap();
+    let insns = cs.disasm_all(x86_code, 0x1000).unwrap();
+    let insns: Vec<_> = insns.iter().collect();
+    assert_eq!(insns.len(), 1);
+    assert_eq!(insns[0].id().0, x86_insn::X86_INS_INSB as u32);
+    assert_eq!(insns[0].mnemonic(), Some("insb"));
+
+    // override with invalid mnemonic should fail
+    let mut cs = Capstone::new()
+        .x86()
+        .mode(x86::ArchMode::Mode64)
+        .build()
+        .unwrap();
+    assert!(cs
+        .set_mnemonic(
+            InsnId(x86_insn::X86_INS_INSB as InsnIdInt),
+            Some("\x00abcd")
+        )
+        .is_err());
+}
+
+#[cfg(all(feature = "full", feature = "arch_x86"))]
 #[test]
 fn test_detail_true() {
     let mut cs1 = Capstone::new()
@@ -176,19 +298,18 @@ fn test_detail_true() {
             cs_group_type::CS_GRP_INT,
             cs_group_type::CS_GRP_IRET,
         ];
-        for insn_idx in 0..1 + 1 {
-            let detail = cs
-                .insn_detail(&insns[insn_idx])
-                .expect("Unable to get detail");
+        for insn in insns.iter() {
+            let detail = cs.insn_detail(insn).expect("Unable to get detail");
             let groups = detail.groups();
             for insn_group_id in &insn_group_ids {
                 let insn_group = InsnGroupId(*insn_group_id as InsnGroupIdInt);
-                assert_eq!(groups.contains(&insn_group), false);
+                assert!(!groups.contains(&insn_group));
             }
         }
     }
 }
 
+#[allow(unused)]
 fn test_instruction_helper(
     cs: &Capstone,
     insn: &Insn,
@@ -196,15 +317,16 @@ fn test_instruction_helper(
     bytes: &[u8],
     has_default_syntax: bool,
 ) {
-    println!("{:?}", insn);
+    println!("{insn:x?}");
 
     // Check mnemonic
-    if has_default_syntax {
+    if has_default_syntax && cfg!(feature = "full") {
         // insn_name() does not respect current syntax
         // does not always match the internal mnemonic
         cs.insn_name(insn.id())
             .expect("Failed to get instruction name");
     }
+    #[cfg(feature = "full")]
     assert_eq!(
         mnemonic_name,
         insn.mnemonic().expect("Failed to get mnemonic"),
@@ -224,12 +346,13 @@ fn test_instruction_detail_helper<T>(
     T: Into<ArchOperand> + Clone,
 {
     // Check mnemonic
-    if has_default_syntax {
+    if has_default_syntax && cfg!(feature = "full") {
         // insn_name() does not respect current syntax
         // does not always match the internal mnemonic
         cs.insn_name(insn.id())
             .expect("Failed to get instruction name");
     }
+    #[cfg(feature = "full")]
     assert_eq!(
         info.mnemonic,
         insn.mnemonic().expect("Failed to get mnemonic"),
@@ -260,9 +383,10 @@ fn test_instruction_detail_helper<T>(
     );
 }
 
+#[cfg(feature = "full")]
 /// Assert instruction belongs or does not belong to groups, testing both insn_belongs_to_group
 /// and insn_group_ids
-fn test_instruction_group_helper<R: Copy + Into<RegId>>(
+fn test_instruction_group_helper<R: Copy + Debug + TryInto<RegIdInt>>(
     cs: &Capstone,
     insn: &Insn,
     mnemonic_name: &str,
@@ -272,7 +396,7 @@ fn test_instruction_group_helper<R: Copy + Into<RegId>>(
     expected_regs_write: &[R],
     has_default_syntax: bool,
 ) {
-    test_instruction_helper(&cs, insn, mnemonic_name, bytes, has_default_syntax);
+    test_instruction_helper(cs, insn, mnemonic_name, bytes, has_default_syntax);
     let detail = cs.insn_detail(insn).expect("Unable to get detail");
 
     // Assert expected instruction groups is a subset of computed groups through ids
@@ -302,7 +426,15 @@ fn test_instruction_group_helper<R: Copy + Into<RegId>>(
 
     macro_rules! assert_regs_match {
         ($expected:expr, $actual_regs:expr, $msg:expr) => {{
-            let mut expected_regs: Vec<RegId> = $expected.iter().map(|&x| x.into()).collect();
+            let mut expected_regs: Vec<RegId> = $expected
+                .iter()
+                .map(|&x| {
+                    RegId(
+                        x.try_into()
+                            .unwrap_or_else(|_| panic!("Failed to convert {:?} to RegIdInt", x)),
+                    )
+                })
+                .collect();
             expected_regs.sort_unstable();
             let mut regs: Vec<RegId> = $actual_regs.iter().map(|&x| x.into()).collect();
             regs.sort_unstable();
@@ -322,15 +454,24 @@ fn test_instruction_group_helper<R: Copy + Into<RegId>>(
     );
 }
 
-fn instructions_match_group<R: Copy + Into<RegId>>(
+type ExpectedInsns<'a, R> = (
+    &'a str,
+    &'a [u8],
+    &'a [cs_group_type::Type],
+    &'a [R],
+    &'a [R],
+);
+
+#[allow(unused)]
+fn instructions_match_group<R: Copy + Debug + TryInto<RegIdInt>>(
     cs: &mut Capstone,
-    expected_insns: &[(&str, &[u8], &[cs_group_type::Type], &[R], &[R])],
+    expected_insns: &[ExpectedInsns<R>],
     has_default_syntax: bool,
 ) {
     let insns_buf: Vec<u8> = expected_insns
         .iter()
         .flat_map(|&(_, bytes, _, _, _)| bytes)
-        .map(|x| *x)
+        .copied()
         .collect();
 
     // Details required to get groups information
@@ -342,8 +483,9 @@ fn instructions_match_group<R: Copy + Into<RegId>>(
     let insns: Vec<&Insn> = insns.iter().collect();
 
     // Check number of instructions
-    assert_eq!(insns.len(), expected_insns.len());
+    assert_eq!(insns.len(), expected_insns.len(), "number of insns");
 
+    #[cfg(feature = "full")]
     for (
         insn,
         &(
@@ -356,7 +498,7 @@ fn instructions_match_group<R: Copy + Into<RegId>>(
     ) in insns.iter().zip(expected_insns)
     {
         test_instruction_group_helper(
-            &cs,
+            cs,
             insn,
             expected_mnemonic,
             expected_bytes,
@@ -376,7 +518,7 @@ fn instructions_match(
     let insns_buf: Vec<u8> = expected_insns
         .iter()
         .flat_map(|&(_, bytes)| bytes)
-        .map(|x| *x)
+        .copied()
         .collect();
 
     // Details required to get groups information
@@ -396,7 +538,7 @@ fn instructions_match(
 
     for (insn, &(expected_mnemonic, expected_bytes)) in insns.iter().zip(expected_insns) {
         test_instruction_helper(
-            &cs,
+            cs,
             insn,
             expected_mnemonic,
             expected_bytes,
@@ -412,17 +554,13 @@ fn instructions_match_detail<T>(
 ) where
     T: Into<ArchOperand> + Clone,
 {
-    let insns_buf: Vec<u8> = info
-        .iter()
-        .flat_map(|ref info| info.bytes)
-        .map(|x| *x)
-        .collect();
+    let insns_buf: Vec<u8> = info.iter().flat_map(|info| info.bytes).copied().collect();
 
     // Details required to get groups information
     cs.set_detail(true).unwrap();
 
     // todo(tmfink) eliminate check
-    if info.len() == 0 {
+    if info.is_empty() {
         // Input was empty, which will cause disasm_all() to fail
         return;
     }
@@ -442,22 +580,17 @@ fn instructions_match_detail<T>(
     );
 
     for (insn, info) in insns.iter().zip(info) {
-        test_instruction_detail_helper(&cs, insn, info, has_default_syntax)
+        test_instruction_detail_helper(cs, insn, info, has_default_syntax)
     }
 }
 
+#[cfg(feature = "arch_x86")]
 #[test]
 fn test_instruction_details() {
     use crate::arch::x86::X86Reg;
     use crate::arch::x86::X86Reg::*;
 
-    let expected_insns: &[(
-        &str,
-        &[u8],
-        &[cs_group_type::Type],
-        &[X86Reg::Type],
-        &[X86Reg::Type],
-    )] = &[
+    let expected_insns: &[ExpectedInsns<X86Reg::Type>] = &[
         ("nop", b"\x90", &[], &[], &[]),
         ("je", b"\x74\x05", &[JUMP], &[X86_REG_EFLAGS], &[]),
         (
@@ -470,10 +603,28 @@ fn test_instruction_details() {
         ("ret", b"\xc3", &[RET], &[X86_REG_RSP], &[X86_REG_RSP]),
         ("syscall", b"\x0f\x05", &[INT], &[], &[]),
         ("iretd", b"\xcf", &[IRET], &[], &[]),
-        ("sub", b"\x48\x83\xec\x08", &[], &[], &[X86_REG_EFLAGS]),
-        ("test", b"\x48\x85\xc0", &[], &[], &[X86_REG_EFLAGS]),
-        ("mov", b"\x48\x8b\x05\x95\x4a\x4d\x00", &[], &[], &[]),
-        ("mov", b"\xb9\x04\x02\x00\x00", &[], &[], &[]),
+        (
+            "sub",
+            b"\x48\x83\xec\x08",
+            &[],
+            &[X86_REG_RSP],
+            &[X86_REG_RSP, X86_REG_EFLAGS],
+        ),
+        (
+            "test",
+            b"\x48\x85\xc0",
+            &[],
+            &[X86_REG_RAX],
+            &[X86_REG_EFLAGS],
+        ),
+        (
+            "mov",
+            b"\x48\x8b\x05\x95\x4a\x4d\x00",
+            &[],
+            &[X86_REG_RIP],
+            &[X86_REG_RAX],
+        ),
+        ("mov", b"\xb9\x04\x02\x00\x00", &[], &[], &[X86_REG_ECX]),
     ];
 
     let mut cs = Capstone::new()
@@ -484,12 +635,13 @@ fn test_instruction_details() {
     instructions_match_group(&mut cs, expected_insns, true);
 }
 
+#[allow(unused)]
 fn test_insns_match(cs: &mut Capstone, insns: &[(&str, &[u8])]) {
     for &(mnemonic, bytes) in insns.iter() {
         let insns = cs.disasm_all(bytes, START_TEST_ADDR).unwrap();
         assert_eq!(insns.len(), 1);
-        let insn = insns.iter().next().unwrap();
-        assert_eq!(insn.mnemonic(), Some(mnemonic));
+        #[cfg(feature = "full")]
+        assert_eq!(insns.iter().next().unwrap().mnemonic(), Some(mnemonic));
     }
 }
 
@@ -500,7 +652,7 @@ fn test_extra_mode_helper(
     valid_both_insns: &[(&str, &[u8])],
     valid_extra_mode: &[(&str, &[u8])],
 ) {
-    let extra_mode = extra_mode.iter().map(|x| *x);
+    let extra_mode = extra_mode.iter().copied();
     let mut cs = Capstone::new_raw(arch, mode, extra_mode, None).unwrap();
 
     test_insns_match(&mut cs, valid_both_insns);
@@ -517,6 +669,7 @@ fn test_extra_mode_helper(
     test_insns_match(&mut cs, valid_extra_mode);
 }
 
+#[cfg(feature = "arch_arm")]
 #[test]
 fn test_extra_mode() {
     test_extra_mode_helper(
@@ -541,9 +694,9 @@ fn test_arch_mode_endian_insns(
         .map(|&(mnemonic, bytes)| (mnemonic, bytes))
         .collect();
 
-    let mut cs_raw = Capstone::new_raw(arch, mode, extra_mode.iter().map(|x| *x), endian).unwrap();
+    let mut cs_raw = Capstone::new_raw(arch, mode, extra_mode.iter().copied(), endian).unwrap();
     let mut cs_raw_endian_set =
-        Capstone::new_raw(arch, mode, extra_mode.iter().map(|x| *x), None).unwrap();
+        Capstone::new_raw(arch, mode, extra_mode.iter().copied(), None).unwrap();
     if let Some(some_endian) = endian {
         cs_raw_endian_set
             .set_endian(some_endian)
@@ -555,12 +708,16 @@ fn test_arch_mode_endian_insns(
     instructions_match(&mut cs_raw_endian_set, expected_insns.as_slice(), true);
 }
 
-#[derive(Copy, Clone, Debug)]
+#[allow(unused)]
+#[derive(Copy, Clone)]
+#[cfg_attr(feature = "full", derive(Debug))]
 struct DetailedInsnInfo<'a, T: 'a + Into<ArchOperand>> {
     pub mnemonic: &'a str,
     pub bytes: &'a [u8],
     pub operands: &'a [T],
 }
+
+#[allow(clippy::upper_case_acronyms)]
 type DII<'a, T> = DetailedInsnInfo<'a, T>;
 
 impl<'a, T> DetailedInsnInfo<'a, T>
@@ -589,13 +746,14 @@ fn test_arch_mode_endian_insns_detail<T>(
 ) where
     T: Into<ArchOperand> + Clone,
 {
-    let extra_mode = extra_mode.iter().map(|x| *x);
+    let extra_mode = extra_mode.iter().copied();
     let mut cs_raw = Capstone::new_raw(arch, mode, extra_mode, endian).unwrap();
 
     instructions_match_detail(&mut cs_raw, insns, true);
     instructions_match_detail(cs, insns, true);
 }
 
+#[cfg(all(feature = "full", feature = "arch_x86"))]
 #[test]
 fn test_syntax() {
     use crate::arch::x86::X86Reg;
@@ -634,15 +792,15 @@ fn test_syntax() {
             "subq",
             b"\x48\x83\xec\x08",
             &[],
-            &[],
-            &[X86_REG_EFLAGS],
+            &[X86_REG_RSP],
+            &[X86_REG_EFLAGS, X86_REG_RSP],
         ),
         (
             "test",
             "testq",
             b"\x48\x85\xc0",
             &[],
-            &[],
+            &[X86_REG_RAX],
             &[X86_REG_EFLAGS],
         ),
         (
@@ -650,31 +808,26 @@ fn test_syntax() {
             "movq",
             b"\x48\x8b\x05\x95\x4a\x4d\x00",
             &[],
-            &[],
-            &[],
+            &[X86_REG_RIP],
+            &[X86_REG_RAX],
         ),
-        ("mov", "movl", b"\xb9\x04\x02\x00\x00", &[], &[], &[]),
+        (
+            "mov",
+            "movl",
+            b"\xb9\x04\x02\x00\x00",
+            &[],
+            &[],
+            &[X86_REG_ECX],
+        ),
     ];
 
-    let expected_insns_intel: Vec<(
-        &str,
-        &[u8],
-        &[cs_group_type::Type],
-        &[X86Reg::Type],
-        &[X86Reg::Type],
-    )> = expected_insns
+    let expected_insns_intel: Vec<ExpectedInsns<X86Reg::Type>> = expected_insns
         .iter()
         .map(|&(mnemonic, _, bytes, groups, reads, writes)| {
             (mnemonic, bytes, groups, reads, writes)
         })
         .collect();
-    let expected_insns_att: Vec<(
-        &str,
-        &[u8],
-        &[cs_group_type::Type],
-        &[X86Reg::Type],
-        &[X86Reg::Type],
-    )> = expected_insns
+    let expected_insns_att: Vec<ExpectedInsns<X86Reg::Type>> = expected_insns
         .iter()
         .map(|&(_, mnemonic, bytes, groups, reads, writes)| {
             (mnemonic, bytes, groups, reads, writes)
@@ -701,6 +854,7 @@ fn test_syntax() {
 }
 
 // @todo(tmfink) test invalid syntax once we check for invalid options
+#[cfg(feature = "arch_arm")]
 #[test]
 fn test_invalid_syntax() {
     // These do no support any syntax change
@@ -735,7 +889,7 @@ fn test_invalid_mode() {
 #[test]
 fn test_capstone_version() {
     let (major, minor) = Capstone::lib_version();
-    println!("Capstone lib version: ({}, {})", major, minor);
+    println!("Capstone lib version: ({major}, {minor})");
     assert!(major > 0 && major < 100, "Invalid major version {}", major);
     assert!(minor < 500, "Invalid minor version {}", minor);
 }
@@ -766,6 +920,7 @@ fn test_capstone_is_diet() {
     println!("Capstone is diet: {}", Capstone::is_diet());
 }
 
+#[cfg(feature = "arch_arm")]
 #[test]
 fn test_arch_arm() {
     test_arch_mode_endian_insns(
@@ -848,7 +1003,7 @@ fn test_arch_arm() {
         &mut Capstone::new()
             .arm()
             .mode(arm::ArchMode::Thumb)
-            .extra_mode([arm::ArchExtraMode::MClass].iter().map(|x| *x))
+            .extra_mode([arm::ArchExtraMode::MClass].iter().copied())
             .build()
             .unwrap(),
         Arch::ARM,
@@ -861,7 +1016,7 @@ fn test_arch_arm() {
         &mut Capstone::new()
             .arm()
             .mode(arm::ArchMode::Arm)
-            .extra_mode([arm::ArchExtraMode::V8].iter().map(|x| *x))
+            .extra_mode([arm::ArchExtraMode::V8].iter().copied())
             .build()
             .unwrap(),
         Arch::ARM,
@@ -876,14 +1031,21 @@ fn test_arch_arm() {
     );
 }
 
+#[cfg(feature = "arch_arm")]
 #[test]
 fn test_arch_arm_detail() {
     use crate::arch::arm::ArmOperandType::*;
     use crate::arch::arm::*;
     use capstone_sys::arm_op_mem;
 
-    let r0_op = ArmOperand {
+    let r0_op_read = ArmOperand {
         op_type: Reg(RegId(ArmReg::ARM_REG_R0 as RegIdInt)),
+        access: Some(AccessType::ReadOnly),
+        ..Default::default()
+    };
+    let r0_op_write = ArmOperand {
+        op_type: Reg(RegId(ArmReg::ARM_REG_R0 as RegIdInt)),
+        access: Some(AccessType::WriteOnly),
         ..Default::default()
     };
 
@@ -914,6 +1076,7 @@ fn test_arch_arm_detail() {
                 &[
                     ArmOperand {
                         op_type: Reg(RegId(ArmReg::ARM_REG_LR as RegIdInt)),
+                        access: Some(AccessType::ReadOnly),
                         ..Default::default()
                     },
                     ArmOperand {
@@ -924,6 +1087,7 @@ fn test_arch_arm_detail() {
                             disp: -4,
                             lshift: 0,
                         })),
+                        access: Some(AccessType::WriteOnly),
                         ..Default::default()
                     },
                 ],
@@ -932,7 +1096,7 @@ fn test_arch_arm_detail() {
             DII::new(
                 "andeq",
                 b"\x00\x00\x00\x00",
-                &[r0_op.clone(), r0_op.clone(), r0_op.clone()],
+                &[r0_op_write.clone(), r0_op_read.clone(), r0_op_read.clone()],
             ),
             // str     r8, [r2, #-0x3e0]!
             DII::new(
@@ -941,6 +1105,7 @@ fn test_arch_arm_detail() {
                 &[
                     ArmOperand {
                         op_type: Reg(RegId(ArmReg::ARM_REG_R8 as RegIdInt)),
+                        access: Some(AccessType::ReadOnly),
                         ..Default::default()
                     },
                     ArmOperand {
@@ -951,6 +1116,7 @@ fn test_arch_arm_detail() {
                             disp: -992,
                             lshift: 0,
                         })),
+                        access: Some(AccessType::WriteOnly),
                         ..Default::default()
                     },
                 ],
@@ -968,7 +1134,7 @@ fn test_arch_arm_detail() {
                         op_type: Imm(0),
                         ..Default::default()
                     },
-                    r0_op.clone(),
+                    r0_op_read.clone(),
                     ArmOperand {
                         op_type: Cimm(3),
                         ..Default::default()
@@ -988,7 +1154,7 @@ fn test_arch_arm_detail() {
                 "mov",
                 b"\x00\x00\xa0\xe3",
                 &[
-                    r0_op.clone(),
+                    r0_op_write,
                     ArmOperand {
                         op_type: Imm(0),
                         ..Default::default()
@@ -1013,12 +1179,14 @@ fn test_arch_arm_detail() {
             b"\x70\x47",
             &[ArmOperand {
                 op_type: Reg(RegId(ArmReg::ARM_REG_LR as RegIdInt)),
+                access: Some(AccessType::ReadOnly),
                 ..Default::default()
             }],
         )],
     );
 }
 
+#[cfg(feature = "arch_arm64")]
 #[test]
 fn test_arch_arm64() {
     test_arch_mode_endian_insns(
@@ -1053,15 +1221,16 @@ fn test_arch_arm64() {
     );
 }
 
+#[cfg(feature = "arch_arm64")]
 #[test]
 fn test_arch_arm64_detail() {
     use crate::arch::arm64::Arm64OperandType::*;
     use crate::arch::arm64::Arm64Pstate::*;
     use crate::arch::arm64::Arm64Reg::*;
-    use crate::arch::arm64::Arm64Sysreg::*;
+    //use crate::arch::arm64::Arm64Sysreg::*;
     use crate::arch::arm64::Arm64Vas::*;
     use crate::arch::arm64::*;
-    use capstone_sys::arm64_op_mem;
+    use capstone_sys::{arm64_op_mem, arm64_op_sme_index};
 
     let s0 = Arm64Operand {
         op_type: Reg(RegId(ARM64_REG_S0 as RegIdInt)),
@@ -1092,6 +1261,8 @@ fn test_arch_arm64_detail() {
         &[],
         &[
             // mrs x9, midr_el1
+            // todo(tmfink): https://github.com/capstone-engine/capstone/issues/1881
+            /*
             DII::new(
                 "mrs",
                 b"\x09\x00\x38\xd5",
@@ -1106,16 +1277,19 @@ fn test_arch_arm64_detail() {
                     },
                 ],
             ),
+            */
             // msr spsel, #0
             DII::new(
                 "msr",
                 b"\xbf\x40\x00\xd5",
                 &[
                     Arm64Operand {
+                        access: Some(AccessType::WriteOnly),
                         op_type: Pstate(ARM64_PSTATE_SPSEL),
                         ..Default::default()
                     },
                     Arm64Operand {
+                        access: Some(AccessType::ReadOnly),
                         op_type: Imm(0),
                         ..Default::default()
                     },
@@ -1127,21 +1301,25 @@ fn test_arch_arm64_detail() {
                 b"\x20\x50\x02\x0e",
                 &[
                     Arm64Operand {
+                        access: Some(AccessType::ReadWrite),
                         vas: ARM64_VAS_8B,
                         op_type: Reg(RegId(ARM64_REG_V0 as RegIdInt)),
                         ..Default::default()
                     },
                     Arm64Operand {
+                        access: Some(AccessType::ReadOnly),
                         vas: ARM64_VAS_16B,
                         op_type: Reg(RegId(ARM64_REG_V1 as RegIdInt)),
                         ..Default::default()
                     },
                     Arm64Operand {
+                        access: Some(AccessType::ReadOnly),
                         vas: ARM64_VAS_16B,
                         op_type: Reg(RegId(ARM64_REG_V2 as RegIdInt)),
                         ..Default::default()
                     },
                     Arm64Operand {
+                        access: Some(AccessType::ReadOnly),
                         vas: ARM64_VAS_16B,
                         op_type: Reg(RegId(ARM64_REG_V3 as RegIdInt)),
                         ..Default::default()
@@ -1159,16 +1337,19 @@ fn test_arch_arm64_detail() {
                 b"\x20\xe4\x3d\x0f",
                 &[
                     Arm64Operand {
+                        access: Some(AccessType::WriteOnly),
                         vas: ARM64_VAS_2S,
                         op_type: Reg(RegId(ARM64_REG_V0 as RegIdInt)),
                         ..Default::default()
                     },
                     Arm64Operand {
+                        access: Some(AccessType::ReadOnly),
                         vas: ARM64_VAS_2S,
                         op_type: Reg(RegId(ARM64_REG_V1 as RegIdInt)),
                         ..Default::default()
                     },
                     Arm64Operand {
+                        access: Some(AccessType::ReadOnly),
                         op_type: Imm(3),
                         ..Default::default()
                     },
@@ -1179,9 +1360,16 @@ fn test_arch_arm64_detail() {
                 "fmla",
                 b"\x00\x18\xa0\x5f",
                 &[
-                    s0.clone(),
-                    s0.clone(),
                     Arm64Operand {
+                        access: Some(AccessType::ReadWrite),
+                        ..s0.clone()
+                    },
+                    Arm64Operand {
+                        access: Some(AccessType::ReadOnly),
+                        ..s0
+                    },
+                    Arm64Operand {
+                        access: Some(AccessType::ReadOnly),
                         vector_index: Some(3),
                         op_type: Reg(RegId(ARM64_REG_V0 as RegIdInt)),
                         vas: ARM64_VAS_1S,
@@ -1195,12 +1383,14 @@ fn test_arch_arm64_detail() {
                 b"\xa2\x00\xae\x9e",
                 &[
                     Arm64Operand {
-                        op_type: Reg(RegId(ARM64_REG_X2 as RegIdInt)),
-                        ..Default::default()
+                        access: Some(AccessType::WriteOnly),
+                        ..x2.clone()
                     },
                     Arm64Operand {
+                        access: Some(AccessType::ReadOnly),
                         vector_index: Some(1),
                         op_type: Reg(RegId(ARM64_REG_V5 as RegIdInt)),
+                        vas: ARM64_VAS_INVALID, // should be ARM64_VAS_1D instead?
                         ..Default::default()
                     },
                 ],
@@ -1210,6 +1400,7 @@ fn test_arch_arm64_detail() {
                 "dsb",
                 b"\x9f\x37\x03\xd5",
                 &[Arm64Operand {
+                    access: Some(AccessType::ReadOnly),
                     op_type: Barrier(Arm64BarrierOp::ARM64_BARRIER_NSH),
                     ..Default::default()
                 }],
@@ -1219,6 +1410,7 @@ fn test_arch_arm64_detail() {
                 "dmb",
                 b"\xbf\x33\x03\xd5",
                 &[Arm64Operand {
+                    access: Some(AccessType::ReadOnly),
                     op_type: Barrier(Arm64BarrierOp::ARM64_BARRIER_OSH),
                     ..Default::default()
                 }],
@@ -1229,7 +1421,20 @@ fn test_arch_arm64_detail() {
             DII::new(
                 "mul",
                 b"\x21\x7c\x02\x9b",
-                &[x1.clone(), x1.clone(), x2.clone()],
+                &[
+                    Arm64Operand {
+                        access: Some(AccessType::WriteOnly),
+                        ..x1.clone()
+                    },
+                    Arm64Operand {
+                        access: Some(AccessType::ReadOnly),
+                        ..x1.clone()
+                    },
+                    Arm64Operand {
+                        access: Some(AccessType::ReadOnly),
+                        ..x2.clone()
+                    },
+                ],
             ),
             // lsr w1, w1, #0
             DII::new(
@@ -1237,14 +1442,18 @@ fn test_arch_arm64_detail() {
                 b"\x21\x7c\x00\x53",
                 &[
                     Arm64Operand {
+                        // Upstream bug: should be read only, fixed in capstone v6
+                        access: Some(AccessType::ReadWrite),
                         op_type: Reg(RegId(ARM64_REG_W1 as RegIdInt)),
                         ..Default::default()
                     },
                     Arm64Operand {
+                        access: Some(AccessType::ReadOnly),
                         op_type: Reg(RegId(ARM64_REG_W1 as RegIdInt)),
                         ..Default::default()
                     },
                     Arm64Operand {
+                        access: Some(AccessType::ReadOnly),
                         op_type: Imm(0),
                         ..Default::default()
                     },
@@ -1256,14 +1465,17 @@ fn test_arch_arm64_detail() {
                 b"\x00\x40\x21\x4b",
                 &[
                     Arm64Operand {
+                        access: Some(AccessType::WriteOnly),
                         op_type: Reg(RegId(ARM64_REG_W0 as RegIdInt)),
                         ..Default::default()
                     },
                     Arm64Operand {
+                        access: Some(AccessType::ReadOnly),
                         op_type: Reg(RegId(ARM64_REG_W0 as RegIdInt)),
                         ..Default::default()
                     },
                     Arm64Operand {
+                        access: Some(AccessType::ReadOnly),
                         ext: Arm64Extender::ARM64_EXT_UXTW,
                         op_type: Reg(RegId(ARM64_REG_W1 as RegIdInt)),
                         ..Default::default()
@@ -1276,10 +1488,12 @@ fn test_arch_arm64_detail() {
                 b"\xe1\x0b\x40\xb9",
                 &[
                     Arm64Operand {
+                        access: Some(AccessType::WriteOnly),
                         op_type: Reg(RegId(ARM64_REG_W1 as RegIdInt)),
                         ..Default::default()
                     },
                     Arm64Operand {
+                        access: Some(AccessType::ReadOnly),
                         op_type: Mem(Arm64OpMem(arm64_op_mem {
                             base: ARM64_REG_SP,
                             index: 0,
@@ -1290,15 +1504,35 @@ fn test_arch_arm64_detail() {
                 ],
             ),
             // cneg x0, x1, ne
-            DII::new("cneg", b"\x20\x04\x81\xda", &[x0.clone(), x1.clone()]),
+            DII::new(
+                "cneg",
+                b"\x20\x04\x81\xda",
+                &[
+                    Arm64Operand {
+                        access: Some(AccessType::WriteOnly),
+                        ..x0.clone()
+                    },
+                    Arm64Operand {
+                        access: Some(AccessType::ReadOnly),
+                        ..x1.clone()
+                    },
+                ],
+            ),
             // add x0, x1, x2, lsl #2
             DII::new(
                 "add",
                 b"\x20\x08\x02\x8b",
                 &[
-                    x0.clone(),
-                    x1.clone(),
                     Arm64Operand {
+                        access: Some(AccessType::WriteOnly),
+                        ..x0
+                    },
+                    Arm64Operand {
+                        access: Some(AccessType::ReadOnly),
+                        ..x1
+                    },
+                    Arm64Operand {
+                        access: Some(AccessType::ReadOnly),
                         shift: Arm64Shift::Lsl(2),
                         ..x2
                     },
@@ -1310,10 +1544,12 @@ fn test_arch_arm64_detail() {
                 b"\x10\x5b\xe8\x3c",
                 &[
                     Arm64Operand {
+                        access: Some(AccessType::WriteOnly),
                         op_type: Reg(RegId(ARM64_REG_Q16 as RegIdInt)),
                         ..Default::default()
                     },
                     Arm64Operand {
+                        access: Some(AccessType::ReadOnly),
                         shift: Arm64Shift::Lsl(4),
                         ext: Arm64Extender::ARM64_EXT_UXTW,
                         op_type: Mem(Arm64OpMem(arm64_op_mem {
@@ -1325,10 +1561,235 @@ fn test_arch_arm64_detail() {
                     },
                 ],
             ),
+            // smstart
+            DII::new(
+                "smstart",
+                b"\x7f\x47\x03\xd5",
+                &[
+                    Arm64Operand {
+                        op_type: SVCR(Arm64SvcrOp::ARM64_SVCR_SVCRSMZA),
+                        ..Default::default()
+                    },
+                    Arm64Operand {
+                        op_type: Imm(1),
+                        ..Default::default()
+                    },
+                ],
+            ),
+            // smstart sm
+            DII::new(
+                "smstart",
+                b"\x7f\x43\x03\xd5",
+                &[
+                    Arm64Operand {
+                        op_type: SVCR(Arm64SvcrOp::ARM64_SVCR_SVCRSM),
+                        ..Default::default()
+                    },
+                    Arm64Operand {
+                        op_type: Imm(1),
+                        ..Default::default()
+                    },
+                ],
+            ),
+            // ldr za[w12, 4], [x0, #4, mul vl]
+            DII::new(
+                "ldr",
+                b"\x04\x00\x00\xe1",
+                &[
+                    Arm64Operand {
+                        op_type: SMEIndex(Arm64OpSmeIndex(arm64_op_sme_index {
+                            reg: ARM64_REG_ZA,
+                            base: ARM64_REG_W12,
+                            disp: 4,
+                        })),
+                        ..Default::default()
+                    },
+                    Arm64Operand {
+                        op_type: Mem(Arm64OpMem(arm64_op_mem {
+                            base: ARM64_REG_X0,
+                            index: 0,
+                            disp: 4,
+                        })),
+                        ..Default::default()
+                    },
+                ],
+            ),
         ],
     );
 }
 
+#[cfg(feature = "arch_bpf")]
+#[test]
+fn test_arch_bpf_cbpf() {
+    let cs = Capstone::new()
+        .bpf()
+        .mode(bpf::ArchMode::Cbpf)
+        .endian(Endian::Little)
+        .detail(true)
+        .build()
+        .unwrap();
+    let insns = cs.disasm_all(CBPF_CODE, 0x1000);
+    match insns {
+        Ok(ins) => {
+            for i in ins.as_ref() {
+                println!();
+                eprintln!("{i}");
+
+                let detail: InsnDetail = cs.insn_detail(i).expect("Failed to get insn detail");
+                let arch_detail: ArchDetail = detail.arch_detail();
+                let ops = arch_detail.operands();
+
+                let output: &[(&str, String)] = &[
+                    ("insn id:", format!("{:?}", i.id().0)),
+                    ("bytes:", format!("{:?}", i.bytes())),
+                    ("read regs:", reg_names(&cs, detail.regs_read())),
+                    ("write regs:", reg_names(&cs, detail.regs_write())),
+                    ("insn groups:", group_names(&cs, detail.groups())),
+                ];
+
+                for (name, message) in output.iter() {
+                    eprintln!("{:4}{:12} {}", "", name, message);
+                }
+
+                println!("{:4}operands: {}", "", ops.len());
+                for op in ops {
+                    eprintln!("{:8}{:?}", "", op);
+                }
+            }
+        }
+
+        Err(e) => {
+            panic!("{:?}", e);
+        }
+    }
+}
+
+#[cfg(feature = "arch_bpf")]
+#[test]
+fn test_arch_bpf_ebpf() {
+    let cs = Capstone::new()
+        .bpf()
+        .mode(bpf::ArchMode::Ebpf)
+        .endian(Endian::Little)
+        .detail(true)
+        .build()
+        .unwrap();
+    let insns = cs.disasm_all(EBPF_CODE, 0x1000);
+    match insns {
+        Ok(ins) => {
+            for i in ins.as_ref() {
+                println!();
+                eprintln!("{i}");
+
+                let detail: InsnDetail = cs.insn_detail(i).expect("Failed to get insn detail");
+                let arch_detail: ArchDetail = detail.arch_detail();
+                let ops = arch_detail.operands();
+
+                let output: &[(&str, String)] = &[
+                    ("insn id:", format!("{:?}", i.id().0)),
+                    ("bytes:", format!("{:?}", i.bytes())),
+                    ("read regs:", reg_names(&cs, detail.regs_read())),
+                    ("write regs:", reg_names(&cs, detail.regs_write())),
+                    ("insn groups:", group_names(&cs, detail.groups())),
+                ];
+
+                for (name, message) in output.iter() {
+                    eprintln!("{:4}{:12} {}", "", name, message);
+                }
+
+                println!("{:4}operands: {}", "", ops.len());
+                for op in ops {
+                    eprintln!("{:8}{:?}", "", op);
+                }
+            }
+        }
+
+        Err(e) => {
+            panic!("{:?}", e);
+        }
+    }
+}
+
+#[cfg(feature = "arch_bpf")]
+#[test]
+fn test_arch_bpf_detail() {
+    use crate::arch::bpf::BpfOperand::*;
+    use crate::arch::bpf::BpfReg::*;
+    use crate::arch::bpf::*;
+    use capstone_sys::*;
+
+    test_arch_mode_endian_insns_detail(
+        &mut Capstone::new()
+            .bpf()
+            .mode(bpf::ArchMode::Ebpf)
+            .endian(Endian::Little)
+            .detail(true)
+            .build()
+            .unwrap(),
+        Arch::BPF,
+        Mode::Ebpf,
+        None,
+        &[],
+        &[
+            // r1 = 0x1
+            DII::new(
+                "mov64",
+                b"\xb7\x01\x00\x00\x01\x00\x00\x00",
+                &[Reg(RegId(BPF_REG_R1 as RegIdInt)), Imm(1)],
+            ),
+            // r0 = *(u32 *)(r10 - 0xc)
+            DII::new(
+                "ldxw",
+                b"\x61\xa0\xf4\xff\x00\x00\x00\x00",
+                &[
+                    Reg(RegId(BPF_REG_R0 as RegIdInt)),
+                    Mem(BpfOpMem(bpf_op_mem {
+                        base: BPF_REG_R10,
+                        disp: 0xfff4,
+                    })),
+                ],
+            ),
+            // *(u32 *)(r10 - 0xc) = r1
+            DII::new(
+                "stxw",
+                b"\x63\x1a\xf4\xff\x00\x00\x00\x00",
+                &[
+                    Mem(BpfOpMem(bpf_op_mem {
+                        base: BPF_REG_R10,
+                        disp: 0xfff4,
+                    })),
+                    Reg(RegId(BPF_REG_R1 as RegIdInt)),
+                ],
+            ),
+            // exit
+            DII::new("exit", b"\x95\x00\x00\x00\x00\x00\x00\x00", &[]),
+        ],
+    );
+
+    test_arch_mode_endian_insns_detail(
+        &mut Capstone::new()
+            .bpf()
+            .mode(bpf::ArchMode::Cbpf)
+            .endian(Endian::Little)
+            .detail(true)
+            .build()
+            .unwrap(),
+        Arch::BPF,
+        Mode::Cbpf,
+        None,
+        &[],
+        &[
+            DII::new("txa", b"\x87\x00\x00\x00\x00\x00\x00\x00", &[]),
+            DII::new(
+                "ret",
+                b"\x16\x00\x00\x00\x00\x00\x00\x00",
+                &[Reg(RegId(BPF_REG_A as RegIdInt))],
+            ),
+        ],
+    );
+}
+
+#[cfg(feature = "arch_evm")]
 #[test]
 fn test_arch_evm() {
     test_arch_mode_endian_insns(
@@ -1345,6 +1806,7 @@ fn test_arch_evm() {
     );
 }
 
+#[cfg(feature = "arch_evm")]
 #[test]
 fn test_arch_evm_detail() {
     let ops: &[arch::m68k::M68kOperand] = &[];
@@ -1362,6 +1824,7 @@ fn test_arch_evm_detail() {
     );
 }
 
+#[cfg(feature = "arch_m680x")]
 #[test]
 fn test_arch_m680x_detail() {
     use crate::arch::m680x::M680xOperandType::*;
@@ -1756,6 +2219,7 @@ fn test_arch_m680x_detail() {
     );
 }
 
+#[cfg(feature = "arch_m68k")]
 #[test]
 fn test_arch_m68k_detail() {
     use crate::arch::m68k::M68kOperand::*;
@@ -1816,7 +2280,7 @@ fn test_arch_m68k_detail() {
                                 M68K_REG_A3,
                             ]
                             .iter()
-                            .map(|x| *x),
+                            .copied(),
                         )
                         .unwrap(),
                     ),
@@ -1847,7 +2311,7 @@ fn test_arch_m68k_detail() {
                                 M68K_REG_A3,
                             ]
                             .iter()
-                            .map(|x| *x),
+                            .copied(),
                         )
                         .unwrap(),
                     ),
@@ -1954,6 +2418,7 @@ fn test_arch_m68k_detail() {
     );
 }
 
+#[cfg(feature = "arch_mips")]
 #[test]
 fn test_arch_mips() {
     test_arch_mode_endian_insns(
@@ -1994,7 +2459,7 @@ fn test_arch_mips() {
         &mut Capstone::new()
             .mips()
             .mode(mips::ArchMode::Mips32R6)
-            .extra_mode([mips::ArchExtraMode::Micro].iter().map(|x| *x))
+            .extra_mode([mips::ArchExtraMode::Micro].iter().copied())
             .endian(Endian::Big)
             .build()
             .unwrap(),
@@ -2011,6 +2476,7 @@ fn test_arch_mips() {
     );
 }
 
+#[cfg(feature = "arch_mips")]
 #[test]
 fn test_arch_mips_detail() {
     use crate::arch::mips::MipsOperand::*;
@@ -2067,6 +2533,143 @@ fn test_arch_mips_detail() {
     );
 }
 
+#[cfg(feature = "arch_mos65xx")]
+#[test]
+fn test_arch_mos65xx() {
+    test_arch_mode_endian_insns(
+        &mut Capstone::new()
+            .mos65xx()
+            .mode(mos65xx::ArchMode::Mos65xx6502)
+            .build()
+            .unwrap(),
+        Arch::MOS65XX,
+        Mode::Mos65xx6502,
+        None,
+        &[],
+        &[("lda", b"\xa1\xa2"), ("ora", b"\x0d\x34\x12")],
+    );
+
+    test_arch_mode_endian_insns(
+        &mut Capstone::new()
+            .mos65xx()
+            .mode(mos65xx::ArchMode::Mos65xx65c02)
+            .build()
+            .unwrap(),
+        Arch::MOS65XX,
+        Mode::Mos65xx65c02,
+        None,
+        &[],
+        &[
+            ("inc", b"\x1a"),
+            ("dec", b"\x3a"),
+            ("nop", b"\x02\x12"),
+            ("nop", b"\x03"),
+            ("nop", b"\x5c\x34\x12"),
+        ],
+    );
+
+    test_arch_mode_endian_insns(
+        &mut Capstone::new()
+            .mos65xx()
+            .mode(mos65xx::ArchMode::Mos65xxW65c02)
+            .build()
+            .unwrap(),
+        Arch::MOS65XX,
+        Mode::Mos65xxW65c02,
+        None,
+        &[],
+        &[("rmb0", b"\x07\x12"), ("rmb2", b"\x27\x12")],
+    );
+
+    test_arch_mode_endian_insns(
+        &mut Capstone::new()
+            .mos65xx()
+            .mode(mos65xx::ArchMode::Mos65xx65816LongMx)
+            .build()
+            .unwrap(),
+        Arch::MOS65XX,
+        Mode::Mos65xx65816LongMx,
+        None,
+        &[],
+        &[("lda", b"\xa9\x34\x12"), ("mvp", b"\x44\x34\x12")],
+    );
+}
+
+#[cfg(feature = "arch_mos65xx")]
+#[test]
+fn test_arch_mos65xx_detail() {
+    use crate::arch::mos65xx::Mos65xxOperand::*;
+    use capstone_sys::mos65xx_reg::*;
+
+    test_arch_mode_endian_insns_detail(
+        &mut Capstone::new()
+            .mos65xx()
+            .mode(mos65xx::ArchMode::Mos65xx6502)
+            .build()
+            .unwrap(),
+        Arch::MOS65XX,
+        Mode::Mos65xx6502,
+        None,
+        &[],
+        &[
+            DII::new("lda", b"\xa1\xa2", &[Mem(0xa2)]),
+            DII::new("ora", b"\x0d\x34\x12", &[Mem(0x1234)]),
+        ],
+    );
+
+    test_arch_mode_endian_insns_detail(
+        &mut Capstone::new()
+            .mos65xx()
+            .mode(mos65xx::ArchMode::Mos65xx65c02)
+            .build()
+            .unwrap(),
+        Arch::MOS65XX,
+        Mode::Mos65xx65c02,
+        None,
+        &[],
+        &[
+            DII::new("inc", b"\x1a", &[Reg(RegId(MOS65XX_REG_ACC as RegIdInt))]),
+            DII::new("dec", b"\x3a", &[Reg(RegId(MOS65XX_REG_ACC as RegIdInt))]),
+            DII::new("nop", b"\x02\x12", &[]),
+            DII::new("nop", b"\x03", &[]),
+            DII::new("nop", b"\x5c\x34\x12", &[]),
+        ],
+    );
+
+    test_arch_mode_endian_insns_detail(
+        &mut Capstone::new()
+            .mos65xx()
+            .mode(mos65xx::ArchMode::Mos65xxW65c02)
+            .build()
+            .unwrap(),
+        Arch::MOS65XX,
+        Mode::Mos65xxW65c02,
+        None,
+        &[],
+        &[
+            DII::new("rmb0", b"\x07\x12", &[Mem(0x12)]),
+            DII::new("rmb2", b"\x27\x12", &[Mem(0x12)]),
+        ],
+    );
+
+    test_arch_mode_endian_insns_detail(
+        &mut Capstone::new()
+            .mos65xx()
+            .mode(mos65xx::ArchMode::Mos65xx65816LongMx)
+            .build()
+            .unwrap(),
+        Arch::MOS65XX,
+        Mode::Mos65xx65816LongMx,
+        None,
+        &[],
+        &[
+            DII::new("lda", b"\xa9\x34\x12", &[Imm(0x1234)]),
+            DII::new("mvp", b"\x44\x34\x12", &[Mem(0x12), Mem(0x34)]),
+        ],
+    );
+}
+
+#[cfg(feature = "arch_powerpc")]
 #[test]
 fn test_arch_ppc() {
     test_arch_mode_endian_insns(
@@ -2099,6 +2702,7 @@ fn test_arch_ppc() {
     );
 }
 
+#[cfg(feature = "arch_powerpc")]
 #[test]
 fn test_arch_ppc_detail() {
     use crate::arch::ppc::PpcOperand::*;
@@ -2213,6 +2817,87 @@ fn test_arch_ppc_detail() {
     );
 }
 
+#[cfg(feature = "arch_sh")]
+#[test]
+fn test_arch_sh() {
+    test_arch_mode_endian_insns(
+        &mut Capstone::new()
+            .sh()
+            .mode(sh::ArchMode::Sh4a)
+            .build()
+            .unwrap(),
+        Arch::SH,
+        Mode::Sh4a,
+        None,
+        &[],
+        &[
+            ("add", b"\x0c\x31"),
+            ("mov.b", b"\x10\x20"),
+            ("mov.l", b"\x22\x21"),
+        ],
+    );
+}
+
+#[cfg(feature = "arch_sh")]
+#[test]
+fn test_arch_sh_detail() {
+    use crate::arch::sh::ShOpMem;
+    use crate::arch::sh::ShOperand;
+    use capstone_sys::sh_op_mem;
+    use capstone_sys::sh_reg;
+    use capstone_sys::sh_reg::*;
+
+    test_arch_mode_endian_insns_detail(
+        &mut Capstone::new()
+            .sh()
+            .mode(sh::ArchMode::Sh4a)
+            .build()
+            .unwrap(),
+        Arch::SH,
+        Mode::Sh4a,
+        None,
+        &[],
+        &[
+            // add r0, r1
+            DII::new(
+                "add",
+                b"\x0c\x31",
+                &[
+                    ShOperand::Reg(RegId(SH_REG_R0 as RegIdInt)),
+                    ShOperand::Reg(RegId(SH_REG_R1 as RegIdInt)),
+                ],
+            ),
+            // mov.b r1,@r0
+            DII::new(
+                "mov.b",
+                b"\x10\x20",
+                &[
+                    ShOperand::Reg(RegId(SH_REG_R1 as RegIdInt)),
+                    ShOperand::Mem(ShOpMem(sh_op_mem {
+                        address: capstone_sys::sh_op_mem_type::SH_OP_MEM_REG_IND,
+                        reg: SH_REG_R0 as sh_reg::Type,
+                        disp: 0,
+                    })),
+                ],
+            ),
+            // mov.l @r3+,r4
+            DII::new(
+                "mov.l",
+                b"\x36\x64",
+                &[
+                    ShOperand::Mem(ShOpMem(sh_op_mem {
+                        address: capstone_sys::sh_op_mem_type::SH_OP_MEM_REG_POST,
+                        reg: SH_REG_R3 as sh_reg::Type,
+                        disp: 0,
+                    })),
+                    ShOperand::Reg(RegId(SH_REG_R4 as RegIdInt)),
+                ],
+            ),
+        ],
+    );
+}
+
+#[cfg(feature = "arch_sparc")]
 #[test]
 fn test_arch_sparc() {
     test_arch_mode_endian_insns(
@@ -2264,6 +2949,7 @@ fn test_arch_sparc() {
     );
 }
 
+#[cfg(feature = "arch_sparc")]
 #[test]
 fn test_arch_sparc_detail() {
     use crate::arch::sparc::SparcOperand::*;
@@ -2431,6 +3117,7 @@ fn test_arch_sparc_detail() {
     );
 }
 
+#[cfg(feature = "arch_sysz")]
 #[test]
 fn test_arch_systemz() {
     test_arch_mode_endian_insns(
@@ -2457,26 +3144,85 @@ fn test_arch_systemz() {
     );
 }
 
+#[cfg(feature = "arch_sysz")]
+#[test]
+fn test_arch_systemz_detail() {
+    use crate::arch::sysz::SysZOperand::*;
+    use crate::arch::sysz::SysZReg::*;
+    use crate::arch::sysz::*;
+    use capstone_sys::sysz_op_mem;
+
+    test_arch_mode_endian_insns_detail(
+        &mut Capstone::new()
+            .sysz()
+            .mode(sysz::ArchMode::Default)
+            .build()
+            .unwrap(),
+        Arch::SYSZ,
+        Mode::Default,
+        None,
+        &[],
+        &[
+            // br %r7
+            DII::new("br", b"\x07\xf7", &[Reg(RegId(SYSZ_REG_7 as RegIdInt))]),
+            // ear %r7, %a8
+            DII::new(
+                "ear",
+                b"\xb2\x4f\x00\x78",
+                &[
+                    Reg(RegId(SYSZ_REG_7 as RegIdInt)),
+                    Reg(RegId(SYSZ_REG_A8 as RegIdInt)),
+                ],
+            ),
+            // adb %f0, 0
+            DII::new(
+                "adb",
+                b"\xed\x00\x00\x00\x00\x1a",
+                &[Reg(RegId(SYSZ_REG_F0 as RegIdInt)), Imm(0)],
+            ),
+            // afi %r0, -0x80000000
+            DII::new(
+                "afi",
+                b"\xc2\x09\x80\x00\x00\x00",
+                &[Reg(RegId(SYSZ_REG_0 as RegIdInt)), Imm(-0x80000000)],
+            ),
+            // a %r0, 0xfff(%r15, %r1)
+            DII::new(
+                "a",
+                b"\x5a\x0f\x1f\xff",
+                &[
+                    Reg(RegId(SYSZ_REG_0 as RegIdInt)),
+                    Mem(SysZOpMem(sysz_op_mem {
+                        base: SYSZ_REG_1 as u8,
+                        index: SYSZ_REG_15 as u8,
+                        disp: 0xfff,
+                        length: 0,
+                    })),
+                ],
+            ),
+        ],
+    );
+}
+
+#[cfg(feature = "arch_tms320c64x")]
 #[test]
 fn test_arch_tms320c64x_detail() {
-    use crate::arch::tms320c64x::Tms320c64xOperand::*;
-    use crate::arch::tms320c64x::Tms320c64xReg::*;
-    use crate::arch::tms320c64x::*;
-    use capstone_sys::tms320c64x_funit::*;
-    use capstone_sys::tms320c64x_mem_dir::*;
-    use capstone_sys::tms320c64x_mem_disp::*;
-    use capstone_sys::tms320c64x_mem_mod::*;
+    use crate::arch::tms320c64x::{
+        Tms320c64xFuntionalUnit, Tms320c64xMemDirection, Tms320c64xMemDisplayType,
+        Tms320c64xMemModify, Tms320c64xOpMem, Tms320c64xOperand::*, Tms320c64xReg::*,
+    };
     use capstone_sys::tms320c64x_op_mem;
 
     test_arch_mode_endian_insns_detail(
         &mut Capstone::new()
             .tms320c64x()
             .mode(tms320c64x::ArchMode::Default)
+            .endian(Endian::Big)
             .build()
             .unwrap(),
         Arch::TMS320C64X,
         Mode::Default,
-        None,
+        Some(Endian::Big),
         &[],
         &[
             // add.D1    a11, a4, a3
@@ -2505,13 +3251,13 @@ fn test_arch_tms320c64x_detail() {
                 b"\x02\x80\x46\x9e",
                 &[
                     Mem(Tms320c64xOpMem(tms320c64x_op_mem {
-                        base: TMS320C64X_REG_B15,
+                        base: TMS320C64X_REG_B15 as c_uint,
                         disp: 0x46,
-                        unit: TMS320C64X_FUNIT_L as c_uint,
+                        unit: Tms320c64xFuntionalUnit::L as c_uint,
                         scaled: false as c_uint,
-                        disptype: TMS320C64X_MEM_DISP_CONSTANT as c_uint,
-                        direction: TMS320C64X_MEM_DIR_FW as c_uint,
-                        modify: TMS320C64X_MEM_MOD_NO as c_uint,
+                        disptype: Tms320c64xMemDisplayType::Constant as c_uint,
+                        direction: Tms320c64xMemDirection::Forward as c_uint,
+                        modify: Tms320c64xMemModify::No as c_uint,
                     })),
                     Reg(RegId(TMS320C64X_REG_B5 as RegIdInt)),
                 ],
@@ -2524,13 +3270,13 @@ fn test_arch_tms320c64x_detail() {
                 b"\x02\x90\x32\x96",
                 &[
                     Mem(Tms320c64xOpMem(tms320c64x_op_mem {
-                        base: TMS320C64X_REG_A4,
+                        base: TMS320C64X_REG_A4 as c_uint,
                         disp: 0x1,
-                        unit: TMS320C64X_FUNIT_L as c_uint,
+                        unit: Tms320c64xFuntionalUnit::L as c_uint,
                         scaled: true as c_uint,
-                        disptype: TMS320C64X_MEM_DISP_CONSTANT as c_uint,
-                        direction: TMS320C64X_MEM_DIR_FW as c_uint,
-                        modify: TMS320C64X_MEM_MOD_PRE as c_uint,
+                        disptype: Tms320c64xMemDisplayType::Constant as c_uint,
+                        direction: Tms320c64xMemDirection::Forward as c_uint,
+                        modify: Tms320c64xMemModify::Pre as c_uint,
                     })),
                     Reg(RegId(TMS320C64X_REG_B5 as RegIdInt)),
                 ],
@@ -2541,13 +3287,13 @@ fn test_arch_tms320c64x_detail() {
                 b"\x02\x80\x46\x9e",
                 &[
                     Mem(Tms320c64xOpMem(tms320c64x_op_mem {
-                        base: TMS320C64X_REG_B15,
+                        base: TMS320C64X_REG_B15 as c_uint,
                         disp: 0x46,
-                        unit: TMS320C64X_FUNIT_L as c_uint,
+                        unit: Tms320c64xFuntionalUnit::L as c_uint,
                         scaled: false as c_uint,
-                        disptype: TMS320C64X_MEM_DISP_CONSTANT as c_uint,
-                        direction: TMS320C64X_MEM_DIR_FW as c_uint,
-                        modify: TMS320C64X_MEM_MOD_NO as c_uint,
+                        disptype: Tms320c64xMemDisplayType::Constant as c_uint,
+                        direction: Tms320c64xMemDirection::Forward as c_uint,
+                        modify: Tms320c64xMemModify::No as c_uint,
                     })),
                     Reg(RegId(TMS320C64X_REG_B5 as RegIdInt)),
                 ],
@@ -2558,13 +3304,13 @@ fn test_arch_tms320c64x_detail() {
                 b"\x05\x3c\x83\xe6",
                 &[
                     Mem(Tms320c64xOpMem(tms320c64x_op_mem {
-                        base: TMS320C64X_REG_A15,
+                        base: TMS320C64X_REG_A15 as c_uint,
                         disp: 0x4,
-                        unit: TMS320C64X_FUNIT_L as c_uint,
+                        unit: Tms320c64xFuntionalUnit::L as c_uint,
                         scaled: true as c_uint,
-                        disptype: TMS320C64X_MEM_DISP_CONSTANT as c_uint,
-                        direction: TMS320C64X_MEM_DIR_FW as c_uint,
-                        modify: TMS320C64X_MEM_MOD_NO as c_uint,
+                        disptype: Tms320c64xMemDisplayType::Constant as c_uint,
+                        direction: Tms320c64xMemDirection::Forward as c_uint,
+                        modify: Tms320c64xMemModify::No as c_uint,
                     })),
                     RegPair(
                         RegId(TMS320C64X_REG_B11 as RegIdInt),
@@ -2578,13 +3324,13 @@ fn test_arch_tms320c64x_detail() {
                 b"\x0b\x0c\x8b\x24",
                 &[
                     Mem(Tms320c64xOpMem(tms320c64x_op_mem {
-                        base: TMS320C64X_REG_A3,
+                        base: TMS320C64X_REG_A3 as c_uint,
                         disp: TMS320C64X_REG_A4 as c_uint,
-                        unit: TMS320C64X_FUNIT_D as c_uint,
+                        unit: Tms320c64xFuntionalUnit::D as c_uint,
                         scaled: false as c_uint,
-                        disptype: TMS320C64X_MEM_DISP_REGISTER as c_uint,
-                        direction: TMS320C64X_MEM_DIR_FW as c_uint,
-                        modify: TMS320C64X_MEM_MOD_NO as c_uint,
+                        disptype: Tms320c64xMemDisplayType::Register as c_uint,
+                        direction: Tms320c64xMemDirection::Forward as c_uint,
+                        modify: Tms320c64xMemModify::No as c_uint,
                     })),
                     RegPair(
                         RegId(TMS320C64X_REG_A23 as RegIdInt),
@@ -2596,6 +3342,59 @@ fn test_arch_tms320c64x_detail() {
     );
 }
 
+#[cfg(feature = "arch_tricore")]
+#[test]
+fn test_arch_tricore() {
+    test_arch_mode_endian_insns(
+        &mut Capstone::new()
+            .tricore()
+            .mode(tricore::ArchMode::TriCore162)
+            .build()
+            .unwrap(),
+        Arch::TRICORE,
+        Mode::TriCore162,
+        None,
+        &[],
+        &[("ld.a", b"\x09\xcf\xbc\xf5")],
+    );
+}
+
+#[cfg(feature = "arch_tricore")]
+#[test]
+fn test_arch_tricore_detail() {
+    use crate::arch::tricore::TriCoreOpMem;
+    use crate::arch::tricore::TriCoreOperand;
+    use capstone_sys::tricore_op_mem;
+    use capstone_sys::tricore_reg::*;
+
+    test_arch_mode_endian_insns_detail(
+        &mut Capstone::new()
+            .tricore()
+            .mode(tricore::ArchMode::TriCore162)
+            .build()
+            .unwrap(),
+        Arch::TRICORE,
+        Mode::TriCore162,
+        None,
+        &[],
+        &[
+            // ld.a a15, [+a12]#-4
+            DII::new(
+                "ld.a",
+                b"\x09\xcf\xbc\xf5",
+                &[
+                    TriCoreOperand::Reg(RegId(TRICORE_REG_A15 as RegIdInt)),
+                    TriCoreOperand::Mem(TriCoreOpMem(tricore_op_mem {
+                        base: TRICORE_REG_A12 as u8,
+                        disp: -4,
+                    })),
+                ],
+            ),
+        ],
+    );
+}
+
+#[cfg(feature = "arch_x86")]
 #[test]
 fn test_arch_x86() {
     test_arch_mode_endian_insns(
@@ -2664,6 +3463,7 @@ fn test_arch_x86() {
     );
 }
 
+#[cfg(feature = "arch_x86")]
 #[test]
 fn test_arch_x86_detail() {
     use crate::arch::x86::X86OperandType::*;
@@ -2690,13 +3490,13 @@ fn test_arch_x86_detail() {
                 &[
                     X86Operand {
                         size: 2,
-                        access: Some(RegAccessType::WriteOnly),
+                        access: Some(AccessType::WriteOnly),
                         op_type: Reg(RegId(X86_REG_CX as RegIdInt)),
                         ..Default::default()
                     },
                     X86Operand {
                         size: 2,
-                        access: Some(RegAccessType::ReadOnly),
+                        access: Some(AccessType::ReadOnly),
                         op_type: Mem(X86OpMem(x86_op_mem {
                             segment: 0,
                             base: X86_REG_SI,
@@ -2715,7 +3515,7 @@ fn test_arch_x86_detail() {
                 &[
                     X86Operand {
                         size: 1,
-                        access: Some(RegAccessType::ReadWrite),
+                        access: Some(AccessType::ReadWrite),
                         op_type: Mem(X86OpMem(x86_op_mem {
                             segment: 0,
                             base: X86_REG_BX,
@@ -2727,7 +3527,7 @@ fn test_arch_x86_detail() {
                     },
                     X86Operand {
                         size: 1,
-                        access: Some(RegAccessType::ReadOnly),
+                        access: Some(AccessType::ReadOnly),
                         op_type: Reg(RegId(X86_REG_AL as RegIdInt)),
                         ..Default::default()
                     },
@@ -2739,7 +3539,7 @@ fn test_arch_x86_detail() {
                 b"\xd8\x81\xc6\x34",
                 &[X86Operand {
                     size: 4,
-                    access: Some(RegAccessType::ReadOnly),
+                    access: Some(AccessType::ReadOnly),
                     op_type: Mem(X86OpMem(x86_op_mem {
                         segment: 0,
                         base: X86_REG_BX,
@@ -2757,13 +3557,13 @@ fn test_arch_x86_detail() {
                 &[
                     X86Operand {
                         size: 1,
-                        access: Some(RegAccessType::ReadWrite),
+                        access: Some(AccessType::ReadWrite),
                         op_type: Reg(RegId(X86_REG_AL as RegIdInt)),
                         ..Default::default()
                     },
                     X86Operand {
                         size: 1,
-                        access: Some(RegAccessType::ReadOnly),
+                        access: Some(AccessType::ReadOnly),
                         op_type: Mem(X86OpMem(x86_op_mem {
                             segment: 0,
                             base: X86_REG_BX,
@@ -2797,13 +3597,13 @@ fn test_arch_x86_detail() {
                 &[
                     X86Operand {
                         size: 4,
-                        access: Some(RegAccessType::WriteOnly),
+                        access: Some(AccessType::WriteOnly),
                         op_type: Reg(RegId(X86_REG_ECX as RegIdInt)),
                         ..Default::default()
                     },
                     X86Operand {
                         size: 4,
-                        access: Some(RegAccessType::ReadOnly),
+                        access: Some(AccessType::ReadOnly),
                         op_type: Mem(X86OpMem(x86_op_mem {
                             segment: 0,
                             base: X86_REG_EDX,
@@ -2822,13 +3622,13 @@ fn test_arch_x86_detail() {
                 &[
                     X86Operand {
                         size: 4,
-                        access: Some(RegAccessType::ReadWrite),
+                        access: Some(AccessType::ReadWrite),
                         op_type: Reg(RegId(X86_REG_EAX as RegIdInt)),
                         ..Default::default()
                     },
                     X86Operand {
                         size: 4,
-                        access: Some(RegAccessType::ReadOnly),
+                        access: Some(AccessType::ReadOnly),
                         op_type: Reg(RegId(X86_REG_EBX as RegIdInt)),
                         ..Default::default()
                     },
@@ -2841,7 +3641,7 @@ fn test_arch_x86_detail() {
                 &[
                     X86Operand {
                         size: 4,
-                        access: Some(RegAccessType::ReadWrite),
+                        access: Some(AccessType::ReadWrite),
                         op_type: Reg(RegId(X86_REG_ESI as RegIdInt)),
                         ..Default::default()
                     },
@@ -2874,7 +3674,7 @@ fn test_arch_x86_detail() {
                 b"\x55",
                 &[X86Operand {
                     size: 8,
-                    access: Some(RegAccessType::ReadOnly),
+                    access: Some(AccessType::ReadOnly),
                     op_type: Reg(RegId(X86_REG_RBP as RegIdInt)),
                     ..Default::default()
                 }],
@@ -2886,13 +3686,13 @@ fn test_arch_x86_detail() {
                 &[
                     X86Operand {
                         size: 8,
-                        access: Some(RegAccessType::WriteOnly),
+                        access: Some(AccessType::WriteOnly),
                         op_type: Reg(RegId(X86_REG_RAX as RegIdInt)),
                         ..Default::default()
                     },
                     X86Operand {
                         size: 8,
-                        access: Some(RegAccessType::ReadOnly),
+                        access: Some(AccessType::ReadOnly),
                         op_type: Mem(X86OpMem(x86_op_mem {
                             segment: 0,
                             base: X86_REG_RIP,
@@ -2908,6 +3708,7 @@ fn test_arch_x86_detail() {
     );
 }
 
+#[cfg(feature = "arch_xcore")]
 #[test]
 fn test_arch_xcore() {
     test_arch_mode_endian_insns(
@@ -2936,6 +3737,7 @@ fn test_arch_xcore() {
 }
 
 // XXX todo(tmfink) investigate upstream xcore operand bugs
+#[cfg(feature = "arch_xcore")]
 #[test]
 fn test_arch_xcore_detail() {
     use crate::arch::xcore::XcoreOperand::*;
@@ -3052,13 +3854,14 @@ fn test_arch_xcore_detail() {
     );
 }
 
+#[cfg(feature = "arch_riscv")]
 #[test]
 fn test_arch_riscv() {
     test_arch_mode_endian_insns(
         &mut Capstone::new()
             .riscv()
             .mode(riscv::ArchMode::RiscV64)
-            .extra_mode([riscv::ArchExtraMode::RiscVC].iter().map(|x| *x))
+            .extra_mode([riscv::ArchExtraMode::RiscVC].iter().copied())
             .build()
             .unwrap(),
         Arch::RISCV,
@@ -3077,6 +3880,7 @@ fn test_arch_riscv() {
     );
 }
 
+#[cfg(feature = "arch_riscv")]
 #[test]
 fn test_arch_riscv_detail() {
     use crate::arch::riscv::RiscVOperand::*;
@@ -3088,7 +3892,7 @@ fn test_arch_riscv_detail() {
         &mut Capstone::new()
             .riscv()
             .mode(riscv::ArchMode::RiscV64)
-            .extra_mode([riscv::ArchExtraMode::RiscVC].iter().map(|x| *x))
+            .extra_mode([riscv::ArchExtraMode::RiscVC].iter().copied())
             .build()
             .unwrap(),
         Arch::RISCV,
@@ -3123,7 +3927,7 @@ fn test_arch_riscv_detail() {
                 &[
                     Reg(RegId(RISCV_REG_X4 as RegIdInt)),
                     Mem(RiscVOpMem(riscv_op_mem {
-                        base: RISCV_REG_X5,
+                        base: RISCV_REG_X5 as c_uint,
                         disp: 8,
                     })),
                 ],
@@ -3160,6 +3964,7 @@ fn test_arch_riscv_detail() {
     );
 }
 
+#[cfg(feature = "arch_x86")]
 #[test]
 fn test_insn_size_and_alignment() {
     use capstone_sys::cs_insn;
@@ -3198,6 +4003,7 @@ fn test_insn_size_and_alignment() {
     }
 }
 
+#[cfg(feature = "arch_x86")]
 #[test]
 fn test_insn_from_raw() {
     use capstone_sys::cs_insn;
@@ -3214,4 +4020,161 @@ fn test_insn_from_raw() {
         let from_raw_insn = unsafe { Insn::from_raw(raw_insn) };
         assert_eq!(format!("{:?}", from_raw_insn), format!("{:?}", insn));
     }
+}
+
+#[cfg(feature = "arch_x86")]
+#[test]
+fn test_owned_insn() {
+    let cs = Capstone::new()
+        .x86()
+        .mode(x86::ArchMode::Mode64)
+        .detail(true)
+        .build()
+        .unwrap();
+
+    let insns = cs.disasm_all(X86_CODE, START_TEST_ADDR).unwrap();
+    let owned: Vec<OwnedInsn> = insns.iter().map(|i| i.into()).collect();
+    for (insn, owned) in insns.iter().zip(&owned) {
+        assert_eq!(format!("{:?}", insn), format!("{:?}", owned));
+    }
+}
+
+/// Print register names
+fn reg_names(cs: &Capstone, regs: &[RegId]) -> String {
+    let names: Vec<String> = regs.iter().map(|&x| cs.reg_name(x).unwrap()).collect();
+    names.join(", ")
+}
+
+/// Print instruction group names
+fn group_names(cs: &Capstone, regs: &[InsnGroupId]) -> String {
+    let names: Vec<String> = regs.iter().map(|&x| cs.group_name(x).unwrap()).collect();
+    names.join(", ")
+}
+
+#[derive(Clone, Debug, PartialEq, Eq, Hash)]
+#[cfg(feature = "full")]
+struct RegAccessVec {
+    read: Vec<RegId>,
+    write: Vec<RegId>,
+}
+
+#[cfg(feature = "full")]
+impl RegAccessVec {
+    /// Sort read and write fields
+    fn sort(&mut self) {
+        self.read.sort_unstable();
+        self.write.sort_unstable();
+    }
+}
+
+/// Get the registers which are read and written
+#[cfg(feature = "full")]
+fn regs_access_vec(cs: &Capstone, insn: &Insn) -> CsResult<RegAccessVec> {
+    let mut regs_read = [MaybeUninit::uninit(); REGS_ACCESS_BUF_LEN];
+    let mut regs_write = [MaybeUninit::uninit(); REGS_ACCESS_BUF_LEN];
+
+    let reg_access = cs.regs_access(insn, &mut regs_read, &mut regs_write)?;
+
+    Ok(RegAccessVec {
+        read: reg_access.read.to_vec(),
+        write: reg_access.write.to_vec(),
+    })
+}
+
+#[cfg(feature = "full")]
+fn assert_regs_access_matches(
+    cs: &mut Capstone,
+    bytes: &[u8],
+    expected_regs_access: CsResult<&[RegAccessVec]>,
+) {
+    let expected_regs_access = expected_regs_access.map(|accesses: &[RegAccessVec]| {
+        accesses
+            .iter()
+            .map(|regs| {
+                let mut regs = regs.clone();
+                regs.sort();
+                regs
+            })
+            .collect::<Vec<RegAccessVec>>()
+    });
+    let insns = cs.disasm_all(bytes, 0x1000).unwrap();
+    let reg_access: CsResult<Vec<RegAccessVec>> = insns
+        .iter()
+        .map(|insn| {
+            regs_access_vec(cs, insn).map(|mut regs| {
+                regs.sort();
+                regs
+            })
+        })
+        .collect();
+    let reg_access = reg_access.as_ref().map(|access| access.as_slice());
+    assert_eq!(reg_access, expected_regs_access.as_deref());
+}
+
+fn as_reg_access<T: TryInto<RegIdInt> + Copy + Debug>(read: &[T], write: &[T]) -> RegAccessVec {
+    let as_reg_access = |input: &[T]| -> Vec<RegId> {
+        input
+            .iter()
+            .copied()
+            .map(|reg| {
+                RegId(
+                    reg.try_into()
+                        .unwrap_or_else(|_| panic!("Failed to create RegInt")),
+                )
+            })
+            .collect()
+    };
+    RegAccessVec {
+        read: as_reg_access(read),
+        write: as_reg_access(write),
+    }
+}
+
+#[cfg(feature = "full")]
+fn test_regs_access(
+    mut cs: Capstone,
+    code: &[u8],
+    expected_regs_access: CsResult<&[RegAccessVec]>,
+) {
+    // should always fail when not in debug mode
+    assert_regs_access_matches(&mut cs, code, CsResult::Err(Error::DetailOff));
+
+    // now detail is enabled, check for expected outcome
+    cs.set_detail(true).expect("failed to set detail");
+    assert_regs_access_matches(&mut cs, code, expected_regs_access);
+}
+
+#[cfg(all(feature = "full", feature = "arch_arm"))]
+#[test]
+fn test_regs_access_arm() {
+    use crate::arch::arm::ArmReg::*;
+
+    test_regs_access(
+        Capstone::new()
+            .arm()
+            .mode(arm::ArchMode::Thumb)
+            .build()
+            .unwrap(),
+        b"\xf0\xbd",
+        CsResult::Ok(&[as_reg_access(
+            &[ARM_REG_SP],
+            &[
+                ARM_REG_SP, ARM_REG_R4, ARM_REG_R5, ARM_REG_R6, ARM_REG_R7, ARM_REG_PC,
+            ],
+        )]),
+    );
+}
+
+#[cfg(all(feature = "full", feature = "arch_tms320c64x"))]
+#[test]
+fn test_regs_tms320c64x() {
+    test_regs_access(
+        Capstone::new()
+            .tms320c64x()
+            .mode(tms320c64x::ArchMode::Default)
+            .build()
+            .unwrap(),
+        b"\x01\xac\x88\x40",
+        CsResult::Err(Error::UnsupportedArch),
+    );
 }

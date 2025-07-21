@@ -12,7 +12,7 @@ pub struct CapstoneArchInfo<'a> {
     cs_name: &'a str,
 }
 
-impl<'a> CapstoneArchInfo<'a> {
+impl CapstoneArchInfo<'_> {
     /// Get the name of the C header
     pub fn header_name(&self) -> &str {
         self.header_name
@@ -50,12 +50,20 @@ pub static ARCH_INCLUDES: &[CapstoneArchInfo<'static>] = &[
         cs_name: "mips",
     },
     CapstoneArchInfo {
+        header_name: "mos65xx.h",
+        cs_name: "mos65xx",
+    },
+    CapstoneArchInfo {
         header_name: "ppc.h",
         cs_name: "ppc",
     },
     CapstoneArchInfo {
         header_name: "riscv.h",
         cs_name: "riscv",
+    },
+    CapstoneArchInfo {
+        header_name: "sh.h",
+        cs_name: "sh",
     },
     CapstoneArchInfo {
         header_name: "sparc.h",
@@ -70,6 +78,10 @@ pub static ARCH_INCLUDES: &[CapstoneArchInfo<'static>] = &[
         cs_name: "tms320c64x",
     },
     CapstoneArchInfo {
+        header_name: "tricore.h",
+        cs_name: "tricore",
+    },
+    CapstoneArchInfo {
         header_name: "x86.h",
         cs_name: "x86",
     },
@@ -77,6 +89,10 @@ pub static ARCH_INCLUDES: &[CapstoneArchInfo<'static>] = &[
         header_name: "xcore.h",
         cs_name: "xcore",
     },
+    CapstoneArchInfo {
+        header_name: "bpf.h",
+        cs_name: "bpf"
+    }
 ];
 
 pub static BINDINGS_FILE: &str = "capstone.rs";

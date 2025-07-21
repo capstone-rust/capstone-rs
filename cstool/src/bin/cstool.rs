@@ -8,7 +8,10 @@ use std::process::exit;
 use std::str::FromStr;
 
 use capstone::{self, prelude::*, Arch, Endian, EnumList, ExtraMode, Mode};
-use clap::{App, Arg, ArgGroup};
+use clap::{
+    builder::{PossibleValuesParser, Str},
+    Arg, ArgAction, ArgGroup, Command,
+};
 use log::{debug, info};
 
 const DEFAULT_CAPACITY: usize = 1024;
@@ -25,7 +28,7 @@ where
         match self {
             Ok(t) => t,
             Err(e) => {
-                eprintln!("error: {}", e);
+                eprintln!("error: {e}");
                 exit(1);
             }
         }
@@ -50,12 +53,12 @@ fn unhexed_bytes(input: Vec<u8>) -> Vec<u8> {
     let mut curr_byte_str = String::with_capacity(2);
     for b_u8 in input {
         let b = char::from(b_u8);
-        if ('0'..='9').contains(&b) || ('a'..='f').contains(&b) || ('A'..='F').contains(&b) {
+        if b.is_ascii_hexdigit() {
             curr_byte_str.push(b);
         }
 
         if curr_byte_str.len() == 2 {
-            debug!("  curr_byte_str={:?}", curr_byte_str);
+            debug!("  curr_byte_str={curr_byte_str:?}");
             let byte = u8::from_str_radix(&curr_byte_str, 16).expect("Unexpect hex parse error");
             output.push(byte);
             curr_byte_str.clear();
@@ -63,8 +66,8 @@ fn unhexed_bytes(input: Vec<u8>) -> Vec<u8> {
     }
 
     if log::max_level() >= log::LevelFilter::Info {
-        let output_hex: Vec<String> = output.iter().map(|x| format!("{:02x}", x)).collect();
-        info!("unhexed_output = {:?}", output_hex);
+        let output_hex: Vec<String> = output.iter().map(|x| format!("{x:02x}")).collect();
+        info!("unhexed_output = {output_hex:?}");
     }
 
     output
@@ -90,7 +93,7 @@ fn disasm<T: Iterator<Item = ExtraMode>>(
     let mut handle = stdout.lock();
 
     for i in cs.disasm_all(code, addr).expect_exit().iter() {
-        let bytes: Vec<_> = i.bytes().iter().map(|x| format!("{:02x}", x)).collect();
+        let bytes: Vec<_> = i.bytes().iter().map(|x| format!("{x:02x}")).collect();
         let bytes = bytes.join(" ");
         let _ = writeln!(
             &mut handle,
@@ -112,7 +115,7 @@ fn disasm<T: Iterator<Item = ExtraMode>>(
                 ("insn groups:", group_names(&cs, detail.groups())),
             ];
 
-            for &(ref name, ref message) in output.iter() {
+            for (name, message) in output.iter() {
                 let _ = writeln!(&mut handle, "{:13}{:12} {}", "", name, message).is_ok();
             }
         }
@@ -143,120 +146,110 @@ Example:
 
 fn main() {
     // Lowercase arches
-    let _arches: Vec<String> = Arch::variants()
+    let arches: Vec<Str> = Arch::variants()
         .iter()
-        .map(|x| format!("{}", x).to_lowercase())
+        .map(|x| format!("{x}").to_lowercase().into())
         .collect();
-    let arches: Vec<&str> = _arches.iter().map(|x| x.as_str()).collect();
 
     // Lowercase modes
-    let _modes: Vec<String> = Mode::variants()
+    let modes: Vec<Str> = Mode::variants()
         .iter()
-        .map(|x| format!("{}", x).to_lowercase())
+        .map(|x| format!("{x}").to_lowercase().into())
         .collect();
-    let modes: Vec<&str> = _modes.iter().map(|x| x.as_str()).collect();
 
     // Lowercase extra modes
-    let _extra_modes: Vec<String> = ExtraMode::variants()
+    let extra_modes: Vec<Str> = ExtraMode::variants()
         .iter()
-        .map(|x| format!("{}", x).to_lowercase())
+        .map(|x| format!("{x}").to_lowercase().into())
         .collect();
-    let extra_modes: Vec<&str> = _extra_modes.iter().map(|x| x.as_str()).collect();
 
-    let matches = App::new("capstone-rs disassembler tool")
+    let matches = Command::new("capstone-rs disassembler tool")
         .about("Disassembles binary file")
         .after_help(AFTER_HELP)
         .arg(
-            Arg::with_name(FILE_ARG)
-                .short("f")
+            Arg::new(FILE_ARG)
+                .short('f')
                 .long(FILE_ARG)
                 .help("input file with binary instructions")
-                .takes_value(true),
+                .value_name("FILE"),
         )
         .arg(
-            Arg::with_name(STDIN_ARG)
-                .short("s")
+            Arg::new(STDIN_ARG)
+                .short('s')
                 .long(STDIN_ARG)
                 .help("read binary instructions from stdin")
-                .takes_value(false),
+                .action(ArgAction::SetTrue),
         )
         .arg(
-            Arg::with_name(CODE_ARG)
-                .short("c")
+            Arg::new(CODE_ARG)
+                .short('c')
                 .long(CODE_ARG)
-                .help("instruction bytes (implies --hex)")
-                .takes_value(true),
+                .help("instruction bytes (implies --hex)"),
         )
         .arg(
-            Arg::with_name(ADDRESS_ARG)
-                .short("r")
+            Arg::new(ADDRESS_ARG)
+                .short('r')
                 .long("addr")
-                .help("address of code")
-                .takes_value(true),
+                .help("address of code"),
         )
         .arg(
-            Arg::with_name(VERBOSE_ARG)
-                .short("v")
-                .multiple(true)
-                .help("Sets the level of verbosity"),
+            Arg::new(VERBOSE_ARG)
+                .short('v')
+                .help("Sets the level of verbosity")
+                .action(ArgAction::Count),
         )
         .arg(
-            Arg::with_name(HEX_ARG)
-                .short("x")
+            Arg::new(HEX_ARG)
+                .short('x')
                 .long(HEX_ARG)
                 .help("Treat input has hex; only select characters that are [a-fA-F0-9]")
-                .takes_value(false),
+                .action(ArgAction::SetTrue),
         )
         .arg(
-            Arg::with_name(DETAIL_ARG)
-                .short("d")
+            Arg::new(DETAIL_ARG)
+                .short('d')
                 .long(DETAIL_ARG)
                 .help("Print details about instructions")
-                .takes_value(false),
+                .action(ArgAction::SetTrue),
         )
         .arg(
-            Arg::with_name(ARCH_ARG)
-                .short("a")
+            Arg::new(ARCH_ARG)
+                .short('a')
                 .long(ARCH_ARG)
                 .help("Architecture")
-                .takes_value(true)
                 .required(true)
-                .possible_values(arches.as_slice())
-                .case_insensitive(true),
+                .value_parser(PossibleValuesParser::new(arches))
+                .ignore_case(true),
         )
         .arg(
-            Arg::with_name(MODE_ARG)
-                .short("m")
+            Arg::new(MODE_ARG)
+                .short('m')
                 .long(MODE_ARG)
                 .help(MODE_ARG)
-                .takes_value(true)
                 .required(true)
-                .possible_values(modes.as_slice())
-                .case_insensitive(true),
+                .value_parser(PossibleValuesParser::new(modes))
+                .ignore_case(true),
         )
         .arg(
-            Arg::with_name(EXTRA_MODE_ARG)
-                .short("e")
+            Arg::new(EXTRA_MODE_ARG)
+                .short('e')
                 .long(EXTRA_MODE_ARG)
                 .help("Extra Mode")
-                .takes_value(true)
                 .required(false)
-                .possible_values(extra_modes.as_slice())
-                .case_insensitive(true)
-                .multiple(true),
+                .value_parser(PossibleValuesParser::new(extra_modes))
+                .ignore_case(true),
         )
         .arg(
-            Arg::with_name(ENDIAN_ARG)
-                .short("n")
+            Arg::new(ENDIAN_ARG)
+                .short('n')
                 .long(ENDIAN_ARG)
                 .help("Endianness")
-                .takes_value(true)
                 .required(false)
-                .possible_values(&["little", "big"])
-                .case_insensitive(true),
+                .value_parser(PossibleValuesParser::new(["little", "big"]))
+                .ignore_case(true),
         )
         .group(
-            ArgGroup::with_name("input")
+            ArgGroup::new("input")
                 .arg(FILE_ARG)
                 .arg(STDIN_ARG)
                 .arg(CODE_ARG)
@@ -264,17 +257,17 @@ fn main() {
         )
         .get_matches();
 
-    let direct_input_bytes: Vec<u8> = if let Some(file_path) = matches.value_of(FILE_ARG) {
+    let direct_input_bytes: Vec<u8> = if let Some(file_path) = matches.get_one::<String>(FILE_ARG) {
         let mut file = File::open(file_path).expect_exit();
         let capacity = match file.metadata() {
             Err(_) => DEFAULT_CAPACITY,
             Ok(metadata) => metadata.len() as usize,
         };
-        let mut buf = Vec::with_capacity(capacity as usize);
+        let mut buf = Vec::with_capacity(capacity);
         file.read_to_end(&mut buf).expect_exit();
         buf
-    } else if let Some(code) = matches.value_of(CODE_ARG) {
-        code.as_bytes().iter().copied().collect()
+    } else if let Some(code) = matches.get_one::<String>(CODE_ARG) {
+        code.as_bytes().to_vec()
     } else {
         let mut buf = Vec::with_capacity(DEFAULT_CAPACITY);
         let stdin = std::io::stdin();
@@ -283,36 +276,41 @@ fn main() {
     };
 
     stderrlog::new()
-        .verbosity(matches.occurrences_of(VERBOSE_ARG) as usize)
+        .verbosity(matches.get_count(VERBOSE_ARG) as usize)
         .init()
         .unwrap();
 
-    let is_hex = matches.is_present(HEX_ARG) || matches.is_present(CODE_ARG);
-    info!("is_hex = {:?}", is_hex);
+    let is_hex = matches.get_flag(HEX_ARG) || matches.get_one::<String>(CODE_ARG).is_some();
+    info!("is_hex = {is_hex:?}");
 
-    let show_detail = matches.is_present(DETAIL_ARG);
-    info!("show_detail = {:?}", show_detail);
+    let show_detail = matches.get_flag(DETAIL_ARG);
+    info!("show_detail = {show_detail:?}");
 
-    let arch: Arch = Arch::from_str(matches.value_of(ARCH_ARG).unwrap()).unwrap();
-    info!("Arch = {:?}", arch);
+    let arch: Arch = Arch::from_str(matches.get_one::<String>(ARCH_ARG).unwrap()).unwrap();
+    info!("Arch = {arch:?}");
 
-    let mode: Mode = Mode::from_str(matches.value_of(MODE_ARG).unwrap()).unwrap();
-    info!("Mode = {:?}", mode);
+    let mode: Mode = Mode::from_str(matches.get_one::<String>(MODE_ARG).unwrap()).unwrap();
+    info!("Mode = {mode:?}");
 
-    let extra_mode: Vec<_> = match matches.values_of(EXTRA_MODE_ARG) {
+    let extra_mode: Vec<_> = match matches.get_many::<String>(EXTRA_MODE_ARG) {
         None => Vec::with_capacity(0),
         Some(x) => x.map(|x| ExtraMode::from_str(x).unwrap()).collect(),
     };
-    info!("ExtraMode = {:?}", extra_mode);
+    info!("ExtraMode = {extra_mode:?}");
 
     let endian: Option<Endian> = matches
-        .value_of(ENDIAN_ARG)
+        .get_one::<String>(ENDIAN_ARG)
         .map(|x| Endian::from_str(x).expect_exit());
-    info!("Endian = {:?}", endian);
+    info!("Endian = {endian:?}");
 
-    let address =
-        u64::from_str_radix(matches.value_of(ADDRESS_ARG).unwrap_or("1000"), 16).expect_exit();
-    info!("Address = 0x{:x}", address);
+    let address = u64::from_str_radix(
+        matches
+            .get_one::<String>(ADDRESS_ARG)
+            .unwrap_or(&"1000".into()),
+        16,
+    )
+    .expect_exit();
+    info!("Address = 0x{address:x}");
 
     let input_bytes = if is_hex {
         unhexed_bytes(direct_input_bytes)

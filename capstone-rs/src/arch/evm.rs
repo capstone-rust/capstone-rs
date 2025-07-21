@@ -14,7 +14,7 @@ use crate::arch::DetailsArchInsn;
 /// Contains EVM-specific details for an instruction
 pub struct EvmInsnDetail<'a>(pub(crate) &'a cs_evm);
 
-impl<'a> EvmInsnDetail<'a> {
+impl EvmInsnDetail<'_> {
     /// Number of items popped from the stack
     pub fn popped_items(&self) -> u8 {
         self.0.pop
@@ -36,14 +36,8 @@ impl_PartialEq_repr_fields!(EvmInsnDetail<'a> [ 'a ];
 );
 
 /// EVM has no operands, so this is a zero-size type.
-#[derive(Clone, Debug, Eq, PartialEq)]
+#[derive(Clone, Debug, Eq, PartialEq, Default)]
 pub struct EvmOperand(());
-
-impl Default for EvmOperand {
-    fn default() -> Self {
-        EvmOperand(())
-    }
-}
 
 // Do not use def_arch_details_struct! since EVM does not have operands
 
@@ -83,7 +77,7 @@ impl fmt::Debug for EvmOperandIterator {
     }
 }
 
-impl<'a> fmt::Debug for EvmInsnDetail<'a> {
+impl fmt::Debug for EvmInsnDetail<'_> {
     fn fmt(&self, fmt: &mut fmt::Formatter) -> ::core::fmt::Result {
         fmt.debug_struct("EvmInsnDetail")
             .field("cs_evm", &(self.0 as *const cs_evm))
@@ -91,7 +85,7 @@ impl<'a> fmt::Debug for EvmInsnDetail<'a> {
     }
 }
 
-impl<'a> DetailsArchInsn for EvmInsnDetail<'a> {
+impl DetailsArchInsn for EvmInsnDetail<'_> {
     type OperandIterator = EvmOperandIterator;
     type Operand = EvmOperand;
 

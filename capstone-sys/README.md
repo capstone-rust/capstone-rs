@@ -5,8 +5,6 @@ Low-level, unsafe Rust bindings for the [`Capstone`][capstone] disassembly libra
 [capstone]: https://github.com/aquynh/capstone
 
 [![Crates.io Badge](https://img.shields.io/crates/v/capstone-sys.svg)](https://crates.io/crates/capstone-sys)
-[![Travis CI Badge](https://travis-ci.org/capstone-rust/capstone-sys.svg?branch=master)](https://travis-ci.org/capstone-rust/capstone-sys)
-[![Appveyor CI Badge](https://ci.appveyor.com/api/projects/status/github/capstone-rust/capstone-sys?svg=true&branch=master)](https://ci.appveyor.com/project/tmfink/capstone-sys)
 
 **[API Documentation](https://docs.rs/capstone-sys/)**
 
@@ -18,29 +16,16 @@ Instead, consider using [capstone-rs](https://github.com/capstone-rust/capstone-
 
 ## Requirements
 
-* Rust version >= 1.50.0
+* Minimum Rust Version: `1.70.0`
 * A toolchain capable of compiling Capstone
     - We build the bundled Capstone with the [`cc` crate](https://github.com/alexcrichton/cc-rs)
-
-[Rust unions]: https://doc.rust-lang.org/stable/reference/items/unions.html
-
-### Supported Platforms
-
-| Platform                   | Supported |
-| -------------------------- | -- |
-| `x86_64-apple-darwin`      | X  |
-| `i686-apple-darwin`        | X  |
-| `x86_64-pc-windows-msvc`   | X  |
-| `x86_64-pc-windows-gnu`    | X  |
-| `i686-pc-windows-msvc`     | X  |
-| `i686-pc-windows-gnu`      | X  |
-| `x86_64-unknown-linux-gnu` | X  |
-| `i686-unknown-linux-gnu`   | X  |
-| `x86_64-unknown-freebsd`   | X  |
 
 ## Features
 
 You can specify the following [features](https://doc.rust-lang.org/cargo/reference/manifest.html#the-features-section) in `Cargo.toml`:
 * `use_bindgen`: instead of using the pre-generated Capstone bindings, dynamically generate bindings with [`bindgen`][bindgen].
+* `full` (enabled by default): enable full capstone build instead of diet.
+* `arch_$ARCH` (enabled by default): enable arch `$ARCH` support in capstone, e.g. `arch_arm64` enables arch arm64 support.
+* `support_all_archs` (enabled by default): enable all archs available in capstone, imply all `arch_$ARCH` features.
 
 [bindgen]: https://github.com/rust-lang-nursery/rust-bindgen

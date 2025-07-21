@@ -74,7 +74,7 @@ impl_PartialEq_repr_fields!(XcoreOpMem;
 
 impl cmp::Eq for XcoreOpMem {}
 
-impl<'a> From<&'a cs_xcore_op> for XcoreOperand {
+impl From<&cs_xcore_op> for XcoreOperand {
     fn from(insn: &cs_xcore_op) -> XcoreOperand {
         match insn.type_ {
             xcore_op_type::XCORE_OP_REG => {

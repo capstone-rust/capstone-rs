@@ -9,8 +9,8 @@ char *(*function)(csh *, cs_mode, cs_insn*) = NULL;
 void test_single_MC(csh *handle, int mc_mode, char *line)
 {
 	char **list_part, **list_byte;
-	int size_part, size_byte, size_data, size_insn;
-	int i, count, count_noreg;
+	int size_part, size_byte;
+	int i, count;
 	unsigned char *code;
 	cs_insn *insn;
 	char tmp[MAXMEM], tmp_mc[MAXMEM], origin[MAXMEM], tmp_noreg[MAXMEM];
@@ -72,7 +72,7 @@ void test_single_MC(csh *handle, int mc_mode, char *line)
 	replace_negative(tmp, mc_mode);
 
 	if (cs_option(*handle, CS_OPT_SYNTAX, CS_OPT_SYNTAX_NOREGNAME) == CS_ERR_OK) {
-		count_noreg = cs_disasm(*handle, code, size_byte, offset, 0, &insn);
+		cs_disasm(*handle, code, size_byte, offset, 0, &insn);
 		strcpy(tmp_noreg, insn[0].mnemonic);
 		if (strlen(insn[0].op_str) > 0) {
 			tmp_noreg[strlen(insn[0].mnemonic)] = ' ';
@@ -181,6 +181,9 @@ int set_function(int arch)
 		case CS_ARCH_RISCV:
 			function = get_detail_riscv;
 			break;
+		case CS_ARCH_TRICORE:
+			function = get_detail_tricore;
+			break;
 		default:
 			return -1;
 	}
@@ -189,9 +192,8 @@ int set_function(int arch)
 
 void test_single_issue(csh *handle, cs_mode mode, char *line, int detail)
 {
-	char **list_part, **list_byte, **list_part_cs_result, **list_part_issue_result;
-	int size_part, size_byte, size_part_cs_result, size_part_issue_result;
-	char *tmptmp;
+	char **list_part, **list_byte, **list_part_issue_result;
+	int size_part, size_byte, size_part_issue_result;
 	int i, count, j;
 	unsigned char *code;
 	cs_insn *insn;
@@ -243,7 +245,7 @@ void test_single_issue(csh *handle, cs_mode mode, char *line, int detail)
 			}
 		}
 	}
-	
+
 	trim_str(cs_result);
 	add_str(&cs_result, " ;");
 	//	list_part_cs_result = split(cs_result, " ; ", &size_part_cs_result);
@@ -252,9 +254,7 @@ void test_single_issue(csh *handle, cs_mode mode, char *line, int detail)
 
 	for (i = 0; i < size_part_issue_result; ++i) {
 		trim_str(list_part_issue_result[i]);
-		memset(tmptmp, MAXMEM, 0);
-		
-		tmptmp = (char *)malloc(sizeof(char));
+		char *tmptmp = (char *)malloc(sizeof(char));
 		tmptmp[0] = '\0';
 		add_str(&tmptmp, "%s", list_part_issue_result[i]);
 		add_str(&tmptmp, " ;");
@@ -267,9 +267,9 @@ void test_single_issue(csh *handle, cs_mode mode, char *line, int detail)
 			free(cs_result);
 			//	free_strs(list_part_cs_result, size_part_cs_result);
 			free_strs(list_part_issue_result, size_part_issue_result);
-			free(tmptmp);
 			_fail(__FILE__, __LINE__);
 		}
+		free(tmptmp);
 	}
 
 	cs_free(insn, count);

@@ -65,7 +65,7 @@ impl_PartialEq_repr_fields!(MipsOpMem;
 
 impl cmp::Eq for MipsOpMem {}
 
-impl<'a> From<&'a cs_mips_op> for MipsOperand {
+impl From<&cs_mips_op> for MipsOperand {
     fn from(insn: &cs_mips_op) -> MipsOperand {
         match insn.type_ {
             mips_op_type::MIPS_OP_REG => {

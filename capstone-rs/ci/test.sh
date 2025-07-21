@@ -1,20 +1,29 @@
 #!/usr/bin/env bash
 #
-# Modified `ci/test.sh` from capstone-sys
 # Environment variables:
 #
-# FEATURES: (none by default)
-# NO_DEFAULT_FEATURES: enables --no-default-features
-# ALL_FEATURES: enables --all-features
-# JOB: {*test,valgrind-test,bench,cov}
-# PROFILES: list of {debug,release} [debug release]
-# SHOULD_FAIL: (disabled by default; set to non-empty string to enable)
-# VALGRIND_TESTS: run tests under Valgrind
+# features:
+# - FEATURES: (none by default)
+# - NO_DEFAULT_FEATURES: enables --no-default-features
+# - ALL_FEATURES: enables --all-features
+#
+# other:
+# - JOB: {*test,valgrind-test,bench,cov}
+# - PROFILES: list of {debug,release} [debug release]
+# - SHOULD_FAIL: (disabled by default; set to non-empty string to enable)
+# - SKIP_CARGO_UPDATE: set to disable "cargo update" part of tests
+# - VALGRIND_TESTS: run tests under Valgrind
+
+# Useful debug info
+echo "BASH=${BASH}"
+echo "BASH_VERSION=${BASH_VERSION}"
+echo "BASH_OPTIONS=$-"
+echo "BASH_COMPAT=${BASH_COMPAT}"
 
 set -euo pipefail
 set -x
 
-if [ $(basename "$0") = "test.sh" ]; then
+if [ "$(basename "$0")" = "test.sh" ]; then
     cd "$(dirname "$0")/.."
 else
     echo "Script is sourced"
@@ -27,15 +36,17 @@ Error() {
     exit 1
 }
 
-RUST_BACKTRACE=1
+export RUST_BACKTRACE=1
 SHOULD_FAIL=${SHOULD_FAIL:-}  # Default to false
 VALGRIND_TESTS=${VALGRIND_TESTS:-}
+CARGO="${CARGO:-cargo}"
+UNAME="$(uname)"
 
 # Feature vars
-if [ -n "${ALL_FEATURES:-}" -a -n "${NO_DEFAULT_FEATURES:-}" ]; then
+if [ -n "${ALL_FEATURES:-}" ] && [ -n "${NO_DEFAULT_FEATURES:-}" ]; then
     Error "ALL_FEATURES and NO_DEFAULT_FEATURES are mutually exclusive"
 fi
-if [ -n "${ALL_FEATURES:-}" -a -n "${FEATURES:-}" ]; then
+if [ -n "${ALL_FEATURES:-}" ] && [ -n "${FEATURES:-}" ]; then
     Error "ALL_FEATURES and FEATURES are mutually exclusive"
 fi
 CARGO_FEATURE_ARGS=(
@@ -44,10 +55,9 @@ CARGO_FEATURE_ARGS=(
     ${FEATURES:+ --features "$FEATURES"}
 )
 
-PROJECT_NAME="$(grep ^name Cargo.toml | head -n1 | xargs -n1 | tail -n1)"
 TARGET="../target"
 TARGET_COV="${TARGET}/cov"
-SIMPLE_RUN_EXAMPLES="${SIMPLE_RUN_EXAMPLES:-demo parallel}"
+SIMPLE_RUN_EXAMPLES="${SIMPLE_RUN_EXAMPLES:-demo}"
 export USER="${USER:-$(id -u -n)}"
 
 PASS="PASS"
@@ -63,12 +73,20 @@ echo "Running as USER=$USER"
 echo "Test should $EXPECTED_RESULT"
 
 if ! [ "${OS_NAME:-}" ]; then
-    case "$(uname)" in
+    case "${UNAME}" in
+    CYGWIN*|MINGW*|MSYS_NT*) OS_NAME=windows ;;
     Linux) OS_NAME=linux ;;
     Darwin) OS_NAME=osx ;;
     FreeBSD) OS_NAME=freebsd ;;
     esac
 fi
+
+true_path() {
+    case "${OS_NAME}" in
+        windows) cygpath -m "$@" ;;
+        *) echo "$@" ;;
+    esac
+}
 
 # Usage: SHOULD_FAIL [ARG1 [ARG2 [...]]]
 expect_exit_status() {
@@ -129,23 +147,23 @@ cleanup_cov() {
 
 run_kcov() {
     KCOV="${KCOV:-kcov}"
-    COVERALLS_ARG="${TRAVIS_JOB_ID:+--coveralls-id=$TRAVIS_JOB_ID}"
+    COVERALLS_ARG="${TRAVIS_JOB_ID:+--coveralls-id=${TRAVIS_JOB_ID}}"
 
     # Build binaries
-    json_format_args="--quiet --message-format=json"
+    json_format_args=(--quiet --message-format=json)
 
     # Test binaries
-    cargo_test_args="cargo test --no-run"
+    cargo_test_args="${CARGO} test --no-run"
     ${cargo_test_args} -v
-    TEST_BINS="$(${cargo_test_args} ${json_format_args} \
+    TEST_BINS="$(${cargo_test_args} "${json_format_args[@]}" \
         | jq -r "select(.profile.test == true) | .filenames[]")"
 
     # Exaple binaries
     EXAMPLE_BINS=
     for example in $SIMPLE_RUN_EXAMPLES; do
-        cargo_build_example_args="cargo build --example $example"
+        cargo_build_example_args="${CARGO} build --example $example"
         ${cargo_build_example_args} -v
-        example_bin="$(${cargo_build_example_args} ${json_format_args} \
+        example_bin="$(${cargo_build_example_args} "${json_format_args[@]}" \
             | jq -r '.executable | strings')"
         EXAMPLE_BINS="${EXAMPLE_BINS} ${example_bin}"
     done
@@ -156,13 +174,13 @@ run_kcov() {
     set -x
 
     pwd
-    ls -l ${TARGET}
-    ls -l ${TARGET}/${PROFILE}
+    ls -l "${TARGET}"
+    ls -l "${TARGET}/${PROFILE}"
 
     # Run test and example binaries under kcov
     for file in ${TEST_BINS} ${EXAMPLE_BINS} ; do
-        "$KCOV" \
-            $COVERALLS_ARG \
+        ${KCOV} \
+            ${COVERALLS_ARG} \
             --include-pattern=capstone-rs \
             --exclude-pattern=/.cargo,/usr/lib,/out/capstone.rs,capstone-sys \
             --verify "${TARGET_COV}" "$file"
@@ -172,6 +190,7 @@ run_kcov() {
 
 cov() {
     echo "Running coverage"
+    cargo_update
 
     install_kcov
     cleanup_cov
@@ -191,7 +210,10 @@ cov() {
 }
 
 bench() {
-    cargo bench
+    echo "Running bench"
+    cargo_update
+
+    ${CARGO} bench
 }
 
 profile_args() {
@@ -209,9 +231,9 @@ test_rust_file() {
     tmp_dir="$(mktemp -d /tmp/rust.testdir.XXXXXXXXXX)"
     [ -d "$tmp_dir" ] || Error "Could not make temp dir"
 
-    capstone_dir="$(pwd)"
+    capstone_dir="$(true_path "$(pwd)")"
     cd "$tmp_dir"
-    cargo new --bin test_project -v
+    ${CARGO} new --bin test_project -v
     cd test_project
     echo "capstone = { path = \"$capstone_dir\" }" >> Cargo.toml
     cat Cargo.toml
@@ -223,13 +245,15 @@ test_rust_file() {
         $(profile_args)
         --verbose
         )
-    cargo check "${cargo_cmd_args[@]}" || exit 1
+    ${CARGO} check "${cargo_cmd_args[@]}" || exit 1
 
     rm -rf "$tmp_dir"
     ) || exit 1
 }
 
 run_tests() {
+    cargo_update
+
     TMPFILE="$(mktemp /tmp/capstone-rs.XXXXXXXXXX)"
     [ -f "$TMPFILE" ] || Error "Could not make temp file"
     for PROFILE in $PROFILES; do
@@ -240,16 +264,16 @@ run_tests() {
             "${CARGO_FEATURE_ARGS[@]}"
         )
         expect_exit_status "$SHOULD_FAIL" \
-            cargo test "${cargo_cmd_args[@]}" \
+            ${CARGO} test "${cargo_cmd_args[@]}" \
             --color=always -- --color=always \
             2>&1 | tee "$TMPFILE"
         # Use 2>&1 above instead of '|&' because OS X uses Bash 3
         for example in $SIMPLE_RUN_EXAMPLES; do
-            cargo run "${cargo_cmd_args[@]}" --example "$example"
+            ${CARGO} run "${cargo_cmd_args[@]}" --example "$example"
         done
         (
             cd ../cstool
-            cargo run $(profile_args) -- \
+            ${CARGO} run $(profile_args) -- \
                 --arch x86 --mode mode64 --file ../capstone-rs/test-inputs/x86_64.bin_ls.bin |
                 head -n20
         )
@@ -263,6 +287,9 @@ run_tests() {
         if [ ! "${VALGRIND_TESTS}" ]; then
             continue
         fi
+
+        which valgrind
+        valgrind --version
 
         test_binary="$(cat "$TMPFILE" |
             grep -E 'Running[^`]*`' |
@@ -279,6 +306,19 @@ run_tests() {
     rm "$TMPFILE"
 }
 
+cargo_update() {
+    if [ -z "${SKIP_CARGO_UPDATE:-}" ]; then
+        if [[ -n "${CI:-}" ]]; then
+            echo "Updating dependencies in Cargo.lock"
+            ${CARGO} update
+        else
+            echo "Skipping 'cargo update' since we are not in CI"
+        fi
+    else
+        echo "Skipping 'cargo update' since SKIP_CARGO_UPDATE is set"
+    fi
+}
+
 PROFILES="${PROFILES-debug}"
 for PROFILE in $PROFILES; do
     profile_args "$PROFILE"
@@ -289,7 +329,7 @@ done
 # necessary so we don't pass an unexpected flag to cargo.
 
 
-if [ $(basename "$0") = "test.sh" ]; then
+if [ "$(basename "$0")" = "test.sh" ]; then
     JOB="${JOB:-test}"
 
     set -x

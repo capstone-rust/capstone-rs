@@ -2,9 +2,7 @@
 
 [![Crates.io Badge](https://img.shields.io/crates/v/capstone.svg)](https://crates.io/crates/capstone)
 
-Linux [![Github Workflow CI Badge](https://github.com/capstone-rust/capstone-rs/actions/workflows/main.yml/badge.svg)](https://github.com/capstone-rust/capstone-rs/actions)
-|
-Windows [![Appveyor CI Badge](https://ci.appveyor.com/api/projects/status/github/capstone-rust/capstone-rs?svg=true&branch=master)](https://ci.appveyor.com/project/tmfink/capstone-rs)
+Linux/macOS/Windows [![Github Workflow CI Badge](https://github.com/capstone-rust/capstone-rs/actions/workflows/main.yml/badge.svg)](https://github.com/capstone-rust/capstone-rs/actions)
 |
 FreeBSD [![Cirrus CI Badge](https://api.cirrus-ci.com/github/capstone-rust/capstone-rs.svg)](https://cirrus-ci.com/github/capstone-rust/capstone-rs)
 
@@ -16,6 +14,7 @@ FreeBSD [![Cirrus CI Badge](https://api.cirrus-ci.com/github/capstone-rust/capst
 
 Bindings to the [capstone library][upstream] disassembly framework.
 
+The `Capstone` struct is the main interface to the library.
 
 # Requirements
 
@@ -23,11 +22,10 @@ Bindings to the [capstone library][upstream] disassembly framework.
 
 See the [`capstone-sys`](capstone-sys) page for the requirements and supported platforms.
 
-* Minimum Rust Version: `1.50.0`
+* Minimum Rust Version: `1.70.0`
 
 # Example
 
-<!-- START: code_sample -->
 ```rust
 extern crate capstone;
 
@@ -86,11 +84,10 @@ fn main() {
     }
 }
 ```
-<!-- END: code_sample -->
 
 Produces:
 
-```
+```plain
 Found 4 instructions
 
 0x1000: pushq %rbp
@@ -119,8 +116,18 @@ More complex demos welcome!
 
 # Features
 
+- `full`<sup>&dagger;</sup>: do not compile Capstone C library in
+  [diet mode](https://www.capstone-engine.org/diet.html)
+- `std`<sup>&dagger;</sup>: enable `std`-only features, such as the
+  [`Error` trait](https://doc.rust-lang.org/std/error/trait.Error.html)
 - `use_bindgen`: run `bindgen` to generate Rust bindings to Capstone C library
   instead of using pre-generated bindings (not recommended).
+- `arch_$ARCH`<sup>&dagger;</sup>: enable arch `$ARCH` support in capstone,
+  e.g. `arch_arm64` enables arch arm64 support.
+- `support_all_archs`<sup>&dagger;</sup>: enable all archs available
+  in capstone, imply all `arch_$ARCH` features.
+
+<sup>&dagger;</sup>: enabled by default
 
 # Reporting Issues
 

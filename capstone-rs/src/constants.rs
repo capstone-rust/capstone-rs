@@ -160,6 +160,7 @@ macro_rules! define_impl_bitmask {
             => $getter:ident = $mask_constant:ident;
         )*
     ) => {
+        #[allow(clippy::redundant_closure_call)]
         impl < $($impl_lifetime),* > $struct < $($impl_lifetime),* > {
             /// Raw mask from Capstone
             pub(crate) fn $mask_getter(&self) -> $mask_getter_ty {
@@ -205,6 +206,8 @@ define_cs_enum_wrapper!(
     => X86 = CS_ARCH_X86;
     /// PowerPC
     => PPC = CS_ARCH_PPC;
+    /// SH
+    => SH = CS_ARCH_SH;
     /// SPARC
     => SPARC = CS_ARCH_SPARC;
     /// System z
@@ -213,14 +216,20 @@ define_cs_enum_wrapper!(
     => XCORE = CS_ARCH_XCORE;
     /// Motorolla 68K
     => M68K = CS_ARCH_M68K;
+    /// MOS65XX architecture (including MOS6502)
+    => MOS65XX = CS_ARCH_MOS65XX;
     /// Texas Instruments TMS320C64x
     => TMS320C64X = CS_ARCH_TMS320C64X;
+    /// TriCore
+    => TRICORE = CS_ARCH_TRICORE;
     /// Motorola 68000
     => M680X = CS_ARCH_M680X;
     /// EVM
     => EVM = CS_ARCH_EVM;
     /// RISC-V
     => RISCV = CS_ARCH_RISCV;
+    /// BPF
+    => BPF = CS_ARCH_BPF;
 );
 
 define_cs_enum_wrapper!(
@@ -229,65 +238,111 @@ define_cs_enum_wrapper!(
         => Mode = cs_mode
     ]
     /// 32-bit ARM
-    => Arm = CS_MODE_ARM;
+    => Arm = { cs_mode::CS_MODE_ARM };
     /// 16-bit mode (X86)
-    => Mode16 = CS_MODE_16;
+    => Mode16 = { cs_mode::CS_MODE_16 };
     /// 32-bit mode (X86)
-    => Mode32 = CS_MODE_32;
+    => Mode32 = { cs_mode::CS_MODE_32 };
     /// 64-bit mode (X86, PPC)
-    => Mode64 = CS_MODE_64;
+    => Mode64 = { cs_mode::CS_MODE_64 };
     /// ARM's Thumb mode, including Thumb-2
-    => Thumb = CS_MODE_THUMB;
+    => Thumb = { cs_mode::CS_MODE_THUMB };
     /// Mips II ISA
-    => Mips2 = CS_MODE_MIPS2;
+    => Mips2 = { cs_mode::CS_MODE_MIPS2 };
     /// Mips III ISA
-    => Mips3 = CS_MODE_MIPS3;
+    => Mips3 = { cs_mode::CS_MODE_MIPS3 };
     /// Mips32r6 ISA
-    => Mips32R6 = CS_MODE_MIPS32R6;
+    => Mips32R6 = { cs_mode::CS_MODE_MIPS32R6 };
     /// Mips32 ISA (Mips)
-    => Mips32 = CS_MODE_MIPS32;
+    => Mips32 = { cs_mode::CS_MODE_MIPS32 };
     /// Mips64 ISA (Mips)
-    => Mips64 = CS_MODE_MIPS64;
+    => Mips64 = { cs_mode::CS_MODE_MIPS64 };
     /// SparcV9 mode (Sparc)
-    => V9 = CS_MODE_V9;
+    => V9 = { cs_mode::CS_MODE_V9 };
     /// Quad Processing eXtensions mode (PPC)
-    => Qpx = CS_MODE_QPX;
+    => Qpx = { cs_mode::CS_MODE_QPX };
     /// M68K 68000 mode
-    => M68k000 = CS_MODE_M68K_000;
+    => M68k000 = { cs_mode::CS_MODE_M68K_000 };
     /// M68K 68010 mode
-    => M68k010 = CS_MODE_M68K_010;
+    => M68k010 = { cs_mode::CS_MODE_M68K_010 };
     /// M68K 68020 mode
-    => M68k020 = CS_MODE_M68K_020;
+    => M68k020 = { cs_mode::CS_MODE_M68K_020 };
     /// M68K 68030 mode
-    => M68k030 = CS_MODE_M68K_030;
+    => M68k030 = { cs_mode::CS_MODE_M68K_030 };
     /// M68K 68040 mode
-    => M68k040 = CS_MODE_M68K_040;
+    => M68k040 = { cs_mode::CS_MODE_M68K_040 };
     /// M680X Hitachi 6301,6303 mode
-    => M680x6301 = CS_MODE_M680X_6301;
+    => M680x6301 = { cs_mode::CS_MODE_M680X_6301 };
     /// M680X Hitachi 6309 mode
-    => M680x6309 = CS_MODE_M680X_6309;
+    => M680x6309 = { cs_mode::CS_MODE_M680X_6309 };
     /// M680X Motorola 6800,6802 mode
-    => M680x6800 = CS_MODE_M680X_6800;
+    => M680x6800 = { cs_mode::CS_MODE_M680X_6800 };
     /// M680X Motorola 6801,6803 mode
-    => M680x6801 = CS_MODE_M680X_6801;
+    => M680x6801 = { cs_mode::CS_MODE_M680X_6801 };
     /// M680X Motorola/Freescale 6805 mode
-    => M680x6805 = CS_MODE_M680X_6805;
+    => M680x6805 = { cs_mode::CS_MODE_M680X_6805 };
     /// M680X Motorola/Freescale/NXP 68HC08 mode
-    => M680x6808 = CS_MODE_M680X_6808;
+    => M680x6808 = { cs_mode::CS_MODE_M680X_6808 };
     /// M680X Motorola 6809 mode
-    => M680x6809 = CS_MODE_M680X_6809;
+    => M680x6809 = { cs_mode::CS_MODE_M680X_6809 };
     /// M680X Motorola/Freescale/NXP 68HC11 mode
-    => M680x6811 = CS_MODE_M680X_6811;
+    => M680x6811 = { cs_mode::CS_MODE_M680X_6811 };
     /// M680X Motorola/Freescale/NXP CPU12
-    => M680xCpu12 = CS_MODE_M680X_CPU12;
+    => M680xCpu12 = { cs_mode::CS_MODE_M680X_CPU12 };
     /// M680X Freescale/NXP HCS08 mode
-    => M680xHcs08 = CS_MODE_M680X_HCS08;
+    => M680xHcs08 = { cs_mode::CS_MODE_M680X_HCS08 };
+    /// MOS65XXX MOS 6502
+    => Mos65xx6502 = { cs_mode::CS_MODE_MOS65XX_6502 };
+    /// MOS65XXX WDC 65c02
+    => Mos65xx65c02 = { cs_mode::CS_MODE_MOS65XX_65C02 };
+    /// MOS65XXX WDC W65c02
+    => Mos65xxW65c02 = { cs_mode::CS_MODE_MOS65XX_W65C02 };
+    /// MOS65XXX WDC 65816, 8-bit m/x
+    => Mos65xx65816 = { cs_mode::CS_MODE_MOS65XX_65816 };
+    /// MOS65XXX WDC 65816, 16-bit m, 8-bit x
+    => Mos65xx65816LongM = { cs_mode::CS_MODE_MOS65XX_65816_LONG_M };
+    /// MOS65XXX WDC 65816, 8-bit m, 16-bit x
+    => Mos65xx65816LongX = { cs_mode::CS_MODE_MOS65XX_65816_LONG_M };
+    /// MOS65XXX WDC 65816, 16-bit m, 16-bit x
+    => Mos65xx65816LongMx = { cs_mode::CS_MODE_MOS65XX_65816_LONG_MX };
+    /// SH2
+    => Sh2 = { cs_mode::CS_MODE_SH2 };
+    /// SH2A
+    => Sh2a = { cs_mode::CS_MODE_SH2A };
+    /// SH3
+    => Sh3 = { cs_mode::CS_MODE_SH3 };
+    /// SH4
+    => Sh4 = { cs_mode::CS_MODE_SH4 };
+    /// SH4A
+    => Sh4a = { cs_mode::CS_MODE_SH4A };
+    /// SH w/ FPU
+    => ShFpu = { cs_mode::CS_MODE_SHFPU };
+    /// SH w/ DSP
+    => ShDsp = { cs_mode::CS_MODE_SHDSP };
     /// RISC-V 32-bit mode
-    => RiscV32 = CS_MODE_RISCV32;
+    => RiscV32 = { cs_mode::CS_MODE_RISCV32 };
     /// RISC-V 64-bit mode
-    => RiscV64 = CS_MODE_RISCV64;
+    => RiscV64 = { cs_mode::CS_MODE_RISCV64 };
+    /// Classic BPF mode
+    => Cbpf = { cs_mode::CS_MODE_BPF_CLASSIC };
+    /// Extended BPF mode
+    => Ebpf = { cs_mode::CS_MODE_BPF_EXTENDED };
+    /// TriCore 1.1
+    => TriCore110 = { cs_mode::CS_MODE_TRICORE_110 };
+    /// TriCore 1.2
+    => TriCore120 = { cs_mode::CS_MODE_TRICORE_120 };
+    /// TriCore 1.3
+    => TriCore130 = { cs_mode::CS_MODE_TRICORE_130 };
+    /// TriCore 1.3.1
+    => TriCore131 = { cs_mode::CS_MODE_TRICORE_131 };
+    /// TriCore 1.6
+    => TriCore160 = { cs_mode::CS_MODE_TRICORE_160 };
+    /// TriCore 1.6.1
+    => TriCore161 = { cs_mode::CS_MODE_TRICORE_161 };
+    /// TriCore 1.6.2
+    => TriCore162 = { cs_mode::CS_MODE_TRICORE_162 };
     /// Default mode for little-endian
-    => Default = CS_MODE_LITTLE_ENDIAN;
+    => Default = { cs_mode::CS_MODE_LITTLE_ENDIAN };
 );
 
 define_cs_enum_wrapper!(
@@ -296,13 +351,13 @@ define_cs_enum_wrapper!(
         => ExtraMode = cs_mode
     ]
     /// ARM's Cortex-M series. Works with `Arm` mode.
-    => MClass = CS_MODE_MCLASS;
+    => MClass = { cs_mode::CS_MODE_MCLASS };
     /// ARMv8 A32 encodings for ARM. Works with `Arm` and `Thumb` modes.
-    => V8 = CS_MODE_V8;
+    => V8 = { cs_mode::CS_MODE_V8 };
     /// MicroMips mode. Works in `MIPS` mode.
-    => Micro = CS_MODE_MICRO;
+    => Micro = { cs_mode::CS_MODE_MICRO };
     /// RISC-V compressed instruction mode
-    => RiscVC = CS_MODE_RISCVC;
+    => RiscVC = { cs_mode::CS_MODE_RISCVC };
 );
 
 define_cs_enum_wrapper!(
@@ -311,9 +366,9 @@ define_cs_enum_wrapper!(
         => Endian = cs_mode
     ]
     /// Little-endian mode
-    => Little = CS_MODE_LITTLE_ENDIAN;
+    => Little = { cs_mode::CS_MODE_LITTLE_ENDIAN };
     /// Big-endian mode
-    => Big = CS_MODE_BIG_ENDIAN;
+    => Big = { cs_mode::CS_MODE_BIG_ENDIAN };
 );
 
 define_cs_enum_wrapper!(

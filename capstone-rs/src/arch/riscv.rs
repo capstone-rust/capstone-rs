@@ -64,7 +64,7 @@ impl_PartialEq_repr_fields!(RiscVOpMem;
 
 impl cmp::Eq for RiscVOpMem {}
 
-impl<'a> From<&'a cs_riscv_op> for RiscVOperand {
+impl From<&cs_riscv_op> for RiscVOperand {
     fn from(insn: &cs_riscv_op) -> RiscVOperand {
         match insn.type_ {
             riscv_op_type::RISCV_OP_REG => {

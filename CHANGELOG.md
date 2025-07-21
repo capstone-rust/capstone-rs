@@ -5,10 +5,59 @@ Notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## UNRELEASED - YYYY-MM-DD
+## [UNRELEASED] - YYYY-MM-DD
+### Added
+- TriCore arch support
+- MOS65XX arch support
+- SH arch support
+- Arch-specific features flags to enable/disable arch support
+- Expose X86 instruction encoding info via `X86InsnDetail::encoding()`
+- Make RegAccessType available for ARM64
+- Rename RegAccessType to AccessType while keeping type alias
+- Expose `CS_OPT_UNSIGNED` via `Capstone::set_unsigned`
+- Expose `CS_OPT_MNEMONIC` via `Capstone::set_mnemonic`
+
+### Changed
+- `InsnDetail::regs_read()`/`InsnDetail::regs_write()` return more of the accessed registers
+- Bump bundled capstone to 5.0.6
+
 ### Fixed
-- Document that minimum supported Rust version is 1.50.0
-    - Improperly documented as 1.40.0 in 0.14.0 release
+- `impl Display for Insn<'_>` now avoids to print trailing space
+
+## [0.13.0] - 2025-02-04
+### Added
+- BPF arch support
+- Detail support for SystemZ
+- Make RegAccessType available for ARM
+
+### Changed
+- Bump minimum Rust version to 1.70.0
+
+### Fixed
+- Build on Windows platforms when using `bindgen` feature
+- Segfault when running on s390x (AKA SystemZ)
+
+### Removed
+- `From<u32> for RegId` impl
+
+## [0.12.0] - 2024-02-25
+### Added
+- `full` feature (enabled by default) which disables [diet mode] for the Capstone C library
+
+### Changed
+- Bump minimum Rust version to 1.60.0
+- `Arm64OperandType::Sys` contains `Arm64SysOp` instead of `u32`
+
+## [0.11.0] - 2022-05-01
+
+### Added
+- Owned insn type `OwnedInsn` ([#123](https://github.com/capstone-rust/capstone-rs/pull/123))
+
+### Removed
+- `Insn` `Clone` impl to fix soundness issue ([#122](https://github.com/capstone-rust/capstone-rs/pull/122))
+
+### Fixed
+- Soundness issue by remove `Insn` `Clone` impl (see "Removed" note above)
 
 ## [0.10.0] - 2021-08-09
 
@@ -147,6 +196,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Removed
 - Dependency
 
+[UNRELEASED]: https://github.com/capstone-rust/capstone-rs/compare/capstone-v0.13.0...master
+[0.13.0]: https://github.com/capstone-rust/capstone-rs/compare/capstone-v0.12.0...capstone-v0.13.0
+[0.12.0]: https://github.com/capstone-rust/capstone-rs/compare/capstone-v0.11.0...capstone-v0.12.0
+[0.11.0]: https://github.com/capstone-rust/capstone-rs/compare/capstone-v0.10.0...capstone-v0.11.0
 [0.10.0]: https://github.com/capstone-rust/capstone-rs/compare/capstone-v0.9.0...capstone-v0.10.0
 [0.9.0]: https://github.com/capstone-rust/capstone-rs/compare/capstone-v0.8.0...capstone-v0.9.0
 [0.8.0]: https://github.com/capstone-rust/capstone-rs/compare/capstone-v0.7.0...capstone-v0.8.0

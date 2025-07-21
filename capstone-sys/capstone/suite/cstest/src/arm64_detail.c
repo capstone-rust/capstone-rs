@@ -74,6 +74,22 @@ char *get_detail_arm64(csh *handle, cs_mode mode, cs_insn *ins)
 			case ARM64_OP_BARRIER:
 				add_str(&result, " ; operands[%u].type: BARRIER = 0x%x", i, op->barrier);
 				break;
+			case ARM64_OP_SME_INDEX:
+				add_str(&result, " ; operands[%u].type: REG = %s", i, cs_reg_name(*handle, op->sme_index.reg));
+				if(op->sme_index.base != ARM64_REG_INVALID)
+					add_str(&result, " ; operands[%u].index.base: REG = %s", i, cs_reg_name(*handle, op->sme_index.base));
+				if(op->sme_index.disp != 0)
+					add_str(&result, " ; operands[%u].index.disp: 0x%x", i, op->sme_index.disp);
+				break;
+			case ARM64_OP_SVCR:
+				add_str(&result, " ; operands[%u].type: SYS = 0x%x", i, op->sys);
+				if(op->svcr == ARM64_SVCR_SVCRSM)
+					add_str(&result, " ; operands[%u].svcr: BIT = SM", i);
+				if(op->svcr == ARM64_SVCR_SVCRZA)
+					add_str(&result, " ; operands[%u].svcr: BIT = ZA", i);
+				if(op->svcr == ARM64_SVCR_SVCRSMZA)
+					add_str(&result, " ; operands[%u].svcr: BIT = SM & ZA", i);
+				break;
 		}
 		
 		access = op->access;
@@ -100,10 +116,10 @@ char *get_detail_arm64(csh *handle, cs_mode mode, cs_insn *ins)
 			add_str(&result, " ; Ext: %u", op->ext);
 
 		if (op->vas != ARM64_VAS_INVALID)
-			add_str(&result, " ; Vector Arrangement Specifier: 0x%x", op->vas);
+			add_str(&result, " ; operands[%u].vas: 0x%x", i, op->vas);
 
 		if (op->vector_index != -1)
-			add_str(&result, " ; Vector Index: %u", op->vector_index);
+			add_str(&result, " ; operands[%u].vector_index: %u", i, op->vector_index);
 	}
 
 	if (arm64->update_flags)

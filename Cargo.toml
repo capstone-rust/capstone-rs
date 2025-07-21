@@ -5,3 +5,6 @@ members = [
     "capstone-sys",
     "cstool",
 ]
+
+[workspace.package]
+rust-version = "1.70"

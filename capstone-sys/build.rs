@@ -73,7 +73,6 @@ fn build_capstone_cc() {
 
         read_dir(dir)
             .expect("Failed to read capstone source directory")
-            .into_iter()
             .map(|e| e.expect("Failed to read capstone source directory"))
             .filter(|e| filter(e))
             .map(|e| {
@@ -92,7 +91,7 @@ fn build_capstone_cc() {
                 .file_type()
                 .expect("Failed to read capstone source directory");
             let file_name = e.file_name().into_string().expect("Invalid filename");
-            file_type.is_file() && (file_name.ends_with(".c") || file_name.ends_with(".C"))
+            !file_type.is_dir() && (file_name.ends_with(".c") || file_name.ends_with(".C"))
         })
     }
 
@@ -109,39 +108,59 @@ fn build_capstone_cc() {
     for arch_dir in find_arch_dirs().into_iter() {
         files.append(&mut find_c_source_files(&arch_dir));
     }
-
+    // keep build reproducible
+    files.sort();
     let use_static_crt = {
         let target_features = env::var("CARGO_CFG_TARGET_FEATURE").unwrap_or_default();
         target_features.split(',').any(|f| f == "crt-static")
     };
-
-    cc::Build::new()
+    let mut builder = cc::Build::new();
+    builder
         .files(files)
         .include(format!("{}/{}", CAPSTONE_DIR, "include"))
         .define("CAPSTONE_USE_SYS_DYN_MEM", None)
-        .define("CAPSTONE_HAS_ARM", None)
-        .define("CAPSTONE_HAS_ARM64", None)
-        .define("CAPSTONE_HAS_EVM", None)
-        .define("CAPSTONE_HAS_M680X", None)
-        .define("CAPSTONE_HAS_M68K", None)
-        .define("CAPSTONE_HAS_MIPS", None)
-        .define("CAPSTONE_HAS_POWERPC", None)
-        .define("CAPSTONE_HAS_RISCV", None)
-        .define("CAPSTONE_HAS_SPARC", None)
-        .define("CAPSTONE_HAS_SYSZ", None)
-        .define("CAPSTONE_HAS_TMS320C64X", None)
-        .define("CAPSTONE_HAS_WASM", None)
-        .define("CAPSTONE_HAS_X86", None)
-        .define("CAPSTONE_HAS_XCORE", None)
-        .flag_if_supported("-Wno-unused-function")
-        .flag_if_supported("-Wno-unused-parameter")
-        .flag_if_supported("-Wno-unknown-pragmas")
-        .flag_if_supported("-Wno-sign-compare")
-        .flag_if_supported("-Wno-return-type")
-        .flag_if_supported("-Wno-implicit-fallthrough")
-        .flag_if_supported("-Wno-missing-field-initializers")
-        .static_crt(use_static_crt)
-        .compile("capstone");
+        // No need to display any warnings from the C library
+        .flag_if_supported("-w")
+        .static_crt(use_static_crt);
+
+    macro_rules! arch_define {
+        (
+            $( $feature:literal = $define:ident, )*
+        ) => {
+            $(
+                if cfg!(feature = $feature) {
+                    builder.define(stringify!($define), None);
+                }
+            )*
+        }
+    }
+
+    arch_define!(
+        "arch_arm" = CAPSTONE_HAS_ARM,
+        "arch_arm64" = CAPSTONE_HAS_ARM64,
+        "arch_bpf" = CAPSTONE_HAS_BPF,
+        "arch_evm" = CAPSTONE_HAS_EVM,
+        "arch_m680x" = CAPSTONE_HAS_M680X,
+        "arch_m68k" = CAPSTONE_HAS_M68K,
+        "arch_mips" = CAPSTONE_HAS_MIPS,
+        "arch_mos65xx" = CAPSTONE_HAS_MOS65XX,
+        "arch_powerpc" = CAPSTONE_HAS_POWERPC,
+        "arch_riscv" = CAPSTONE_HAS_RISCV,
+        "arch_sh" = CAPSTONE_HAS_SH,
+        "arch_sparc" = CAPSTONE_HAS_SPARC,
+        "arch_sysz" = CAPSTONE_HAS_SYSZ,
+        "arch_tms320c64x" = CAPSTONE_HAS_TMS320C64X,
+        "arch_tricore" = CAPSTONE_HAS_TRICORE,
+        "arch_wasm" = CAPSTONE_HAS_WASM,
+        "arch_x86" = CAPSTONE_HAS_X86,
+        "arch_xcore" = CAPSTONE_HAS_XCORE,
+    );
+
+    if !cfg!(feature = "full") {
+        builder.define("CAPSTONE_DIET", "yes");
+    }
+
+    builder.compile("capstone");
 }
 
 /// Search for header in search paths
@@ -165,6 +184,8 @@ fn env_var(var: &str) -> String {
 /// instructions enum declaration.
 #[cfg(feature = "use_bindgen")]
 fn impl_insid_to_insenum(bindings: &str) -> String {
+    use std::fmt::Write as _;
+
     let mut impl_arch_enum = String::new();
     impl_arch_enum.push_str("use core::convert::From;\n");
 
@@ -172,7 +193,7 @@ fn impl_insid_to_insenum(bindings: &str) -> String {
         let arch = cs_arch.cs_name();
 
         // find architecture instructions enum declaration
-        let re_enum_def = Regex::new(&format!("pub enum {}_insn (?s)\\{{.*?\\}}", arch))
+        let re_enum_def = Regex::new(&format!("pub enum {arch}_insn (?s)\\{{.*?\\}}"))
             .expect("Unable to compile regex");
         let cap_enum_def = &re_enum_def
             .captures(bindings)
@@ -185,42 +206,42 @@ fn impl_insid_to_insenum(bindings: &str) -> String {
         ))
         .expect("Unable to compile regex");
 
-        impl_arch_enum.push_str(&format!(
+        write!(
+            impl_arch_enum,
             "impl From<u32> for {}_insn {{\n
             fn from(id: u32) -> Self {{\n
             match id {{\n",
             &arch
-        ));
+        )
+        .unwrap();
 
         // fill match expression
         for cap_ins_id in re_ins_ids.captures_iter(cap_enum_def) {
-            impl_arch_enum.push_str(&format!(
-                "{} => {}_insn::{}_INS_{},\n",
+            writeln!(
+                impl_arch_enum,
+                "{} => {}_insn::{}_INS_{},",
                 &cap_ins_id["id"],
                 &arch,
                 &arch.to_uppercase(),
                 &cap_ins_id["ins"]
-            ));
+            )
+            .unwrap();
         }
 
         // if id didn't match, return [arch]_INS_INVALID.
         // special case for m680x which has 'INVLD' variant instead of 'INVALID'
-        match arch {
-            "m680x" => {
-                impl_arch_enum.push_str(&format!(
-                    "_ => {}_insn::{}_INS_INVLD,",
-                    &arch,
-                    &arch.to_uppercase()
-                ));
-            }
-            _ => {
-                impl_arch_enum.push_str(&format!(
-                    "_ => {}_insn::{}_INS_INVALID,",
-                    &arch,
-                    &arch.to_uppercase()
-                ));
-            }
-        }
+        let invalid_str = match arch {
+            "m680x" => "INVLD",
+            _ => "INVALID",
+        };
+        write!(
+            impl_arch_enum,
+            "_ => {}_insn::{}_INS_{},",
+            &arch,
+            &arch.to_uppercase(),
+            invalid_str,
+        )
+        .unwrap();
 
         impl_arch_enum.push_str("}\n}\n}\n");
     }
@@ -238,8 +259,9 @@ fn write_bindgen_bindings(
     out_bindings_path: PathBuf,
     out_impl_path: PathBuf,
 ) {
+    #[allow(deprecated)]
     let mut builder = bindgen::Builder::default()
-        .rust_target(bindgen::RustTarget::Stable_1_19)
+        .rust_target(bindgen::RustTarget::Stable_1_28)
         .size_t_is_usize(true)
         .use_core()
         .ctypes_prefix("libc")
@@ -256,7 +278,9 @@ fn write_bindgen_bindings(
         .impl_debug(true)
         .constified_enum_module("cs_err|cs_group_type|cs_opt_value")
         .bitfield_enum("cs_mode|cs_ac_type")
-        .rustified_enum(".*");
+        .rustified_enum(".*")
+        .array_pointers_in_arguments(true)
+        .no_copy("cs_insn");
 
     // Whitelist cs_.* functions and types
     let pattern = String::from("cs_.*");
@@ -354,9 +378,8 @@ fn main() {
     // Otherwise, copy the pregenerated bindings
     #[cfg(not(feature = "use_bindgen"))]
     {
-        copy(&pregenerated_bindgen_header, &out_bindings_path)
+        copy(pregenerated_bindgen_header, out_bindings_path)
             .expect("Unable to update capstone bindings");
-        copy(&pregenerated_bindgen_impl, &out_impl_path)
-            .expect("Unable to update capstone bindings");
+        copy(pregenerated_bindgen_impl, out_impl_path).expect("Unable to update capstone bindings");
     }
 }
