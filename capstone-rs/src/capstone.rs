@@ -207,18 +207,18 @@ impl Capstone {
 
     /// Creates an instance of DisasmIter structure
     ///
-    pub fn get_disasm_iter<'a>(&'a self) -> DisasmIter<'a> {
+    pub fn get_disasm_iter<'a>(&'a self) -> CsResult<DisasmIter<'a>> {
         let insn = unsafe { cs_malloc(self.csh()) };
         if insn.is_null() {
-            panic!("cs_malloc() failed");
+            return Err(Error::OutOfMemory);
         }
-        DisasmIter {
+        Ok(DisasmIter {
             insn: insn,
             csh: self.csh,
             _covariant: PhantomData,
             offset: 0,
             addr: 0,
-        }
+        })
     }
 
     /// Disassemble all instructions in buffer

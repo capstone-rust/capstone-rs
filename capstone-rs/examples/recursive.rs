@@ -41,7 +41,7 @@ fn main() {
         .build()
         .expect("failed to create capstone handle");
 
-    let mut disasm = cs.get_disasm_iter();
+    let mut disasm = cs.get_disasm_iter().unwrap();
 
     while let Some(addr) = addr_queue.pop_front() {
         if addr_seen.contains(&addr) {
