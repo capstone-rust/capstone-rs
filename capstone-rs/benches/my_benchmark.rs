@@ -16,14 +16,22 @@ fn arch_bench<T: Iterator<Item = ExtraMode>>(
     extra_mode: T,
     endian: Option<Endian>,
     detail: bool,
+    iter: bool,
 ) {
     let mut cs =
         Capstone::new_raw(arch, mode, extra_mode, endian).expect("failed to make capstone");
     cs.set_detail(detail).expect("failed to set detail");
 
-    let insns = cs.disasm_all(code, 0x1000).expect("failed to disassemble");
-    for i in insns.iter() {
-        black_box(i);
+    if iter {
+        let iter = cs.disasm_iter(code, 0x1000).expect("failed to disassemble");
+        for i in iter {
+            black_box(i);
+        }
+    } else {
+        let insns = cs.disasm_all(code, 0x1000).expect("failed to disassemble");
+        for i in insns.iter() {
+            black_box(i);
+        }
     }
 }
 
@@ -31,11 +39,19 @@ fn criterion_benchmark(c: &mut Criterion) {
     macro_rules! bench {
         ($name:expr; $( $args:expr ),+ ) => {
             c.bench_function($name, |b| {
-                b.iter(|| arch_bench($( $args, )+ false))
+                b.iter(|| arch_bench($( $args, )+ false, false))
+            });
+
+            c.bench_function(concat!($name, "_iter"), |b| {
+                b.iter(|| arch_bench($( $args, )+ false, true))
             });
 
             c.bench_function(concat!($name, "_detail"), move |b| {
-                b.iter(|| arch_bench($( $args, )+ true))
+                b.iter(|| arch_bench($( $args, )+ true, false))
+            });
+
+            c.bench_function(concat!($name, "_detail_iter"), |b| {
+                b.iter(|| arch_bench($( $args, )+ true, true))
             });
         }
     }
