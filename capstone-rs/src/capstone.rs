@@ -213,7 +213,7 @@ impl Capstone {
             return Err(Error::OutOfMemory);
         }
         Ok(DisasmIter {
-            insn: insn,
+            insn,
             csh: self.csh,
             _covariant: PhantomData,
             offset: 0,
