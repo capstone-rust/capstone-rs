@@ -205,15 +205,23 @@ impl Capstone {
         }
     }
 
-    /// Disassemble and iterate instructions from user-provided buffer using `cs_disasm_iter`.
+    /// Disassemble and iterate instructions from user-provided buffer `code` using `cs_disasm_iter`.
+    /// The disassembled address of the buffer is assumed to be `addr`.
     /// It uses less memory and reduces memory allocations.
+    ///
+    /// # Examples
     ///
     /// ```
     /// # use capstone::prelude::*;
     /// # let cs = Capstone::new().x86().mode(arch::x86::ArchMode::Mode32).build().unwrap();
     /// let mut iter = cs.disasm_iter(b"\x90", 0x1000).unwrap();
     /// assert_eq!(iter.next().unwrap().mnemonic(), Some("nop"));
+    /// assert!(iter.next().is_none());
     /// ```
+    ///
+    /// # Errors
+    ///
+    /// If `cs_malloc` failed due to OOM, [`Err(Error::OutOfMemory)`](Error::OutOfMemory) is returned.
     pub fn disasm_iter<'a, 'b>(
         &'a self,
         code: &'b [u8],
@@ -620,28 +628,33 @@ impl Drop for Capstone {
     }
 }
 
-/// Structure to handle iterative disassembly
+/// Structure to handle iterative disassembly.
 ///
-/// Create with a capstone instance `get_disasm_iter()`
+/// Create with a [`Capstone`](Capstone) instance: [`Capstone::disasm_iter()`](Capstone::disasm_iter).
 ///
-pub struct DisasmIter<'a, 'b> {
-    insn: *mut cs_insn,          // space for current instruction to be processed
-    csh: *mut c_void,            // reference to the the capstone handle required by disasm_iter
-    code: *const u8,             // pointer to the code buffer
-    size: usize,                 // size of the code buffer
-    addr: u64,                   // current address
-    _data1: PhantomData<&'a ()>, // used to make sure DisasmIter lifetime doesn't exceed Capstone's lifetime
-    _data2: PhantomData<&'b ()>, // used to make sure code lifetime doesn't exceed user provided array
+/// # Lifetimes
+///
+/// `'cs` is the lifetime of the [`Capstone`](Capstone) instance.
+/// `'buf` is the lifetime of the user provided code buffer in [`Capstone::disasm_iter()`](Capstone::disasm_iter).
+///
+pub struct DisasmIter<'cs, 'buf> {
+    insn: *mut cs_insn,            // space for current instruction to be processed
+    csh: *mut c_void,              // reference to the the capstone handle required by disasm_iter
+    code: *const u8,               // pointer to the code buffer
+    size: usize,                   // size of the code buffer
+    addr: u64,                     // current address
+    _data1: PhantomData<&'cs ()>, // used to make sure DisasmIter lifetime doesn't exceed Capstone's lifetime
+    _data2: PhantomData<&'buf ()>, // used to make sure code lifetime doesn't exceed user provided array
 }
 
-impl<'a, 'b> Drop for DisasmIter<'a, 'b> {
+impl<'cs, 'buf> Drop for DisasmIter<'cs, 'buf> {
     fn drop(&mut self) {
         unsafe { cs_free(self.insn, 1) };
     }
 }
 
-impl<'a, 'b> Iterator for DisasmIter<'a, 'b> {
-    type Item = Insn<'a>;
+impl<'cs, 'buf> Iterator for DisasmIter<'cs, 'buf> {
+    type Item = Insn<'cs>;
 
     fn next(&mut self) -> Option<Self::Item> {
         unsafe {
@@ -660,7 +673,7 @@ impl<'a, 'b> Iterator for DisasmIter<'a, 'b> {
     }
 }
 
-impl<'a, 'b> DisasmIter<'a, 'b> {
+impl<'cs, 'buf> DisasmIter<'cs, 'buf> {
     /// Get the slice of the code yet to be disassembled
     ///
     /// ```
