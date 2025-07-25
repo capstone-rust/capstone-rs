@@ -677,7 +677,9 @@ impl<'cs, 'buf> DisasmIter<'cs, 'buf> {
     /// let mut iter = cs.disasm_iter(code, 0x1000).unwrap();
     /// let insn1 = iter.next().unwrap();
     /// let insn2 = iter.next().unwrap();
-    /// // fails with: cannot borrow `iter` as mutable more than once at a time
+    /// // fails with: cannot borrow `iter` as mutable more than once at a time,
+    /// // `insn1` cannot be used after calling `iter.next()` again,
+    /// // as `iter` is mutably borrowed during the second call to `next()`.
     /// println!("{insn1}");
     /// ```
     pub fn next<'iter>(&'iter mut self) -> Option<Insn<'iter>> {
