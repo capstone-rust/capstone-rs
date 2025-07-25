@@ -4037,6 +4037,16 @@ fn test_owned_insn() {
     for (insn, owned) in insns.iter().zip(&owned) {
         assert_eq!(format!("{:?}", insn), format!("{:?}", owned));
     }
+
+    // test disasm_iter
+    let mut iter_insns = cs.disasm_iter(X86_CODE, START_TEST_ADDR).unwrap();
+    let mut iter_owned: Vec<OwnedInsn> = vec![];
+    while let Some(insn) = iter_insns.next() {
+        iter_owned.push((&insn).into());
+    }
+    for (insn, owned) in insns.iter().zip(&iter_owned) {
+        assert_eq!(format!("{:?}", insn), format!("{:?}", owned));
+    }
 }
 
 /// Print register names
