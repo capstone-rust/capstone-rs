@@ -653,10 +653,34 @@ impl<'cs, 'buf> Drop for DisasmIter<'cs, 'buf> {
     }
 }
 
-impl<'cs, 'buf> Iterator for DisasmIter<'cs, 'buf> {
-    type Item = Insn<'cs>;
-
-    fn next(&mut self) -> Option<Self::Item> {
+impl<'cs, 'buf> DisasmIter<'cs, 'buf> {
+    /// Get next instruction if available.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// # use capstone::prelude::*;
+    /// # let cs = Capstone::new().x86().mode(arch::x86::ArchMode::Mode32).build().unwrap();
+    /// let code = b"\x90";
+    /// let mut iter = cs.disasm_iter(code, 0x1000).unwrap();
+    /// while let Some(insn) = iter.next() {
+    ///     println!("{insn}");
+    /// }
+    /// ```
+    ///
+    /// At most one instruction can be accessed at the same time:
+    ///
+    /// ```compile_fail
+    /// # use capstone::prelude::*;
+    /// # let cs = Capstone::new().x86().mode(arch::x86::ArchMode::Mode32).build().unwrap();
+    /// let code = b"\x90";
+    /// let mut iter = cs.disasm_iter(code, 0x1000).unwrap();
+    /// let insn1 = iter.next().unwrap();
+    /// let insn2 = iter.next().unwrap();
+    /// // fails with: cannot borrow `iter` as mutable more than once at a time
+    /// println!("{insn1}");
+    /// ```
+    pub fn next<'iter>(&'iter mut self) -> Option<Insn<'iter>> {
         unsafe {
             if cs_disasm_iter(
                 self.csh as csh,
@@ -671,9 +695,7 @@ impl<'cs, 'buf> Iterator for DisasmIter<'cs, 'buf> {
 
         None
     }
-}
 
-impl<'cs, 'buf> DisasmIter<'cs, 'buf> {
     /// Get the slice of the code yet to be disassembled
     ///
     /// ```

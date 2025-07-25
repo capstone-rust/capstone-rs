@@ -23,8 +23,8 @@ fn arch_bench<T: Iterator<Item = ExtraMode>>(
     cs.set_detail(detail).expect("failed to set detail");
 
     if iter {
-        let iter = cs.disasm_iter(code, 0x1000).expect("failed to disassemble");
-        for i in iter {
+        let mut iter = cs.disasm_iter(code, 0x1000).expect("failed to disassemble");
+        while let Some(i) = iter.next() {
             black_box(i);
         }
     } else {
