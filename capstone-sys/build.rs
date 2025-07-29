@@ -326,7 +326,9 @@ fn main() {
     // C header search paths
     let mut header_search_paths: Vec<PathBuf> = Vec::new();
 
-    build_capstone_cc();
+    if !cfg!(feature = "check_only") {
+        build_capstone_cc();
+    }
 
     header_search_paths.push([CAPSTONE_DIR, "include", "capstone"].iter().collect());
     link_type = Some(LinkType::Static);
