@@ -326,6 +326,7 @@ fn main() {
     // C header search paths
     let mut header_search_paths: Vec<PathBuf> = Vec::new();
 
+    // speed up cargo check by skipping native part
     if !cfg!(feature = "check_only") {
         build_capstone_cc();
     }
