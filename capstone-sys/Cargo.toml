@@ -75,3 +75,5 @@ arch_tricore = []
 arch_wasm = []
 arch_x86 = []
 arch_xcore = []
+# Can be used to accelerate check builds by not building C code
+check_only = []
