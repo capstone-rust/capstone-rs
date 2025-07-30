@@ -121,11 +121,13 @@ More complex demos welcome!
 - `std`<sup>&dagger;</sup>: enable `std`-only features, such as the
   [`Error` trait](https://doc.rust-lang.org/std/error/trait.Error.html)
 - `use_bindgen`: run `bindgen` to generate Rust bindings to Capstone C library
-  instead of using pre-generated bindings (not recommended).
+  instead of using pre-generated bindings (not recommended)
 - `arch_$ARCH`<sup>&dagger;</sup>: enable arch `$ARCH` support in capstone,
-  e.g. `arch_arm64` enables arch arm64 support.
+  e.g. `arch_arm64` enables arch arm64 support
 - `support_all_archs`<sup>&dagger;</sup>: enable all archs available
-  in capstone, imply all `arch_$ARCH` features.
+  in capstone, imply all `arch_$ARCH` features
+- `build`<sup>&dagger;</sup>: compile and link capstone C library,
+  you can disable it to speed up `cargo check` by 5x
 
 <sup>&dagger;</sup>: enabled by default
 

@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Support for MOS65XX arch
 - Support for SH arch
 - Arch-specific features flags to enable/disable arch support
+- Add `build` feature to speed up `cargo check` by building without native code
 
 ### Changed
 - Bump bundled capstone to 5.0.6
