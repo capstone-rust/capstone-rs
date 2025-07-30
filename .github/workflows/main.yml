@@ -37,8 +37,8 @@ jobs:
       - name: test
         run: env ${{ matrix.rust.env }} ./capstone-rs/ci/test.sh
 
-      - name: test (with bindgen)
-        run: env ${{ matrix.rust.env }} FEATURES="use_bindgen" ./capstone-rs/ci/test.sh
+      - name: test (all features)
+        run: env ${{ matrix.rust.env }} ALL_FEATURES=1 ./capstone-rs/ci/test.sh
 
       - name: test (only enable x86 and arm64)
-        run: env ${{ matrix.rust.env }} FEATURES=std,full,arch_x86,arch_arm64 NO_DEFAULT_FEATURES=1 ./capstone-rs/ci/test.sh
+        run: env ${{ matrix.rust.env }} FEATURES=std,full,arch_x86,arch_arm64,build NO_DEFAULT_FEATURES=1 ./capstone-rs/ci/test.sh
