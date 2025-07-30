@@ -29,7 +29,7 @@ name = "my_benchmark"
 harness = false
 
 [features]
-default = ["full", "std", "support_all_archs"]
+default = ["full", "std", "support_all_archs", "build"]
 std = []
 # The 'full' feature, enabled by default, compiles Capstone normally. When disabled,
 # Capstone will be built in Diet mode (https://www.capstone-engine.org/diet.html).
@@ -77,4 +77,4 @@ arch_wasm = ["capstone-sys/arch_wasm"]
 arch_x86 = ["capstone-sys/arch_x86"]
 arch_xcore = ["capstone-sys/arch_xcore"]
 # Can be used to accelerate check builds by not building C code
-check_only = ["capstone-sys/check_only"]
+build = ["capstone-sys/build"]

@@ -16,7 +16,7 @@ default-features = false
 features = ["error-context", "help", "std", "string", "usage"]
 
 [features]
-default = ["full", "support_all_archs"]
+default = ["full", "support_all_archs", "build"]
 full = ["capstone/full"]
 
 support_all_archs = [
@@ -58,3 +58,5 @@ arch_tricore = ["capstone/arch_tricore"]
 arch_wasm = ["capstone/arch_wasm"]
 arch_x86 = ["capstone/arch_x86"]
 arch_xcore = ["capstone/arch_xcore"]
+# Can be used to accelerate check builds by not building C code
+build = ["capstone/build"]
