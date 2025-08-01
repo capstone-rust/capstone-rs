@@ -126,7 +126,7 @@ More complex demos welcome!
   e.g. `arch_arm64` enables arch arm64 support
 - `support_all_archs`<sup>&dagger;</sup>: enable all archs available
   in capstone, imply all `arch_$ARCH` features
-- `check_only`<sup>&dagger;</sup>: do not compile and link capstone C library,
+- `check_only`: do not compile and link capstone C library,
   you can enable it to speed up `cargo check` by 5x
 
 <sup>&dagger;</sup>: enabled by default
