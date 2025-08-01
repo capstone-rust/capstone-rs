@@ -17,7 +17,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Expose `CS_OPT_UNSIGNED` via `Capstone::set_unsigned`
 - Expose `CS_OPT_MNEMONIC` via `Capstone::set_mnemonic`
 - Expose `cs_disasm_iter` via `Capstone::disasm_iter`
-- Add `build` feature to speed up `cargo check` by building without native code
+- Add `check_only` feature to speed up `cargo check` by building without native code
 
 ### Changed
 - `InsnDetail::regs_read()`/`InsnDetail::regs_write()` return more of the accessed registers
