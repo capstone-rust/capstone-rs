@@ -19,7 +19,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Rename ARM64 to AARCH64, SYSZ to SYSTEMZ to follow upstream changes
 
 ### Changed
-- Bump bundled capstone to 6.0.0-Alpha4
+- Bump bundled capstone to 6.0.0-Alpha5
 - Change `cs_regs_access()` `regs_read`/`regs_write` args to take `*mut cs_regs` (instead of `*mut u16`)
     - makes it more clear that args should be fixed size arrays
 
