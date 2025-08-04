@@ -8422,7 +8422,7 @@ pub struct cs_mips {
     #[doc = " Number of operands of this instruction,\n or 0 when instruction has no operand."]
     pub op_count: u8,
     #[doc = "< operands for this instruction."]
-    pub operands: [cs_mips_op; 10usize],
+    pub operands: [cs_mips_op; 16usize],
 }
 impl ::core::fmt::Debug for cs_mips {
     fn fmt(&self, f: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
@@ -13970,7 +13970,7 @@ pub struct cs_sparc {
     #[doc = " Number of operands of this instruction,\n or 0 when instruction has no operand."]
     pub op_count: u8,
     #[doc = "< operands for this instruction."]
-    pub operands: [cs_sparc_op; 4usize],
+    pub operands: [cs_sparc_op; 6usize],
 }
 impl ::core::fmt::Debug for cs_sparc {
     fn fmt(&self, f: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {

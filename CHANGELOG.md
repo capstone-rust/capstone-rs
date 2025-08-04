@@ -15,7 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - New operands types are added to `ArmOperandType`
 
 ### Changed
-- Bump bundled capstone to 6.0.0-Alpha4
+- Bump bundled capstone to 6.0.0-Alpha5
 - Rename ARM64 to AARCH64, SYSZ to SYSTEMZ to follow upstream changes
 - AArch64 support is rewritten to follow upstream changes
 - Endian must be specified for Sparc/SystemZ, since little endian support is added
