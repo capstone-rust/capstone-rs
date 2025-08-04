@@ -66,7 +66,12 @@ static void Sparc_add_bit_details(MCInst *MI, const uint8_t *Bytes,
 		break;
 	}
 	case SPARC_INSN_FORM_F2_3:
-		detail->cc_field = 0x4 | get_insn_field_r(insn, 20, 21);
+		detail->cc_field = get_insn_field_r(insn, 20, 21);
+		if (get_insn_field_r(insn, 22, 24) == 1) {
+			// BPcc and FBPcc encode their fields in two bits.
+			// BPcc needs the upper bit set to match our CC field enum.
+			detail->cc_field |= 0x4;
+		}
 		break;
 	case SPARC_INSN_FORM_TRAPSP:
 		detail->cc_field = 0x4 | get_insn_field_r(insn, 11, 12);
@@ -400,6 +405,10 @@ static inline bool is_single_reg_mem_case(MCInst *MI, unsigned OpNo)
 	if (map_get_op_type(MI, OpNo) != CS_OP_MEM_REG) {
 		return false;
 	}
+	cs_sparc_op *prev_op = Sparc_get_detail_op(MI, -1);
+	if (prev_op && prev_op->type == SPARC_OP_MEM) {
+		return false;
+	}
 	if (MI->size == 1) {
 		return true;
 	} else if (MI->size > OpNo + 1 && Sparc_get_detail(MI)->operands[0].type != SPARC_OP_MEM) {
@@ -450,6 +459,11 @@ void Sparc_add_cs_detail_0(MCInst *MI, sparc_op_group op_group, unsigned OpNo)
 		break;
 	}
 	case Sparc_OP_GROUP_MemOperand: {
+		cs_sparc_op *prev_op = Sparc_get_detail_op(MI, -1);
+		if (prev_op && prev_op->type == SPARC_OP_MEM) {
+			// Already added.
+			break;
+		}
 		MCOperand *Op1 = MCInst_getOperand(MI, (OpNo));
 		MCOperand *Op2 = MCInst_getOperand(MI, (OpNo + 1));
 		if (!MCOperand_isReg(Op1) ||

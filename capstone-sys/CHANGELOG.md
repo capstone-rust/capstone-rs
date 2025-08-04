@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [UNRELEASED] - YYYY-MM-DD
 ### Changed
 - Rename ARM64 to AARCH64, SYSZ to SYSTEMZ to follow upstream changes
-- Bump bundled capstone to 6.0.0-Alpha4
+- Bump bundled capstone to 6.0.0-Alpha5
 
 ## [0.18.0] - 2026-01-04
 ### Added
