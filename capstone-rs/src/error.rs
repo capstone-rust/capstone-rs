@@ -72,9 +72,7 @@ capstone_error_def!(
     => UnsupportedX86Masm = CS_ERR_X86_MASM;
 );
 
-// Required until https://github.com/rust-lang/rust/issues/103765 is resolved
-#[cfg(feature = "std")]
-impl std::error::Error for Error {}
+impl core::error::Error for Error {}
 
 pub type CsResult<T> = result::Result<T, Error>;
 
