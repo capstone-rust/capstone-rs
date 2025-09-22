@@ -472,7 +472,7 @@ impl InsnDetail<'_> {
     }
 
     /// Architecture-specific detail
-    pub fn arch_detail(&self) -> ArchDetail {
+    pub fn arch_detail(&self) -> ArchDetail<'_> {
         macro_rules! def_arch_detail_match {
             (
                 $( [ $ARCH:ident, $detail:ident, $insn_detail:ident, $arch:ident, $feature:literal ] )*
