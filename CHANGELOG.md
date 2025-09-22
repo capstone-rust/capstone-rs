@@ -22,6 +22,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - `InsnDetail::regs_read()`/`InsnDetail::regs_write()` return more of the accessed registers
 - Bump bundled capstone to 5.0.6
+- Bump minimum Rust version to 1.81.0
 
 ### Fixed
 - `impl Display for Insn<'_>` now avoids to print trailing space
