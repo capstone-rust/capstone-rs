@@ -750,7 +750,7 @@ macro_rules! def_arch_details_struct {
         $iter_struct
 
         impl<'a> $OperandIteratorLife {
-            fn new(ops: &[$cs_arch_op]) -> $OperandIterator {
+            fn new(ops: &[$cs_arch_op]) -> $OperandIterator<'_> {
                 $OperandIterator(ops.iter())
             }
         }
