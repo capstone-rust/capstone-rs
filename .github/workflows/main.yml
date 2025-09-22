@@ -10,7 +10,7 @@ jobs:
       fail-fast: false
       matrix:
         rust:
-          - version: 1.70.0 # MSRV
+          - version: 1.81.0 # MSRV
             env: SKIP_CARGO_UPDATE=1
           - version: stable
           - version: beta
