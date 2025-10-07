@@ -5,6 +5,7 @@
     clippy::upper_case_acronyms
 )]
 
+use core::ffi::c_uint;
 use core::{convert::TryInto, fmt::Debug, mem::MaybeUninit};
 
 use alloc::vec::Vec;
@@ -12,7 +13,6 @@ use alloc::vec::Vec;
 use {alloc::string::String, std::collections::HashSet};
 
 use capstone_sys::cs_group_type;
-use libc::c_uint;
 use pretty_assertions::assert_eq;
 
 use super::arch::*;

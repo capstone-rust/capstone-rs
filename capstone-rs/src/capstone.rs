@@ -1,13 +1,11 @@
 use alloc::boxed::Box;
 use alloc::string::String;
 use core::convert::From;
-use core::ffi::CStr;
+use core::ffi::{c_int, c_uint, c_void, CStr};
 use core::marker::PhantomData;
 use core::mem::MaybeUninit;
 #[cfg(feature = "std")]
 use std::ffi::CString;
-
-use libc::{c_int, c_void};
 
 use capstone_sys::cs_opt_value::*;
 use capstone_sys::*;
@@ -17,7 +15,7 @@ use crate::constants::{Arch, Endian, ExtraMode, Mode, OptValue, Syntax};
 use crate::instruction::{Insn, InsnDetail, InsnGroupId, InsnId, Instructions, RegId};
 use crate::{error::*, PartialInitRegsAccess};
 
-use {crate::ffi::str_from_cstr_ptr, alloc::string::ToString, libc::c_uint};
+use {crate::ffi::str_from_cstr_ptr, alloc::string::ToString};
 
 /// Length of `cs_regs`
 pub(crate) const REGS_ACCESS_BUF_LEN: usize = 64;

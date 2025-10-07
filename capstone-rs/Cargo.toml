@@ -17,7 +17,6 @@ travis-ci = { repository = "capstone-rust/capstone-rs" }
 
 [dependencies]
 capstone-sys = { path = "../capstone-sys", version = "0.17.0",  default-features = false }
-libc = { version = "0.2", default-features = false }
 static_assertions = "1.1.0"
 
 [dev-dependencies]
