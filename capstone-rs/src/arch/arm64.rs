@@ -1,13 +1,12 @@
 //! Contains arm64-specific types
 
-use libc::c_uint;
-
 pub use crate::arch::arch_builder::arm64::*;
 use crate::arch::DetailsArchInsn;
 use crate::instruction::{AccessType, RegId, RegIdInt};
 use capstone_sys::{arm64_op_mem, arm64_op_sme_index, arm64_op_type, cs_ac_type, cs_arm64, cs_arm64_op};
 use core::convert::{From, TryInto};
 use core::{cmp, fmt, mem, slice};
+use core::ffi::c_uint;
 
 // Re-exports
 pub use capstone_sys::arm64_barrier_op as ArmBarrierOp;
@@ -306,7 +305,7 @@ mod test {
     fn test_arm64shift() {
         use super::arm64_shifter::*;
         use super::Arm64Shift::*;
-        use libc::c_uint;
+        use core::ffi::c_uint;
 
         fn t(shift_type_value: (arm64_shifter, c_uint), arm64_shift: Arm64Shift) {
             let (shift_type, value) = shift_type_value;

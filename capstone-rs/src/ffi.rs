@@ -1,7 +1,7 @@
 //! Functions useful for FFI
 
-use core::{slice, str};
-use libc::{self, c_char};
+use core::ffi::c_char;
+use core::ffi::CStr;
 
 // This function will go unused in Diet mode
 #[allow(unused)]
@@ -17,11 +17,10 @@ pub(crate) unsafe fn str_from_cstr_ptr<'a>(ptr: *const c_char) -> Option<&'a str
     if ptr.is_null() {
         return None;
     }
-    let len = libc::strlen(ptr);
     /* ASSUMPTION: capstone returns NUL terminated string */
-    let view: &[u8] = slice::from_raw_parts(ptr as *const u8, len as usize);
+    let cstr = CStr::from_ptr(ptr);
     /* ASSUMPTION: capstone returns a valid UTF-8 string */
-    Some(str::from_utf8_unchecked(view))
+    Some(core::str::from_utf8_unchecked(cstr.to_bytes()))
 }
 
 #[cfg(test)]

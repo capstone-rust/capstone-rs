@@ -2,8 +2,8 @@
 
 use core::convert::From;
 use core::{cmp, fmt, slice};
+use core::ffi::c_int;
 
-use libc::c_int;
 use capstone_sys::{
     cs_tms320c64x, cs_tms320c64x_op, tms320c64x_funit, tms320c64x_mem_dir, tms320c64x_mem_disp,
     tms320c64x_mem_mod, tms320c64x_op_mem, tms320c64x_op_type,
@@ -256,7 +256,7 @@ def_arch_details_struct!(
 mod test {
     use super::*;
     use capstone_sys::*;
-    use libc::{c_int, c_uint};
+    use core::ffi::{c_int, c_uint};
 
     const OP_MEM_ZERO: tms320c64x_op_mem = tms320c64x_op_mem {
         base: 0,

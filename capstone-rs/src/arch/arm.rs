@@ -2,10 +2,10 @@
 
 use core::convert::{From, TryInto};
 use core::{cmp, fmt, slice};
+use core::ffi::c_uint;
 
 use capstone_sys::{
     arm_op_mem, arm_op_type, arm_shifter, cs_ac_type, cs_arm, cs_arm_op, cs_arm_op__bindgen_ty_2};
-use libc::c_uint;
 
 pub use crate::arch::arch_builder::arm::*;
 use crate::arch::DetailsArchInsn;
@@ -301,7 +301,7 @@ mod test {
     fn test_armshift() {
         use super::arm_shifter::*;
         use super::ArmShift::*;
-        use libc::c_uint;
+        use core::ffi::c_uint;
 
         fn t(shift_type_value: (arm_shifter, c_uint), arm_shift: ArmShift) {
             let (shift_type, value) = shift_type_value;

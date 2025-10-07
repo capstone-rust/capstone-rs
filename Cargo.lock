@@ -85,7 +85,6 @@ version = "0.13.0"
 dependencies = [
  "capstone-sys",
  "criterion",
- "libc",
  "pretty_assertions",
  "static_assertions",
 ]
