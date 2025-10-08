@@ -53,9 +53,7 @@
 #![allow(improper_ctypes)]
 #![no_std]
 
-extern crate libc;
-
-use libc::c_int;
+use core::ffi::c_int;
 
 // Bindings should be copied here
 include!(concat!(env!("OUT_DIR"), "/capstone.rs"));

@@ -96,7 +96,6 @@ version = "0.17.0"
 dependencies = [
  "bindgen",
  "cc",
- "libc",
  "regex",
 ]
 
