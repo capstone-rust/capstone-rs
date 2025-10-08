@@ -321,22 +321,23 @@ impl ::core::ops::BitAndAssign for cs_mode {
 #[repr(transparent)]
 #[doc = " Mode type"]
 #[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
-pub struct cs_mode(pub libc::c_uint);
+pub struct cs_mode(pub ::core::ffi::c_uint);
 pub type cs_malloc_t =
-    ::core::option::Option<unsafe extern "C" fn(size: usize) -> *mut libc::c_void>;
-pub type cs_calloc_t =
-    ::core::option::Option<unsafe extern "C" fn(nmemb: usize, size: usize) -> *mut libc::c_void>;
-pub type cs_realloc_t = ::core::option::Option<
-    unsafe extern "C" fn(ptr: *mut libc::c_void, size: usize) -> *mut libc::c_void,
+    ::core::option::Option<unsafe extern "C" fn(size: usize) -> *mut ::core::ffi::c_void>;
+pub type cs_calloc_t = ::core::option::Option<
+    unsafe extern "C" fn(nmemb: usize, size: usize) -> *mut ::core::ffi::c_void,
 >;
-pub type cs_free_t = ::core::option::Option<unsafe extern "C" fn(ptr: *mut libc::c_void)>;
+pub type cs_realloc_t = ::core::option::Option<
+    unsafe extern "C" fn(ptr: *mut ::core::ffi::c_void, size: usize) -> *mut ::core::ffi::c_void,
+>;
+pub type cs_free_t = ::core::option::Option<unsafe extern "C" fn(ptr: *mut ::core::ffi::c_void)>;
 pub type cs_vsnprintf_t = ::core::option::Option<
     unsafe extern "C" fn(
-        str_: *mut libc::c_char,
+        str_: *mut ::core::ffi::c_char,
         size: usize,
-        format: *const libc::c_char,
+        format: *const ::core::ffi::c_char,
         ap: *mut va_list,
-    ) -> libc::c_int,
+    ) -> ::core::ffi::c_int,
 >;
 #[doc = " User-defined dynamic memory related functions: malloc/calloc/realloc/free/vsnprintf()\n By default, Capstone uses system's malloc(), calloc(), realloc(), free() & vsnprintf()."]
 #[repr(C)]
@@ -353,9 +354,9 @@ pub struct cs_opt_mem {
 #[derive(Debug, Copy, Clone)]
 pub struct cs_opt_mnem {
     #[doc = " ID of instruction to be customized."]
-    pub id: libc::c_uint,
+    pub id: ::core::ffi::c_uint,
     #[doc = " Customized instruction mnemonic."]
-    pub mnemonic: *const libc::c_char,
+    pub mnemonic: *const ::core::ffi::c_char,
 }
 #[repr(u32)]
 #[doc = " Runtime option for the disassembled engine"]
@@ -384,7 +385,7 @@ pub enum cs_opt_type {
 }
 pub mod cs_opt_value {
     #[doc = " Runtime option value (associated with option type above)"]
-    pub type Type = libc::c_uint;
+    pub type Type = ::core::ffi::c_uint;
     #[doc = "< Turn OFF an option - default for CS_OPT_DETAIL, CS_OPT_SKIPDATA, CS_OPT_UNSIGNED."]
     pub const CS_OPT_OFF: Type = 0;
     #[doc = "< Turn ON an option (CS_OPT_DETAIL, CS_OPT_SKIPDATA)."]
@@ -458,10 +459,10 @@ impl ::core::ops::BitAndAssign for cs_ac_type {
 #[repr(transparent)]
 #[doc = " Common instruction operand access types - to be consistent across all architectures.\n It is possible to combine access types, for example: CS_AC_READ | CS_AC_WRITE"]
 #[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
-pub struct cs_ac_type(pub libc::c_uint);
+pub struct cs_ac_type(pub ::core::ffi::c_uint);
 pub mod cs_group_type {
     #[doc = " Common instruction groups - to be consistent across all architectures."]
-    pub type Type = libc::c_uint;
+    pub type Type = ::core::ffi::c_uint;
     #[doc = "< uninitialized/invalid group."]
     pub const CS_GRP_INVALID: Type = 0;
     #[doc = "< all jump instructions (conditional+direct+indirect jumps)"]
@@ -485,7 +486,7 @@ pub type cs_skipdata_cb_t = ::core::option::Option<
         code: *const u8,
         code_size: usize,
         offset: usize,
-        user_data: *mut libc::c_void,
+        user_data: *mut ::core::ffi::c_void,
     ) -> usize,
 >;
 #[doc = " User-customized setup for SKIPDATA option"]
@@ -493,11 +494,11 @@ pub type cs_skipdata_cb_t = ::core::option::Option<
 #[derive(Debug, Copy, Clone)]
 pub struct cs_opt_skipdata {
     #[doc = " Capstone considers data to skip as special \"instructions\".\n User can specify the string for this instruction's \"mnemonic\" here.\n By default (if @mnemonic is NULL), Capstone use \".byte\"."]
-    pub mnemonic: *const libc::c_char,
+    pub mnemonic: *const ::core::ffi::c_char,
     #[doc = " User-defined callback function to be called when Capstone hits data.\n If the returned value from this callback is positive (>0), Capstone\n will skip exactly that number of bytes & continue. Otherwise, if\n the callback returns 0, Capstone stops disassembling and returns\n immediately from cs_disasm()\n NOTE: if this callback pointer is NULL, Capstone would skip a number\n of bytes depending on architectures, as following:\n Arm:     2 bytes (Thumb mode) or 4 bytes.\n Arm64:   4 bytes.\n Mips:    4 bytes.\n M680x:   1 byte.\n PowerPC: 4 bytes.\n Sparc:   4 bytes.\n SystemZ: 2 bytes.\n X86:     1 bytes.\n XCore:   2 bytes.\n EVM:     1 bytes.\n RISCV:   4 bytes.\n WASM:    1 bytes.\n MOS65XX: 1 bytes.\n BPF:     8 bytes.\n TriCore: 2 bytes."]
     pub callback: cs_skipdata_cb_t,
     #[doc = " User-defined data to be passed to @callback function pointer."]
-    pub user_data: *mut libc::c_void,
+    pub user_data: *mut ::core::ffi::c_void,
 }
 #[repr(u32)]
 #[doc = " ARM shift type"]
@@ -847,7 +848,7 @@ pub enum arm_vectordata_type {
 }
 pub mod arm_reg {
     #[doc = " ARM registers"]
-    pub type Type = libc::c_uint;
+    pub type Type = ::core::ffi::c_uint;
     pub const ARM_REG_INVALID: Type = 0;
     pub const ARM_REG_APSR: Type = 1;
     pub const ARM_REG_APSR_NZCV: Type = 2;
@@ -977,18 +978,18 @@ pub struct arm_op_mem {
     #[doc = "< index register"]
     pub index: arm_reg::Type,
     #[doc = "< scale for index register (can be 1, or -1)"]
-    pub scale: libc::c_int,
+    pub scale: ::core::ffi::c_int,
     #[doc = "< displacement/offset value"]
-    pub disp: libc::c_int,
+    pub disp: ::core::ffi::c_int,
     #[doc = " left-shift on index register, or 0 if irrelevant\n NOTE: this value can also be fetched via operand.shift.value"]
-    pub lshift: libc::c_int,
+    pub lshift: ::core::ffi::c_int,
 }
 #[doc = " Instruction operand"]
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub struct cs_arm_op {
     #[doc = "< Vector Index for some vector operands (or -1 if irrelevant)"]
-    pub vector_index: libc::c_int,
+    pub vector_index: ::core::ffi::c_int,
     pub shift: cs_arm_op__bindgen_ty_1,
     #[doc = "< operand type"]
     pub type_: arm_op_type,
@@ -1004,13 +1005,13 @@ pub struct cs_arm_op {
 #[derive(Debug, Copy, Clone)]
 pub struct cs_arm_op__bindgen_ty_1 {
     pub type_: arm_shifter,
-    pub value: libc::c_uint,
+    pub value: ::core::ffi::c_uint,
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub union cs_arm_op__bindgen_ty_2 {
     #[doc = "< register value for REG/SYSREG operand"]
-    pub reg: libc::c_int,
+    pub reg: ::core::ffi::c_int,
     #[doc = "< immediate value for C-IMM, P-IMM or IMM operand"]
     pub imm: i32,
     #[doc = "< floating point value for FP operand"]
@@ -1037,7 +1038,7 @@ pub struct cs_arm {
     #[doc = "< User-mode registers to be loaded (for LDM/STM instructions)"]
     pub usermode: bool,
     #[doc = "< Scalar size for vector instructions"]
-    pub vector_size: libc::c_int,
+    pub vector_size: ::core::ffi::c_int,
     #[doc = "< Data type for elements of vector instructions"]
     pub vector_data: arm_vectordata_type,
     #[doc = "< CPS mode for CPS instruction"]
@@ -1544,7 +1545,7 @@ pub enum arm_insn {
 }
 pub mod arm_insn_group {
     #[doc = " Group of ARM instructions"]
-    pub type Type = libc::c_uint;
+    pub type Type = ::core::ffi::c_uint;
     #[doc = "< = CS_GRP_INVALID"]
     pub const ARM_GRP_INVALID: Type = 0;
     #[doc = "< = CS_GRP_JUMP"]
@@ -3211,7 +3212,7 @@ pub enum arm64_prefetch_op {
 }
 pub mod arm64_reg {
     #[doc = " ARM64 registers"]
-    pub type Type = libc::c_uint;
+    pub type Type = ::core::ffi::c_uint;
     pub const ARM64_REG_INVALID: Type = 0;
     pub const ARM64_REG_FFR: Type = 1;
     pub const ARM64_REG_FP: Type = 2;
@@ -3587,7 +3588,7 @@ pub struct arm64_op_sme_index {
 #[derive(Copy, Clone)]
 pub struct cs_arm64_op {
     #[doc = "< Vector Index for some vector operands (or -1 if\n< irrelevant)"]
-    pub vector_index: libc::c_int,
+    pub vector_index: ::core::ffi::c_int,
     #[doc = "< Vector Arrangement Specifier"]
     pub vas: arm64_vas,
     pub shift: cs_arm64_op__bindgen_ty_1,
@@ -3607,7 +3608,7 @@ pub struct cs_arm64_op__bindgen_ty_1 {
     #[doc = "< shifter type of this operand"]
     pub type_: arm64_shifter,
     #[doc = "< shifter value of this operand"]
-    pub value: libc::c_uint,
+    pub value: ::core::ffi::c_uint,
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
@@ -4960,7 +4961,7 @@ pub enum arm64_insn {
 }
 pub mod arm64_insn_group {
     #[doc = " Group of ARM64 instructions"]
-    pub type Type = libc::c_uint;
+    pub type Type = ::core::ffi::c_uint;
     #[doc = "< = CS_GRP_INVALID"]
     pub const ARM64_GRP_INVALID: Type = 0;
     #[doc = "< = CS_GRP_JUMP"]
@@ -5005,7 +5006,7 @@ pub mod arm64_insn_group {
 }
 pub mod m68k_reg {
     #[doc = " M68K registers and special registers"]
-    pub type Type = libc::c_uint;
+    pub type Type = ::core::ffi::c_uint;
     pub const M68K_REG_INVALID: Type = 0;
     pub const M68K_REG_D0: Type = 1;
     pub const M68K_REG_D1: Type = 2;
@@ -5710,7 +5711,7 @@ pub enum mips_op_type {
 }
 pub mod mips_reg {
     #[doc = " MIPS registers"]
-    pub type Type = libc::c_uint;
+    pub type Type = ::core::ffi::c_uint;
     pub const MIPS_REG_INVALID: Type = 0;
     pub const MIPS_REG_PC: Type = 1;
     pub const MIPS_REG_0: Type = 2;
@@ -6580,7 +6581,7 @@ pub enum mips_insn {
 }
 pub mod mips_insn_group {
     #[doc = " Group of MIPS instructions"]
-    pub type Type = libc::c_uint;
+    pub type Type = ::core::ffi::c_uint;
     #[doc = "< = CS_GRP_INVALID"]
     pub const MIPS_GRP_INVALID: Type = 0;
     #[doc = "< = CS_GRP_JUMP"]
@@ -6678,7 +6679,7 @@ pub enum ppc_op_type {
 }
 pub mod ppc_reg {
     #[doc = " PPC registers"]
-    pub type Type = libc::c_uint;
+    pub type Type = ::core::ffi::c_uint;
     pub const PPC_REG_INVALID: Type = 0;
     pub const PPC_REG_CARRY: Type = 2;
     pub const PPC_REG_CTR: Type = 3;
@@ -6935,7 +6936,7 @@ pub struct ppc_op_mem {
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
 pub struct ppc_op_crx {
-    pub scale: libc::c_uint,
+    pub scale: ::core::ffi::c_uint,
     pub reg: ppc_reg::Type,
     pub cond: ppc_bc,
 }
@@ -8732,7 +8733,7 @@ pub enum ppc_insn {
 }
 pub mod ppc_insn_group {
     #[doc = " Group of PPC instructions"]
-    pub type Type = libc::c_uint;
+    pub type Type = ::core::ffi::c_uint;
     #[doc = "< = CS_GRP_INVALID"]
     pub const PPC_GRP_INVALID: Type = 0;
     #[doc = "< = CS_GRP_JUMP"]
@@ -8853,7 +8854,7 @@ pub enum sparc_op_type {
 }
 pub mod sparc_reg {
     #[doc = " SPARC registers"]
-    pub type Type = libc::c_uint;
+    pub type Type = ::core::ffi::c_uint;
     pub const SPARC_REG_INVALID: Type = 0;
     pub const SPARC_REG_F0: Type = 1;
     pub const SPARC_REG_F1: Type = 2;
@@ -9298,7 +9299,7 @@ pub enum sparc_insn {
 }
 pub mod sparc_insn_group {
     #[doc = " Group of SPARC instructions"]
-    pub type Type = libc::c_uint;
+    pub type Type = ::core::ffi::c_uint;
     #[doc = "< = CS_GRP_INVALID"]
     pub const SPARC_GRP_INVALID: Type = 0;
     #[doc = "< = CS_GRP_JUMP"]
@@ -9350,7 +9351,7 @@ pub enum sysz_op_type {
 }
 pub mod sysz_reg {
     #[doc = " SystemZ registers"]
-    pub type Type = libc::c_uint;
+    pub type Type = ::core::ffi::c_uint;
     pub const SYSZ_REG_INVALID: Type = 0;
     pub const SYSZ_REG_0: Type = 1;
     pub const SYSZ_REG_1: Type = 2;
@@ -11888,7 +11889,7 @@ pub enum sysz_insn {
 }
 pub mod sysz_insn_group {
     #[doc = " Group of SystemZ instructions"]
-    pub type Type = libc::c_uint;
+    pub type Type = ::core::ffi::c_uint;
     #[doc = "< = CS_GRP_INVALID"]
     pub const SYSZ_GRP_INVALID: Type = 0;
     #[doc = "< = CS_GRP_JUMP"]
@@ -11926,7 +11927,7 @@ pub mod sysz_insn_group {
 }
 pub mod x86_reg {
     #[doc = " X86 registers"]
-    pub type Type = libc::c_uint;
+    pub type Type = ::core::ffi::c_uint;
     pub const X86_REG_INVALID: Type = 0;
     pub const X86_REG_AH: Type = 1;
     pub const X86_REG_AL: Type = 2;
@@ -12328,7 +12329,7 @@ pub struct x86_op_mem {
     #[doc = "< index register (or X86_REG_INVALID if irrelevant)"]
     pub index: x86_reg::Type,
     #[doc = "< scale for index register"]
-    pub scale: libc::c_int,
+    pub scale: ::core::ffi::c_int,
     #[doc = "< displacement value"]
     pub disp: i64,
 }
@@ -13972,7 +13973,7 @@ pub enum x86_insn {
 }
 pub mod x86_insn_group {
     #[doc = " Group of X86 instructions"]
-    pub type Type = libc::c_uint;
+    pub type Type = ::core::ffi::c_uint;
     #[doc = "< = CS_GRP_INVALID"]
     pub const X86_GRP_INVALID: Type = 0;
     #[doc = "< = CS_GRP_JUMP"]
@@ -14049,7 +14050,7 @@ pub enum xcore_op_type {
 }
 pub mod xcore_reg {
     #[doc = " XCore registers"]
-    pub type Type = libc::c_uint;
+    pub type Type = ::core::ffi::c_uint;
     pub const XCORE_REG_INVALID: Type = 0;
     pub const XCORE_REG_CP: Type = 1;
     pub const XCORE_REG_DP: Type = 2;
@@ -14091,7 +14092,7 @@ pub struct xcore_op_mem {
     #[doc = "< displacement/offset value"]
     pub disp: i32,
     #[doc = "< +1: forward, -1: backward"]
-    pub direct: libc::c_int,
+    pub direct: ::core::ffi::c_int,
 }
 #[doc = " Instruction operand"]
 #[repr(C)]
@@ -14268,7 +14269,7 @@ pub enum xcore_insn {
 }
 pub mod xcore_insn_group {
     #[doc = " Group of XCore instructions"]
-    pub type Type = libc::c_uint;
+    pub type Type = ::core::ffi::c_uint;
     #[doc = "< = CS_GRP_INVALID"]
     pub const XCORE_GRP_INVALID: Type = 0;
     #[doc = "< = CS_GRP_JUMP"]
@@ -14315,19 +14316,19 @@ pub enum tms320c64x_mem_mod {
 #[derive(Debug, Copy, Clone)]
 pub struct tms320c64x_op_mem {
     #[doc = "< base register"]
-    pub base: libc::c_uint,
+    pub base: ::core::ffi::c_uint,
     #[doc = "< displacement/offset value"]
-    pub disp: libc::c_uint,
+    pub disp: ::core::ffi::c_uint,
     #[doc = "< unit of base and offset register"]
-    pub unit: libc::c_uint,
+    pub unit: ::core::ffi::c_uint,
     #[doc = "< offset scaled"]
-    pub scaled: libc::c_uint,
+    pub scaled: ::core::ffi::c_uint,
     #[doc = "< displacement type"]
-    pub disptype: libc::c_uint,
+    pub disptype: ::core::ffi::c_uint,
     #[doc = "< direction"]
-    pub direction: libc::c_uint,
+    pub direction: ::core::ffi::c_uint,
     #[doc = "< modification"]
-    pub modify: libc::c_uint,
+    pub modify: ::core::ffi::c_uint,
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
@@ -14340,7 +14341,7 @@ pub struct cs_tms320c64x_op {
 #[derive(Copy, Clone)]
 pub union cs_tms320c64x_op__bindgen_ty_1 {
     #[doc = "< register value for REG operand or first register for REGPAIR operand"]
-    pub reg: libc::c_uint,
+    pub reg: ::core::ffi::c_uint,
     #[doc = "< immediate value for IMM operand"]
     pub imm: i32,
     #[doc = "< base/disp value for MEM operand"]
@@ -14368,20 +14369,20 @@ pub struct cs_tms320c64x {
     pub operands: [cs_tms320c64x_op; 8usize],
     pub condition: cs_tms320c64x__bindgen_ty_1,
     pub funit: cs_tms320c64x__bindgen_ty_2,
-    pub parallel: libc::c_uint,
+    pub parallel: ::core::ffi::c_uint,
 }
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
 pub struct cs_tms320c64x__bindgen_ty_1 {
-    pub reg: libc::c_uint,
-    pub zero: libc::c_uint,
+    pub reg: ::core::ffi::c_uint,
+    pub zero: ::core::ffi::c_uint,
 }
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
 pub struct cs_tms320c64x__bindgen_ty_2 {
-    pub unit: libc::c_uint,
-    pub side: libc::c_uint,
-    pub crosspath: libc::c_uint,
+    pub unit: ::core::ffi::c_uint,
+    pub side: ::core::ffi::c_uint,
+    pub crosspath: ::core::ffi::c_uint,
 }
 impl ::core::fmt::Debug for cs_tms320c64x {
     fn fmt(&self, f: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
@@ -14393,7 +14394,7 @@ impl ::core::fmt::Debug for cs_tms320c64x {
     }
 }
 pub mod tms320c64x_reg {
-    pub type Type = libc::c_uint;
+    pub type Type = ::core::ffi::c_uint;
     pub const TMS320C64X_REG_INVALID: Type = 0;
     pub const TMS320C64X_REG_AMR: Type = 1;
     pub const TMS320C64X_REG_CSR: Type = 2;
@@ -14639,7 +14640,7 @@ pub enum tms320c64x_insn {
     TMS320C64X_INS_ENDING = 145,
 }
 pub mod tms320c64x_insn_group {
-    pub type Type = libc::c_uint;
+    pub type Type = ::core::ffi::c_uint;
     #[doc = "< = CS_GRP_INVALID"]
     pub const TMS320C64X_GRP_INVALID: Type = 0;
     #[doc = "< = CS_GRP_JUMP"]
@@ -14663,7 +14664,7 @@ pub enum tms320c64x_funit {
 }
 pub mod m680x_reg {
     #[doc = " M680X registers and special registers"]
-    pub type Type = libc::c_uint;
+    pub type Type = ::core::ffi::c_uint;
     pub const M680X_REG_INVALID: Type = 0;
     #[doc = "< M6800/1/2/3/9, HD6301/9"]
     pub const M680X_REG_A: Type = 1;
@@ -15253,11 +15254,11 @@ pub enum m680x_insn {
 #[derive(Debug, Copy, Clone)]
 pub struct cs_evm {
     #[doc = "< number of items popped from the stack"]
-    pub pop: libc::c_uchar,
+    pub pop: ::core::ffi::c_uchar,
     #[doc = "< number of items pushed into the stack"]
-    pub push: libc::c_uchar,
+    pub push: ::core::ffi::c_uchar,
     #[doc = "< gas fee for the instruction"]
-    pub fee: libc::c_uint,
+    pub fee: ::core::ffi::c_uint,
 }
 #[repr(u32)]
 #[doc = " EVM instruction"]
@@ -15403,7 +15404,7 @@ pub enum evm_insn {
 }
 pub mod evm_insn_group {
     #[doc = " Group of EVM instructions"]
-    pub type Type = libc::c_uint;
+    pub type Type = ::core::ffi::c_uint;
     #[doc = "< = CS_GRP_INVALID"]
     pub const EVM_GRP_INVALID: Type = 0;
     #[doc = "< all jump instructions"]
@@ -15438,7 +15439,7 @@ pub enum riscv_op_type {
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
 pub struct riscv_op_mem {
-    pub base: libc::c_uint,
+    pub base: ::core::ffi::c_uint,
     pub disp: i64,
 }
 #[repr(C)]
@@ -15450,7 +15451,7 @@ pub struct cs_riscv_op {
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub union cs_riscv_op__bindgen_ty_1 {
-    pub reg: libc::c_uint,
+    pub reg: ::core::ffi::c_uint,
     pub imm: i64,
     pub mem: riscv_op_mem,
 }
@@ -15485,7 +15486,7 @@ impl ::core::fmt::Debug for cs_riscv {
     }
 }
 pub mod riscv_reg {
-    pub type Type = libc::c_uint;
+    pub type Type = ::core::ffi::c_uint;
     pub const RISCV_REG_INVALID: Type = 0;
     pub const RISCV_REG_X0: Type = 1;
     pub const RISCV_REG_ZERO: Type = 1;
@@ -15897,7 +15898,7 @@ pub enum riscv_insn {
     RISCV_INS_ENDING = 273,
 }
 pub mod riscv_insn_group {
-    pub type Type = libc::c_uint;
+    pub type Type = ::core::ffi::c_uint;
     #[doc = "< = CS_GRP_INVALID"]
     pub const RISCV_GRP_INVALID: Type = 0;
     #[doc = "< = CS_GRP_JUMP"]
@@ -15989,7 +15990,7 @@ impl ::core::fmt::Debug for cs_wasm {
 }
 pub mod mos65xx_reg {
     #[doc = " MOS65XX registers and special registers"]
-    pub type Type = libc::c_uint;
+    pub type Type = ::core::ffi::c_uint;
     pub const MOS65XX_REG_INVALID: Type = 0;
     #[doc = "< accumulator"]
     pub const MOS65XX_REG_ACC: Type = 1;
@@ -16272,7 +16273,7 @@ pub enum bpf_op_type {
 }
 pub mod bpf_reg {
     #[doc = " BPF registers"]
-    pub type Type = libc::c_uint;
+    pub type Type = ::core::ffi::c_uint;
     pub const BPF_REG_INVALID: Type = 0;
     pub const BPF_REG_A: Type = 1;
     pub const BPF_REG_X: Type = 2;
@@ -16474,7 +16475,7 @@ pub enum bpf_insn {
 }
 pub mod bpf_insn_group {
     #[doc = " Group of BPF instructions"]
-    pub type Type = libc::c_uint;
+    pub type Type = ::core::ffi::c_uint;
     #[doc = "< = CS_GRP_INVALID"]
     pub const BPF_GRP_INVALID: Type = 0;
     pub const BPF_GRP_LOAD: Type = 1;
@@ -16490,7 +16491,7 @@ pub mod bpf_insn_group {
 }
 pub mod sh_reg {
     #[doc = " SH registers and special registers"]
-    pub type Type = libc::c_uint;
+    pub type Type = ::core::ffi::c_uint;
     pub const SH_REG_INVALID: Type = 0;
     pub const SH_REG_R0: Type = 1;
     pub const SH_REG_R1: Type = 2;
@@ -16728,7 +16729,7 @@ pub struct sh_op_dsp {
     pub r: [sh_reg::Type; 6usize],
     pub cc: sh_dsp_cc,
     pub imm: u8,
-    pub size: libc::c_int,
+    pub size: ::core::ffi::c_int,
 }
 #[doc = " Instruction operand"]
 #[repr(C)]
@@ -16948,7 +16949,7 @@ impl ::core::fmt::Debug for cs_sh {
 }
 pub mod sh_insn_group {
     #[doc = " Group of SH instructions"]
-    pub type Type = libc::c_uint;
+    pub type Type = ::core::ffi::c_uint;
     #[doc = "< CS_GRUP_INVALID"]
     pub const SH_GRP_INVALID: Type = 0;
     #[doc = "< = CS_GRP_JUMP"]
@@ -17013,7 +17014,7 @@ pub struct cs_tricore_op {
 #[derive(Copy, Clone)]
 pub union cs_tricore_op__bindgen_ty_1 {
     #[doc = "< register value for REG operand"]
-    pub reg: libc::c_uint,
+    pub reg: ::core::ffi::c_uint,
     #[doc = "< immediate value for IMM operand"]
     pub imm: i32,
     #[doc = "< base/disp value for MEM operand"]
@@ -17055,7 +17056,7 @@ impl ::core::fmt::Debug for cs_tricore {
 }
 pub mod tricore_reg {
     #[doc = " TriCore registers"]
-    pub type Type = libc::c_uint;
+    pub type Type = ::core::ffi::c_uint;
     pub const TRICORE_REG_INVALID: Type = 0;
     pub const TRICORE_REG_FCX: Type = 1;
     pub const TRICORE_REG_PC: Type = 2;
@@ -17518,7 +17519,7 @@ pub enum tricore_insn {
 }
 pub mod tricore_insn_group {
     #[doc = " Group of TriCore instructions"]
-    pub type Type = libc::c_uint;
+    pub type Type = ::core::ffi::c_uint;
     #[doc = "< = CS_GRP_INVALID"]
     pub const TRICORE_GRP_INVALID: Type = 0;
     #[doc = "< = CS_GRP_CALL"]
@@ -17618,7 +17619,7 @@ impl ::core::fmt::Debug for cs_detail {
 #[repr(C)]
 pub struct cs_insn {
     #[doc = " Instruction ID (basically a numeric ID for the instruction mnemonic)\n Find the instruction id in the '[ARCH]_insn' enum in the header file\n of corresponding architecture, such as 'arm_insn' in arm.h for ARM,\n 'x86_insn' in x86.h for X86, etc...\n This information is available even when CS_OPT_DETAIL = CS_OPT_OFF\n NOTE: in Skipdata mode, \"data\" instruction has 0 for this id field."]
-    pub id: libc::c_uint,
+    pub id: ::core::ffi::c_uint,
     #[doc = " Address (EIP) of this instruction\n This information is available even when CS_OPT_DETAIL = CS_OPT_OFF"]
     pub address: u64,
     #[doc = " Size of this instruction\n This information is available even when CS_OPT_DETAIL = CS_OPT_OFF"]
@@ -17626,9 +17627,9 @@ pub struct cs_insn {
     #[doc = " Machine bytes of this instruction, with number of bytes indicated by @size above\n This information is available even when CS_OPT_DETAIL = CS_OPT_OFF"]
     pub bytes: [u8; 24usize],
     #[doc = " Ascii text of instruction mnemonic\n This information is available even when CS_OPT_DETAIL = CS_OPT_OFF"]
-    pub mnemonic: [libc::c_char; 32usize],
+    pub mnemonic: [::core::ffi::c_char; 32usize],
     #[doc = " Ascii text of instruction operands\n This information is available even when CS_OPT_DETAIL = CS_OPT_OFF"]
-    pub op_str: [libc::c_char; 160usize],
+    pub op_str: [::core::ffi::c_char; 160usize],
     #[doc = " Pointer to cs_detail.\n NOTE: detail pointer is only valid when both requirements below are met:\n (1) CS_OP_DETAIL = CS_OPT_ON\n (2) Engine is not in Skipdata mode (CS_OP_SKIPDATA option set to CS_OPT_ON)\n\n NOTE 2: when in Skipdata mode, or when detail mode is OFF, even if this pointer\n     is not NULL, its content is still irrelevant."]
     pub detail: *mut cs_detail,
 }
@@ -17643,7 +17644,7 @@ impl ::core::fmt::Debug for cs_insn {
 }
 pub mod cs_err {
     #[doc = " All type of errors encountered by Capstone API.\n These are values returned by cs_errno()"]
-    pub type Type = libc::c_uint;
+    pub type Type = ::core::ffi::c_uint;
     #[doc = "< No error: everything was fine"]
     pub const CS_ERR_OK: Type = 0;
     #[doc = "< Out-Of-Memory error: cs_open(), cs_disasm(), cs_disasm_iter()"]
@@ -17677,11 +17678,14 @@ pub mod cs_err {
 }
 extern "C" {
     #[doc = "Return combined API version & major and minor version numbers.\n\n@major: major number of API version\n@minor: minor number of API version\n\n@return hexical number as (major << 8 | minor), which encodes both\nmajor & minor versions.\nNOTE: This returned value can be compared with version number made\nwith macro CS_MAKE_VERSION\n\nFor example, second API version would return 1 in @major, and 1 in @minor\nThe return value would be 0x0101\n\nNOTE: if you only care about returned value, but not major and minor values,\nset both @major & @minor arguments to NULL."]
-    pub fn cs_version(major: *mut libc::c_int, minor: *mut libc::c_int) -> libc::c_uint;
+    pub fn cs_version(
+        major: *mut ::core::ffi::c_int,
+        minor: *mut ::core::ffi::c_int,
+    ) -> ::core::ffi::c_uint;
 }
 extern "C" {
     #[doc = "This API can be used to either ask for archs supported by this library,\nor check to see if the library was compile with 'diet' option (or called\nin 'diet' mode).\n\nTo check if a particular arch is supported by this library, set @query to\narch mode (CS_ARCH_* value).\nTo verify if this library supports all the archs, use CS_ARCH_ALL.\n\nTo check if this library is in 'diet' mode, set @query to CS_SUPPORT_DIET.\n\n@return True if this library supports the given arch, or in 'diet' mode."]
-    pub fn cs_support(query: libc::c_int) -> bool;
+    pub fn cs_support(query: ::core::ffi::c_int) -> bool;
 }
 extern "C" {
     #[doc = "Initialize CS handle: this must be done before any usage of CS.\n\n@arch: architecture type (CS_ARCH_*)\n@mode: hardware mode. This is combined of CS_MODE_*\n@handle: pointer to handle, which will be updated at return time\n\n@return CS_ERR_OK on success, or other value on failure (refer to cs_err enum\nfor detailed error)."]
@@ -17701,7 +17705,7 @@ extern "C" {
 }
 extern "C" {
     #[doc = "Return a string describing given error code.\n\n@code: error code (see CS_ERR_* above)\n\n@return: returns a pointer to a string that describes the error code\npassed in the argument @code"]
-    pub fn cs_strerror(code: cs_err::Type) -> *const libc::c_char;
+    pub fn cs_strerror(code: cs_err::Type) -> *const ::core::ffi::c_char;
 }
 extern "C" {
     #[doc = "Disassemble binary code, given the code buffer, size, address and number\nof instructions to be decoded.\nThis API dynamically allocate memory to contain disassembled instruction.\nResulting instructions will be put into @*insn\n\nNOTE 1: this API will automatically determine memory needed to contain\noutput disassembled instructions in @insn.\n\nNOTE 2: caller must free the allocated memory itself to avoid memory leaking.\n\nNOTE 3: for system with scarce memory to be dynamically allocated such as\nOS kernel or firmware, the API cs_disasm_iter() might be a better choice than\ncs_disasm(). The reason is that with cs_disasm(), based on limited available\nmemory, we have to calculate in advance how many instructions to be disassembled,\nwhich complicates things. This is especially troublesome for the case @count=0,\nwhen cs_disasm() runs uncontrollably (until either end of input buffer, or\nwhen it encounters an invalid instruction).\n\n@handle: handle returned by cs_open()\n@code: buffer containing raw binary code to be disassembled.\n@code_size: size of the above code buffer.\n@address: address of the first instruction in given raw code buffer.\n@insn: array of instructions filled in by this API.\nNOTE: @insn will be allocated by this function, and should be freed\nwith cs_free() API.\n@count: number of instructions to be disassembled, or 0 to get all of them\n\n@return: the number of successfully disassembled instructions,\nor 0 if this function failed to disassemble the given code\n\nOn failure, call cs_errno() for error code."]
@@ -17734,40 +17738,44 @@ extern "C" {
 }
 extern "C" {
     #[doc = "Return friendly name of register in a string.\nFind the instruction id from header file of corresponding architecture (arm.h for ARM,\nx86.h for X86, ...)\n\nWARN: when in 'diet' mode, this API is irrelevant because engine does not\nstore register name.\n\n@handle: handle returned by cs_open()\n@reg_id: register id\n\n@return: string name of the register, or NULL if @reg_id is invalid."]
-    pub fn cs_reg_name(handle: csh, reg_id: libc::c_uint) -> *const libc::c_char;
+    pub fn cs_reg_name(handle: csh, reg_id: ::core::ffi::c_uint) -> *const ::core::ffi::c_char;
 }
 extern "C" {
     #[doc = "Return friendly name of an instruction in a string.\nFind the instruction id from header file of corresponding architecture (arm.h for ARM, x86.h for X86, ...)\n\nWARN: when in 'diet' mode, this API is irrelevant because the engine does not\nstore instruction name.\n\n@handle: handle returned by cs_open()\n@insn_id: instruction id\n\n@return: string name of the instruction, or NULL if @insn_id is invalid."]
-    pub fn cs_insn_name(handle: csh, insn_id: libc::c_uint) -> *const libc::c_char;
+    pub fn cs_insn_name(handle: csh, insn_id: ::core::ffi::c_uint) -> *const ::core::ffi::c_char;
 }
 extern "C" {
     #[doc = "Return friendly name of a group id (that an instruction can belong to)\nFind the group id from header file of corresponding architecture (arm.h for ARM, x86.h for X86, ...)\n\nWARN: when in 'diet' mode, this API is irrelevant because the engine does not\nstore group name.\n\n@handle: handle returned by cs_open()\n@group_id: group id\n\n@return: string name of the group, or NULL if @group_id is invalid."]
-    pub fn cs_group_name(handle: csh, group_id: libc::c_uint) -> *const libc::c_char;
+    pub fn cs_group_name(handle: csh, group_id: ::core::ffi::c_uint) -> *const ::core::ffi::c_char;
 }
 extern "C" {
     #[doc = "Check if a disassembled instruction belong to a particular group.\nFind the group id from header file of corresponding architecture (arm.h for ARM, x86.h for X86, ...)\nInternally, this simply verifies if @group_id matches any member of insn->groups array.\n\nNOTE: this API is only valid when detail option is ON (which is OFF by default).\n\nWARN: when in 'diet' mode, this API is irrelevant because the engine does not\nupdate @groups array.\n\n@handle: handle returned by cs_open()\n@insn: disassembled instruction structure received from cs_disasm() or cs_disasm_iter()\n@group_id: group that you want to check if this instruction belong to.\n\n@return: true if this instruction indeed belongs to the given group, or false otherwise."]
-    pub fn cs_insn_group(handle: csh, insn: *const cs_insn, group_id: libc::c_uint) -> bool;
+    pub fn cs_insn_group(handle: csh, insn: *const cs_insn, group_id: ::core::ffi::c_uint) -> bool;
 }
 extern "C" {
     #[doc = "Check if a disassembled instruction IMPLICITLY used a particular register.\nFind the register id from header file of corresponding architecture (arm.h for ARM, x86.h for X86, ...)\nInternally, this simply verifies if @reg_id matches any member of insn->regs_read array.\n\nNOTE: this API is only valid when detail option is ON (which is OFF by default)\n\nWARN: when in 'diet' mode, this API is irrelevant because the engine does not\nupdate @regs_read array.\n\n@insn: disassembled instruction structure received from cs_disasm() or cs_disasm_iter()\n@reg_id: register that you want to check if this instruction used it.\n\n@return: true if this instruction indeed implicitly used the given register, or false otherwise."]
-    pub fn cs_reg_read(handle: csh, insn: *const cs_insn, reg_id: libc::c_uint) -> bool;
+    pub fn cs_reg_read(handle: csh, insn: *const cs_insn, reg_id: ::core::ffi::c_uint) -> bool;
 }
 extern "C" {
     #[doc = "Check if a disassembled instruction IMPLICITLY modified a particular register.\nFind the register id from header file of corresponding architecture (arm.h for ARM, x86.h for X86, ...)\nInternally, this simply verifies if @reg_id matches any member of insn->regs_write array.\n\nNOTE: this API is only valid when detail option is ON (which is OFF by default)\n\nWARN: when in 'diet' mode, this API is irrelevant because the engine does not\nupdate @regs_write array.\n\n@insn: disassembled instruction structure received from cs_disasm() or cs_disasm_iter()\n@reg_id: register that you want to check if this instruction modified it.\n\n@return: true if this instruction indeed implicitly modified the given register, or false otherwise."]
-    pub fn cs_reg_write(handle: csh, insn: *const cs_insn, reg_id: libc::c_uint) -> bool;
+    pub fn cs_reg_write(handle: csh, insn: *const cs_insn, reg_id: ::core::ffi::c_uint) -> bool;
 }
 extern "C" {
     #[doc = "Count the number of operands of a given type.\nFind the operand type in header file of corresponding architecture (arm.h for ARM, x86.h for X86, ...)\n\nNOTE: this API is only valid when detail option is ON (which is OFF by default)\n\n@handle: handle returned by cs_open()\n@insn: disassembled instruction structure received from cs_disasm() or cs_disasm_iter()\n@op_type: Operand type to be found.\n\n@return: number of operands of given type @op_type in instruction @insn,\nor -1 on failure."]
-    pub fn cs_op_count(handle: csh, insn: *const cs_insn, op_type: libc::c_uint) -> libc::c_int;
+    pub fn cs_op_count(
+        handle: csh,
+        insn: *const cs_insn,
+        op_type: ::core::ffi::c_uint,
+    ) -> ::core::ffi::c_int;
 }
 extern "C" {
     #[doc = "Retrieve the position of operand of given type in <arch>.operands[] array.\nLater, the operand can be accessed using the returned position.\nFind the operand type in header file of corresponding architecture (arm.h for ARM, x86.h for X86, ...)\n\nNOTE: this API is only valid when detail option is ON (which is OFF by default)\n\n@handle: handle returned by cs_open()\n@insn: disassembled instruction structure received from cs_disasm() or cs_disasm_iter()\n@op_type: Operand type to be found.\n@position: position of the operand to be found. This must be in the range\n[1, cs_op_count(handle, insn, op_type)]\n\n@return: index of operand of given type @op_type in <arch>.operands[] array\nin instruction @insn, or -1 on failure."]
     pub fn cs_op_index(
         handle: csh,
         insn: *const cs_insn,
-        op_type: libc::c_uint,
-        position: libc::c_uint,
-    ) -> libc::c_int;
+        op_type: ::core::ffi::c_uint,
+        position: ::core::ffi::c_uint,
+    ) -> ::core::ffi::c_int;
 }
 #[doc = " Type of array to keep the list of registers"]
 pub type cs_regs = [u16; 64usize];
@@ -17786,8 +17794,8 @@ pub type __builtin_va_list = [__va_list_tag; 1usize];
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
 pub struct __va_list_tag {
-    pub gp_offset: libc::c_uint,
-    pub fp_offset: libc::c_uint,
-    pub overflow_arg_area: *mut libc::c_void,
-    pub reg_save_area: *mut libc::c_void,
+    pub gp_offset: ::core::ffi::c_uint,
+    pub fp_offset: ::core::ffi::c_uint,
+    pub overflow_arg_area: *mut ::core::ffi::c_void,
+    pub reg_save_area: *mut ::core::ffi::c_void,
 }

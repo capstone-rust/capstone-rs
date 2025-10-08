@@ -264,7 +264,7 @@ fn write_bindgen_bindings(
         .rust_target(bindgen::RustTarget::Stable_1_28)
         .size_t_is_usize(true)
         .use_core()
-        .ctypes_prefix("libc")
+        .ctypes_prefix("::core::ffi")
         .header(
             find_capstone_header(header_search_paths, "capstone.h")
                 .expect("Could not find header")

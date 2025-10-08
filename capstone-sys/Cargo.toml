@@ -22,10 +22,6 @@ exclude = [
 [badges]
 travis-ci = { repository = "capstone-rust/capstone-sys" }
 
-
-[dependencies]
-libc = { version = "0.2.59", default-features = false }
-
 [build-dependencies]
 bindgen = { optional = true, version = "0.69.0" }
 regex = { optional = true, version = "1.10.4" }
