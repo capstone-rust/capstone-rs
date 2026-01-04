@@ -1,12 +1,12 @@
 [package]
 name = "cstool"
-version = "0.1.0"
+version = "0.2.0"
 authors = ["Travis Finkenauer <tmfinken@gmail.com>"]
 license = "MIT"
 edition = "2018"
 
 [dependencies]
-capstone = { path = "../capstone-rs", version = "0.13.0", default-features = false, features = ["std"] }
+capstone = { path = "../capstone-rs", version = "0.14.0", default-features = false, features = ["std"] }
 log = "0.4"
 stderrlog = "0.6"
 

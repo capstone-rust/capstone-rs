@@ -81,7 +81,7 @@ checksum = "79296716171880943b8470b5f8d03aa55eb2e645a4874bdbb28adb49162e012c"
 
 [[package]]
 name = "capstone"
-version = "0.13.0"
+version = "0.14.0"
 dependencies = [
  "capstone-sys",
  "criterion",
@@ -91,7 +91,7 @@ dependencies = [
 
 [[package]]
 name = "capstone-sys"
-version = "0.17.0"
+version = "0.18.0"
 dependencies = [
  "bindgen",
  "cc",
@@ -277,7 +277,7 @@ checksum = "7a81dae078cea95a014a339291cec439d2f232ebe854a9d672b796c6afafa9b7"
 
 [[package]]
 name = "cstool"
-version = "0.1.0"
+version = "0.2.0"
 dependencies = [
  "capstone",
  "clap",

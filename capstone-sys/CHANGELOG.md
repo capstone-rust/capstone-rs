@@ -1,10 +1,10 @@
 # Changelog
-All notable changes to this project will be documented in this file.
+Notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [UNRELEASED] - YYYY-MM-DD
+## [0.18.0] - 2026-01-04
 ### Added
 - Support for TriCore arch
 - Support for MOS65XX arch
@@ -136,7 +136,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Removed
 - Dependency
 
-[UNRELEASED]: https://github.com/capstone-rust/capstone-rs/compare/capstone-sys-v0.17.0...master
+[0.18.0]: https://github.com/capstone-rust/capstone-rs/compare/capstone-sys-v0.17.0...capstone-sys-v0.18.0
 [0.17.0]: https://github.com/capstone-rust/capstone-rs/compare/capstone-sys-v0.16.0...capstone-sys-v0.17.0
 [0.16.0]: https://github.com/capstone-rust/capstone-rs/compare/capstone-sys-v0.15.0...capstone-sys-v0.16.0
 [0.15.0]: https://github.com/capstone-rust/capstone-rs/compare/capstone-sys-v0.14.0...capstone-sys-v0.15.0
