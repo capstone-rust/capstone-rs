@@ -10,22 +10,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - TriCore arch support
 - MOS65XX arch support
 - SH arch support
-- Arch-specific features flags to enable/disable arch support
+- Arch-specific features to toggle arch support
 - Expose X86 instruction encoding info via `X86InsnDetail::encoding()`
-- Make RegAccessType available for ARM64
-- Rename RegAccessType to AccessType while keeping type alias
+- Make `RegAccessType` available for ARM64
 - Expose `CS_OPT_UNSIGNED` via `Capstone::set_unsigned`
 - Expose `CS_OPT_MNEMONIC` via `Capstone::set_mnemonic`
 - Expose `cs_disasm_iter` via `Capstone::disasm_iter`
 - Add `check_only` feature to speed up `cargo check` by building without native code
 
 ### Changed
+- Rename `RegAccessType` to `AccessType` while keeping type alias
 - `InsnDetail::regs_read()`/`InsnDetail::regs_write()` return more of the accessed registers
 - Bump bundled capstone to 5.0.6
 - Bump minimum Rust version to 1.81.0
 
 ### Fixed
 - `impl Display for Insn<'_>` now avoids to print trailing space
+- Avoids using allocator when building for `no_std`
+- Build in Bazel sandbox
 
 ## [0.13.0] - 2025-02-04
 ### Added
