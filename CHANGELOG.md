@@ -33,7 +33,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Expose `CS_OPT_MNEMONIC` via `Capstone::set_mnemonic`
 - Expose `cs_disasm_iter` via `Capstone::disasm_iter`
 - Add `check_only` feature to speed up `cargo check` by building without native code
-- Rename ARM64 to AARCH64, SYSZ to SYSTEMZ to follow upstream changes
 
 ### Changed
 - Rename `RegAccessType` to `AccessType` while keeping type alias
