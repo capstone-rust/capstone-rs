@@ -13905,7 +13905,7 @@ impl ::core::ops::BitAndAssign for sparc_membar_tag {
 }
 #[repr(transparent)]
 #[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
-pub struct sparc_membar_tag(pub libc::c_uint);
+pub struct sparc_membar_tag(pub ::core::ffi::c_uint);
 #[doc = " Instruction's operand referring to memory\n This is associated with SPARC_OP_MEM operand type above"]
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
