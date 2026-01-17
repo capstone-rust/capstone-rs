@@ -48,7 +48,7 @@ pub enum AlphaOperandType {
     Reg(RegId),
 
     /// Immediate
-    Imm(i32),
+    Imm(i64),
 
     /// Invalid
     Invalid,

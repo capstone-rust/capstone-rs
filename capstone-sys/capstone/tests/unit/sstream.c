@@ -356,7 +356,8 @@ bool test_printuint64_bang()
 	return true;
 }
 
-bool test_trimls() {
+bool test_trimls()
+{
 	printf("Test test_replc\n");
 
 	SStream OS = { 0 };
@@ -416,7 +417,6 @@ bool test_stream_unsigned_imm()
 	CHECK_OS_EQUAL_RET_FALSE(OS, "#0xffffffff");
 	SStream_Flush(&OS, NULL);
 
-
 	OS.unsigned_num = true;
 	printInt64(&OS, -1);
 	CHECK_OS_EQUAL_RET_FALSE(OS, "0xffffffffffffffff");
@@ -429,7 +429,8 @@ bool test_stream_unsigned_imm()
 	return true;
 }
 
-bool test_copy_mnem_opstr() {
+bool test_copy_mnem_opstr()
+{
 	printf("Test test_copy_mnem_opstr\n");
 
 	SStream OS = { 0 };
@@ -438,25 +439,29 @@ bool test_copy_mnem_opstr() {
 
 	char mnem_1[1] = { 0 };
 	char opstr_1[1] = { 0 };
-	SStream_extract_mnem_opstr(&OS, mnem_1, sizeof(mnem_1), opstr_1, sizeof(opstr_1));
+	SStream_extract_mnem_opstr(&OS, mnem_1, sizeof(mnem_1), opstr_1,
+				   sizeof(opstr_1));
 	CHECK_STR_EQUAL_RET_FALSE(mnem_1, "");
 	CHECK_STR_EQUAL_RET_FALSE(opstr_1, "");
 
 	char mnem_3[3] = { 0 };
 	char opstr_3[3] = { 0 };
-	SStream_extract_mnem_opstr(&OS, mnem_3, sizeof(mnem_3), opstr_3, sizeof(opstr_3));
+	SStream_extract_mnem_opstr(&OS, mnem_3, sizeof(mnem_3), opstr_3,
+				   sizeof(opstr_3));
 	CHECK_STR_EQUAL_RET_FALSE(mnem_3, "AA");
 	CHECK_STR_EQUAL_RET_FALSE(opstr_3, "BB");
 
 	char mnem_4[4] = { 0 };
 	char opstr_4[4] = { 0 };
-	SStream_extract_mnem_opstr(&OS, mnem_4, sizeof(mnem_4), opstr_4, sizeof(opstr_4));
+	SStream_extract_mnem_opstr(&OS, mnem_4, sizeof(mnem_4), opstr_4,
+				   sizeof(opstr_4));
 	CHECK_STR_EQUAL_RET_FALSE(mnem_4, "AAA");
 	CHECK_STR_EQUAL_RET_FALSE(opstr_4, "BBB");
 
 	char mnem_5[5] = { 0 };
 	char opstr_5[5] = { 0 };
-	SStream_extract_mnem_opstr(&OS, mnem_5, sizeof(mnem_5), opstr_5, sizeof(opstr_5));
+	SStream_extract_mnem_opstr(&OS, mnem_5, sizeof(mnem_5), opstr_5,
+				   sizeof(opstr_5));
 	CHECK_STR_EQUAL_RET_FALSE(mnem_5, "AAA");
 	CHECK_STR_EQUAL_RET_FALSE(opstr_5, "BBBB");
 
@@ -465,7 +470,8 @@ bool test_copy_mnem_opstr() {
 	char opstr_9[9] = { 0 };
 	SStream_Flush(&OS, NULL);
 	SStream_concat0(&OS, " AAA\tBBBB");
-	SStream_extract_mnem_opstr(&OS, mnem_9, sizeof(mnem_9), opstr_9, sizeof(opstr_9));
+	SStream_extract_mnem_opstr(&OS, mnem_9, sizeof(mnem_9), opstr_9,
+				   sizeof(opstr_9));
 	CHECK_STR_EQUAL_RET_FALSE(mnem_9, "");
 	CHECK_STR_EQUAL_RET_FALSE(opstr_9, "AAA\tBBBB");
 
@@ -474,7 +480,8 @@ bool test_copy_mnem_opstr() {
 	char opstr_6[6] = { 0 };
 	SStream_Flush(&OS, NULL);
 	SStream_concat0(&OS, "AAA  \t");
-	SStream_extract_mnem_opstr(&OS, mnem_6, sizeof(mnem_6), opstr_6, sizeof(opstr_6));
+	SStream_extract_mnem_opstr(&OS, mnem_6, sizeof(mnem_6), opstr_6,
+				   sizeof(opstr_6));
 	CHECK_STR_EQUAL_RET_FALSE(mnem_6, "AAA");
 	CHECK_STR_EQUAL_RET_FALSE(opstr_6, "");
 
@@ -523,7 +530,6 @@ bool test_replc()
 
 	return true;
 }
-
 
 bool test_replc_str()
 {
@@ -588,6 +594,35 @@ bool test_replc_str()
 	return true;
 }
 
+static int evil_vsnprintf(char *str, size_t size, const char *fmt, va_list ap)
+{
+	(void)str;
+	(void)size;
+	(void)fmt;
+	(void)ap;
+	return -1; // forces index underflow
+}
+
+/// Possible underflow of SStream.index and subsequent OOB reads/writes.
+/// Reported by Finder16.
+bool test_underflow_in_sstream(void)
+{
+	cs_opt_mem mem = { .malloc = malloc,
+			   .calloc = calloc,
+			   .realloc = realloc,
+			   .free = free,
+			   .vsnprintf = evil_vsnprintf };
+	cs_option(0, CS_OPT_MEM, (size_t)&mem);
+
+	SStream OS;
+	SStream_Init(&OS);
+	SStream_concat(&OS, "%s", "AAAA"); // index += -1
+	SStream_concat1(&OS, 'B'); // writes before buffer => crash/ASan hit
+	CHECK_OS_EQUAL_RET_FALSE(OS, "B");
+	CHECK_INT_EQUAL_RET_FALSE(OS.index, 1);
+	return true;
+}
+
 int main()
 {
 	bool result = true;
@@ -608,6 +643,7 @@ int main()
 	result &= test_replc_str();
 	result &= test_copy_mnem_opstr();
 	result &= test_trimls();
+	result &= test_underflow_in_sstream();
 	if (result) {
 		printf("All tests passed.\n");
 	} else {

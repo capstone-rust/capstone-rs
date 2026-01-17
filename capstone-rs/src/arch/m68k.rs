@@ -381,12 +381,12 @@ impl M68kOpMem {
 
     define_m68k_getter!(
         /// Indirect displacement
-        => in_disp: u32
+        => in_disp: i32
     );
 
     define_m68k_getter!(
         /// other displacement
-        => out_disp: u32
+        => out_disp: i32
     );
 
     define_m68k_getter!(
@@ -479,6 +479,9 @@ mod test {
         width: 0,
         offset: 0,
         index_size: 0,
+        disp_size: 0,
+        in_disp_size: 0,
+        out_disp_size: 0
     };
 
     #[test]
