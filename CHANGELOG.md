@@ -4,6 +4,23 @@ Notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [UNRELEASED] - YYYY-MM-DD
+### Added
+- Alpha arch support
+- HPPA arch support
+- LoongArch arch support
+- Xtensa arch support
+- ARC arch support
+- Make AccessType available for Sparc
+- New operands types are added to `ArmOperandType`
+
+### Changed
+- Bump bundled capstone to 6.0.0-Alpha6
+- Rename ARM64 to AARCH64, SYSZ to SYSTEMZ to follow upstream changes
+- AArch64 support is rewritten to follow upstream changes
+- Endian must be specified for Sparc/SystemZ, since little endian support is added
+- Rename RegAccessType to AccessType while keeping type alias
+
 ## [0.14.0] - 2026-01-04
 ### Added
 - TriCore arch support
