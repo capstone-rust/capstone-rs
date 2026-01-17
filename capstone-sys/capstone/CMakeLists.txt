@@ -25,7 +25,7 @@ if(NOT DEFINED PROJECT_VERSION OR PROJECT_VERSION STREQUAL "")
 endif()
 
 # Remove the 'v' prefix if it exists and extract the major, minor, and patch versions
-string(REGEX MATCH "^[vV]?([0-9]+\\.[0-9]+\\.[0-9]+)" _ ${PROJECT_VERSION})
+string(REGEX MATCH "^[vV]?([0-9]+\\.[0-9]+\\.[0-9]+)" _ "${PROJECT_VERSION}")
 set(PROJECT_VERSION_BASE ${CMAKE_MATCH_1})
 
 # Use PROJECT_VERSION directly for CPack
@@ -79,7 +79,7 @@ option(CAPSTONE_USE_DEFAULT_ALLOC "Use default memory allocation functions" ON)
 option(CAPSTONE_USE_ARCH_REGISTRATION "Use explicit architecture registration" OFF)
 option(CAPSTONE_ARCHITECTURE_DEFAULT "Whether architectures are enabled by default" ON)
 option(CAPSTONE_DEBUG "Whether to enable extra debug assertions (enabled with CMAKE_BUILD_TYPE=Debug)" OFF)
-option(CAPSTONE_ASSERTION_WARNINGS "Warns about hit assertions in release builds." OFF)
+option(CAPSTONE_ASSERTION_WARNINGS "Disables some asserts and warns instead when hit. Does not disable all asserts." OFF)
 option(CAPSTONE_INSTALL "Generate install target" ${PROJECT_IS_TOP_LEVEL})
 option(ENABLE_ASAN "Enable address sanitizer" OFF)
 option(ENABLE_COVERAGE "Enable test coverage" OFF)
@@ -176,6 +176,9 @@ endif()
 if(CAPSTONE_BUILD_STATIC_MSVC_RUNTIME)
     set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
 endif()
+
+# The directory for external project patches.
+set(EXTERNAL_PROJ_PATCH_DIR ${PROJECT_SOURCE_DIR}/ext_patches/)
 
 ## sources
 set(SOURCES_ENGINE
@@ -811,6 +814,7 @@ set_property(TARGET capstone PROPERTY C_STANDARD 99)
 target_include_directories(capstone PUBLIC
     $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
 )
+set_property(TARGET capstone PROPERTY POSITION_INDEPENDENT_CODE ON)
 
 if(CAPSTONE_BUILD_STATIC_LIBS)
     add_library(capstone_static STATIC $<TARGET_OBJECTS:capstone>)
@@ -822,7 +826,6 @@ if(CAPSTONE_BUILD_STATIC_LIBS)
 endif()
 
 if(CAPSTONE_BUILD_SHARED_LIBS)
-    set_property(TARGET capstone PROPERTY POSITION_INDEPENDENT_CODE 1)
     add_library(capstone_shared SHARED $<TARGET_OBJECTS:capstone>)
     # Use normal capstone name. Otherwise we get libcapstone_shared.so
     set_target_properties(capstone_shared PROPERTIES OUTPUT_NAME "capstone")

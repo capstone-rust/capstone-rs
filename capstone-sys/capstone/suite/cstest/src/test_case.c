@@ -55,7 +55,7 @@ TestInput *test_input_clone(TestInput *test_input)
 	return ti;
 }
 
-char *test_input_stringify(const TestInput *test_input, const char *postfix)
+char *test_input_stringify(const TestInput *test_input, const char *prefix)
 {
 	size_t msg_len = 2048;
 	char *msg = cs_mem_calloc(sizeof(char), msg_len);
@@ -68,17 +68,19 @@ char *test_input_stringify(const TestInput *test_input, const char *postfix)
 	char opt_seq[128] = { 0 };
 	str_append_no_realloc(opt_seq, sizeof(opt_seq), "[");
 	for (size_t i = 0; i < test_input->options_count; ++i) {
-		str_append_no_realloc(opt_seq, sizeof(opt_seq), test_input->options[i]);
+		str_append_no_realloc(opt_seq, sizeof(opt_seq),
+				      test_input->options[i]);
 		if (i < test_input->options_count - 1) {
 			str_append_no_realloc(opt_seq, sizeof(opt_seq), ", ");
 		}
 	}
 	str_append_no_realloc(opt_seq, sizeof(opt_seq), "]");
-	cs_snprintf(msg, msg_len,
-		    "%sTestInput { arch: %s, options: %s, addr: 0x%" PRIx64
-		    ", bytes: %s }",
-		    postfix, test_input->arch, opt_seq, test_input->address,
-		    byte_seq);
+	cs_snprintf(
+		msg, msg_len,
+		"%sTestInput { name: %s, arch: %s, options: %s, addr: 0x%" PRIx64
+		", bytes: %s }",
+		prefix, test_input->name, test_input->arch, opt_seq,
+		test_input->address, byte_seq);
 	cs_mem_free(byte_seq);
 	return msg;
 }
@@ -111,11 +113,10 @@ TestInsnData *test_insn_data_clone(TestInsnData *test_insn_data)
 	tid->alias_id = test_insn_data->alias_id ?
 				cs_strdup(test_insn_data->alias_id) :
 				NULL;
-	tid->id = test_insn_data->id ?
-				cs_strdup(test_insn_data->id) :
-				NULL;
+	tid->id = test_insn_data->id ? cs_strdup(test_insn_data->id) : NULL;
 	tid->is_alias = test_insn_data->is_alias;
 	tid->illegal = test_insn_data->illegal;
+	tid->size = test_insn_data->size;
 	tid->mnemonic = test_insn_data->mnemonic ?
 				cs_strdup(test_insn_data->mnemonic) :
 				NULL;
@@ -207,9 +208,21 @@ static bool compare_asm_text(const char *asm_text, const char *expected,
 	return false;
 }
 
-static bool ids_match(uint32_t actual, const char *expected) {
-       compare_enum_ret(actual, expected, false);
-       return true;
+static bool ids_match(uint32_t actual, const char *expected)
+{
+	compare_enum_ret(actual, expected, false);
+	return true;
+}
+
+static void _print_insn(csh *handle, cs_insn *insn)
+{
+	cm_print_error("Failed instruction: %s %s", insn->mnemonic,
+		       insn->op_str);
+	cm_print_error("(0x%x", insn->bytes[0]);
+	for (int i = 1; i < insn->size; i++) {
+		cm_print_error(", 0x%x", insn->bytes[i]);
+	}
+	cm_print_error("%s", ")\n");
 }
 
 /// Compares the decoded instructions @insns against the @expected values and returns the result.
@@ -225,57 +238,84 @@ void test_expected_compare(csh *handle, TestExpected *expected, cs_insn *insns,
 		char asm_text[256] = { 0 };
 		if (insns[i].mnemonic[0] != '\0') {
 			str_append_no_realloc(asm_text, sizeof(asm_text),
-				      insns[i].mnemonic);
+					      insns[i].mnemonic);
 			str_append_no_realloc(asm_text, sizeof(asm_text), " ");
 		}
 		if (insns[i].op_str[0] != '\0') {
 			str_append_no_realloc(asm_text, sizeof(asm_text),
-				      insns[i].op_str);
+					      insns[i].op_str);
 		}
+
+#define CS_TEST_FAIL(msg) \
+	_print_insn(handle, &insns[i]); \
+	cs_free(insns, insns_count); \
+	fail_msg(msg);
+
 		if (!compare_asm_text(asm_text, expec_data->asm_text,
 				      arch_bits)) {
-			fail_msg("asm-text mismatch\n");
+			CS_TEST_FAIL("asm-text mismatch\n");
 		}
 
 		// Not mandatory fields. If not initialized they should still match.
 		if (expec_data->id) {
-			assert_true(ids_match((uint32_t)insns[i].id,
-								expec_data->id));
+			if (!ids_match((uint32_t)insns[i].id, expec_data->id)) {
+				CS_TEST_FAIL("ids mismatch");
+			}
 		}
 		if (expec_data->is_alias != 0) {
 			if (expec_data->is_alias > 0) {
-				assert_true(insns[i].is_alias);
+				if (!insns[i].is_alias) {
+					CS_TEST_FAIL("should be an alias");
+				}
 			} else {
-				assert_false(insns[i].is_alias);
+				if (insns[i].is_alias) {
+					CS_TEST_FAIL("should not be an alias");
+				}
 			}
 		}
 		if (expec_data->illegal != 0) {
 			if (expec_data->illegal > 0) {
-				assert_true(insns[i].illegal);
+				if (!insns[i].illegal) {
+					CS_TEST_FAIL("should be illegal");
+				}
 			} else {
-				assert_false(insns[i].illegal);
+				if (insns[i].illegal) {
+					CS_TEST_FAIL("should not be illegal");
+				}
+			}
+		}
+		if (expec_data->size) {
+			if (insns[i].size != expec_data->size) {
+				CS_TEST_FAIL("size mismatch");
 			}
 		}
 		if (expec_data->alias_id) {
-			assert_true(ids_match((uint32_t)insns[i].alias_id,
-								expec_data->alias_id));
+			if (!ids_match((uint32_t)insns[i].alias_id,
+				       expec_data->alias_id)) {
+				CS_TEST_FAIL("alias ids mismatch");
+			}
 		}
 		if (expec_data->mnemonic) {
-			assert_string_equal(insns[i].mnemonic,
-					    expec_data->mnemonic);
+			if (strcmp(insns[i].mnemonic, expec_data->mnemonic) !=
+			    0) {
+				CS_TEST_FAIL("mnemonics don't match");
+			}
 		}
 		if (expec_data->op_str) {
-			assert_string_equal(insns[i].op_str,
-					    expec_data->op_str);
+			if (strcmp(insns[i].op_str, expec_data->op_str) != 0) {
+				CS_TEST_FAIL("operands don't match");
+			}
 		}
 		if (expec_data->details) {
 			if (!insns[i].detail) {
-				fprintf(stderr, "detail is NULL\n");
-				assert_non_null(insns[i].detail);
+				CS_TEST_FAIL("detail is NULL");
 			}
-			assert_true(test_expected_detail(handle, &insns[i],
-							 expec_data->details));
+			if (!test_expected_detail(handle, &insns[i],
+						  expec_data->details)) {
+				CS_TEST_FAIL("test_expected_detail");
+			}
 		}
+#undef CS_TEST_FAIL
 	}
 }
 
