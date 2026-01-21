@@ -25,6 +25,7 @@
 # python
 bindings/python/build/
 bindings/python/capstone.egg-info/
+bindings/python/cstest_py/src/cstest_py.egg**
 bindings/cython/capstone.egg-info/
 *.pyc
 
@@ -38,7 +39,7 @@ bindings/ocaml/*.cmxa
 bindings/ocaml/*.mli
 bindings/ocaml/test
 bindings/ocaml/test_arm
-bindings/ocaml/test_arm64
+bindings/ocaml/test_aarch64
 bindings/ocaml/test_basic
 bindings/ocaml/test_mips
 bindings/ocaml/test_x86
@@ -55,7 +56,7 @@ tests/test_basic
 tests/test_detail
 tests/test_iter
 tests/test_arm
-tests/test_arm64
+tests/test_aarch64
 tests/test_mips
 tests/test_x86
 tests/test_ppc
@@ -75,6 +76,10 @@ tests/test_mos65xx
 tests/test_bpf
 tests/test_sh
 tests/test_riscv
+tests/test_sh
+tests/test_alpha
+tests/test_hppa
+tests/test_arc
 
 # regress binaries
 suite/regress/invalid_read_in_print_operand
@@ -115,6 +120,9 @@ build*/
 xcode/Capstone.xcodeproj/xcuserdata
 xcode/Capstone.xcodeproj/project.xcworkspace/xcuserdata
 
+# IntelliJ IDEs
+.idea/
+
 # suite/
 corpus-libFuzzer-capstone_fuzz_disasmnext-latest.zip
 test_arm_regression
@@ -126,8 +134,7 @@ fuzz_bindisasm
 fuzz_disasm
 fuzz_decode_platform
 capstone_get_setup
-suite/fuzz/
-suite/cstest/cmocka/
+suite/fuzz/corpus
 
 *.s
 
@@ -135,3 +142,12 @@ cstool/cstool
 
 # android
 android-ndk-*
+
+# python virtual env
+.ven*/
+
+# Auto-sync files
+suite/auto-sync/src/autosync.egg-info
+
+# clangd cache
+/.cache

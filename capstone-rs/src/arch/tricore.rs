@@ -26,7 +26,7 @@ pub enum TriCoreOperand {
     Reg(RegId),
 
     /// Immediate
-    Imm(i32),
+    Imm(i64),
 
     /// Memory
     Mem(TriCoreOpMem),
@@ -52,7 +52,7 @@ impl TriCoreOpMem {
     }
 
     /// Disp value
-    pub fn disp(&self) -> i32 {
+    pub fn disp(&self) -> i64 {
         self.0.disp
     }
 }

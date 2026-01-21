@@ -326,11 +326,10 @@ let _X86_FPU_FLAGS_TEST_C0 = 1 lsl 16;;
 let _X86_FPU_FLAGS_TEST_C1 = 1 lsl 17;;
 let _X86_FPU_FLAGS_TEST_C2 = 1 lsl 18;;
 let _X86_FPU_FLAGS_TEST_C3 = 1 lsl 19;;
-
-let _X86_OP_INVALID = 0;;
-let _X86_OP_REG = 1;;
-let _X86_OP_IMM = 2;;
-let _X86_OP_MEM = 3;;
+let _X86_OP_INVALID = _CS_OP_INVALID;;
+let _X86_OP_REG = _CS_OP_REG;;
+let _X86_OP_IMM = _CS_OP_IMM;;
+let _X86_OP_MEM = _CS_OP_MEM;;
 
 let _X86_XOP_CC_INVALID = 0;;
 let _X86_XOP_CC_LT = 1;;
@@ -397,6 +396,7 @@ let _X86_AVX_RM_RN = 1;;
 let _X86_AVX_RM_RD = 2;;
 let _X86_AVX_RM_RU = 3;;
 let _X86_AVX_RM_RZ = 4;;
+let _X86_PREFIX_0 = 0x0;;
 let _X86_PREFIX_LOCK = 0xf0;;
 let _X86_PREFIX_REP = 0xf3;;
 let _X86_PREFIX_REPE = 0xf3;;

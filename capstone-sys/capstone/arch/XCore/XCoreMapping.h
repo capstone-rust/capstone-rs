@@ -6,7 +6,7 @@
 
 #include "capstone/capstone.h"
 
-// return name of regiser in friendly string
+// return name of register in friendly string
 const char *XCore_reg_name(csh handle, unsigned int reg);
 
 // given internal insn id, return public instruction info
@@ -23,4 +23,3 @@ xcore_reg XCore_map_register(unsigned int r);
 xcore_reg XCore_reg_id(char *name);
 
 #endif
-

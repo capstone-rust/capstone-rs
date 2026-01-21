@@ -20,10 +20,13 @@ default = ["full", "support_all_archs"]
 full = ["capstone/full"]
 
 support_all_archs = [
+    "arch_aarch64",
+    "arch_arc",
     "arch_arm",
-    "arch_arm64",
     "arch_bpf",
     "arch_evm",
+    "arch_hppa",
+    "arch_loongarch",
     "arch_m680x",
     "arch_m68k",
     "arch_mips",
@@ -32,18 +35,22 @@ support_all_archs = [
     "arch_riscv",
     "arch_sh",
     "arch_sparc",
-    "arch_sysz",
+    "arch_systemz",
     "arch_tms320c64x",
     "arch_tricore",
     "arch_wasm",
     "arch_x86",
     "arch_xcore",
+    "arch_xtensa",
     "capstone/support_all_archs",
 ]
+arch_aarch64 = ["capstone/arch_aarch64"]
+arch_arc = ["capstone/arch_arc"]
 arch_arm = ["capstone/arch_arm"]
-arch_arm64 = ["capstone/arch_arm64"]
 arch_bpf = ["capstone/arch_bpf"]
 arch_evm = ["capstone/arch_evm"]
+arch_hppa = ["capstone/arch_hppa"]
+arch_loongarch = ["capstone/arch_loongarch"]
 arch_m680x = ["capstone/arch_m680x"]
 arch_m68k = ["capstone/arch_m68k"]
 arch_mips = ["capstone/arch_mips"]
@@ -52,9 +59,10 @@ arch_powerpc = ["capstone/arch_powerpc"]
 arch_riscv = ["capstone/arch_riscv"]
 arch_sh = ["capstone/arch_sh"]
 arch_sparc = ["capstone/arch_sparc"]
-arch_sysz = ["capstone/arch_sysz"]
+arch_systemz = ["capstone/arch_systemz"]
 arch_tms320c64x = ["capstone/arch_tms320c64x"]
 arch_tricore = ["capstone/arch_tricore"]
 arch_wasm = ["capstone/arch_wasm"]
 arch_x86 = ["capstone/arch_x86"]
 arch_xcore = ["capstone/arch_xcore"]
+arch_xtensa = ["capstone/arch_xtensa"]

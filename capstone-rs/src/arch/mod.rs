@@ -205,6 +205,24 @@ macro_rules! arch_info_base {
     ($x_macro:ident) => {
         $x_macro!(
             [
+                ( aarch64, AARCH64, "arch_aarch64" )
+                ( mode:
+                    Arm,
+                    )
+                ( extra_modes: )
+                ( syntax: )
+                ( both_endian: true )
+            ]
+            [
+                ( arc, ARC, "arch_arc" )
+                ( mode:
+                    Default,
+                    )
+                ( extra_modes: )
+                ( syntax: )
+                ( both_endian: true )
+            ]
+            [
                 ( arm, ARM, "arch_arm" )
                 ( mode:
                     Arm,
@@ -220,18 +238,49 @@ macro_rules! arch_info_base {
                 ( both_endian: true )
             ]
             [
-                ( arm64, ARM64, "arch_arm64" )
+                ( alpha, ALPHA, "arch_alpha" )
                 ( mode:
-                    Arm,
+                    Default,
                     )
                 ( extra_modes: )
                 ( syntax: )
                 ( both_endian: true )
             ]
             [
+                ( bpf, BPF, "arch_bpf" )
+                ( mode:
+                    Cbpf,
+                    Ebpf,
+                )
+                ( extra_modes: )
+                ( syntax: )
+                ( both_endian: true  )
+            ]
+            [
                 ( evm, EVM, "arch_evm" )
                 ( mode:
                     Default,
+                    )
+                ( extra_modes: )
+                ( syntax: )
+                ( both_endian: false )
+            ]
+            [
+                ( hppa, HPPA, "arch_hppa" )
+                ( mode:
+                    Hppa11,
+                    Hppa20,
+                    Hppa20W,
+                    )
+                ( extra_modes: )
+                ( syntax: )
+                ( both_endian: true )
+            ]
+            [
+                ( loongarch, LOONGARCH, "arch_loongarch" )
+                ( mode:
+                    LoongArch32,
+                    LoongArch64,
                     )
                 ( extra_modes: )
                 ( syntax: )
@@ -346,16 +395,29 @@ macro_rules! arch_info_base {
                     )
                 ( extra_modes: )
                 ( syntax: )
-                ( both_endian: false )
+                ( both_endian: true )
             ]
             [
-                ( sysz, SYSZ, "arch_sysz" )
+                ( systemz, SYSTEMZ, "arch_systemz" )
                 ( mode:
-                    Default,
+                    SystemZArch8,
+                    SystemZArch9,
+                    SystemZArch10,
+                    SystemZArch11,
+                    SystemZArch12,
+                    SystemZArch13,
+                    SystemZZ10,
+                    SystemZZ196,
+                    SystemZZec12,
+                    SystemZZ13,
+                    SystemZZ14,
+                    SystemZZ15,
+                    SystemZZ16,
+                    SystemZGeneric,
                     )
                 ( extra_modes: )
                 ( syntax: )
-                ( both_endian: false )
+                ( both_endian: true )
             ]
             [
                 ( tms320c64x, TMS320C64X, "arch_tms320c64x" )
@@ -406,14 +468,13 @@ macro_rules! arch_info_base {
                 ( both_endian: false  )
             ]
             [
-                ( bpf, BPF, "arch_bpf" )
+                ( xtensa, XTENSA, "arch_xtensa" )
                 ( mode:
-                    Cbpf,
-                    Ebpf,
-                )
+                    Default,
+                    )
                 ( extra_modes: )
                 ( syntax: )
-                ( both_endian: true  )
+                ( both_endian: false )
             ]
         );
     };
@@ -514,6 +575,30 @@ macro_rules! detail_arch_base {
     ($x_macro:ident) => {
         $x_macro!(
             [
+                detail = AArch64Detail,
+                insn_detail = AArch64InsnDetail<'a>,
+                op = AArch64Operand,
+                feature = "arch_aarch64",
+                /// Returns the AARCH64 details, if any
+                => arch_name = aarch64,
+            ]
+            [
+                detail = AlphaDetail,
+                insn_detail = AlphaInsnDetail<'a>,
+                op = AlphaOperand,
+                feature = "arch_alpha",
+                /// Returns the Alpha details, if any
+                => arch_name = alpha,
+            ]
+            [
+                detail = ArcDetail,
+                insn_detail = ArcInsnDetail<'a>,
+                op = ArcOperand,
+                feature = "arch_arc",
+                /// Returns the ARC details, if any
+                => arch_name = arc,
+            ]
+            [
                 detail = ArmDetail,
                 insn_detail = ArmInsnDetail<'a>,
                 op = ArmOperand,
@@ -522,12 +607,12 @@ macro_rules! detail_arch_base {
                 => arch_name = arm,
             ]
             [
-                detail = Arm64Detail,
-                insn_detail = Arm64InsnDetail<'a>,
-                op = Arm64Operand,
-                feature = "arch_arm64",
-                /// Returns the ARM64 details, if any
-                => arch_name = arm64,
+                detail = BpfDetail,
+                insn_detail = BpfInsnDetail<'a>,
+                op = BpfOperand,
+                feature = "arch_bpf",
+                /// Returns the BPF details, if any
+                => arch_name = bpf,
             ]
             [
                 detail = EvmDetail,
@@ -536,6 +621,22 @@ macro_rules! detail_arch_base {
                 feature = "arch_evm",
                 /// Returns the EVM details, if any
                 => arch_name = evm,
+            ]
+            [
+                detail = HppaDetail,
+                insn_detail = HppaInsnDetail<'a>,
+                op = HppaOperand,
+                feature = "arch_hppa",
+                /// Returns the HPPA details, if any
+                => arch_name = hppa,
+            ]
+            [
+                detail = LoongArchDetail,
+                insn_detail = LoongArchInsnDetail<'a>,
+                op = LoongArchOperand,
+                feature = "arch_loongarch",
+                /// Returns the LoongArch details, if any
+                => arch_name = loongarch,
             ]
             [
                 detail = M680xDetail,
@@ -602,6 +703,14 @@ macro_rules! detail_arch_base {
                 => arch_name = sparc,
             ]
             [
+                detail = SystemZDetail,
+                insn_detail = SystemZInsnDetail<'a>,
+                op = SystemZOperand,
+                feature = "arch_systemz",
+                /// Returns the SystemZ details, if any
+                => arch_name = systemz,
+            ]
+            [
                 detail = Tms320c64xDetail,
                 insn_detail = Tms320c64xInsnDetail<'a>,
                 op = Tms320c64xOperand,
@@ -634,20 +743,12 @@ macro_rules! detail_arch_base {
                 => arch_name = xcore,
             ]
             [
-                detail = BpfDetail,
-                insn_detail = BpfInsnDetail<'a>,
-                op = BpfOperand,
-                feature = "arch_bpf",
-                /// Returns the BPF details, if any
-                => arch_name = bpf,
-            ]
-            [
-                detail = SysZDetail,
-                insn_detail = SysZInsnDetail<'a>,
-                op = SysZOperand,
-                feature = "arch_sysz",
-                /// Returns the SysZ details, if any
-                => arch_name = sysz,
+                detail = XtensaDetail,
+                insn_detail = XtensaInsnDetail<'a>,
+                op = XtensaOperand,
+                feature = "arch_xtensa",
+                /// Returns the HPPA details, if any
+                => arch_name = xtensa,
             ]
         );
     };

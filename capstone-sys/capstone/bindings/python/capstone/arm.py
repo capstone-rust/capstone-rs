@@ -7,11 +7,11 @@ from .arm_const import *
 # define the API
 class ArmOpMem(ctypes.Structure):
     _fields_ = (
-        ('base', ctypes.c_uint),
-        ('index', ctypes.c_uint),
+        ('base', ctypes.c_int),
+        ('index', ctypes.c_int),
         ('scale', ctypes.c_int),
         ('disp', ctypes.c_int),
-        ('lshift', ctypes.c_int),
+        ('align', ctypes.c_uint),
     )
 
 class ArmOpShift(ctypes.Structure):
@@ -20,10 +20,27 @@ class ArmOpShift(ctypes.Structure):
         ('value', ctypes.c_uint),
     )
 
+class ArmSysopReg(ctypes.Union):
+    _fields_ = (
+        ('mclasssysreg', ctypes.c_uint),
+        ('bankedreg', ctypes.c_uint),
+        ('raw_val', ctypes.c_int),
+    )
+
+class ArmOpSysop(ctypes.Structure):
+    _fields_ = (
+        ('reg', ArmSysopReg),
+        ('psr_bits', ctypes.c_uint),
+        ('sysm', ctypes.c_uint16),
+        ('msr_mask', ctypes.c_uint8),
+    )
+
 class ArmOpValue(ctypes.Union):
     _fields_ = (
         ('reg', ctypes.c_uint),
-        ('imm', ctypes.c_int32),
+        ('sysop', ArmOpSysop),
+        ('imm', ctypes.c_int64),
+        ('pred', ctypes.c_int),
         ('fp', ctypes.c_double),
         ('mem', ArmOpMem),
         ('setend', ctypes.c_int),
@@ -36,17 +53,25 @@ class ArmOp(ctypes.Structure):
         ('type', ctypes.c_uint),
         ('value', ArmOpValue),
         ('subtracted', ctypes.c_bool),
-        ('access', ctypes.c_uint8),
+        ('access', ctypes.c_uint),
         ('neon_lane', ctypes.c_int8),
     )
+
+    @property
+    def reg(self):
+        return self.value.reg
+
+    @property
+    def sysop(self):
+        return self.value.sysop
 
     @property
     def imm(self):
         return self.value.imm
 
     @property
-    def reg(self):
-        return self.value.reg
+    def pred(self):
+        return self.value.pred
 
     @property
     def fp(self):
@@ -69,15 +94,16 @@ class CsArm(ctypes.Structure):
         ('cps_mode', ctypes.c_int),
         ('cps_flag', ctypes.c_int),
         ('cc', ctypes.c_uint),
+        ('vcc', ctypes.c_uint),
         ('update_flags', ctypes.c_bool),
-        ('writeback', ctypes.c_bool),
         ('post_index', ctypes.c_bool),
         ('mem_barrier', ctypes.c_int),
+        ('pred_mask', ctypes.c_uint8),
         ('op_count', ctypes.c_uint8),
         ('operands', ArmOp * 36),
     )
 
 def get_arch_info(a):
-    return (a.usermode, a.vector_size, a.vector_data, a.cps_mode, a.cps_flag, a.cc, a.update_flags, \
-        a.writeback, a.post_index, a.mem_barrier, copy_ctypes_list(a.operands[:a.op_count]))
+    return (a.usermode, a.vector_size, a.vector_data, a.cps_mode, a.cps_flag, a.cc, a.vcc, a.update_flags, \
+        a.post_index, a.mem_barrier, a.pred_mask, copy_ctypes_list(a.operands[:a.op_count]))
 

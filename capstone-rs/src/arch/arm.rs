@@ -1,26 +1,30 @@
 //! Contains arm-specific types
 
 use core::convert::{From, TryInto};
-use core::{cmp, fmt, slice};
 use core::ffi::c_uint;
+use core::{cmp, fmt, slice};
 
 use capstone_sys::{
-    arm_op_mem, arm_op_type, arm_shifter, cs_ac_type, cs_arm, cs_arm_op, cs_arm_op__bindgen_ty_2};
+    arm_op_mem, arm_op_type, arm_shifter, cs_arm, cs_arm_op, cs_arm_op__bindgen_ty_2,
+};
 
 pub use crate::arch::arch_builder::arm::*;
 use crate::arch::DetailsArchInsn;
 use crate::instruction::{RegId, RegIdInt};
 use crate::AccessType;
 
-pub use capstone_sys::arm_insn_group as ArmInsnGroup;
-pub use capstone_sys::arm_insn as ArmInsn;
-pub use capstone_sys::arm_reg as ArmReg;
-pub use capstone_sys::arm_vectordata_type as ArmVectorData;
-pub use capstone_sys::arm_cpsmode_type as ArmCPSMode;
+pub use capstone_sys::arm_bankedreg as ArmBankedReg;
 pub use capstone_sys::arm_cpsflag_type as ArmCPSFlag;
-pub use capstone_sys::arm_cc as ArmCC;
-pub use capstone_sys::arm_mem_barrier as ArmMemBarrier;
+pub use capstone_sys::arm_cpsmode_type as ArmCPSMode;
+pub use capstone_sys::arm_insn as ArmInsn;
+pub use capstone_sys::arm_insn_group as ArmInsnGroup;
+pub use capstone_sys::arm_mem_bo_opt as ArmMemBarrier;
+pub use capstone_sys::arm_reg as ArmReg;
 pub use capstone_sys::arm_setend_type as ArmSetendType;
+pub use capstone_sys::arm_sysreg as ArmSysreg;
+pub use capstone_sys::arm_vectordata_type as ArmVectorData;
+pub use capstone_sys::arm_spsr_cpsr_bits as ArmSpsrCpsrBits;
+pub use capstone_sys::ARMCC_CondCodes as ArmCC;
 
 /// Contains ARM-specific details for an instruction
 pub struct ArmInsnDetail<'a>(pub(crate) &'a cs_arm);
@@ -45,6 +49,12 @@ pub enum ArmShift {
     /// Rotate right with extend (immediate)
     Rrx(u32),
 
+    /// Left shift with unsigned extension (immediate)
+    Uxtw(u32),
+
+    /// Shift by register
+    Reg(RegId),
+
     /// Arithmetic shift right (register)
     AsrReg(RegId),
 
@@ -56,9 +66,6 @@ pub enum ArmShift {
 
     /// Rotate right (register)
     RorReg(RegId),
-
-    /// Rotate right with extend (register)
-    RrxReg(RegId),
 }
 
 impl ArmShift {
@@ -87,11 +94,11 @@ impl ArmShift {
         arm_shift_match!(
             imm = [
                 Asr = ARM_SFT_ASR, Lsl = ARM_SFT_LSL, Lsr = ARM_SFT_LSR,
-                Ror = ARM_SFT_ROR, Rrx = ARM_SFT_RRX,
+                Ror = ARM_SFT_ROR, Rrx = ARM_SFT_RRX, Uxtw = ARM_SFT_UXTW,
             ]
             reg = [
                 AsrReg = ARM_SFT_ASR_REG, LslReg = ARM_SFT_LSL_REG, LsrReg = ARM_SFT_LSR_REG,
-                RorReg = ARM_SFT_ROR_REG, RrxReg = ARM_SFT_RRX_REG,
+                RorReg = ARM_SFT_ROR_REG, Reg = ARM_SFT_REG,
             ]
         )
     }
@@ -106,12 +113,18 @@ impl ArmOperandType {
             ARM_OP_INVALID => Invalid,
             ARM_OP_REG => Reg(RegId(unsafe { value.reg } as RegIdInt)),
             ARM_OP_IMM => Imm(unsafe { value.imm }),
-            ARM_OP_MEM => Mem(ArmOpMem(unsafe { value.mem })),
             ARM_OP_FP => Fp(unsafe { value.fp }),
+            ARM_OP_PRED => Pred(unsafe { value.pred } as i32),
             ARM_OP_CIMM => Cimm(unsafe { value.imm }),
             ARM_OP_PIMM => Pimm(unsafe { value.imm }),
             ARM_OP_SETEND => Setend(unsafe { value.setend }),
-            ARM_OP_SYSREG => SysReg(RegId(unsafe { value.reg } as RegIdInt)),
+            ARM_OP_SYSREG => SysReg(unsafe { value.sysop.reg.mclasssysreg }),
+            ARM_OP_BANKEDREG => BankedReg(unsafe { value.sysop.reg.bankedreg }),
+            ARM_OP_SPSR => Spsr(unsafe { value.sysop.psr_bits }),
+            ARM_OP_CPSR => Cpsr(unsafe { value.sysop.psr_bits }),
+            ARM_OP_SYSM => Sysm(unsafe { value.sysop.sysm }),
+            ARM_OP_MEM => Mem(ArmOpMem(unsafe { value.mem })),
+            _ => Invalid,
         }
     }
 }
@@ -133,7 +146,7 @@ pub struct ArmOperand {
     /// How is this operand accessed?
     ///
     /// NOTE: this field is always `None` if the "full" feataure is not enabled.
-    pub access: Option<AccessType>
+    pub access: Option<AccessType>,
 }
 
 /// ARM operand
@@ -143,25 +156,46 @@ pub enum ArmOperandType {
     Reg(RegId),
 
     /// Immediate
-    Imm(i32),
-
-    /// Memory
-    Mem(ArmOpMem),
+    Imm(i64),
 
     /// Floating point
     Fp(f64),
 
+    /// Predicate operand value
+    Pred(i32),
+
     /// C-IMM
-    Cimm(i32),
+    Cimm(i64),
 
     /// P-IMM
-    Pimm(i32),
+    Pimm(i64),
 
     /// SETEND instruction endianness
     Setend(ArmSetendType),
 
     /// Sysreg
-    SysReg(RegId),
+    SysReg(ArmSysreg),
+
+    /// Banked register operand
+    BankedReg(ArmBankedReg),
+
+    /// Collection of SPSR bits
+    Spsr(ArmSpsrCpsrBits),
+
+    /// Collection of CPSR bits
+    Cpsr(ArmSpsrCpsrBits),
+
+    /// Raw SYSm field
+    Sysm(u16),
+
+    /// Vector predicate that leaves inactive lanes unchanged
+    VPredR(RegId),
+
+    /// Vector predicate that does not preserve inactive lanes
+    VPredN(RegId),
+
+    /// Memory
+    Mem(ArmOpMem),
 
     /// Invalid
     Invalid,
@@ -207,11 +241,6 @@ impl ArmInsnDetail<'_> {
         self.0.update_flags
     }
 
-    /// Whether writeback is required
-    pub fn writeback(&self) -> bool {
-        self.0.writeback
-    }
-
     /// Memory barrier
     pub fn mem_barrier(&self) -> ArmMemBarrier {
         self.0.mem_barrier
@@ -219,7 +248,7 @@ impl ArmInsnDetail<'_> {
 }
 
 impl_PartialEq_repr_fields!(ArmInsnDetail<'a> [ 'a ];
-    usermode, vector_size, vector_data, cps_mode, cps_flag, cc, update_flags, writeback,
+    usermode, vector_size, vector_data, cps_mode, cps_flag, cc, update_flags,
     mem_barrier, operands
 );
 
@@ -258,7 +287,7 @@ impl Default for ArmOperand {
             subtracted: false,
             shift: ArmShift::Invalid,
             op_type: ArmOperandType::Invalid,
-            access: None
+            access: None,
         }
     }
 }
@@ -277,7 +306,7 @@ impl From<&cs_arm_op> for ArmOperand {
             shift,
             op_type,
             subtracted: op.subtracted,
-            access: cs_ac_type(op.access as _).try_into().ok(),
+            access: op.access.try_into().ok(),
         }
     }
 }
@@ -311,7 +340,6 @@ mod test {
         t((ARM_SFT_INVALID, 0), Invalid);
         t((ARM_SFT_ASR, 0), Asr(0));
         t((ARM_SFT_ASR_REG, 42), AsrReg(RegId(42)));
-        t((ARM_SFT_RRX_REG, 42), RrxReg(RegId(42)));
     }
 
     #[test]
@@ -346,39 +374,32 @@ mod test {
             vector_data: arm_vectordata_type::ARM_VECTORDATA_INVALID,
             cps_mode: arm_cpsmode_type::ARM_CPSMODE_INVALID,
             cps_flag: arm_cpsflag_type::ARM_CPSFLAG_INVALID,
-            cc: arm_cc::ARM_CC_INVALID,
+            cc: CondCodes::ARMCC_Invalid,
             update_flags: false,
-            writeback: false,
             post_index: false,
-            mem_barrier: arm_mem_barrier::ARM_MB_INVALID,
+            mem_barrier: MemBOpt::ARM_MB_RESERVED_0,
             op_count: 0,
-            operands: [
-                cs_arm_op {
-                    vector_index: 0,
-                    shift: cs_arm_op__bindgen_ty_1 {
-                        type_: arm_shifter::ARM_SFT_INVALID,
-                        value: 0
-                    },
-                    type_: arm_op_type::ARM_OP_INVALID,
-                    __bindgen_anon_1: cs_arm_op__bindgen_ty_2 { imm: 0 },
-                    subtracted: false,
-                    access: 0,
-                    neon_lane: 0,
-                }
-            ; 36]
+            operands: [cs_arm_op {
+                vector_index: 0,
+                shift: cs_arm_op__bindgen_ty_1 {
+                    type_: arm_shifter::ARM_SFT_INVALID,
+                    value: 0,
+                },
+                type_: arm_op_type::ARM_OP_INVALID,
+                __bindgen_anon_1: cs_arm_op__bindgen_ty_2 { imm: 0 },
+                subtracted: false,
+                access: cs_ac_type(0),
+                neon_lane: 0,
+            }; 36],
+            vcc: VPTCodes::ARMVCC_None,
+            pred_mask: 0,
         };
         let a2 = cs_arm {
             usermode: true,
             ..a1
         };
-        let a3 = cs_arm {
-            op_count: 20,
-            ..a1
-        };
-        let a4 = cs_arm {
-            op_count: 19,
-            ..a1
-        };
+        let a3 = cs_arm { op_count: 20, ..a1 };
+        let a4 = cs_arm { op_count: 19, ..a1 };
         let a4_clone = a4;
         assert_eq!(ArmInsnDetail(&a1), ArmInsnDetail(&a1));
         assert_ne!(ArmInsnDetail(&a1), ArmInsnDetail(&a2));
