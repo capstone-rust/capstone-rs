@@ -4664,10 +4664,12 @@ fn test_arch_riscv() {
             ("addi", b"\x93\x00\x31\x00"),
             ("add", b"\xb3\x00\x31\x00"),
             ("ld", b"\x03\xb2\x82\x00"),
-            ("c.ebreak", b"\x02\x90"),
-            ("c.addi", b"\x05\x04"),
-            ("c.add", b"\x2a\x94"),
-            ("c.ld", b"\x0c\x66"),
+            ("ebreak", b"\x02\x90"),
+            ("addi", b"\x05\x04"),
+            ("add", b"\x2a\x94"),
+            ("ld", b"\x0c\x66"),
+            ("fli.s", b"\xd3\x00\x10\xf0"),
+            ("csrr", b"\x73\x25\x00\x30"),
         ],
     );
 }
@@ -4724,26 +4726,31 @@ fn test_arch_riscv_detail() {
                     })),
                 ],
             ),
-            // c.ebreak
-            DII::new("c.ebreak", b"\x02\x90", &[]),
-            // c.addi x8, 1
+            // ebreak
+            DII::new("ebreak", b"\x02\x90", &[]),
+            // addi x8, x8, 1
             DII::new(
-                "c.addi",
+                "addi",
                 b"\x05\x04",
-                &[Reg(RegId(RISCV_REG_X8 as RegIdInt)), Imm(1)],
+                &[
+                    Reg(RegId(RISCV_REG_X8 as RegIdInt)),
+                    Reg(RegId(RISCV_REG_X8 as RegIdInt)),
+                    Imm(1),
+                ],
             ),
-            // c.add x8, x10
+            // add x8, x8, x10
             DII::new(
-                "c.add",
+                "add",
                 b"\x2a\x94",
                 &[
+                    Reg(RegId(RISCV_REG_X8 as RegIdInt)),
                     Reg(RegId(RISCV_REG_X8 as RegIdInt)),
                     Reg(RegId(RISCV_REG_X10 as RegIdInt)),
                 ],
             ),
-            // c.ld x11, 8(x12)
+            // ld x11, 8(x12)
             DII::new(
-                "c.ld",
+                "ld",
                 b"\x0c\x66",
                 &[
                     Reg(RegId(RISCV_REG_X11 as RegIdInt)),
@@ -4752,6 +4759,19 @@ fn test_arch_riscv_detail() {
                         disp: 8,
                     })),
                 ],
+            ),
+            // fli.s ft1, -1.0
+            DII::new(
+                "fli.s",
+                b"\xd3\x00\x10\xf0",
+                &[Reg(RegId(RISCV_REG_F1_F as RegIdInt)), FP(-1.0)],
+            ),
+            // csrr a0, mstatus
+            DII::new(
+                "csrr",
+                b"\x73\x25\x00\x30",
+                // TODO: add mapping between CSR name and u16
+                &[Reg(RegId(RISCV_REG_X10 as RegIdInt)), CSR(0x300)],
             ),
         ],
     );

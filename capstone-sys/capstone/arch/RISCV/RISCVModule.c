@@ -6,27 +6,31 @@
 
 #include "../../utils.h"
 #include "../../MCRegisterInfo.h"
-#include "RISCVDisassembler.h"
 #include "RISCVInstPrinter.h"
 #include "RISCVMapping.h"
 #include "RISCVModule.h"
+#include "RISCVLinkage.h"
 
 cs_err RISCV_global_init(cs_struct *ud)
 {
 	MCRegisterInfo *mri;
 	mri = cs_mem_malloc(sizeof(*mri));
+	if (!mri)
+		return CS_ERR_MEM;
 
 	RISCV_init(mri);
-	ud->printer = RISCV_printInst;
+	ud->printer = RISCV_LLVM_printInstruction;
 	ud->printer_info = mri;
 	ud->getinsn_info = mri;
-	ud->disasm = RISCV_getInstruction;
+	ud->disasm = RISCV_LLVM_getInstruction;
 	ud->post_printer = NULL;
 
 	ud->reg_name = RISCV_reg_name;
 	ud->insn_id = RISCV_get_insn_id;
 	ud->insn_name = RISCV_insn_name;
 	ud->group_name = RISCV_group_name;
+	ud->insn_map = RISCV_insns;
+	ud->insn_map_size = RISCV_insn_count;
 
 	return CS_ERR_OK;
 }

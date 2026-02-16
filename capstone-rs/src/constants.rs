@@ -407,7 +407,7 @@ define_cs_enum_wrapper!(
     /// MicroMips mode. Works in `MIPS` mode.
     => Micro = { cs_mode::CS_MODE_MICRO };
     /// RISC-V compressed instruction mode
-    => RiscVC = { cs_mode::CS_MODE_RISCVC };
+    => RiscVC = { cs_mode::CS_MODE_RISCV_C };
 );
 
 define_cs_enum_wrapper!(
