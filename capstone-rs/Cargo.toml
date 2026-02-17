@@ -37,10 +37,14 @@ full = ["capstone-sys/full"]
 use_bindgen = ["capstone-sys/use_bindgen"]
 # arch specific features to reduce binary size
 support_all_archs = [
+    "arch_aarch64",
+    "arch_alpha",
+    "arch_arc",
     "arch_arm",
-    "arch_arm64",
     "arch_bpf",
     "arch_evm",
+    "arch_hppa",
+    "arch_loongarch",
     "arch_m680x",
     "arch_m68k",
     "arch_mips",
@@ -49,18 +53,23 @@ support_all_archs = [
     "arch_riscv",
     "arch_sh",
     "arch_sparc",
-    "arch_sysz",
+    "arch_systemz",
     "arch_tms320c64x",
     "arch_tricore",
     "arch_wasm",
     "arch_x86",
     "arch_xcore",
+    "arch_xtensa",
     "capstone-sys/support_all_archs",
 ]
+arch_aarch64 = ["capstone-sys/arch_aarch64"]
+arch_alpha = ["capstone-sys/arch_alpha"]
+arch_arc = ["capstone-sys/arch_arc"]
 arch_arm = ["capstone-sys/arch_arm"]
-arch_arm64 = ["capstone-sys/arch_arm64"]
 arch_bpf = ["capstone-sys/arch_bpf"]
 arch_evm = ["capstone-sys/arch_evm"]
+arch_hppa = ["capstone-sys/arch_hppa"]
+arch_loongarch = ["capstone-sys/arch_loongarch"]
 arch_m680x = ["capstone-sys/arch_m680x"]
 arch_m68k = ["capstone-sys/arch_m68k"]
 arch_mips = ["capstone-sys/arch_mips"]
@@ -69,11 +78,12 @@ arch_powerpc = ["capstone-sys/arch_powerpc"]
 arch_riscv = ["capstone-sys/arch_riscv"]
 arch_sh = ["capstone-sys/arch_sh"]
 arch_sparc = ["capstone-sys/arch_sparc"]
-arch_sysz = ["capstone-sys/arch_sysz"]
+arch_systemz = ["capstone-sys/arch_systemz"]
 arch_tms320c64x = ["capstone-sys/arch_tms320c64x"]
 arch_tricore = ["capstone-sys/arch_tricore"]
 arch_wasm = ["capstone-sys/arch_wasm"]
 arch_x86 = ["capstone-sys/arch_x86"]
 arch_xcore = ["capstone-sys/arch_xcore"]
+arch_xtensa = ["capstone-sys/arch_xtensa"]
 # Can be used to accelerate check builds by not building C code
 check_only = ["capstone-sys/check_only"]

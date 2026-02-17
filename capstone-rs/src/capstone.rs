@@ -229,6 +229,22 @@ impl Capstone {
         if insn.is_null() {
             return Err(Error::OutOfMemory);
         }
+        // zero initialize cs_insn
+        unsafe {
+            *insn = cs_insn {
+                id: 0,
+                alias_id: 0,
+                address: 0,
+                size: 0,
+                bytes: [0; 24],
+                mnemonic: [0; 32],
+                op_str: [0; 160],
+                is_alias: false,
+                usesAliasDetails: false,
+                illegal: false,
+                detail: (*insn).detail,
+            };
+        }
         Ok(DisasmIter {
             insn,
             csh: self.csh,

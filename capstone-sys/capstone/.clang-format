@@ -1,4 +1,4 @@
-# SPDX-License-Identifier: GPL-2.0
+# SPDX-License-Identifier: BSD-3-Clause
 #
 # clang-format configuration file. Intended for clang-format >= 11.
 #
@@ -15,9 +15,7 @@ AlignConsecutiveAssignments: false
 AlignConsecutiveDeclarations: false
 AlignEscapedNewlines: DontAlign
 AlignOperands: true
-AlignTrailingComments:
-  Kind: Always
-  OverEmptyLines: 2
+AlignTrailingComments: false
 AllowAllParametersOfDeclarationOnNextLine: false
 AllowShortBlocksOnASingleLine: false
 AllowShortCaseLabelsOnASingleLine: false

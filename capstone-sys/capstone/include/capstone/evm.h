@@ -3,6 +3,7 @@
 
 /* Capstone Disassembly Engine */
 /* By Nguyen Anh Quynh <aquynh@gmail.com>, 2013-2018 */
+/* By Andelf <andelf@gmail.com>, 2025 */
 
 #ifdef __cplusplus
 extern "C" {
@@ -11,14 +12,14 @@ extern "C" {
 #include "platform.h"
 
 #ifdef _MSC_VER
-#pragma warning(disable:4201)
+#pragma warning(disable : 4201)
 #endif
 
 /// Instruction structure
 typedef struct cs_evm {
-    unsigned char pop;    ///< number of items popped from the stack
-    unsigned char push;   ///< number of items pushed into the stack
-    unsigned int  fee;    ///< gas fee for the instruction
+	unsigned char pop; ///< number of items popped from the stack
+	unsigned char push; ///< number of items pushed into the stack
+	unsigned int fee; ///< gas fee for the instruction
 } cs_evm;
 
 /// EVM instruction
@@ -46,6 +47,9 @@ typedef enum evm_insn {
 	EVM_INS_XOR = 24,
 	EVM_INS_NOT = 25,
 	EVM_INS_BYTE = 26,
+	EVM_INS_SHL = 27,
+	EVM_INS_SHR = 28,
+	EVM_INS_SAR = 29,
 	EVM_INS_SHA3 = 32,
 	EVM_INS_ADDRESS = 48,
 	EVM_INS_BALANCE = 49,
@@ -68,6 +72,11 @@ typedef enum evm_insn {
 	EVM_INS_NUMBER = 67,
 	EVM_INS_DIFFICULTY = 68,
 	EVM_INS_GASLIMIT = 69,
+	EVM_INS_CHAINID = 70,
+	EVM_INS_SELFBALANCE = 71,
+	EVM_INS_BASEFEE = 72,
+	EVM_INS_BLOBHASH = 73,
+	EVM_INS_BLOBBASEFEE = 74,
 	EVM_INS_POP = 80,
 	EVM_INS_MLOAD = 81,
 	EVM_INS_MSTORE = 82,
@@ -80,6 +89,10 @@ typedef enum evm_insn {
 	EVM_INS_MSIZE = 89,
 	EVM_INS_GAS = 90,
 	EVM_INS_JUMPDEST = 91,
+	EVM_INS_TLOAD = 92,
+	EVM_INS_TSTORE = 93,
+	EVM_INS_MCOPY = 94,
+	EVM_INS_PUSH0 = 95,
 	EVM_INS_PUSH1 = 96,
 	EVM_INS_PUSH2 = 97,
 	EVM_INS_PUSH3 = 98,
@@ -154,31 +167,31 @@ typedef enum evm_insn {
 	EVM_INS_CALLCODE = 242,
 	EVM_INS_RETURN = 243,
 	EVM_INS_DELEGATECALL = 244,
-	EVM_INS_CALLBLACKBOX = 245,
+	EVM_INS_CREATE2 = 245,
 	EVM_INS_STATICCALL = 250,
 	EVM_INS_REVERT = 253,
-	EVM_INS_SUICIDE = 255,
+	EVM_INS_INVALID = 254,
+	EVM_INS_SELFDESTRUCT = 255, // originally called SUICIDE
 
-	EVM_INS_INVALID = 512,
-	EVM_INS_ENDING,   // <-- mark the end of the list of instructions
+	EVM_INS_ENDING, // <-- mark the end of the list of instructions
 } evm_insn;
 
 /// Group of EVM instructions
 typedef enum evm_insn_group {
 	EVM_GRP_INVALID = 0, ///< = CS_GRP_INVALID
 
-	EVM_GRP_JUMP,          ///< all jump instructions
+	EVM_GRP_JUMP, ///< all jump instructions
 
-	EVM_GRP_MATH = 8,      ///< math instructions
-	EVM_GRP_STACK_WRITE,   ///< instructions write to stack
-	EVM_GRP_STACK_READ,    ///< instructions read from stack
-	EVM_GRP_MEM_WRITE,     ///< instructions write to memory
-	EVM_GRP_MEM_READ,      ///< instructions read from memory
-	EVM_GRP_STORE_WRITE,   ///< instructions write to storage
-	EVM_GRP_STORE_READ,    ///< instructions read from storage
-	EVM_GRP_HALT,    ///< instructions halt execution
+	EVM_GRP_MATH = 8, ///< math instructions
+	EVM_GRP_STACK_WRITE, ///< instructions write to stack
+	EVM_GRP_STACK_READ, ///< instructions read from stack
+	EVM_GRP_MEM_WRITE, ///< instructions write to memory
+	EVM_GRP_MEM_READ, ///< instructions read from memory
+	EVM_GRP_STORE_WRITE, ///< instructions write to storage
+	EVM_GRP_STORE_READ, ///< instructions read from storage
+	EVM_GRP_HALT, ///< instructions halt execution
 
-	EVM_GRP_ENDING,   ///< <-- mark the end of the list of groups
+	EVM_GRP_ENDING, ///< <-- mark the end of the list of groups
 } evm_insn_group;
 
 #ifdef __cplusplus

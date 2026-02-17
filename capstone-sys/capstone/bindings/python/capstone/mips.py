@@ -15,6 +15,7 @@ class MipsOpValue(ctypes.Union):
     _fields_ = (
         ('reg', ctypes.c_uint),
         ('imm', ctypes.c_int64),
+        ('uimm', ctypes.c_uint64),
         ('mem', MipsOpMem),
     )
 
@@ -22,6 +23,9 @@ class MipsOp(ctypes.Structure):
     _fields_ = (
         ('type', ctypes.c_uint),
         ('value', MipsOpValue),
+        ('is_reglist', ctypes.c_bool),
+        ('is_unsigned', ctypes.c_bool),
+        ('access', ctypes.c_uint),
     )
 
     @property
@@ -40,7 +44,7 @@ class MipsOp(ctypes.Structure):
 class CsMips(ctypes.Structure):
     _fields_ = (
         ('op_count', ctypes.c_uint8),
-        ('operands', MipsOp * 10),
+        ('operands', MipsOp * 16),
     )
 
 def get_arch_info(a):
