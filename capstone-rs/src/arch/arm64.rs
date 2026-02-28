@@ -167,6 +167,11 @@ impl Arm64InsnDetail<'_> {
         self.0.update_flags
     }
 
+    /// Whether this is a post-index writeback (only applicable when `writeback` is true)
+    pub fn post_index(&self) -> bool {
+        self.0.post_index
+    }
+
     /// Whether writeback is required
     pub fn writeback(&self) -> bool {
         self.0.writeback
@@ -174,7 +179,7 @@ impl Arm64InsnDetail<'_> {
 }
 
 impl_PartialEq_repr_fields!(Arm64InsnDetail<'a> [ 'a ];
-    cc, update_flags, writeback, operands
+    cc, update_flags, post_index, writeback, operands
 );
 
 impl Arm64OpMem {
