@@ -206,6 +206,11 @@ impl ArmInsnDetail<'_> {
     pub fn update_flags(&self) -> bool {
         self.0.update_flags
     }
+    
+    /// Whether this is a post-index writeback (only applicable when `writeback` is true)
+    pub fn post_index(&self) -> bool {
+        self.0.post_index
+    }
 
     /// Whether writeback is required
     pub fn writeback(&self) -> bool {
@@ -219,7 +224,7 @@ impl ArmInsnDetail<'_> {
 }
 
 impl_PartialEq_repr_fields!(ArmInsnDetail<'a> [ 'a ];
-    usermode, vector_size, vector_data, cps_mode, cps_flag, cc, update_flags, writeback,
+    usermode, vector_size, vector_data, cps_mode, cps_flag, cc, update_flags, post_index, writeback,
     mem_barrier, operands
 );
 
