@@ -1190,17 +1190,20 @@ fn test_arch_arm_detail() {
 #[test]
 fn test_arch_arm64_writeback() {
     let mut cs = Capstone::new()
-            .arm64()
-            .mode(arm64::ArchMode::Arm)
-            .build()
-            .unwrap();
+        .arm64()
+        .mode(arm64::ArchMode::Arm)
+        .build()
+        .unwrap();
     cs.set_detail(true).unwrap();
 
     // ldr x0, [x19]
     // ldr x8, [x16, #0x28]!
     // ldp x24, x23, [sp], #0x40
     let insns = cs
-        .disasm_all(b"\x60\x02\x40\xf9\x08\x8e\x42\xf8\xf8\x5f\xc4\xa8", START_TEST_ADDR)
+        .disasm_all(
+            b"\x60\x02\x40\xf9\x08\x8e\x42\xf8\xf8\x5f\xc4\xa8",
+            START_TEST_ADDR,
+        )
         .expect("Failed to disassemble");
     let insns: Vec<_> = insns.iter().collect();
 
