@@ -1186,6 +1186,49 @@ fn test_arch_arm_detail() {
     );
 }
 
+#[cfg(feature = "arch_arm")]
+#[test]
+fn test_arch_arm_writeback() {
+    let mut cs = Capstone::new()
+        .arm()
+        .mode(arm::ArchMode::Arm)
+        .build()
+        .unwrap();
+    cs.set_detail(true).unwrap();
+
+    // ldr r0, [r1]
+    // ldr r0, [r1], #4
+    // ldr r0, [r1, #4]!
+    let insns = cs
+        .disasm_all(
+            b"\x00\x00\x91\xe5\x04\x00\x91\xe4\x04\x00\xb1\xe5",
+            START_TEST_ADDR,
+        )
+        .expect("Failed to disassemble");
+    let insns: Vec<_> = insns.iter().collect();
+
+    let insn = insns[0];
+    let detail = cs.insn_detail(insn).expect("Could not get detail");
+    let arch_detail = detail.arch_detail();
+    let arm_detail = arch_detail.arm().expect("Failed to get arm detail");
+    assert_eq!(false, arm_detail.writeback());
+    assert_eq!(false, arm_detail.post_index());
+
+    let insn = insns[1];
+    let detail = cs.insn_detail(insn).expect("Could not get detail");
+    let arch_detail = detail.arch_detail();
+    let arm_detail = arch_detail.arm().expect("Failed to get arm detail");
+    assert_eq!(true, arm_detail.writeback());
+    assert_eq!(true, arm_detail.post_index());
+
+    let insn = insns[2];
+    let detail = cs.insn_detail(insn).expect("Could not get detail");
+    let arch_detail = detail.arch_detail();
+    let arm_detail = arch_detail.arm().expect("Failed to get arm detail");
+    assert_eq!(true, arm_detail.writeback());
+    assert_eq!(false, arm_detail.post_index());
+}
+
 #[cfg(feature = "arch_arm64")]
 #[test]
 fn test_arch_arm64_writeback() {
