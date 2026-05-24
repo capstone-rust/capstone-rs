@@ -2794,6 +2794,7 @@ fn test_arch_m68k_detail() {
         disp_size: 0,
         in_disp_size: 0,
         out_disp_size: 0,
+        address: 0,
     };
 
     test_arch_mode_endian_insns_detail(
@@ -2839,9 +2840,12 @@ fn test_arch_m68k_detail() {
                         .unwrap(),
                     ),
                     Mem(M68kOpMem {
-                        op_mem: mem_zero,
+                        op_mem: m68k_op_mem {
+                            base_reg: M68K_REG_A7,
+                            ..mem_zero
+                        },
                         address_mode: M68K_AM_REGI_ADDR_PRE_DEC,
-                        extra_info: M68kOpMemExtraInfo::Reg(RegId(M68K_REG_A7 as RegIdInt)),
+                        extra_info: M68kOpMemExtraInfo::Reg(RegId(M68K_REG_INVALID as RegIdInt)),
                     }),
                 ],
             ),
@@ -2851,9 +2855,12 @@ fn test_arch_m68k_detail() {
                 b"\x4c\xdf\x0c\x07",
                 &[
                     Mem(M68kOpMem {
-                        op_mem: mem_zero,
+                        op_mem: m68k_op_mem {
+                            base_reg: M68K_REG_A7,
+                            ..mem_zero
+                        },
                         address_mode: M68K_AM_REGI_ADDR_POST_INC,
-                        extra_info: M68kOpMemExtraInfo::Reg(RegId(M68K_REG_A7 as RegIdInt)),
+                        extra_info: M68kOpMemExtraInfo::Reg(RegId(M68K_REG_INVALID as RegIdInt)),
                     }),
                     RegBits(
                         M68kRegisterBits::from_register_iter(
@@ -2887,9 +2894,12 @@ fn test_arch_m68k_detail() {
                 &[
                     Reg(RegId(M68K_REG_D3 as RegIdInt)),
                     Mem(M68kOpMem {
-                        op_mem: mem_zero,
+                        op_mem: m68k_op_mem {
+                            base_reg: M68K_REG_A2,
+                            ..mem_zero
+                        },
                         address_mode: M68K_AM_REGI_ADDR_POST_INC,
-                        extra_info: M68kOpMemExtraInfo::Reg(RegId(M68K_REG_A2 as RegIdInt)),
+                        extra_info: M68kOpMemExtraInfo::Reg(RegId(M68K_REG_INVALID as RegIdInt)),
                     }),
                 ],
             ),
@@ -2909,7 +2919,7 @@ fn test_arch_m68k_detail() {
                             scale: 4,
                             ..mem_zero
                         },
-                        address_mode: M68K_AM_AREGI_INDEX_BASE_DISP,
+                        address_mode: M68K_AM_AREGI_INDEX_8_BIT_DISP,
                         extra_info: M68kOpMemExtraInfo::None,
                     }),
                 ],
@@ -2961,9 +2971,12 @@ fn test_arch_m68k_detail() {
                 "jsr",
                 b"\x4e\xb9\x00\x00\x00\x12",
                 &[Mem(M68kOpMem {
-                    op_mem: m68k_op_mem { ..mem_zero },
+                    op_mem: m68k_op_mem {
+                        address: 18,
+                        ..mem_zero
+                    },
                     address_mode: M68K_AM_ABSOLUTE_DATA_LONG,
-                    extra_info: M68kOpMemExtraInfo::Imm(0x12),
+                    extra_info: M68kOpMemExtraInfo::Imm(0),
                 })],
             ),
             // rts

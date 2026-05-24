@@ -242,6 +242,73 @@ impl cs_mode {
     pub const CS_MODE_M68K_060: cs_mode = cs_mode(64);
 }
 impl cs_mode {
+    pub const CS_MODE_M68K_CPU32: cs_mode = cs_mode(128);
+}
+impl cs_mode {
+    #[doc = "< ColdFire ISA_A"]
+    pub const CS_MODE_M68K_CF_ISA_A: cs_mode = cs_mode(256);
+}
+impl cs_mode {
+    #[doc = "< ColdFire ISA_A+"]
+    pub const CS_MODE_M68K_CF_ISA_A_PLUS: cs_mode = cs_mode(512);
+}
+impl cs_mode {
+    #[doc = "< ColdFire ISA_B"]
+    pub const CS_MODE_M68K_CF_ISA_B: cs_mode = cs_mode(1024);
+}
+impl cs_mode {
+    #[doc = "< ColdFire ISA_C"]
+    pub const CS_MODE_M68K_CF_ISA_C: cs_mode = cs_mode(2048);
+}
+impl cs_mode {
+    #[doc = "< ColdFire USP instructions"]
+    pub const CS_MODE_M68K_CF_USP: cs_mode = cs_mode(4096);
+}
+impl cs_mode {
+    #[doc = "< ColdFire hardware divide"]
+    pub const CS_MODE_M68K_CF_DIV: cs_mode = cs_mode(8192);
+}
+impl cs_mode {
+    #[doc = "< ColdFire MAC"]
+    pub const CS_MODE_M68K_CF_MAC: cs_mode = cs_mode(16384);
+}
+impl cs_mode {
+    #[doc = "< ColdFire EMAC"]
+    pub const CS_MODE_M68K_CF_EMAC: cs_mode = cs_mode(32768);
+}
+impl cs_mode {
+    #[doc = "< ColdFire EMAC_B"]
+    pub const CS_MODE_M68K_CF_EMAC_B: cs_mode = cs_mode(65536);
+}
+impl cs_mode {
+    #[doc = "< ColdFire FPU"]
+    pub const CS_MODE_M68K_CF_FPU: cs_mode = cs_mode(131072);
+}
+impl cs_mode {
+    pub const CS_MODE_M68K_COLDFIRE: cs_mode = cs_mode(261888);
+}
+impl cs_mode {
+    pub const CS_MODE_M68K_CFV1: cs_mode = cs_mode(6144);
+}
+impl cs_mode {
+    pub const CS_MODE_M68K_CFV2: cs_mode = cs_mode(8448);
+}
+impl cs_mode {
+    pub const CS_MODE_M68K_CFV3: cs_mode = cs_mode(8448);
+}
+impl cs_mode {
+    pub const CS_MODE_M68K_CFV4: cs_mode = cs_mode(9216);
+}
+impl cs_mode {
+    pub const CS_MODE_M68K_CFV4E: cs_mode = cs_mode(177152);
+}
+impl cs_mode {
+    pub const CS_MODE_M68K_CFV5: cs_mode = cs_mode(112640);
+}
+impl cs_mode {
+    pub const CS_MODE_M68K_FEATURE_MASK: cs_mode = cs_mode(262142);
+}
+impl cs_mode {
     #[doc = "< big-endian mode"]
     pub const CS_MODE_BIG_ENDIAN: cs_mode = cs_mode(2147483648);
 }
@@ -386,6 +453,14 @@ impl cs_mode {
     pub const CS_MODE_M680X_HCS08: cs_mode = cs_mode(1024);
 }
 impl cs_mode {
+    #[doc = "< M680X Freescale/NXP RS08 mode"]
+    pub const CS_MODE_M680X_RS08: cs_mode = cs_mode(2048);
+}
+impl cs_mode {
+    #[doc = "< M680X Freescale/NXP HCS12X mode"]
+    pub const CS_MODE_M680X_HCS12X: cs_mode = cs_mode(4096);
+}
+impl cs_mode {
     #[doc = "< Classic BPF mode (default)"]
     pub const CS_MODE_BPF_CLASSIC: cs_mode = cs_mode(0);
 }
@@ -458,6 +533,9 @@ impl cs_mode {
 }
 impl cs_mode {
     pub const CS_MODE_RISCV_ZBS: cs_mode = cs_mode(1048576);
+}
+impl cs_mode {
+    pub const CS_MODE_RISCV_VENTANA: cs_mode = cs_mode(2097152);
 }
 impl cs_mode {
     #[doc = "< MOS65XXX MOS 6502"]
@@ -734,6 +812,7 @@ pub mod cs_opt_value {
     pub const CS_OPT_SYNTAX_PERCENT: Type = 256;
     pub const CS_OPT_SYNTAX_NO_DOLLAR: Type = 512;
     pub const CS_OPT_SYNTAX_NO_ALIAS_TEXT: Type = 1024;
+    pub const CS_OPT_SYNTAX_NO_ALIAS_TEXT_COMPRESSED: Type = 2048;
     pub const CS_OPT_DETAIL_REAL: Type = 2;
 }
 #[doc = " An option"]
@@ -7075,6 +7154,5035 @@ pub mod aarch64_insn_group {
     pub const AARCH64_FEATURE_HASCONTEXTIDREL2: Type = 253;
     pub const AARCH64_GRP_ENDING: Type = 254;
 }
+#[repr(u32)]
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
+pub enum alpha_op_type {
+    #[doc = "< CS_OP_INVALID (Uninitialized)."]
+    ALPHA_OP_INVALID = 0,
+    #[doc = "< CS_OP_REG (Register operand)."]
+    ALPHA_OP_REG = 1,
+    #[doc = "< CS_OP_IMM (Immediate operand)."]
+    ALPHA_OP_IMM = 2,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct cs_alpha_op {
+    pub type_: alpha_op_type,
+    pub __bindgen_anon_1: cs_alpha_op__bindgen_ty_1,
+    pub access: cs_ac_type,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub union cs_alpha_op__bindgen_ty_1 {
+    pub reg: ::core::ffi::c_uint,
+    pub imm: i64,
+}
+impl ::core::fmt::Debug for cs_alpha_op__bindgen_ty_1 {
+    fn fmt(&self, f: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
+        write!(f, "cs_alpha_op__bindgen_ty_1 {{ union }}")
+    }
+}
+impl ::core::fmt::Debug for cs_alpha_op {
+    fn fmt(&self, f: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
+        write!(
+            f,
+            "cs_alpha_op {{ type: {:?}, __bindgen_anon_1: {:?}, access: {:?} }}",
+            self.type_, self.__bindgen_anon_1, self.access
+        )
+    }
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct cs_alpha {
+    pub op_count: u8,
+    pub operands: [cs_alpha_op; 3usize],
+}
+impl ::core::fmt::Debug for cs_alpha {
+    fn fmt(&self, f: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
+        write!(f, "cs_alpha {{ operands: {:?} }}", self.operands)
+    }
+}
+pub mod alpha_reg {
+    pub type Type = ::core::ffi::c_uint;
+    pub const Alpha_REG_INVALID: Type = 0;
+    pub const Alpha_REG_F0: Type = 1;
+    pub const Alpha_REG_F1: Type = 2;
+    pub const Alpha_REG_F2: Type = 3;
+    pub const Alpha_REG_F3: Type = 4;
+    pub const Alpha_REG_F4: Type = 5;
+    pub const Alpha_REG_F5: Type = 6;
+    pub const Alpha_REG_F6: Type = 7;
+    pub const Alpha_REG_F7: Type = 8;
+    pub const Alpha_REG_F8: Type = 9;
+    pub const Alpha_REG_F9: Type = 10;
+    pub const Alpha_REG_F10: Type = 11;
+    pub const Alpha_REG_F11: Type = 12;
+    pub const Alpha_REG_F12: Type = 13;
+    pub const Alpha_REG_F13: Type = 14;
+    pub const Alpha_REG_F14: Type = 15;
+    pub const Alpha_REG_F15: Type = 16;
+    pub const Alpha_REG_F16: Type = 17;
+    pub const Alpha_REG_F17: Type = 18;
+    pub const Alpha_REG_F18: Type = 19;
+    pub const Alpha_REG_F19: Type = 20;
+    pub const Alpha_REG_F20: Type = 21;
+    pub const Alpha_REG_F21: Type = 22;
+    pub const Alpha_REG_F22: Type = 23;
+    pub const Alpha_REG_F23: Type = 24;
+    pub const Alpha_REG_F24: Type = 25;
+    pub const Alpha_REG_F25: Type = 26;
+    pub const Alpha_REG_F26: Type = 27;
+    pub const Alpha_REG_F27: Type = 28;
+    pub const Alpha_REG_F28: Type = 29;
+    pub const Alpha_REG_F29: Type = 30;
+    pub const Alpha_REG_F30: Type = 31;
+    pub const Alpha_REG_F31: Type = 32;
+    pub const Alpha_REG_R0: Type = 33;
+    pub const Alpha_REG_R1: Type = 34;
+    pub const Alpha_REG_R2: Type = 35;
+    pub const Alpha_REG_R3: Type = 36;
+    pub const Alpha_REG_R4: Type = 37;
+    pub const Alpha_REG_R5: Type = 38;
+    pub const Alpha_REG_R6: Type = 39;
+    pub const Alpha_REG_R7: Type = 40;
+    pub const Alpha_REG_R8: Type = 41;
+    pub const Alpha_REG_R9: Type = 42;
+    pub const Alpha_REG_R10: Type = 43;
+    pub const Alpha_REG_R11: Type = 44;
+    pub const Alpha_REG_R12: Type = 45;
+    pub const Alpha_REG_R13: Type = 46;
+    pub const Alpha_REG_R14: Type = 47;
+    pub const Alpha_REG_R15: Type = 48;
+    pub const Alpha_REG_R16: Type = 49;
+    pub const Alpha_REG_R17: Type = 50;
+    pub const Alpha_REG_R18: Type = 51;
+    pub const Alpha_REG_R19: Type = 52;
+    pub const Alpha_REG_R20: Type = 53;
+    pub const Alpha_REG_R21: Type = 54;
+    pub const Alpha_REG_R22: Type = 55;
+    pub const Alpha_REG_R23: Type = 56;
+    pub const Alpha_REG_R24: Type = 57;
+    pub const Alpha_REG_R25: Type = 58;
+    pub const Alpha_REG_R26: Type = 59;
+    pub const Alpha_REG_R27: Type = 60;
+    pub const Alpha_REG_R28: Type = 61;
+    pub const Alpha_REG_R29: Type = 62;
+    pub const Alpha_REG_R30: Type = 63;
+    pub const Alpha_REG_R31: Type = 64;
+    pub const Alpha_REG_ENDING: Type = 65;
+}
+#[repr(u32)]
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
+pub enum alpha_insn {
+    Alpha_INS_INVALID = 0,
+    Alpha_INS_ADDL = 1,
+    Alpha_INS_ADDQ = 2,
+    Alpha_INS_ADDSsSU = 3,
+    Alpha_INS_ADDTsSU = 4,
+    Alpha_INS_AND = 5,
+    Alpha_INS_BEQ = 6,
+    Alpha_INS_BGE = 7,
+    Alpha_INS_BGT = 8,
+    Alpha_INS_BIC = 9,
+    Alpha_INS_BIS = 10,
+    Alpha_INS_BLBC = 11,
+    Alpha_INS_BLBS = 12,
+    Alpha_INS_BLE = 13,
+    Alpha_INS_BLT = 14,
+    Alpha_INS_BNE = 15,
+    Alpha_INS_BR = 16,
+    Alpha_INS_BSR = 17,
+    Alpha_INS_CMOVEQ = 18,
+    Alpha_INS_CMOVGE = 19,
+    Alpha_INS_CMOVGT = 20,
+    Alpha_INS_CMOVLBC = 21,
+    Alpha_INS_CMOVLBS = 22,
+    Alpha_INS_CMOVLE = 23,
+    Alpha_INS_CMOVLT = 24,
+    Alpha_INS_CMOVNE = 25,
+    Alpha_INS_CMPBGE = 26,
+    Alpha_INS_CMPEQ = 27,
+    Alpha_INS_CMPLE = 28,
+    Alpha_INS_CMPLT = 29,
+    Alpha_INS_CMPTEQsSU = 30,
+    Alpha_INS_CMPTLEsSU = 31,
+    Alpha_INS_CMPTLTsSU = 32,
+    Alpha_INS_CMPTUNsSU = 33,
+    Alpha_INS_CMPULE = 34,
+    Alpha_INS_CMPULT = 35,
+    Alpha_INS_COND_BRANCH = 36,
+    Alpha_INS_CPYSE = 37,
+    Alpha_INS_CPYSN = 38,
+    Alpha_INS_CPYS = 39,
+    Alpha_INS_CTLZ = 40,
+    Alpha_INS_CTPOP = 41,
+    Alpha_INS_CTTZ = 42,
+    Alpha_INS_CVTQSsSUI = 43,
+    Alpha_INS_CVTQTsSUI = 44,
+    Alpha_INS_CVTSTsS = 45,
+    Alpha_INS_CVTTQsSVC = 46,
+    Alpha_INS_CVTTSsSUI = 47,
+    Alpha_INS_DIVSsSU = 48,
+    Alpha_INS_DIVTsSU = 49,
+    Alpha_INS_ECB = 50,
+    Alpha_INS_EQV = 51,
+    Alpha_INS_EXCB = 52,
+    Alpha_INS_EXTBL = 53,
+    Alpha_INS_EXTLH = 54,
+    Alpha_INS_EXTLL = 55,
+    Alpha_INS_EXTQH = 56,
+    Alpha_INS_EXTQL = 57,
+    Alpha_INS_EXTWH = 58,
+    Alpha_INS_EXTWL = 59,
+    Alpha_INS_FBEQ = 60,
+    Alpha_INS_FBGE = 61,
+    Alpha_INS_FBGT = 62,
+    Alpha_INS_FBLE = 63,
+    Alpha_INS_FBLT = 64,
+    Alpha_INS_FBNE = 65,
+    Alpha_INS_FCMOVEQ = 66,
+    Alpha_INS_FCMOVGE = 67,
+    Alpha_INS_FCMOVGT = 68,
+    Alpha_INS_FCMOVLE = 69,
+    Alpha_INS_FCMOVLT = 70,
+    Alpha_INS_FCMOVNE = 71,
+    Alpha_INS_FETCH = 72,
+    Alpha_INS_FETCH_M = 73,
+    Alpha_INS_FTOIS = 74,
+    Alpha_INS_FTOIT = 75,
+    Alpha_INS_INSBL = 76,
+    Alpha_INS_INSLH = 77,
+    Alpha_INS_INSLL = 78,
+    Alpha_INS_INSQH = 79,
+    Alpha_INS_INSQL = 80,
+    Alpha_INS_INSWH = 81,
+    Alpha_INS_INSWL = 82,
+    Alpha_INS_ITOFS = 83,
+    Alpha_INS_ITOFT = 84,
+    Alpha_INS_JMP = 85,
+    Alpha_INS_JSR = 86,
+    Alpha_INS_JSR_COROUTINE = 87,
+    Alpha_INS_LDA = 88,
+    Alpha_INS_LDAH = 89,
+    Alpha_INS_LDBU = 90,
+    Alpha_INS_LDL = 91,
+    Alpha_INS_LDL_L = 92,
+    Alpha_INS_LDQ = 93,
+    Alpha_INS_LDQ_L = 94,
+    Alpha_INS_LDQ_U = 95,
+    Alpha_INS_LDS = 96,
+    Alpha_INS_LDT = 97,
+    Alpha_INS_LDWU = 98,
+    Alpha_INS_MB = 99,
+    Alpha_INS_MSKBL = 100,
+    Alpha_INS_MSKLH = 101,
+    Alpha_INS_MSKLL = 102,
+    Alpha_INS_MSKQH = 103,
+    Alpha_INS_MSKQL = 104,
+    Alpha_INS_MSKWH = 105,
+    Alpha_INS_MSKWL = 106,
+    Alpha_INS_MULL = 107,
+    Alpha_INS_MULQ = 108,
+    Alpha_INS_MULSsSU = 109,
+    Alpha_INS_MULTsSU = 110,
+    Alpha_INS_ORNOT = 111,
+    Alpha_INS_RC = 112,
+    Alpha_INS_RET = 113,
+    Alpha_INS_RPCC = 114,
+    Alpha_INS_RS = 115,
+    Alpha_INS_S4ADDL = 116,
+    Alpha_INS_S4ADDQ = 117,
+    Alpha_INS_S4SUBL = 118,
+    Alpha_INS_S4SUBQ = 119,
+    Alpha_INS_S8ADDL = 120,
+    Alpha_INS_S8ADDQ = 121,
+    Alpha_INS_S8SUBL = 122,
+    Alpha_INS_S8SUBQ = 123,
+    Alpha_INS_SEXTB = 124,
+    Alpha_INS_SEXTW = 125,
+    Alpha_INS_SLL = 126,
+    Alpha_INS_SQRTSsSU = 127,
+    Alpha_INS_SQRTTsSU = 128,
+    Alpha_INS_SRA = 129,
+    Alpha_INS_SRL = 130,
+    Alpha_INS_STB = 131,
+    Alpha_INS_STL = 132,
+    Alpha_INS_STL_C = 133,
+    Alpha_INS_STQ = 134,
+    Alpha_INS_STQ_C = 135,
+    Alpha_INS_STQ_U = 136,
+    Alpha_INS_STS = 137,
+    Alpha_INS_STT = 138,
+    Alpha_INS_STW = 139,
+    Alpha_INS_SUBL = 140,
+    Alpha_INS_SUBQ = 141,
+    Alpha_INS_SUBSsSU = 142,
+    Alpha_INS_SUBTsSU = 143,
+    Alpha_INS_TRAPB = 144,
+    Alpha_INS_UMULH = 145,
+    Alpha_INS_WH64 = 146,
+    Alpha_INS_WH64EN = 147,
+    Alpha_INS_WMB = 148,
+    Alpha_INS_XOR = 149,
+    Alpha_INS_ZAPNOT = 150,
+    ALPHA_INS_ENDING = 151,
+}
+pub mod alpha_insn_group {
+    pub type Type = ::core::ffi::c_uint;
+    #[doc = "< = CS_GRP_INVALID"]
+    pub const Alpha_GRP_INVALID: Type = 0;
+    #[doc = "< = CS_GRP_CALL"]
+    pub const Alpha_GRP_CALL: Type = 1;
+    #[doc = "< = CS_GRP_JUMP"]
+    pub const Alpha_GRP_JUMP: Type = 2;
+    #[doc = "< = CS_GRP_BRANCH_RELATIVE"]
+    pub const Alpha_GRP_BRANCH_RELATIVE: Type = 3;
+    #[doc = "< = mark the end of the list of groups"]
+    pub const Alpha_GRP_ENDING: Type = 4;
+}
+#[repr(u32)]
+#[doc = " Operand type for instruction's operands"]
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
+pub enum arc_op_type {
+    #[doc = "< Invalid"]
+    ARC_OP_INVALID = 0,
+    #[doc = "< Register operand"]
+    ARC_OP_REG = 1,
+    #[doc = "< Immediate operand"]
+    ARC_OP_IMM = 2,
+}
+#[doc = " Instruction operand"]
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct cs_arc_op {
+    pub type_: arc_op_type,
+    pub __bindgen_anon_1: cs_arc_op__bindgen_ty_1,
+    #[doc = " How is this operand accessed? (READ, WRITE or READ|WRITE)\n NOTE: this field is irrelevant if engine is compiled in DIET mode."]
+    pub access: cs_ac_type,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub union cs_arc_op__bindgen_ty_1 {
+    pub reg: ::core::ffi::c_uint,
+    #[doc = " register value for REG operand"]
+    pub imm: i64,
+}
+impl ::core::fmt::Debug for cs_arc_op__bindgen_ty_1 {
+    fn fmt(&self, f: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
+        write!(f, "cs_arc_op__bindgen_ty_1 {{ union }}")
+    }
+}
+impl ::core::fmt::Debug for cs_arc_op {
+    fn fmt(&self, f: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
+        write!(
+            f,
+            "cs_arc_op {{ type: {:?}, __bindgen_anon_1: {:?}, access: {:?} }}",
+            self.type_, self.__bindgen_anon_1, self.access
+        )
+    }
+}
+#[doc = " Instruction structure"]
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct cs_arc {
+    #[doc = " Number of operands of this instruction,\n or 0 when instruction has no operand."]
+    pub op_count: u8,
+    #[doc = "< operands for this instruction."]
+    pub operands: [cs_arc_op; 8usize],
+}
+impl ::core::fmt::Debug for cs_arc {
+    fn fmt(&self, f: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
+        write!(f, "cs_arc {{ operands: {:?} }}", self.operands)
+    }
+}
+pub mod arc_reg {
+    #[doc = " ARC registers"]
+    pub type Type = ::core::ffi::c_uint;
+    pub const ARC_REG_INVALID: Type = 0;
+    pub const ARC_REG_BLINK: Type = 1;
+    pub const ARC_REG_FP: Type = 2;
+    pub const ARC_REG_GP: Type = 3;
+    pub const ARC_REG_ILINK: Type = 4;
+    pub const ARC_REG_SP: Type = 5;
+    pub const ARC_REG_R0: Type = 6;
+    pub const ARC_REG_R1: Type = 7;
+    pub const ARC_REG_R2: Type = 8;
+    pub const ARC_REG_R3: Type = 9;
+    pub const ARC_REG_R4: Type = 10;
+    pub const ARC_REG_R5: Type = 11;
+    pub const ARC_REG_R6: Type = 12;
+    pub const ARC_REG_R7: Type = 13;
+    pub const ARC_REG_R8: Type = 14;
+    pub const ARC_REG_R9: Type = 15;
+    pub const ARC_REG_R10: Type = 16;
+    pub const ARC_REG_R11: Type = 17;
+    pub const ARC_REG_R12: Type = 18;
+    pub const ARC_REG_R13: Type = 19;
+    pub const ARC_REG_R14: Type = 20;
+    pub const ARC_REG_R15: Type = 21;
+    pub const ARC_REG_R16: Type = 22;
+    pub const ARC_REG_R17: Type = 23;
+    pub const ARC_REG_R18: Type = 24;
+    pub const ARC_REG_R19: Type = 25;
+    pub const ARC_REG_R20: Type = 26;
+    pub const ARC_REG_R21: Type = 27;
+    pub const ARC_REG_R22: Type = 28;
+    pub const ARC_REG_R23: Type = 29;
+    pub const ARC_REG_R24: Type = 30;
+    pub const ARC_REG_R25: Type = 31;
+    pub const ARC_REG_R30: Type = 32;
+    pub const ARC_REG_R32: Type = 33;
+    pub const ARC_REG_R33: Type = 34;
+    pub const ARC_REG_R34: Type = 35;
+    pub const ARC_REG_R35: Type = 36;
+    pub const ARC_REG_R36: Type = 37;
+    pub const ARC_REG_R37: Type = 38;
+    pub const ARC_REG_R38: Type = 39;
+    pub const ARC_REG_R39: Type = 40;
+    pub const ARC_REG_R40: Type = 41;
+    pub const ARC_REG_R41: Type = 42;
+    pub const ARC_REG_R42: Type = 43;
+    pub const ARC_REG_R43: Type = 44;
+    pub const ARC_REG_R44: Type = 45;
+    pub const ARC_REG_R45: Type = 46;
+    pub const ARC_REG_R46: Type = 47;
+    pub const ARC_REG_R47: Type = 48;
+    pub const ARC_REG_R48: Type = 49;
+    pub const ARC_REG_R49: Type = 50;
+    pub const ARC_REG_R50: Type = 51;
+    pub const ARC_REG_R51: Type = 52;
+    pub const ARC_REG_R52: Type = 53;
+    pub const ARC_REG_R53: Type = 54;
+    pub const ARC_REG_R54: Type = 55;
+    pub const ARC_REG_R55: Type = 56;
+    pub const ARC_REG_R56: Type = 57;
+    pub const ARC_REG_R57: Type = 58;
+    pub const ARC_REG_R58: Type = 59;
+    pub const ARC_REG_R59: Type = 60;
+    pub const ARC_REG_R60: Type = 61;
+    pub const ARC_REG_R61: Type = 62;
+    pub const ARC_REG_R62: Type = 63;
+    pub const ARC_REG_R63: Type = 64;
+    pub const ARC_REG_STATUS32: Type = 65;
+    pub const ARC_REG_ENDING: Type = 66;
+}
+#[repr(u32)]
+#[doc = " ARC instruction"]
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
+pub enum arc_insn {
+    ARC_INS_INVALID = 0,
+    ARC_INS_h = 1,
+    ARC_INS_PBR = 2,
+    ARC_INS_ERROR_FLS = 3,
+    ARC_INS_ERROR_FFS = 4,
+    ARC_INS_PLDFI = 5,
+    ARC_INS_STB_FAR = 6,
+    ARC_INS_STH_FAR = 7,
+    ARC_INS_ST_FAR = 8,
+    ARC_INS_ADC = 9,
+    ARC_INS_ADC_F = 10,
+    ARC_INS_ADD_S = 11,
+    ARC_INS_ADD = 12,
+    ARC_INS_ADD_F = 13,
+    ARC_INS_AND = 14,
+    ARC_INS_AND_F = 15,
+    ARC_INS_ASL_S = 16,
+    ARC_INS_ASL = 17,
+    ARC_INS_ASL_F = 18,
+    ARC_INS_ASR_S = 19,
+    ARC_INS_ASR = 20,
+    ARC_INS_ASR_F = 21,
+    ARC_INS_BCLR_S = 22,
+    ARC_INS_BEQ_S = 23,
+    ARC_INS_BGE_S = 24,
+    ARC_INS_BGT_S = 25,
+    ARC_INS_BHI_S = 26,
+    ARC_INS_BHS_S = 27,
+    ARC_INS_BL = 28,
+    ARC_INS_BLE_S = 29,
+    ARC_INS_BLO_S = 30,
+    ARC_INS_BLS_S = 31,
+    ARC_INS_BLT_S = 32,
+    ARC_INS_BL_S = 33,
+    ARC_INS_BMSK_S = 34,
+    ARC_INS_BNE_S = 35,
+    ARC_INS_B = 36,
+    ARC_INS_BREQ_S = 37,
+    ARC_INS_BRNE_S = 38,
+    ARC_INS_BR = 39,
+    ARC_INS_BSET_S = 40,
+    ARC_INS_BTST_S = 41,
+    ARC_INS_B_S = 42,
+    ARC_INS_CMP_S = 43,
+    ARC_INS_CMP = 44,
+    ARC_INS_LD_S = 45,
+    ARC_INS_MOV_S = 46,
+    ARC_INS_EI_S = 47,
+    ARC_INS_ENTER_S = 48,
+    ARC_INS_FFS_F = 49,
+    ARC_INS_FFS = 50,
+    ARC_INS_FLS_F = 51,
+    ARC_INS_FLS = 52,
+    ARC_INS_ABS_S = 53,
+    ARC_INS_ADD1_S = 54,
+    ARC_INS_ADD2_S = 55,
+    ARC_INS_ADD3_S = 56,
+    ARC_INS_AND_S = 57,
+    ARC_INS_BIC_S = 58,
+    ARC_INS_BRK_S = 59,
+    ARC_INS_EXTB_S = 60,
+    ARC_INS_EXTH_S = 61,
+    ARC_INS_JEQ_S = 62,
+    ARC_INS_JL_S = 63,
+    ARC_INS_JL_S_D = 64,
+    ARC_INS_JNE_S = 65,
+    ARC_INS_J_S = 66,
+    ARC_INS_J_S_D = 67,
+    ARC_INS_LSR_S = 68,
+    ARC_INS_MPYUW_S = 69,
+    ARC_INS_MPYW_S = 70,
+    ARC_INS_MPY_S = 71,
+    ARC_INS_NEG_S = 72,
+    ARC_INS_NOP_S = 73,
+    ARC_INS_NOT_S = 74,
+    ARC_INS_OR_S = 75,
+    ARC_INS_SEXB_S = 76,
+    ARC_INS_SEXH_S = 77,
+    ARC_INS_SUB_S = 78,
+    ARC_INS_SUB_S_NE = 79,
+    ARC_INS_SWI_S = 80,
+    ARC_INS_TRAP_S = 81,
+    ARC_INS_TST_S = 82,
+    ARC_INS_UNIMP_S = 83,
+    ARC_INS_XOR_S = 84,
+    ARC_INS_LDB_S = 85,
+    ARC_INS_LDH_S = 86,
+    ARC_INS_J = 87,
+    ARC_INS_JL = 88,
+    ARC_INS_JLI_S = 89,
+    ARC_INS_LDB_AB = 90,
+    ARC_INS_LDB_AW = 91,
+    ARC_INS_LDB_DI_AB = 92,
+    ARC_INS_LDB_DI_AW = 93,
+    ARC_INS_LDB_DI = 94,
+    ARC_INS_LDB_X_AB = 95,
+    ARC_INS_LDB_X_AW = 96,
+    ARC_INS_LDB_X_DI_AB = 97,
+    ARC_INS_LDB_X_DI_AW = 98,
+    ARC_INS_LDB_X_DI = 99,
+    ARC_INS_LDB_X = 100,
+    ARC_INS_LDB = 101,
+    ARC_INS_LDH_AB = 102,
+    ARC_INS_LDH_AW = 103,
+    ARC_INS_LDH_DI_AB = 104,
+    ARC_INS_LDH_DI_AW = 105,
+    ARC_INS_LDH_DI = 106,
+    ARC_INS_LDH_S_X = 107,
+    ARC_INS_LDH_X_AB = 108,
+    ARC_INS_LDH_X_AW = 109,
+    ARC_INS_LDH_X_DI_AB = 110,
+    ARC_INS_LDH_X_DI_AW = 111,
+    ARC_INS_LDH_X_DI = 112,
+    ARC_INS_LDH_X = 113,
+    ARC_INS_LDH = 114,
+    ARC_INS_LDI_S = 115,
+    ARC_INS_LD_AB = 116,
+    ARC_INS_LD_AW = 117,
+    ARC_INS_LD_DI_AB = 118,
+    ARC_INS_LD_DI_AW = 119,
+    ARC_INS_LD_DI = 120,
+    ARC_INS_LD_S_AS = 121,
+    ARC_INS_LD = 122,
+    ARC_INS_LEAVE_S = 123,
+    ARC_INS_LR = 124,
+    ARC_INS_LSR = 125,
+    ARC_INS_LSR_F = 126,
+    ARC_INS_MAX = 127,
+    ARC_INS_MAX_F = 128,
+    ARC_INS_MIN = 129,
+    ARC_INS_MIN_F = 130,
+    ARC_INS_MOV_S_NE = 131,
+    ARC_INS_MOV = 132,
+    ARC_INS_MOV_F = 133,
+    ARC_INS_MPYMU = 134,
+    ARC_INS_MPYMU_F = 135,
+    ARC_INS_MPYM = 136,
+    ARC_INS_MPYM_F = 137,
+    ARC_INS_MPY = 138,
+    ARC_INS_MPY_F = 139,
+    ARC_INS_NORMH_F = 140,
+    ARC_INS_NORMH = 141,
+    ARC_INS_NORM_F = 142,
+    ARC_INS_NORM = 143,
+    ARC_INS_OR = 144,
+    ARC_INS_OR_F = 145,
+    ARC_INS_POP_S = 146,
+    ARC_INS_PUSH_S = 147,
+    ARC_INS_ROR = 148,
+    ARC_INS_ROR_F = 149,
+    ARC_INS_RSUB = 150,
+    ARC_INS_RSUB_F = 151,
+    ARC_INS_SBC = 152,
+    ARC_INS_SBC_F = 153,
+    ARC_INS_SETEQ = 154,
+    ARC_INS_SETEQ_F = 155,
+    ARC_INS_SEXB_F = 156,
+    ARC_INS_SEXB = 157,
+    ARC_INS_SEXH_F = 158,
+    ARC_INS_SEXH = 159,
+    ARC_INS_STB_S = 160,
+    ARC_INS_ST_S = 161,
+    ARC_INS_STB_AB = 162,
+    ARC_INS_STB_AW = 163,
+    ARC_INS_STB_DI_AB = 164,
+    ARC_INS_STB_DI_AW = 165,
+    ARC_INS_STB_DI = 166,
+    ARC_INS_STB = 167,
+    ARC_INS_STH_AB = 168,
+    ARC_INS_STH_AW = 169,
+    ARC_INS_STH_DI_AB = 170,
+    ARC_INS_STH_DI_AW = 171,
+    ARC_INS_STH_DI = 172,
+    ARC_INS_STH_S = 173,
+    ARC_INS_STH = 174,
+    ARC_INS_ST_AB = 175,
+    ARC_INS_ST_AW = 176,
+    ARC_INS_ST_DI_AB = 177,
+    ARC_INS_ST_DI_AW = 178,
+    ARC_INS_ST_DI = 179,
+    ARC_INS_ST = 180,
+    ARC_INS_SUB1 = 181,
+    ARC_INS_SUB1_F = 182,
+    ARC_INS_SUB2 = 183,
+    ARC_INS_SUB2_F = 184,
+    ARC_INS_SUB3 = 185,
+    ARC_INS_SUB3_F = 186,
+    ARC_INS_SUB = 187,
+    ARC_INS_SUB_F = 188,
+    ARC_INS_XOR = 189,
+    ARC_INS_XOR_F = 190,
+}
+pub mod arc_insn_group {
+    pub type Type = ::core::ffi::c_uint;
+    #[doc = "< = CS_GRP_INVALID"]
+    pub const ARC_GRP_INVALID: Type = 0;
+    #[doc = "< = CS_GRP_JUMP"]
+    pub const ARC_GRP_JUMP: Type = 1;
+    #[doc = "< = CS_GRP_CALL"]
+    pub const ARC_GRP_CALL: Type = 2;
+    #[doc = "< = CS_GRP_RET"]
+    pub const ARC_GRP_RET: Type = 3;
+    #[doc = "< = CS_GRP_BRANCH_RELATIVE"]
+    pub const ARC_GRP_BRANCH_RELATIVE: Type = 4;
+    pub const ARC_GRP_ENDING: Type = 5;
+}
+#[repr(u32)]
+#[doc = " Operand type for instruction's operands"]
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
+pub enum bpf_op_type {
+    BPF_OP_INVALID = 0,
+    BPF_OP_REG = 1,
+    BPF_OP_IMM = 2,
+    BPF_OP_OFF = 16,
+    #[doc = "< corresponds to cBPF's BPF_MSH mode"]
+    BPF_OP_MSH = 17,
+    #[doc = "< cBPF's extension (not eBPF)"]
+    BPF_OP_EXT = 18,
+    #[doc = "< M[k] in cBPF"]
+    BPF_OP_MMEM = 147,
+    BPF_OP_MEM = 128,
+}
+pub mod bpf_reg {
+    #[doc = " BPF registers"]
+    pub type Type = ::core::ffi::c_uint;
+    pub const BPF_REG_INVALID: Type = 0;
+    pub const BPF_REG_A: Type = 1;
+    pub const BPF_REG_X: Type = 2;
+    pub const BPF_REG_R0: Type = 3;
+    pub const BPF_REG_R1: Type = 4;
+    pub const BPF_REG_R2: Type = 5;
+    pub const BPF_REG_R3: Type = 6;
+    pub const BPF_REG_R4: Type = 7;
+    pub const BPF_REG_R5: Type = 8;
+    pub const BPF_REG_R6: Type = 9;
+    pub const BPF_REG_R7: Type = 10;
+    pub const BPF_REG_R8: Type = 11;
+    pub const BPF_REG_R9: Type = 12;
+    pub const BPF_REG_R10: Type = 13;
+    pub const BPF_REG_ENDING: Type = 14;
+}
+#[doc = " Instruction's operand referring to memory\n This is associated with BPF_OP_MEM operand type above"]
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct bpf_op_mem {
+    #[doc = "< base register"]
+    pub base: bpf_reg::Type,
+    #[doc = "< offset value"]
+    pub disp: u32,
+}
+#[repr(u32)]
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
+pub enum bpf_ext_type {
+    BPF_EXT_INVALID = 0,
+    BPF_EXT_LEN = 1,
+}
+#[doc = " Instruction operand"]
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct cs_bpf_op {
+    pub type_: bpf_op_type,
+    pub __bindgen_anon_1: cs_bpf_op__bindgen_ty_1,
+    #[doc = "< is this operand signed? It is set for memory, immediate and offset operands."]
+    pub is_signed: bool,
+    #[doc = "< is this operand referring to packet data? It is set for memory operands."]
+    pub is_pkt: bool,
+    #[doc = " How is this operand accessed? (READ, WRITE or READ|WRITE)\n This field is combined of cs_ac_type.\n NOTE: this field is irrelevant if engine is compiled in DIET mode."]
+    pub access: cs_ac_type,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub union cs_bpf_op__bindgen_ty_1 {
+    #[doc = "< register value for REG operand"]
+    pub reg: u8,
+    #[doc = "< immediate value IMM operand"]
+    pub imm: u64,
+    #[doc = "< offset value, used in jump & call"]
+    pub off: u32,
+    #[doc = "< base/disp value for MEM operand"]
+    pub mem: bpf_op_mem,
+    #[doc = "< M[k] in cBPF"]
+    pub mmem: u32,
+    #[doc = "< corresponds to cBPF's BPF_MSH mode"]
+    pub msh: u32,
+    #[doc = "< cBPF's extension (not eBPF)"]
+    pub ext: u32,
+}
+impl ::core::fmt::Debug for cs_bpf_op__bindgen_ty_1 {
+    fn fmt(&self, f: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
+        write!(f, "cs_bpf_op__bindgen_ty_1 {{ union }}")
+    }
+}
+impl ::core::fmt::Debug for cs_bpf_op {
+    fn fmt(&self, f: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
+        write ! (f , "cs_bpf_op {{ type: {:?}, __bindgen_anon_1: {:?}, is_signed: {:?}, is_pkt: {:?}, access: {:?} }}" , self . type_ , self . __bindgen_anon_1 , self . is_signed , self . is_pkt , self . access)
+    }
+}
+#[doc = " Instruction structure"]
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct cs_bpf {
+    pub op_count: u8,
+    pub operands: [cs_bpf_op; 4usize],
+}
+impl ::core::fmt::Debug for cs_bpf {
+    fn fmt(&self, f: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
+        write!(f, "cs_bpf {{ operands: {:?} }}", self.operands)
+    }
+}
+impl bpf_insn {
+    pub const BPF_INS_LD: bpf_insn = bpf_insn::BPF_INS_LDW;
+}
+impl bpf_insn {
+    pub const BPF_INS_LDX: bpf_insn = bpf_insn::BPF_INS_LDXW;
+}
+impl bpf_insn {
+    pub const BPF_INS_ST: bpf_insn = bpf_insn::BPF_INS_STW;
+}
+impl bpf_insn {
+    pub const BPF_INS_STX: bpf_insn = bpf_insn::BPF_INS_STXW;
+}
+#[repr(u32)]
+#[doc = " BPF instruction"]
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
+pub enum bpf_insn {
+    BPF_INS_INVALID = 0,
+    BPF_INS_ADD = 1,
+    BPF_INS_SUB = 2,
+    BPF_INS_MUL = 3,
+    BPF_INS_DIV = 4,
+    BPF_INS_SDIV = 5,
+    BPF_INS_OR = 6,
+    BPF_INS_AND = 7,
+    BPF_INS_LSH = 8,
+    BPF_INS_RSH = 9,
+    BPF_INS_NEG = 10,
+    BPF_INS_MOD = 11,
+    BPF_INS_SMOD = 12,
+    BPF_INS_XOR = 13,
+    #[doc = "< eBPF only"]
+    BPF_INS_MOV = 14,
+    #[doc = "< eBPF only"]
+    BPF_INS_MOVSB = 15,
+    #[doc = "< eBPF only"]
+    BPF_INS_MOVSH = 16,
+    #[doc = "< eBPF only"]
+    BPF_INS_ARSH = 17,
+    BPF_INS_ADD64 = 18,
+    BPF_INS_SUB64 = 19,
+    BPF_INS_MUL64 = 20,
+    BPF_INS_DIV64 = 21,
+    BPF_INS_SDIV64 = 22,
+    BPF_INS_OR64 = 23,
+    BPF_INS_AND64 = 24,
+    BPF_INS_LSH64 = 25,
+    BPF_INS_RSH64 = 26,
+    BPF_INS_NEG64 = 27,
+    BPF_INS_MOD64 = 28,
+    BPF_INS_SMOD64 = 29,
+    BPF_INS_XOR64 = 30,
+    BPF_INS_MOV64 = 31,
+    BPF_INS_MOVSB64 = 32,
+    BPF_INS_MOVSH64 = 33,
+    BPF_INS_MOVSW64 = 34,
+    BPF_INS_ARSH64 = 35,
+    BPF_INS_LE16 = 36,
+    BPF_INS_LE32 = 37,
+    BPF_INS_LE64 = 38,
+    BPF_INS_BE16 = 39,
+    BPF_INS_BE32 = 40,
+    BPF_INS_BE64 = 41,
+    BPF_INS_BSWAP16 = 42,
+    BPF_INS_BSWAP32 = 43,
+    BPF_INS_BSWAP64 = 44,
+    #[doc = "< eBPF only"]
+    BPF_INS_LDW = 45,
+    BPF_INS_LDH = 46,
+    BPF_INS_LDB = 47,
+    #[doc = "< eBPF only: load 64-bit imm"]
+    BPF_INS_LDDW = 48,
+    #[doc = "< eBPF only"]
+    BPF_INS_LDXW = 49,
+    #[doc = "< eBPF only"]
+    BPF_INS_LDXH = 50,
+    #[doc = "< eBPF only"]
+    BPF_INS_LDXB = 51,
+    #[doc = "< eBPF only\n< Packet data access"]
+    BPF_INS_LDXDW = 52,
+    #[doc = "< eBPF only"]
+    BPF_INS_LDABSW = 53,
+    #[doc = "< eBPF only"]
+    BPF_INS_LDABSH = 54,
+    #[doc = "< eBPF only"]
+    BPF_INS_LDABSB = 55,
+    #[doc = "< eBPF only"]
+    BPF_INS_LDINDW = 56,
+    #[doc = "< eBPF only"]
+    BPF_INS_LDINDH = 57,
+    #[doc = "< eBPF only"]
+    BPF_INS_LDINDB = 58,
+    #[doc = "< eBPF only"]
+    BPF_INS_STW = 59,
+    #[doc = "< eBPF only"]
+    BPF_INS_STH = 60,
+    #[doc = "< eBPF only"]
+    BPF_INS_STB = 61,
+    #[doc = "< eBPF only"]
+    BPF_INS_STDW = 62,
+    #[doc = "< eBPF only"]
+    BPF_INS_STXW = 63,
+    #[doc = "< eBPF only"]
+    BPF_INS_STXH = 64,
+    #[doc = "< eBPF only"]
+    BPF_INS_STXB = 65,
+    #[doc = "< eBPF only"]
+    BPF_INS_STXDW = 66,
+    #[doc = "< eBPF only"]
+    BPF_INS_XADDW = 67,
+    #[doc = "< eBPF only"]
+    BPF_INS_XADDDW = 68,
+    BPF_INS_JA = 69,
+    BPF_INS_JEQ = 70,
+    BPF_INS_JGT = 71,
+    BPF_INS_JGE = 72,
+    BPF_INS_JSET = 73,
+    #[doc = "< eBPF only"]
+    BPF_INS_JNE = 74,
+    #[doc = "< eBPF only"]
+    BPF_INS_JSGT = 75,
+    #[doc = "< eBPF only"]
+    BPF_INS_JSGE = 76,
+    #[doc = "< eBPF only"]
+    BPF_INS_CALL = 77,
+    #[doc = "< eBPF only"]
+    BPF_INS_CALLX = 78,
+    #[doc = "< eBPF only"]
+    BPF_INS_EXIT = 79,
+    #[doc = "< eBPF only"]
+    BPF_INS_JLT = 80,
+    #[doc = "< eBPF only"]
+    BPF_INS_JLE = 81,
+    #[doc = "< eBPF only"]
+    BPF_INS_JSLT = 82,
+    #[doc = "< eBPF only"]
+    BPF_INS_JSLE = 83,
+    BPF_INS_JAL = 84,
+    BPF_INS_JEQ32 = 85,
+    BPF_INS_JGT32 = 86,
+    BPF_INS_JGE32 = 87,
+    BPF_INS_JSET32 = 88,
+    BPF_INS_JNE32 = 89,
+    BPF_INS_JSGT32 = 90,
+    BPF_INS_JSGE32 = 91,
+    BPF_INS_JLT32 = 92,
+    BPF_INS_JLE32 = 93,
+    BPF_INS_JSLT32 = 94,
+    BPF_INS_JSLE32 = 95,
+    BPF_INS_RET = 96,
+    BPF_INS_AADD = 97,
+    BPF_INS_AOR = 98,
+    BPF_INS_AAND = 99,
+    BPF_INS_AXOR = 100,
+    BPF_INS_AFADD = 101,
+    BPF_INS_AFOR = 102,
+    BPF_INS_AFAND = 103,
+    BPF_INS_AFXOR = 104,
+    BPF_INS_AXCHG64 = 105,
+    BPF_INS_ACMPXCHG64 = 106,
+    BPF_INS_AADD64 = 107,
+    BPF_INS_AOR64 = 108,
+    BPF_INS_AAND64 = 109,
+    BPF_INS_AXOR64 = 110,
+    BPF_INS_AFADD64 = 111,
+    BPF_INS_AFOR64 = 112,
+    BPF_INS_AFAND64 = 113,
+    BPF_INS_AFXOR64 = 114,
+    BPF_INS_TAX = 115,
+    BPF_INS_TXA = 116,
+    BPF_INS_ENDING = 117,
+}
+pub mod bpf_insn_group {
+    #[doc = " Group of BPF instructions"]
+    pub type Type = ::core::ffi::c_uint;
+    #[doc = "< = CS_GRP_INVALID"]
+    pub const BPF_GRP_INVALID: Type = 0;
+    pub const BPF_GRP_LOAD: Type = 1;
+    pub const BPF_GRP_STORE: Type = 2;
+    pub const BPF_GRP_ALU: Type = 3;
+    pub const BPF_GRP_JUMP: Type = 4;
+    #[doc = "< eBPF only"]
+    pub const BPF_GRP_CALL: Type = 5;
+    pub const BPF_GRP_RETURN: Type = 6;
+    #[doc = "< cBPF only"]
+    pub const BPF_GRP_MISC: Type = 7;
+    pub const BPF_GRP_ENDING: Type = 8;
+}
+#[doc = " Instruction structure"]
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct cs_evm {
+    #[doc = "< number of items popped from the stack"]
+    pub pop: ::core::ffi::c_uchar,
+    #[doc = "< number of items pushed into the stack"]
+    pub push: ::core::ffi::c_uchar,
+    #[doc = "< gas fee for the instruction"]
+    pub fee: ::core::ffi::c_uint,
+}
+#[repr(u32)]
+#[doc = " EVM instruction"]
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
+pub enum evm_insn {
+    EVM_INS_STOP = 0,
+    EVM_INS_ADD = 1,
+    EVM_INS_MUL = 2,
+    EVM_INS_SUB = 3,
+    EVM_INS_DIV = 4,
+    EVM_INS_SDIV = 5,
+    EVM_INS_MOD = 6,
+    EVM_INS_SMOD = 7,
+    EVM_INS_ADDMOD = 8,
+    EVM_INS_MULMOD = 9,
+    EVM_INS_EXP = 10,
+    EVM_INS_SIGNEXTEND = 11,
+    EVM_INS_LT = 16,
+    EVM_INS_GT = 17,
+    EVM_INS_SLT = 18,
+    EVM_INS_SGT = 19,
+    EVM_INS_EQ = 20,
+    EVM_INS_ISZERO = 21,
+    EVM_INS_AND = 22,
+    EVM_INS_OR = 23,
+    EVM_INS_XOR = 24,
+    EVM_INS_NOT = 25,
+    EVM_INS_BYTE = 26,
+    EVM_INS_SHL = 27,
+    EVM_INS_SHR = 28,
+    EVM_INS_SAR = 29,
+    EVM_INS_SHA3 = 32,
+    EVM_INS_ADDRESS = 48,
+    EVM_INS_BALANCE = 49,
+    EVM_INS_ORIGIN = 50,
+    EVM_INS_CALLER = 51,
+    EVM_INS_CALLVALUE = 52,
+    EVM_INS_CALLDATALOAD = 53,
+    EVM_INS_CALLDATASIZE = 54,
+    EVM_INS_CALLDATACOPY = 55,
+    EVM_INS_CODESIZE = 56,
+    EVM_INS_CODECOPY = 57,
+    EVM_INS_GASPRICE = 58,
+    EVM_INS_EXTCODESIZE = 59,
+    EVM_INS_EXTCODECOPY = 60,
+    EVM_INS_RETURNDATASIZE = 61,
+    EVM_INS_RETURNDATACOPY = 62,
+    EVM_INS_BLOCKHASH = 64,
+    EVM_INS_COINBASE = 65,
+    EVM_INS_TIMESTAMP = 66,
+    EVM_INS_NUMBER = 67,
+    EVM_INS_DIFFICULTY = 68,
+    EVM_INS_GASLIMIT = 69,
+    EVM_INS_CHAINID = 70,
+    EVM_INS_SELFBALANCE = 71,
+    EVM_INS_BASEFEE = 72,
+    EVM_INS_BLOBHASH = 73,
+    EVM_INS_BLOBBASEFEE = 74,
+    EVM_INS_POP = 80,
+    EVM_INS_MLOAD = 81,
+    EVM_INS_MSTORE = 82,
+    EVM_INS_MSTORE8 = 83,
+    EVM_INS_SLOAD = 84,
+    EVM_INS_SSTORE = 85,
+    EVM_INS_JUMP = 86,
+    EVM_INS_JUMPI = 87,
+    EVM_INS_PC = 88,
+    EVM_INS_MSIZE = 89,
+    EVM_INS_GAS = 90,
+    EVM_INS_JUMPDEST = 91,
+    EVM_INS_TLOAD = 92,
+    EVM_INS_TSTORE = 93,
+    EVM_INS_MCOPY = 94,
+    EVM_INS_PUSH0 = 95,
+    EVM_INS_PUSH1 = 96,
+    EVM_INS_PUSH2 = 97,
+    EVM_INS_PUSH3 = 98,
+    EVM_INS_PUSH4 = 99,
+    EVM_INS_PUSH5 = 100,
+    EVM_INS_PUSH6 = 101,
+    EVM_INS_PUSH7 = 102,
+    EVM_INS_PUSH8 = 103,
+    EVM_INS_PUSH9 = 104,
+    EVM_INS_PUSH10 = 105,
+    EVM_INS_PUSH11 = 106,
+    EVM_INS_PUSH12 = 107,
+    EVM_INS_PUSH13 = 108,
+    EVM_INS_PUSH14 = 109,
+    EVM_INS_PUSH15 = 110,
+    EVM_INS_PUSH16 = 111,
+    EVM_INS_PUSH17 = 112,
+    EVM_INS_PUSH18 = 113,
+    EVM_INS_PUSH19 = 114,
+    EVM_INS_PUSH20 = 115,
+    EVM_INS_PUSH21 = 116,
+    EVM_INS_PUSH22 = 117,
+    EVM_INS_PUSH23 = 118,
+    EVM_INS_PUSH24 = 119,
+    EVM_INS_PUSH25 = 120,
+    EVM_INS_PUSH26 = 121,
+    EVM_INS_PUSH27 = 122,
+    EVM_INS_PUSH28 = 123,
+    EVM_INS_PUSH29 = 124,
+    EVM_INS_PUSH30 = 125,
+    EVM_INS_PUSH31 = 126,
+    EVM_INS_PUSH32 = 127,
+    EVM_INS_DUP1 = 128,
+    EVM_INS_DUP2 = 129,
+    EVM_INS_DUP3 = 130,
+    EVM_INS_DUP4 = 131,
+    EVM_INS_DUP5 = 132,
+    EVM_INS_DUP6 = 133,
+    EVM_INS_DUP7 = 134,
+    EVM_INS_DUP8 = 135,
+    EVM_INS_DUP9 = 136,
+    EVM_INS_DUP10 = 137,
+    EVM_INS_DUP11 = 138,
+    EVM_INS_DUP12 = 139,
+    EVM_INS_DUP13 = 140,
+    EVM_INS_DUP14 = 141,
+    EVM_INS_DUP15 = 142,
+    EVM_INS_DUP16 = 143,
+    EVM_INS_SWAP1 = 144,
+    EVM_INS_SWAP2 = 145,
+    EVM_INS_SWAP3 = 146,
+    EVM_INS_SWAP4 = 147,
+    EVM_INS_SWAP5 = 148,
+    EVM_INS_SWAP6 = 149,
+    EVM_INS_SWAP7 = 150,
+    EVM_INS_SWAP8 = 151,
+    EVM_INS_SWAP9 = 152,
+    EVM_INS_SWAP10 = 153,
+    EVM_INS_SWAP11 = 154,
+    EVM_INS_SWAP12 = 155,
+    EVM_INS_SWAP13 = 156,
+    EVM_INS_SWAP14 = 157,
+    EVM_INS_SWAP15 = 158,
+    EVM_INS_SWAP16 = 159,
+    EVM_INS_LOG0 = 160,
+    EVM_INS_LOG1 = 161,
+    EVM_INS_LOG2 = 162,
+    EVM_INS_LOG3 = 163,
+    EVM_INS_LOG4 = 164,
+    EVM_INS_CREATE = 240,
+    EVM_INS_CALL = 241,
+    EVM_INS_CALLCODE = 242,
+    EVM_INS_RETURN = 243,
+    EVM_INS_DELEGATECALL = 244,
+    EVM_INS_CREATE2 = 245,
+    EVM_INS_STATICCALL = 250,
+    EVM_INS_REVERT = 253,
+    EVM_INS_INVALID = 254,
+    EVM_INS_SELFDESTRUCT = 255,
+    EVM_INS_ENDING = 256,
+}
+pub mod evm_insn_group {
+    #[doc = " Group of EVM instructions"]
+    pub type Type = ::core::ffi::c_uint;
+    #[doc = "< = CS_GRP_INVALID"]
+    pub const EVM_GRP_INVALID: Type = 0;
+    #[doc = "< all jump instructions"]
+    pub const EVM_GRP_JUMP: Type = 1;
+    #[doc = "< math instructions"]
+    pub const EVM_GRP_MATH: Type = 8;
+    #[doc = "< instructions write to stack"]
+    pub const EVM_GRP_STACK_WRITE: Type = 9;
+    #[doc = "< instructions read from stack"]
+    pub const EVM_GRP_STACK_READ: Type = 10;
+    #[doc = "< instructions write to memory"]
+    pub const EVM_GRP_MEM_WRITE: Type = 11;
+    #[doc = "< instructions read from memory"]
+    pub const EVM_GRP_MEM_READ: Type = 12;
+    #[doc = "< instructions write to storage"]
+    pub const EVM_GRP_STORE_WRITE: Type = 13;
+    #[doc = "< instructions read from storage"]
+    pub const EVM_GRP_STORE_READ: Type = 14;
+    #[doc = "< instructions halt execution"]
+    pub const EVM_GRP_HALT: Type = 15;
+    #[doc = "< <-- mark the end of the list of groups"]
+    pub const EVM_GRP_ENDING: Type = 16;
+}
+#[repr(u32)]
+#[doc = " Operand type for instruction's operands"]
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
+pub enum hppa_op_type {
+    HPPA_OP_INVALID = 0,
+    HPPA_OP_REG = 1,
+    HPPA_OP_IMM = 2,
+    HPPA_OP_IDX_REG = 16,
+    HPPA_OP_DISP = 17,
+    HPPA_OP_TARGET = 18,
+    HPPA_OP_MEM = 128,
+}
+pub mod hppa_reg {
+    pub type Type = ::core::ffi::c_uint;
+    pub const HPPA_REG_INVALID: Type = 0;
+    #[doc = "> General registers"]
+    pub const HPPA_REG_GR0: Type = 1;
+    #[doc = "> General registers"]
+    pub const HPPA_REG_GR1: Type = 2;
+    #[doc = "> General registers"]
+    pub const HPPA_REG_GR2: Type = 3;
+    #[doc = "> General registers"]
+    pub const HPPA_REG_GR3: Type = 4;
+    #[doc = "> General registers"]
+    pub const HPPA_REG_GR4: Type = 5;
+    #[doc = "> General registers"]
+    pub const HPPA_REG_GR5: Type = 6;
+    #[doc = "> General registers"]
+    pub const HPPA_REG_GR6: Type = 7;
+    #[doc = "> General registers"]
+    pub const HPPA_REG_GR7: Type = 8;
+    #[doc = "> General registers"]
+    pub const HPPA_REG_GR8: Type = 9;
+    #[doc = "> General registers"]
+    pub const HPPA_REG_GR9: Type = 10;
+    #[doc = "> General registers"]
+    pub const HPPA_REG_GR10: Type = 11;
+    #[doc = "> General registers"]
+    pub const HPPA_REG_GR11: Type = 12;
+    #[doc = "> General registers"]
+    pub const HPPA_REG_GR12: Type = 13;
+    #[doc = "> General registers"]
+    pub const HPPA_REG_GR13: Type = 14;
+    #[doc = "> General registers"]
+    pub const HPPA_REG_GR14: Type = 15;
+    #[doc = "> General registers"]
+    pub const HPPA_REG_GR15: Type = 16;
+    #[doc = "> General registers"]
+    pub const HPPA_REG_GR16: Type = 17;
+    #[doc = "> General registers"]
+    pub const HPPA_REG_GR17: Type = 18;
+    #[doc = "> General registers"]
+    pub const HPPA_REG_GR18: Type = 19;
+    #[doc = "> General registers"]
+    pub const HPPA_REG_GR19: Type = 20;
+    #[doc = "> General registers"]
+    pub const HPPA_REG_GR20: Type = 21;
+    #[doc = "> General registers"]
+    pub const HPPA_REG_GR21: Type = 22;
+    #[doc = "> General registers"]
+    pub const HPPA_REG_GR22: Type = 23;
+    #[doc = "> General registers"]
+    pub const HPPA_REG_GR23: Type = 24;
+    #[doc = "> General registers"]
+    pub const HPPA_REG_GR24: Type = 25;
+    #[doc = "> General registers"]
+    pub const HPPA_REG_GR25: Type = 26;
+    #[doc = "> General registers"]
+    pub const HPPA_REG_GR26: Type = 27;
+    #[doc = "> General registers"]
+    pub const HPPA_REG_GR27: Type = 28;
+    #[doc = "> General registers"]
+    pub const HPPA_REG_GR28: Type = 29;
+    #[doc = "> General registers"]
+    pub const HPPA_REG_GR29: Type = 30;
+    #[doc = "> General registers"]
+    pub const HPPA_REG_GR30: Type = 31;
+    #[doc = "> General registers"]
+    pub const HPPA_REG_GR31: Type = 32;
+    #[doc = "> Floating-point registers"]
+    pub const HPPA_REG_FPR0: Type = 33;
+    #[doc = "> Floating-point registers"]
+    pub const HPPA_REG_FPR1: Type = 34;
+    #[doc = "> Floating-point registers"]
+    pub const HPPA_REG_FPR2: Type = 35;
+    #[doc = "> Floating-point registers"]
+    pub const HPPA_REG_FPR3: Type = 36;
+    #[doc = "> Floating-point registers"]
+    pub const HPPA_REG_FPR4: Type = 37;
+    #[doc = "> Floating-point registers"]
+    pub const HPPA_REG_FPR5: Type = 38;
+    #[doc = "> Floating-point registers"]
+    pub const HPPA_REG_FPR6: Type = 39;
+    #[doc = "> Floating-point registers"]
+    pub const HPPA_REG_FPR7: Type = 40;
+    #[doc = "> Floating-point registers"]
+    pub const HPPA_REG_FPR8: Type = 41;
+    #[doc = "> Floating-point registers"]
+    pub const HPPA_REG_FPR9: Type = 42;
+    #[doc = "> Floating-point registers"]
+    pub const HPPA_REG_FPR10: Type = 43;
+    #[doc = "> Floating-point registers"]
+    pub const HPPA_REG_FPR11: Type = 44;
+    #[doc = "> Floating-point registers"]
+    pub const HPPA_REG_FPR12: Type = 45;
+    #[doc = "> Floating-point registers"]
+    pub const HPPA_REG_FPR13: Type = 46;
+    #[doc = "> Floating-point registers"]
+    pub const HPPA_REG_FPR14: Type = 47;
+    #[doc = "> Floating-point registers"]
+    pub const HPPA_REG_FPR15: Type = 48;
+    #[doc = "> Floating-point registers"]
+    pub const HPPA_REG_FPR16: Type = 49;
+    #[doc = "> Floating-point registers"]
+    pub const HPPA_REG_FPR17: Type = 50;
+    #[doc = "> Floating-point registers"]
+    pub const HPPA_REG_FPR18: Type = 51;
+    #[doc = "> Floating-point registers"]
+    pub const HPPA_REG_FPR19: Type = 52;
+    #[doc = "> Floating-point registers"]
+    pub const HPPA_REG_FPR20: Type = 53;
+    #[doc = "> Floating-point registers"]
+    pub const HPPA_REG_FPR21: Type = 54;
+    #[doc = "> Floating-point registers"]
+    pub const HPPA_REG_FPR22: Type = 55;
+    #[doc = "> Floating-point registers"]
+    pub const HPPA_REG_FPR23: Type = 56;
+    #[doc = "> Floating-point registers"]
+    pub const HPPA_REG_FPR24: Type = 57;
+    #[doc = "> Floating-point registers"]
+    pub const HPPA_REG_FPR25: Type = 58;
+    #[doc = "> Floating-point registers"]
+    pub const HPPA_REG_FPR26: Type = 59;
+    #[doc = "> Floating-point registers"]
+    pub const HPPA_REG_FPR27: Type = 60;
+    #[doc = "> Floating-point registers"]
+    pub const HPPA_REG_FPR28: Type = 61;
+    #[doc = "> Floating-point registers"]
+    pub const HPPA_REG_FPR29: Type = 62;
+    #[doc = "> Floating-point registers"]
+    pub const HPPA_REG_FPR30: Type = 63;
+    #[doc = "> Floating-point registers"]
+    pub const HPPA_REG_FPR31: Type = 64;
+    #[doc = "> Space registers"]
+    pub const HPPA_REG_SR0: Type = 65;
+    #[doc = "> Space registers"]
+    pub const HPPA_REG_SR1: Type = 66;
+    #[doc = "> Space registers"]
+    pub const HPPA_REG_SR2: Type = 67;
+    #[doc = "> Space registers"]
+    pub const HPPA_REG_SR3: Type = 68;
+    #[doc = "> Space registers"]
+    pub const HPPA_REG_SR4: Type = 69;
+    #[doc = "> Space registers"]
+    pub const HPPA_REG_SR5: Type = 70;
+    #[doc = "> Space registers"]
+    pub const HPPA_REG_SR6: Type = 71;
+    #[doc = "> Space registers"]
+    pub const HPPA_REG_SR7: Type = 72;
+    #[doc = "> Control registers"]
+    pub const HPPA_REG_CR0: Type = 73;
+    #[doc = "> Control registers"]
+    pub const HPPA_REG_CR1: Type = 74;
+    #[doc = "> Control registers"]
+    pub const HPPA_REG_CR2: Type = 75;
+    #[doc = "> Control registers"]
+    pub const HPPA_REG_CR3: Type = 76;
+    #[doc = "> Control registers"]
+    pub const HPPA_REG_CR4: Type = 77;
+    #[doc = "> Control registers"]
+    pub const HPPA_REG_CR5: Type = 78;
+    #[doc = "> Control registers"]
+    pub const HPPA_REG_CR6: Type = 79;
+    #[doc = "> Control registers"]
+    pub const HPPA_REG_CR7: Type = 80;
+    #[doc = "> Control registers"]
+    pub const HPPA_REG_CR8: Type = 81;
+    #[doc = "> Control registers"]
+    pub const HPPA_REG_CR9: Type = 82;
+    #[doc = "> Control registers"]
+    pub const HPPA_REG_CR10: Type = 83;
+    #[doc = "> Control registers"]
+    pub const HPPA_REG_CR11: Type = 84;
+    #[doc = "> Control registers"]
+    pub const HPPA_REG_CR12: Type = 85;
+    #[doc = "> Control registers"]
+    pub const HPPA_REG_CR13: Type = 86;
+    #[doc = "> Control registers"]
+    pub const HPPA_REG_CR14: Type = 87;
+    #[doc = "> Control registers"]
+    pub const HPPA_REG_CR15: Type = 88;
+    #[doc = "> Control registers"]
+    pub const HPPA_REG_CR16: Type = 89;
+    #[doc = "> Control registers"]
+    pub const HPPA_REG_CR17: Type = 90;
+    #[doc = "> Control registers"]
+    pub const HPPA_REG_CR18: Type = 91;
+    #[doc = "> Control registers"]
+    pub const HPPA_REG_CR19: Type = 92;
+    #[doc = "> Control registers"]
+    pub const HPPA_REG_CR20: Type = 93;
+    #[doc = "> Control registers"]
+    pub const HPPA_REG_CR21: Type = 94;
+    #[doc = "> Control registers"]
+    pub const HPPA_REG_CR22: Type = 95;
+    #[doc = "> Control registers"]
+    pub const HPPA_REG_CR23: Type = 96;
+    #[doc = "> Control registers"]
+    pub const HPPA_REG_CR24: Type = 97;
+    #[doc = "> Control registers"]
+    pub const HPPA_REG_CR25: Type = 98;
+    #[doc = "> Control registers"]
+    pub const HPPA_REG_CR26: Type = 99;
+    #[doc = "> Control registers"]
+    pub const HPPA_REG_CR27: Type = 100;
+    #[doc = "> Control registers"]
+    pub const HPPA_REG_CR28: Type = 101;
+    #[doc = "> Control registers"]
+    pub const HPPA_REG_CR29: Type = 102;
+    #[doc = "> Control registers"]
+    pub const HPPA_REG_CR30: Type = 103;
+    #[doc = "> Control registers"]
+    pub const HPPA_REG_CR31: Type = 104;
+    #[doc = "> Special floating point exception registers"]
+    pub const HPPA_REG_FPE0: Type = 105;
+    #[doc = "> Special floating point exception registers"]
+    pub const HPPA_REG_FPE1: Type = 106;
+    #[doc = "> Special floating point exception registers"]
+    pub const HPPA_REG_FPE2: Type = 107;
+    #[doc = "> Special floating point exception registers"]
+    pub const HPPA_REG_FPE3: Type = 108;
+    #[doc = "> Special floating point exception registers"]
+    pub const HPPA_REG_FPE4: Type = 109;
+    #[doc = "> Special floating point exception registers"]
+    pub const HPPA_REG_FPE5: Type = 110;
+    #[doc = "> Special floating point exception registers"]
+    pub const HPPA_REG_FPE6: Type = 111;
+    #[doc = "> Special floating point exception registers"]
+    pub const HPPA_REG_FPE7: Type = 112;
+    #[doc = "> Special floating point exception registers"]
+    pub const HPPA_REG_FPE8: Type = 113;
+    #[doc = "> Special floating point exception registers"]
+    pub const HPPA_REG_FPE9: Type = 114;
+    #[doc = "> Special floating point exception registers"]
+    pub const HPPA_REG_FPE10: Type = 115;
+    #[doc = "> Special floating point exception registers"]
+    pub const HPPA_REG_FPE11: Type = 116;
+    #[doc = "> Special floating point exception registers"]
+    pub const HPPA_REG_FPE12: Type = 117;
+    #[doc = "> Special floating point exception registers"]
+    pub const HPPA_REG_FPE13: Type = 118;
+    #[doc = "> Special floating point exception registers"]
+    pub const HPPA_REG_FPE14: Type = 119;
+    #[doc = "> Special floating point exception registers"]
+    pub const HPPA_REG_FPE15: Type = 120;
+    #[doc = "> Special floating point exception registers"]
+    pub const HPPA_REG_FPE16: Type = 121;
+    #[doc = "> Special floating point exception registers"]
+    pub const HPPA_REG_FPE17: Type = 122;
+    #[doc = "> Special floating point exception registers"]
+    pub const HPPA_REG_FPE18: Type = 123;
+    #[doc = "> Special floating point exception registers"]
+    pub const HPPA_REG_FPE19: Type = 124;
+    #[doc = "> Special floating point exception registers"]
+    pub const HPPA_REG_FPE20: Type = 125;
+    #[doc = "> Special floating point exception registers"]
+    pub const HPPA_REG_FPE21: Type = 126;
+    #[doc = "> Special floating point exception registers"]
+    pub const HPPA_REG_FPE22: Type = 127;
+    #[doc = "> Special floating point exception registers"]
+    pub const HPPA_REG_FPE23: Type = 128;
+    #[doc = "> Special floating point exception registers"]
+    pub const HPPA_REG_FPE24: Type = 129;
+    #[doc = "> Special floating point exception registers"]
+    pub const HPPA_REG_FPE25: Type = 130;
+    #[doc = "> Special floating point exception registers"]
+    pub const HPPA_REG_FPE26: Type = 131;
+    #[doc = "> Special floating point exception registers"]
+    pub const HPPA_REG_FPE27: Type = 132;
+    #[doc = "> Special floating point exception registers"]
+    pub const HPPA_REG_FPE28: Type = 133;
+    #[doc = "> Special floating point exception registers"]
+    pub const HPPA_REG_FPE29: Type = 134;
+    #[doc = "> Special floating point exception registers"]
+    pub const HPPA_REG_FPE30: Type = 135;
+    #[doc = "> Special floating point exception registers"]
+    pub const HPPA_REG_FPE31: Type = 136;
+    #[doc = "> Single-precision floating point registers"]
+    pub const HPPA_REG_SP_FPR0: Type = 137;
+    #[doc = "> Single-precision floating point registers"]
+    pub const HPPA_REG_SP_FPR1: Type = 138;
+    #[doc = "> Single-precision floating point registers"]
+    pub const HPPA_REG_SP_FPR2: Type = 139;
+    #[doc = "> Single-precision floating point registers"]
+    pub const HPPA_REG_SP_FPR3: Type = 140;
+    #[doc = "> Single-precision floating point registers"]
+    pub const HPPA_REG_SP_FPR4: Type = 141;
+    #[doc = "> Single-precision floating point registers"]
+    pub const HPPA_REG_SP_FPR5: Type = 142;
+    #[doc = "> Single-precision floating point registers"]
+    pub const HPPA_REG_SP_FPR6: Type = 143;
+    #[doc = "> Single-precision floating point registers"]
+    pub const HPPA_REG_SP_FPR7: Type = 144;
+    #[doc = "> Single-precision floating point registers"]
+    pub const HPPA_REG_SP_FPR8: Type = 145;
+    #[doc = "> Single-precision floating point registers"]
+    pub const HPPA_REG_SP_FPR9: Type = 146;
+    #[doc = "> Single-precision floating point registers"]
+    pub const HPPA_REG_SP_FPR10: Type = 147;
+    #[doc = "> Single-precision floating point registers"]
+    pub const HPPA_REG_SP_FPR11: Type = 148;
+    #[doc = "> Single-precision floating point registers"]
+    pub const HPPA_REG_SP_FPR12: Type = 149;
+    #[doc = "> Single-precision floating point registers"]
+    pub const HPPA_REG_SP_FPR13: Type = 150;
+    #[doc = "> Single-precision floating point registers"]
+    pub const HPPA_REG_SP_FPR14: Type = 151;
+    #[doc = "> Single-precision floating point registers"]
+    pub const HPPA_REG_SP_FPR15: Type = 152;
+    #[doc = "> Single-precision floating point registers"]
+    pub const HPPA_REG_SP_FPR16: Type = 153;
+    #[doc = "> Single-precision floating point registers"]
+    pub const HPPA_REG_SP_FPR17: Type = 154;
+    #[doc = "> Single-precision floating point registers"]
+    pub const HPPA_REG_SP_FPR18: Type = 155;
+    #[doc = "> Single-precision floating point registers"]
+    pub const HPPA_REG_SP_FPR19: Type = 156;
+    #[doc = "> Single-precision floating point registers"]
+    pub const HPPA_REG_SP_FPR20: Type = 157;
+    #[doc = "> Single-precision floating point registers"]
+    pub const HPPA_REG_SP_FPR21: Type = 158;
+    #[doc = "> Single-precision floating point registers"]
+    pub const HPPA_REG_SP_FPR22: Type = 159;
+    #[doc = "> Single-precision floating point registers"]
+    pub const HPPA_REG_SP_FPR23: Type = 160;
+    #[doc = "> Single-precision floating point registers"]
+    pub const HPPA_REG_SP_FPR24: Type = 161;
+    #[doc = "> Single-precision floating point registers"]
+    pub const HPPA_REG_SP_FPR25: Type = 162;
+    #[doc = "> Single-precision floating point registers"]
+    pub const HPPA_REG_SP_FPR26: Type = 163;
+    #[doc = "> Single-precision floating point registers"]
+    pub const HPPA_REG_SP_FPR27: Type = 164;
+    #[doc = "> Single-precision floating point registers"]
+    pub const HPPA_REG_SP_FPR28: Type = 165;
+    #[doc = "> Single-precision floating point registers"]
+    pub const HPPA_REG_SP_FPR29: Type = 166;
+    #[doc = "> Single-precision floating point registers"]
+    pub const HPPA_REG_SP_FPR30: Type = 167;
+    #[doc = "> Single-precision floating point registers"]
+    pub const HPPA_REG_SP_FPR31: Type = 168;
+    #[doc = "> Single-precision floating point registers"]
+    pub const HPPA_REG_ENDING: Type = 169;
+}
+#[repr(u32)]
+#[doc = " HPPA instruction"]
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
+pub enum hppa_insn {
+    HPPA_INS_INVALID = 0,
+    HPPA_INS_ADD = 1,
+    HPPA_INS_ADDI = 2,
+    HPPA_INS_ADDIO = 3,
+    HPPA_INS_ADDIT = 4,
+    HPPA_INS_ADDITO = 5,
+    HPPA_INS_ADDB = 6,
+    HPPA_INS_ADDBT = 7,
+    HPPA_INS_ADDBF = 8,
+    HPPA_INS_ADDIB = 9,
+    HPPA_INS_ADDIBT = 10,
+    HPPA_INS_ADDIBF = 11,
+    HPPA_INS_ADDIL = 12,
+    HPPA_INS_ADDC = 13,
+    HPPA_INS_ADDCO = 14,
+    HPPA_INS_ADDL = 15,
+    HPPA_INS_ADDO = 16,
+    HPPA_INS_AND = 17,
+    HPPA_INS_ANDCM = 18,
+    HPPA_INS_B = 19,
+    HPPA_INS_BB = 20,
+    HPPA_INS_BE = 21,
+    HPPA_INS_BL = 22,
+    HPPA_INS_BLE = 23,
+    HPPA_INS_BLR = 24,
+    HPPA_INS_BREAK = 25,
+    HPPA_INS_BV = 26,
+    HPPA_INS_BVB = 27,
+    HPPA_INS_BVE = 28,
+    HPPA_INS_CALL = 29,
+    HPPA_INS_CLDD = 30,
+    HPPA_INS_CLDDS = 31,
+    HPPA_INS_CLDDX = 32,
+    HPPA_INS_CLDW = 33,
+    HPPA_INS_CLDWS = 34,
+    HPPA_INS_CLDWX = 35,
+    HPPA_INS_CLRBTS = 36,
+    HPPA_INS_CMPB = 37,
+    HPPA_INS_CMPCLR = 38,
+    HPPA_INS_CMPIB = 39,
+    HPPA_INS_CMPICLR = 40,
+    HPPA_INS_COMB = 41,
+    HPPA_INS_COMBT = 42,
+    HPPA_INS_COMBF = 43,
+    HPPA_INS_COMCLR = 44,
+    HPPA_INS_COMIB = 45,
+    HPPA_INS_COMIBT = 46,
+    HPPA_INS_COMIBF = 47,
+    HPPA_INS_COMICLR = 48,
+    HPPA_INS_COPR = 49,
+    HPPA_INS_COPY = 50,
+    HPPA_INS_CSTD = 51,
+    HPPA_INS_CSTDS = 52,
+    HPPA_INS_CSTDX = 53,
+    HPPA_INS_CSTW = 54,
+    HPPA_INS_CSTWS = 55,
+    HPPA_INS_CSTWX = 56,
+    HPPA_INS_DCOR = 57,
+    HPPA_INS_DEP = 58,
+    HPPA_INS_DEPI = 59,
+    HPPA_INS_DEPD = 60,
+    HPPA_INS_DEPDI = 61,
+    HPPA_INS_DEPW = 62,
+    HPPA_INS_DEPWI = 63,
+    HPPA_INS_DIAG = 64,
+    HPPA_INS_DS = 65,
+    HPPA_INS_EXTRD = 66,
+    HPPA_INS_EXTRS = 67,
+    HPPA_INS_EXTRU = 68,
+    HPPA_INS_EXTRW = 69,
+    HPPA_INS_FABS = 70,
+    HPPA_INS_FADD = 71,
+    HPPA_INS_FCMP = 72,
+    HPPA_INS_FCNV = 73,
+    HPPA_INS_FCNVFF = 74,
+    HPPA_INS_FCNVFX = 75,
+    HPPA_INS_FCNVFXT = 76,
+    HPPA_INS_FCNVXF = 77,
+    HPPA_INS_FCPY = 78,
+    HPPA_INS_FDC = 79,
+    HPPA_INS_FDCE = 80,
+    HPPA_INS_FDIV = 81,
+    HPPA_INS_FIC = 82,
+    HPPA_INS_FICE = 83,
+    HPPA_INS_FID = 84,
+    HPPA_INS_FLDD = 85,
+    HPPA_INS_FLDDS = 86,
+    HPPA_INS_FLDDX = 87,
+    HPPA_INS_FLDW = 88,
+    HPPA_INS_FLDWS = 89,
+    HPPA_INS_FLDWX = 90,
+    HPPA_INS_FMPY = 91,
+    HPPA_INS_FMPYADD = 92,
+    HPPA_INS_FMPYFADD = 93,
+    HPPA_INS_FMPYNFADD = 94,
+    HPPA_INS_FMPYSUB = 95,
+    HPPA_INS_FNEG = 96,
+    HPPA_INS_FNEGABS = 97,
+    HPPA_INS_FREM = 98,
+    HPPA_INS_FRND = 99,
+    HPPA_INS_FSQRT = 100,
+    HPPA_INS_FSTD = 101,
+    HPPA_INS_FSTDS = 102,
+    HPPA_INS_FSTDX = 103,
+    HPPA_INS_FSTW = 104,
+    HPPA_INS_FSTWS = 105,
+    HPPA_INS_FSTWX = 106,
+    HPPA_INS_FSTQS = 107,
+    HPPA_INS_FSTQX = 108,
+    HPPA_INS_FSUB = 109,
+    HPPA_INS_FTEST = 110,
+    HPPA_INS_GATE = 111,
+    HPPA_INS_GFR = 112,
+    HPPA_INS_GFW = 113,
+    HPPA_INS_GRSHDW = 114,
+    HPPA_INS_HADD = 115,
+    HPPA_INS_HAVG = 116,
+    HPPA_INS_HSHL = 117,
+    HPPA_INS_HSHLADD = 118,
+    HPPA_INS_HSHR = 119,
+    HPPA_INS_HSHRADD = 120,
+    HPPA_INS_HSUB = 121,
+    HPPA_INS_IDTLBA = 122,
+    HPPA_INS_IDTLBP = 123,
+    HPPA_INS_IDTLBT = 124,
+    HPPA_INS_IDCOR = 125,
+    HPPA_INS_IITLBA = 126,
+    HPPA_INS_IITLBP = 127,
+    HPPA_INS_IITLBT = 128,
+    HPPA_INS_LCI = 129,
+    HPPA_INS_LDB = 130,
+    HPPA_INS_LDBS = 131,
+    HPPA_INS_LDBX = 132,
+    HPPA_INS_LDCD = 133,
+    HPPA_INS_LDCW = 134,
+    HPPA_INS_LDCWS = 135,
+    HPPA_INS_LDCWX = 136,
+    HPPA_INS_LDD = 137,
+    HPPA_INS_LDDA = 138,
+    HPPA_INS_LDH = 139,
+    HPPA_INS_LDHS = 140,
+    HPPA_INS_LDHX = 141,
+    HPPA_INS_LDI = 142,
+    HPPA_INS_LDIL = 143,
+    HPPA_INS_LDO = 144,
+    HPPA_INS_LDSID = 145,
+    HPPA_INS_LDW = 146,
+    HPPA_INS_LDWA = 147,
+    HPPA_INS_LDWAS = 148,
+    HPPA_INS_LDWAX = 149,
+    HPPA_INS_LDWM = 150,
+    HPPA_INS_LDWS = 151,
+    HPPA_INS_LDWX = 152,
+    HPPA_INS_LPA = 153,
+    HPPA_INS_MFCPU = 154,
+    HPPA_INS_MFCTL = 155,
+    HPPA_INS_MFIA = 156,
+    HPPA_INS_MFSP = 157,
+    HPPA_INS_MIXH = 158,
+    HPPA_INS_MIXW = 159,
+    HPPA_INS_MOVB = 160,
+    HPPA_INS_MOVIB = 161,
+    HPPA_INS_MTCPU = 162,
+    HPPA_INS_MTCTL = 163,
+    HPPA_INS_MTSAR = 164,
+    HPPA_INS_MTSARCM = 165,
+    HPPA_INS_MTSM = 166,
+    HPPA_INS_MTSP = 167,
+    HPPA_INS_NOP = 168,
+    HPPA_INS_OR = 169,
+    HPPA_INS_PDC = 170,
+    HPPA_INS_PDTLB = 171,
+    HPPA_INS_PDTLBE = 172,
+    HPPA_INS_PERMH = 173,
+    HPPA_INS_PITLB = 174,
+    HPPA_INS_PITLBE = 175,
+    HPPA_INS_PMDIS = 176,
+    HPPA_INS_PMENB = 177,
+    HPPA_INS_POPBTS = 178,
+    HPPA_INS_PROBE = 179,
+    HPPA_INS_PROBEI = 180,
+    HPPA_INS_PROBER = 181,
+    HPPA_INS_PROBERI = 182,
+    HPPA_INS_PROBEW = 183,
+    HPPA_INS_PROBEWI = 184,
+    HPPA_INS_PUSHBTS = 185,
+    HPPA_INS_PUSHNOM = 186,
+    HPPA_INS_RET = 187,
+    HPPA_INS_RFI = 188,
+    HPPA_INS_RFIR = 189,
+    HPPA_INS_RSM = 190,
+    HPPA_INS_SHDWGR = 191,
+    HPPA_INS_SHLADD = 192,
+    HPPA_INS_SH1ADD = 193,
+    HPPA_INS_SH1ADDL = 194,
+    HPPA_INS_SH1ADDO = 195,
+    HPPA_INS_SH2ADD = 196,
+    HPPA_INS_SH2ADDL = 197,
+    HPPA_INS_SH2ADDO = 198,
+    HPPA_INS_SH3ADD = 199,
+    HPPA_INS_SH3ADDL = 200,
+    HPPA_INS_SH3ADDO = 201,
+    HPPA_INS_SHD = 202,
+    HPPA_INS_SHRPD = 203,
+    HPPA_INS_SHRPW = 204,
+    HPPA_INS_SPOP0 = 205,
+    HPPA_INS_SPOP1 = 206,
+    HPPA_INS_SPOP2 = 207,
+    HPPA_INS_SPOP3 = 208,
+    HPPA_INS_SSM = 209,
+    HPPA_INS_STB = 210,
+    HPPA_INS_STBS = 211,
+    HPPA_INS_STBY = 212,
+    HPPA_INS_STBYS = 213,
+    HPPA_INS_STD = 214,
+    HPPA_INS_STDA = 215,
+    HPPA_INS_STDBY = 216,
+    HPPA_INS_STH = 217,
+    HPPA_INS_STHS = 218,
+    HPPA_INS_STW = 219,
+    HPPA_INS_STWA = 220,
+    HPPA_INS_STWAS = 221,
+    HPPA_INS_STWS = 222,
+    HPPA_INS_STWM = 223,
+    HPPA_INS_SUB = 224,
+    HPPA_INS_SUBB = 225,
+    HPPA_INS_SUBBO = 226,
+    HPPA_INS_SUBI = 227,
+    HPPA_INS_SUBIO = 228,
+    HPPA_INS_SUBO = 229,
+    HPPA_INS_SUBT = 230,
+    HPPA_INS_SUBTO = 231,
+    HPPA_INS_SYNC = 232,
+    HPPA_INS_SYNCDMA = 233,
+    HPPA_INS_TOCDIS = 234,
+    HPPA_INS_TOCEN = 235,
+    HPPA_INS_UADDCM = 236,
+    HPPA_INS_UADDCMT = 237,
+    HPPA_INS_UXOR = 238,
+    HPPA_INS_VDEP = 239,
+    HPPA_INS_VDEPI = 240,
+    HPPA_INS_VEXTRS = 241,
+    HPPA_INS_VEXTRU = 242,
+    HPPA_INS_VSHD = 243,
+    HPPA_INS_XMPYU = 244,
+    HPPA_INS_XOR = 245,
+    HPPA_INS_ZDEP = 246,
+    HPPA_INS_ZDEPI = 247,
+    HPPA_INS_ZVDEP = 248,
+    HPPA_INS_ZVDEPI = 249,
+    HPPA_INS_ENDING = 250,
+}
+#[doc = " HPPA space select operand"]
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct hppa_mem {
+    pub base: hppa_reg::Type,
+    pub space: hppa_reg::Type,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct cs_hppa_op {
+    #[doc = "< operand type"]
+    pub type_: hppa_op_type,
+    pub __bindgen_anon_1: cs_hppa_op__bindgen_ty_1,
+    pub access: cs_ac_type,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub union cs_hppa_op__bindgen_ty_1 {
+    #[doc = "< register value for REG operand"]
+    pub reg: hppa_reg::Type,
+    #[doc = "< immediate value for IMM operand"]
+    pub imm: i64,
+    pub mem: hppa_mem,
+}
+impl ::core::fmt::Debug for cs_hppa_op__bindgen_ty_1 {
+    fn fmt(&self, f: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
+        write!(f, "cs_hppa_op__bindgen_ty_1 {{ union }}")
+    }
+}
+impl ::core::fmt::Debug for cs_hppa_op {
+    fn fmt(&self, f: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
+        write!(
+            f,
+            "cs_hppa_op {{ type: {:?}, __bindgen_anon_1: {:?}, access: {:?} }}",
+            self.type_, self.__bindgen_anon_1, self.access
+        )
+    }
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct cs_hppa {
+    pub op_count: u8,
+    #[doc = "< operands for hppa instruction."]
+    pub operands: [cs_hppa_op; 5usize],
+}
+impl ::core::fmt::Debug for cs_hppa {
+    fn fmt(&self, f: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
+        write!(f, "cs_hppa {{ operands: {:?} }}", self.operands)
+    }
+}
+#[repr(u32)]
+#[doc = " HPPA modifiers type. Can be string (most of them) or int (uid, sop)"]
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
+pub enum hppa_modifier_type {
+    HPPA_MOD_STR = 0,
+    HPPA_MOD_INT = 1,
+}
+#[doc = " hppa string/integer modifier"]
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct hppa_modifier {
+    pub type_: hppa_modifier_type,
+    pub __bindgen_anon_1: hppa_modifier__bindgen_ty_1,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub union hppa_modifier__bindgen_ty_1 {
+    pub str_mod: [::core::ffi::c_char; 8usize],
+    pub int_mod: u32,
+}
+impl ::core::fmt::Debug for hppa_modifier__bindgen_ty_1 {
+    fn fmt(&self, f: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
+        write!(f, "hppa_modifier__bindgen_ty_1 {{ union }}")
+    }
+}
+impl ::core::fmt::Debug for hppa_modifier {
+    fn fmt(&self, f: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
+        write!(
+            f,
+            "hppa_modifier {{ type: {:?}, __bindgen_anon_1: {:?} }}",
+            self.type_, self.__bindgen_anon_1
+        )
+    }
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct hppa_ext {
+    #[doc = "< instruction modifiers array"]
+    pub modifiers: [hppa_modifier; 5usize],
+    #[doc = "< number of modifiers of current instruction"]
+    pub mod_num: u8,
+    #[doc = "< true if some load/store modifier has modify base register bit"]
+    pub b_writeble: bool,
+    #[doc = "< true if some modifier affects instruction format"]
+    pub is_alternative: bool,
+}
+impl ::core::fmt::Debug for hppa_ext {
+    fn fmt(&self, f: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
+        write!(
+            f,
+            "hppa_ext {{ modifiers: {:?}, b_writeble: {:?}, is_alternative: {:?} }}",
+            self.modifiers, self.b_writeble, self.is_alternative
+        )
+    }
+}
+pub mod hppa_insn_group {
+    pub type Type = ::core::ffi::c_uint;
+    #[doc = "< = CS_GRP_INVALID"]
+    pub const HPPA_GRP_INVALID: Type = 0;
+    pub const HPPA_GRP_COMPUTATION: Type = 128;
+    pub const HPPA_GRP_MULTIMEDIA: Type = 129;
+    pub const HPPA_GRP_MEM_REF: Type = 130;
+    pub const HPPA_GRP_LONG_IMM: Type = 131;
+    pub const HPPA_GRP_BRANCH: Type = 132;
+    pub const HPPA_GRP_SYSCTRL: Type = 133;
+    pub const HPPA_GRP_ASSIST: Type = 134;
+    pub const HPPA_GRP_FLOAT: Type = 135;
+    pub const HPPA_GRP_PERFMON: Type = 136;
+    pub const HPPA_GRP_ENDING: Type = 137;
+}
+#[repr(u32)]
+#[doc = " Operand type for instruction's operands"]
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
+pub enum loongarch_op_type {
+    #[doc = "< Invalid"]
+    LOONGARCH_OP_INVALID = 0,
+    #[doc = "< Register operand"]
+    LOONGARCH_OP_REG = 1,
+    #[doc = "< Immediate operand"]
+    LOONGARCH_OP_IMM = 2,
+    #[doc = "< Memory operand"]
+    LOONGARCH_OP_MEM = 128,
+}
+#[doc = " Instruction's operand referring to memory\n This is associated with LOONGARCH_OP_MEM operand type above"]
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct loongarch_op_mem {
+    #[doc = "< base register"]
+    pub base: ::core::ffi::c_uint,
+    #[doc = "< index register"]
+    pub index: ::core::ffi::c_uint,
+    #[doc = "< displacement/offset value"]
+    pub disp: i64,
+}
+#[doc = " Instruction operand"]
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct cs_loongarch_op {
+    pub type_: loongarch_op_type,
+    pub __bindgen_anon_1: cs_loongarch_op__bindgen_ty_1,
+    #[doc = " How is this operand accessed? (READ, WRITE or READ|WRITE)\n NOTE: this field is irrelevant if engine is compiled in DIET mode."]
+    pub access: cs_ac_type,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub union cs_loongarch_op__bindgen_ty_1 {
+    pub reg: ::core::ffi::c_uint,
+    #[doc = " register value for REG operand"]
+    pub imm: i64,
+    #[doc = " immediate value for IMM operand"]
+    pub mem: loongarch_op_mem,
+}
+impl ::core::fmt::Debug for cs_loongarch_op__bindgen_ty_1 {
+    fn fmt(&self, f: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
+        write!(f, "cs_loongarch_op__bindgen_ty_1 {{ union }}")
+    }
+}
+impl ::core::fmt::Debug for cs_loongarch_op {
+    fn fmt(&self, f: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
+        write!(
+            f,
+            "cs_loongarch_op {{ type: {:?}, __bindgen_anon_1: {:?}, access: {:?} }}",
+            self.type_, self.__bindgen_anon_1, self.access
+        )
+    }
+}
+#[repr(u32)]
+#[doc = " LoongArch instruction formats. To get details about them please\n refer to `LoongArchInstrFormats.td` in LLVM."]
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
+pub enum loongarch_insn_form {
+    LOONGARCH_INSN_FORM_PSEUDO = 0,
+    LOONGARCH_INSN_FORM_FMT3R = 1,
+    LOONGARCH_INSN_FORM_FMT2RI12 = 2,
+    LOONGARCH_INSN_FORM_FMT2RI5 = 3,
+    LOONGARCH_INSN_FORM_FMT2RI16 = 4,
+    LOONGARCH_INSN_FORM_FMT3RI2 = 5,
+    LOONGARCH_INSN_FORM_NODSTFMT2RI4 = 6,
+    LOONGARCH_INSN_FORM_FMT1RI8 = 7,
+    LOONGARCH_INSN_FORM_FMT2RI4 = 8,
+    LOONGARCH_INSN_FORM_NODSTFMT1RI4 = 9,
+    LOONGARCH_INSN_FORM_NODSTFMT1RI5I4 = 10,
+    LOONGARCH_INSN_FORM_FMTASRT = 11,
+    LOONGARCH_INSN_FORM_FMTI26 = 12,
+    LOONGARCH_INSN_FORM_FPFMTBR = 13,
+    LOONGARCH_INSN_FORM_FMT1RI21 = 14,
+    LOONGARCH_INSN_FORM_FMT2R = 15,
+    LOONGARCH_INSN_FORM_FMTI15 = 16,
+    LOONGARCH_INSN_FORM_FMTBSTR_D = 17,
+    LOONGARCH_INSN_FORM_FMTBSTR_W = 18,
+    LOONGARCH_INSN_FORM_FMT3RI3 = 19,
+    LOONGARCH_INSN_FORM_FMTCACOP = 20,
+    LOONGARCH_INSN_FORM_FMTCSR = 21,
+    LOONGARCH_INSN_FORM_FMTCSRXCHG = 22,
+    LOONGARCH_INSN_FORM_FMTI32 = 23,
+    LOONGARCH_INSN_FORM_FPFMT2R = 24,
+    LOONGARCH_INSN_FORM_FPFMT3R = 25,
+    LOONGARCH_INSN_FORM_FPFMTFCMP = 26,
+    LOONGARCH_INSN_FORM_FPFMTMEM = 27,
+    LOONGARCH_INSN_FORM_FPFMT2RI12 = 28,
+    LOONGARCH_INSN_FORM_FPFMT4R = 29,
+    LOONGARCH_INSN_FORM_FPFMTMOV = 30,
+    LOONGARCH_INSN_FORM_FPFMTFSEL = 31,
+    LOONGARCH_INSN_FORM_FMTINVTLB = 32,
+    LOONGARCH_INSN_FORM_FMTJISCR = 33,
+    LOONGARCH_INSN_FORM_FMT2RI8 = 34,
+    LOONGARCH_INSN_FORM_FMTLDPTE = 35,
+    LOONGARCH_INSN_FORM_FMT2RI14 = 36,
+    LOONGARCH_INSN_FORM_FMT1RI20 = 37,
+    LOONGARCH_INSN_FORM_FMTGR2SCR = 38,
+    LOONGARCH_INSN_FORM_FMTSCR2GR = 39,
+    LOONGARCH_INSN_FORM_FMTPRELD = 40,
+    LOONGARCH_INSN_FORM_FMTPRELDX = 41,
+    LOONGARCH_INSN_FORM_FMT2RI3 = 42,
+    LOONGARCH_INSN_FORM_FMT2RI6 = 43,
+    LOONGARCH_INSN_FORM_FMT1RI4 = 44,
+    LOONGARCH_INSN_FORM_FMT3R_VVV = 45,
+    LOONGARCH_INSN_FORM_FMT2RI5_VVI = 46,
+    LOONGARCH_INSN_FORM_FMT2RI8_VVI = 47,
+    LOONGARCH_INSN_FORM_FMT2RI3_VVI = 48,
+    LOONGARCH_INSN_FORM_FMT2RI6_VVI = 49,
+    LOONGARCH_INSN_FORM_FMT2RI4_VVI = 50,
+    LOONGARCH_INSN_FORM_FMT4R_VVVV = 51,
+    LOONGARCH_INSN_FORM_FMT2R_VV = 52,
+    LOONGARCH_INSN_FORM_FMT2R_XX = 53,
+    LOONGARCH_INSN_FORM_FMT2RI4_VRI = 54,
+    LOONGARCH_INSN_FORM_FMT2RI1_VRI = 55,
+    LOONGARCH_INSN_FORM_FMT2RI3_VRI = 56,
+    LOONGARCH_INSN_FORM_FMT2RI2_VRI = 57,
+    LOONGARCH_INSN_FORM_FMT2RI12_VRI = 58,
+    LOONGARCH_INSN_FORM_FMT1RI13_VI = 59,
+    LOONGARCH_INSN_FORM_FMT2RI9_VRI = 60,
+    LOONGARCH_INSN_FORM_FMT2RI11_VRI = 61,
+    LOONGARCH_INSN_FORM_FMT2RI10_VRI = 62,
+    LOONGARCH_INSN_FORM_FMT3R_VRR = 63,
+    LOONGARCH_INSN_FORM_FMT2RI4_RVI = 64,
+    LOONGARCH_INSN_FORM_FMT2RI1_RVI = 65,
+    LOONGARCH_INSN_FORM_FMT2RI3_RVI = 66,
+    LOONGARCH_INSN_FORM_FMT2RI2_RVI = 67,
+    LOONGARCH_INSN_FORM_FMT2R_VR = 68,
+    LOONGARCH_INSN_FORM_FMT2RI1_VVI = 69,
+    LOONGARCH_INSN_FORM_FMT2RI2_VVI = 70,
+    LOONGARCH_INSN_FORM_FMT3R_VVR = 71,
+    LOONGARCH_INSN_FORM_FMT2R_CV = 72,
+    LOONGARCH_INSN_FORM_FMT2RI7_VVI = 73,
+    LOONGARCH_INSN_FORM_FMT2RI8I4_VRII = 74,
+    LOONGARCH_INSN_FORM_FMT2RI8I1_VRII = 75,
+    LOONGARCH_INSN_FORM_FMT2RI8I3_VRII = 76,
+    LOONGARCH_INSN_FORM_FMT2RI8I2_VRII = 77,
+    LOONGARCH_INSN_FORM_NODSTFMT2R = 78,
+    LOONGARCH_INSN_FORM_NODSTFMT1R = 79,
+    LOONGARCH_INSN_FORM_FMTMFTOP = 80,
+    LOONGARCH_INSN_FORM_FMTMTTOP = 81,
+    LOONGARCH_INSN_FORM_NODSTFMT1RI3 = 82,
+    LOONGARCH_INSN_FORM_NODSTFMT1RI6 = 83,
+    LOONGARCH_INSN_FORM_NODSTFMT1RI5 = 84,
+    LOONGARCH_INSN_FORM_FMT1RI5I8 = 85,
+    LOONGARCH_INSN_FORM_FMT3R_XXX = 86,
+    LOONGARCH_INSN_FORM_FMT2RI5_XXI = 87,
+    LOONGARCH_INSN_FORM_FMT2RI8_XXI = 88,
+    LOONGARCH_INSN_FORM_FMT2RI3_XXI = 89,
+    LOONGARCH_INSN_FORM_FMT2RI6_XXI = 90,
+    LOONGARCH_INSN_FORM_FMT2RI4_XXI = 91,
+    LOONGARCH_INSN_FORM_FMT4R_XXXX = 92,
+    LOONGARCH_INSN_FORM_FMT2RI2_XRI = 93,
+    LOONGARCH_INSN_FORM_FMT2RI3_XRI = 94,
+    LOONGARCH_INSN_FORM_FMT2RI2_XXI = 95,
+    LOONGARCH_INSN_FORM_FMT2RI12_XRI = 96,
+    LOONGARCH_INSN_FORM_FMT1RI13_XI = 97,
+    LOONGARCH_INSN_FORM_FMT2RI9_XRI = 98,
+    LOONGARCH_INSN_FORM_FMT2RI11_XRI = 99,
+    LOONGARCH_INSN_FORM_FMT2RI10_XRI = 100,
+    LOONGARCH_INSN_FORM_FMT3R_XRR = 101,
+    LOONGARCH_INSN_FORM_FMT2RI2_RXI = 102,
+    LOONGARCH_INSN_FORM_FMT2RI3_RXI = 103,
+    LOONGARCH_INSN_FORM_FMT2RI1_XXI = 104,
+    LOONGARCH_INSN_FORM_FMT2R_XR = 105,
+    LOONGARCH_INSN_FORM_FMT3R_XXR = 106,
+    LOONGARCH_INSN_FORM_FMT2R_CX = 107,
+    LOONGARCH_INSN_FORM_FMT2RI7_XXI = 108,
+    LOONGARCH_INSN_FORM_FMT2RI8I5_XRII = 109,
+    LOONGARCH_INSN_FORM_FMT2RI8I2_XRII = 110,
+    LOONGARCH_INSN_FORM_FMT2RI8I4_XRII = 111,
+    LOONGARCH_INSN_FORM_FMT2RI8I3_XRII = 112,
+}
+#[doc = " Supplemental info for LoongArch instructions"]
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct loongarch_suppl_info {
+    #[doc = "< Instruction form"]
+    pub form: loongarch_insn_form,
+    #[doc = "< Memory access (none/read/write/read+write)"]
+    pub memory_access: cs_ac_type,
+}
+#[doc = " Instruction structure"]
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct cs_loongarch {
+    #[doc = " The instruction format. Can be use to determine the bit encoding of the instruction."]
+    pub format: loongarch_insn_form,
+    #[doc = " Number of operands of this instruction,\n or 0 when instruction has no operand."]
+    pub op_count: u8,
+    #[doc = "< operands for this instruction."]
+    pub operands: [cs_loongarch_op; 8usize],
+}
+impl ::core::fmt::Debug for cs_loongarch {
+    fn fmt(&self, f: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
+        write!(
+            f,
+            "cs_loongarch {{ format: {:?}, operands: {:?} }}",
+            self.format, self.operands
+        )
+    }
+}
+pub mod loongarch_reg {
+    #[doc = " LoongArch registers"]
+    pub type Type = ::core::ffi::c_uint;
+    pub const LOONGARCH_REG_INVALID: Type = 0;
+    pub const LOONGARCH_REG_F0: Type = 1;
+    pub const LOONGARCH_REG_F1: Type = 2;
+    pub const LOONGARCH_REG_F2: Type = 3;
+    pub const LOONGARCH_REG_F3: Type = 4;
+    pub const LOONGARCH_REG_F4: Type = 5;
+    pub const LOONGARCH_REG_F5: Type = 6;
+    pub const LOONGARCH_REG_F6: Type = 7;
+    pub const LOONGARCH_REG_F7: Type = 8;
+    pub const LOONGARCH_REG_F8: Type = 9;
+    pub const LOONGARCH_REG_F9: Type = 10;
+    pub const LOONGARCH_REG_F10: Type = 11;
+    pub const LOONGARCH_REG_F11: Type = 12;
+    pub const LOONGARCH_REG_F12: Type = 13;
+    pub const LOONGARCH_REG_F13: Type = 14;
+    pub const LOONGARCH_REG_F14: Type = 15;
+    pub const LOONGARCH_REG_F15: Type = 16;
+    pub const LOONGARCH_REG_F16: Type = 17;
+    pub const LOONGARCH_REG_F17: Type = 18;
+    pub const LOONGARCH_REG_F18: Type = 19;
+    pub const LOONGARCH_REG_F19: Type = 20;
+    pub const LOONGARCH_REG_F20: Type = 21;
+    pub const LOONGARCH_REG_F21: Type = 22;
+    pub const LOONGARCH_REG_F22: Type = 23;
+    pub const LOONGARCH_REG_F23: Type = 24;
+    pub const LOONGARCH_REG_F24: Type = 25;
+    pub const LOONGARCH_REG_F25: Type = 26;
+    pub const LOONGARCH_REG_F26: Type = 27;
+    pub const LOONGARCH_REG_F27: Type = 28;
+    pub const LOONGARCH_REG_F28: Type = 29;
+    pub const LOONGARCH_REG_F29: Type = 30;
+    pub const LOONGARCH_REG_F30: Type = 31;
+    pub const LOONGARCH_REG_F31: Type = 32;
+    pub const LOONGARCH_REG_FCC0: Type = 33;
+    pub const LOONGARCH_REG_FCC1: Type = 34;
+    pub const LOONGARCH_REG_FCC2: Type = 35;
+    pub const LOONGARCH_REG_FCC3: Type = 36;
+    pub const LOONGARCH_REG_FCC4: Type = 37;
+    pub const LOONGARCH_REG_FCC5: Type = 38;
+    pub const LOONGARCH_REG_FCC6: Type = 39;
+    pub const LOONGARCH_REG_FCC7: Type = 40;
+    pub const LOONGARCH_REG_FCSR0: Type = 41;
+    pub const LOONGARCH_REG_FCSR1: Type = 42;
+    pub const LOONGARCH_REG_FCSR2: Type = 43;
+    pub const LOONGARCH_REG_FCSR3: Type = 44;
+    pub const LOONGARCH_REG_R0: Type = 45;
+    pub const LOONGARCH_REG_R1: Type = 46;
+    pub const LOONGARCH_REG_R2: Type = 47;
+    pub const LOONGARCH_REG_R3: Type = 48;
+    pub const LOONGARCH_REG_R4: Type = 49;
+    pub const LOONGARCH_REG_R5: Type = 50;
+    pub const LOONGARCH_REG_R6: Type = 51;
+    pub const LOONGARCH_REG_R7: Type = 52;
+    pub const LOONGARCH_REG_R8: Type = 53;
+    pub const LOONGARCH_REG_R9: Type = 54;
+    pub const LOONGARCH_REG_R10: Type = 55;
+    pub const LOONGARCH_REG_R11: Type = 56;
+    pub const LOONGARCH_REG_R12: Type = 57;
+    pub const LOONGARCH_REG_R13: Type = 58;
+    pub const LOONGARCH_REG_R14: Type = 59;
+    pub const LOONGARCH_REG_R15: Type = 60;
+    pub const LOONGARCH_REG_R16: Type = 61;
+    pub const LOONGARCH_REG_R17: Type = 62;
+    pub const LOONGARCH_REG_R18: Type = 63;
+    pub const LOONGARCH_REG_R19: Type = 64;
+    pub const LOONGARCH_REG_R20: Type = 65;
+    pub const LOONGARCH_REG_R21: Type = 66;
+    pub const LOONGARCH_REG_R22: Type = 67;
+    pub const LOONGARCH_REG_R23: Type = 68;
+    pub const LOONGARCH_REG_R24: Type = 69;
+    pub const LOONGARCH_REG_R25: Type = 70;
+    pub const LOONGARCH_REG_R26: Type = 71;
+    pub const LOONGARCH_REG_R27: Type = 72;
+    pub const LOONGARCH_REG_R28: Type = 73;
+    pub const LOONGARCH_REG_R29: Type = 74;
+    pub const LOONGARCH_REG_R30: Type = 75;
+    pub const LOONGARCH_REG_R31: Type = 76;
+    pub const LOONGARCH_REG_SCR0: Type = 77;
+    pub const LOONGARCH_REG_SCR1: Type = 78;
+    pub const LOONGARCH_REG_SCR2: Type = 79;
+    pub const LOONGARCH_REG_SCR3: Type = 80;
+    pub const LOONGARCH_REG_VR0: Type = 81;
+    pub const LOONGARCH_REG_VR1: Type = 82;
+    pub const LOONGARCH_REG_VR2: Type = 83;
+    pub const LOONGARCH_REG_VR3: Type = 84;
+    pub const LOONGARCH_REG_VR4: Type = 85;
+    pub const LOONGARCH_REG_VR5: Type = 86;
+    pub const LOONGARCH_REG_VR6: Type = 87;
+    pub const LOONGARCH_REG_VR7: Type = 88;
+    pub const LOONGARCH_REG_VR8: Type = 89;
+    pub const LOONGARCH_REG_VR9: Type = 90;
+    pub const LOONGARCH_REG_VR10: Type = 91;
+    pub const LOONGARCH_REG_VR11: Type = 92;
+    pub const LOONGARCH_REG_VR12: Type = 93;
+    pub const LOONGARCH_REG_VR13: Type = 94;
+    pub const LOONGARCH_REG_VR14: Type = 95;
+    pub const LOONGARCH_REG_VR15: Type = 96;
+    pub const LOONGARCH_REG_VR16: Type = 97;
+    pub const LOONGARCH_REG_VR17: Type = 98;
+    pub const LOONGARCH_REG_VR18: Type = 99;
+    pub const LOONGARCH_REG_VR19: Type = 100;
+    pub const LOONGARCH_REG_VR20: Type = 101;
+    pub const LOONGARCH_REG_VR21: Type = 102;
+    pub const LOONGARCH_REG_VR22: Type = 103;
+    pub const LOONGARCH_REG_VR23: Type = 104;
+    pub const LOONGARCH_REG_VR24: Type = 105;
+    pub const LOONGARCH_REG_VR25: Type = 106;
+    pub const LOONGARCH_REG_VR26: Type = 107;
+    pub const LOONGARCH_REG_VR27: Type = 108;
+    pub const LOONGARCH_REG_VR28: Type = 109;
+    pub const LOONGARCH_REG_VR29: Type = 110;
+    pub const LOONGARCH_REG_VR30: Type = 111;
+    pub const LOONGARCH_REG_VR31: Type = 112;
+    pub const LOONGARCH_REG_XR0: Type = 113;
+    pub const LOONGARCH_REG_XR1: Type = 114;
+    pub const LOONGARCH_REG_XR2: Type = 115;
+    pub const LOONGARCH_REG_XR3: Type = 116;
+    pub const LOONGARCH_REG_XR4: Type = 117;
+    pub const LOONGARCH_REG_XR5: Type = 118;
+    pub const LOONGARCH_REG_XR6: Type = 119;
+    pub const LOONGARCH_REG_XR7: Type = 120;
+    pub const LOONGARCH_REG_XR8: Type = 121;
+    pub const LOONGARCH_REG_XR9: Type = 122;
+    pub const LOONGARCH_REG_XR10: Type = 123;
+    pub const LOONGARCH_REG_XR11: Type = 124;
+    pub const LOONGARCH_REG_XR12: Type = 125;
+    pub const LOONGARCH_REG_XR13: Type = 126;
+    pub const LOONGARCH_REG_XR14: Type = 127;
+    pub const LOONGARCH_REG_XR15: Type = 128;
+    pub const LOONGARCH_REG_XR16: Type = 129;
+    pub const LOONGARCH_REG_XR17: Type = 130;
+    pub const LOONGARCH_REG_XR18: Type = 131;
+    pub const LOONGARCH_REG_XR19: Type = 132;
+    pub const LOONGARCH_REG_XR20: Type = 133;
+    pub const LOONGARCH_REG_XR21: Type = 134;
+    pub const LOONGARCH_REG_XR22: Type = 135;
+    pub const LOONGARCH_REG_XR23: Type = 136;
+    pub const LOONGARCH_REG_XR24: Type = 137;
+    pub const LOONGARCH_REG_XR25: Type = 138;
+    pub const LOONGARCH_REG_XR26: Type = 139;
+    pub const LOONGARCH_REG_XR27: Type = 140;
+    pub const LOONGARCH_REG_XR28: Type = 141;
+    pub const LOONGARCH_REG_XR29: Type = 142;
+    pub const LOONGARCH_REG_XR30: Type = 143;
+    pub const LOONGARCH_REG_XR31: Type = 144;
+    pub const LOONGARCH_REG_F0_64: Type = 145;
+    pub const LOONGARCH_REG_F1_64: Type = 146;
+    pub const LOONGARCH_REG_F2_64: Type = 147;
+    pub const LOONGARCH_REG_F3_64: Type = 148;
+    pub const LOONGARCH_REG_F4_64: Type = 149;
+    pub const LOONGARCH_REG_F5_64: Type = 150;
+    pub const LOONGARCH_REG_F6_64: Type = 151;
+    pub const LOONGARCH_REG_F7_64: Type = 152;
+    pub const LOONGARCH_REG_F8_64: Type = 153;
+    pub const LOONGARCH_REG_F9_64: Type = 154;
+    pub const LOONGARCH_REG_F10_64: Type = 155;
+    pub const LOONGARCH_REG_F11_64: Type = 156;
+    pub const LOONGARCH_REG_F12_64: Type = 157;
+    pub const LOONGARCH_REG_F13_64: Type = 158;
+    pub const LOONGARCH_REG_F14_64: Type = 159;
+    pub const LOONGARCH_REG_F15_64: Type = 160;
+    pub const LOONGARCH_REG_F16_64: Type = 161;
+    pub const LOONGARCH_REG_F17_64: Type = 162;
+    pub const LOONGARCH_REG_F18_64: Type = 163;
+    pub const LOONGARCH_REG_F19_64: Type = 164;
+    pub const LOONGARCH_REG_F20_64: Type = 165;
+    pub const LOONGARCH_REG_F21_64: Type = 166;
+    pub const LOONGARCH_REG_F22_64: Type = 167;
+    pub const LOONGARCH_REG_F23_64: Type = 168;
+    pub const LOONGARCH_REG_F24_64: Type = 169;
+    pub const LOONGARCH_REG_F25_64: Type = 170;
+    pub const LOONGARCH_REG_F26_64: Type = 171;
+    pub const LOONGARCH_REG_F27_64: Type = 172;
+    pub const LOONGARCH_REG_F28_64: Type = 173;
+    pub const LOONGARCH_REG_F29_64: Type = 174;
+    pub const LOONGARCH_REG_F30_64: Type = 175;
+    pub const LOONGARCH_REG_F31_64: Type = 176;
+    pub const LOONGARCH_REG_ENDING: Type = 177;
+    pub const LOONGARCH_REG_ZERO: Type = 45;
+    pub const LOONGARCH_REG_RA: Type = 46;
+    pub const LOONGARCH_REG_TP: Type = 47;
+    pub const LOONGARCH_REG_SP: Type = 48;
+    pub const LOONGARCH_REG_A0: Type = 49;
+    pub const LOONGARCH_REG_A1: Type = 50;
+    pub const LOONGARCH_REG_A2: Type = 51;
+    pub const LOONGARCH_REG_A3: Type = 52;
+    pub const LOONGARCH_REG_A4: Type = 53;
+    pub const LOONGARCH_REG_A5: Type = 54;
+    pub const LOONGARCH_REG_A6: Type = 55;
+    pub const LOONGARCH_REG_A7: Type = 56;
+    pub const LOONGARCH_REG_T0: Type = 57;
+    pub const LOONGARCH_REG_T1: Type = 58;
+    pub const LOONGARCH_REG_T2: Type = 59;
+    pub const LOONGARCH_REG_T3: Type = 60;
+    pub const LOONGARCH_REG_T4: Type = 61;
+    pub const LOONGARCH_REG_T5: Type = 62;
+    pub const LOONGARCH_REG_T6: Type = 63;
+    pub const LOONGARCH_REG_T7: Type = 64;
+    pub const LOONGARCH_REG_T8: Type = 65;
+    pub const LOONGARCH_REG_FP: Type = 67;
+    pub const LOONGARCH_REG_S9: Type = 67;
+    pub const LOONGARCH_REG_S0: Type = 68;
+    pub const LOONGARCH_REG_S1: Type = 69;
+    pub const LOONGARCH_REG_S2: Type = 70;
+    pub const LOONGARCH_REG_S3: Type = 71;
+    pub const LOONGARCH_REG_S4: Type = 72;
+    pub const LOONGARCH_REG_S5: Type = 73;
+    pub const LOONGARCH_REG_S6: Type = 74;
+    pub const LOONGARCH_REG_S7: Type = 75;
+    pub const LOONGARCH_REG_S8: Type = 76;
+}
+#[repr(u32)]
+#[doc = " LoongArch instruction"]
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
+pub enum loongarch_insn {
+    LOONGARCH_INS_INVALID = 0,
+    LOONGARCH_INS_CALL36 = 1,
+    LOONGARCH_INS_LA_ABS = 2,
+    LOONGARCH_INS_LA_GOT = 3,
+    LOONGARCH_INS_LA_PCREL = 4,
+    LOONGARCH_INS_LA_TLS_GD = 5,
+    LOONGARCH_INS_LA_TLS_IE = 6,
+    LOONGARCH_INS_LA_TLS_LD = 7,
+    LOONGARCH_INS_LA_TLS_LE = 8,
+    LOONGARCH_INS_LI_D = 9,
+    LOONGARCH_INS_LI_W = 10,
+    LOONGARCH_INS_TAIL36 = 11,
+    LOONGARCH_INS_VREPLI_B = 12,
+    LOONGARCH_INS_VREPLI_D = 13,
+    LOONGARCH_INS_VREPLI_H = 14,
+    LOONGARCH_INS_VREPLI_W = 15,
+    LOONGARCH_INS_XVREPLI_B = 16,
+    LOONGARCH_INS_XVREPLI_D = 17,
+    LOONGARCH_INS_XVREPLI_H = 18,
+    LOONGARCH_INS_XVREPLI_W = 19,
+    LOONGARCH_INS_ADC_B = 20,
+    LOONGARCH_INS_ADC_D = 21,
+    LOONGARCH_INS_ADC_H = 22,
+    LOONGARCH_INS_ADC_W = 23,
+    LOONGARCH_INS_ADDI_D = 24,
+    LOONGARCH_INS_ADDI_W = 25,
+    LOONGARCH_INS_ADDU12I_D = 26,
+    LOONGARCH_INS_ADDU12I_W = 27,
+    LOONGARCH_INS_ADDU16I_D = 28,
+    LOONGARCH_INS_ADD_D = 29,
+    LOONGARCH_INS_ADD_W = 30,
+    LOONGARCH_INS_ALSL_D = 31,
+    LOONGARCH_INS_ALSL_W = 32,
+    LOONGARCH_INS_ALSL_WU = 33,
+    LOONGARCH_INS_AMADD_B = 34,
+    LOONGARCH_INS_AMADD_D = 35,
+    LOONGARCH_INS_AMADD_H = 36,
+    LOONGARCH_INS_AMADD_W = 37,
+    LOONGARCH_INS_AMADD_DB_B = 38,
+    LOONGARCH_INS_AMADD_DB_D = 39,
+    LOONGARCH_INS_AMADD_DB_H = 40,
+    LOONGARCH_INS_AMADD_DB_W = 41,
+    LOONGARCH_INS_AMAND_D = 42,
+    LOONGARCH_INS_AMAND_W = 43,
+    LOONGARCH_INS_AMAND_DB_D = 44,
+    LOONGARCH_INS_AMAND_DB_W = 45,
+    LOONGARCH_INS_AMCAS_B = 46,
+    LOONGARCH_INS_AMCAS_D = 47,
+    LOONGARCH_INS_AMCAS_H = 48,
+    LOONGARCH_INS_AMCAS_W = 49,
+    LOONGARCH_INS_AMCAS_DB_B = 50,
+    LOONGARCH_INS_AMCAS_DB_D = 51,
+    LOONGARCH_INS_AMCAS_DB_H = 52,
+    LOONGARCH_INS_AMCAS_DB_W = 53,
+    LOONGARCH_INS_AMMAX_D = 54,
+    LOONGARCH_INS_AMMAX_DU = 55,
+    LOONGARCH_INS_AMMAX_W = 56,
+    LOONGARCH_INS_AMMAX_WU = 57,
+    LOONGARCH_INS_AMMAX_DB_D = 58,
+    LOONGARCH_INS_AMMAX_DB_DU = 59,
+    LOONGARCH_INS_AMMAX_DB_W = 60,
+    LOONGARCH_INS_AMMAX_DB_WU = 61,
+    LOONGARCH_INS_AMMIN_D = 62,
+    LOONGARCH_INS_AMMIN_DU = 63,
+    LOONGARCH_INS_AMMIN_W = 64,
+    LOONGARCH_INS_AMMIN_WU = 65,
+    LOONGARCH_INS_AMMIN_DB_D = 66,
+    LOONGARCH_INS_AMMIN_DB_DU = 67,
+    LOONGARCH_INS_AMMIN_DB_W = 68,
+    LOONGARCH_INS_AMMIN_DB_WU = 69,
+    LOONGARCH_INS_AMOR_D = 70,
+    LOONGARCH_INS_AMOR_W = 71,
+    LOONGARCH_INS_AMOR_DB_D = 72,
+    LOONGARCH_INS_AMOR_DB_W = 73,
+    LOONGARCH_INS_AMSWAP_B = 74,
+    LOONGARCH_INS_AMSWAP_D = 75,
+    LOONGARCH_INS_AMSWAP_H = 76,
+    LOONGARCH_INS_AMSWAP_W = 77,
+    LOONGARCH_INS_AMSWAP_DB_B = 78,
+    LOONGARCH_INS_AMSWAP_DB_D = 79,
+    LOONGARCH_INS_AMSWAP_DB_H = 80,
+    LOONGARCH_INS_AMSWAP_DB_W = 81,
+    LOONGARCH_INS_AMXOR_D = 82,
+    LOONGARCH_INS_AMXOR_W = 83,
+    LOONGARCH_INS_AMXOR_DB_D = 84,
+    LOONGARCH_INS_AMXOR_DB_W = 85,
+    LOONGARCH_INS_AND = 86,
+    LOONGARCH_INS_ANDI = 87,
+    LOONGARCH_INS_ANDN = 88,
+    LOONGARCH_INS_ARMADC_W = 89,
+    LOONGARCH_INS_ARMADD_W = 90,
+    LOONGARCH_INS_ARMAND_W = 91,
+    LOONGARCH_INS_ARMMFFLAG = 92,
+    LOONGARCH_INS_ARMMOVE = 93,
+    LOONGARCH_INS_ARMMOV_D = 94,
+    LOONGARCH_INS_ARMMOV_W = 95,
+    LOONGARCH_INS_ARMMTFLAG = 96,
+    LOONGARCH_INS_ARMNOT_W = 97,
+    LOONGARCH_INS_ARMOR_W = 98,
+    LOONGARCH_INS_ARMROTRI_W = 99,
+    LOONGARCH_INS_ARMROTR_W = 100,
+    LOONGARCH_INS_ARMRRX_W = 101,
+    LOONGARCH_INS_ARMSBC_W = 102,
+    LOONGARCH_INS_ARMSLLI_W = 103,
+    LOONGARCH_INS_ARMSLL_W = 104,
+    LOONGARCH_INS_ARMSRAI_W = 105,
+    LOONGARCH_INS_ARMSRA_W = 106,
+    LOONGARCH_INS_ARMSRLI_W = 107,
+    LOONGARCH_INS_ARMSRL_W = 108,
+    LOONGARCH_INS_ARMSUB_W = 109,
+    LOONGARCH_INS_ARMXOR_W = 110,
+    LOONGARCH_INS_ASRTGT_D = 111,
+    LOONGARCH_INS_ASRTLE_D = 112,
+    LOONGARCH_INS_B = 113,
+    LOONGARCH_INS_BCEQZ = 114,
+    LOONGARCH_INS_BCNEZ = 115,
+    LOONGARCH_INS_BEQ = 116,
+    LOONGARCH_INS_BEQZ = 117,
+    LOONGARCH_INS_BGE = 118,
+    LOONGARCH_INS_BGEU = 119,
+    LOONGARCH_INS_BITREV_4B = 120,
+    LOONGARCH_INS_BITREV_8B = 121,
+    LOONGARCH_INS_BITREV_D = 122,
+    LOONGARCH_INS_BITREV_W = 123,
+    LOONGARCH_INS_BL = 124,
+    LOONGARCH_INS_BLT = 125,
+    LOONGARCH_INS_BLTU = 126,
+    LOONGARCH_INS_BNE = 127,
+    LOONGARCH_INS_BNEZ = 128,
+    LOONGARCH_INS_BREAK = 129,
+    LOONGARCH_INS_BSTRINS_D = 130,
+    LOONGARCH_INS_BSTRINS_W = 131,
+    LOONGARCH_INS_BSTRPICK_D = 132,
+    LOONGARCH_INS_BSTRPICK_W = 133,
+    LOONGARCH_INS_BYTEPICK_D = 134,
+    LOONGARCH_INS_BYTEPICK_W = 135,
+    LOONGARCH_INS_CACOP = 136,
+    LOONGARCH_INS_CLO_D = 137,
+    LOONGARCH_INS_CLO_W = 138,
+    LOONGARCH_INS_CLZ_D = 139,
+    LOONGARCH_INS_CLZ_W = 140,
+    LOONGARCH_INS_CPUCFG = 141,
+    LOONGARCH_INS_CRCC_W_B_W = 142,
+    LOONGARCH_INS_CRCC_W_D_W = 143,
+    LOONGARCH_INS_CRCC_W_H_W = 144,
+    LOONGARCH_INS_CRCC_W_W_W = 145,
+    LOONGARCH_INS_CRC_W_B_W = 146,
+    LOONGARCH_INS_CRC_W_D_W = 147,
+    LOONGARCH_INS_CRC_W_H_W = 148,
+    LOONGARCH_INS_CRC_W_W_W = 149,
+    LOONGARCH_INS_CSRRD = 150,
+    LOONGARCH_INS_CSRWR = 151,
+    LOONGARCH_INS_CSRXCHG = 152,
+    LOONGARCH_INS_CTO_D = 153,
+    LOONGARCH_INS_CTO_W = 154,
+    LOONGARCH_INS_CTZ_D = 155,
+    LOONGARCH_INS_CTZ_W = 156,
+    LOONGARCH_INS_DBAR = 157,
+    LOONGARCH_INS_DBCL = 158,
+    LOONGARCH_INS_DIV_D = 159,
+    LOONGARCH_INS_DIV_DU = 160,
+    LOONGARCH_INS_DIV_W = 161,
+    LOONGARCH_INS_DIV_WU = 162,
+    LOONGARCH_INS_ERTN = 163,
+    LOONGARCH_INS_EXT_W_B = 164,
+    LOONGARCH_INS_EXT_W_H = 165,
+    LOONGARCH_INS_FABS_D = 166,
+    LOONGARCH_INS_FABS_S = 167,
+    LOONGARCH_INS_FADD_D = 168,
+    LOONGARCH_INS_FADD_S = 169,
+    LOONGARCH_INS_FCLASS_D = 170,
+    LOONGARCH_INS_FCLASS_S = 171,
+    LOONGARCH_INS_FCMP_CAF_D = 172,
+    LOONGARCH_INS_FCMP_CAF_S = 173,
+    LOONGARCH_INS_FCMP_CEQ_D = 174,
+    LOONGARCH_INS_FCMP_CEQ_S = 175,
+    LOONGARCH_INS_FCMP_CLE_D = 176,
+    LOONGARCH_INS_FCMP_CLE_S = 177,
+    LOONGARCH_INS_FCMP_CLT_D = 178,
+    LOONGARCH_INS_FCMP_CLT_S = 179,
+    LOONGARCH_INS_FCMP_CNE_D = 180,
+    LOONGARCH_INS_FCMP_CNE_S = 181,
+    LOONGARCH_INS_FCMP_COR_D = 182,
+    LOONGARCH_INS_FCMP_COR_S = 183,
+    LOONGARCH_INS_FCMP_CUEQ_D = 184,
+    LOONGARCH_INS_FCMP_CUEQ_S = 185,
+    LOONGARCH_INS_FCMP_CULE_D = 186,
+    LOONGARCH_INS_FCMP_CULE_S = 187,
+    LOONGARCH_INS_FCMP_CULT_D = 188,
+    LOONGARCH_INS_FCMP_CULT_S = 189,
+    LOONGARCH_INS_FCMP_CUNE_D = 190,
+    LOONGARCH_INS_FCMP_CUNE_S = 191,
+    LOONGARCH_INS_FCMP_CUN_D = 192,
+    LOONGARCH_INS_FCMP_CUN_S = 193,
+    LOONGARCH_INS_FCMP_SAF_D = 194,
+    LOONGARCH_INS_FCMP_SAF_S = 195,
+    LOONGARCH_INS_FCMP_SEQ_D = 196,
+    LOONGARCH_INS_FCMP_SEQ_S = 197,
+    LOONGARCH_INS_FCMP_SLE_D = 198,
+    LOONGARCH_INS_FCMP_SLE_S = 199,
+    LOONGARCH_INS_FCMP_SLT_D = 200,
+    LOONGARCH_INS_FCMP_SLT_S = 201,
+    LOONGARCH_INS_FCMP_SNE_D = 202,
+    LOONGARCH_INS_FCMP_SNE_S = 203,
+    LOONGARCH_INS_FCMP_SOR_D = 204,
+    LOONGARCH_INS_FCMP_SOR_S = 205,
+    LOONGARCH_INS_FCMP_SUEQ_D = 206,
+    LOONGARCH_INS_FCMP_SUEQ_S = 207,
+    LOONGARCH_INS_FCMP_SULE_D = 208,
+    LOONGARCH_INS_FCMP_SULE_S = 209,
+    LOONGARCH_INS_FCMP_SULT_D = 210,
+    LOONGARCH_INS_FCMP_SULT_S = 211,
+    LOONGARCH_INS_FCMP_SUNE_D = 212,
+    LOONGARCH_INS_FCMP_SUNE_S = 213,
+    LOONGARCH_INS_FCMP_SUN_D = 214,
+    LOONGARCH_INS_FCMP_SUN_S = 215,
+    LOONGARCH_INS_FCOPYSIGN_D = 216,
+    LOONGARCH_INS_FCOPYSIGN_S = 217,
+    LOONGARCH_INS_FCVT_D_LD = 218,
+    LOONGARCH_INS_FCVT_D_S = 219,
+    LOONGARCH_INS_FCVT_LD_D = 220,
+    LOONGARCH_INS_FCVT_S_D = 221,
+    LOONGARCH_INS_FCVT_UD_D = 222,
+    LOONGARCH_INS_FDIV_D = 223,
+    LOONGARCH_INS_FDIV_S = 224,
+    LOONGARCH_INS_FFINT_D_L = 225,
+    LOONGARCH_INS_FFINT_D_W = 226,
+    LOONGARCH_INS_FFINT_S_L = 227,
+    LOONGARCH_INS_FFINT_S_W = 228,
+    LOONGARCH_INS_FLDGT_D = 229,
+    LOONGARCH_INS_FLDGT_S = 230,
+    LOONGARCH_INS_FLDLE_D = 231,
+    LOONGARCH_INS_FLDLE_S = 232,
+    LOONGARCH_INS_FLDX_D = 233,
+    LOONGARCH_INS_FLDX_S = 234,
+    LOONGARCH_INS_FLD_D = 235,
+    LOONGARCH_INS_FLD_S = 236,
+    LOONGARCH_INS_FLOGB_D = 237,
+    LOONGARCH_INS_FLOGB_S = 238,
+    LOONGARCH_INS_FMADD_D = 239,
+    LOONGARCH_INS_FMADD_S = 240,
+    LOONGARCH_INS_FMAXA_D = 241,
+    LOONGARCH_INS_FMAXA_S = 242,
+    LOONGARCH_INS_FMAX_D = 243,
+    LOONGARCH_INS_FMAX_S = 244,
+    LOONGARCH_INS_FMINA_D = 245,
+    LOONGARCH_INS_FMINA_S = 246,
+    LOONGARCH_INS_FMIN_D = 247,
+    LOONGARCH_INS_FMIN_S = 248,
+    LOONGARCH_INS_FMOV_D = 249,
+    LOONGARCH_INS_FMOV_S = 250,
+    LOONGARCH_INS_FMSUB_D = 251,
+    LOONGARCH_INS_FMSUB_S = 252,
+    LOONGARCH_INS_FMUL_D = 253,
+    LOONGARCH_INS_FMUL_S = 254,
+    LOONGARCH_INS_FNEG_D = 255,
+    LOONGARCH_INS_FNEG_S = 256,
+    LOONGARCH_INS_FNMADD_D = 257,
+    LOONGARCH_INS_FNMADD_S = 258,
+    LOONGARCH_INS_FNMSUB_D = 259,
+    LOONGARCH_INS_FNMSUB_S = 260,
+    LOONGARCH_INS_FRECIPE_D = 261,
+    LOONGARCH_INS_FRECIPE_S = 262,
+    LOONGARCH_INS_FRECIP_D = 263,
+    LOONGARCH_INS_FRECIP_S = 264,
+    LOONGARCH_INS_FRINT_D = 265,
+    LOONGARCH_INS_FRINT_S = 266,
+    LOONGARCH_INS_FRSQRTE_D = 267,
+    LOONGARCH_INS_FRSQRTE_S = 268,
+    LOONGARCH_INS_FRSQRT_D = 269,
+    LOONGARCH_INS_FRSQRT_S = 270,
+    LOONGARCH_INS_FSCALEB_D = 271,
+    LOONGARCH_INS_FSCALEB_S = 272,
+    LOONGARCH_INS_FSEL = 273,
+    LOONGARCH_INS_FSQRT_D = 274,
+    LOONGARCH_INS_FSQRT_S = 275,
+    LOONGARCH_INS_FSTGT_D = 276,
+    LOONGARCH_INS_FSTGT_S = 277,
+    LOONGARCH_INS_FSTLE_D = 278,
+    LOONGARCH_INS_FSTLE_S = 279,
+    LOONGARCH_INS_FSTX_D = 280,
+    LOONGARCH_INS_FSTX_S = 281,
+    LOONGARCH_INS_FST_D = 282,
+    LOONGARCH_INS_FST_S = 283,
+    LOONGARCH_INS_FSUB_D = 284,
+    LOONGARCH_INS_FSUB_S = 285,
+    LOONGARCH_INS_FTINTRM_L_D = 286,
+    LOONGARCH_INS_FTINTRM_L_S = 287,
+    LOONGARCH_INS_FTINTRM_W_D = 288,
+    LOONGARCH_INS_FTINTRM_W_S = 289,
+    LOONGARCH_INS_FTINTRNE_L_D = 290,
+    LOONGARCH_INS_FTINTRNE_L_S = 291,
+    LOONGARCH_INS_FTINTRNE_W_D = 292,
+    LOONGARCH_INS_FTINTRNE_W_S = 293,
+    LOONGARCH_INS_FTINTRP_L_D = 294,
+    LOONGARCH_INS_FTINTRP_L_S = 295,
+    LOONGARCH_INS_FTINTRP_W_D = 296,
+    LOONGARCH_INS_FTINTRP_W_S = 297,
+    LOONGARCH_INS_FTINTRZ_L_D = 298,
+    LOONGARCH_INS_FTINTRZ_L_S = 299,
+    LOONGARCH_INS_FTINTRZ_W_D = 300,
+    LOONGARCH_INS_FTINTRZ_W_S = 301,
+    LOONGARCH_INS_FTINT_L_D = 302,
+    LOONGARCH_INS_FTINT_L_S = 303,
+    LOONGARCH_INS_FTINT_W_D = 304,
+    LOONGARCH_INS_FTINT_W_S = 305,
+    LOONGARCH_INS_GCSRRD = 306,
+    LOONGARCH_INS_GCSRWR = 307,
+    LOONGARCH_INS_GCSRXCHG = 308,
+    LOONGARCH_INS_GTLBFLUSH = 309,
+    LOONGARCH_INS_HVCL = 310,
+    LOONGARCH_INS_IBAR = 311,
+    LOONGARCH_INS_IDLE = 312,
+    LOONGARCH_INS_INVTLB = 313,
+    LOONGARCH_INS_IOCSRRD_B = 314,
+    LOONGARCH_INS_IOCSRRD_D = 315,
+    LOONGARCH_INS_IOCSRRD_H = 316,
+    LOONGARCH_INS_IOCSRRD_W = 317,
+    LOONGARCH_INS_IOCSRWR_B = 318,
+    LOONGARCH_INS_IOCSRWR_D = 319,
+    LOONGARCH_INS_IOCSRWR_H = 320,
+    LOONGARCH_INS_IOCSRWR_W = 321,
+    LOONGARCH_INS_JIRL = 322,
+    LOONGARCH_INS_JISCR0 = 323,
+    LOONGARCH_INS_JISCR1 = 324,
+    LOONGARCH_INS_LDDIR = 325,
+    LOONGARCH_INS_LDGT_B = 326,
+    LOONGARCH_INS_LDGT_D = 327,
+    LOONGARCH_INS_LDGT_H = 328,
+    LOONGARCH_INS_LDGT_W = 329,
+    LOONGARCH_INS_LDLE_B = 330,
+    LOONGARCH_INS_LDLE_D = 331,
+    LOONGARCH_INS_LDLE_H = 332,
+    LOONGARCH_INS_LDLE_W = 333,
+    LOONGARCH_INS_LDL_D = 334,
+    LOONGARCH_INS_LDL_W = 335,
+    LOONGARCH_INS_LDPTE = 336,
+    LOONGARCH_INS_LDPTR_D = 337,
+    LOONGARCH_INS_LDPTR_W = 338,
+    LOONGARCH_INS_LDR_D = 339,
+    LOONGARCH_INS_LDR_W = 340,
+    LOONGARCH_INS_LDX_B = 341,
+    LOONGARCH_INS_LDX_BU = 342,
+    LOONGARCH_INS_LDX_D = 343,
+    LOONGARCH_INS_LDX_H = 344,
+    LOONGARCH_INS_LDX_HU = 345,
+    LOONGARCH_INS_LDX_W = 346,
+    LOONGARCH_INS_LDX_WU = 347,
+    LOONGARCH_INS_LD_B = 348,
+    LOONGARCH_INS_LD_BU = 349,
+    LOONGARCH_INS_LD_D = 350,
+    LOONGARCH_INS_LD_H = 351,
+    LOONGARCH_INS_LD_HU = 352,
+    LOONGARCH_INS_LD_W = 353,
+    LOONGARCH_INS_LD_WU = 354,
+    LOONGARCH_INS_LLACQ_D = 355,
+    LOONGARCH_INS_LLACQ_W = 356,
+    LOONGARCH_INS_LL_D = 357,
+    LOONGARCH_INS_LL_W = 358,
+    LOONGARCH_INS_LU12I_W = 359,
+    LOONGARCH_INS_LU32I_D = 360,
+    LOONGARCH_INS_LU52I_D = 361,
+    LOONGARCH_INS_MASKEQZ = 362,
+    LOONGARCH_INS_MASKNEZ = 363,
+    LOONGARCH_INS_MOD_D = 364,
+    LOONGARCH_INS_MOD_DU = 365,
+    LOONGARCH_INS_MOD_W = 366,
+    LOONGARCH_INS_MOD_WU = 367,
+    LOONGARCH_INS_MOVCF2FR = 368,
+    LOONGARCH_INS_MOVCF2GR = 369,
+    LOONGARCH_INS_MOVFCSR2GR = 370,
+    LOONGARCH_INS_MOVFR2CF = 371,
+    LOONGARCH_INS_MOVFR2GR_D = 372,
+    LOONGARCH_INS_MOVFR2GR_S = 373,
+    LOONGARCH_INS_MOVFRH2GR_S = 374,
+    LOONGARCH_INS_MOVGR2CF = 375,
+    LOONGARCH_INS_MOVGR2FCSR = 376,
+    LOONGARCH_INS_MOVGR2FRH_W = 377,
+    LOONGARCH_INS_MOVGR2FR_D = 378,
+    LOONGARCH_INS_MOVGR2FR_W = 379,
+    LOONGARCH_INS_MOVGR2SCR = 380,
+    LOONGARCH_INS_MOVSCR2GR = 381,
+    LOONGARCH_INS_MULH_D = 382,
+    LOONGARCH_INS_MULH_DU = 383,
+    LOONGARCH_INS_MULH_W = 384,
+    LOONGARCH_INS_MULH_WU = 385,
+    LOONGARCH_INS_MULW_D_W = 386,
+    LOONGARCH_INS_MULW_D_WU = 387,
+    LOONGARCH_INS_MUL_D = 388,
+    LOONGARCH_INS_MUL_W = 389,
+    LOONGARCH_INS_NOR = 390,
+    LOONGARCH_INS_OR = 391,
+    LOONGARCH_INS_ORI = 392,
+    LOONGARCH_INS_ORN = 393,
+    LOONGARCH_INS_PCADDI = 394,
+    LOONGARCH_INS_PCADDU12I = 395,
+    LOONGARCH_INS_PCADDU18I = 396,
+    LOONGARCH_INS_PCALAU12I = 397,
+    LOONGARCH_INS_PRELD = 398,
+    LOONGARCH_INS_PRELDX = 399,
+    LOONGARCH_INS_RCRI_B = 400,
+    LOONGARCH_INS_RCRI_D = 401,
+    LOONGARCH_INS_RCRI_H = 402,
+    LOONGARCH_INS_RCRI_W = 403,
+    LOONGARCH_INS_RCR_B = 404,
+    LOONGARCH_INS_RCR_D = 405,
+    LOONGARCH_INS_RCR_H = 406,
+    LOONGARCH_INS_RCR_W = 407,
+    LOONGARCH_INS_RDTIMEH_W = 408,
+    LOONGARCH_INS_RDTIMEL_W = 409,
+    LOONGARCH_INS_RDTIME_D = 410,
+    LOONGARCH_INS_REVB_2H = 411,
+    LOONGARCH_INS_REVB_2W = 412,
+    LOONGARCH_INS_REVB_4H = 413,
+    LOONGARCH_INS_REVB_D = 414,
+    LOONGARCH_INS_REVH_2W = 415,
+    LOONGARCH_INS_REVH_D = 416,
+    LOONGARCH_INS_ROTRI_B = 417,
+    LOONGARCH_INS_ROTRI_D = 418,
+    LOONGARCH_INS_ROTRI_H = 419,
+    LOONGARCH_INS_ROTRI_W = 420,
+    LOONGARCH_INS_ROTR_B = 421,
+    LOONGARCH_INS_ROTR_D = 422,
+    LOONGARCH_INS_ROTR_H = 423,
+    LOONGARCH_INS_ROTR_W = 424,
+    LOONGARCH_INS_SBC_B = 425,
+    LOONGARCH_INS_SBC_D = 426,
+    LOONGARCH_INS_SBC_H = 427,
+    LOONGARCH_INS_SBC_W = 428,
+    LOONGARCH_INS_SCREL_D = 429,
+    LOONGARCH_INS_SCREL_W = 430,
+    LOONGARCH_INS_SC_D = 431,
+    LOONGARCH_INS_SC_Q = 432,
+    LOONGARCH_INS_SC_W = 433,
+    LOONGARCH_INS_SETARMJ = 434,
+    LOONGARCH_INS_SETX86J = 435,
+    LOONGARCH_INS_SETX86LOOPE = 436,
+    LOONGARCH_INS_SETX86LOOPNE = 437,
+    LOONGARCH_INS_SLLI_D = 438,
+    LOONGARCH_INS_SLLI_W = 439,
+    LOONGARCH_INS_SLL_D = 440,
+    LOONGARCH_INS_SLL_W = 441,
+    LOONGARCH_INS_SLT = 442,
+    LOONGARCH_INS_SLTI = 443,
+    LOONGARCH_INS_SLTU = 444,
+    LOONGARCH_INS_SLTUI = 445,
+    LOONGARCH_INS_SRAI_D = 446,
+    LOONGARCH_INS_SRAI_W = 447,
+    LOONGARCH_INS_SRA_D = 448,
+    LOONGARCH_INS_SRA_W = 449,
+    LOONGARCH_INS_SRLI_D = 450,
+    LOONGARCH_INS_SRLI_W = 451,
+    LOONGARCH_INS_SRL_D = 452,
+    LOONGARCH_INS_SRL_W = 453,
+    LOONGARCH_INS_STGT_B = 454,
+    LOONGARCH_INS_STGT_D = 455,
+    LOONGARCH_INS_STGT_H = 456,
+    LOONGARCH_INS_STGT_W = 457,
+    LOONGARCH_INS_STLE_B = 458,
+    LOONGARCH_INS_STLE_D = 459,
+    LOONGARCH_INS_STLE_H = 460,
+    LOONGARCH_INS_STLE_W = 461,
+    LOONGARCH_INS_STL_D = 462,
+    LOONGARCH_INS_STL_W = 463,
+    LOONGARCH_INS_STPTR_D = 464,
+    LOONGARCH_INS_STPTR_W = 465,
+    LOONGARCH_INS_STR_D = 466,
+    LOONGARCH_INS_STR_W = 467,
+    LOONGARCH_INS_STX_B = 468,
+    LOONGARCH_INS_STX_D = 469,
+    LOONGARCH_INS_STX_H = 470,
+    LOONGARCH_INS_STX_W = 471,
+    LOONGARCH_INS_ST_B = 472,
+    LOONGARCH_INS_ST_D = 473,
+    LOONGARCH_INS_ST_H = 474,
+    LOONGARCH_INS_ST_W = 475,
+    LOONGARCH_INS_SUB_D = 476,
+    LOONGARCH_INS_SUB_W = 477,
+    LOONGARCH_INS_SYSCALL = 478,
+    LOONGARCH_INS_TLBCLR = 479,
+    LOONGARCH_INS_TLBFILL = 480,
+    LOONGARCH_INS_TLBFLUSH = 481,
+    LOONGARCH_INS_TLBRD = 482,
+    LOONGARCH_INS_TLBSRCH = 483,
+    LOONGARCH_INS_TLBWR = 484,
+    LOONGARCH_INS_VABSD_B = 485,
+    LOONGARCH_INS_VABSD_BU = 486,
+    LOONGARCH_INS_VABSD_D = 487,
+    LOONGARCH_INS_VABSD_DU = 488,
+    LOONGARCH_INS_VABSD_H = 489,
+    LOONGARCH_INS_VABSD_HU = 490,
+    LOONGARCH_INS_VABSD_W = 491,
+    LOONGARCH_INS_VABSD_WU = 492,
+    LOONGARCH_INS_VADDA_B = 493,
+    LOONGARCH_INS_VADDA_D = 494,
+    LOONGARCH_INS_VADDA_H = 495,
+    LOONGARCH_INS_VADDA_W = 496,
+    LOONGARCH_INS_VADDI_BU = 497,
+    LOONGARCH_INS_VADDI_DU = 498,
+    LOONGARCH_INS_VADDI_HU = 499,
+    LOONGARCH_INS_VADDI_WU = 500,
+    LOONGARCH_INS_VADDWEV_D_W = 501,
+    LOONGARCH_INS_VADDWEV_D_WU = 502,
+    LOONGARCH_INS_VADDWEV_D_WU_W = 503,
+    LOONGARCH_INS_VADDWEV_H_B = 504,
+    LOONGARCH_INS_VADDWEV_H_BU = 505,
+    LOONGARCH_INS_VADDWEV_H_BU_B = 506,
+    LOONGARCH_INS_VADDWEV_Q_D = 507,
+    LOONGARCH_INS_VADDWEV_Q_DU = 508,
+    LOONGARCH_INS_VADDWEV_Q_DU_D = 509,
+    LOONGARCH_INS_VADDWEV_W_H = 510,
+    LOONGARCH_INS_VADDWEV_W_HU = 511,
+    LOONGARCH_INS_VADDWEV_W_HU_H = 512,
+    LOONGARCH_INS_VADDWOD_D_W = 513,
+    LOONGARCH_INS_VADDWOD_D_WU = 514,
+    LOONGARCH_INS_VADDWOD_D_WU_W = 515,
+    LOONGARCH_INS_VADDWOD_H_B = 516,
+    LOONGARCH_INS_VADDWOD_H_BU = 517,
+    LOONGARCH_INS_VADDWOD_H_BU_B = 518,
+    LOONGARCH_INS_VADDWOD_Q_D = 519,
+    LOONGARCH_INS_VADDWOD_Q_DU = 520,
+    LOONGARCH_INS_VADDWOD_Q_DU_D = 521,
+    LOONGARCH_INS_VADDWOD_W_H = 522,
+    LOONGARCH_INS_VADDWOD_W_HU = 523,
+    LOONGARCH_INS_VADDWOD_W_HU_H = 524,
+    LOONGARCH_INS_VADD_B = 525,
+    LOONGARCH_INS_VADD_D = 526,
+    LOONGARCH_INS_VADD_H = 527,
+    LOONGARCH_INS_VADD_Q = 528,
+    LOONGARCH_INS_VADD_W = 529,
+    LOONGARCH_INS_VANDI_B = 530,
+    LOONGARCH_INS_VANDN_V = 531,
+    LOONGARCH_INS_VAND_V = 532,
+    LOONGARCH_INS_VAVGR_B = 533,
+    LOONGARCH_INS_VAVGR_BU = 534,
+    LOONGARCH_INS_VAVGR_D = 535,
+    LOONGARCH_INS_VAVGR_DU = 536,
+    LOONGARCH_INS_VAVGR_H = 537,
+    LOONGARCH_INS_VAVGR_HU = 538,
+    LOONGARCH_INS_VAVGR_W = 539,
+    LOONGARCH_INS_VAVGR_WU = 540,
+    LOONGARCH_INS_VAVG_B = 541,
+    LOONGARCH_INS_VAVG_BU = 542,
+    LOONGARCH_INS_VAVG_D = 543,
+    LOONGARCH_INS_VAVG_DU = 544,
+    LOONGARCH_INS_VAVG_H = 545,
+    LOONGARCH_INS_VAVG_HU = 546,
+    LOONGARCH_INS_VAVG_W = 547,
+    LOONGARCH_INS_VAVG_WU = 548,
+    LOONGARCH_INS_VBITCLRI_B = 549,
+    LOONGARCH_INS_VBITCLRI_D = 550,
+    LOONGARCH_INS_VBITCLRI_H = 551,
+    LOONGARCH_INS_VBITCLRI_W = 552,
+    LOONGARCH_INS_VBITCLR_B = 553,
+    LOONGARCH_INS_VBITCLR_D = 554,
+    LOONGARCH_INS_VBITCLR_H = 555,
+    LOONGARCH_INS_VBITCLR_W = 556,
+    LOONGARCH_INS_VBITREVI_B = 557,
+    LOONGARCH_INS_VBITREVI_D = 558,
+    LOONGARCH_INS_VBITREVI_H = 559,
+    LOONGARCH_INS_VBITREVI_W = 560,
+    LOONGARCH_INS_VBITREV_B = 561,
+    LOONGARCH_INS_VBITREV_D = 562,
+    LOONGARCH_INS_VBITREV_H = 563,
+    LOONGARCH_INS_VBITREV_W = 564,
+    LOONGARCH_INS_VBITSELI_B = 565,
+    LOONGARCH_INS_VBITSEL_V = 566,
+    LOONGARCH_INS_VBITSETI_B = 567,
+    LOONGARCH_INS_VBITSETI_D = 568,
+    LOONGARCH_INS_VBITSETI_H = 569,
+    LOONGARCH_INS_VBITSETI_W = 570,
+    LOONGARCH_INS_VBITSET_B = 571,
+    LOONGARCH_INS_VBITSET_D = 572,
+    LOONGARCH_INS_VBITSET_H = 573,
+    LOONGARCH_INS_VBITSET_W = 574,
+    LOONGARCH_INS_VBSLL_V = 575,
+    LOONGARCH_INS_VBSRL_V = 576,
+    LOONGARCH_INS_VCLO_B = 577,
+    LOONGARCH_INS_VCLO_D = 578,
+    LOONGARCH_INS_VCLO_H = 579,
+    LOONGARCH_INS_VCLO_W = 580,
+    LOONGARCH_INS_VCLZ_B = 581,
+    LOONGARCH_INS_VCLZ_D = 582,
+    LOONGARCH_INS_VCLZ_H = 583,
+    LOONGARCH_INS_VCLZ_W = 584,
+    LOONGARCH_INS_VDIV_B = 585,
+    LOONGARCH_INS_VDIV_BU = 586,
+    LOONGARCH_INS_VDIV_D = 587,
+    LOONGARCH_INS_VDIV_DU = 588,
+    LOONGARCH_INS_VDIV_H = 589,
+    LOONGARCH_INS_VDIV_HU = 590,
+    LOONGARCH_INS_VDIV_W = 591,
+    LOONGARCH_INS_VDIV_WU = 592,
+    LOONGARCH_INS_VEXT2XV_DU_BU = 593,
+    LOONGARCH_INS_VEXT2XV_DU_HU = 594,
+    LOONGARCH_INS_VEXT2XV_DU_WU = 595,
+    LOONGARCH_INS_VEXT2XV_D_B = 596,
+    LOONGARCH_INS_VEXT2XV_D_H = 597,
+    LOONGARCH_INS_VEXT2XV_D_W = 598,
+    LOONGARCH_INS_VEXT2XV_HU_BU = 599,
+    LOONGARCH_INS_VEXT2XV_H_B = 600,
+    LOONGARCH_INS_VEXT2XV_WU_BU = 601,
+    LOONGARCH_INS_VEXT2XV_WU_HU = 602,
+    LOONGARCH_INS_VEXT2XV_W_B = 603,
+    LOONGARCH_INS_VEXT2XV_W_H = 604,
+    LOONGARCH_INS_VEXTH_DU_WU = 605,
+    LOONGARCH_INS_VEXTH_D_W = 606,
+    LOONGARCH_INS_VEXTH_HU_BU = 607,
+    LOONGARCH_INS_VEXTH_H_B = 608,
+    LOONGARCH_INS_VEXTH_QU_DU = 609,
+    LOONGARCH_INS_VEXTH_Q_D = 610,
+    LOONGARCH_INS_VEXTH_WU_HU = 611,
+    LOONGARCH_INS_VEXTH_W_H = 612,
+    LOONGARCH_INS_VEXTL_QU_DU = 613,
+    LOONGARCH_INS_VEXTL_Q_D = 614,
+    LOONGARCH_INS_VEXTRINS_B = 615,
+    LOONGARCH_INS_VEXTRINS_D = 616,
+    LOONGARCH_INS_VEXTRINS_H = 617,
+    LOONGARCH_INS_VEXTRINS_W = 618,
+    LOONGARCH_INS_VFADD_D = 619,
+    LOONGARCH_INS_VFADD_S = 620,
+    LOONGARCH_INS_VFCLASS_D = 621,
+    LOONGARCH_INS_VFCLASS_S = 622,
+    LOONGARCH_INS_VFCMP_CAF_D = 623,
+    LOONGARCH_INS_VFCMP_CAF_S = 624,
+    LOONGARCH_INS_VFCMP_CEQ_D = 625,
+    LOONGARCH_INS_VFCMP_CEQ_S = 626,
+    LOONGARCH_INS_VFCMP_CLE_D = 627,
+    LOONGARCH_INS_VFCMP_CLE_S = 628,
+    LOONGARCH_INS_VFCMP_CLT_D = 629,
+    LOONGARCH_INS_VFCMP_CLT_S = 630,
+    LOONGARCH_INS_VFCMP_CNE_D = 631,
+    LOONGARCH_INS_VFCMP_CNE_S = 632,
+    LOONGARCH_INS_VFCMP_COR_D = 633,
+    LOONGARCH_INS_VFCMP_COR_S = 634,
+    LOONGARCH_INS_VFCMP_CUEQ_D = 635,
+    LOONGARCH_INS_VFCMP_CUEQ_S = 636,
+    LOONGARCH_INS_VFCMP_CULE_D = 637,
+    LOONGARCH_INS_VFCMP_CULE_S = 638,
+    LOONGARCH_INS_VFCMP_CULT_D = 639,
+    LOONGARCH_INS_VFCMP_CULT_S = 640,
+    LOONGARCH_INS_VFCMP_CUNE_D = 641,
+    LOONGARCH_INS_VFCMP_CUNE_S = 642,
+    LOONGARCH_INS_VFCMP_CUN_D = 643,
+    LOONGARCH_INS_VFCMP_CUN_S = 644,
+    LOONGARCH_INS_VFCMP_SAF_D = 645,
+    LOONGARCH_INS_VFCMP_SAF_S = 646,
+    LOONGARCH_INS_VFCMP_SEQ_D = 647,
+    LOONGARCH_INS_VFCMP_SEQ_S = 648,
+    LOONGARCH_INS_VFCMP_SLE_D = 649,
+    LOONGARCH_INS_VFCMP_SLE_S = 650,
+    LOONGARCH_INS_VFCMP_SLT_D = 651,
+    LOONGARCH_INS_VFCMP_SLT_S = 652,
+    LOONGARCH_INS_VFCMP_SNE_D = 653,
+    LOONGARCH_INS_VFCMP_SNE_S = 654,
+    LOONGARCH_INS_VFCMP_SOR_D = 655,
+    LOONGARCH_INS_VFCMP_SOR_S = 656,
+    LOONGARCH_INS_VFCMP_SUEQ_D = 657,
+    LOONGARCH_INS_VFCMP_SUEQ_S = 658,
+    LOONGARCH_INS_VFCMP_SULE_D = 659,
+    LOONGARCH_INS_VFCMP_SULE_S = 660,
+    LOONGARCH_INS_VFCMP_SULT_D = 661,
+    LOONGARCH_INS_VFCMP_SULT_S = 662,
+    LOONGARCH_INS_VFCMP_SUNE_D = 663,
+    LOONGARCH_INS_VFCMP_SUNE_S = 664,
+    LOONGARCH_INS_VFCMP_SUN_D = 665,
+    LOONGARCH_INS_VFCMP_SUN_S = 666,
+    LOONGARCH_INS_VFCVTH_D_S = 667,
+    LOONGARCH_INS_VFCVTH_S_H = 668,
+    LOONGARCH_INS_VFCVTL_D_S = 669,
+    LOONGARCH_INS_VFCVTL_S_H = 670,
+    LOONGARCH_INS_VFCVT_H_S = 671,
+    LOONGARCH_INS_VFCVT_S_D = 672,
+    LOONGARCH_INS_VFDIV_D = 673,
+    LOONGARCH_INS_VFDIV_S = 674,
+    LOONGARCH_INS_VFFINTH_D_W = 675,
+    LOONGARCH_INS_VFFINTL_D_W = 676,
+    LOONGARCH_INS_VFFINT_D_L = 677,
+    LOONGARCH_INS_VFFINT_D_LU = 678,
+    LOONGARCH_INS_VFFINT_S_L = 679,
+    LOONGARCH_INS_VFFINT_S_W = 680,
+    LOONGARCH_INS_VFFINT_S_WU = 681,
+    LOONGARCH_INS_VFLOGB_D = 682,
+    LOONGARCH_INS_VFLOGB_S = 683,
+    LOONGARCH_INS_VFMADD_D = 684,
+    LOONGARCH_INS_VFMADD_S = 685,
+    LOONGARCH_INS_VFMAXA_D = 686,
+    LOONGARCH_INS_VFMAXA_S = 687,
+    LOONGARCH_INS_VFMAX_D = 688,
+    LOONGARCH_INS_VFMAX_S = 689,
+    LOONGARCH_INS_VFMINA_D = 690,
+    LOONGARCH_INS_VFMINA_S = 691,
+    LOONGARCH_INS_VFMIN_D = 692,
+    LOONGARCH_INS_VFMIN_S = 693,
+    LOONGARCH_INS_VFMSUB_D = 694,
+    LOONGARCH_INS_VFMSUB_S = 695,
+    LOONGARCH_INS_VFMUL_D = 696,
+    LOONGARCH_INS_VFMUL_S = 697,
+    LOONGARCH_INS_VFNMADD_D = 698,
+    LOONGARCH_INS_VFNMADD_S = 699,
+    LOONGARCH_INS_VFNMSUB_D = 700,
+    LOONGARCH_INS_VFNMSUB_S = 701,
+    LOONGARCH_INS_VFRECIPE_D = 702,
+    LOONGARCH_INS_VFRECIPE_S = 703,
+    LOONGARCH_INS_VFRECIP_D = 704,
+    LOONGARCH_INS_VFRECIP_S = 705,
+    LOONGARCH_INS_VFRINTRM_D = 706,
+    LOONGARCH_INS_VFRINTRM_S = 707,
+    LOONGARCH_INS_VFRINTRNE_D = 708,
+    LOONGARCH_INS_VFRINTRNE_S = 709,
+    LOONGARCH_INS_VFRINTRP_D = 710,
+    LOONGARCH_INS_VFRINTRP_S = 711,
+    LOONGARCH_INS_VFRINTRZ_D = 712,
+    LOONGARCH_INS_VFRINTRZ_S = 713,
+    LOONGARCH_INS_VFRINT_D = 714,
+    LOONGARCH_INS_VFRINT_S = 715,
+    LOONGARCH_INS_VFRSQRTE_D = 716,
+    LOONGARCH_INS_VFRSQRTE_S = 717,
+    LOONGARCH_INS_VFRSQRT_D = 718,
+    LOONGARCH_INS_VFRSQRT_S = 719,
+    LOONGARCH_INS_VFRSTPI_B = 720,
+    LOONGARCH_INS_VFRSTPI_H = 721,
+    LOONGARCH_INS_VFRSTP_B = 722,
+    LOONGARCH_INS_VFRSTP_H = 723,
+    LOONGARCH_INS_VFSQRT_D = 724,
+    LOONGARCH_INS_VFSQRT_S = 725,
+    LOONGARCH_INS_VFSUB_D = 726,
+    LOONGARCH_INS_VFSUB_S = 727,
+    LOONGARCH_INS_VFTINTH_L_S = 728,
+    LOONGARCH_INS_VFTINTL_L_S = 729,
+    LOONGARCH_INS_VFTINTRMH_L_S = 730,
+    LOONGARCH_INS_VFTINTRML_L_S = 731,
+    LOONGARCH_INS_VFTINTRM_L_D = 732,
+    LOONGARCH_INS_VFTINTRM_W_D = 733,
+    LOONGARCH_INS_VFTINTRM_W_S = 734,
+    LOONGARCH_INS_VFTINTRNEH_L_S = 735,
+    LOONGARCH_INS_VFTINTRNEL_L_S = 736,
+    LOONGARCH_INS_VFTINTRNE_L_D = 737,
+    LOONGARCH_INS_VFTINTRNE_W_D = 738,
+    LOONGARCH_INS_VFTINTRNE_W_S = 739,
+    LOONGARCH_INS_VFTINTRPH_L_S = 740,
+    LOONGARCH_INS_VFTINTRPL_L_S = 741,
+    LOONGARCH_INS_VFTINTRP_L_D = 742,
+    LOONGARCH_INS_VFTINTRP_W_D = 743,
+    LOONGARCH_INS_VFTINTRP_W_S = 744,
+    LOONGARCH_INS_VFTINTRZH_L_S = 745,
+    LOONGARCH_INS_VFTINTRZL_L_S = 746,
+    LOONGARCH_INS_VFTINTRZ_LU_D = 747,
+    LOONGARCH_INS_VFTINTRZ_L_D = 748,
+    LOONGARCH_INS_VFTINTRZ_WU_S = 749,
+    LOONGARCH_INS_VFTINTRZ_W_D = 750,
+    LOONGARCH_INS_VFTINTRZ_W_S = 751,
+    LOONGARCH_INS_VFTINT_LU_D = 752,
+    LOONGARCH_INS_VFTINT_L_D = 753,
+    LOONGARCH_INS_VFTINT_WU_S = 754,
+    LOONGARCH_INS_VFTINT_W_D = 755,
+    LOONGARCH_INS_VFTINT_W_S = 756,
+    LOONGARCH_INS_VHADDW_DU_WU = 757,
+    LOONGARCH_INS_VHADDW_D_W = 758,
+    LOONGARCH_INS_VHADDW_HU_BU = 759,
+    LOONGARCH_INS_VHADDW_H_B = 760,
+    LOONGARCH_INS_VHADDW_QU_DU = 761,
+    LOONGARCH_INS_VHADDW_Q_D = 762,
+    LOONGARCH_INS_VHADDW_WU_HU = 763,
+    LOONGARCH_INS_VHADDW_W_H = 764,
+    LOONGARCH_INS_VHSUBW_DU_WU = 765,
+    LOONGARCH_INS_VHSUBW_D_W = 766,
+    LOONGARCH_INS_VHSUBW_HU_BU = 767,
+    LOONGARCH_INS_VHSUBW_H_B = 768,
+    LOONGARCH_INS_VHSUBW_QU_DU = 769,
+    LOONGARCH_INS_VHSUBW_Q_D = 770,
+    LOONGARCH_INS_VHSUBW_WU_HU = 771,
+    LOONGARCH_INS_VHSUBW_W_H = 772,
+    LOONGARCH_INS_VILVH_B = 773,
+    LOONGARCH_INS_VILVH_D = 774,
+    LOONGARCH_INS_VILVH_H = 775,
+    LOONGARCH_INS_VILVH_W = 776,
+    LOONGARCH_INS_VILVL_B = 777,
+    LOONGARCH_INS_VILVL_D = 778,
+    LOONGARCH_INS_VILVL_H = 779,
+    LOONGARCH_INS_VILVL_W = 780,
+    LOONGARCH_INS_VINSGR2VR_B = 781,
+    LOONGARCH_INS_VINSGR2VR_D = 782,
+    LOONGARCH_INS_VINSGR2VR_H = 783,
+    LOONGARCH_INS_VINSGR2VR_W = 784,
+    LOONGARCH_INS_VLD = 785,
+    LOONGARCH_INS_VLDI = 786,
+    LOONGARCH_INS_VLDREPL_B = 787,
+    LOONGARCH_INS_VLDREPL_D = 788,
+    LOONGARCH_INS_VLDREPL_H = 789,
+    LOONGARCH_INS_VLDREPL_W = 790,
+    LOONGARCH_INS_VLDX = 791,
+    LOONGARCH_INS_VMADDWEV_D_W = 792,
+    LOONGARCH_INS_VMADDWEV_D_WU = 793,
+    LOONGARCH_INS_VMADDWEV_D_WU_W = 794,
+    LOONGARCH_INS_VMADDWEV_H_B = 795,
+    LOONGARCH_INS_VMADDWEV_H_BU = 796,
+    LOONGARCH_INS_VMADDWEV_H_BU_B = 797,
+    LOONGARCH_INS_VMADDWEV_Q_D = 798,
+    LOONGARCH_INS_VMADDWEV_Q_DU = 799,
+    LOONGARCH_INS_VMADDWEV_Q_DU_D = 800,
+    LOONGARCH_INS_VMADDWEV_W_H = 801,
+    LOONGARCH_INS_VMADDWEV_W_HU = 802,
+    LOONGARCH_INS_VMADDWEV_W_HU_H = 803,
+    LOONGARCH_INS_VMADDWOD_D_W = 804,
+    LOONGARCH_INS_VMADDWOD_D_WU = 805,
+    LOONGARCH_INS_VMADDWOD_D_WU_W = 806,
+    LOONGARCH_INS_VMADDWOD_H_B = 807,
+    LOONGARCH_INS_VMADDWOD_H_BU = 808,
+    LOONGARCH_INS_VMADDWOD_H_BU_B = 809,
+    LOONGARCH_INS_VMADDWOD_Q_D = 810,
+    LOONGARCH_INS_VMADDWOD_Q_DU = 811,
+    LOONGARCH_INS_VMADDWOD_Q_DU_D = 812,
+    LOONGARCH_INS_VMADDWOD_W_H = 813,
+    LOONGARCH_INS_VMADDWOD_W_HU = 814,
+    LOONGARCH_INS_VMADDWOD_W_HU_H = 815,
+    LOONGARCH_INS_VMADD_B = 816,
+    LOONGARCH_INS_VMADD_D = 817,
+    LOONGARCH_INS_VMADD_H = 818,
+    LOONGARCH_INS_VMADD_W = 819,
+    LOONGARCH_INS_VMAXI_B = 820,
+    LOONGARCH_INS_VMAXI_BU = 821,
+    LOONGARCH_INS_VMAXI_D = 822,
+    LOONGARCH_INS_VMAXI_DU = 823,
+    LOONGARCH_INS_VMAXI_H = 824,
+    LOONGARCH_INS_VMAXI_HU = 825,
+    LOONGARCH_INS_VMAXI_W = 826,
+    LOONGARCH_INS_VMAXI_WU = 827,
+    LOONGARCH_INS_VMAX_B = 828,
+    LOONGARCH_INS_VMAX_BU = 829,
+    LOONGARCH_INS_VMAX_D = 830,
+    LOONGARCH_INS_VMAX_DU = 831,
+    LOONGARCH_INS_VMAX_H = 832,
+    LOONGARCH_INS_VMAX_HU = 833,
+    LOONGARCH_INS_VMAX_W = 834,
+    LOONGARCH_INS_VMAX_WU = 835,
+    LOONGARCH_INS_VMINI_B = 836,
+    LOONGARCH_INS_VMINI_BU = 837,
+    LOONGARCH_INS_VMINI_D = 838,
+    LOONGARCH_INS_VMINI_DU = 839,
+    LOONGARCH_INS_VMINI_H = 840,
+    LOONGARCH_INS_VMINI_HU = 841,
+    LOONGARCH_INS_VMINI_W = 842,
+    LOONGARCH_INS_VMINI_WU = 843,
+    LOONGARCH_INS_VMIN_B = 844,
+    LOONGARCH_INS_VMIN_BU = 845,
+    LOONGARCH_INS_VMIN_D = 846,
+    LOONGARCH_INS_VMIN_DU = 847,
+    LOONGARCH_INS_VMIN_H = 848,
+    LOONGARCH_INS_VMIN_HU = 849,
+    LOONGARCH_INS_VMIN_W = 850,
+    LOONGARCH_INS_VMIN_WU = 851,
+    LOONGARCH_INS_VMOD_B = 852,
+    LOONGARCH_INS_VMOD_BU = 853,
+    LOONGARCH_INS_VMOD_D = 854,
+    LOONGARCH_INS_VMOD_DU = 855,
+    LOONGARCH_INS_VMOD_H = 856,
+    LOONGARCH_INS_VMOD_HU = 857,
+    LOONGARCH_INS_VMOD_W = 858,
+    LOONGARCH_INS_VMOD_WU = 859,
+    LOONGARCH_INS_VMSKGEZ_B = 860,
+    LOONGARCH_INS_VMSKLTZ_B = 861,
+    LOONGARCH_INS_VMSKLTZ_D = 862,
+    LOONGARCH_INS_VMSKLTZ_H = 863,
+    LOONGARCH_INS_VMSKLTZ_W = 864,
+    LOONGARCH_INS_VMSKNZ_B = 865,
+    LOONGARCH_INS_VMSUB_B = 866,
+    LOONGARCH_INS_VMSUB_D = 867,
+    LOONGARCH_INS_VMSUB_H = 868,
+    LOONGARCH_INS_VMSUB_W = 869,
+    LOONGARCH_INS_VMUH_B = 870,
+    LOONGARCH_INS_VMUH_BU = 871,
+    LOONGARCH_INS_VMUH_D = 872,
+    LOONGARCH_INS_VMUH_DU = 873,
+    LOONGARCH_INS_VMUH_H = 874,
+    LOONGARCH_INS_VMUH_HU = 875,
+    LOONGARCH_INS_VMUH_W = 876,
+    LOONGARCH_INS_VMUH_WU = 877,
+    LOONGARCH_INS_VMULWEV_D_W = 878,
+    LOONGARCH_INS_VMULWEV_D_WU = 879,
+    LOONGARCH_INS_VMULWEV_D_WU_W = 880,
+    LOONGARCH_INS_VMULWEV_H_B = 881,
+    LOONGARCH_INS_VMULWEV_H_BU = 882,
+    LOONGARCH_INS_VMULWEV_H_BU_B = 883,
+    LOONGARCH_INS_VMULWEV_Q_D = 884,
+    LOONGARCH_INS_VMULWEV_Q_DU = 885,
+    LOONGARCH_INS_VMULWEV_Q_DU_D = 886,
+    LOONGARCH_INS_VMULWEV_W_H = 887,
+    LOONGARCH_INS_VMULWEV_W_HU = 888,
+    LOONGARCH_INS_VMULWEV_W_HU_H = 889,
+    LOONGARCH_INS_VMULWOD_D_W = 890,
+    LOONGARCH_INS_VMULWOD_D_WU = 891,
+    LOONGARCH_INS_VMULWOD_D_WU_W = 892,
+    LOONGARCH_INS_VMULWOD_H_B = 893,
+    LOONGARCH_INS_VMULWOD_H_BU = 894,
+    LOONGARCH_INS_VMULWOD_H_BU_B = 895,
+    LOONGARCH_INS_VMULWOD_Q_D = 896,
+    LOONGARCH_INS_VMULWOD_Q_DU = 897,
+    LOONGARCH_INS_VMULWOD_Q_DU_D = 898,
+    LOONGARCH_INS_VMULWOD_W_H = 899,
+    LOONGARCH_INS_VMULWOD_W_HU = 900,
+    LOONGARCH_INS_VMULWOD_W_HU_H = 901,
+    LOONGARCH_INS_VMUL_B = 902,
+    LOONGARCH_INS_VMUL_D = 903,
+    LOONGARCH_INS_VMUL_H = 904,
+    LOONGARCH_INS_VMUL_W = 905,
+    LOONGARCH_INS_VNEG_B = 906,
+    LOONGARCH_INS_VNEG_D = 907,
+    LOONGARCH_INS_VNEG_H = 908,
+    LOONGARCH_INS_VNEG_W = 909,
+    LOONGARCH_INS_VNORI_B = 910,
+    LOONGARCH_INS_VNOR_V = 911,
+    LOONGARCH_INS_VORI_B = 912,
+    LOONGARCH_INS_VORN_V = 913,
+    LOONGARCH_INS_VOR_V = 914,
+    LOONGARCH_INS_VPACKEV_B = 915,
+    LOONGARCH_INS_VPACKEV_D = 916,
+    LOONGARCH_INS_VPACKEV_H = 917,
+    LOONGARCH_INS_VPACKEV_W = 918,
+    LOONGARCH_INS_VPACKOD_B = 919,
+    LOONGARCH_INS_VPACKOD_D = 920,
+    LOONGARCH_INS_VPACKOD_H = 921,
+    LOONGARCH_INS_VPACKOD_W = 922,
+    LOONGARCH_INS_VPCNT_B = 923,
+    LOONGARCH_INS_VPCNT_D = 924,
+    LOONGARCH_INS_VPCNT_H = 925,
+    LOONGARCH_INS_VPCNT_W = 926,
+    LOONGARCH_INS_VPERMI_W = 927,
+    LOONGARCH_INS_VPICKEV_B = 928,
+    LOONGARCH_INS_VPICKEV_D = 929,
+    LOONGARCH_INS_VPICKEV_H = 930,
+    LOONGARCH_INS_VPICKEV_W = 931,
+    LOONGARCH_INS_VPICKOD_B = 932,
+    LOONGARCH_INS_VPICKOD_D = 933,
+    LOONGARCH_INS_VPICKOD_H = 934,
+    LOONGARCH_INS_VPICKOD_W = 935,
+    LOONGARCH_INS_VPICKVE2GR_B = 936,
+    LOONGARCH_INS_VPICKVE2GR_BU = 937,
+    LOONGARCH_INS_VPICKVE2GR_D = 938,
+    LOONGARCH_INS_VPICKVE2GR_DU = 939,
+    LOONGARCH_INS_VPICKVE2GR_H = 940,
+    LOONGARCH_INS_VPICKVE2GR_HU = 941,
+    LOONGARCH_INS_VPICKVE2GR_W = 942,
+    LOONGARCH_INS_VPICKVE2GR_WU = 943,
+    LOONGARCH_INS_VREPLGR2VR_B = 944,
+    LOONGARCH_INS_VREPLGR2VR_D = 945,
+    LOONGARCH_INS_VREPLGR2VR_H = 946,
+    LOONGARCH_INS_VREPLGR2VR_W = 947,
+    LOONGARCH_INS_VREPLVEI_B = 948,
+    LOONGARCH_INS_VREPLVEI_D = 949,
+    LOONGARCH_INS_VREPLVEI_H = 950,
+    LOONGARCH_INS_VREPLVEI_W = 951,
+    LOONGARCH_INS_VREPLVE_B = 952,
+    LOONGARCH_INS_VREPLVE_D = 953,
+    LOONGARCH_INS_VREPLVE_H = 954,
+    LOONGARCH_INS_VREPLVE_W = 955,
+    LOONGARCH_INS_VROTRI_B = 956,
+    LOONGARCH_INS_VROTRI_D = 957,
+    LOONGARCH_INS_VROTRI_H = 958,
+    LOONGARCH_INS_VROTRI_W = 959,
+    LOONGARCH_INS_VROTR_B = 960,
+    LOONGARCH_INS_VROTR_D = 961,
+    LOONGARCH_INS_VROTR_H = 962,
+    LOONGARCH_INS_VROTR_W = 963,
+    LOONGARCH_INS_VSADD_B = 964,
+    LOONGARCH_INS_VSADD_BU = 965,
+    LOONGARCH_INS_VSADD_D = 966,
+    LOONGARCH_INS_VSADD_DU = 967,
+    LOONGARCH_INS_VSADD_H = 968,
+    LOONGARCH_INS_VSADD_HU = 969,
+    LOONGARCH_INS_VSADD_W = 970,
+    LOONGARCH_INS_VSADD_WU = 971,
+    LOONGARCH_INS_VSAT_B = 972,
+    LOONGARCH_INS_VSAT_BU = 973,
+    LOONGARCH_INS_VSAT_D = 974,
+    LOONGARCH_INS_VSAT_DU = 975,
+    LOONGARCH_INS_VSAT_H = 976,
+    LOONGARCH_INS_VSAT_HU = 977,
+    LOONGARCH_INS_VSAT_W = 978,
+    LOONGARCH_INS_VSAT_WU = 979,
+    LOONGARCH_INS_VSEQI_B = 980,
+    LOONGARCH_INS_VSEQI_D = 981,
+    LOONGARCH_INS_VSEQI_H = 982,
+    LOONGARCH_INS_VSEQI_W = 983,
+    LOONGARCH_INS_VSEQ_B = 984,
+    LOONGARCH_INS_VSEQ_D = 985,
+    LOONGARCH_INS_VSEQ_H = 986,
+    LOONGARCH_INS_VSEQ_W = 987,
+    LOONGARCH_INS_VSETALLNEZ_B = 988,
+    LOONGARCH_INS_VSETALLNEZ_D = 989,
+    LOONGARCH_INS_VSETALLNEZ_H = 990,
+    LOONGARCH_INS_VSETALLNEZ_W = 991,
+    LOONGARCH_INS_VSETANYEQZ_B = 992,
+    LOONGARCH_INS_VSETANYEQZ_D = 993,
+    LOONGARCH_INS_VSETANYEQZ_H = 994,
+    LOONGARCH_INS_VSETANYEQZ_W = 995,
+    LOONGARCH_INS_VSETEQZ_V = 996,
+    LOONGARCH_INS_VSETNEZ_V = 997,
+    LOONGARCH_INS_VSHUF4I_B = 998,
+    LOONGARCH_INS_VSHUF4I_D = 999,
+    LOONGARCH_INS_VSHUF4I_H = 1000,
+    LOONGARCH_INS_VSHUF4I_W = 1001,
+    LOONGARCH_INS_VSHUF_B = 1002,
+    LOONGARCH_INS_VSHUF_D = 1003,
+    LOONGARCH_INS_VSHUF_H = 1004,
+    LOONGARCH_INS_VSHUF_W = 1005,
+    LOONGARCH_INS_VSIGNCOV_B = 1006,
+    LOONGARCH_INS_VSIGNCOV_D = 1007,
+    LOONGARCH_INS_VSIGNCOV_H = 1008,
+    LOONGARCH_INS_VSIGNCOV_W = 1009,
+    LOONGARCH_INS_VSLEI_B = 1010,
+    LOONGARCH_INS_VSLEI_BU = 1011,
+    LOONGARCH_INS_VSLEI_D = 1012,
+    LOONGARCH_INS_VSLEI_DU = 1013,
+    LOONGARCH_INS_VSLEI_H = 1014,
+    LOONGARCH_INS_VSLEI_HU = 1015,
+    LOONGARCH_INS_VSLEI_W = 1016,
+    LOONGARCH_INS_VSLEI_WU = 1017,
+    LOONGARCH_INS_VSLE_B = 1018,
+    LOONGARCH_INS_VSLE_BU = 1019,
+    LOONGARCH_INS_VSLE_D = 1020,
+    LOONGARCH_INS_VSLE_DU = 1021,
+    LOONGARCH_INS_VSLE_H = 1022,
+    LOONGARCH_INS_VSLE_HU = 1023,
+    LOONGARCH_INS_VSLE_W = 1024,
+    LOONGARCH_INS_VSLE_WU = 1025,
+    LOONGARCH_INS_VSLLI_B = 1026,
+    LOONGARCH_INS_VSLLI_D = 1027,
+    LOONGARCH_INS_VSLLI_H = 1028,
+    LOONGARCH_INS_VSLLI_W = 1029,
+    LOONGARCH_INS_VSLLWIL_DU_WU = 1030,
+    LOONGARCH_INS_VSLLWIL_D_W = 1031,
+    LOONGARCH_INS_VSLLWIL_HU_BU = 1032,
+    LOONGARCH_INS_VSLLWIL_H_B = 1033,
+    LOONGARCH_INS_VSLLWIL_WU_HU = 1034,
+    LOONGARCH_INS_VSLLWIL_W_H = 1035,
+    LOONGARCH_INS_VSLL_B = 1036,
+    LOONGARCH_INS_VSLL_D = 1037,
+    LOONGARCH_INS_VSLL_H = 1038,
+    LOONGARCH_INS_VSLL_W = 1039,
+    LOONGARCH_INS_VSLTI_B = 1040,
+    LOONGARCH_INS_VSLTI_BU = 1041,
+    LOONGARCH_INS_VSLTI_D = 1042,
+    LOONGARCH_INS_VSLTI_DU = 1043,
+    LOONGARCH_INS_VSLTI_H = 1044,
+    LOONGARCH_INS_VSLTI_HU = 1045,
+    LOONGARCH_INS_VSLTI_W = 1046,
+    LOONGARCH_INS_VSLTI_WU = 1047,
+    LOONGARCH_INS_VSLT_B = 1048,
+    LOONGARCH_INS_VSLT_BU = 1049,
+    LOONGARCH_INS_VSLT_D = 1050,
+    LOONGARCH_INS_VSLT_DU = 1051,
+    LOONGARCH_INS_VSLT_H = 1052,
+    LOONGARCH_INS_VSLT_HU = 1053,
+    LOONGARCH_INS_VSLT_W = 1054,
+    LOONGARCH_INS_VSLT_WU = 1055,
+    LOONGARCH_INS_VSRAI_B = 1056,
+    LOONGARCH_INS_VSRAI_D = 1057,
+    LOONGARCH_INS_VSRAI_H = 1058,
+    LOONGARCH_INS_VSRAI_W = 1059,
+    LOONGARCH_INS_VSRANI_B_H = 1060,
+    LOONGARCH_INS_VSRANI_D_Q = 1061,
+    LOONGARCH_INS_VSRANI_H_W = 1062,
+    LOONGARCH_INS_VSRANI_W_D = 1063,
+    LOONGARCH_INS_VSRAN_B_H = 1064,
+    LOONGARCH_INS_VSRAN_H_W = 1065,
+    LOONGARCH_INS_VSRAN_W_D = 1066,
+    LOONGARCH_INS_VSRARI_B = 1067,
+    LOONGARCH_INS_VSRARI_D = 1068,
+    LOONGARCH_INS_VSRARI_H = 1069,
+    LOONGARCH_INS_VSRARI_W = 1070,
+    LOONGARCH_INS_VSRARNI_B_H = 1071,
+    LOONGARCH_INS_VSRARNI_D_Q = 1072,
+    LOONGARCH_INS_VSRARNI_H_W = 1073,
+    LOONGARCH_INS_VSRARNI_W_D = 1074,
+    LOONGARCH_INS_VSRARN_B_H = 1075,
+    LOONGARCH_INS_VSRARN_H_W = 1076,
+    LOONGARCH_INS_VSRARN_W_D = 1077,
+    LOONGARCH_INS_VSRAR_B = 1078,
+    LOONGARCH_INS_VSRAR_D = 1079,
+    LOONGARCH_INS_VSRAR_H = 1080,
+    LOONGARCH_INS_VSRAR_W = 1081,
+    LOONGARCH_INS_VSRA_B = 1082,
+    LOONGARCH_INS_VSRA_D = 1083,
+    LOONGARCH_INS_VSRA_H = 1084,
+    LOONGARCH_INS_VSRA_W = 1085,
+    LOONGARCH_INS_VSRLI_B = 1086,
+    LOONGARCH_INS_VSRLI_D = 1087,
+    LOONGARCH_INS_VSRLI_H = 1088,
+    LOONGARCH_INS_VSRLI_W = 1089,
+    LOONGARCH_INS_VSRLNI_B_H = 1090,
+    LOONGARCH_INS_VSRLNI_D_Q = 1091,
+    LOONGARCH_INS_VSRLNI_H_W = 1092,
+    LOONGARCH_INS_VSRLNI_W_D = 1093,
+    LOONGARCH_INS_VSRLN_B_H = 1094,
+    LOONGARCH_INS_VSRLN_H_W = 1095,
+    LOONGARCH_INS_VSRLN_W_D = 1096,
+    LOONGARCH_INS_VSRLRI_B = 1097,
+    LOONGARCH_INS_VSRLRI_D = 1098,
+    LOONGARCH_INS_VSRLRI_H = 1099,
+    LOONGARCH_INS_VSRLRI_W = 1100,
+    LOONGARCH_INS_VSRLRNI_B_H = 1101,
+    LOONGARCH_INS_VSRLRNI_D_Q = 1102,
+    LOONGARCH_INS_VSRLRNI_H_W = 1103,
+    LOONGARCH_INS_VSRLRNI_W_D = 1104,
+    LOONGARCH_INS_VSRLRN_B_H = 1105,
+    LOONGARCH_INS_VSRLRN_H_W = 1106,
+    LOONGARCH_INS_VSRLRN_W_D = 1107,
+    LOONGARCH_INS_VSRLR_B = 1108,
+    LOONGARCH_INS_VSRLR_D = 1109,
+    LOONGARCH_INS_VSRLR_H = 1110,
+    LOONGARCH_INS_VSRLR_W = 1111,
+    LOONGARCH_INS_VSRL_B = 1112,
+    LOONGARCH_INS_VSRL_D = 1113,
+    LOONGARCH_INS_VSRL_H = 1114,
+    LOONGARCH_INS_VSRL_W = 1115,
+    LOONGARCH_INS_VSSRANI_BU_H = 1116,
+    LOONGARCH_INS_VSSRANI_B_H = 1117,
+    LOONGARCH_INS_VSSRANI_DU_Q = 1118,
+    LOONGARCH_INS_VSSRANI_D_Q = 1119,
+    LOONGARCH_INS_VSSRANI_HU_W = 1120,
+    LOONGARCH_INS_VSSRANI_H_W = 1121,
+    LOONGARCH_INS_VSSRANI_WU_D = 1122,
+    LOONGARCH_INS_VSSRANI_W_D = 1123,
+    LOONGARCH_INS_VSSRAN_BU_H = 1124,
+    LOONGARCH_INS_VSSRAN_B_H = 1125,
+    LOONGARCH_INS_VSSRAN_HU_W = 1126,
+    LOONGARCH_INS_VSSRAN_H_W = 1127,
+    LOONGARCH_INS_VSSRAN_WU_D = 1128,
+    LOONGARCH_INS_VSSRAN_W_D = 1129,
+    LOONGARCH_INS_VSSRARNI_BU_H = 1130,
+    LOONGARCH_INS_VSSRARNI_B_H = 1131,
+    LOONGARCH_INS_VSSRARNI_DU_Q = 1132,
+    LOONGARCH_INS_VSSRARNI_D_Q = 1133,
+    LOONGARCH_INS_VSSRARNI_HU_W = 1134,
+    LOONGARCH_INS_VSSRARNI_H_W = 1135,
+    LOONGARCH_INS_VSSRARNI_WU_D = 1136,
+    LOONGARCH_INS_VSSRARNI_W_D = 1137,
+    LOONGARCH_INS_VSSRARN_BU_H = 1138,
+    LOONGARCH_INS_VSSRARN_B_H = 1139,
+    LOONGARCH_INS_VSSRARN_HU_W = 1140,
+    LOONGARCH_INS_VSSRARN_H_W = 1141,
+    LOONGARCH_INS_VSSRARN_WU_D = 1142,
+    LOONGARCH_INS_VSSRARN_W_D = 1143,
+    LOONGARCH_INS_VSSRLNI_BU_H = 1144,
+    LOONGARCH_INS_VSSRLNI_B_H = 1145,
+    LOONGARCH_INS_VSSRLNI_DU_Q = 1146,
+    LOONGARCH_INS_VSSRLNI_D_Q = 1147,
+    LOONGARCH_INS_VSSRLNI_HU_W = 1148,
+    LOONGARCH_INS_VSSRLNI_H_W = 1149,
+    LOONGARCH_INS_VSSRLNI_WU_D = 1150,
+    LOONGARCH_INS_VSSRLNI_W_D = 1151,
+    LOONGARCH_INS_VSSRLN_BU_H = 1152,
+    LOONGARCH_INS_VSSRLN_B_H = 1153,
+    LOONGARCH_INS_VSSRLN_HU_W = 1154,
+    LOONGARCH_INS_VSSRLN_H_W = 1155,
+    LOONGARCH_INS_VSSRLN_WU_D = 1156,
+    LOONGARCH_INS_VSSRLN_W_D = 1157,
+    LOONGARCH_INS_VSSRLRNI_BU_H = 1158,
+    LOONGARCH_INS_VSSRLRNI_B_H = 1159,
+    LOONGARCH_INS_VSSRLRNI_DU_Q = 1160,
+    LOONGARCH_INS_VSSRLRNI_D_Q = 1161,
+    LOONGARCH_INS_VSSRLRNI_HU_W = 1162,
+    LOONGARCH_INS_VSSRLRNI_H_W = 1163,
+    LOONGARCH_INS_VSSRLRNI_WU_D = 1164,
+    LOONGARCH_INS_VSSRLRNI_W_D = 1165,
+    LOONGARCH_INS_VSSRLRN_BU_H = 1166,
+    LOONGARCH_INS_VSSRLRN_B_H = 1167,
+    LOONGARCH_INS_VSSRLRN_HU_W = 1168,
+    LOONGARCH_INS_VSSRLRN_H_W = 1169,
+    LOONGARCH_INS_VSSRLRN_WU_D = 1170,
+    LOONGARCH_INS_VSSRLRN_W_D = 1171,
+    LOONGARCH_INS_VSSUB_B = 1172,
+    LOONGARCH_INS_VSSUB_BU = 1173,
+    LOONGARCH_INS_VSSUB_D = 1174,
+    LOONGARCH_INS_VSSUB_DU = 1175,
+    LOONGARCH_INS_VSSUB_H = 1176,
+    LOONGARCH_INS_VSSUB_HU = 1177,
+    LOONGARCH_INS_VSSUB_W = 1178,
+    LOONGARCH_INS_VSSUB_WU = 1179,
+    LOONGARCH_INS_VST = 1180,
+    LOONGARCH_INS_VSTELM_B = 1181,
+    LOONGARCH_INS_VSTELM_D = 1182,
+    LOONGARCH_INS_VSTELM_H = 1183,
+    LOONGARCH_INS_VSTELM_W = 1184,
+    LOONGARCH_INS_VSTX = 1185,
+    LOONGARCH_INS_VSUBI_BU = 1186,
+    LOONGARCH_INS_VSUBI_DU = 1187,
+    LOONGARCH_INS_VSUBI_HU = 1188,
+    LOONGARCH_INS_VSUBI_WU = 1189,
+    LOONGARCH_INS_VSUBWEV_D_W = 1190,
+    LOONGARCH_INS_VSUBWEV_D_WU = 1191,
+    LOONGARCH_INS_VSUBWEV_H_B = 1192,
+    LOONGARCH_INS_VSUBWEV_H_BU = 1193,
+    LOONGARCH_INS_VSUBWEV_Q_D = 1194,
+    LOONGARCH_INS_VSUBWEV_Q_DU = 1195,
+    LOONGARCH_INS_VSUBWEV_W_H = 1196,
+    LOONGARCH_INS_VSUBWEV_W_HU = 1197,
+    LOONGARCH_INS_VSUBWOD_D_W = 1198,
+    LOONGARCH_INS_VSUBWOD_D_WU = 1199,
+    LOONGARCH_INS_VSUBWOD_H_B = 1200,
+    LOONGARCH_INS_VSUBWOD_H_BU = 1201,
+    LOONGARCH_INS_VSUBWOD_Q_D = 1202,
+    LOONGARCH_INS_VSUBWOD_Q_DU = 1203,
+    LOONGARCH_INS_VSUBWOD_W_H = 1204,
+    LOONGARCH_INS_VSUBWOD_W_HU = 1205,
+    LOONGARCH_INS_VSUB_B = 1206,
+    LOONGARCH_INS_VSUB_D = 1207,
+    LOONGARCH_INS_VSUB_H = 1208,
+    LOONGARCH_INS_VSUB_Q = 1209,
+    LOONGARCH_INS_VSUB_W = 1210,
+    LOONGARCH_INS_VXORI_B = 1211,
+    LOONGARCH_INS_VXOR_V = 1212,
+    LOONGARCH_INS_X86ADC_B = 1213,
+    LOONGARCH_INS_X86ADC_D = 1214,
+    LOONGARCH_INS_X86ADC_H = 1215,
+    LOONGARCH_INS_X86ADC_W = 1216,
+    LOONGARCH_INS_X86ADD_B = 1217,
+    LOONGARCH_INS_X86ADD_D = 1218,
+    LOONGARCH_INS_X86ADD_DU = 1219,
+    LOONGARCH_INS_X86ADD_H = 1220,
+    LOONGARCH_INS_X86ADD_W = 1221,
+    LOONGARCH_INS_X86ADD_WU = 1222,
+    LOONGARCH_INS_X86AND_B = 1223,
+    LOONGARCH_INS_X86AND_D = 1224,
+    LOONGARCH_INS_X86AND_H = 1225,
+    LOONGARCH_INS_X86AND_W = 1226,
+    LOONGARCH_INS_X86CLRTM = 1227,
+    LOONGARCH_INS_X86DECTOP = 1228,
+    LOONGARCH_INS_X86DEC_B = 1229,
+    LOONGARCH_INS_X86DEC_D = 1230,
+    LOONGARCH_INS_X86DEC_H = 1231,
+    LOONGARCH_INS_X86DEC_W = 1232,
+    LOONGARCH_INS_X86INCTOP = 1233,
+    LOONGARCH_INS_X86INC_B = 1234,
+    LOONGARCH_INS_X86INC_D = 1235,
+    LOONGARCH_INS_X86INC_H = 1236,
+    LOONGARCH_INS_X86INC_W = 1237,
+    LOONGARCH_INS_X86MFFLAG = 1238,
+    LOONGARCH_INS_X86MFTOP = 1239,
+    LOONGARCH_INS_X86MTFLAG = 1240,
+    LOONGARCH_INS_X86MTTOP = 1241,
+    LOONGARCH_INS_X86MUL_B = 1242,
+    LOONGARCH_INS_X86MUL_BU = 1243,
+    LOONGARCH_INS_X86MUL_D = 1244,
+    LOONGARCH_INS_X86MUL_DU = 1245,
+    LOONGARCH_INS_X86MUL_H = 1246,
+    LOONGARCH_INS_X86MUL_HU = 1247,
+    LOONGARCH_INS_X86MUL_W = 1248,
+    LOONGARCH_INS_X86MUL_WU = 1249,
+    LOONGARCH_INS_X86OR_B = 1250,
+    LOONGARCH_INS_X86OR_D = 1251,
+    LOONGARCH_INS_X86OR_H = 1252,
+    LOONGARCH_INS_X86OR_W = 1253,
+    LOONGARCH_INS_X86RCLI_B = 1254,
+    LOONGARCH_INS_X86RCLI_D = 1255,
+    LOONGARCH_INS_X86RCLI_H = 1256,
+    LOONGARCH_INS_X86RCLI_W = 1257,
+    LOONGARCH_INS_X86RCL_B = 1258,
+    LOONGARCH_INS_X86RCL_D = 1259,
+    LOONGARCH_INS_X86RCL_H = 1260,
+    LOONGARCH_INS_X86RCL_W = 1261,
+    LOONGARCH_INS_X86RCRI_B = 1262,
+    LOONGARCH_INS_X86RCRI_D = 1263,
+    LOONGARCH_INS_X86RCRI_H = 1264,
+    LOONGARCH_INS_X86RCRI_W = 1265,
+    LOONGARCH_INS_X86RCR_B = 1266,
+    LOONGARCH_INS_X86RCR_D = 1267,
+    LOONGARCH_INS_X86RCR_H = 1268,
+    LOONGARCH_INS_X86RCR_W = 1269,
+    LOONGARCH_INS_X86ROTLI_B = 1270,
+    LOONGARCH_INS_X86ROTLI_D = 1271,
+    LOONGARCH_INS_X86ROTLI_H = 1272,
+    LOONGARCH_INS_X86ROTLI_W = 1273,
+    LOONGARCH_INS_X86ROTL_B = 1274,
+    LOONGARCH_INS_X86ROTL_D = 1275,
+    LOONGARCH_INS_X86ROTL_H = 1276,
+    LOONGARCH_INS_X86ROTL_W = 1277,
+    LOONGARCH_INS_X86ROTRI_B = 1278,
+    LOONGARCH_INS_X86ROTRI_D = 1279,
+    LOONGARCH_INS_X86ROTRI_H = 1280,
+    LOONGARCH_INS_X86ROTRI_W = 1281,
+    LOONGARCH_INS_X86ROTR_B = 1282,
+    LOONGARCH_INS_X86ROTR_D = 1283,
+    LOONGARCH_INS_X86ROTR_H = 1284,
+    LOONGARCH_INS_X86ROTR_W = 1285,
+    LOONGARCH_INS_X86SBC_B = 1286,
+    LOONGARCH_INS_X86SBC_D = 1287,
+    LOONGARCH_INS_X86SBC_H = 1288,
+    LOONGARCH_INS_X86SBC_W = 1289,
+    LOONGARCH_INS_X86SETTAG = 1290,
+    LOONGARCH_INS_X86SETTM = 1291,
+    LOONGARCH_INS_X86SLLI_B = 1292,
+    LOONGARCH_INS_X86SLLI_D = 1293,
+    LOONGARCH_INS_X86SLLI_H = 1294,
+    LOONGARCH_INS_X86SLLI_W = 1295,
+    LOONGARCH_INS_X86SLL_B = 1296,
+    LOONGARCH_INS_X86SLL_D = 1297,
+    LOONGARCH_INS_X86SLL_H = 1298,
+    LOONGARCH_INS_X86SLL_W = 1299,
+    LOONGARCH_INS_X86SRAI_B = 1300,
+    LOONGARCH_INS_X86SRAI_D = 1301,
+    LOONGARCH_INS_X86SRAI_H = 1302,
+    LOONGARCH_INS_X86SRAI_W = 1303,
+    LOONGARCH_INS_X86SRA_B = 1304,
+    LOONGARCH_INS_X86SRA_D = 1305,
+    LOONGARCH_INS_X86SRA_H = 1306,
+    LOONGARCH_INS_X86SRA_W = 1307,
+    LOONGARCH_INS_X86SRLI_B = 1308,
+    LOONGARCH_INS_X86SRLI_D = 1309,
+    LOONGARCH_INS_X86SRLI_H = 1310,
+    LOONGARCH_INS_X86SRLI_W = 1311,
+    LOONGARCH_INS_X86SRL_B = 1312,
+    LOONGARCH_INS_X86SRL_D = 1313,
+    LOONGARCH_INS_X86SRL_H = 1314,
+    LOONGARCH_INS_X86SRL_W = 1315,
+    LOONGARCH_INS_X86SUB_B = 1316,
+    LOONGARCH_INS_X86SUB_D = 1317,
+    LOONGARCH_INS_X86SUB_DU = 1318,
+    LOONGARCH_INS_X86SUB_H = 1319,
+    LOONGARCH_INS_X86SUB_W = 1320,
+    LOONGARCH_INS_X86SUB_WU = 1321,
+    LOONGARCH_INS_X86XOR_B = 1322,
+    LOONGARCH_INS_X86XOR_D = 1323,
+    LOONGARCH_INS_X86XOR_H = 1324,
+    LOONGARCH_INS_X86XOR_W = 1325,
+    LOONGARCH_INS_XOR = 1326,
+    LOONGARCH_INS_XORI = 1327,
+    LOONGARCH_INS_XVABSD_B = 1328,
+    LOONGARCH_INS_XVABSD_BU = 1329,
+    LOONGARCH_INS_XVABSD_D = 1330,
+    LOONGARCH_INS_XVABSD_DU = 1331,
+    LOONGARCH_INS_XVABSD_H = 1332,
+    LOONGARCH_INS_XVABSD_HU = 1333,
+    LOONGARCH_INS_XVABSD_W = 1334,
+    LOONGARCH_INS_XVABSD_WU = 1335,
+    LOONGARCH_INS_XVADDA_B = 1336,
+    LOONGARCH_INS_XVADDA_D = 1337,
+    LOONGARCH_INS_XVADDA_H = 1338,
+    LOONGARCH_INS_XVADDA_W = 1339,
+    LOONGARCH_INS_XVADDI_BU = 1340,
+    LOONGARCH_INS_XVADDI_DU = 1341,
+    LOONGARCH_INS_XVADDI_HU = 1342,
+    LOONGARCH_INS_XVADDI_WU = 1343,
+    LOONGARCH_INS_XVADDWEV_D_W = 1344,
+    LOONGARCH_INS_XVADDWEV_D_WU = 1345,
+    LOONGARCH_INS_XVADDWEV_D_WU_W = 1346,
+    LOONGARCH_INS_XVADDWEV_H_B = 1347,
+    LOONGARCH_INS_XVADDWEV_H_BU = 1348,
+    LOONGARCH_INS_XVADDWEV_H_BU_B = 1349,
+    LOONGARCH_INS_XVADDWEV_Q_D = 1350,
+    LOONGARCH_INS_XVADDWEV_Q_DU = 1351,
+    LOONGARCH_INS_XVADDWEV_Q_DU_D = 1352,
+    LOONGARCH_INS_XVADDWEV_W_H = 1353,
+    LOONGARCH_INS_XVADDWEV_W_HU = 1354,
+    LOONGARCH_INS_XVADDWEV_W_HU_H = 1355,
+    LOONGARCH_INS_XVADDWOD_D_W = 1356,
+    LOONGARCH_INS_XVADDWOD_D_WU = 1357,
+    LOONGARCH_INS_XVADDWOD_D_WU_W = 1358,
+    LOONGARCH_INS_XVADDWOD_H_B = 1359,
+    LOONGARCH_INS_XVADDWOD_H_BU = 1360,
+    LOONGARCH_INS_XVADDWOD_H_BU_B = 1361,
+    LOONGARCH_INS_XVADDWOD_Q_D = 1362,
+    LOONGARCH_INS_XVADDWOD_Q_DU = 1363,
+    LOONGARCH_INS_XVADDWOD_Q_DU_D = 1364,
+    LOONGARCH_INS_XVADDWOD_W_H = 1365,
+    LOONGARCH_INS_XVADDWOD_W_HU = 1366,
+    LOONGARCH_INS_XVADDWOD_W_HU_H = 1367,
+    LOONGARCH_INS_XVADD_B = 1368,
+    LOONGARCH_INS_XVADD_D = 1369,
+    LOONGARCH_INS_XVADD_H = 1370,
+    LOONGARCH_INS_XVADD_Q = 1371,
+    LOONGARCH_INS_XVADD_W = 1372,
+    LOONGARCH_INS_XVANDI_B = 1373,
+    LOONGARCH_INS_XVANDN_V = 1374,
+    LOONGARCH_INS_XVAND_V = 1375,
+    LOONGARCH_INS_XVAVGR_B = 1376,
+    LOONGARCH_INS_XVAVGR_BU = 1377,
+    LOONGARCH_INS_XVAVGR_D = 1378,
+    LOONGARCH_INS_XVAVGR_DU = 1379,
+    LOONGARCH_INS_XVAVGR_H = 1380,
+    LOONGARCH_INS_XVAVGR_HU = 1381,
+    LOONGARCH_INS_XVAVGR_W = 1382,
+    LOONGARCH_INS_XVAVGR_WU = 1383,
+    LOONGARCH_INS_XVAVG_B = 1384,
+    LOONGARCH_INS_XVAVG_BU = 1385,
+    LOONGARCH_INS_XVAVG_D = 1386,
+    LOONGARCH_INS_XVAVG_DU = 1387,
+    LOONGARCH_INS_XVAVG_H = 1388,
+    LOONGARCH_INS_XVAVG_HU = 1389,
+    LOONGARCH_INS_XVAVG_W = 1390,
+    LOONGARCH_INS_XVAVG_WU = 1391,
+    LOONGARCH_INS_XVBITCLRI_B = 1392,
+    LOONGARCH_INS_XVBITCLRI_D = 1393,
+    LOONGARCH_INS_XVBITCLRI_H = 1394,
+    LOONGARCH_INS_XVBITCLRI_W = 1395,
+    LOONGARCH_INS_XVBITCLR_B = 1396,
+    LOONGARCH_INS_XVBITCLR_D = 1397,
+    LOONGARCH_INS_XVBITCLR_H = 1398,
+    LOONGARCH_INS_XVBITCLR_W = 1399,
+    LOONGARCH_INS_XVBITREVI_B = 1400,
+    LOONGARCH_INS_XVBITREVI_D = 1401,
+    LOONGARCH_INS_XVBITREVI_H = 1402,
+    LOONGARCH_INS_XVBITREVI_W = 1403,
+    LOONGARCH_INS_XVBITREV_B = 1404,
+    LOONGARCH_INS_XVBITREV_D = 1405,
+    LOONGARCH_INS_XVBITREV_H = 1406,
+    LOONGARCH_INS_XVBITREV_W = 1407,
+    LOONGARCH_INS_XVBITSELI_B = 1408,
+    LOONGARCH_INS_XVBITSEL_V = 1409,
+    LOONGARCH_INS_XVBITSETI_B = 1410,
+    LOONGARCH_INS_XVBITSETI_D = 1411,
+    LOONGARCH_INS_XVBITSETI_H = 1412,
+    LOONGARCH_INS_XVBITSETI_W = 1413,
+    LOONGARCH_INS_XVBITSET_B = 1414,
+    LOONGARCH_INS_XVBITSET_D = 1415,
+    LOONGARCH_INS_XVBITSET_H = 1416,
+    LOONGARCH_INS_XVBITSET_W = 1417,
+    LOONGARCH_INS_XVBSLL_V = 1418,
+    LOONGARCH_INS_XVBSRL_V = 1419,
+    LOONGARCH_INS_XVCLO_B = 1420,
+    LOONGARCH_INS_XVCLO_D = 1421,
+    LOONGARCH_INS_XVCLO_H = 1422,
+    LOONGARCH_INS_XVCLO_W = 1423,
+    LOONGARCH_INS_XVCLZ_B = 1424,
+    LOONGARCH_INS_XVCLZ_D = 1425,
+    LOONGARCH_INS_XVCLZ_H = 1426,
+    LOONGARCH_INS_XVCLZ_W = 1427,
+    LOONGARCH_INS_XVDIV_B = 1428,
+    LOONGARCH_INS_XVDIV_BU = 1429,
+    LOONGARCH_INS_XVDIV_D = 1430,
+    LOONGARCH_INS_XVDIV_DU = 1431,
+    LOONGARCH_INS_XVDIV_H = 1432,
+    LOONGARCH_INS_XVDIV_HU = 1433,
+    LOONGARCH_INS_XVDIV_W = 1434,
+    LOONGARCH_INS_XVDIV_WU = 1435,
+    LOONGARCH_INS_XVEXTH_DU_WU = 1436,
+    LOONGARCH_INS_XVEXTH_D_W = 1437,
+    LOONGARCH_INS_XVEXTH_HU_BU = 1438,
+    LOONGARCH_INS_XVEXTH_H_B = 1439,
+    LOONGARCH_INS_XVEXTH_QU_DU = 1440,
+    LOONGARCH_INS_XVEXTH_Q_D = 1441,
+    LOONGARCH_INS_XVEXTH_WU_HU = 1442,
+    LOONGARCH_INS_XVEXTH_W_H = 1443,
+    LOONGARCH_INS_XVEXTL_QU_DU = 1444,
+    LOONGARCH_INS_XVEXTL_Q_D = 1445,
+    LOONGARCH_INS_XVEXTRINS_B = 1446,
+    LOONGARCH_INS_XVEXTRINS_D = 1447,
+    LOONGARCH_INS_XVEXTRINS_H = 1448,
+    LOONGARCH_INS_XVEXTRINS_W = 1449,
+    LOONGARCH_INS_XVFADD_D = 1450,
+    LOONGARCH_INS_XVFADD_S = 1451,
+    LOONGARCH_INS_XVFCLASS_D = 1452,
+    LOONGARCH_INS_XVFCLASS_S = 1453,
+    LOONGARCH_INS_XVFCMP_CAF_D = 1454,
+    LOONGARCH_INS_XVFCMP_CAF_S = 1455,
+    LOONGARCH_INS_XVFCMP_CEQ_D = 1456,
+    LOONGARCH_INS_XVFCMP_CEQ_S = 1457,
+    LOONGARCH_INS_XVFCMP_CLE_D = 1458,
+    LOONGARCH_INS_XVFCMP_CLE_S = 1459,
+    LOONGARCH_INS_XVFCMP_CLT_D = 1460,
+    LOONGARCH_INS_XVFCMP_CLT_S = 1461,
+    LOONGARCH_INS_XVFCMP_CNE_D = 1462,
+    LOONGARCH_INS_XVFCMP_CNE_S = 1463,
+    LOONGARCH_INS_XVFCMP_COR_D = 1464,
+    LOONGARCH_INS_XVFCMP_COR_S = 1465,
+    LOONGARCH_INS_XVFCMP_CUEQ_D = 1466,
+    LOONGARCH_INS_XVFCMP_CUEQ_S = 1467,
+    LOONGARCH_INS_XVFCMP_CULE_D = 1468,
+    LOONGARCH_INS_XVFCMP_CULE_S = 1469,
+    LOONGARCH_INS_XVFCMP_CULT_D = 1470,
+    LOONGARCH_INS_XVFCMP_CULT_S = 1471,
+    LOONGARCH_INS_XVFCMP_CUNE_D = 1472,
+    LOONGARCH_INS_XVFCMP_CUNE_S = 1473,
+    LOONGARCH_INS_XVFCMP_CUN_D = 1474,
+    LOONGARCH_INS_XVFCMP_CUN_S = 1475,
+    LOONGARCH_INS_XVFCMP_SAF_D = 1476,
+    LOONGARCH_INS_XVFCMP_SAF_S = 1477,
+    LOONGARCH_INS_XVFCMP_SEQ_D = 1478,
+    LOONGARCH_INS_XVFCMP_SEQ_S = 1479,
+    LOONGARCH_INS_XVFCMP_SLE_D = 1480,
+    LOONGARCH_INS_XVFCMP_SLE_S = 1481,
+    LOONGARCH_INS_XVFCMP_SLT_D = 1482,
+    LOONGARCH_INS_XVFCMP_SLT_S = 1483,
+    LOONGARCH_INS_XVFCMP_SNE_D = 1484,
+    LOONGARCH_INS_XVFCMP_SNE_S = 1485,
+    LOONGARCH_INS_XVFCMP_SOR_D = 1486,
+    LOONGARCH_INS_XVFCMP_SOR_S = 1487,
+    LOONGARCH_INS_XVFCMP_SUEQ_D = 1488,
+    LOONGARCH_INS_XVFCMP_SUEQ_S = 1489,
+    LOONGARCH_INS_XVFCMP_SULE_D = 1490,
+    LOONGARCH_INS_XVFCMP_SULE_S = 1491,
+    LOONGARCH_INS_XVFCMP_SULT_D = 1492,
+    LOONGARCH_INS_XVFCMP_SULT_S = 1493,
+    LOONGARCH_INS_XVFCMP_SUNE_D = 1494,
+    LOONGARCH_INS_XVFCMP_SUNE_S = 1495,
+    LOONGARCH_INS_XVFCMP_SUN_D = 1496,
+    LOONGARCH_INS_XVFCMP_SUN_S = 1497,
+    LOONGARCH_INS_XVFCVTH_D_S = 1498,
+    LOONGARCH_INS_XVFCVTH_S_H = 1499,
+    LOONGARCH_INS_XVFCVTL_D_S = 1500,
+    LOONGARCH_INS_XVFCVTL_S_H = 1501,
+    LOONGARCH_INS_XVFCVT_H_S = 1502,
+    LOONGARCH_INS_XVFCVT_S_D = 1503,
+    LOONGARCH_INS_XVFDIV_D = 1504,
+    LOONGARCH_INS_XVFDIV_S = 1505,
+    LOONGARCH_INS_XVFFINTH_D_W = 1506,
+    LOONGARCH_INS_XVFFINTL_D_W = 1507,
+    LOONGARCH_INS_XVFFINT_D_L = 1508,
+    LOONGARCH_INS_XVFFINT_D_LU = 1509,
+    LOONGARCH_INS_XVFFINT_S_L = 1510,
+    LOONGARCH_INS_XVFFINT_S_W = 1511,
+    LOONGARCH_INS_XVFFINT_S_WU = 1512,
+    LOONGARCH_INS_XVFLOGB_D = 1513,
+    LOONGARCH_INS_XVFLOGB_S = 1514,
+    LOONGARCH_INS_XVFMADD_D = 1515,
+    LOONGARCH_INS_XVFMADD_S = 1516,
+    LOONGARCH_INS_XVFMAXA_D = 1517,
+    LOONGARCH_INS_XVFMAXA_S = 1518,
+    LOONGARCH_INS_XVFMAX_D = 1519,
+    LOONGARCH_INS_XVFMAX_S = 1520,
+    LOONGARCH_INS_XVFMINA_D = 1521,
+    LOONGARCH_INS_XVFMINA_S = 1522,
+    LOONGARCH_INS_XVFMIN_D = 1523,
+    LOONGARCH_INS_XVFMIN_S = 1524,
+    LOONGARCH_INS_XVFMSUB_D = 1525,
+    LOONGARCH_INS_XVFMSUB_S = 1526,
+    LOONGARCH_INS_XVFMUL_D = 1527,
+    LOONGARCH_INS_XVFMUL_S = 1528,
+    LOONGARCH_INS_XVFNMADD_D = 1529,
+    LOONGARCH_INS_XVFNMADD_S = 1530,
+    LOONGARCH_INS_XVFNMSUB_D = 1531,
+    LOONGARCH_INS_XVFNMSUB_S = 1532,
+    LOONGARCH_INS_XVFRECIPE_D = 1533,
+    LOONGARCH_INS_XVFRECIPE_S = 1534,
+    LOONGARCH_INS_XVFRECIP_D = 1535,
+    LOONGARCH_INS_XVFRECIP_S = 1536,
+    LOONGARCH_INS_XVFRINTRM_D = 1537,
+    LOONGARCH_INS_XVFRINTRM_S = 1538,
+    LOONGARCH_INS_XVFRINTRNE_D = 1539,
+    LOONGARCH_INS_XVFRINTRNE_S = 1540,
+    LOONGARCH_INS_XVFRINTRP_D = 1541,
+    LOONGARCH_INS_XVFRINTRP_S = 1542,
+    LOONGARCH_INS_XVFRINTRZ_D = 1543,
+    LOONGARCH_INS_XVFRINTRZ_S = 1544,
+    LOONGARCH_INS_XVFRINT_D = 1545,
+    LOONGARCH_INS_XVFRINT_S = 1546,
+    LOONGARCH_INS_XVFRSQRTE_D = 1547,
+    LOONGARCH_INS_XVFRSQRTE_S = 1548,
+    LOONGARCH_INS_XVFRSQRT_D = 1549,
+    LOONGARCH_INS_XVFRSQRT_S = 1550,
+    LOONGARCH_INS_XVFRSTPI_B = 1551,
+    LOONGARCH_INS_XVFRSTPI_H = 1552,
+    LOONGARCH_INS_XVFRSTP_B = 1553,
+    LOONGARCH_INS_XVFRSTP_H = 1554,
+    LOONGARCH_INS_XVFSQRT_D = 1555,
+    LOONGARCH_INS_XVFSQRT_S = 1556,
+    LOONGARCH_INS_XVFSUB_D = 1557,
+    LOONGARCH_INS_XVFSUB_S = 1558,
+    LOONGARCH_INS_XVFTINTH_L_S = 1559,
+    LOONGARCH_INS_XVFTINTL_L_S = 1560,
+    LOONGARCH_INS_XVFTINTRMH_L_S = 1561,
+    LOONGARCH_INS_XVFTINTRML_L_S = 1562,
+    LOONGARCH_INS_XVFTINTRM_L_D = 1563,
+    LOONGARCH_INS_XVFTINTRM_W_D = 1564,
+    LOONGARCH_INS_XVFTINTRM_W_S = 1565,
+    LOONGARCH_INS_XVFTINTRNEH_L_S = 1566,
+    LOONGARCH_INS_XVFTINTRNEL_L_S = 1567,
+    LOONGARCH_INS_XVFTINTRNE_L_D = 1568,
+    LOONGARCH_INS_XVFTINTRNE_W_D = 1569,
+    LOONGARCH_INS_XVFTINTRNE_W_S = 1570,
+    LOONGARCH_INS_XVFTINTRPH_L_S = 1571,
+    LOONGARCH_INS_XVFTINTRPL_L_S = 1572,
+    LOONGARCH_INS_XVFTINTRP_L_D = 1573,
+    LOONGARCH_INS_XVFTINTRP_W_D = 1574,
+    LOONGARCH_INS_XVFTINTRP_W_S = 1575,
+    LOONGARCH_INS_XVFTINTRZH_L_S = 1576,
+    LOONGARCH_INS_XVFTINTRZL_L_S = 1577,
+    LOONGARCH_INS_XVFTINTRZ_LU_D = 1578,
+    LOONGARCH_INS_XVFTINTRZ_L_D = 1579,
+    LOONGARCH_INS_XVFTINTRZ_WU_S = 1580,
+    LOONGARCH_INS_XVFTINTRZ_W_D = 1581,
+    LOONGARCH_INS_XVFTINTRZ_W_S = 1582,
+    LOONGARCH_INS_XVFTINT_LU_D = 1583,
+    LOONGARCH_INS_XVFTINT_L_D = 1584,
+    LOONGARCH_INS_XVFTINT_WU_S = 1585,
+    LOONGARCH_INS_XVFTINT_W_D = 1586,
+    LOONGARCH_INS_XVFTINT_W_S = 1587,
+    LOONGARCH_INS_XVHADDW_DU_WU = 1588,
+    LOONGARCH_INS_XVHADDW_D_W = 1589,
+    LOONGARCH_INS_XVHADDW_HU_BU = 1590,
+    LOONGARCH_INS_XVHADDW_H_B = 1591,
+    LOONGARCH_INS_XVHADDW_QU_DU = 1592,
+    LOONGARCH_INS_XVHADDW_Q_D = 1593,
+    LOONGARCH_INS_XVHADDW_WU_HU = 1594,
+    LOONGARCH_INS_XVHADDW_W_H = 1595,
+    LOONGARCH_INS_XVHSELI_D = 1596,
+    LOONGARCH_INS_XVHSUBW_DU_WU = 1597,
+    LOONGARCH_INS_XVHSUBW_D_W = 1598,
+    LOONGARCH_INS_XVHSUBW_HU_BU = 1599,
+    LOONGARCH_INS_XVHSUBW_H_B = 1600,
+    LOONGARCH_INS_XVHSUBW_QU_DU = 1601,
+    LOONGARCH_INS_XVHSUBW_Q_D = 1602,
+    LOONGARCH_INS_XVHSUBW_WU_HU = 1603,
+    LOONGARCH_INS_XVHSUBW_W_H = 1604,
+    LOONGARCH_INS_XVILVH_B = 1605,
+    LOONGARCH_INS_XVILVH_D = 1606,
+    LOONGARCH_INS_XVILVH_H = 1607,
+    LOONGARCH_INS_XVILVH_W = 1608,
+    LOONGARCH_INS_XVILVL_B = 1609,
+    LOONGARCH_INS_XVILVL_D = 1610,
+    LOONGARCH_INS_XVILVL_H = 1611,
+    LOONGARCH_INS_XVILVL_W = 1612,
+    LOONGARCH_INS_XVINSGR2VR_D = 1613,
+    LOONGARCH_INS_XVINSGR2VR_W = 1614,
+    LOONGARCH_INS_XVINSVE0_D = 1615,
+    LOONGARCH_INS_XVINSVE0_W = 1616,
+    LOONGARCH_INS_XVLD = 1617,
+    LOONGARCH_INS_XVLDI = 1618,
+    LOONGARCH_INS_XVLDREPL_B = 1619,
+    LOONGARCH_INS_XVLDREPL_D = 1620,
+    LOONGARCH_INS_XVLDREPL_H = 1621,
+    LOONGARCH_INS_XVLDREPL_W = 1622,
+    LOONGARCH_INS_XVLDX = 1623,
+    LOONGARCH_INS_XVMADDWEV_D_W = 1624,
+    LOONGARCH_INS_XVMADDWEV_D_WU = 1625,
+    LOONGARCH_INS_XVMADDWEV_D_WU_W = 1626,
+    LOONGARCH_INS_XVMADDWEV_H_B = 1627,
+    LOONGARCH_INS_XVMADDWEV_H_BU = 1628,
+    LOONGARCH_INS_XVMADDWEV_H_BU_B = 1629,
+    LOONGARCH_INS_XVMADDWEV_Q_D = 1630,
+    LOONGARCH_INS_XVMADDWEV_Q_DU = 1631,
+    LOONGARCH_INS_XVMADDWEV_Q_DU_D = 1632,
+    LOONGARCH_INS_XVMADDWEV_W_H = 1633,
+    LOONGARCH_INS_XVMADDWEV_W_HU = 1634,
+    LOONGARCH_INS_XVMADDWEV_W_HU_H = 1635,
+    LOONGARCH_INS_XVMADDWOD_D_W = 1636,
+    LOONGARCH_INS_XVMADDWOD_D_WU = 1637,
+    LOONGARCH_INS_XVMADDWOD_D_WU_W = 1638,
+    LOONGARCH_INS_XVMADDWOD_H_B = 1639,
+    LOONGARCH_INS_XVMADDWOD_H_BU = 1640,
+    LOONGARCH_INS_XVMADDWOD_H_BU_B = 1641,
+    LOONGARCH_INS_XVMADDWOD_Q_D = 1642,
+    LOONGARCH_INS_XVMADDWOD_Q_DU = 1643,
+    LOONGARCH_INS_XVMADDWOD_Q_DU_D = 1644,
+    LOONGARCH_INS_XVMADDWOD_W_H = 1645,
+    LOONGARCH_INS_XVMADDWOD_W_HU = 1646,
+    LOONGARCH_INS_XVMADDWOD_W_HU_H = 1647,
+    LOONGARCH_INS_XVMADD_B = 1648,
+    LOONGARCH_INS_XVMADD_D = 1649,
+    LOONGARCH_INS_XVMADD_H = 1650,
+    LOONGARCH_INS_XVMADD_W = 1651,
+    LOONGARCH_INS_XVMAXI_B = 1652,
+    LOONGARCH_INS_XVMAXI_BU = 1653,
+    LOONGARCH_INS_XVMAXI_D = 1654,
+    LOONGARCH_INS_XVMAXI_DU = 1655,
+    LOONGARCH_INS_XVMAXI_H = 1656,
+    LOONGARCH_INS_XVMAXI_HU = 1657,
+    LOONGARCH_INS_XVMAXI_W = 1658,
+    LOONGARCH_INS_XVMAXI_WU = 1659,
+    LOONGARCH_INS_XVMAX_B = 1660,
+    LOONGARCH_INS_XVMAX_BU = 1661,
+    LOONGARCH_INS_XVMAX_D = 1662,
+    LOONGARCH_INS_XVMAX_DU = 1663,
+    LOONGARCH_INS_XVMAX_H = 1664,
+    LOONGARCH_INS_XVMAX_HU = 1665,
+    LOONGARCH_INS_XVMAX_W = 1666,
+    LOONGARCH_INS_XVMAX_WU = 1667,
+    LOONGARCH_INS_XVMINI_B = 1668,
+    LOONGARCH_INS_XVMINI_BU = 1669,
+    LOONGARCH_INS_XVMINI_D = 1670,
+    LOONGARCH_INS_XVMINI_DU = 1671,
+    LOONGARCH_INS_XVMINI_H = 1672,
+    LOONGARCH_INS_XVMINI_HU = 1673,
+    LOONGARCH_INS_XVMINI_W = 1674,
+    LOONGARCH_INS_XVMINI_WU = 1675,
+    LOONGARCH_INS_XVMIN_B = 1676,
+    LOONGARCH_INS_XVMIN_BU = 1677,
+    LOONGARCH_INS_XVMIN_D = 1678,
+    LOONGARCH_INS_XVMIN_DU = 1679,
+    LOONGARCH_INS_XVMIN_H = 1680,
+    LOONGARCH_INS_XVMIN_HU = 1681,
+    LOONGARCH_INS_XVMIN_W = 1682,
+    LOONGARCH_INS_XVMIN_WU = 1683,
+    LOONGARCH_INS_XVMOD_B = 1684,
+    LOONGARCH_INS_XVMOD_BU = 1685,
+    LOONGARCH_INS_XVMOD_D = 1686,
+    LOONGARCH_INS_XVMOD_DU = 1687,
+    LOONGARCH_INS_XVMOD_H = 1688,
+    LOONGARCH_INS_XVMOD_HU = 1689,
+    LOONGARCH_INS_XVMOD_W = 1690,
+    LOONGARCH_INS_XVMOD_WU = 1691,
+    LOONGARCH_INS_XVMSKGEZ_B = 1692,
+    LOONGARCH_INS_XVMSKLTZ_B = 1693,
+    LOONGARCH_INS_XVMSKLTZ_D = 1694,
+    LOONGARCH_INS_XVMSKLTZ_H = 1695,
+    LOONGARCH_INS_XVMSKLTZ_W = 1696,
+    LOONGARCH_INS_XVMSKNZ_B = 1697,
+    LOONGARCH_INS_XVMSUB_B = 1698,
+    LOONGARCH_INS_XVMSUB_D = 1699,
+    LOONGARCH_INS_XVMSUB_H = 1700,
+    LOONGARCH_INS_XVMSUB_W = 1701,
+    LOONGARCH_INS_XVMUH_B = 1702,
+    LOONGARCH_INS_XVMUH_BU = 1703,
+    LOONGARCH_INS_XVMUH_D = 1704,
+    LOONGARCH_INS_XVMUH_DU = 1705,
+    LOONGARCH_INS_XVMUH_H = 1706,
+    LOONGARCH_INS_XVMUH_HU = 1707,
+    LOONGARCH_INS_XVMUH_W = 1708,
+    LOONGARCH_INS_XVMUH_WU = 1709,
+    LOONGARCH_INS_XVMULWEV_D_W = 1710,
+    LOONGARCH_INS_XVMULWEV_D_WU = 1711,
+    LOONGARCH_INS_XVMULWEV_D_WU_W = 1712,
+    LOONGARCH_INS_XVMULWEV_H_B = 1713,
+    LOONGARCH_INS_XVMULWEV_H_BU = 1714,
+    LOONGARCH_INS_XVMULWEV_H_BU_B = 1715,
+    LOONGARCH_INS_XVMULWEV_Q_D = 1716,
+    LOONGARCH_INS_XVMULWEV_Q_DU = 1717,
+    LOONGARCH_INS_XVMULWEV_Q_DU_D = 1718,
+    LOONGARCH_INS_XVMULWEV_W_H = 1719,
+    LOONGARCH_INS_XVMULWEV_W_HU = 1720,
+    LOONGARCH_INS_XVMULWEV_W_HU_H = 1721,
+    LOONGARCH_INS_XVMULWOD_D_W = 1722,
+    LOONGARCH_INS_XVMULWOD_D_WU = 1723,
+    LOONGARCH_INS_XVMULWOD_D_WU_W = 1724,
+    LOONGARCH_INS_XVMULWOD_H_B = 1725,
+    LOONGARCH_INS_XVMULWOD_H_BU = 1726,
+    LOONGARCH_INS_XVMULWOD_H_BU_B = 1727,
+    LOONGARCH_INS_XVMULWOD_Q_D = 1728,
+    LOONGARCH_INS_XVMULWOD_Q_DU = 1729,
+    LOONGARCH_INS_XVMULWOD_Q_DU_D = 1730,
+    LOONGARCH_INS_XVMULWOD_W_H = 1731,
+    LOONGARCH_INS_XVMULWOD_W_HU = 1732,
+    LOONGARCH_INS_XVMULWOD_W_HU_H = 1733,
+    LOONGARCH_INS_XVMUL_B = 1734,
+    LOONGARCH_INS_XVMUL_D = 1735,
+    LOONGARCH_INS_XVMUL_H = 1736,
+    LOONGARCH_INS_XVMUL_W = 1737,
+    LOONGARCH_INS_XVNEG_B = 1738,
+    LOONGARCH_INS_XVNEG_D = 1739,
+    LOONGARCH_INS_XVNEG_H = 1740,
+    LOONGARCH_INS_XVNEG_W = 1741,
+    LOONGARCH_INS_XVNORI_B = 1742,
+    LOONGARCH_INS_XVNOR_V = 1743,
+    LOONGARCH_INS_XVORI_B = 1744,
+    LOONGARCH_INS_XVORN_V = 1745,
+    LOONGARCH_INS_XVOR_V = 1746,
+    LOONGARCH_INS_XVPACKEV_B = 1747,
+    LOONGARCH_INS_XVPACKEV_D = 1748,
+    LOONGARCH_INS_XVPACKEV_H = 1749,
+    LOONGARCH_INS_XVPACKEV_W = 1750,
+    LOONGARCH_INS_XVPACKOD_B = 1751,
+    LOONGARCH_INS_XVPACKOD_D = 1752,
+    LOONGARCH_INS_XVPACKOD_H = 1753,
+    LOONGARCH_INS_XVPACKOD_W = 1754,
+    LOONGARCH_INS_XVPCNT_B = 1755,
+    LOONGARCH_INS_XVPCNT_D = 1756,
+    LOONGARCH_INS_XVPCNT_H = 1757,
+    LOONGARCH_INS_XVPCNT_W = 1758,
+    LOONGARCH_INS_XVPERMI_D = 1759,
+    LOONGARCH_INS_XVPERMI_Q = 1760,
+    LOONGARCH_INS_XVPERMI_W = 1761,
+    LOONGARCH_INS_XVPERM_W = 1762,
+    LOONGARCH_INS_XVPICKEV_B = 1763,
+    LOONGARCH_INS_XVPICKEV_D = 1764,
+    LOONGARCH_INS_XVPICKEV_H = 1765,
+    LOONGARCH_INS_XVPICKEV_W = 1766,
+    LOONGARCH_INS_XVPICKOD_B = 1767,
+    LOONGARCH_INS_XVPICKOD_D = 1768,
+    LOONGARCH_INS_XVPICKOD_H = 1769,
+    LOONGARCH_INS_XVPICKOD_W = 1770,
+    LOONGARCH_INS_XVPICKVE2GR_D = 1771,
+    LOONGARCH_INS_XVPICKVE2GR_DU = 1772,
+    LOONGARCH_INS_XVPICKVE2GR_W = 1773,
+    LOONGARCH_INS_XVPICKVE2GR_WU = 1774,
+    LOONGARCH_INS_XVPICKVE_D = 1775,
+    LOONGARCH_INS_XVPICKVE_W = 1776,
+    LOONGARCH_INS_XVREPL128VEI_B = 1777,
+    LOONGARCH_INS_XVREPL128VEI_D = 1778,
+    LOONGARCH_INS_XVREPL128VEI_H = 1779,
+    LOONGARCH_INS_XVREPL128VEI_W = 1780,
+    LOONGARCH_INS_XVREPLGR2VR_B = 1781,
+    LOONGARCH_INS_XVREPLGR2VR_D = 1782,
+    LOONGARCH_INS_XVREPLGR2VR_H = 1783,
+    LOONGARCH_INS_XVREPLGR2VR_W = 1784,
+    LOONGARCH_INS_XVREPLVE0_B = 1785,
+    LOONGARCH_INS_XVREPLVE0_D = 1786,
+    LOONGARCH_INS_XVREPLVE0_H = 1787,
+    LOONGARCH_INS_XVREPLVE0_Q = 1788,
+    LOONGARCH_INS_XVREPLVE0_W = 1789,
+    LOONGARCH_INS_XVREPLVE_B = 1790,
+    LOONGARCH_INS_XVREPLVE_D = 1791,
+    LOONGARCH_INS_XVREPLVE_H = 1792,
+    LOONGARCH_INS_XVREPLVE_W = 1793,
+    LOONGARCH_INS_XVROTRI_B = 1794,
+    LOONGARCH_INS_XVROTRI_D = 1795,
+    LOONGARCH_INS_XVROTRI_H = 1796,
+    LOONGARCH_INS_XVROTRI_W = 1797,
+    LOONGARCH_INS_XVROTR_B = 1798,
+    LOONGARCH_INS_XVROTR_D = 1799,
+    LOONGARCH_INS_XVROTR_H = 1800,
+    LOONGARCH_INS_XVROTR_W = 1801,
+    LOONGARCH_INS_XVSADD_B = 1802,
+    LOONGARCH_INS_XVSADD_BU = 1803,
+    LOONGARCH_INS_XVSADD_D = 1804,
+    LOONGARCH_INS_XVSADD_DU = 1805,
+    LOONGARCH_INS_XVSADD_H = 1806,
+    LOONGARCH_INS_XVSADD_HU = 1807,
+    LOONGARCH_INS_XVSADD_W = 1808,
+    LOONGARCH_INS_XVSADD_WU = 1809,
+    LOONGARCH_INS_XVSAT_B = 1810,
+    LOONGARCH_INS_XVSAT_BU = 1811,
+    LOONGARCH_INS_XVSAT_D = 1812,
+    LOONGARCH_INS_XVSAT_DU = 1813,
+    LOONGARCH_INS_XVSAT_H = 1814,
+    LOONGARCH_INS_XVSAT_HU = 1815,
+    LOONGARCH_INS_XVSAT_W = 1816,
+    LOONGARCH_INS_XVSAT_WU = 1817,
+    LOONGARCH_INS_XVSEQI_B = 1818,
+    LOONGARCH_INS_XVSEQI_D = 1819,
+    LOONGARCH_INS_XVSEQI_H = 1820,
+    LOONGARCH_INS_XVSEQI_W = 1821,
+    LOONGARCH_INS_XVSEQ_B = 1822,
+    LOONGARCH_INS_XVSEQ_D = 1823,
+    LOONGARCH_INS_XVSEQ_H = 1824,
+    LOONGARCH_INS_XVSEQ_W = 1825,
+    LOONGARCH_INS_XVSETALLNEZ_B = 1826,
+    LOONGARCH_INS_XVSETALLNEZ_D = 1827,
+    LOONGARCH_INS_XVSETALLNEZ_H = 1828,
+    LOONGARCH_INS_XVSETALLNEZ_W = 1829,
+    LOONGARCH_INS_XVSETANYEQZ_B = 1830,
+    LOONGARCH_INS_XVSETANYEQZ_D = 1831,
+    LOONGARCH_INS_XVSETANYEQZ_H = 1832,
+    LOONGARCH_INS_XVSETANYEQZ_W = 1833,
+    LOONGARCH_INS_XVSETEQZ_V = 1834,
+    LOONGARCH_INS_XVSETNEZ_V = 1835,
+    LOONGARCH_INS_XVSHUF4I_B = 1836,
+    LOONGARCH_INS_XVSHUF4I_D = 1837,
+    LOONGARCH_INS_XVSHUF4I_H = 1838,
+    LOONGARCH_INS_XVSHUF4I_W = 1839,
+    LOONGARCH_INS_XVSHUF_B = 1840,
+    LOONGARCH_INS_XVSHUF_D = 1841,
+    LOONGARCH_INS_XVSHUF_H = 1842,
+    LOONGARCH_INS_XVSHUF_W = 1843,
+    LOONGARCH_INS_XVSIGNCOV_B = 1844,
+    LOONGARCH_INS_XVSIGNCOV_D = 1845,
+    LOONGARCH_INS_XVSIGNCOV_H = 1846,
+    LOONGARCH_INS_XVSIGNCOV_W = 1847,
+    LOONGARCH_INS_XVSLEI_B = 1848,
+    LOONGARCH_INS_XVSLEI_BU = 1849,
+    LOONGARCH_INS_XVSLEI_D = 1850,
+    LOONGARCH_INS_XVSLEI_DU = 1851,
+    LOONGARCH_INS_XVSLEI_H = 1852,
+    LOONGARCH_INS_XVSLEI_HU = 1853,
+    LOONGARCH_INS_XVSLEI_W = 1854,
+    LOONGARCH_INS_XVSLEI_WU = 1855,
+    LOONGARCH_INS_XVSLE_B = 1856,
+    LOONGARCH_INS_XVSLE_BU = 1857,
+    LOONGARCH_INS_XVSLE_D = 1858,
+    LOONGARCH_INS_XVSLE_DU = 1859,
+    LOONGARCH_INS_XVSLE_H = 1860,
+    LOONGARCH_INS_XVSLE_HU = 1861,
+    LOONGARCH_INS_XVSLE_W = 1862,
+    LOONGARCH_INS_XVSLE_WU = 1863,
+    LOONGARCH_INS_XVSLLI_B = 1864,
+    LOONGARCH_INS_XVSLLI_D = 1865,
+    LOONGARCH_INS_XVSLLI_H = 1866,
+    LOONGARCH_INS_XVSLLI_W = 1867,
+    LOONGARCH_INS_XVSLLWIL_DU_WU = 1868,
+    LOONGARCH_INS_XVSLLWIL_D_W = 1869,
+    LOONGARCH_INS_XVSLLWIL_HU_BU = 1870,
+    LOONGARCH_INS_XVSLLWIL_H_B = 1871,
+    LOONGARCH_INS_XVSLLWIL_WU_HU = 1872,
+    LOONGARCH_INS_XVSLLWIL_W_H = 1873,
+    LOONGARCH_INS_XVSLL_B = 1874,
+    LOONGARCH_INS_XVSLL_D = 1875,
+    LOONGARCH_INS_XVSLL_H = 1876,
+    LOONGARCH_INS_XVSLL_W = 1877,
+    LOONGARCH_INS_XVSLTI_B = 1878,
+    LOONGARCH_INS_XVSLTI_BU = 1879,
+    LOONGARCH_INS_XVSLTI_D = 1880,
+    LOONGARCH_INS_XVSLTI_DU = 1881,
+    LOONGARCH_INS_XVSLTI_H = 1882,
+    LOONGARCH_INS_XVSLTI_HU = 1883,
+    LOONGARCH_INS_XVSLTI_W = 1884,
+    LOONGARCH_INS_XVSLTI_WU = 1885,
+    LOONGARCH_INS_XVSLT_B = 1886,
+    LOONGARCH_INS_XVSLT_BU = 1887,
+    LOONGARCH_INS_XVSLT_D = 1888,
+    LOONGARCH_INS_XVSLT_DU = 1889,
+    LOONGARCH_INS_XVSLT_H = 1890,
+    LOONGARCH_INS_XVSLT_HU = 1891,
+    LOONGARCH_INS_XVSLT_W = 1892,
+    LOONGARCH_INS_XVSLT_WU = 1893,
+    LOONGARCH_INS_XVSRAI_B = 1894,
+    LOONGARCH_INS_XVSRAI_D = 1895,
+    LOONGARCH_INS_XVSRAI_H = 1896,
+    LOONGARCH_INS_XVSRAI_W = 1897,
+    LOONGARCH_INS_XVSRANI_B_H = 1898,
+    LOONGARCH_INS_XVSRANI_D_Q = 1899,
+    LOONGARCH_INS_XVSRANI_H_W = 1900,
+    LOONGARCH_INS_XVSRANI_W_D = 1901,
+    LOONGARCH_INS_XVSRAN_B_H = 1902,
+    LOONGARCH_INS_XVSRAN_H_W = 1903,
+    LOONGARCH_INS_XVSRAN_W_D = 1904,
+    LOONGARCH_INS_XVSRARI_B = 1905,
+    LOONGARCH_INS_XVSRARI_D = 1906,
+    LOONGARCH_INS_XVSRARI_H = 1907,
+    LOONGARCH_INS_XVSRARI_W = 1908,
+    LOONGARCH_INS_XVSRARNI_B_H = 1909,
+    LOONGARCH_INS_XVSRARNI_D_Q = 1910,
+    LOONGARCH_INS_XVSRARNI_H_W = 1911,
+    LOONGARCH_INS_XVSRARNI_W_D = 1912,
+    LOONGARCH_INS_XVSRARN_B_H = 1913,
+    LOONGARCH_INS_XVSRARN_H_W = 1914,
+    LOONGARCH_INS_XVSRARN_W_D = 1915,
+    LOONGARCH_INS_XVSRAR_B = 1916,
+    LOONGARCH_INS_XVSRAR_D = 1917,
+    LOONGARCH_INS_XVSRAR_H = 1918,
+    LOONGARCH_INS_XVSRAR_W = 1919,
+    LOONGARCH_INS_XVSRA_B = 1920,
+    LOONGARCH_INS_XVSRA_D = 1921,
+    LOONGARCH_INS_XVSRA_H = 1922,
+    LOONGARCH_INS_XVSRA_W = 1923,
+    LOONGARCH_INS_XVSRLI_B = 1924,
+    LOONGARCH_INS_XVSRLI_D = 1925,
+    LOONGARCH_INS_XVSRLI_H = 1926,
+    LOONGARCH_INS_XVSRLI_W = 1927,
+    LOONGARCH_INS_XVSRLNI_B_H = 1928,
+    LOONGARCH_INS_XVSRLNI_D_Q = 1929,
+    LOONGARCH_INS_XVSRLNI_H_W = 1930,
+    LOONGARCH_INS_XVSRLNI_W_D = 1931,
+    LOONGARCH_INS_XVSRLN_B_H = 1932,
+    LOONGARCH_INS_XVSRLN_H_W = 1933,
+    LOONGARCH_INS_XVSRLN_W_D = 1934,
+    LOONGARCH_INS_XVSRLRI_B = 1935,
+    LOONGARCH_INS_XVSRLRI_D = 1936,
+    LOONGARCH_INS_XVSRLRI_H = 1937,
+    LOONGARCH_INS_XVSRLRI_W = 1938,
+    LOONGARCH_INS_XVSRLRNI_B_H = 1939,
+    LOONGARCH_INS_XVSRLRNI_D_Q = 1940,
+    LOONGARCH_INS_XVSRLRNI_H_W = 1941,
+    LOONGARCH_INS_XVSRLRNI_W_D = 1942,
+    LOONGARCH_INS_XVSRLRN_B_H = 1943,
+    LOONGARCH_INS_XVSRLRN_H_W = 1944,
+    LOONGARCH_INS_XVSRLRN_W_D = 1945,
+    LOONGARCH_INS_XVSRLR_B = 1946,
+    LOONGARCH_INS_XVSRLR_D = 1947,
+    LOONGARCH_INS_XVSRLR_H = 1948,
+    LOONGARCH_INS_XVSRLR_W = 1949,
+    LOONGARCH_INS_XVSRL_B = 1950,
+    LOONGARCH_INS_XVSRL_D = 1951,
+    LOONGARCH_INS_XVSRL_H = 1952,
+    LOONGARCH_INS_XVSRL_W = 1953,
+    LOONGARCH_INS_XVSSRANI_BU_H = 1954,
+    LOONGARCH_INS_XVSSRANI_B_H = 1955,
+    LOONGARCH_INS_XVSSRANI_DU_Q = 1956,
+    LOONGARCH_INS_XVSSRANI_D_Q = 1957,
+    LOONGARCH_INS_XVSSRANI_HU_W = 1958,
+    LOONGARCH_INS_XVSSRANI_H_W = 1959,
+    LOONGARCH_INS_XVSSRANI_WU_D = 1960,
+    LOONGARCH_INS_XVSSRANI_W_D = 1961,
+    LOONGARCH_INS_XVSSRAN_BU_H = 1962,
+    LOONGARCH_INS_XVSSRAN_B_H = 1963,
+    LOONGARCH_INS_XVSSRAN_HU_W = 1964,
+    LOONGARCH_INS_XVSSRAN_H_W = 1965,
+    LOONGARCH_INS_XVSSRAN_WU_D = 1966,
+    LOONGARCH_INS_XVSSRAN_W_D = 1967,
+    LOONGARCH_INS_XVSSRARNI_BU_H = 1968,
+    LOONGARCH_INS_XVSSRARNI_B_H = 1969,
+    LOONGARCH_INS_XVSSRARNI_DU_Q = 1970,
+    LOONGARCH_INS_XVSSRARNI_D_Q = 1971,
+    LOONGARCH_INS_XVSSRARNI_HU_W = 1972,
+    LOONGARCH_INS_XVSSRARNI_H_W = 1973,
+    LOONGARCH_INS_XVSSRARNI_WU_D = 1974,
+    LOONGARCH_INS_XVSSRARNI_W_D = 1975,
+    LOONGARCH_INS_XVSSRARN_BU_H = 1976,
+    LOONGARCH_INS_XVSSRARN_B_H = 1977,
+    LOONGARCH_INS_XVSSRARN_HU_W = 1978,
+    LOONGARCH_INS_XVSSRARN_H_W = 1979,
+    LOONGARCH_INS_XVSSRARN_WU_D = 1980,
+    LOONGARCH_INS_XVSSRARN_W_D = 1981,
+    LOONGARCH_INS_XVSSRLNI_BU_H = 1982,
+    LOONGARCH_INS_XVSSRLNI_B_H = 1983,
+    LOONGARCH_INS_XVSSRLNI_DU_Q = 1984,
+    LOONGARCH_INS_XVSSRLNI_D_Q = 1985,
+    LOONGARCH_INS_XVSSRLNI_HU_W = 1986,
+    LOONGARCH_INS_XVSSRLNI_H_W = 1987,
+    LOONGARCH_INS_XVSSRLNI_WU_D = 1988,
+    LOONGARCH_INS_XVSSRLNI_W_D = 1989,
+    LOONGARCH_INS_XVSSRLN_BU_H = 1990,
+    LOONGARCH_INS_XVSSRLN_B_H = 1991,
+    LOONGARCH_INS_XVSSRLN_HU_W = 1992,
+    LOONGARCH_INS_XVSSRLN_H_W = 1993,
+    LOONGARCH_INS_XVSSRLN_WU_D = 1994,
+    LOONGARCH_INS_XVSSRLN_W_D = 1995,
+    LOONGARCH_INS_XVSSRLRNI_BU_H = 1996,
+    LOONGARCH_INS_XVSSRLRNI_B_H = 1997,
+    LOONGARCH_INS_XVSSRLRNI_DU_Q = 1998,
+    LOONGARCH_INS_XVSSRLRNI_D_Q = 1999,
+    LOONGARCH_INS_XVSSRLRNI_HU_W = 2000,
+    LOONGARCH_INS_XVSSRLRNI_H_W = 2001,
+    LOONGARCH_INS_XVSSRLRNI_WU_D = 2002,
+    LOONGARCH_INS_XVSSRLRNI_W_D = 2003,
+    LOONGARCH_INS_XVSSRLRN_BU_H = 2004,
+    LOONGARCH_INS_XVSSRLRN_B_H = 2005,
+    LOONGARCH_INS_XVSSRLRN_HU_W = 2006,
+    LOONGARCH_INS_XVSSRLRN_H_W = 2007,
+    LOONGARCH_INS_XVSSRLRN_WU_D = 2008,
+    LOONGARCH_INS_XVSSRLRN_W_D = 2009,
+    LOONGARCH_INS_XVSSUB_B = 2010,
+    LOONGARCH_INS_XVSSUB_BU = 2011,
+    LOONGARCH_INS_XVSSUB_D = 2012,
+    LOONGARCH_INS_XVSSUB_DU = 2013,
+    LOONGARCH_INS_XVSSUB_H = 2014,
+    LOONGARCH_INS_XVSSUB_HU = 2015,
+    LOONGARCH_INS_XVSSUB_W = 2016,
+    LOONGARCH_INS_XVSSUB_WU = 2017,
+    LOONGARCH_INS_XVST = 2018,
+    LOONGARCH_INS_XVSTELM_B = 2019,
+    LOONGARCH_INS_XVSTELM_D = 2020,
+    LOONGARCH_INS_XVSTELM_H = 2021,
+    LOONGARCH_INS_XVSTELM_W = 2022,
+    LOONGARCH_INS_XVSTX = 2023,
+    LOONGARCH_INS_XVSUBI_BU = 2024,
+    LOONGARCH_INS_XVSUBI_DU = 2025,
+    LOONGARCH_INS_XVSUBI_HU = 2026,
+    LOONGARCH_INS_XVSUBI_WU = 2027,
+    LOONGARCH_INS_XVSUBWEV_D_W = 2028,
+    LOONGARCH_INS_XVSUBWEV_D_WU = 2029,
+    LOONGARCH_INS_XVSUBWEV_H_B = 2030,
+    LOONGARCH_INS_XVSUBWEV_H_BU = 2031,
+    LOONGARCH_INS_XVSUBWEV_Q_D = 2032,
+    LOONGARCH_INS_XVSUBWEV_Q_DU = 2033,
+    LOONGARCH_INS_XVSUBWEV_W_H = 2034,
+    LOONGARCH_INS_XVSUBWEV_W_HU = 2035,
+    LOONGARCH_INS_XVSUBWOD_D_W = 2036,
+    LOONGARCH_INS_XVSUBWOD_D_WU = 2037,
+    LOONGARCH_INS_XVSUBWOD_H_B = 2038,
+    LOONGARCH_INS_XVSUBWOD_H_BU = 2039,
+    LOONGARCH_INS_XVSUBWOD_Q_D = 2040,
+    LOONGARCH_INS_XVSUBWOD_Q_DU = 2041,
+    LOONGARCH_INS_XVSUBWOD_W_H = 2042,
+    LOONGARCH_INS_XVSUBWOD_W_HU = 2043,
+    LOONGARCH_INS_XVSUB_B = 2044,
+    LOONGARCH_INS_XVSUB_D = 2045,
+    LOONGARCH_INS_XVSUB_H = 2046,
+    LOONGARCH_INS_XVSUB_Q = 2047,
+    LOONGARCH_INS_XVSUB_W = 2048,
+    LOONGARCH_INS_XVXORI_B = 2049,
+    LOONGARCH_INS_XVXOR_V = 2050,
+    LOONGARCH_INS_ENDING = 2051,
+    LOONGARCH_INS_ALIAS_BEGIN = 2052,
+    LOONGARCH_INS_ALIAS_LA = 2053,
+    LOONGARCH_INS_ALIAS_LA_GLOBAL = 2054,
+    LOONGARCH_INS_ALIAS_LA_LOCAL = 2055,
+    LOONGARCH_INS_ALIAS_NOP = 2056,
+    LOONGARCH_INS_ALIAS_MOVE = 2057,
+    LOONGARCH_INS_ALIAS_RET = 2058,
+    LOONGARCH_INS_ALIAS_JR = 2059,
+    LOONGARCH_INS_ALIAS_END = 2060,
+}
+pub mod loongarch_insn_group {
+    pub type Type = ::core::ffi::c_uint;
+    #[doc = "< = CS_GRP_INVALID"]
+    pub const LOONGARCH_GRP_INVALID: Type = 0;
+    #[doc = "< = CS_GRP_JUMP"]
+    pub const LOONGARCH_GRP_JUMP: Type = 1;
+    #[doc = "< = CS_GRP_CALL"]
+    pub const LOONGARCH_GRP_CALL: Type = 2;
+    #[doc = "< = CS_GRP_RET"]
+    pub const LOONGARCH_GRP_RET: Type = 3;
+    #[doc = "< = CS_GRP_INT"]
+    pub const LOONGARCH_GRP_INT: Type = 4;
+    #[doc = "< = CS_GRP_IRET"]
+    pub const LOONGARCH_GRP_IRET: Type = 5;
+    #[doc = "< = CS_GRP_PRIVILEGE"]
+    pub const LOONGARCH_GRP_PRIVILEGE: Type = 6;
+    #[doc = "< = CS_GRP_BRANCH_RELATIVE"]
+    pub const LOONGARCH_GRP_BRANCH_RELATIVE: Type = 7;
+    pub const LOONGARCH_FEATURE_ISLA64: Type = 128;
+    pub const LOONGARCH_FEATURE_ISLA32: Type = 129;
+    pub const LOONGARCH_FEATURE_HASLAGLOBALWITHPCREL: Type = 130;
+    pub const LOONGARCH_FEATURE_HASLAGLOBALWITHABS: Type = 131;
+    pub const LOONGARCH_FEATURE_HASLALOCALWITHABS: Type = 132;
+    pub const LOONGARCH_GRP_ENDING: Type = 133;
+}
+pub mod m680x_reg {
+    #[doc = " M680X registers and special registers"]
+    pub type Type = ::core::ffi::c_uint;
+    pub const M680X_REG_INVALID: Type = 0;
+    #[doc = "< M6800/1/2/3/9, HD6301/9"]
+    pub const M680X_REG_A: Type = 1;
+    #[doc = "< M6800/1/2/3/9, HD6301/9"]
+    pub const M680X_REG_B: Type = 2;
+    #[doc = "< HD6309"]
+    pub const M680X_REG_E: Type = 3;
+    #[doc = "< HD6309"]
+    pub const M680X_REG_F: Type = 4;
+    #[doc = "< HD6309"]
+    pub const M680X_REG_0: Type = 5;
+    #[doc = "< M6801/3/9, HD6301/9"]
+    pub const M680X_REG_D: Type = 6;
+    #[doc = "< HD6309"]
+    pub const M680X_REG_W: Type = 7;
+    #[doc = "< M6800/1/2/3/9, M6301/9"]
+    pub const M680X_REG_CC: Type = 8;
+    #[doc = "< M6809/M6309"]
+    pub const M680X_REG_DP: Type = 9;
+    #[doc = "< M6309"]
+    pub const M680X_REG_MD: Type = 10;
+    #[doc = "< M6808"]
+    pub const M680X_REG_HX: Type = 11;
+    #[doc = "< M6808"]
+    pub const M680X_REG_H: Type = 12;
+    #[doc = "< M6800/1/2/3/9, M6301/9"]
+    pub const M680X_REG_X: Type = 13;
+    #[doc = "< M6809/M6309"]
+    pub const M680X_REG_Y: Type = 14;
+    #[doc = "< M6809/M6309"]
+    pub const M680X_REG_S: Type = 15;
+    #[doc = "< M6809/M6309"]
+    pub const M680X_REG_U: Type = 16;
+    #[doc = "< M6309"]
+    pub const M680X_REG_V: Type = 17;
+    #[doc = "< M6309"]
+    pub const M680X_REG_Q: Type = 18;
+    #[doc = "< M6800/1/2/3/9, M6301/9"]
+    pub const M680X_REG_PC: Type = 19;
+    #[doc = "< RS08"]
+    pub const M680X_REG_SPC: Type = 20;
+    #[doc = "< CPU12"]
+    pub const M680X_REG_TMP2: Type = 21;
+    #[doc = "< CPU12"]
+    pub const M680X_REG_TMP3: Type = 22;
+    #[doc = "< <-- mark the end of the list of registers"]
+    pub const M680X_REG_ENDING: Type = 23;
+}
+#[repr(u32)]
+#[doc = " Operand type for instruction's operands"]
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
+pub enum m680x_op_type {
+    #[doc = "< = CS_OP_INVALID (Uninitialized)."]
+    M680X_OP_INVALID = 0,
+    #[doc = "< = Register operand."]
+    M680X_OP_REGISTER = 1,
+    #[doc = "< = Immediate operand."]
+    M680X_OP_IMMEDIATE = 2,
+    M680X_OP_INDEXED = 16,
+    M680X_OP_EXTENDED = 17,
+    #[doc = "< = Direct addressing operand."]
+    M680X_OP_DIRECT = 18,
+    M680X_OP_RELATIVE = 19,
+    M680X_OP_CONSTANT = 20,
+}
+#[doc = " Instruction's operand referring to indexed addressing"]
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct m680x_op_idx {
+    #[doc = "< base register (or M680X_REG_INVALID if\n< irrelevant)"]
+    pub base_reg: m680x_reg::Type,
+    #[doc = "< offset register (or M680X_REG_INVALID if\n< irrelevant)"]
+    pub offset_reg: m680x_reg::Type,
+    #[doc = "< 5-,8- or 16-bit offset. See also offset_bits."]
+    pub offset: i16,
+    #[doc = "< = offset addr. if base_reg == M680X_REG_PC.\n< calculated as offset + PC"]
+    pub offset_addr: u16,
+    #[doc = "< offset width in bits for indexed addressing"]
+    pub offset_bits: u8,
+    #[doc = "< inc. or dec. value:\n<    0: no inc-/decrement\n<    1 .. 8: increment by 1 .. 8\n<    -1 .. -8: decrement by 1 .. 8\n< if flag M680X_IDX_POST_INC_DEC set it is post\n< inc-/decrement otherwise pre inc-/decrement"]
+    pub inc_dec: i8,
+    #[doc = "< 8-bit flags (see above)"]
+    pub flags: u8,
+}
+#[doc = " Instruction's memory operand referring to relative addressing (Bcc/LBcc)"]
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct m680x_op_rel {
+    #[doc = "< The absolute address.\n< calculated as PC + offset. PC is the first\n< address after the instruction."]
+    pub address: u16,
+    #[doc = "< the offset/displacement value"]
+    pub offset: i16,
+}
+#[doc = " Instruction's operand referring to extended addressing"]
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct m680x_op_ext {
+    #[doc = "< The absolute address"]
+    pub address: u16,
+    #[doc = "< true if extended indirect addressing"]
+    pub indirect: bool,
+}
+#[doc = " Instruction operand"]
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct cs_m680x_op {
+    pub type_: m680x_op_type,
+    pub __bindgen_anon_1: cs_m680x_op__bindgen_ty_1,
+    #[doc = "< size of this operand (in bytes)"]
+    pub size: u8,
+    #[doc = " How is this operand accessed? (READ, WRITE or READ|WRITE)\n This field is combined of cs_ac_type.\n NOTE: this field is irrelevant if engine is compiled in DIET"]
+    pub access: cs_ac_type,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub union cs_m680x_op__bindgen_ty_1 {
+    #[doc = "< immediate value for IMM operand"]
+    pub imm: i32,
+    #[doc = "< register value for REG operand"]
+    pub reg: m680x_reg::Type,
+    #[doc = "< Indexed addressing operand"]
+    pub idx: m680x_op_idx,
+    #[doc = "< Relative address. operand (Bcc/LBcc)"]
+    pub rel: m680x_op_rel,
+    #[doc = "< Extended address"]
+    pub ext: m680x_op_ext,
+    #[doc = "<</ Direct address (lower 8-bit)"]
+    pub direct_addr: u8,
+    #[doc = "< constant value (bit index, page nr.)"]
+    pub const_val: u8,
+}
+impl ::core::fmt::Debug for cs_m680x_op__bindgen_ty_1 {
+    fn fmt(&self, f: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
+        write!(f, "cs_m680x_op__bindgen_ty_1 {{ union }}")
+    }
+}
+impl ::core::fmt::Debug for cs_m680x_op {
+    fn fmt(&self, f: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
+        write!(
+            f,
+            "cs_m680x_op {{ type: {:?}, __bindgen_anon_1: {:?}, access: {:?} }}",
+            self.type_, self.__bindgen_anon_1, self.access
+        )
+    }
+}
+#[repr(u32)]
+#[doc = " Group of M680X instructions"]
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
+pub enum m680x_group_type {
+    M680X_GRP_INVALID = 0,
+    #[doc = "< = CS_GRP_JUMP"]
+    M680X_GRP_JUMP = 1,
+    #[doc = "< = CS_GRP_CALL"]
+    M680X_GRP_CALL = 2,
+    #[doc = "< = CS_GRP_RET"]
+    M680X_GRP_RET = 3,
+    #[doc = "< = CS_GRP_INT"]
+    M680X_GRP_INT = 4,
+    #[doc = "< = CS_GRP_IRET"]
+    M680X_GRP_IRET = 5,
+    #[doc = "< = CS_GRP_PRIVILEDGE; not used"]
+    M680X_GRP_PRIV = 6,
+    #[doc = "< = CS_GRP_BRANCH_RELATIVE"]
+    M680X_GRP_BRAREL = 7,
+    M680X_GRP_ENDING = 8,
+}
+#[doc = " The M680X instruction and its operands"]
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct cs_m680x {
+    #[doc = "< See: M680X instruction flags"]
+    pub flags: u8,
+    #[doc = "< number of operands for the instruction or 0"]
+    pub op_count: u8,
+    #[doc = "< operands for this insn."]
+    pub operands: [cs_m680x_op; 9usize],
+}
+impl ::core::fmt::Debug for cs_m680x {
+    fn fmt(&self, f: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
+        write!(f, "cs_m680x {{ operands: {:?} }}", self.operands)
+    }
+}
+#[repr(u32)]
+#[doc = " M680X instruction IDs"]
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
+pub enum m680x_insn {
+    M680X_INS_INVLD = 0,
+    #[doc = "< M6800/1/2/3"]
+    M680X_INS_ABA = 1,
+    M680X_INS_ABX = 2,
+    M680X_INS_ABY = 3,
+    M680X_INS_ADC = 4,
+    M680X_INS_ADCA = 5,
+    M680X_INS_ADCB = 6,
+    M680X_INS_ADCD = 7,
+    M680X_INS_ADCR = 8,
+    M680X_INS_ADD = 9,
+    M680X_INS_ADDA = 10,
+    M680X_INS_ADDB = 11,
+    M680X_INS_ADDD = 12,
+    M680X_INS_ADDE = 13,
+    M680X_INS_ADDF = 14,
+    M680X_INS_ADDR = 15,
+    M680X_INS_ADDW = 16,
+    #[doc = "< HCS12X"]
+    M680X_INS_ADDX = 17,
+    #[doc = "< HCS12X"]
+    M680X_INS_ADDY = 18,
+    #[doc = "< HCS12X"]
+    M680X_INS_ADED = 19,
+    #[doc = "< HCS12X"]
+    M680X_INS_ADEX = 20,
+    #[doc = "< HCS12X"]
+    M680X_INS_ADEY = 21,
+    M680X_INS_AIM = 22,
+    M680X_INS_AIS = 23,
+    M680X_INS_AIX = 24,
+    M680X_INS_AND = 25,
+    M680X_INS_ANDA = 26,
+    M680X_INS_ANDB = 27,
+    #[doc = "< HCS12X"]
+    M680X_INS_ANDX = 28,
+    #[doc = "< HCS12X"]
+    M680X_INS_ANDY = 29,
+    M680X_INS_ANDCC = 30,
+    M680X_INS_ANDD = 31,
+    M680X_INS_ANDR = 32,
+    M680X_INS_ASL = 33,
+    M680X_INS_ASLA = 34,
+    M680X_INS_ASLB = 35,
+    #[doc = "< or LSLD"]
+    M680X_INS_ASLD = 36,
+    #[doc = "< HCS12X"]
+    M680X_INS_ASLW = 37,
+    #[doc = "< HCS12X"]
+    M680X_INS_ASLX = 38,
+    #[doc = "< HCS12X"]
+    M680X_INS_ASLY = 39,
+    M680X_INS_ASR = 40,
+    M680X_INS_ASRA = 41,
+    M680X_INS_ASRB = 42,
+    M680X_INS_ASRD = 43,
+    #[doc = "< HCS12X"]
+    M680X_INS_ASRW = 44,
+    M680X_INS_ASRX = 45,
+    #[doc = "< HCS12X"]
+    M680X_INS_ASRY = 46,
+    M680X_INS_BAND = 47,
+    #[doc = "< or BHS"]
+    M680X_INS_BCC = 48,
+    M680X_INS_BCLR = 49,
+    #[doc = "< or BLO"]
+    M680X_INS_BCS = 50,
+    M680X_INS_BEOR = 51,
+    M680X_INS_BEQ = 52,
+    M680X_INS_BGE = 53,
+    M680X_INS_BGND = 54,
+    M680X_INS_BGT = 55,
+    M680X_INS_BHCC = 56,
+    M680X_INS_BHCS = 57,
+    M680X_INS_BHI = 58,
+    M680X_INS_BIAND = 59,
+    M680X_INS_BIEOR = 60,
+    M680X_INS_BIH = 61,
+    M680X_INS_BIL = 62,
+    M680X_INS_BIOR = 63,
+    M680X_INS_BIT = 64,
+    M680X_INS_BITA = 65,
+    M680X_INS_BITB = 66,
+    M680X_INS_BITD = 67,
+    M680X_INS_BITMD = 68,
+    #[doc = "< HCS12X"]
+    M680X_INS_BITX = 69,
+    #[doc = "< HCS12X"]
+    M680X_INS_BITY = 70,
+    M680X_INS_BLE = 71,
+    M680X_INS_BLS = 72,
+    M680X_INS_BLT = 73,
+    M680X_INS_BMC = 74,
+    M680X_INS_BMI = 75,
+    M680X_INS_BMS = 76,
+    M680X_INS_BNE = 77,
+    M680X_INS_BOR = 78,
+    M680X_INS_BPL = 79,
+    M680X_INS_BRCLR = 80,
+    M680X_INS_BRSET = 81,
+    M680X_INS_BRA = 82,
+    M680X_INS_BRN = 83,
+    M680X_INS_BSET = 84,
+    M680X_INS_BSR = 85,
+    #[doc = "< HCS12X"]
+    M680X_INS_BTAS = 86,
+    M680X_INS_BVC = 87,
+    M680X_INS_BVS = 88,
+    M680X_INS_CALL = 89,
+    #[doc = "< M6800/1/2/3"]
+    M680X_INS_CBA = 90,
+    M680X_INS_CBEQ = 91,
+    M680X_INS_CBEQA = 92,
+    M680X_INS_CBEQX = 93,
+    #[doc = "< M6800/1/2/3"]
+    M680X_INS_CLC = 94,
+    #[doc = "< M6800/1/2/3"]
+    M680X_INS_CLI = 95,
+    M680X_INS_CLR = 96,
+    M680X_INS_CLRA = 97,
+    M680X_INS_CLRB = 98,
+    M680X_INS_CLRD = 99,
+    M680X_INS_CLRE = 100,
+    M680X_INS_CLRF = 101,
+    M680X_INS_CLRH = 102,
+    M680X_INS_CLRW = 103,
+    M680X_INS_CLRX = 104,
+    M680X_INS_CLRY = 105,
+    #[doc = "< M6800/1/2/3"]
+    M680X_INS_CLV = 106,
+    M680X_INS_CMP = 107,
+    M680X_INS_CMPA = 108,
+    M680X_INS_CMPB = 109,
+    M680X_INS_CMPD = 110,
+    M680X_INS_CMPE = 111,
+    M680X_INS_CMPF = 112,
+    M680X_INS_CMPR = 113,
+    M680X_INS_CMPS = 114,
+    M680X_INS_CMPU = 115,
+    M680X_INS_CMPW = 116,
+    M680X_INS_CMPX = 117,
+    M680X_INS_CMPY = 118,
+    M680X_INS_COM = 119,
+    M680X_INS_COMA = 120,
+    M680X_INS_COMB = 121,
+    M680X_INS_COMD = 122,
+    M680X_INS_COME = 123,
+    M680X_INS_COMF = 124,
+    M680X_INS_COMW = 125,
+    M680X_INS_COMX = 126,
+    M680X_INS_COMY = 127,
+    M680X_INS_CPD = 128,
+    #[doc = "< HCS12X"]
+    M680X_INS_CPED = 129,
+    #[doc = "< HCS12X"]
+    M680X_INS_CPES = 130,
+    #[doc = "< HCS12X"]
+    M680X_INS_CPEX = 131,
+    #[doc = "< HCS12X"]
+    M680X_INS_CPEY = 132,
+    M680X_INS_CPHX = 133,
+    M680X_INS_CPS = 134,
+    #[doc = "< M6800/1/2/3"]
+    M680X_INS_CPX = 135,
+    M680X_INS_CPY = 136,
+    M680X_INS_CWAI = 137,
+    M680X_INS_DAA = 138,
+    M680X_INS_DBEQ = 139,
+    M680X_INS_DBNE = 140,
+    M680X_INS_DBNZ = 141,
+    M680X_INS_DBNZA = 142,
+    M680X_INS_DBNZX = 143,
+    M680X_INS_DEC = 144,
+    M680X_INS_DECA = 145,
+    M680X_INS_DECB = 146,
+    M680X_INS_DECD = 147,
+    M680X_INS_DECE = 148,
+    M680X_INS_DECF = 149,
+    M680X_INS_DECW = 150,
+    M680X_INS_DECX = 151,
+    M680X_INS_DECY = 152,
+    #[doc = "< M6800/1/2/3"]
+    M680X_INS_DES = 153,
+    #[doc = "< M6800/1/2/3"]
+    M680X_INS_DEX = 154,
+    M680X_INS_DEY = 155,
+    M680X_INS_DIV = 156,
+    M680X_INS_DIVD = 157,
+    M680X_INS_DIVQ = 158,
+    M680X_INS_EDIV = 159,
+    M680X_INS_EDIVS = 160,
+    M680X_INS_EIM = 161,
+    M680X_INS_EMACS = 162,
+    M680X_INS_EMAXD = 163,
+    M680X_INS_EMAXM = 164,
+    M680X_INS_EMIND = 165,
+    M680X_INS_EMINM = 166,
+    M680X_INS_EMUL = 167,
+    M680X_INS_EMULS = 168,
+    M680X_INS_EOR = 169,
+    M680X_INS_EORA = 170,
+    M680X_INS_EORB = 171,
+    M680X_INS_EORD = 172,
+    M680X_INS_EORR = 173,
+    #[doc = "< HCS12X"]
+    M680X_INS_EORX = 174,
+    #[doc = "< HCS12X"]
+    M680X_INS_EORY = 175,
+    M680X_INS_ETBL = 176,
+    M680X_INS_EXG = 177,
+    M680X_INS_FDIV = 178,
+    #[doc = "< HCS12X"]
+    M680X_INS_GLDAA = 179,
+    #[doc = "< HCS12X"]
+    M680X_INS_GLDAB = 180,
+    #[doc = "< HCS12X"]
+    M680X_INS_GLDD = 181,
+    #[doc = "< HCS12X"]
+    M680X_INS_GLDS = 182,
+    #[doc = "< HCS12X"]
+    M680X_INS_GLDX = 183,
+    #[doc = "< HCS12X"]
+    M680X_INS_GLDY = 184,
+    #[doc = "< HCS12X"]
+    M680X_INS_GSTAA = 185,
+    #[doc = "< HCS12X"]
+    M680X_INS_GSTAB = 186,
+    #[doc = "< HCS12X"]
+    M680X_INS_GSTD = 187,
+    #[doc = "< HCS12X"]
+    M680X_INS_GSTS = 188,
+    #[doc = "< HCS12X"]
+    M680X_INS_GSTX = 189,
+    #[doc = "< HCS12X"]
+    M680X_INS_GSTY = 190,
+    M680X_INS_IBEQ = 191,
+    M680X_INS_IBNE = 192,
+    M680X_INS_IDIV = 193,
+    M680X_INS_IDIVS = 194,
+    M680X_INS_ILLGL = 195,
+    M680X_INS_INC = 196,
+    M680X_INS_INCA = 197,
+    M680X_INS_INCB = 198,
+    M680X_INS_INCD = 199,
+    M680X_INS_INCE = 200,
+    M680X_INS_INCF = 201,
+    M680X_INS_INCW = 202,
+    M680X_INS_INCX = 203,
+    M680X_INS_INCY = 204,
+    #[doc = "< M6800/1/2/3"]
+    M680X_INS_INS = 205,
+    #[doc = "< M6800/1/2/3"]
+    M680X_INS_INX = 206,
+    M680X_INS_INY = 207,
+    M680X_INS_JMP = 208,
+    M680X_INS_JSR = 209,
+    #[doc = "< or LBHS"]
+    M680X_INS_LBCC = 210,
+    #[doc = "< or LBLO"]
+    M680X_INS_LBCS = 211,
+    M680X_INS_LBEQ = 212,
+    M680X_INS_LBGE = 213,
+    M680X_INS_LBGT = 214,
+    M680X_INS_LBHI = 215,
+    M680X_INS_LBLE = 216,
+    M680X_INS_LBLS = 217,
+    M680X_INS_LBLT = 218,
+    M680X_INS_LBMI = 219,
+    M680X_INS_LBNE = 220,
+    M680X_INS_LBPL = 221,
+    M680X_INS_LBRA = 222,
+    M680X_INS_LBRN = 223,
+    M680X_INS_LBSR = 224,
+    M680X_INS_LBVC = 225,
+    M680X_INS_LBVS = 226,
+    M680X_INS_LDA = 227,
+    #[doc = "< M6800/1/2/3"]
+    M680X_INS_LDAA = 228,
+    #[doc = "< M6800/1/2/3"]
+    M680X_INS_LDAB = 229,
+    M680X_INS_LDB = 230,
+    M680X_INS_LDBT = 231,
+    M680X_INS_LDD = 232,
+    M680X_INS_LDE = 233,
+    M680X_INS_LDF = 234,
+    M680X_INS_LDHX = 235,
+    M680X_INS_LDMD = 236,
+    M680X_INS_LDQ = 237,
+    M680X_INS_LDS = 238,
+    M680X_INS_LDU = 239,
+    M680X_INS_LDW = 240,
+    M680X_INS_LDX = 241,
+    M680X_INS_LDY = 242,
+    M680X_INS_LEAS = 243,
+    M680X_INS_LEAU = 244,
+    M680X_INS_LEAX = 245,
+    M680X_INS_LEAY = 246,
+    M680X_INS_LSL = 247,
+    M680X_INS_LSLA = 248,
+    M680X_INS_LSLB = 249,
+    M680X_INS_LSLD = 250,
+    M680X_INS_LSLX = 251,
+    M680X_INS_LSR = 252,
+    M680X_INS_LSRA = 253,
+    M680X_INS_LSRB = 254,
+    #[doc = "< or ASRD"]
+    M680X_INS_LSRD = 255,
+    M680X_INS_LSRW = 256,
+    M680X_INS_LSRX = 257,
+    M680X_INS_LSRY = 258,
+    M680X_INS_MAXA = 259,
+    M680X_INS_MAXM = 260,
+    M680X_INS_MEM = 261,
+    M680X_INS_MINA = 262,
+    M680X_INS_MINM = 263,
+    M680X_INS_MOV = 264,
+    M680X_INS_MOVB = 265,
+    M680X_INS_MOVW = 266,
+    M680X_INS_MUL = 267,
+    M680X_INS_MULD = 268,
+    M680X_INS_NEG = 269,
+    M680X_INS_NEGA = 270,
+    M680X_INS_NEGB = 271,
+    M680X_INS_NEGD = 272,
+    #[doc = "< HCS12X"]
+    M680X_INS_NEGW = 273,
+    M680X_INS_NEGX = 274,
+    #[doc = "< HCS12X"]
+    M680X_INS_NEGY = 275,
+    M680X_INS_NOP = 276,
+    M680X_INS_NSA = 277,
+    M680X_INS_OIM = 278,
+    M680X_INS_ORA = 279,
+    #[doc = "< M6800/1/2/3"]
+    M680X_INS_ORAA = 280,
+    #[doc = "< M6800/1/2/3"]
+    M680X_INS_ORAB = 281,
+    M680X_INS_ORB = 282,
+    M680X_INS_ORCC = 283,
+    M680X_INS_ORD = 284,
+    M680X_INS_ORR = 285,
+    #[doc = "< HCS12X"]
+    M680X_INS_ORX = 286,
+    #[doc = "< HCS12X"]
+    M680X_INS_ORY = 287,
+    #[doc = "< M6800/1/2/3"]
+    M680X_INS_PSHA = 288,
+    #[doc = "< M6800/1/2/3"]
+    M680X_INS_PSHB = 289,
+    M680X_INS_PSHC = 290,
+    #[doc = "< HCS12X"]
+    M680X_INS_PSHCW = 291,
+    M680X_INS_PSHD = 292,
+    M680X_INS_PSHH = 293,
+    M680X_INS_PSHS = 294,
+    M680X_INS_PSHSW = 295,
+    M680X_INS_PSHU = 296,
+    M680X_INS_PSHUW = 297,
+    #[doc = "< M6800/1/2/3"]
+    M680X_INS_PSHX = 298,
+    M680X_INS_PSHY = 299,
+    #[doc = "< M6800/1/2/3"]
+    M680X_INS_PULA = 300,
+    #[doc = "< M6800/1/2/3"]
+    M680X_INS_PULB = 301,
+    M680X_INS_PULC = 302,
+    #[doc = "< HCS12X"]
+    M680X_INS_PULCW = 303,
+    M680X_INS_PULD = 304,
+    M680X_INS_PULH = 305,
+    M680X_INS_PULS = 306,
+    M680X_INS_PULSW = 307,
+    M680X_INS_PULU = 308,
+    M680X_INS_PULUW = 309,
+    #[doc = "< M6800/1/2/3"]
+    M680X_INS_PULX = 310,
+    M680X_INS_PULY = 311,
+    M680X_INS_REV = 312,
+    M680X_INS_REVW = 313,
+    M680X_INS_ROL = 314,
+    M680X_INS_ROLA = 315,
+    M680X_INS_ROLB = 316,
+    M680X_INS_ROLD = 317,
+    M680X_INS_ROLW = 318,
+    M680X_INS_ROLX = 319,
+    M680X_INS_ROLY = 320,
+    M680X_INS_ROR = 321,
+    M680X_INS_RORA = 322,
+    M680X_INS_RORB = 323,
+    M680X_INS_RORD = 324,
+    M680X_INS_RORW = 325,
+    M680X_INS_RORX = 326,
+    M680X_INS_RORY = 327,
+    M680X_INS_RSP = 328,
+    M680X_INS_RTC = 329,
+    M680X_INS_RTI = 330,
+    M680X_INS_RTS = 331,
+    #[doc = "< M6800/1/2/3"]
+    M680X_INS_SBA = 332,
+    M680X_INS_SBC = 333,
+    M680X_INS_SBCA = 334,
+    M680X_INS_SBCB = 335,
+    M680X_INS_SBCD = 336,
+    M680X_INS_SBCR = 337,
+    #[doc = "< HCS12X"]
+    M680X_INS_SBED = 338,
+    #[doc = "< HCS12X"]
+    M680X_INS_SBEX = 339,
+    #[doc = "< HCS12X"]
+    M680X_INS_SBEY = 340,
+    M680X_INS_SEC = 341,
+    M680X_INS_SEI = 342,
+    M680X_INS_SEV = 343,
+    M680X_INS_SEX = 344,
+    M680X_INS_SEXW = 345,
+    #[doc = "< RS08"]
+    M680X_INS_SHA = 346,
+    #[doc = "< RS08"]
+    M680X_INS_SLA = 347,
+    M680X_INS_SLP = 348,
+    M680X_INS_STA = 349,
+    #[doc = "< M6800/1/2/3"]
+    M680X_INS_STAA = 350,
+    #[doc = "< M6800/1/2/3"]
+    M680X_INS_STAB = 351,
+    M680X_INS_STB = 352,
+    M680X_INS_STBT = 353,
+    M680X_INS_STD = 354,
+    M680X_INS_STE = 355,
+    M680X_INS_STF = 356,
+    M680X_INS_STOP = 357,
+    M680X_INS_STHX = 358,
+    M680X_INS_STQ = 359,
+    M680X_INS_STS = 360,
+    M680X_INS_STU = 361,
+    M680X_INS_STW = 362,
+    M680X_INS_STX = 363,
+    M680X_INS_STY = 364,
+    M680X_INS_SUB = 365,
+    M680X_INS_SUBA = 366,
+    M680X_INS_SUBB = 367,
+    M680X_INS_SUBD = 368,
+    M680X_INS_SUBE = 369,
+    M680X_INS_SUBF = 370,
+    M680X_INS_SUBR = 371,
+    M680X_INS_SUBW = 372,
+    #[doc = "< HCS12X"]
+    M680X_INS_SUBX = 373,
+    #[doc = "< HCS12X"]
+    M680X_INS_SUBY = 374,
+    M680X_INS_SWI = 375,
+    M680X_INS_SWI2 = 376,
+    M680X_INS_SWI3 = 377,
+    M680X_INS_SYNC = 378,
+    #[doc = "< HCS12X"]
+    M680X_INS_SYS = 379,
+    #[doc = "< M6800/1/2/3"]
+    M680X_INS_TAB = 380,
+    #[doc = "< M6800/1/2/3"]
+    M680X_INS_TAP = 381,
+    M680X_INS_TAX = 382,
+    #[doc = "< M6800/1/2/3"]
+    M680X_INS_TBA = 383,
+    M680X_INS_TBEQ = 384,
+    M680X_INS_TBL = 385,
+    M680X_INS_TBNE = 386,
+    M680X_INS_TEST = 387,
+    M680X_INS_TFM = 388,
+    M680X_INS_TFR = 389,
+    M680X_INS_TIM = 390,
+    #[doc = "< M6800/1/2/3"]
+    M680X_INS_TPA = 391,
+    M680X_INS_TRAP = 392,
+    M680X_INS_TST = 393,
+    M680X_INS_TSTA = 394,
+    M680X_INS_TSTB = 395,
+    M680X_INS_TSTD = 396,
+    M680X_INS_TSTE = 397,
+    M680X_INS_TSTF = 398,
+    M680X_INS_TSTW = 399,
+    M680X_INS_TSTX = 400,
+    M680X_INS_TSTY = 401,
+    #[doc = "< M6800/1/2/3"]
+    M680X_INS_TSX = 402,
+    M680X_INS_TSY = 403,
+    M680X_INS_TXA = 404,
+    #[doc = "< M6800/1/2/3"]
+    M680X_INS_TXS = 405,
+    M680X_INS_TYS = 406,
+    #[doc = "< M6800/1/2/3"]
+    M680X_INS_WAI = 407,
+    M680X_INS_WAIT = 408,
+    M680X_INS_WAV = 409,
+    M680X_INS_WAVR = 410,
+    #[doc = "< HD6301"]
+    M680X_INS_XGDX = 411,
+    M680X_INS_XGDY = 412,
+    M680X_INS_ENDING = 413,
+}
 pub mod m68k_reg {
     #[doc = " M68K registers and special registers"]
     pub type Type = ::core::ffi::c_uint;
@@ -7125,7 +12233,19 @@ pub mod m68k_reg {
     pub const M68K_REG_FPCR: Type = 44;
     pub const M68K_REG_FPSR: Type = 45;
     pub const M68K_REG_FPIAR: Type = 46;
-    pub const M68K_REG_ENDING: Type = 47;
+    pub const M68K_REG_TT0: Type = 47;
+    pub const M68K_REG_TT1: Type = 48;
+    pub const M68K_REG_CRP: Type = 49;
+    pub const M68K_REG_ACC: Type = 50;
+    pub const M68K_REG_ACC0: Type = 51;
+    pub const M68K_REG_ACC1: Type = 52;
+    pub const M68K_REG_ACC2: Type = 53;
+    pub const M68K_REG_ACC3: Type = 54;
+    pub const M68K_REG_ACCEXT01: Type = 55;
+    pub const M68K_REG_ACCEXT23: Type = 56;
+    pub const M68K_REG_MACSR: Type = 57;
+    pub const M68K_REG_MASK: Type = 58;
+    pub const M68K_REG_ENDING: Type = 59;
 }
 #[repr(u32)]
 #[doc = " M68K Addressing Modes"]
@@ -7189,8 +12309,24 @@ pub enum m68k_op_type {
     M68K_OP_REG_PAIR = 19,
     #[doc = "< Branch displacement"]
     M68K_OP_BR_DISP = 20,
+    #[doc = " Shift-direction pseudo operand.\n Shift direction is set in cs_m68k_op.flags"]
+    M68K_OP_SHIFT = 21,
     #[doc = "< = CS_OP_MEM (Memory operand)."]
     M68K_OP_MEM = 128,
+}
+#[repr(u32)]
+#[doc = " Per-operand modifier flags."]
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
+pub enum m68k_op_flags {
+    M68K_OP_FLAG_NONE = 0,
+    M68K_OP_FLAG_REG_LOWER = 1,
+    M68K_OP_FLAG_REG_UPPER = 2,
+    #[doc = "< ColdFire MAC left-shift operand"]
+    M68K_OP_FLAG_SHIFT_LEFT = 4,
+    #[doc = "< ColdFire MAC right-shift operand"]
+    M68K_OP_FLAG_SHIFT_RIGHT = 8,
+    #[doc = "< ColdFire MAC memory update marker"]
+    M68K_OP_FLAG_MEM_UPDATE = 16,
 }
 #[doc = " Instruction's operand referring to memory\n This is associated with M68K_OP_MEM operand type above"]
 #[repr(C)]
@@ -7212,9 +12348,9 @@ pub struct m68k_op_mem {
     pub scale: u8,
     #[doc = "< set to true if the two values below should be used"]
     pub bitfield: u8,
-    #[doc = "< used for bf* instructions"]
+    #[doc = "< bitfield width (bf* insns): static 1-32, or register-encoded (see M68K_BF_*)"]
     pub width: u8,
-    #[doc = "< used for bf* instructions"]
+    #[doc = "< bitfield offset (bf* insns): static 0-31, or register-encoded (see M68K_BF_*)"]
     pub offset: u8,
     #[doc = "< 0 = word, 1 = long"]
     pub index_size: u8,
@@ -7224,6 +12360,8 @@ pub struct m68k_op_mem {
     pub out_disp_size: u8,
     #[doc = "< 0 = byte, 1 = word"]
     pub disp_size: u8,
+    #[doc = "< absolute address for absolute MEM operands"]
+    pub address: u64,
 }
 #[repr(u32)]
 #[doc = " Operand type for instruction's operands"]
@@ -7267,6 +12405,8 @@ pub struct cs_m68k_op {
     pub type_: m68k_op_type,
     #[doc = "< M68K addressing mode for this op"]
     pub address_mode: m68k_address_mode,
+    #[doc = "< Operand modifier flags, see m68k_op_flags."]
+    pub flags: u8,
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
@@ -7358,7 +12498,7 @@ impl ::core::fmt::Debug for m68k_op_size {
 #[derive(Copy, Clone)]
 pub struct cs_m68k {
     #[doc = "< operands for this instruction."]
-    pub operands: [cs_m68k_op; 4usize],
+    pub operands: [cs_m68k_op; 6usize],
     #[doc = "< size of data operand works on in bytes (.b, .w, .l, etc)"]
     pub op_size: m68k_op_size,
     #[doc = "< number of operands for the instruction"]
@@ -7410,349 +12550,377 @@ pub enum m68k_insn {
     M68K_INS_BCLR = 30,
     M68K_INS_BSET = 31,
     M68K_INS_BTST = 32,
-    M68K_INS_BFCHG = 33,
-    M68K_INS_BFCLR = 34,
-    M68K_INS_BFEXTS = 35,
-    M68K_INS_BFEXTU = 36,
-    M68K_INS_BFFFO = 37,
-    M68K_INS_BFINS = 38,
-    M68K_INS_BFSET = 39,
-    M68K_INS_BFTST = 40,
-    M68K_INS_BKPT = 41,
-    M68K_INS_CALLM = 42,
-    M68K_INS_CAS = 43,
-    M68K_INS_CAS2 = 44,
-    M68K_INS_CHK = 45,
-    M68K_INS_CHK2 = 46,
-    M68K_INS_CLR = 47,
-    M68K_INS_CMP = 48,
-    M68K_INS_CMPA = 49,
-    M68K_INS_CMPI = 50,
-    M68K_INS_CMPM = 51,
-    M68K_INS_CMP2 = 52,
-    M68K_INS_CINVL = 53,
-    M68K_INS_CINVP = 54,
-    M68K_INS_CINVA = 55,
-    M68K_INS_CPUSHL = 56,
-    M68K_INS_CPUSHP = 57,
-    M68K_INS_CPUSHA = 58,
-    M68K_INS_DBT = 59,
-    M68K_INS_DBF = 60,
-    M68K_INS_DBHI = 61,
-    M68K_INS_DBLS = 62,
-    M68K_INS_DBCC = 63,
-    M68K_INS_DBCS = 64,
-    M68K_INS_DBNE = 65,
-    M68K_INS_DBEQ = 66,
-    M68K_INS_DBVC = 67,
-    M68K_INS_DBVS = 68,
-    M68K_INS_DBPL = 69,
-    M68K_INS_DBMI = 70,
-    M68K_INS_DBGE = 71,
-    M68K_INS_DBLT = 72,
-    M68K_INS_DBGT = 73,
-    M68K_INS_DBLE = 74,
-    M68K_INS_DBRA = 75,
-    M68K_INS_DIVS = 76,
-    M68K_INS_DIVSL = 77,
-    M68K_INS_DIVU = 78,
-    M68K_INS_DIVUL = 79,
-    M68K_INS_EOR = 80,
-    M68K_INS_EORI = 81,
-    M68K_INS_EXG = 82,
-    M68K_INS_EXT = 83,
-    M68K_INS_EXTB = 84,
-    M68K_INS_FABS = 85,
-    M68K_INS_FSABS = 86,
-    M68K_INS_FDABS = 87,
-    M68K_INS_FACOS = 88,
-    M68K_INS_FADD = 89,
-    M68K_INS_FSADD = 90,
-    M68K_INS_FDADD = 91,
-    M68K_INS_FASIN = 92,
-    M68K_INS_FATAN = 93,
-    M68K_INS_FATANH = 94,
-    M68K_INS_FBF = 95,
-    M68K_INS_FBEQ = 96,
-    M68K_INS_FBOGT = 97,
-    M68K_INS_FBOGE = 98,
-    M68K_INS_FBOLT = 99,
-    M68K_INS_FBOLE = 100,
-    M68K_INS_FBOGL = 101,
-    M68K_INS_FBOR = 102,
-    M68K_INS_FBUN = 103,
-    M68K_INS_FBUEQ = 104,
-    M68K_INS_FBUGT = 105,
-    M68K_INS_FBUGE = 106,
-    M68K_INS_FBULT = 107,
-    M68K_INS_FBULE = 108,
-    M68K_INS_FBNE = 109,
-    M68K_INS_FBT = 110,
-    M68K_INS_FBSF = 111,
-    M68K_INS_FBSEQ = 112,
-    M68K_INS_FBGT = 113,
-    M68K_INS_FBGE = 114,
-    M68K_INS_FBLT = 115,
-    M68K_INS_FBLE = 116,
-    M68K_INS_FBGL = 117,
-    M68K_INS_FBGLE = 118,
-    M68K_INS_FBNGLE = 119,
-    M68K_INS_FBNGL = 120,
-    M68K_INS_FBNLE = 121,
-    M68K_INS_FBNLT = 122,
-    M68K_INS_FBNGE = 123,
-    M68K_INS_FBNGT = 124,
-    M68K_INS_FBSNE = 125,
-    M68K_INS_FBST = 126,
-    M68K_INS_FCMP = 127,
-    M68K_INS_FCOS = 128,
-    M68K_INS_FCOSH = 129,
-    M68K_INS_FDBF = 130,
-    M68K_INS_FDBEQ = 131,
-    M68K_INS_FDBOGT = 132,
-    M68K_INS_FDBOGE = 133,
-    M68K_INS_FDBOLT = 134,
-    M68K_INS_FDBOLE = 135,
-    M68K_INS_FDBOGL = 136,
-    M68K_INS_FDBOR = 137,
-    M68K_INS_FDBUN = 138,
-    M68K_INS_FDBUEQ = 139,
-    M68K_INS_FDBUGT = 140,
-    M68K_INS_FDBUGE = 141,
-    M68K_INS_FDBULT = 142,
-    M68K_INS_FDBULE = 143,
-    M68K_INS_FDBNE = 144,
-    M68K_INS_FDBT = 145,
-    M68K_INS_FDBSF = 146,
-    M68K_INS_FDBSEQ = 147,
-    M68K_INS_FDBGT = 148,
-    M68K_INS_FDBGE = 149,
-    M68K_INS_FDBLT = 150,
-    M68K_INS_FDBLE = 151,
-    M68K_INS_FDBGL = 152,
-    M68K_INS_FDBGLE = 153,
-    M68K_INS_FDBNGLE = 154,
-    M68K_INS_FDBNGL = 155,
-    M68K_INS_FDBNLE = 156,
-    M68K_INS_FDBNLT = 157,
-    M68K_INS_FDBNGE = 158,
-    M68K_INS_FDBNGT = 159,
-    M68K_INS_FDBSNE = 160,
-    M68K_INS_FDBST = 161,
-    M68K_INS_FDIV = 162,
-    M68K_INS_FSDIV = 163,
-    M68K_INS_FDDIV = 164,
-    M68K_INS_FETOX = 165,
-    M68K_INS_FETOXM1 = 166,
-    M68K_INS_FGETEXP = 167,
-    M68K_INS_FGETMAN = 168,
-    M68K_INS_FINT = 169,
-    M68K_INS_FINTRZ = 170,
-    M68K_INS_FLOG10 = 171,
-    M68K_INS_FLOG2 = 172,
-    M68K_INS_FLOGN = 173,
-    M68K_INS_FLOGNP1 = 174,
-    M68K_INS_FMOD = 175,
-    M68K_INS_FMOVE = 176,
-    M68K_INS_FSMOVE = 177,
-    M68K_INS_FDMOVE = 178,
-    M68K_INS_FMOVECR = 179,
-    M68K_INS_FMOVEM = 180,
-    M68K_INS_FMUL = 181,
-    M68K_INS_FSMUL = 182,
-    M68K_INS_FDMUL = 183,
-    M68K_INS_FNEG = 184,
-    M68K_INS_FSNEG = 185,
-    M68K_INS_FDNEG = 186,
-    M68K_INS_FNOP = 187,
-    M68K_INS_FREM = 188,
-    M68K_INS_FRESTORE = 189,
-    M68K_INS_FSAVE = 190,
-    M68K_INS_FSCALE = 191,
-    M68K_INS_FSGLDIV = 192,
-    M68K_INS_FSGLMUL = 193,
-    M68K_INS_FSIN = 194,
-    M68K_INS_FSINCOS = 195,
-    M68K_INS_FSINH = 196,
-    M68K_INS_FSQRT = 197,
-    M68K_INS_FSSQRT = 198,
-    M68K_INS_FDSQRT = 199,
-    M68K_INS_FSF = 200,
-    M68K_INS_FSBEQ = 201,
-    M68K_INS_FSOGT = 202,
-    M68K_INS_FSOGE = 203,
-    M68K_INS_FSOLT = 204,
-    M68K_INS_FSOLE = 205,
-    M68K_INS_FSOGL = 206,
-    M68K_INS_FSOR = 207,
-    M68K_INS_FSUN = 208,
-    M68K_INS_FSUEQ = 209,
-    M68K_INS_FSUGT = 210,
-    M68K_INS_FSUGE = 211,
-    M68K_INS_FSULT = 212,
-    M68K_INS_FSULE = 213,
-    M68K_INS_FSNE = 214,
-    M68K_INS_FST = 215,
-    M68K_INS_FSSF = 216,
-    M68K_INS_FSSEQ = 217,
-    M68K_INS_FSGT = 218,
-    M68K_INS_FSGE = 219,
-    M68K_INS_FSLT = 220,
-    M68K_INS_FSLE = 221,
-    M68K_INS_FSGL = 222,
-    M68K_INS_FSGLE = 223,
-    M68K_INS_FSNGLE = 224,
-    M68K_INS_FSNGL = 225,
-    M68K_INS_FSNLE = 226,
-    M68K_INS_FSNLT = 227,
-    M68K_INS_FSNGE = 228,
-    M68K_INS_FSNGT = 229,
-    M68K_INS_FSSNE = 230,
-    M68K_INS_FSST = 231,
-    M68K_INS_FSUB = 232,
-    M68K_INS_FSSUB = 233,
-    M68K_INS_FDSUB = 234,
-    M68K_INS_FTAN = 235,
-    M68K_INS_FTANH = 236,
-    M68K_INS_FTENTOX = 237,
-    M68K_INS_FTRAPF = 238,
-    M68K_INS_FTRAPEQ = 239,
-    M68K_INS_FTRAPOGT = 240,
-    M68K_INS_FTRAPOGE = 241,
-    M68K_INS_FTRAPOLT = 242,
-    M68K_INS_FTRAPOLE = 243,
-    M68K_INS_FTRAPOGL = 244,
-    M68K_INS_FTRAPOR = 245,
-    M68K_INS_FTRAPUN = 246,
-    M68K_INS_FTRAPUEQ = 247,
-    M68K_INS_FTRAPUGT = 248,
-    M68K_INS_FTRAPUGE = 249,
-    M68K_INS_FTRAPULT = 250,
-    M68K_INS_FTRAPULE = 251,
-    M68K_INS_FTRAPNE = 252,
-    M68K_INS_FTRAPT = 253,
-    M68K_INS_FTRAPSF = 254,
-    M68K_INS_FTRAPSEQ = 255,
-    M68K_INS_FTRAPGT = 256,
-    M68K_INS_FTRAPGE = 257,
-    M68K_INS_FTRAPLT = 258,
-    M68K_INS_FTRAPLE = 259,
-    M68K_INS_FTRAPGL = 260,
-    M68K_INS_FTRAPGLE = 261,
-    M68K_INS_FTRAPNGLE = 262,
-    M68K_INS_FTRAPNGL = 263,
-    M68K_INS_FTRAPNLE = 264,
-    M68K_INS_FTRAPNLT = 265,
-    M68K_INS_FTRAPNGE = 266,
-    M68K_INS_FTRAPNGT = 267,
-    M68K_INS_FTRAPSNE = 268,
-    M68K_INS_FTRAPST = 269,
-    M68K_INS_FTST = 270,
-    M68K_INS_FTWOTOX = 271,
-    M68K_INS_HALT = 272,
-    M68K_INS_ILLEGAL = 273,
-    M68K_INS_JMP = 274,
-    M68K_INS_JSR = 275,
-    M68K_INS_LEA = 276,
-    M68K_INS_LINK = 277,
-    M68K_INS_LPSTOP = 278,
-    M68K_INS_LSL = 279,
-    M68K_INS_LSR = 280,
-    M68K_INS_MOVE = 281,
-    M68K_INS_MOVEA = 282,
-    M68K_INS_MOVEC = 283,
-    M68K_INS_MOVEM = 284,
-    M68K_INS_MOVEP = 285,
-    M68K_INS_MOVEQ = 286,
-    M68K_INS_MOVES = 287,
-    M68K_INS_MOVE16 = 288,
-    M68K_INS_MULS = 289,
-    M68K_INS_MULU = 290,
-    M68K_INS_NBCD = 291,
-    M68K_INS_NEG = 292,
-    M68K_INS_NEGX = 293,
-    M68K_INS_NOP = 294,
-    M68K_INS_NOT = 295,
-    M68K_INS_OR = 296,
-    M68K_INS_ORI = 297,
-    M68K_INS_PACK = 298,
-    M68K_INS_PEA = 299,
-    M68K_INS_PFLUSH = 300,
-    M68K_INS_PFLUSHA = 301,
-    M68K_INS_PFLUSHAN = 302,
-    M68K_INS_PFLUSHN = 303,
-    M68K_INS_PLOADR = 304,
-    M68K_INS_PLOADW = 305,
-    M68K_INS_PLPAR = 306,
-    M68K_INS_PLPAW = 307,
-    M68K_INS_PMOVE = 308,
-    M68K_INS_PMOVEFD = 309,
-    M68K_INS_PTESTR = 310,
-    M68K_INS_PTESTW = 311,
-    M68K_INS_PULSE = 312,
-    M68K_INS_REMS = 313,
-    M68K_INS_REMU = 314,
-    M68K_INS_RESET = 315,
-    M68K_INS_ROL = 316,
-    M68K_INS_ROR = 317,
-    M68K_INS_ROXL = 318,
-    M68K_INS_ROXR = 319,
-    M68K_INS_RTD = 320,
-    M68K_INS_RTE = 321,
-    M68K_INS_RTM = 322,
-    M68K_INS_RTR = 323,
-    M68K_INS_RTS = 324,
-    M68K_INS_SBCD = 325,
-    M68K_INS_ST = 326,
-    M68K_INS_SF = 327,
-    M68K_INS_SHI = 328,
-    M68K_INS_SLS = 329,
-    M68K_INS_SCC = 330,
-    M68K_INS_SHS = 331,
-    M68K_INS_SCS = 332,
-    M68K_INS_SLO = 333,
-    M68K_INS_SNE = 334,
-    M68K_INS_SEQ = 335,
-    M68K_INS_SVC = 336,
-    M68K_INS_SVS = 337,
-    M68K_INS_SPL = 338,
-    M68K_INS_SMI = 339,
-    M68K_INS_SGE = 340,
-    M68K_INS_SLT = 341,
-    M68K_INS_SGT = 342,
-    M68K_INS_SLE = 343,
-    M68K_INS_STOP = 344,
-    M68K_INS_SUB = 345,
-    M68K_INS_SUBA = 346,
-    M68K_INS_SUBI = 347,
-    M68K_INS_SUBQ = 348,
-    M68K_INS_SUBX = 349,
-    M68K_INS_SWAP = 350,
-    M68K_INS_TAS = 351,
-    M68K_INS_TRAP = 352,
-    M68K_INS_TRAPV = 353,
-    M68K_INS_TRAPT = 354,
-    M68K_INS_TRAPF = 355,
-    M68K_INS_TRAPHI = 356,
-    M68K_INS_TRAPLS = 357,
-    M68K_INS_TRAPCC = 358,
-    M68K_INS_TRAPHS = 359,
-    M68K_INS_TRAPCS = 360,
-    M68K_INS_TRAPLO = 361,
-    M68K_INS_TRAPNE = 362,
-    M68K_INS_TRAPEQ = 363,
-    M68K_INS_TRAPVC = 364,
-    M68K_INS_TRAPVS = 365,
-    M68K_INS_TRAPPL = 366,
-    M68K_INS_TRAPMI = 367,
-    M68K_INS_TRAPGE = 368,
-    M68K_INS_TRAPLT = 369,
-    M68K_INS_TRAPGT = 370,
-    M68K_INS_TRAPLE = 371,
-    M68K_INS_TST = 372,
-    M68K_INS_UNLK = 373,
-    M68K_INS_UNPK = 374,
-    M68K_INS_ENDING = 375,
+    M68K_INS_BITREV = 33,
+    M68K_INS_BYTEREV = 34,
+    M68K_INS_BFCHG = 35,
+    M68K_INS_BFCLR = 36,
+    M68K_INS_BFEXTS = 37,
+    M68K_INS_BFEXTU = 38,
+    M68K_INS_BFFFO = 39,
+    M68K_INS_BFINS = 40,
+    M68K_INS_BFSET = 41,
+    M68K_INS_BFTST = 42,
+    M68K_INS_BKPT = 43,
+    M68K_INS_CALLM = 44,
+    M68K_INS_CAS = 45,
+    M68K_INS_CAS2 = 46,
+    M68K_INS_CHK = 47,
+    M68K_INS_CHK2 = 48,
+    M68K_INS_CLR = 49,
+    M68K_INS_CMP = 50,
+    M68K_INS_CMPA = 51,
+    M68K_INS_CMPI = 52,
+    M68K_INS_CMPM = 53,
+    M68K_INS_CMP2 = 54,
+    M68K_INS_CINVL = 55,
+    M68K_INS_CINVP = 56,
+    M68K_INS_CINVA = 57,
+    M68K_INS_CPUSHL = 58,
+    M68K_INS_CPUSHP = 59,
+    M68K_INS_CPUSHA = 60,
+    M68K_INS_DBT = 61,
+    M68K_INS_DBF = 62,
+    M68K_INS_DBHI = 63,
+    M68K_INS_DBLS = 64,
+    M68K_INS_DBCC = 65,
+    M68K_INS_DBCS = 66,
+    M68K_INS_DBNE = 67,
+    M68K_INS_DBEQ = 68,
+    M68K_INS_DBVC = 69,
+    M68K_INS_DBVS = 70,
+    M68K_INS_DBPL = 71,
+    M68K_INS_DBMI = 72,
+    M68K_INS_DBGE = 73,
+    M68K_INS_DBLT = 74,
+    M68K_INS_DBGT = 75,
+    M68K_INS_DBLE = 76,
+    M68K_INS_DBRA = 77,
+    M68K_INS_DIVS = 78,
+    M68K_INS_DIVSL = 79,
+    M68K_INS_DIVU = 80,
+    M68K_INS_DIVUL = 81,
+    M68K_INS_EOR = 82,
+    M68K_INS_EORI = 83,
+    M68K_INS_EXG = 84,
+    M68K_INS_EXT = 85,
+    M68K_INS_EXTB = 86,
+    M68K_INS_FF1 = 87,
+    M68K_INS_FABS = 88,
+    M68K_INS_FSABS = 89,
+    M68K_INS_FDABS = 90,
+    M68K_INS_FACOS = 91,
+    M68K_INS_FADD = 92,
+    M68K_INS_FSADD = 93,
+    M68K_INS_FDADD = 94,
+    M68K_INS_FASIN = 95,
+    M68K_INS_FATAN = 96,
+    M68K_INS_FATANH = 97,
+    M68K_INS_FBF = 98,
+    M68K_INS_FBEQ = 99,
+    M68K_INS_FBOGT = 100,
+    M68K_INS_FBOGE = 101,
+    M68K_INS_FBOLT = 102,
+    M68K_INS_FBOLE = 103,
+    M68K_INS_FBOGL = 104,
+    M68K_INS_FBOR = 105,
+    M68K_INS_FBUN = 106,
+    M68K_INS_FBUEQ = 107,
+    M68K_INS_FBUGT = 108,
+    M68K_INS_FBUGE = 109,
+    M68K_INS_FBULT = 110,
+    M68K_INS_FBULE = 111,
+    M68K_INS_FBNE = 112,
+    M68K_INS_FBT = 113,
+    M68K_INS_FBSF = 114,
+    M68K_INS_FBSEQ = 115,
+    M68K_INS_FBGT = 116,
+    M68K_INS_FBGE = 117,
+    M68K_INS_FBLT = 118,
+    M68K_INS_FBLE = 119,
+    M68K_INS_FBGL = 120,
+    M68K_INS_FBGLE = 121,
+    M68K_INS_FBNGLE = 122,
+    M68K_INS_FBNGL = 123,
+    M68K_INS_FBNLE = 124,
+    M68K_INS_FBNLT = 125,
+    M68K_INS_FBNGE = 126,
+    M68K_INS_FBNGT = 127,
+    M68K_INS_FBSNE = 128,
+    M68K_INS_FBST = 129,
+    M68K_INS_FCMP = 130,
+    M68K_INS_FCOS = 131,
+    M68K_INS_FCOSH = 132,
+    M68K_INS_FDBF = 133,
+    M68K_INS_FDBEQ = 134,
+    M68K_INS_FDBOGT = 135,
+    M68K_INS_FDBOGE = 136,
+    M68K_INS_FDBOLT = 137,
+    M68K_INS_FDBOLE = 138,
+    M68K_INS_FDBOGL = 139,
+    M68K_INS_FDBOR = 140,
+    M68K_INS_FDBUN = 141,
+    M68K_INS_FDBUEQ = 142,
+    M68K_INS_FDBUGT = 143,
+    M68K_INS_FDBUGE = 144,
+    M68K_INS_FDBULT = 145,
+    M68K_INS_FDBULE = 146,
+    M68K_INS_FDBNE = 147,
+    M68K_INS_FDBT = 148,
+    M68K_INS_FDBSF = 149,
+    M68K_INS_FDBSEQ = 150,
+    M68K_INS_FDBGT = 151,
+    M68K_INS_FDBGE = 152,
+    M68K_INS_FDBLT = 153,
+    M68K_INS_FDBLE = 154,
+    M68K_INS_FDBGL = 155,
+    M68K_INS_FDBGLE = 156,
+    M68K_INS_FDBNGLE = 157,
+    M68K_INS_FDBNGL = 158,
+    M68K_INS_FDBNLE = 159,
+    M68K_INS_FDBNLT = 160,
+    M68K_INS_FDBNGE = 161,
+    M68K_INS_FDBNGT = 162,
+    M68K_INS_FDBSNE = 163,
+    M68K_INS_FDBST = 164,
+    M68K_INS_FDIV = 165,
+    M68K_INS_FSDIV = 166,
+    M68K_INS_FDDIV = 167,
+    M68K_INS_FETOX = 168,
+    M68K_INS_FETOXM1 = 169,
+    M68K_INS_FGETEXP = 170,
+    M68K_INS_FGETMAN = 171,
+    M68K_INS_FINT = 172,
+    M68K_INS_FINTRZ = 173,
+    M68K_INS_FLOG10 = 174,
+    M68K_INS_FLOG2 = 175,
+    M68K_INS_FLOGN = 176,
+    M68K_INS_FLOGNP1 = 177,
+    M68K_INS_FMOD = 178,
+    M68K_INS_FMOVE = 179,
+    M68K_INS_FSMOVE = 180,
+    M68K_INS_FDMOVE = 181,
+    M68K_INS_FMOVECR = 182,
+    M68K_INS_FMOVEM = 183,
+    M68K_INS_FMUL = 184,
+    M68K_INS_FSMUL = 185,
+    M68K_INS_FDMUL = 186,
+    M68K_INS_FNEG = 187,
+    M68K_INS_FSNEG = 188,
+    M68K_INS_FDNEG = 189,
+    M68K_INS_FNOP = 190,
+    M68K_INS_FREM = 191,
+    M68K_INS_FRESTORE = 192,
+    M68K_INS_FSAVE = 193,
+    M68K_INS_FSCALE = 194,
+    M68K_INS_FSGLDIV = 195,
+    M68K_INS_FSGLMUL = 196,
+    M68K_INS_FSIN = 197,
+    M68K_INS_FSINCOS = 198,
+    M68K_INS_FSINH = 199,
+    M68K_INS_FSQRT = 200,
+    M68K_INS_FSSQRT = 201,
+    M68K_INS_FDSQRT = 202,
+    M68K_INS_FSF = 203,
+    M68K_INS_FSBEQ = 204,
+    M68K_INS_FSOGT = 205,
+    M68K_INS_FSOGE = 206,
+    M68K_INS_FSOLT = 207,
+    M68K_INS_FSOLE = 208,
+    M68K_INS_FSOGL = 209,
+    M68K_INS_FSOR = 210,
+    M68K_INS_FSUN = 211,
+    M68K_INS_FSUEQ = 212,
+    M68K_INS_FSUGT = 213,
+    M68K_INS_FSUGE = 214,
+    M68K_INS_FSULT = 215,
+    M68K_INS_FSULE = 216,
+    M68K_INS_FSNE = 217,
+    M68K_INS_FST = 218,
+    M68K_INS_FSSF = 219,
+    M68K_INS_FSSEQ = 220,
+    M68K_INS_FSGT = 221,
+    M68K_INS_FSGE = 222,
+    M68K_INS_FSLT = 223,
+    M68K_INS_FSLE = 224,
+    M68K_INS_FSGL = 225,
+    M68K_INS_FSGLE = 226,
+    M68K_INS_FSNGLE = 227,
+    M68K_INS_FSNGL = 228,
+    M68K_INS_FSNLE = 229,
+    M68K_INS_FSNLT = 230,
+    M68K_INS_FSNGE = 231,
+    M68K_INS_FSNGT = 232,
+    M68K_INS_FSSNE = 233,
+    M68K_INS_FSST = 234,
+    M68K_INS_FSUB = 235,
+    M68K_INS_FSSUB = 236,
+    M68K_INS_FDSUB = 237,
+    M68K_INS_FTAN = 238,
+    M68K_INS_FTANH = 239,
+    M68K_INS_FTENTOX = 240,
+    M68K_INS_FTRAPF = 241,
+    M68K_INS_FTRAPEQ = 242,
+    M68K_INS_FTRAPOGT = 243,
+    M68K_INS_FTRAPOGE = 244,
+    M68K_INS_FTRAPOLT = 245,
+    M68K_INS_FTRAPOLE = 246,
+    M68K_INS_FTRAPOGL = 247,
+    M68K_INS_FTRAPOR = 248,
+    M68K_INS_FTRAPUN = 249,
+    M68K_INS_FTRAPUEQ = 250,
+    M68K_INS_FTRAPUGT = 251,
+    M68K_INS_FTRAPUGE = 252,
+    M68K_INS_FTRAPULT = 253,
+    M68K_INS_FTRAPULE = 254,
+    M68K_INS_FTRAPNE = 255,
+    M68K_INS_FTRAPT = 256,
+    M68K_INS_FTRAPSF = 257,
+    M68K_INS_FTRAPSEQ = 258,
+    M68K_INS_FTRAPGT = 259,
+    M68K_INS_FTRAPGE = 260,
+    M68K_INS_FTRAPLT = 261,
+    M68K_INS_FTRAPLE = 262,
+    M68K_INS_FTRAPGL = 263,
+    M68K_INS_FTRAPGLE = 264,
+    M68K_INS_FTRAPNGLE = 265,
+    M68K_INS_FTRAPNGL = 266,
+    M68K_INS_FTRAPNLE = 267,
+    M68K_INS_FTRAPNLT = 268,
+    M68K_INS_FTRAPNGE = 269,
+    M68K_INS_FTRAPNGT = 270,
+    M68K_INS_FTRAPSNE = 271,
+    M68K_INS_FTRAPST = 272,
+    M68K_INS_FTST = 273,
+    M68K_INS_FTWOTOX = 274,
+    M68K_INS_HALT = 275,
+    M68K_INS_ILLEGAL = 276,
+    M68K_INS_INTOUCH = 277,
+    M68K_INS_JMP = 278,
+    M68K_INS_JSR = 279,
+    M68K_INS_LEA = 280,
+    M68K_INS_LINK = 281,
+    M68K_INS_LPSTOP = 282,
+    M68K_INS_LSL = 283,
+    M68K_INS_LSR = 284,
+    M68K_INS_MAC = 285,
+    M68K_INS_MOVE = 286,
+    M68K_INS_MOVEA = 287,
+    M68K_INS_MOVEC = 288,
+    M68K_INS_MOVEM = 289,
+    M68K_INS_MOVEP = 290,
+    M68K_INS_MOVEQ = 291,
+    M68K_INS_MOVES = 292,
+    M68K_INS_MOVE16 = 293,
+    M68K_INS_MOV3Q = 294,
+    M68K_INS_MOVCLR = 295,
+    M68K_INS_MSAC = 296,
+    M68K_INS_MULS = 297,
+    M68K_INS_MULU = 298,
+    M68K_INS_MVS = 299,
+    M68K_INS_MVZ = 300,
+    M68K_INS_NBCD = 301,
+    M68K_INS_NEG = 302,
+    M68K_INS_NEGX = 303,
+    M68K_INS_NOP = 304,
+    M68K_INS_NOT = 305,
+    M68K_INS_OR = 306,
+    M68K_INS_ORI = 307,
+    M68K_INS_PACK = 308,
+    M68K_INS_PEA = 309,
+    M68K_INS_PFLUSH = 310,
+    M68K_INS_PFLUSHA = 311,
+    M68K_INS_PFLUSHAN = 312,
+    M68K_INS_PFLUSHN = 313,
+    M68K_INS_PLOADR = 314,
+    M68K_INS_PLOADW = 315,
+    M68K_INS_PLPAR = 316,
+    M68K_INS_PLPAW = 317,
+    M68K_INS_PMOVE = 318,
+    M68K_INS_PMOVEFD = 319,
+    M68K_INS_PTESTR = 320,
+    M68K_INS_PTESTW = 321,
+    M68K_INS_PULSE = 322,
+    M68K_INS_REMS = 323,
+    M68K_INS_REMU = 324,
+    M68K_INS_RESET = 325,
+    M68K_INS_ROL = 326,
+    M68K_INS_ROR = 327,
+    M68K_INS_ROXL = 328,
+    M68K_INS_ROXR = 329,
+    M68K_INS_RTD = 330,
+    M68K_INS_RTE = 331,
+    M68K_INS_RTM = 332,
+    M68K_INS_RTR = 333,
+    M68K_INS_RTS = 334,
+    M68K_INS_SATS = 335,
+    M68K_INS_SBCD = 336,
+    M68K_INS_ST = 337,
+    M68K_INS_SF = 338,
+    M68K_INS_SHI = 339,
+    M68K_INS_SLS = 340,
+    M68K_INS_SCC = 341,
+    M68K_INS_SHS = 342,
+    M68K_INS_SCS = 343,
+    M68K_INS_SLO = 344,
+    M68K_INS_SNE = 345,
+    M68K_INS_SEQ = 346,
+    M68K_INS_SVC = 347,
+    M68K_INS_SVS = 348,
+    M68K_INS_SPL = 349,
+    M68K_INS_SMI = 350,
+    M68K_INS_SGE = 351,
+    M68K_INS_SLT = 352,
+    M68K_INS_SGT = 353,
+    M68K_INS_SLE = 354,
+    M68K_INS_STOP = 355,
+    M68K_INS_STRLDSR = 356,
+    M68K_INS_SUB = 357,
+    M68K_INS_SUBA = 358,
+    M68K_INS_SUBI = 359,
+    M68K_INS_SUBQ = 360,
+    M68K_INS_SUBX = 361,
+    M68K_INS_SWAP = 362,
+    M68K_INS_TAS = 363,
+    M68K_INS_TRAP = 364,
+    M68K_INS_TRAPV = 365,
+    M68K_INS_TRAPT = 366,
+    M68K_INS_TRAPF = 367,
+    M68K_INS_TRAPHI = 368,
+    M68K_INS_TRAPLS = 369,
+    M68K_INS_TRAPCC = 370,
+    M68K_INS_TRAPHS = 371,
+    M68K_INS_TRAPCS = 372,
+    M68K_INS_TRAPLO = 373,
+    M68K_INS_TRAPNE = 374,
+    M68K_INS_TRAPEQ = 375,
+    M68K_INS_TRAPVC = 376,
+    M68K_INS_TRAPVS = 377,
+    M68K_INS_TRAPPL = 378,
+    M68K_INS_TRAPMI = 379,
+    M68K_INS_TRAPGE = 380,
+    M68K_INS_TRAPLT = 381,
+    M68K_INS_TRAPGT = 382,
+    M68K_INS_TRAPLE = 383,
+    M68K_INS_TST = 384,
+    M68K_INS_UNLK = 385,
+    M68K_INS_UNPK = 386,
+    M68K_INS_WDDATA = 387,
+    M68K_INS_WDEBUG = 388,
+    M68K_INS_BGND = 389,
+    M68K_INS_TBLS = 390,
+    M68K_INS_TBLU = 391,
+    M68K_INS_TBLSN = 392,
+    M68K_INS_TBLUN = 393,
+    M68K_INS_CP0BCBUSY = 394,
+    M68K_INS_CP0LD = 395,
+    M68K_INS_CP0NOP = 396,
+    M68K_INS_CP0ST = 397,
+    M68K_INS_CP1BCBUSY = 398,
+    M68K_INS_CP1LD = 399,
+    M68K_INS_CP1NOP = 400,
+    M68K_INS_CP1ST = 401,
+    M68K_INS_TPF = 402,
+    M68K_INS_ENDING = 403,
 }
 #[repr(u32)]
 #[doc = " Group of M68K instructions"]
@@ -10036,6 +15204,272 @@ pub mod mips_insn_group {
     pub const MIPS_FEATURE_HASDSPR2: Type = 182;
     pub const MIPS_FEATURE_HASDSPR3: Type = 183;
     pub const MIPS_GRP_ENDING: Type = 184;
+}
+pub mod mos65xx_reg {
+    #[doc = " MOS65XX registers and special registers"]
+    pub type Type = ::core::ffi::c_uint;
+    pub const MOS65XX_REG_INVALID: Type = 0;
+    #[doc = "< accumulator"]
+    pub const MOS65XX_REG_ACC: Type = 1;
+    #[doc = "< X index register"]
+    pub const MOS65XX_REG_X: Type = 2;
+    #[doc = "< Y index register"]
+    pub const MOS65XX_REG_Y: Type = 3;
+    #[doc = "< status register"]
+    pub const MOS65XX_REG_P: Type = 4;
+    #[doc = "< stack pointer register"]
+    pub const MOS65XX_REG_SP: Type = 5;
+    #[doc = "< direct page register"]
+    pub const MOS65XX_REG_DP: Type = 6;
+    #[doc = "< data bank register"]
+    pub const MOS65XX_REG_B: Type = 7;
+    #[doc = "< program bank register"]
+    pub const MOS65XX_REG_K: Type = 8;
+    pub const MOS65XX_REG_ENDING: Type = 9;
+}
+#[repr(u32)]
+#[doc = " MOS65XX Addressing Modes"]
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
+pub enum mos65xx_address_mode {
+    #[doc = "< No address mode."]
+    MOS65XX_AM_NONE = 0,
+    #[doc = "< implied addressing (no addressing mode)"]
+    MOS65XX_AM_IMP = 1,
+    #[doc = "< accumulator addressing"]
+    MOS65XX_AM_ACC = 2,
+    #[doc = "< 8/16 Bit immediate value"]
+    MOS65XX_AM_IMM = 3,
+    #[doc = "< relative addressing used by branches"]
+    MOS65XX_AM_REL = 4,
+    #[doc = "< interrupt addressing"]
+    MOS65XX_AM_INT = 5,
+    #[doc = "< memory block addressing"]
+    MOS65XX_AM_BLOCK = 6,
+    #[doc = "< zeropage addressing"]
+    MOS65XX_AM_ZP = 7,
+    #[doc = "< indexed zeropage addressing by the X index register"]
+    MOS65XX_AM_ZP_X = 8,
+    #[doc = "< indexed zeropage addressing by the Y index register"]
+    MOS65XX_AM_ZP_Y = 9,
+    #[doc = "< zero page address, branch relative address"]
+    MOS65XX_AM_ZP_REL = 10,
+    #[doc = "< indirect zeropage addressing"]
+    MOS65XX_AM_ZP_IND = 11,
+    #[doc = "< indexed zeropage indirect addressing by the X index register"]
+    MOS65XX_AM_ZP_X_IND = 12,
+    #[doc = "< indirect zeropage indexed addressing by the Y index register"]
+    MOS65XX_AM_ZP_IND_Y = 13,
+    #[doc = "< zeropage indirect long addressing"]
+    MOS65XX_AM_ZP_IND_LONG = 14,
+    #[doc = "< zeropage indirect long addressing indexed by Y register"]
+    MOS65XX_AM_ZP_IND_LONG_Y = 15,
+    #[doc = "< absolute addressing"]
+    MOS65XX_AM_ABS = 16,
+    #[doc = "< indexed absolute addressing by the X index register"]
+    MOS65XX_AM_ABS_X = 17,
+    #[doc = "< indexed absolute addressing by the Y index register"]
+    MOS65XX_AM_ABS_Y = 18,
+    #[doc = "< absolute indirect addressing"]
+    MOS65XX_AM_ABS_IND = 19,
+    #[doc = "< indexed absolute indirect addressing by the X index register"]
+    MOS65XX_AM_ABS_X_IND = 20,
+    #[doc = "< absolute indirect long addressing"]
+    MOS65XX_AM_ABS_IND_LONG = 21,
+    #[doc = "< absolute long address mode"]
+    MOS65XX_AM_ABS_LONG = 22,
+    #[doc = "< absolute long address mode, indexed by X register"]
+    MOS65XX_AM_ABS_LONG_X = 23,
+    #[doc = "< stack relative addressing"]
+    MOS65XX_AM_SR = 24,
+    #[doc = "< indirect stack relative addressing indexed by the Y index register"]
+    MOS65XX_AM_SR_IND_Y = 25,
+}
+#[repr(u32)]
+#[doc = " MOS65XX instruction"]
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
+pub enum mos65xx_insn {
+    MOS65XX_INS_INVALID = 0,
+    MOS65XX_INS_ADC = 1,
+    MOS65XX_INS_AND = 2,
+    MOS65XX_INS_ASL = 3,
+    MOS65XX_INS_BBR = 4,
+    MOS65XX_INS_BBS = 5,
+    MOS65XX_INS_BCC = 6,
+    MOS65XX_INS_BCS = 7,
+    MOS65XX_INS_BEQ = 8,
+    MOS65XX_INS_BIT = 9,
+    MOS65XX_INS_BMI = 10,
+    MOS65XX_INS_BNE = 11,
+    MOS65XX_INS_BPL = 12,
+    MOS65XX_INS_BRA = 13,
+    MOS65XX_INS_BRK = 14,
+    MOS65XX_INS_BRL = 15,
+    MOS65XX_INS_BVC = 16,
+    MOS65XX_INS_BVS = 17,
+    MOS65XX_INS_CLC = 18,
+    MOS65XX_INS_CLD = 19,
+    MOS65XX_INS_CLI = 20,
+    MOS65XX_INS_CLV = 21,
+    MOS65XX_INS_CMP = 22,
+    MOS65XX_INS_COP = 23,
+    MOS65XX_INS_CPX = 24,
+    MOS65XX_INS_CPY = 25,
+    MOS65XX_INS_DEC = 26,
+    MOS65XX_INS_DEX = 27,
+    MOS65XX_INS_DEY = 28,
+    MOS65XX_INS_EOR = 29,
+    MOS65XX_INS_INC = 30,
+    MOS65XX_INS_INX = 31,
+    MOS65XX_INS_INY = 32,
+    MOS65XX_INS_JML = 33,
+    MOS65XX_INS_JMP = 34,
+    MOS65XX_INS_JSL = 35,
+    MOS65XX_INS_JSR = 36,
+    MOS65XX_INS_LDA = 37,
+    MOS65XX_INS_LDX = 38,
+    MOS65XX_INS_LDY = 39,
+    MOS65XX_INS_LSR = 40,
+    MOS65XX_INS_MVN = 41,
+    MOS65XX_INS_MVP = 42,
+    MOS65XX_INS_NOP = 43,
+    MOS65XX_INS_ORA = 44,
+    MOS65XX_INS_PEA = 45,
+    MOS65XX_INS_PEI = 46,
+    MOS65XX_INS_PER = 47,
+    MOS65XX_INS_PHA = 48,
+    MOS65XX_INS_PHB = 49,
+    MOS65XX_INS_PHD = 50,
+    MOS65XX_INS_PHK = 51,
+    MOS65XX_INS_PHP = 52,
+    MOS65XX_INS_PHX = 53,
+    MOS65XX_INS_PHY = 54,
+    MOS65XX_INS_PLA = 55,
+    MOS65XX_INS_PLB = 56,
+    MOS65XX_INS_PLD = 57,
+    MOS65XX_INS_PLP = 58,
+    MOS65XX_INS_PLX = 59,
+    MOS65XX_INS_PLY = 60,
+    MOS65XX_INS_REP = 61,
+    MOS65XX_INS_RMB = 62,
+    MOS65XX_INS_ROL = 63,
+    MOS65XX_INS_ROR = 64,
+    MOS65XX_INS_RTI = 65,
+    MOS65XX_INS_RTL = 66,
+    MOS65XX_INS_RTS = 67,
+    MOS65XX_INS_SBC = 68,
+    MOS65XX_INS_SEC = 69,
+    MOS65XX_INS_SED = 70,
+    MOS65XX_INS_SEI = 71,
+    MOS65XX_INS_SEP = 72,
+    MOS65XX_INS_SMB = 73,
+    MOS65XX_INS_STA = 74,
+    MOS65XX_INS_STP = 75,
+    MOS65XX_INS_STX = 76,
+    MOS65XX_INS_STY = 77,
+    MOS65XX_INS_STZ = 78,
+    MOS65XX_INS_TAX = 79,
+    MOS65XX_INS_TAY = 80,
+    MOS65XX_INS_TCD = 81,
+    MOS65XX_INS_TCS = 82,
+    MOS65XX_INS_TDC = 83,
+    MOS65XX_INS_TRB = 84,
+    MOS65XX_INS_TSB = 85,
+    MOS65XX_INS_TSC = 86,
+    MOS65XX_INS_TSX = 87,
+    MOS65XX_INS_TXA = 88,
+    MOS65XX_INS_TXS = 89,
+    MOS65XX_INS_TXY = 90,
+    MOS65XX_INS_TYA = 91,
+    MOS65XX_INS_TYX = 92,
+    MOS65XX_INS_WAI = 93,
+    MOS65XX_INS_WDM = 94,
+    MOS65XX_INS_XBA = 95,
+    MOS65XX_INS_XCE = 96,
+    MOS65XX_INS_ENDING = 97,
+}
+#[repr(u32)]
+#[doc = " Group of MOS65XX instructions"]
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
+pub enum mos65xx_group_type {
+    #[doc = "< CS_GRP_INVALID"]
+    MOS65XX_GRP_INVALID = 0,
+    #[doc = "< = CS_GRP_JUMP"]
+    MOS65XX_GRP_JUMP = 1,
+    #[doc = "< = CS_GRP_RET"]
+    MOS65XX_GRP_CALL = 2,
+    #[doc = "< = CS_GRP_RET"]
+    MOS65XX_GRP_RET = 3,
+    #[doc = "< = CS_GRP_INT"]
+    MOS65XX_GRP_INT = 4,
+    #[doc = "< = CS_GRP_IRET"]
+    MOS65XX_GRP_IRET = 5,
+    #[doc = "< = CS_GRP_BRANCH_RELATIVE"]
+    MOS65XX_GRP_BRANCH_RELATIVE = 6,
+    MOS65XX_GRP_ENDING = 7,
+}
+#[repr(u32)]
+#[doc = " Operand type for instruction's operands"]
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
+pub enum mos65xx_op_type {
+    MOS65XX_OP_INVALID = 0,
+    #[doc = "< = CS_OP_REG (Register operand)."]
+    MOS65XX_OP_REG = 1,
+    #[doc = "< = CS_OP_IMM (Immediate operand)."]
+    MOS65XX_OP_IMM = 2,
+    #[doc = "< = CS_OP_MEM (Memory operand)."]
+    MOS65XX_OP_MEM = 128,
+}
+#[doc = " Instruction operand"]
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct cs_mos65xx_op {
+    #[doc = "< operand type"]
+    pub type_: mos65xx_op_type,
+    pub __bindgen_anon_1: cs_mos65xx_op__bindgen_ty_1,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub union cs_mos65xx_op__bindgen_ty_1 {
+    #[doc = "< register value for REG operand"]
+    pub reg: mos65xx_reg::Type,
+    #[doc = "< immediate value for IMM operand"]
+    pub imm: u16,
+    #[doc = "< address for MEM operand"]
+    pub mem: u32,
+}
+impl ::core::fmt::Debug for cs_mos65xx_op__bindgen_ty_1 {
+    fn fmt(&self, f: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
+        write!(f, "cs_mos65xx_op__bindgen_ty_1 {{ union }}")
+    }
+}
+impl ::core::fmt::Debug for cs_mos65xx_op {
+    fn fmt(&self, f: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
+        write!(
+            f,
+            "cs_mos65xx_op {{ type: {:?}, __bindgen_anon_1: {:?} }}",
+            self.type_, self.__bindgen_anon_1
+        )
+    }
+}
+#[doc = " The MOS65XX address mode and its operands"]
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct cs_mos65xx {
+    pub am: mos65xx_address_mode,
+    pub modifies_flags: bool,
+    #[doc = " Number of operands of this instruction,\n or 0 when instruction has no operand."]
+    pub op_count: u8,
+    #[doc = "< operands for this instruction."]
+    pub operands: [cs_mos65xx_op; 3usize],
+}
+impl ::core::fmt::Debug for cs_mos65xx {
+    fn fmt(&self, f: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
+        write!(
+            f,
+            "cs_mos65xx {{ am: {:?}, modifies_flags: {:?}, operands: {:?} }}",
+            self.am, self.modifies_flags, self.operands
+        )
+    }
 }
 impl ppc_pred {
     pub const PPC_PRED_SO: ppc_pred = ppc_pred::PPC_PRED_UN;
@@ -13459,6 +18893,3323 @@ impl ::core::fmt::Debug for cs_ppc {
             self.bc, self.update_cr0, self.format, self.operands
         )
     }
+}
+#[repr(u32)]
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
+pub enum riscv_op_type {
+    #[doc = "< = CS_OP_INVALID (Uninitialized)."]
+    RISCV_OP_INVALID = 0,
+    #[doc = "< = CS_OP_REG (Register operand)."]
+    RISCV_OP_REG = 1,
+    #[doc = "< = CS_OP_IMM (Immediate operand)."]
+    RISCV_OP_IMM = 2,
+    #[doc = "< = CS_OP_MEM (Memory operand)."]
+    RISCV_OP_MEM = 128,
+    #[doc = "< = CS_OP_FP (FP immediate operand)."]
+    RISCV_OP_FP = 3,
+    #[doc = "< =  Control and Status Register."]
+    RISCV_OP_CSR = 16,
+}
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct riscv_op_mem {
+    pub base: ::core::ffi::c_uint,
+    pub disp: i64,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct cs_riscv_op {
+    pub type_: riscv_op_type,
+    pub __bindgen_anon_1: cs_riscv_op__bindgen_ty_1,
+    #[doc = "< How is this operand accessed? (READ, WRITE or READ|WRITE)"]
+    pub access: cs_ac_type,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub union cs_riscv_op__bindgen_ty_1 {
+    pub reg: ::core::ffi::c_uint,
+    pub imm: i64,
+    pub dimm: f64,
+    pub mem: riscv_op_mem,
+    pub csr: u16,
+}
+impl ::core::fmt::Debug for cs_riscv_op__bindgen_ty_1 {
+    fn fmt(&self, f: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
+        write!(f, "cs_riscv_op__bindgen_ty_1 {{ union }}")
+    }
+}
+impl ::core::fmt::Debug for cs_riscv_op {
+    fn fmt(&self, f: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
+        write!(
+            f,
+            "cs_riscv_op {{ type: {:?}, __bindgen_anon_1: {:?}, access: {:?} }}",
+            self.type_, self.__bindgen_anon_1, self.access
+        )
+    }
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct cs_riscv {
+    pub need_effective_addr: bool,
+    pub op_count: u8,
+    pub operands: [cs_riscv_op; 8usize],
+}
+impl ::core::fmt::Debug for cs_riscv {
+    fn fmt(&self, f: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
+        write!(
+            f,
+            "cs_riscv {{ need_effective_addr: {:?}, operands: {:?} }}",
+            self.need_effective_addr, self.operands
+        )
+    }
+}
+pub mod riscv_reg {
+    pub type Type = ::core::ffi::c_uint;
+    pub const RISCV_REG_INVALID: Type = 0;
+    pub const RISCV_REG_FFLAGS: Type = 1;
+    pub const RISCV_REG_FRM: Type = 2;
+    pub const RISCV_REG_SSP: Type = 3;
+    pub const RISCV_REG_VL: Type = 4;
+    pub const RISCV_REG_VLENB: Type = 5;
+    pub const RISCV_REG_VTYPE: Type = 6;
+    pub const RISCV_REG_VXRM: Type = 7;
+    pub const RISCV_REG_VXSAT: Type = 8;
+    pub const RISCV_REG_DUMMY_REG_PAIR_WITH_X0: Type = 9;
+    pub const RISCV_REG_V0: Type = 10;
+    pub const RISCV_REG_V1: Type = 11;
+    pub const RISCV_REG_V2: Type = 12;
+    pub const RISCV_REG_V3: Type = 13;
+    pub const RISCV_REG_V4: Type = 14;
+    pub const RISCV_REG_V5: Type = 15;
+    pub const RISCV_REG_V6: Type = 16;
+    pub const RISCV_REG_V7: Type = 17;
+    pub const RISCV_REG_V8: Type = 18;
+    pub const RISCV_REG_V9: Type = 19;
+    pub const RISCV_REG_V10: Type = 20;
+    pub const RISCV_REG_V11: Type = 21;
+    pub const RISCV_REG_V12: Type = 22;
+    pub const RISCV_REG_V13: Type = 23;
+    pub const RISCV_REG_V14: Type = 24;
+    pub const RISCV_REG_V15: Type = 25;
+    pub const RISCV_REG_V16: Type = 26;
+    pub const RISCV_REG_V17: Type = 27;
+    pub const RISCV_REG_V18: Type = 28;
+    pub const RISCV_REG_V19: Type = 29;
+    pub const RISCV_REG_V20: Type = 30;
+    pub const RISCV_REG_V21: Type = 31;
+    pub const RISCV_REG_V22: Type = 32;
+    pub const RISCV_REG_V23: Type = 33;
+    pub const RISCV_REG_V24: Type = 34;
+    pub const RISCV_REG_V25: Type = 35;
+    pub const RISCV_REG_V26: Type = 36;
+    pub const RISCV_REG_V27: Type = 37;
+    pub const RISCV_REG_V28: Type = 38;
+    pub const RISCV_REG_V29: Type = 39;
+    pub const RISCV_REG_V30: Type = 40;
+    pub const RISCV_REG_V31: Type = 41;
+    pub const RISCV_REG_X0: Type = 42;
+    pub const RISCV_REG_X1: Type = 43;
+    pub const RISCV_REG_X2: Type = 44;
+    pub const RISCV_REG_X3: Type = 45;
+    pub const RISCV_REG_X4: Type = 46;
+    pub const RISCV_REG_X5: Type = 47;
+    pub const RISCV_REG_X6: Type = 48;
+    pub const RISCV_REG_X7: Type = 49;
+    pub const RISCV_REG_X8: Type = 50;
+    pub const RISCV_REG_X9: Type = 51;
+    pub const RISCV_REG_X10: Type = 52;
+    pub const RISCV_REG_X11: Type = 53;
+    pub const RISCV_REG_X12: Type = 54;
+    pub const RISCV_REG_X13: Type = 55;
+    pub const RISCV_REG_X14: Type = 56;
+    pub const RISCV_REG_X15: Type = 57;
+    pub const RISCV_REG_X16: Type = 58;
+    pub const RISCV_REG_X17: Type = 59;
+    pub const RISCV_REG_X18: Type = 60;
+    pub const RISCV_REG_X19: Type = 61;
+    pub const RISCV_REG_X20: Type = 62;
+    pub const RISCV_REG_X21: Type = 63;
+    pub const RISCV_REG_X22: Type = 64;
+    pub const RISCV_REG_X23: Type = 65;
+    pub const RISCV_REG_X24: Type = 66;
+    pub const RISCV_REG_X25: Type = 67;
+    pub const RISCV_REG_X26: Type = 68;
+    pub const RISCV_REG_X27: Type = 69;
+    pub const RISCV_REG_X28: Type = 70;
+    pub const RISCV_REG_X29: Type = 71;
+    pub const RISCV_REG_X30: Type = 72;
+    pub const RISCV_REG_X31: Type = 73;
+    pub const RISCV_REG_F0_D: Type = 74;
+    pub const RISCV_REG_F1_D: Type = 75;
+    pub const RISCV_REG_F2_D: Type = 76;
+    pub const RISCV_REG_F3_D: Type = 77;
+    pub const RISCV_REG_F4_D: Type = 78;
+    pub const RISCV_REG_F5_D: Type = 79;
+    pub const RISCV_REG_F6_D: Type = 80;
+    pub const RISCV_REG_F7_D: Type = 81;
+    pub const RISCV_REG_F8_D: Type = 82;
+    pub const RISCV_REG_F9_D: Type = 83;
+    pub const RISCV_REG_F10_D: Type = 84;
+    pub const RISCV_REG_F11_D: Type = 85;
+    pub const RISCV_REG_F12_D: Type = 86;
+    pub const RISCV_REG_F13_D: Type = 87;
+    pub const RISCV_REG_F14_D: Type = 88;
+    pub const RISCV_REG_F15_D: Type = 89;
+    pub const RISCV_REG_F16_D: Type = 90;
+    pub const RISCV_REG_F17_D: Type = 91;
+    pub const RISCV_REG_F18_D: Type = 92;
+    pub const RISCV_REG_F19_D: Type = 93;
+    pub const RISCV_REG_F20_D: Type = 94;
+    pub const RISCV_REG_F21_D: Type = 95;
+    pub const RISCV_REG_F22_D: Type = 96;
+    pub const RISCV_REG_F23_D: Type = 97;
+    pub const RISCV_REG_F24_D: Type = 98;
+    pub const RISCV_REG_F25_D: Type = 99;
+    pub const RISCV_REG_F26_D: Type = 100;
+    pub const RISCV_REG_F27_D: Type = 101;
+    pub const RISCV_REG_F28_D: Type = 102;
+    pub const RISCV_REG_F29_D: Type = 103;
+    pub const RISCV_REG_F30_D: Type = 104;
+    pub const RISCV_REG_F31_D: Type = 105;
+    pub const RISCV_REG_F0_F: Type = 106;
+    pub const RISCV_REG_F1_F: Type = 107;
+    pub const RISCV_REG_F2_F: Type = 108;
+    pub const RISCV_REG_F3_F: Type = 109;
+    pub const RISCV_REG_F4_F: Type = 110;
+    pub const RISCV_REG_F5_F: Type = 111;
+    pub const RISCV_REG_F6_F: Type = 112;
+    pub const RISCV_REG_F7_F: Type = 113;
+    pub const RISCV_REG_F8_F: Type = 114;
+    pub const RISCV_REG_F9_F: Type = 115;
+    pub const RISCV_REG_F10_F: Type = 116;
+    pub const RISCV_REG_F11_F: Type = 117;
+    pub const RISCV_REG_F12_F: Type = 118;
+    pub const RISCV_REG_F13_F: Type = 119;
+    pub const RISCV_REG_F14_F: Type = 120;
+    pub const RISCV_REG_F15_F: Type = 121;
+    pub const RISCV_REG_F16_F: Type = 122;
+    pub const RISCV_REG_F17_F: Type = 123;
+    pub const RISCV_REG_F18_F: Type = 124;
+    pub const RISCV_REG_F19_F: Type = 125;
+    pub const RISCV_REG_F20_F: Type = 126;
+    pub const RISCV_REG_F21_F: Type = 127;
+    pub const RISCV_REG_F22_F: Type = 128;
+    pub const RISCV_REG_F23_F: Type = 129;
+    pub const RISCV_REG_F24_F: Type = 130;
+    pub const RISCV_REG_F25_F: Type = 131;
+    pub const RISCV_REG_F26_F: Type = 132;
+    pub const RISCV_REG_F27_F: Type = 133;
+    pub const RISCV_REG_F28_F: Type = 134;
+    pub const RISCV_REG_F29_F: Type = 135;
+    pub const RISCV_REG_F30_F: Type = 136;
+    pub const RISCV_REG_F31_F: Type = 137;
+    pub const RISCV_REG_F0_H: Type = 138;
+    pub const RISCV_REG_F1_H: Type = 139;
+    pub const RISCV_REG_F2_H: Type = 140;
+    pub const RISCV_REG_F3_H: Type = 141;
+    pub const RISCV_REG_F4_H: Type = 142;
+    pub const RISCV_REG_F5_H: Type = 143;
+    pub const RISCV_REG_F6_H: Type = 144;
+    pub const RISCV_REG_F7_H: Type = 145;
+    pub const RISCV_REG_F8_H: Type = 146;
+    pub const RISCV_REG_F9_H: Type = 147;
+    pub const RISCV_REG_F10_H: Type = 148;
+    pub const RISCV_REG_F11_H: Type = 149;
+    pub const RISCV_REG_F12_H: Type = 150;
+    pub const RISCV_REG_F13_H: Type = 151;
+    pub const RISCV_REG_F14_H: Type = 152;
+    pub const RISCV_REG_F15_H: Type = 153;
+    pub const RISCV_REG_F16_H: Type = 154;
+    pub const RISCV_REG_F17_H: Type = 155;
+    pub const RISCV_REG_F18_H: Type = 156;
+    pub const RISCV_REG_F19_H: Type = 157;
+    pub const RISCV_REG_F20_H: Type = 158;
+    pub const RISCV_REG_F21_H: Type = 159;
+    pub const RISCV_REG_F22_H: Type = 160;
+    pub const RISCV_REG_F23_H: Type = 161;
+    pub const RISCV_REG_F24_H: Type = 162;
+    pub const RISCV_REG_F25_H: Type = 163;
+    pub const RISCV_REG_F26_H: Type = 164;
+    pub const RISCV_REG_F27_H: Type = 165;
+    pub const RISCV_REG_F28_H: Type = 166;
+    pub const RISCV_REG_F29_H: Type = 167;
+    pub const RISCV_REG_F30_H: Type = 168;
+    pub const RISCV_REG_F31_H: Type = 169;
+    pub const RISCV_REG_X0_PAIR: Type = 170;
+    pub const RISCV_REG_V0M2: Type = 171;
+    pub const RISCV_REG_V0M4: Type = 172;
+    pub const RISCV_REG_V0M8: Type = 173;
+    pub const RISCV_REG_V2M2: Type = 174;
+    pub const RISCV_REG_V4M2: Type = 175;
+    pub const RISCV_REG_V4M4: Type = 176;
+    pub const RISCV_REG_V6M2: Type = 177;
+    pub const RISCV_REG_V8M2: Type = 178;
+    pub const RISCV_REG_V8M4: Type = 179;
+    pub const RISCV_REG_V8M8: Type = 180;
+    pub const RISCV_REG_V10M2: Type = 181;
+    pub const RISCV_REG_V12M2: Type = 182;
+    pub const RISCV_REG_V12M4: Type = 183;
+    pub const RISCV_REG_V14M2: Type = 184;
+    pub const RISCV_REG_V16M2: Type = 185;
+    pub const RISCV_REG_V16M4: Type = 186;
+    pub const RISCV_REG_V16M8: Type = 187;
+    pub const RISCV_REG_V18M2: Type = 188;
+    pub const RISCV_REG_V20M2: Type = 189;
+    pub const RISCV_REG_V20M4: Type = 190;
+    pub const RISCV_REG_V22M2: Type = 191;
+    pub const RISCV_REG_V24M2: Type = 192;
+    pub const RISCV_REG_V24M4: Type = 193;
+    pub const RISCV_REG_V24M8: Type = 194;
+    pub const RISCV_REG_V26M2: Type = 195;
+    pub const RISCV_REG_V28M2: Type = 196;
+    pub const RISCV_REG_V28M4: Type = 197;
+    pub const RISCV_REG_V30M2: Type = 198;
+    pub const RISCV_REG_X2_X3: Type = 199;
+    pub const RISCV_REG_X4_X5: Type = 200;
+    pub const RISCV_REG_X6_X7: Type = 201;
+    pub const RISCV_REG_X8_X9: Type = 202;
+    pub const RISCV_REG_X10_X11: Type = 203;
+    pub const RISCV_REG_X12_X13: Type = 204;
+    pub const RISCV_REG_X14_X15: Type = 205;
+    pub const RISCV_REG_X16_X17: Type = 206;
+    pub const RISCV_REG_X18_X19: Type = 207;
+    pub const RISCV_REG_X20_X21: Type = 208;
+    pub const RISCV_REG_X22_X23: Type = 209;
+    pub const RISCV_REG_X24_X25: Type = 210;
+    pub const RISCV_REG_X26_X27: Type = 211;
+    pub const RISCV_REG_X28_X29: Type = 212;
+    pub const RISCV_REG_X30_X31: Type = 213;
+    pub const RISCV_REG_V1_V2: Type = 214;
+    pub const RISCV_REG_V2_V3: Type = 215;
+    pub const RISCV_REG_V3_V4: Type = 216;
+    pub const RISCV_REG_V4_V5: Type = 217;
+    pub const RISCV_REG_V5_V6: Type = 218;
+    pub const RISCV_REG_V6_V7: Type = 219;
+    pub const RISCV_REG_V7_V8: Type = 220;
+    pub const RISCV_REG_V8_V9: Type = 221;
+    pub const RISCV_REG_V9_V10: Type = 222;
+    pub const RISCV_REG_V10_V11: Type = 223;
+    pub const RISCV_REG_V11_V12: Type = 224;
+    pub const RISCV_REG_V12_V13: Type = 225;
+    pub const RISCV_REG_V13_V14: Type = 226;
+    pub const RISCV_REG_V14_V15: Type = 227;
+    pub const RISCV_REG_V15_V16: Type = 228;
+    pub const RISCV_REG_V16_V17: Type = 229;
+    pub const RISCV_REG_V17_V18: Type = 230;
+    pub const RISCV_REG_V18_V19: Type = 231;
+    pub const RISCV_REG_V19_V20: Type = 232;
+    pub const RISCV_REG_V20_V21: Type = 233;
+    pub const RISCV_REG_V21_V22: Type = 234;
+    pub const RISCV_REG_V22_V23: Type = 235;
+    pub const RISCV_REG_V23_V24: Type = 236;
+    pub const RISCV_REG_V24_V25: Type = 237;
+    pub const RISCV_REG_V25_V26: Type = 238;
+    pub const RISCV_REG_V26_V27: Type = 239;
+    pub const RISCV_REG_V27_V28: Type = 240;
+    pub const RISCV_REG_V28_V29: Type = 241;
+    pub const RISCV_REG_V29_V30: Type = 242;
+    pub const RISCV_REG_V30_V31: Type = 243;
+    pub const RISCV_REG_V0_V1: Type = 244;
+    pub const RISCV_REG_V2M2_V4M2: Type = 245;
+    pub const RISCV_REG_V4M2_V6M2: Type = 246;
+    pub const RISCV_REG_V6M2_V8M2: Type = 247;
+    pub const RISCV_REG_V8M2_V10M2: Type = 248;
+    pub const RISCV_REG_V10M2_V12M2: Type = 249;
+    pub const RISCV_REG_V12M2_V14M2: Type = 250;
+    pub const RISCV_REG_V14M2_V16M2: Type = 251;
+    pub const RISCV_REG_V16M2_V18M2: Type = 252;
+    pub const RISCV_REG_V18M2_V20M2: Type = 253;
+    pub const RISCV_REG_V20M2_V22M2: Type = 254;
+    pub const RISCV_REG_V22M2_V24M2: Type = 255;
+    pub const RISCV_REG_V24M2_V26M2: Type = 256;
+    pub const RISCV_REG_V26M2_V28M2: Type = 257;
+    pub const RISCV_REG_V28M2_V30M2: Type = 258;
+    pub const RISCV_REG_V0M2_V2M2: Type = 259;
+    pub const RISCV_REG_V4M4_V8M4: Type = 260;
+    pub const RISCV_REG_V8M4_V12M4: Type = 261;
+    pub const RISCV_REG_V12M4_V16M4: Type = 262;
+    pub const RISCV_REG_V16M4_V20M4: Type = 263;
+    pub const RISCV_REG_V20M4_V24M4: Type = 264;
+    pub const RISCV_REG_V24M4_V28M4: Type = 265;
+    pub const RISCV_REG_V0M4_V4M4: Type = 266;
+    pub const RISCV_REG_V1_V2_V3: Type = 267;
+    pub const RISCV_REG_V2_V3_V4: Type = 268;
+    pub const RISCV_REG_V3_V4_V5: Type = 269;
+    pub const RISCV_REG_V4_V5_V6: Type = 270;
+    pub const RISCV_REG_V5_V6_V7: Type = 271;
+    pub const RISCV_REG_V6_V7_V8: Type = 272;
+    pub const RISCV_REG_V7_V8_V9: Type = 273;
+    pub const RISCV_REG_V8_V9_V10: Type = 274;
+    pub const RISCV_REG_V9_V10_V11: Type = 275;
+    pub const RISCV_REG_V10_V11_V12: Type = 276;
+    pub const RISCV_REG_V11_V12_V13: Type = 277;
+    pub const RISCV_REG_V12_V13_V14: Type = 278;
+    pub const RISCV_REG_V13_V14_V15: Type = 279;
+    pub const RISCV_REG_V14_V15_V16: Type = 280;
+    pub const RISCV_REG_V15_V16_V17: Type = 281;
+    pub const RISCV_REG_V16_V17_V18: Type = 282;
+    pub const RISCV_REG_V17_V18_V19: Type = 283;
+    pub const RISCV_REG_V18_V19_V20: Type = 284;
+    pub const RISCV_REG_V19_V20_V21: Type = 285;
+    pub const RISCV_REG_V20_V21_V22: Type = 286;
+    pub const RISCV_REG_V21_V22_V23: Type = 287;
+    pub const RISCV_REG_V22_V23_V24: Type = 288;
+    pub const RISCV_REG_V23_V24_V25: Type = 289;
+    pub const RISCV_REG_V24_V25_V26: Type = 290;
+    pub const RISCV_REG_V25_V26_V27: Type = 291;
+    pub const RISCV_REG_V26_V27_V28: Type = 292;
+    pub const RISCV_REG_V27_V28_V29: Type = 293;
+    pub const RISCV_REG_V28_V29_V30: Type = 294;
+    pub const RISCV_REG_V29_V30_V31: Type = 295;
+    pub const RISCV_REG_V0_V1_V2: Type = 296;
+    pub const RISCV_REG_V2M2_V4M2_V6M2: Type = 297;
+    pub const RISCV_REG_V4M2_V6M2_V8M2: Type = 298;
+    pub const RISCV_REG_V6M2_V8M2_V10M2: Type = 299;
+    pub const RISCV_REG_V8M2_V10M2_V12M2: Type = 300;
+    pub const RISCV_REG_V10M2_V12M2_V14M2: Type = 301;
+    pub const RISCV_REG_V12M2_V14M2_V16M2: Type = 302;
+    pub const RISCV_REG_V14M2_V16M2_V18M2: Type = 303;
+    pub const RISCV_REG_V16M2_V18M2_V20M2: Type = 304;
+    pub const RISCV_REG_V18M2_V20M2_V22M2: Type = 305;
+    pub const RISCV_REG_V20M2_V22M2_V24M2: Type = 306;
+    pub const RISCV_REG_V22M2_V24M2_V26M2: Type = 307;
+    pub const RISCV_REG_V24M2_V26M2_V28M2: Type = 308;
+    pub const RISCV_REG_V26M2_V28M2_V30M2: Type = 309;
+    pub const RISCV_REG_V0M2_V2M2_V4M2: Type = 310;
+    pub const RISCV_REG_V1_V2_V3_V4: Type = 311;
+    pub const RISCV_REG_V2_V3_V4_V5: Type = 312;
+    pub const RISCV_REG_V3_V4_V5_V6: Type = 313;
+    pub const RISCV_REG_V4_V5_V6_V7: Type = 314;
+    pub const RISCV_REG_V5_V6_V7_V8: Type = 315;
+    pub const RISCV_REG_V6_V7_V8_V9: Type = 316;
+    pub const RISCV_REG_V7_V8_V9_V10: Type = 317;
+    pub const RISCV_REG_V8_V9_V10_V11: Type = 318;
+    pub const RISCV_REG_V9_V10_V11_V12: Type = 319;
+    pub const RISCV_REG_V10_V11_V12_V13: Type = 320;
+    pub const RISCV_REG_V11_V12_V13_V14: Type = 321;
+    pub const RISCV_REG_V12_V13_V14_V15: Type = 322;
+    pub const RISCV_REG_V13_V14_V15_V16: Type = 323;
+    pub const RISCV_REG_V14_V15_V16_V17: Type = 324;
+    pub const RISCV_REG_V15_V16_V17_V18: Type = 325;
+    pub const RISCV_REG_V16_V17_V18_V19: Type = 326;
+    pub const RISCV_REG_V17_V18_V19_V20: Type = 327;
+    pub const RISCV_REG_V18_V19_V20_V21: Type = 328;
+    pub const RISCV_REG_V19_V20_V21_V22: Type = 329;
+    pub const RISCV_REG_V20_V21_V22_V23: Type = 330;
+    pub const RISCV_REG_V21_V22_V23_V24: Type = 331;
+    pub const RISCV_REG_V22_V23_V24_V25: Type = 332;
+    pub const RISCV_REG_V23_V24_V25_V26: Type = 333;
+    pub const RISCV_REG_V24_V25_V26_V27: Type = 334;
+    pub const RISCV_REG_V25_V26_V27_V28: Type = 335;
+    pub const RISCV_REG_V26_V27_V28_V29: Type = 336;
+    pub const RISCV_REG_V27_V28_V29_V30: Type = 337;
+    pub const RISCV_REG_V28_V29_V30_V31: Type = 338;
+    pub const RISCV_REG_V0_V1_V2_V3: Type = 339;
+    pub const RISCV_REG_V2M2_V4M2_V6M2_V8M2: Type = 340;
+    pub const RISCV_REG_V4M2_V6M2_V8M2_V10M2: Type = 341;
+    pub const RISCV_REG_V6M2_V8M2_V10M2_V12M2: Type = 342;
+    pub const RISCV_REG_V8M2_V10M2_V12M2_V14M2: Type = 343;
+    pub const RISCV_REG_V10M2_V12M2_V14M2_V16M2: Type = 344;
+    pub const RISCV_REG_V12M2_V14M2_V16M2_V18M2: Type = 345;
+    pub const RISCV_REG_V14M2_V16M2_V18M2_V20M2: Type = 346;
+    pub const RISCV_REG_V16M2_V18M2_V20M2_V22M2: Type = 347;
+    pub const RISCV_REG_V18M2_V20M2_V22M2_V24M2: Type = 348;
+    pub const RISCV_REG_V20M2_V22M2_V24M2_V26M2: Type = 349;
+    pub const RISCV_REG_V22M2_V24M2_V26M2_V28M2: Type = 350;
+    pub const RISCV_REG_V24M2_V26M2_V28M2_V30M2: Type = 351;
+    pub const RISCV_REG_V0M2_V2M2_V4M2_V6M2: Type = 352;
+    pub const RISCV_REG_V1_V2_V3_V4_V5: Type = 353;
+    pub const RISCV_REG_V2_V3_V4_V5_V6: Type = 354;
+    pub const RISCV_REG_V3_V4_V5_V6_V7: Type = 355;
+    pub const RISCV_REG_V4_V5_V6_V7_V8: Type = 356;
+    pub const RISCV_REG_V5_V6_V7_V8_V9: Type = 357;
+    pub const RISCV_REG_V6_V7_V8_V9_V10: Type = 358;
+    pub const RISCV_REG_V7_V8_V9_V10_V11: Type = 359;
+    pub const RISCV_REG_V8_V9_V10_V11_V12: Type = 360;
+    pub const RISCV_REG_V9_V10_V11_V12_V13: Type = 361;
+    pub const RISCV_REG_V10_V11_V12_V13_V14: Type = 362;
+    pub const RISCV_REG_V11_V12_V13_V14_V15: Type = 363;
+    pub const RISCV_REG_V12_V13_V14_V15_V16: Type = 364;
+    pub const RISCV_REG_V13_V14_V15_V16_V17: Type = 365;
+    pub const RISCV_REG_V14_V15_V16_V17_V18: Type = 366;
+    pub const RISCV_REG_V15_V16_V17_V18_V19: Type = 367;
+    pub const RISCV_REG_V16_V17_V18_V19_V20: Type = 368;
+    pub const RISCV_REG_V17_V18_V19_V20_V21: Type = 369;
+    pub const RISCV_REG_V18_V19_V20_V21_V22: Type = 370;
+    pub const RISCV_REG_V19_V20_V21_V22_V23: Type = 371;
+    pub const RISCV_REG_V20_V21_V22_V23_V24: Type = 372;
+    pub const RISCV_REG_V21_V22_V23_V24_V25: Type = 373;
+    pub const RISCV_REG_V22_V23_V24_V25_V26: Type = 374;
+    pub const RISCV_REG_V23_V24_V25_V26_V27: Type = 375;
+    pub const RISCV_REG_V24_V25_V26_V27_V28: Type = 376;
+    pub const RISCV_REG_V25_V26_V27_V28_V29: Type = 377;
+    pub const RISCV_REG_V26_V27_V28_V29_V30: Type = 378;
+    pub const RISCV_REG_V27_V28_V29_V30_V31: Type = 379;
+    pub const RISCV_REG_V0_V1_V2_V3_V4: Type = 380;
+    pub const RISCV_REG_V1_V2_V3_V4_V5_V6: Type = 381;
+    pub const RISCV_REG_V2_V3_V4_V5_V6_V7: Type = 382;
+    pub const RISCV_REG_V3_V4_V5_V6_V7_V8: Type = 383;
+    pub const RISCV_REG_V4_V5_V6_V7_V8_V9: Type = 384;
+    pub const RISCV_REG_V5_V6_V7_V8_V9_V10: Type = 385;
+    pub const RISCV_REG_V6_V7_V8_V9_V10_V11: Type = 386;
+    pub const RISCV_REG_V7_V8_V9_V10_V11_V12: Type = 387;
+    pub const RISCV_REG_V8_V9_V10_V11_V12_V13: Type = 388;
+    pub const RISCV_REG_V9_V10_V11_V12_V13_V14: Type = 389;
+    pub const RISCV_REG_V10_V11_V12_V13_V14_V15: Type = 390;
+    pub const RISCV_REG_V11_V12_V13_V14_V15_V16: Type = 391;
+    pub const RISCV_REG_V12_V13_V14_V15_V16_V17: Type = 392;
+    pub const RISCV_REG_V13_V14_V15_V16_V17_V18: Type = 393;
+    pub const RISCV_REG_V14_V15_V16_V17_V18_V19: Type = 394;
+    pub const RISCV_REG_V15_V16_V17_V18_V19_V20: Type = 395;
+    pub const RISCV_REG_V16_V17_V18_V19_V20_V21: Type = 396;
+    pub const RISCV_REG_V17_V18_V19_V20_V21_V22: Type = 397;
+    pub const RISCV_REG_V18_V19_V20_V21_V22_V23: Type = 398;
+    pub const RISCV_REG_V19_V20_V21_V22_V23_V24: Type = 399;
+    pub const RISCV_REG_V20_V21_V22_V23_V24_V25: Type = 400;
+    pub const RISCV_REG_V21_V22_V23_V24_V25_V26: Type = 401;
+    pub const RISCV_REG_V22_V23_V24_V25_V26_V27: Type = 402;
+    pub const RISCV_REG_V23_V24_V25_V26_V27_V28: Type = 403;
+    pub const RISCV_REG_V24_V25_V26_V27_V28_V29: Type = 404;
+    pub const RISCV_REG_V25_V26_V27_V28_V29_V30: Type = 405;
+    pub const RISCV_REG_V26_V27_V28_V29_V30_V31: Type = 406;
+    pub const RISCV_REG_V0_V1_V2_V3_V4_V5: Type = 407;
+    pub const RISCV_REG_V1_V2_V3_V4_V5_V6_V7: Type = 408;
+    pub const RISCV_REG_V2_V3_V4_V5_V6_V7_V8: Type = 409;
+    pub const RISCV_REG_V3_V4_V5_V6_V7_V8_V9: Type = 410;
+    pub const RISCV_REG_V4_V5_V6_V7_V8_V9_V10: Type = 411;
+    pub const RISCV_REG_V5_V6_V7_V8_V9_V10_V11: Type = 412;
+    pub const RISCV_REG_V6_V7_V8_V9_V10_V11_V12: Type = 413;
+    pub const RISCV_REG_V7_V8_V9_V10_V11_V12_V13: Type = 414;
+    pub const RISCV_REG_V8_V9_V10_V11_V12_V13_V14: Type = 415;
+    pub const RISCV_REG_V9_V10_V11_V12_V13_V14_V15: Type = 416;
+    pub const RISCV_REG_V10_V11_V12_V13_V14_V15_V16: Type = 417;
+    pub const RISCV_REG_V11_V12_V13_V14_V15_V16_V17: Type = 418;
+    pub const RISCV_REG_V12_V13_V14_V15_V16_V17_V18: Type = 419;
+    pub const RISCV_REG_V13_V14_V15_V16_V17_V18_V19: Type = 420;
+    pub const RISCV_REG_V14_V15_V16_V17_V18_V19_V20: Type = 421;
+    pub const RISCV_REG_V15_V16_V17_V18_V19_V20_V21: Type = 422;
+    pub const RISCV_REG_V16_V17_V18_V19_V20_V21_V22: Type = 423;
+    pub const RISCV_REG_V17_V18_V19_V20_V21_V22_V23: Type = 424;
+    pub const RISCV_REG_V18_V19_V20_V21_V22_V23_V24: Type = 425;
+    pub const RISCV_REG_V19_V20_V21_V22_V23_V24_V25: Type = 426;
+    pub const RISCV_REG_V20_V21_V22_V23_V24_V25_V26: Type = 427;
+    pub const RISCV_REG_V21_V22_V23_V24_V25_V26_V27: Type = 428;
+    pub const RISCV_REG_V22_V23_V24_V25_V26_V27_V28: Type = 429;
+    pub const RISCV_REG_V23_V24_V25_V26_V27_V28_V29: Type = 430;
+    pub const RISCV_REG_V24_V25_V26_V27_V28_V29_V30: Type = 431;
+    pub const RISCV_REG_V25_V26_V27_V28_V29_V30_V31: Type = 432;
+    pub const RISCV_REG_V0_V1_V2_V3_V4_V5_V6: Type = 433;
+    pub const RISCV_REG_V1_V2_V3_V4_V5_V6_V7_V8: Type = 434;
+    pub const RISCV_REG_V2_V3_V4_V5_V6_V7_V8_V9: Type = 435;
+    pub const RISCV_REG_V3_V4_V5_V6_V7_V8_V9_V10: Type = 436;
+    pub const RISCV_REG_V4_V5_V6_V7_V8_V9_V10_V11: Type = 437;
+    pub const RISCV_REG_V5_V6_V7_V8_V9_V10_V11_V12: Type = 438;
+    pub const RISCV_REG_V6_V7_V8_V9_V10_V11_V12_V13: Type = 439;
+    pub const RISCV_REG_V7_V8_V9_V10_V11_V12_V13_V14: Type = 440;
+    pub const RISCV_REG_V8_V9_V10_V11_V12_V13_V14_V15: Type = 441;
+    pub const RISCV_REG_V9_V10_V11_V12_V13_V14_V15_V16: Type = 442;
+    pub const RISCV_REG_V10_V11_V12_V13_V14_V15_V16_V17: Type = 443;
+    pub const RISCV_REG_V11_V12_V13_V14_V15_V16_V17_V18: Type = 444;
+    pub const RISCV_REG_V12_V13_V14_V15_V16_V17_V18_V19: Type = 445;
+    pub const RISCV_REG_V13_V14_V15_V16_V17_V18_V19_V20: Type = 446;
+    pub const RISCV_REG_V14_V15_V16_V17_V18_V19_V20_V21: Type = 447;
+    pub const RISCV_REG_V15_V16_V17_V18_V19_V20_V21_V22: Type = 448;
+    pub const RISCV_REG_V16_V17_V18_V19_V20_V21_V22_V23: Type = 449;
+    pub const RISCV_REG_V17_V18_V19_V20_V21_V22_V23_V24: Type = 450;
+    pub const RISCV_REG_V18_V19_V20_V21_V22_V23_V24_V25: Type = 451;
+    pub const RISCV_REG_V19_V20_V21_V22_V23_V24_V25_V26: Type = 452;
+    pub const RISCV_REG_V20_V21_V22_V23_V24_V25_V26_V27: Type = 453;
+    pub const RISCV_REG_V21_V22_V23_V24_V25_V26_V27_V28: Type = 454;
+    pub const RISCV_REG_V22_V23_V24_V25_V26_V27_V28_V29: Type = 455;
+    pub const RISCV_REG_V23_V24_V25_V26_V27_V28_V29_V30: Type = 456;
+    pub const RISCV_REG_V24_V25_V26_V27_V28_V29_V30_V31: Type = 457;
+    pub const RISCV_REG_V0_V1_V2_V3_V4_V5_V6_V7: Type = 458;
+    pub const RISCV_REG_ENDING: Type = 459;
+}
+impl riscv_sysreg {
+    pub const RISCV_SYSREG_MUCOUNTEREN: riscv_sysreg = riscv_sysreg::RISCV_SYSREG_MCOUNTINHIBIT;
+}
+impl riscv_sysreg {
+    pub const RISCV_SYSREG_DSCRATCH: riscv_sysreg = riscv_sysreg::RISCV_SYSREG_DSCRATCH0;
+}
+#[repr(u32)]
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
+pub enum riscv_sysreg {
+    RISCV_SYSREG_FFLAGS = 1,
+    RISCV_SYSREG_FRM = 2,
+    RISCV_SYSREG_FCSR = 3,
+    RISCV_SYSREG_VSTART = 8,
+    RISCV_SYSREG_VXSAT = 9,
+    RISCV_SYSREG_VXRM = 10,
+    RISCV_SYSREG_VCSR = 15,
+    RISCV_SYSREG_SEED = 21,
+    RISCV_SYSREG_JVT = 23,
+    RISCV_SYSREG_SSTATUS = 256,
+    RISCV_SYSREG_SIE = 260,
+    RISCV_SYSREG_STVEC = 261,
+    RISCV_SYSREG_SCOUNTEREN = 262,
+    RISCV_SYSREG_SENVCFG = 266,
+    RISCV_SYSREG_SSTATEEN0 = 268,
+    RISCV_SYSREG_SSTATEEN1 = 269,
+    RISCV_SYSREG_SSTATEEN2 = 270,
+    RISCV_SYSREG_SSTATEEN3 = 271,
+    RISCV_SYSREG_SIEH = 276,
+    RISCV_SYSREG_SSCRATCH = 320,
+    RISCV_SYSREG_SEPC = 321,
+    RISCV_SYSREG_SCAUSE = 322,
+    RISCV_SYSREG_STVAL = 323,
+    RISCV_SYSREG_SIP = 324,
+    RISCV_SYSREG_STIMECMP = 333,
+    RISCV_SYSREG_SISELECT = 336,
+    RISCV_SYSREG_SIREG = 337,
+    RISCV_SYSREG_SIPH = 340,
+    RISCV_SYSREG_STOPEI = 348,
+    RISCV_SYSREG_STIMECMPH = 349,
+    RISCV_SYSREG_SATP = 384,
+    RISCV_SYSREG_VSSTATUS = 512,
+    RISCV_SYSREG_VSIE = 516,
+    RISCV_SYSREG_VSTVEC = 517,
+    RISCV_SYSREG_VSIEH = 532,
+    RISCV_SYSREG_VSSCRATCH = 576,
+    RISCV_SYSREG_VSEPC = 577,
+    RISCV_SYSREG_VSCAUSE = 578,
+    RISCV_SYSREG_VSTVAL = 579,
+    RISCV_SYSREG_VSIP = 580,
+    RISCV_SYSREG_VSTIMECMP = 589,
+    RISCV_SYSREG_VSISELECT = 592,
+    RISCV_SYSREG_VSIREG = 593,
+    RISCV_SYSREG_VSIPH = 596,
+    RISCV_SYSREG_VSTOPEI = 604,
+    RISCV_SYSREG_VSTIMECMPH = 605,
+    RISCV_SYSREG_VSATP = 640,
+    RISCV_SYSREG_MSTATUS = 768,
+    RISCV_SYSREG_MISA = 769,
+    RISCV_SYSREG_MEDELEG = 770,
+    RISCV_SYSREG_MIDELEG = 771,
+    RISCV_SYSREG_MIE = 772,
+    RISCV_SYSREG_MTVEC = 773,
+    RISCV_SYSREG_MCOUNTEREN = 774,
+    RISCV_SYSREG_MVIEN = 776,
+    RISCV_SYSREG_MVIP = 777,
+    RISCV_SYSREG_MENVCFG = 778,
+    RISCV_SYSREG_MSTATEEN0 = 780,
+    RISCV_SYSREG_MSTATEEN1 = 781,
+    RISCV_SYSREG_MSTATEEN2 = 782,
+    RISCV_SYSREG_MSTATEEN3 = 783,
+    RISCV_SYSREG_MSTATUSH = 784,
+    RISCV_SYSREG_MIDELEGH = 787,
+    RISCV_SYSREG_MIEH = 788,
+    RISCV_SYSREG_MVIENH = 792,
+    RISCV_SYSREG_MVIPH = 793,
+    RISCV_SYSREG_MENVCFGH = 794,
+    RISCV_SYSREG_MSTATEEN0H = 796,
+    RISCV_SYSREG_MSTATEEN1H = 797,
+    RISCV_SYSREG_MSTATEEN2H = 798,
+    RISCV_SYSREG_MSTATEEN3H = 799,
+    RISCV_SYSREG_MCOUNTINHIBIT = 800,
+    RISCV_SYSREG_MHPMEVENT3 = 803,
+    RISCV_SYSREG_MHPMEVENT4 = 804,
+    RISCV_SYSREG_MHPMEVENT5 = 805,
+    RISCV_SYSREG_MHPMEVENT6 = 806,
+    RISCV_SYSREG_MHPMEVENT7 = 807,
+    RISCV_SYSREG_MHPMEVENT8 = 808,
+    RISCV_SYSREG_MHPMEVENT9 = 809,
+    RISCV_SYSREG_MHPMEVENT10 = 810,
+    RISCV_SYSREG_MHPMEVENT11 = 811,
+    RISCV_SYSREG_MHPMEVENT12 = 812,
+    RISCV_SYSREG_MHPMEVENT13 = 813,
+    RISCV_SYSREG_MHPMEVENT14 = 814,
+    RISCV_SYSREG_MHPMEVENT15 = 815,
+    RISCV_SYSREG_MHPMEVENT16 = 816,
+    RISCV_SYSREG_MHPMEVENT17 = 817,
+    RISCV_SYSREG_MHPMEVENT18 = 818,
+    RISCV_SYSREG_MHPMEVENT19 = 819,
+    RISCV_SYSREG_MHPMEVENT20 = 820,
+    RISCV_SYSREG_MHPMEVENT21 = 821,
+    RISCV_SYSREG_MHPMEVENT22 = 822,
+    RISCV_SYSREG_MHPMEVENT23 = 823,
+    RISCV_SYSREG_MHPMEVENT24 = 824,
+    RISCV_SYSREG_MHPMEVENT25 = 825,
+    RISCV_SYSREG_MHPMEVENT26 = 826,
+    RISCV_SYSREG_MHPMEVENT27 = 827,
+    RISCV_SYSREG_MHPMEVENT28 = 828,
+    RISCV_SYSREG_MHPMEVENT29 = 829,
+    RISCV_SYSREG_MHPMEVENT30 = 830,
+    RISCV_SYSREG_MHPMEVENT31 = 831,
+    RISCV_SYSREG_MSCRATCH = 832,
+    RISCV_SYSREG_MEPC = 833,
+    RISCV_SYSREG_MCAUSE = 834,
+    RISCV_SYSREG_MTVAL = 835,
+    RISCV_SYSREG_MIP = 836,
+    RISCV_SYSREG_MTINST = 842,
+    RISCV_SYSREG_MTVAL2 = 843,
+    RISCV_SYSREG_MISELECT = 848,
+    RISCV_SYSREG_MIREG = 849,
+    RISCV_SYSREG_MIPH = 852,
+    RISCV_SYSREG_MTOPEI = 860,
+    RISCV_SYSREG_PMPCFG0 = 928,
+    RISCV_SYSREG_PMPCFG1 = 929,
+    RISCV_SYSREG_PMPCFG2 = 930,
+    RISCV_SYSREG_PMPCFG3 = 931,
+    RISCV_SYSREG_PMPCFG4 = 932,
+    RISCV_SYSREG_PMPCFG5 = 933,
+    RISCV_SYSREG_PMPCFG6 = 934,
+    RISCV_SYSREG_PMPCFG7 = 935,
+    RISCV_SYSREG_PMPCFG8 = 936,
+    RISCV_SYSREG_PMPCFG9 = 937,
+    RISCV_SYSREG_PMPCFG10 = 938,
+    RISCV_SYSREG_PMPCFG11 = 939,
+    RISCV_SYSREG_PMPCFG12 = 940,
+    RISCV_SYSREG_PMPCFG13 = 941,
+    RISCV_SYSREG_PMPCFG14 = 942,
+    RISCV_SYSREG_PMPCFG15 = 943,
+    RISCV_SYSREG_PMPADDR0 = 944,
+    RISCV_SYSREG_PMPADDR1 = 945,
+    RISCV_SYSREG_PMPADDR2 = 946,
+    RISCV_SYSREG_PMPADDR3 = 947,
+    RISCV_SYSREG_PMPADDR4 = 948,
+    RISCV_SYSREG_PMPADDR5 = 949,
+    RISCV_SYSREG_PMPADDR6 = 950,
+    RISCV_SYSREG_PMPADDR7 = 951,
+    RISCV_SYSREG_PMPADDR8 = 952,
+    RISCV_SYSREG_PMPADDR9 = 953,
+    RISCV_SYSREG_PMPADDR10 = 954,
+    RISCV_SYSREG_PMPADDR11 = 955,
+    RISCV_SYSREG_PMPADDR12 = 956,
+    RISCV_SYSREG_PMPADDR13 = 957,
+    RISCV_SYSREG_PMPADDR14 = 958,
+    RISCV_SYSREG_PMPADDR15 = 959,
+    RISCV_SYSREG_PMPADDR16 = 960,
+    RISCV_SYSREG_PMPADDR17 = 961,
+    RISCV_SYSREG_PMPADDR18 = 962,
+    RISCV_SYSREG_PMPADDR19 = 963,
+    RISCV_SYSREG_PMPADDR20 = 964,
+    RISCV_SYSREG_PMPADDR21 = 965,
+    RISCV_SYSREG_PMPADDR22 = 966,
+    RISCV_SYSREG_PMPADDR23 = 967,
+    RISCV_SYSREG_PMPADDR24 = 968,
+    RISCV_SYSREG_PMPADDR25 = 969,
+    RISCV_SYSREG_PMPADDR26 = 970,
+    RISCV_SYSREG_PMPADDR27 = 971,
+    RISCV_SYSREG_PMPADDR28 = 972,
+    RISCV_SYSREG_PMPADDR29 = 973,
+    RISCV_SYSREG_PMPADDR30 = 974,
+    RISCV_SYSREG_PMPADDR31 = 975,
+    RISCV_SYSREG_PMPADDR32 = 976,
+    RISCV_SYSREG_PMPADDR33 = 977,
+    RISCV_SYSREG_PMPADDR34 = 978,
+    RISCV_SYSREG_PMPADDR35 = 979,
+    RISCV_SYSREG_PMPADDR36 = 980,
+    RISCV_SYSREG_PMPADDR37 = 981,
+    RISCV_SYSREG_PMPADDR38 = 982,
+    RISCV_SYSREG_PMPADDR39 = 983,
+    RISCV_SYSREG_PMPADDR40 = 984,
+    RISCV_SYSREG_PMPADDR41 = 985,
+    RISCV_SYSREG_PMPADDR42 = 986,
+    RISCV_SYSREG_PMPADDR43 = 987,
+    RISCV_SYSREG_PMPADDR44 = 988,
+    RISCV_SYSREG_PMPADDR45 = 989,
+    RISCV_SYSREG_PMPADDR46 = 990,
+    RISCV_SYSREG_PMPADDR47 = 991,
+    RISCV_SYSREG_PMPADDR48 = 992,
+    RISCV_SYSREG_PMPADDR49 = 993,
+    RISCV_SYSREG_PMPADDR50 = 994,
+    RISCV_SYSREG_PMPADDR51 = 995,
+    RISCV_SYSREG_PMPADDR52 = 996,
+    RISCV_SYSREG_PMPADDR53 = 997,
+    RISCV_SYSREG_PMPADDR54 = 998,
+    RISCV_SYSREG_PMPADDR55 = 999,
+    RISCV_SYSREG_PMPADDR56 = 1000,
+    RISCV_SYSREG_PMPADDR57 = 1001,
+    RISCV_SYSREG_PMPADDR58 = 1002,
+    RISCV_SYSREG_PMPADDR59 = 1003,
+    RISCV_SYSREG_PMPADDR60 = 1004,
+    RISCV_SYSREG_PMPADDR61 = 1005,
+    RISCV_SYSREG_PMPADDR62 = 1006,
+    RISCV_SYSREG_PMPADDR63 = 1007,
+    RISCV_SYSREG_SCONTEXT = 1448,
+    RISCV_SYSREG_HSTATUS = 1536,
+    RISCV_SYSREG_HEDELEG = 1538,
+    RISCV_SYSREG_HIDELEG = 1539,
+    RISCV_SYSREG_HIE = 1540,
+    RISCV_SYSREG_HTIMEDELTA = 1541,
+    RISCV_SYSREG_HCOUNTEREN = 1542,
+    RISCV_SYSREG_HGEIE = 1543,
+    RISCV_SYSREG_HVIEN = 1544,
+    RISCV_SYSREG_HVICTL = 1545,
+    RISCV_SYSREG_HENVCFG = 1546,
+    RISCV_SYSREG_HSTATEEN0 = 1548,
+    RISCV_SYSREG_HSTATEEN1 = 1549,
+    RISCV_SYSREG_HSTATEEN2 = 1550,
+    RISCV_SYSREG_HSTATEEN3 = 1551,
+    RISCV_SYSREG_HIDELEGH = 1555,
+    RISCV_SYSREG_HTIMEDELTAH = 1557,
+    RISCV_SYSREG_HVIENH = 1560,
+    RISCV_SYSREG_HENVCFGH = 1562,
+    RISCV_SYSREG_HSTATEEN0H = 1564,
+    RISCV_SYSREG_HSTATEEN1H = 1565,
+    RISCV_SYSREG_HSTATEEN2H = 1566,
+    RISCV_SYSREG_HSTATEEN3H = 1567,
+    RISCV_SYSREG_HTVAL = 1603,
+    RISCV_SYSREG_HIP = 1604,
+    RISCV_SYSREG_HVIP = 1605,
+    RISCV_SYSREG_HVIPRIO1 = 1606,
+    RISCV_SYSREG_HVIPRIO2 = 1607,
+    RISCV_SYSREG_HTINST = 1610,
+    RISCV_SYSREG_HVIPH = 1621,
+    RISCV_SYSREG_HVIPRIO1H = 1622,
+    RISCV_SYSREG_HVIPRIO2H = 1623,
+    RISCV_SYSREG_HGATP = 1664,
+    RISCV_SYSREG_HCONTEXT = 1704,
+    RISCV_SYSREG_MHPMEVENT3H = 1827,
+    RISCV_SYSREG_MHPMEVENT4H = 1828,
+    RISCV_SYSREG_MHPMEVENT5H = 1829,
+    RISCV_SYSREG_MHPMEVENT6H = 1830,
+    RISCV_SYSREG_MHPMEVENT7H = 1831,
+    RISCV_SYSREG_MHPMEVENT8H = 1832,
+    RISCV_SYSREG_MHPMEVENT9H = 1833,
+    RISCV_SYSREG_MHPMEVENT10H = 1834,
+    RISCV_SYSREG_MHPMEVENT11H = 1835,
+    RISCV_SYSREG_MHPMEVENT12H = 1836,
+    RISCV_SYSREG_MHPMEVENT13H = 1837,
+    RISCV_SYSREG_MHPMEVENT14H = 1838,
+    RISCV_SYSREG_MHPMEVENT15H = 1839,
+    RISCV_SYSREG_MHPMEVENT16H = 1840,
+    RISCV_SYSREG_MHPMEVENT17H = 1841,
+    RISCV_SYSREG_MHPMEVENT18H = 1842,
+    RISCV_SYSREG_MHPMEVENT19H = 1843,
+    RISCV_SYSREG_MHPMEVENT20H = 1844,
+    RISCV_SYSREG_MHPMEVENT21H = 1845,
+    RISCV_SYSREG_MHPMEVENT22H = 1846,
+    RISCV_SYSREG_MHPMEVENT23H = 1847,
+    RISCV_SYSREG_MHPMEVENT24H = 1848,
+    RISCV_SYSREG_MHPMEVENT25H = 1849,
+    RISCV_SYSREG_MHPMEVENT26H = 1850,
+    RISCV_SYSREG_MHPMEVENT27H = 1851,
+    RISCV_SYSREG_MHPMEVENT28H = 1852,
+    RISCV_SYSREG_MHPMEVENT29H = 1853,
+    RISCV_SYSREG_MHPMEVENT30H = 1854,
+    RISCV_SYSREG_MHPMEVENT31H = 1855,
+    RISCV_SYSREG_MSECCFG = 1863,
+    RISCV_SYSREG_MSECCFGH = 1879,
+    RISCV_SYSREG_TSELECT = 1952,
+    RISCV_SYSREG_TDATA1 = 1953,
+    RISCV_SYSREG_TDATA2 = 1954,
+    RISCV_SYSREG_TDATA3 = 1955,
+    RISCV_SYSREG_MCONTEXT = 1960,
+    RISCV_SYSREG_DCSR = 1968,
+    RISCV_SYSREG_DPC = 1969,
+    RISCV_SYSREG_DSCRATCH0 = 1970,
+    RISCV_SYSREG_DSCRATCH1 = 1971,
+    RISCV_SYSREG_MCYCLE = 2816,
+    RISCV_SYSREG_MINSTRET = 2818,
+    RISCV_SYSREG_MHPMCOUNTER3 = 2819,
+    RISCV_SYSREG_MHPMCOUNTER4 = 2820,
+    RISCV_SYSREG_MHPMCOUNTER5 = 2821,
+    RISCV_SYSREG_MHPMCOUNTER6 = 2822,
+    RISCV_SYSREG_MHPMCOUNTER7 = 2823,
+    RISCV_SYSREG_MHPMCOUNTER8 = 2824,
+    RISCV_SYSREG_MHPMCOUNTER9 = 2825,
+    RISCV_SYSREG_MHPMCOUNTER10 = 2826,
+    RISCV_SYSREG_MHPMCOUNTER11 = 2827,
+    RISCV_SYSREG_MHPMCOUNTER12 = 2828,
+    RISCV_SYSREG_MHPMCOUNTER13 = 2829,
+    RISCV_SYSREG_MHPMCOUNTER14 = 2830,
+    RISCV_SYSREG_MHPMCOUNTER15 = 2831,
+    RISCV_SYSREG_MHPMCOUNTER16 = 2832,
+    RISCV_SYSREG_MHPMCOUNTER17 = 2833,
+    RISCV_SYSREG_MHPMCOUNTER18 = 2834,
+    RISCV_SYSREG_MHPMCOUNTER19 = 2835,
+    RISCV_SYSREG_MHPMCOUNTER20 = 2836,
+    RISCV_SYSREG_MHPMCOUNTER21 = 2837,
+    RISCV_SYSREG_MHPMCOUNTER22 = 2838,
+    RISCV_SYSREG_MHPMCOUNTER23 = 2839,
+    RISCV_SYSREG_MHPMCOUNTER24 = 2840,
+    RISCV_SYSREG_MHPMCOUNTER25 = 2841,
+    RISCV_SYSREG_MHPMCOUNTER26 = 2842,
+    RISCV_SYSREG_MHPMCOUNTER27 = 2843,
+    RISCV_SYSREG_MHPMCOUNTER28 = 2844,
+    RISCV_SYSREG_MHPMCOUNTER29 = 2845,
+    RISCV_SYSREG_MHPMCOUNTER30 = 2846,
+    RISCV_SYSREG_MHPMCOUNTER31 = 2847,
+    RISCV_SYSREG_MCYCLEH = 2944,
+    RISCV_SYSREG_MINSTRETH = 2946,
+    RISCV_SYSREG_MHPMCOUNTER3H = 2947,
+    RISCV_SYSREG_MHPMCOUNTER4H = 2948,
+    RISCV_SYSREG_MHPMCOUNTER5H = 2949,
+    RISCV_SYSREG_MHPMCOUNTER6H = 2950,
+    RISCV_SYSREG_MHPMCOUNTER7H = 2951,
+    RISCV_SYSREG_MHPMCOUNTER8H = 2952,
+    RISCV_SYSREG_MHPMCOUNTER9H = 2953,
+    RISCV_SYSREG_MHPMCOUNTER10H = 2954,
+    RISCV_SYSREG_MHPMCOUNTER11H = 2955,
+    RISCV_SYSREG_MHPMCOUNTER12H = 2956,
+    RISCV_SYSREG_MHPMCOUNTER13H = 2957,
+    RISCV_SYSREG_MHPMCOUNTER14H = 2958,
+    RISCV_SYSREG_MHPMCOUNTER15H = 2959,
+    RISCV_SYSREG_MHPMCOUNTER16H = 2960,
+    RISCV_SYSREG_MHPMCOUNTER17H = 2961,
+    RISCV_SYSREG_MHPMCOUNTER18H = 2962,
+    RISCV_SYSREG_MHPMCOUNTER19H = 2963,
+    RISCV_SYSREG_MHPMCOUNTER20H = 2964,
+    RISCV_SYSREG_MHPMCOUNTER21H = 2965,
+    RISCV_SYSREG_MHPMCOUNTER22H = 2966,
+    RISCV_SYSREG_MHPMCOUNTER23H = 2967,
+    RISCV_SYSREG_MHPMCOUNTER24H = 2968,
+    RISCV_SYSREG_MHPMCOUNTER25H = 2969,
+    RISCV_SYSREG_MHPMCOUNTER26H = 2970,
+    RISCV_SYSREG_MHPMCOUNTER27H = 2971,
+    RISCV_SYSREG_MHPMCOUNTER28H = 2972,
+    RISCV_SYSREG_MHPMCOUNTER29H = 2973,
+    RISCV_SYSREG_MHPMCOUNTER30H = 2974,
+    RISCV_SYSREG_MHPMCOUNTER31H = 2975,
+    RISCV_SYSREG_CYCLE = 3072,
+    RISCV_SYSREG_TIME = 3073,
+    RISCV_SYSREG_INSTRET = 3074,
+    RISCV_SYSREG_HPMCOUNTER3 = 3075,
+    RISCV_SYSREG_HPMCOUNTER4 = 3076,
+    RISCV_SYSREG_HPMCOUNTER5 = 3077,
+    RISCV_SYSREG_HPMCOUNTER6 = 3078,
+    RISCV_SYSREG_HPMCOUNTER7 = 3079,
+    RISCV_SYSREG_HPMCOUNTER8 = 3080,
+    RISCV_SYSREG_HPMCOUNTER9 = 3081,
+    RISCV_SYSREG_HPMCOUNTER10 = 3082,
+    RISCV_SYSREG_HPMCOUNTER11 = 3083,
+    RISCV_SYSREG_HPMCOUNTER12 = 3084,
+    RISCV_SYSREG_HPMCOUNTER13 = 3085,
+    RISCV_SYSREG_HPMCOUNTER14 = 3086,
+    RISCV_SYSREG_HPMCOUNTER15 = 3087,
+    RISCV_SYSREG_HPMCOUNTER16 = 3088,
+    RISCV_SYSREG_HPMCOUNTER17 = 3089,
+    RISCV_SYSREG_HPMCOUNTER18 = 3090,
+    RISCV_SYSREG_HPMCOUNTER19 = 3091,
+    RISCV_SYSREG_HPMCOUNTER20 = 3092,
+    RISCV_SYSREG_HPMCOUNTER21 = 3093,
+    RISCV_SYSREG_HPMCOUNTER22 = 3094,
+    RISCV_SYSREG_HPMCOUNTER23 = 3095,
+    RISCV_SYSREG_HPMCOUNTER24 = 3096,
+    RISCV_SYSREG_HPMCOUNTER25 = 3097,
+    RISCV_SYSREG_HPMCOUNTER26 = 3098,
+    RISCV_SYSREG_HPMCOUNTER27 = 3099,
+    RISCV_SYSREG_HPMCOUNTER28 = 3100,
+    RISCV_SYSREG_HPMCOUNTER29 = 3101,
+    RISCV_SYSREG_HPMCOUNTER30 = 3102,
+    RISCV_SYSREG_HPMCOUNTER31 = 3103,
+    RISCV_SYSREG_VL = 3104,
+    RISCV_SYSREG_VTYPE = 3105,
+    RISCV_SYSREG_VLENB = 3106,
+    RISCV_SYSREG_CYCLEH = 3200,
+    RISCV_SYSREG_TIMEH = 3201,
+    RISCV_SYSREG_INSTRETH = 3202,
+    RISCV_SYSREG_HPMCOUNTER3H = 3203,
+    RISCV_SYSREG_HPMCOUNTER4H = 3204,
+    RISCV_SYSREG_HPMCOUNTER5H = 3205,
+    RISCV_SYSREG_HPMCOUNTER6H = 3206,
+    RISCV_SYSREG_HPMCOUNTER7H = 3207,
+    RISCV_SYSREG_HPMCOUNTER8H = 3208,
+    RISCV_SYSREG_HPMCOUNTER9H = 3209,
+    RISCV_SYSREG_HPMCOUNTER10H = 3210,
+    RISCV_SYSREG_HPMCOUNTER11H = 3211,
+    RISCV_SYSREG_HPMCOUNTER12H = 3212,
+    RISCV_SYSREG_HPMCOUNTER13H = 3213,
+    RISCV_SYSREG_HPMCOUNTER14H = 3214,
+    RISCV_SYSREG_HPMCOUNTER15H = 3215,
+    RISCV_SYSREG_HPMCOUNTER16H = 3216,
+    RISCV_SYSREG_HPMCOUNTER17H = 3217,
+    RISCV_SYSREG_HPMCOUNTER18H = 3218,
+    RISCV_SYSREG_HPMCOUNTER19H = 3219,
+    RISCV_SYSREG_HPMCOUNTER20H = 3220,
+    RISCV_SYSREG_HPMCOUNTER21H = 3221,
+    RISCV_SYSREG_HPMCOUNTER22H = 3222,
+    RISCV_SYSREG_HPMCOUNTER23H = 3223,
+    RISCV_SYSREG_HPMCOUNTER24H = 3224,
+    RISCV_SYSREG_HPMCOUNTER25H = 3225,
+    RISCV_SYSREG_HPMCOUNTER26H = 3226,
+    RISCV_SYSREG_HPMCOUNTER27H = 3227,
+    RISCV_SYSREG_HPMCOUNTER28H = 3228,
+    RISCV_SYSREG_HPMCOUNTER29H = 3229,
+    RISCV_SYSREG_HPMCOUNTER30H = 3230,
+    RISCV_SYSREG_HPMCOUNTER31H = 3231,
+    RISCV_SYSREG_SCOUNTOVF = 3488,
+    RISCV_SYSREG_STOPI = 3504,
+    RISCV_SYSREG_HGEIP = 3602,
+    RISCV_SYSREG_VSTOPI = 3760,
+    RISCV_SYSREG_MVENDORID = 3857,
+    RISCV_SYSREG_MARCHID = 3858,
+    RISCV_SYSREG_MIMPID = 3859,
+    RISCV_SYSREG_MHARTID = 3860,
+    RISCV_SYSREG_MCONFIGPTR = 3861,
+    RISCV_SYSREG_MTOPI = 4016,
+}
+#[repr(u32)]
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
+pub enum riscv_insn {
+    RISCV_INS_INVALID = 0,
+    RISCV_INS_ADD = 1,
+    RISCV_INS_CALL = 2,
+    RISCV_INS_FLD = 3,
+    RISCV_INS_FLH = 4,
+    RISCV_INS_FLW = 5,
+    RISCV_INS_FSD = 6,
+    RISCV_INS_FSH = 7,
+    RISCV_INS_FSW = 8,
+    RISCV_INS_JUMP = 9,
+    RISCV_INS_LA = 10,
+    RISCV_INS_LA_TLSDESC = 11,
+    RISCV_INS_LA_TLS_GD = 12,
+    RISCV_INS_LA_TLS_IE = 13,
+    RISCV_INS_LB = 14,
+    RISCV_INS_LBU = 15,
+    RISCV_INS_LD = 16,
+    RISCV_INS_LGA = 17,
+    RISCV_INS_LH = 18,
+    RISCV_INS_LHU = 19,
+    RISCV_INS_LI = 20,
+    RISCV_INS_LLA = 21,
+    RISCV_INS_LW = 22,
+    RISCV_INS_LWU = 23,
+    RISCV_INS_SB = 24,
+    RISCV_INS_SD = 25,
+    RISCV_INS_SEXT_B = 26,
+    RISCV_INS_SEXT_H = 27,
+    RISCV_INS_SH = 28,
+    RISCV_INS_SW = 29,
+    RISCV_INS_TAIL = 30,
+    RISCV_INS_JALR = 31,
+    RISCV_INS_VMSGEU_VI = 32,
+    RISCV_INS_VMSGEU_VX = 33,
+    RISCV_INS_VMSGE_VI = 34,
+    RISCV_INS_VMSGE_VX = 35,
+    RISCV_INS_VMSLTU_VI = 36,
+    RISCV_INS_VMSLT_VI = 37,
+    RISCV_INS_ZEXT_H = 38,
+    RISCV_INS_ZEXT_W = 39,
+    RISCV_INS_ADDI = 40,
+    RISCV_INS_ADDIW = 41,
+    RISCV_INS_ADDW = 42,
+    RISCV_INS_ADD_UW = 43,
+    RISCV_INS_AES32DSI = 44,
+    RISCV_INS_AES32DSMI = 45,
+    RISCV_INS_AES32ESI = 46,
+    RISCV_INS_AES32ESMI = 47,
+    RISCV_INS_AES64DS = 48,
+    RISCV_INS_AES64DSM = 49,
+    RISCV_INS_AES64ES = 50,
+    RISCV_INS_AES64ESM = 51,
+    RISCV_INS_AES64IM = 52,
+    RISCV_INS_AES64KS1I = 53,
+    RISCV_INS_AES64KS2 = 54,
+    RISCV_INS_AMOADD_D = 55,
+    RISCV_INS_AMOADD_D_AQ = 56,
+    RISCV_INS_AMOADD_D_AQRL = 57,
+    RISCV_INS_AMOADD_D_RL = 58,
+    RISCV_INS_AMOADD_W = 59,
+    RISCV_INS_AMOADD_W_AQ = 60,
+    RISCV_INS_AMOADD_W_AQRL = 61,
+    RISCV_INS_AMOADD_W_RL = 62,
+    RISCV_INS_AMOAND_D = 63,
+    RISCV_INS_AMOAND_D_AQ = 64,
+    RISCV_INS_AMOAND_D_AQRL = 65,
+    RISCV_INS_AMOAND_D_RL = 66,
+    RISCV_INS_AMOAND_W = 67,
+    RISCV_INS_AMOAND_W_AQ = 68,
+    RISCV_INS_AMOAND_W_AQRL = 69,
+    RISCV_INS_AMOAND_W_RL = 70,
+    RISCV_INS_AMOCAS_D = 71,
+    RISCV_INS_AMOCAS_D_AQ = 72,
+    RISCV_INS_AMOCAS_D_AQRL = 73,
+    RISCV_INS_AMOCAS_D_RL = 74,
+    RISCV_INS_AMOCAS_Q = 75,
+    RISCV_INS_AMOCAS_Q_AQ = 76,
+    RISCV_INS_AMOCAS_Q_AQRL = 77,
+    RISCV_INS_AMOCAS_Q_RL = 78,
+    RISCV_INS_AMOCAS_W = 79,
+    RISCV_INS_AMOCAS_W_AQ = 80,
+    RISCV_INS_AMOCAS_W_AQRL = 81,
+    RISCV_INS_AMOCAS_W_RL = 82,
+    RISCV_INS_AMOMAXU_D = 83,
+    RISCV_INS_AMOMAXU_D_AQ = 84,
+    RISCV_INS_AMOMAXU_D_AQRL = 85,
+    RISCV_INS_AMOMAXU_D_RL = 86,
+    RISCV_INS_AMOMAXU_W = 87,
+    RISCV_INS_AMOMAXU_W_AQ = 88,
+    RISCV_INS_AMOMAXU_W_AQRL = 89,
+    RISCV_INS_AMOMAXU_W_RL = 90,
+    RISCV_INS_AMOMAX_D = 91,
+    RISCV_INS_AMOMAX_D_AQ = 92,
+    RISCV_INS_AMOMAX_D_AQRL = 93,
+    RISCV_INS_AMOMAX_D_RL = 94,
+    RISCV_INS_AMOMAX_W = 95,
+    RISCV_INS_AMOMAX_W_AQ = 96,
+    RISCV_INS_AMOMAX_W_AQRL = 97,
+    RISCV_INS_AMOMAX_W_RL = 98,
+    RISCV_INS_AMOMINU_D = 99,
+    RISCV_INS_AMOMINU_D_AQ = 100,
+    RISCV_INS_AMOMINU_D_AQRL = 101,
+    RISCV_INS_AMOMINU_D_RL = 102,
+    RISCV_INS_AMOMINU_W = 103,
+    RISCV_INS_AMOMINU_W_AQ = 104,
+    RISCV_INS_AMOMINU_W_AQRL = 105,
+    RISCV_INS_AMOMINU_W_RL = 106,
+    RISCV_INS_AMOMIN_D = 107,
+    RISCV_INS_AMOMIN_D_AQ = 108,
+    RISCV_INS_AMOMIN_D_AQRL = 109,
+    RISCV_INS_AMOMIN_D_RL = 110,
+    RISCV_INS_AMOMIN_W = 111,
+    RISCV_INS_AMOMIN_W_AQ = 112,
+    RISCV_INS_AMOMIN_W_AQRL = 113,
+    RISCV_INS_AMOMIN_W_RL = 114,
+    RISCV_INS_AMOOR_D = 115,
+    RISCV_INS_AMOOR_D_AQ = 116,
+    RISCV_INS_AMOOR_D_AQRL = 117,
+    RISCV_INS_AMOOR_D_RL = 118,
+    RISCV_INS_AMOOR_W = 119,
+    RISCV_INS_AMOOR_W_AQ = 120,
+    RISCV_INS_AMOOR_W_AQRL = 121,
+    RISCV_INS_AMOOR_W_RL = 122,
+    RISCV_INS_AMOSWAP_D = 123,
+    RISCV_INS_AMOSWAP_D_AQ = 124,
+    RISCV_INS_AMOSWAP_D_AQRL = 125,
+    RISCV_INS_AMOSWAP_D_RL = 126,
+    RISCV_INS_AMOSWAP_W = 127,
+    RISCV_INS_AMOSWAP_W_AQ = 128,
+    RISCV_INS_AMOSWAP_W_AQRL = 129,
+    RISCV_INS_AMOSWAP_W_RL = 130,
+    RISCV_INS_AMOXOR_D = 131,
+    RISCV_INS_AMOXOR_D_AQ = 132,
+    RISCV_INS_AMOXOR_D_AQRL = 133,
+    RISCV_INS_AMOXOR_D_RL = 134,
+    RISCV_INS_AMOXOR_W = 135,
+    RISCV_INS_AMOXOR_W_AQ = 136,
+    RISCV_INS_AMOXOR_W_AQRL = 137,
+    RISCV_INS_AMOXOR_W_RL = 138,
+    RISCV_INS_AND = 139,
+    RISCV_INS_ANDI = 140,
+    RISCV_INS_ANDN = 141,
+    RISCV_INS_AUIPC = 142,
+    RISCV_INS_BCLR = 143,
+    RISCV_INS_BCLRI = 144,
+    RISCV_INS_BEQ = 145,
+    RISCV_INS_BEXT = 146,
+    RISCV_INS_BEXTI = 147,
+    RISCV_INS_BGE = 148,
+    RISCV_INS_BGEU = 149,
+    RISCV_INS_BINV = 150,
+    RISCV_INS_BINVI = 151,
+    RISCV_INS_BLT = 152,
+    RISCV_INS_BLTU = 153,
+    RISCV_INS_BNE = 154,
+    RISCV_INS_BREV8 = 155,
+    RISCV_INS_BSET = 156,
+    RISCV_INS_BSETI = 157,
+    RISCV_INS_CBO_CLEAN = 158,
+    RISCV_INS_CBO_FLUSH = 159,
+    RISCV_INS_CBO_INVAL = 160,
+    RISCV_INS_CBO_ZERO = 161,
+    RISCV_INS_CLMUL = 162,
+    RISCV_INS_CLMULH = 163,
+    RISCV_INS_CLMULR = 164,
+    RISCV_INS_CLZ = 165,
+    RISCV_INS_CLZW = 166,
+    RISCV_INS_CMOP_1 = 167,
+    RISCV_INS_CMOP_11 = 168,
+    RISCV_INS_CMOP_13 = 169,
+    RISCV_INS_CMOP_15 = 170,
+    RISCV_INS_CMOP_3 = 171,
+    RISCV_INS_CMOP_5 = 172,
+    RISCV_INS_CMOP_7 = 173,
+    RISCV_INS_CMOP_9 = 174,
+    RISCV_INS_CM_JALT = 175,
+    RISCV_INS_CM_JT = 176,
+    RISCV_INS_CM_MVA01S = 177,
+    RISCV_INS_CM_MVSA01 = 178,
+    RISCV_INS_CM_POP = 179,
+    RISCV_INS_CM_POPRET = 180,
+    RISCV_INS_CM_POPRETZ = 181,
+    RISCV_INS_CM_PUSH = 182,
+    RISCV_INS_CPOP = 183,
+    RISCV_INS_CPOPW = 184,
+    RISCV_INS_CSRRC = 185,
+    RISCV_INS_CSRRCI = 186,
+    RISCV_INS_CSRRS = 187,
+    RISCV_INS_CSRRSI = 188,
+    RISCV_INS_CSRRW = 189,
+    RISCV_INS_CSRRWI = 190,
+    RISCV_INS_CTZ = 191,
+    RISCV_INS_CTZW = 192,
+    RISCV_INS_CV_ABS = 193,
+    RISCV_INS_CV_ABS_B = 194,
+    RISCV_INS_CV_ABS_H = 195,
+    RISCV_INS_CV_ADDN = 196,
+    RISCV_INS_CV_ADDNR = 197,
+    RISCV_INS_CV_ADDRN = 198,
+    RISCV_INS_CV_ADDRNR = 199,
+    RISCV_INS_CV_ADDUN = 200,
+    RISCV_INS_CV_ADDUNR = 201,
+    RISCV_INS_CV_ADDURN = 202,
+    RISCV_INS_CV_ADDURNR = 203,
+    RISCV_INS_CV_ADD_B = 204,
+    RISCV_INS_CV_ADD_DIV2 = 205,
+    RISCV_INS_CV_ADD_DIV4 = 206,
+    RISCV_INS_CV_ADD_DIV8 = 207,
+    RISCV_INS_CV_ADD_H = 208,
+    RISCV_INS_CV_ADD_SCI_B = 209,
+    RISCV_INS_CV_ADD_SCI_H = 210,
+    RISCV_INS_CV_ADD_SC_B = 211,
+    RISCV_INS_CV_ADD_SC_H = 212,
+    RISCV_INS_CV_AND_B = 213,
+    RISCV_INS_CV_AND_H = 214,
+    RISCV_INS_CV_AND_SCI_B = 215,
+    RISCV_INS_CV_AND_SCI_H = 216,
+    RISCV_INS_CV_AND_SC_B = 217,
+    RISCV_INS_CV_AND_SC_H = 218,
+    RISCV_INS_CV_AVGU_B = 219,
+    RISCV_INS_CV_AVGU_H = 220,
+    RISCV_INS_CV_AVGU_SCI_B = 221,
+    RISCV_INS_CV_AVGU_SCI_H = 222,
+    RISCV_INS_CV_AVGU_SC_B = 223,
+    RISCV_INS_CV_AVGU_SC_H = 224,
+    RISCV_INS_CV_AVG_B = 225,
+    RISCV_INS_CV_AVG_H = 226,
+    RISCV_INS_CV_AVG_SCI_B = 227,
+    RISCV_INS_CV_AVG_SCI_H = 228,
+    RISCV_INS_CV_AVG_SC_B = 229,
+    RISCV_INS_CV_AVG_SC_H = 230,
+    RISCV_INS_CV_BCLR = 231,
+    RISCV_INS_CV_BCLRR = 232,
+    RISCV_INS_CV_BEQIMM = 233,
+    RISCV_INS_CV_BITREV = 234,
+    RISCV_INS_CV_BNEIMM = 235,
+    RISCV_INS_CV_BSET = 236,
+    RISCV_INS_CV_BSETR = 237,
+    RISCV_INS_CV_CLB = 238,
+    RISCV_INS_CV_CLIP = 239,
+    RISCV_INS_CV_CLIPR = 240,
+    RISCV_INS_CV_CLIPU = 241,
+    RISCV_INS_CV_CLIPUR = 242,
+    RISCV_INS_CV_CMPEQ_B = 243,
+    RISCV_INS_CV_CMPEQ_H = 244,
+    RISCV_INS_CV_CMPEQ_SCI_B = 245,
+    RISCV_INS_CV_CMPEQ_SCI_H = 246,
+    RISCV_INS_CV_CMPEQ_SC_B = 247,
+    RISCV_INS_CV_CMPEQ_SC_H = 248,
+    RISCV_INS_CV_CMPGEU_B = 249,
+    RISCV_INS_CV_CMPGEU_H = 250,
+    RISCV_INS_CV_CMPGEU_SCI_B = 251,
+    RISCV_INS_CV_CMPGEU_SCI_H = 252,
+    RISCV_INS_CV_CMPGEU_SC_B = 253,
+    RISCV_INS_CV_CMPGEU_SC_H = 254,
+    RISCV_INS_CV_CMPGE_B = 255,
+    RISCV_INS_CV_CMPGE_H = 256,
+    RISCV_INS_CV_CMPGE_SCI_B = 257,
+    RISCV_INS_CV_CMPGE_SCI_H = 258,
+    RISCV_INS_CV_CMPGE_SC_B = 259,
+    RISCV_INS_CV_CMPGE_SC_H = 260,
+    RISCV_INS_CV_CMPGTU_B = 261,
+    RISCV_INS_CV_CMPGTU_H = 262,
+    RISCV_INS_CV_CMPGTU_SCI_B = 263,
+    RISCV_INS_CV_CMPGTU_SCI_H = 264,
+    RISCV_INS_CV_CMPGTU_SC_B = 265,
+    RISCV_INS_CV_CMPGTU_SC_H = 266,
+    RISCV_INS_CV_CMPGT_B = 267,
+    RISCV_INS_CV_CMPGT_H = 268,
+    RISCV_INS_CV_CMPGT_SCI_B = 269,
+    RISCV_INS_CV_CMPGT_SCI_H = 270,
+    RISCV_INS_CV_CMPGT_SC_B = 271,
+    RISCV_INS_CV_CMPGT_SC_H = 272,
+    RISCV_INS_CV_CMPLEU_B = 273,
+    RISCV_INS_CV_CMPLEU_H = 274,
+    RISCV_INS_CV_CMPLEU_SCI_B = 275,
+    RISCV_INS_CV_CMPLEU_SCI_H = 276,
+    RISCV_INS_CV_CMPLEU_SC_B = 277,
+    RISCV_INS_CV_CMPLEU_SC_H = 278,
+    RISCV_INS_CV_CMPLE_B = 279,
+    RISCV_INS_CV_CMPLE_H = 280,
+    RISCV_INS_CV_CMPLE_SCI_B = 281,
+    RISCV_INS_CV_CMPLE_SCI_H = 282,
+    RISCV_INS_CV_CMPLE_SC_B = 283,
+    RISCV_INS_CV_CMPLE_SC_H = 284,
+    RISCV_INS_CV_CMPLTU_B = 285,
+    RISCV_INS_CV_CMPLTU_H = 286,
+    RISCV_INS_CV_CMPLTU_SCI_B = 287,
+    RISCV_INS_CV_CMPLTU_SCI_H = 288,
+    RISCV_INS_CV_CMPLTU_SC_B = 289,
+    RISCV_INS_CV_CMPLTU_SC_H = 290,
+    RISCV_INS_CV_CMPLT_B = 291,
+    RISCV_INS_CV_CMPLT_H = 292,
+    RISCV_INS_CV_CMPLT_SCI_B = 293,
+    RISCV_INS_CV_CMPLT_SCI_H = 294,
+    RISCV_INS_CV_CMPLT_SC_B = 295,
+    RISCV_INS_CV_CMPLT_SC_H = 296,
+    RISCV_INS_CV_CMPNE_B = 297,
+    RISCV_INS_CV_CMPNE_H = 298,
+    RISCV_INS_CV_CMPNE_SCI_B = 299,
+    RISCV_INS_CV_CMPNE_SCI_H = 300,
+    RISCV_INS_CV_CMPNE_SC_B = 301,
+    RISCV_INS_CV_CMPNE_SC_H = 302,
+    RISCV_INS_CV_CNT = 303,
+    RISCV_INS_CV_CPLXCONJ = 304,
+    RISCV_INS_CV_CPLXMUL_I = 305,
+    RISCV_INS_CV_CPLXMUL_I_DIV2 = 306,
+    RISCV_INS_CV_CPLXMUL_I_DIV4 = 307,
+    RISCV_INS_CV_CPLXMUL_I_DIV8 = 308,
+    RISCV_INS_CV_CPLXMUL_R = 309,
+    RISCV_INS_CV_CPLXMUL_R_DIV2 = 310,
+    RISCV_INS_CV_CPLXMUL_R_DIV4 = 311,
+    RISCV_INS_CV_CPLXMUL_R_DIV8 = 312,
+    RISCV_INS_CV_DOTSP_B = 313,
+    RISCV_INS_CV_DOTSP_H = 314,
+    RISCV_INS_CV_DOTSP_SCI_B = 315,
+    RISCV_INS_CV_DOTSP_SCI_H = 316,
+    RISCV_INS_CV_DOTSP_SC_B = 317,
+    RISCV_INS_CV_DOTSP_SC_H = 318,
+    RISCV_INS_CV_DOTUP_B = 319,
+    RISCV_INS_CV_DOTUP_H = 320,
+    RISCV_INS_CV_DOTUP_SCI_B = 321,
+    RISCV_INS_CV_DOTUP_SCI_H = 322,
+    RISCV_INS_CV_DOTUP_SC_B = 323,
+    RISCV_INS_CV_DOTUP_SC_H = 324,
+    RISCV_INS_CV_DOTUSP_B = 325,
+    RISCV_INS_CV_DOTUSP_H = 326,
+    RISCV_INS_CV_DOTUSP_SCI_B = 327,
+    RISCV_INS_CV_DOTUSP_SCI_H = 328,
+    RISCV_INS_CV_DOTUSP_SC_B = 329,
+    RISCV_INS_CV_DOTUSP_SC_H = 330,
+    RISCV_INS_CV_ELW = 331,
+    RISCV_INS_CV_EXTBS = 332,
+    RISCV_INS_CV_EXTBZ = 333,
+    RISCV_INS_CV_EXTHS = 334,
+    RISCV_INS_CV_EXTHZ = 335,
+    RISCV_INS_CV_EXTRACT = 336,
+    RISCV_INS_CV_EXTRACTR = 337,
+    RISCV_INS_CV_EXTRACTU = 338,
+    RISCV_INS_CV_EXTRACTUR = 339,
+    RISCV_INS_CV_EXTRACTU_B = 340,
+    RISCV_INS_CV_EXTRACTU_H = 341,
+    RISCV_INS_CV_EXTRACT_B = 342,
+    RISCV_INS_CV_EXTRACT_H = 343,
+    RISCV_INS_CV_FF1 = 344,
+    RISCV_INS_CV_FL1 = 345,
+    RISCV_INS_CV_INSERT = 346,
+    RISCV_INS_CV_INSERTR = 347,
+    RISCV_INS_CV_INSERT_B = 348,
+    RISCV_INS_CV_INSERT_H = 349,
+    RISCV_INS_CV_LBU = 350,
+    RISCV_INS_CV_LB = 351,
+    RISCV_INS_CV_LHU = 352,
+    RISCV_INS_CV_LH = 353,
+    RISCV_INS_CV_LW = 354,
+    RISCV_INS_CV_MAC = 355,
+    RISCV_INS_CV_MACHHSN = 356,
+    RISCV_INS_CV_MACHHSRN = 357,
+    RISCV_INS_CV_MACHHUN = 358,
+    RISCV_INS_CV_MACHHURN = 359,
+    RISCV_INS_CV_MACSN = 360,
+    RISCV_INS_CV_MACSRN = 361,
+    RISCV_INS_CV_MACUN = 362,
+    RISCV_INS_CV_MACURN = 363,
+    RISCV_INS_CV_MAX = 364,
+    RISCV_INS_CV_MAXU = 365,
+    RISCV_INS_CV_MAXU_B = 366,
+    RISCV_INS_CV_MAXU_H = 367,
+    RISCV_INS_CV_MAXU_SCI_B = 368,
+    RISCV_INS_CV_MAXU_SCI_H = 369,
+    RISCV_INS_CV_MAXU_SC_B = 370,
+    RISCV_INS_CV_MAXU_SC_H = 371,
+    RISCV_INS_CV_MAX_B = 372,
+    RISCV_INS_CV_MAX_H = 373,
+    RISCV_INS_CV_MAX_SCI_B = 374,
+    RISCV_INS_CV_MAX_SCI_H = 375,
+    RISCV_INS_CV_MAX_SC_B = 376,
+    RISCV_INS_CV_MAX_SC_H = 377,
+    RISCV_INS_CV_MIN = 378,
+    RISCV_INS_CV_MINU = 379,
+    RISCV_INS_CV_MINU_B = 380,
+    RISCV_INS_CV_MINU_H = 381,
+    RISCV_INS_CV_MINU_SCI_B = 382,
+    RISCV_INS_CV_MINU_SCI_H = 383,
+    RISCV_INS_CV_MINU_SC_B = 384,
+    RISCV_INS_CV_MINU_SC_H = 385,
+    RISCV_INS_CV_MIN_B = 386,
+    RISCV_INS_CV_MIN_H = 387,
+    RISCV_INS_CV_MIN_SCI_B = 388,
+    RISCV_INS_CV_MIN_SCI_H = 389,
+    RISCV_INS_CV_MIN_SC_B = 390,
+    RISCV_INS_CV_MIN_SC_H = 391,
+    RISCV_INS_CV_MSU = 392,
+    RISCV_INS_CV_MULHHSN = 393,
+    RISCV_INS_CV_MULHHSRN = 394,
+    RISCV_INS_CV_MULHHUN = 395,
+    RISCV_INS_CV_MULHHURN = 396,
+    RISCV_INS_CV_MULSN = 397,
+    RISCV_INS_CV_MULSRN = 398,
+    RISCV_INS_CV_MULUN = 399,
+    RISCV_INS_CV_MULURN = 400,
+    RISCV_INS_CV_OR_B = 401,
+    RISCV_INS_CV_OR_H = 402,
+    RISCV_INS_CV_OR_SCI_B = 403,
+    RISCV_INS_CV_OR_SCI_H = 404,
+    RISCV_INS_CV_OR_SC_B = 405,
+    RISCV_INS_CV_OR_SC_H = 406,
+    RISCV_INS_CV_PACK = 407,
+    RISCV_INS_CV_PACKHI_B = 408,
+    RISCV_INS_CV_PACKLO_B = 409,
+    RISCV_INS_CV_PACK_H = 410,
+    RISCV_INS_CV_ROR = 411,
+    RISCV_INS_CV_SB = 412,
+    RISCV_INS_CV_SDOTSP_B = 413,
+    RISCV_INS_CV_SDOTSP_H = 414,
+    RISCV_INS_CV_SDOTSP_SCI_B = 415,
+    RISCV_INS_CV_SDOTSP_SCI_H = 416,
+    RISCV_INS_CV_SDOTSP_SC_B = 417,
+    RISCV_INS_CV_SDOTSP_SC_H = 418,
+    RISCV_INS_CV_SDOTUP_B = 419,
+    RISCV_INS_CV_SDOTUP_H = 420,
+    RISCV_INS_CV_SDOTUP_SCI_B = 421,
+    RISCV_INS_CV_SDOTUP_SCI_H = 422,
+    RISCV_INS_CV_SDOTUP_SC_B = 423,
+    RISCV_INS_CV_SDOTUP_SC_H = 424,
+    RISCV_INS_CV_SDOTUSP_B = 425,
+    RISCV_INS_CV_SDOTUSP_H = 426,
+    RISCV_INS_CV_SDOTUSP_SCI_B = 427,
+    RISCV_INS_CV_SDOTUSP_SCI_H = 428,
+    RISCV_INS_CV_SDOTUSP_SC_B = 429,
+    RISCV_INS_CV_SDOTUSP_SC_H = 430,
+    RISCV_INS_CV_SHUFFLE2_B = 431,
+    RISCV_INS_CV_SHUFFLE2_H = 432,
+    RISCV_INS_CV_SHUFFLEI0_SCI_B = 433,
+    RISCV_INS_CV_SHUFFLEI1_SCI_B = 434,
+    RISCV_INS_CV_SHUFFLEI2_SCI_B = 435,
+    RISCV_INS_CV_SHUFFLEI3_SCI_B = 436,
+    RISCV_INS_CV_SHUFFLE_B = 437,
+    RISCV_INS_CV_SHUFFLE_H = 438,
+    RISCV_INS_CV_SHUFFLE_SCI_H = 439,
+    RISCV_INS_CV_SH = 440,
+    RISCV_INS_CV_SLET = 441,
+    RISCV_INS_CV_SLETU = 442,
+    RISCV_INS_CV_SLL_B = 443,
+    RISCV_INS_CV_SLL_H = 444,
+    RISCV_INS_CV_SLL_SCI_B = 445,
+    RISCV_INS_CV_SLL_SCI_H = 446,
+    RISCV_INS_CV_SLL_SC_B = 447,
+    RISCV_INS_CV_SLL_SC_H = 448,
+    RISCV_INS_CV_SRA_B = 449,
+    RISCV_INS_CV_SRA_H = 450,
+    RISCV_INS_CV_SRA_SCI_B = 451,
+    RISCV_INS_CV_SRA_SCI_H = 452,
+    RISCV_INS_CV_SRA_SC_B = 453,
+    RISCV_INS_CV_SRA_SC_H = 454,
+    RISCV_INS_CV_SRL_B = 455,
+    RISCV_INS_CV_SRL_H = 456,
+    RISCV_INS_CV_SRL_SCI_B = 457,
+    RISCV_INS_CV_SRL_SCI_H = 458,
+    RISCV_INS_CV_SRL_SC_B = 459,
+    RISCV_INS_CV_SRL_SC_H = 460,
+    RISCV_INS_CV_SUBN = 461,
+    RISCV_INS_CV_SUBNR = 462,
+    RISCV_INS_CV_SUBRN = 463,
+    RISCV_INS_CV_SUBRNR = 464,
+    RISCV_INS_CV_SUBROTMJ = 465,
+    RISCV_INS_CV_SUBROTMJ_DIV2 = 466,
+    RISCV_INS_CV_SUBROTMJ_DIV4 = 467,
+    RISCV_INS_CV_SUBROTMJ_DIV8 = 468,
+    RISCV_INS_CV_SUBUN = 469,
+    RISCV_INS_CV_SUBUNR = 470,
+    RISCV_INS_CV_SUBURN = 471,
+    RISCV_INS_CV_SUBURNR = 472,
+    RISCV_INS_CV_SUB_B = 473,
+    RISCV_INS_CV_SUB_DIV2 = 474,
+    RISCV_INS_CV_SUB_DIV4 = 475,
+    RISCV_INS_CV_SUB_DIV8 = 476,
+    RISCV_INS_CV_SUB_H = 477,
+    RISCV_INS_CV_SUB_SCI_B = 478,
+    RISCV_INS_CV_SUB_SCI_H = 479,
+    RISCV_INS_CV_SUB_SC_B = 480,
+    RISCV_INS_CV_SUB_SC_H = 481,
+    RISCV_INS_CV_SW = 482,
+    RISCV_INS_CV_XOR_B = 483,
+    RISCV_INS_CV_XOR_H = 484,
+    RISCV_INS_CV_XOR_SCI_B = 485,
+    RISCV_INS_CV_XOR_SCI_H = 486,
+    RISCV_INS_CV_XOR_SC_B = 487,
+    RISCV_INS_CV_XOR_SC_H = 488,
+    RISCV_INS_CZERO_EQZ = 489,
+    RISCV_INS_CZERO_NEZ = 490,
+    RISCV_INS_C_ADD = 491,
+    RISCV_INS_C_ADDI = 492,
+    RISCV_INS_C_ADDI16SP = 493,
+    RISCV_INS_C_ADDI4SPN = 494,
+    RISCV_INS_C_ADDIW = 495,
+    RISCV_INS_C_ADDW = 496,
+    RISCV_INS_C_AND = 497,
+    RISCV_INS_C_ANDI = 498,
+    RISCV_INS_C_BEQZ = 499,
+    RISCV_INS_C_BNEZ = 500,
+    RISCV_INS_C_EBREAK = 501,
+    RISCV_INS_C_FLD = 502,
+    RISCV_INS_C_FLDSP = 503,
+    RISCV_INS_C_FLW = 504,
+    RISCV_INS_C_FLWSP = 505,
+    RISCV_INS_C_FSD = 506,
+    RISCV_INS_C_FSDSP = 507,
+    RISCV_INS_C_FSW = 508,
+    RISCV_INS_C_FSWSP = 509,
+    RISCV_INS_C_J = 510,
+    RISCV_INS_C_JAL = 511,
+    RISCV_INS_C_JALR = 512,
+    RISCV_INS_C_JR = 513,
+    RISCV_INS_C_LBU = 514,
+    RISCV_INS_C_LD = 515,
+    RISCV_INS_C_LDSP = 516,
+    RISCV_INS_C_LH = 517,
+    RISCV_INS_C_LHU = 518,
+    RISCV_INS_C_LI = 519,
+    RISCV_INS_C_LUI = 520,
+    RISCV_INS_C_LW = 521,
+    RISCV_INS_C_LWSP = 522,
+    RISCV_INS_C_MUL = 523,
+    RISCV_INS_C_MV = 524,
+    RISCV_INS_C_NOP = 525,
+    RISCV_INS_C_NOT = 526,
+    RISCV_INS_C_OR = 527,
+    RISCV_INS_C_SB = 528,
+    RISCV_INS_C_SD = 529,
+    RISCV_INS_C_SDSP = 530,
+    RISCV_INS_C_SEXT_B = 531,
+    RISCV_INS_C_SEXT_H = 532,
+    RISCV_INS_C_SH = 533,
+    RISCV_INS_C_SLLI = 534,
+    RISCV_INS_C_SLLI64 = 535,
+    RISCV_INS_C_SRAI = 536,
+    RISCV_INS_C_SRAI64 = 537,
+    RISCV_INS_C_SRLI = 538,
+    RISCV_INS_C_SRLI64 = 539,
+    RISCV_INS_C_SSPOPCHK = 540,
+    RISCV_INS_C_SSPUSH = 541,
+    RISCV_INS_C_SUB = 542,
+    RISCV_INS_C_SUBW = 543,
+    RISCV_INS_C_SW = 544,
+    RISCV_INS_C_SWSP = 545,
+    RISCV_INS_C_UNIMP = 546,
+    RISCV_INS_C_XOR = 547,
+    RISCV_INS_C_ZEXT_B = 548,
+    RISCV_INS_C_ZEXT_H = 549,
+    RISCV_INS_C_ZEXT_W = 550,
+    RISCV_INS_DIV = 551,
+    RISCV_INS_DIVU = 552,
+    RISCV_INS_DIVUW = 553,
+    RISCV_INS_DIVW = 554,
+    RISCV_INS_DRET = 555,
+    RISCV_INS_EBREAK = 556,
+    RISCV_INS_ECALL = 557,
+    RISCV_INS_FADD_D = 558,
+    RISCV_INS_FADD_H = 559,
+    RISCV_INS_FADD_S = 560,
+    RISCV_INS_FCLASS_D = 561,
+    RISCV_INS_FCLASS_H = 562,
+    RISCV_INS_FCLASS_S = 563,
+    RISCV_INS_FCVTMOD_W_D = 564,
+    RISCV_INS_FCVT_BF16_S = 565,
+    RISCV_INS_FCVT_D_H = 566,
+    RISCV_INS_FCVT_D_L = 567,
+    RISCV_INS_FCVT_D_LU = 568,
+    RISCV_INS_FCVT_D_S = 569,
+    RISCV_INS_FCVT_D_W = 570,
+    RISCV_INS_FCVT_D_WU = 571,
+    RISCV_INS_FCVT_H_D = 572,
+    RISCV_INS_FCVT_H_L = 573,
+    RISCV_INS_FCVT_H_LU = 574,
+    RISCV_INS_FCVT_H_S = 575,
+    RISCV_INS_FCVT_H_W = 576,
+    RISCV_INS_FCVT_H_WU = 577,
+    RISCV_INS_FCVT_LU_D = 578,
+    RISCV_INS_FCVT_LU_H = 579,
+    RISCV_INS_FCVT_LU_S = 580,
+    RISCV_INS_FCVT_L_D = 581,
+    RISCV_INS_FCVT_L_H = 582,
+    RISCV_INS_FCVT_L_S = 583,
+    RISCV_INS_FCVT_S_BF16 = 584,
+    RISCV_INS_FCVT_S_D = 585,
+    RISCV_INS_FCVT_S_H = 586,
+    RISCV_INS_FCVT_S_L = 587,
+    RISCV_INS_FCVT_S_LU = 588,
+    RISCV_INS_FCVT_S_W = 589,
+    RISCV_INS_FCVT_S_WU = 590,
+    RISCV_INS_FCVT_WU_D = 591,
+    RISCV_INS_FCVT_WU_H = 592,
+    RISCV_INS_FCVT_WU_S = 593,
+    RISCV_INS_FCVT_W_D = 594,
+    RISCV_INS_FCVT_W_H = 595,
+    RISCV_INS_FCVT_W_S = 596,
+    RISCV_INS_FDIV_D = 597,
+    RISCV_INS_FDIV_H = 598,
+    RISCV_INS_FDIV_S = 599,
+    RISCV_INS_FENCE = 600,
+    RISCV_INS_FENCE_I = 601,
+    RISCV_INS_FENCE_TSO = 602,
+    RISCV_INS_FEQ_D = 603,
+    RISCV_INS_FEQ_H = 604,
+    RISCV_INS_FEQ_S = 605,
+    RISCV_INS_FLEQ_D = 606,
+    RISCV_INS_FLEQ_H = 607,
+    RISCV_INS_FLEQ_S = 608,
+    RISCV_INS_FLE_D = 609,
+    RISCV_INS_FLE_H = 610,
+    RISCV_INS_FLE_S = 611,
+    RISCV_INS_FLI_D = 612,
+    RISCV_INS_FLI_H = 613,
+    RISCV_INS_FLI_S = 614,
+    RISCV_INS_FLTQ_D = 615,
+    RISCV_INS_FLTQ_H = 616,
+    RISCV_INS_FLTQ_S = 617,
+    RISCV_INS_FLT_D = 618,
+    RISCV_INS_FLT_H = 619,
+    RISCV_INS_FLT_S = 620,
+    RISCV_INS_FMADD_D = 621,
+    RISCV_INS_FMADD_H = 622,
+    RISCV_INS_FMADD_S = 623,
+    RISCV_INS_FMAXM_D = 624,
+    RISCV_INS_FMAXM_H = 625,
+    RISCV_INS_FMAXM_S = 626,
+    RISCV_INS_FMAX_D = 627,
+    RISCV_INS_FMAX_H = 628,
+    RISCV_INS_FMAX_S = 629,
+    RISCV_INS_FMINM_D = 630,
+    RISCV_INS_FMINM_H = 631,
+    RISCV_INS_FMINM_S = 632,
+    RISCV_INS_FMIN_D = 633,
+    RISCV_INS_FMIN_H = 634,
+    RISCV_INS_FMIN_S = 635,
+    RISCV_INS_FMSUB_D = 636,
+    RISCV_INS_FMSUB_H = 637,
+    RISCV_INS_FMSUB_S = 638,
+    RISCV_INS_FMUL_D = 639,
+    RISCV_INS_FMUL_H = 640,
+    RISCV_INS_FMUL_S = 641,
+    RISCV_INS_FMVH_X_D = 642,
+    RISCV_INS_FMVP_D_X = 643,
+    RISCV_INS_FMV_D_X = 644,
+    RISCV_INS_FMV_H_X = 645,
+    RISCV_INS_FMV_W_X = 646,
+    RISCV_INS_FMV_X_D = 647,
+    RISCV_INS_FMV_X_H = 648,
+    RISCV_INS_FMV_X_W = 649,
+    RISCV_INS_FNMADD_D = 650,
+    RISCV_INS_FNMADD_H = 651,
+    RISCV_INS_FNMADD_S = 652,
+    RISCV_INS_FNMSUB_D = 653,
+    RISCV_INS_FNMSUB_H = 654,
+    RISCV_INS_FNMSUB_S = 655,
+    RISCV_INS_FROUNDNX_D = 656,
+    RISCV_INS_FROUNDNX_H = 657,
+    RISCV_INS_FROUNDNX_S = 658,
+    RISCV_INS_FROUND_D = 659,
+    RISCV_INS_FROUND_H = 660,
+    RISCV_INS_FROUND_S = 661,
+    RISCV_INS_FSGNJN_D = 662,
+    RISCV_INS_FSGNJN_H = 663,
+    RISCV_INS_FSGNJN_S = 664,
+    RISCV_INS_FSGNJX_D = 665,
+    RISCV_INS_FSGNJX_H = 666,
+    RISCV_INS_FSGNJX_S = 667,
+    RISCV_INS_FSGNJ_D = 668,
+    RISCV_INS_FSGNJ_H = 669,
+    RISCV_INS_FSGNJ_S = 670,
+    RISCV_INS_FSQRT_D = 671,
+    RISCV_INS_FSQRT_H = 672,
+    RISCV_INS_FSQRT_S = 673,
+    RISCV_INS_FSUB_D = 674,
+    RISCV_INS_FSUB_H = 675,
+    RISCV_INS_FSUB_S = 676,
+    RISCV_INS_HFENCE_GVMA = 677,
+    RISCV_INS_HFENCE_VVMA = 678,
+    RISCV_INS_HINVAL_GVMA = 679,
+    RISCV_INS_HINVAL_VVMA = 680,
+    RISCV_INS_HLVX_HU = 681,
+    RISCV_INS_HLVX_WU = 682,
+    RISCV_INS_HLV_B = 683,
+    RISCV_INS_HLV_BU = 684,
+    RISCV_INS_HLV_D = 685,
+    RISCV_INS_HLV_H = 686,
+    RISCV_INS_HLV_HU = 687,
+    RISCV_INS_HLV_W = 688,
+    RISCV_INS_HLV_WU = 689,
+    RISCV_INS_HSV_B = 690,
+    RISCV_INS_HSV_D = 691,
+    RISCV_INS_HSV_H = 692,
+    RISCV_INS_HSV_W = 693,
+    RISCV_INS_JAL = 694,
+    RISCV_INS_LR_D = 695,
+    RISCV_INS_LR_D_AQ = 696,
+    RISCV_INS_LR_D_AQRL = 697,
+    RISCV_INS_LR_D_RL = 698,
+    RISCV_INS_LR_W = 699,
+    RISCV_INS_LR_W_AQ = 700,
+    RISCV_INS_LR_W_AQRL = 701,
+    RISCV_INS_LR_W_RL = 702,
+    RISCV_INS_LUI = 703,
+    RISCV_INS_MAX = 704,
+    RISCV_INS_MAXU = 705,
+    RISCV_INS_MIN = 706,
+    RISCV_INS_MINU = 707,
+    RISCV_INS_MOP_R_0 = 708,
+    RISCV_INS_MOP_R_1 = 709,
+    RISCV_INS_MOP_R_10 = 710,
+    RISCV_INS_MOP_R_11 = 711,
+    RISCV_INS_MOP_R_12 = 712,
+    RISCV_INS_MOP_R_13 = 713,
+    RISCV_INS_MOP_R_14 = 714,
+    RISCV_INS_MOP_R_15 = 715,
+    RISCV_INS_MOP_R_16 = 716,
+    RISCV_INS_MOP_R_17 = 717,
+    RISCV_INS_MOP_R_18 = 718,
+    RISCV_INS_MOP_R_19 = 719,
+    RISCV_INS_MOP_R_2 = 720,
+    RISCV_INS_MOP_R_20 = 721,
+    RISCV_INS_MOP_R_21 = 722,
+    RISCV_INS_MOP_R_22 = 723,
+    RISCV_INS_MOP_R_23 = 724,
+    RISCV_INS_MOP_R_24 = 725,
+    RISCV_INS_MOP_R_25 = 726,
+    RISCV_INS_MOP_R_26 = 727,
+    RISCV_INS_MOP_R_27 = 728,
+    RISCV_INS_MOP_R_28 = 729,
+    RISCV_INS_MOP_R_29 = 730,
+    RISCV_INS_MOP_R_3 = 731,
+    RISCV_INS_MOP_R_30 = 732,
+    RISCV_INS_MOP_R_31 = 733,
+    RISCV_INS_MOP_R_4 = 734,
+    RISCV_INS_MOP_R_5 = 735,
+    RISCV_INS_MOP_R_6 = 736,
+    RISCV_INS_MOP_R_7 = 737,
+    RISCV_INS_MOP_R_8 = 738,
+    RISCV_INS_MOP_R_9 = 739,
+    RISCV_INS_MOP_RR_0 = 740,
+    RISCV_INS_MOP_RR_1 = 741,
+    RISCV_INS_MOP_RR_2 = 742,
+    RISCV_INS_MOP_RR_3 = 743,
+    RISCV_INS_MOP_RR_4 = 744,
+    RISCV_INS_MOP_RR_5 = 745,
+    RISCV_INS_MOP_RR_6 = 746,
+    RISCV_INS_MOP_RR_7 = 747,
+    RISCV_INS_MRET = 748,
+    RISCV_INS_MUL = 749,
+    RISCV_INS_MULH = 750,
+    RISCV_INS_MULHSU = 751,
+    RISCV_INS_MULHU = 752,
+    RISCV_INS_MULW = 753,
+    RISCV_INS_OR = 754,
+    RISCV_INS_ORC_B = 755,
+    RISCV_INS_ORI = 756,
+    RISCV_INS_ORN = 757,
+    RISCV_INS_PACK = 758,
+    RISCV_INS_PACKH = 759,
+    RISCV_INS_PACKW = 760,
+    RISCV_INS_PREFETCH_I = 761,
+    RISCV_INS_PREFETCH_R = 762,
+    RISCV_INS_PREFETCH_W = 763,
+    RISCV_INS_REM = 764,
+    RISCV_INS_REMU = 765,
+    RISCV_INS_REMUW = 766,
+    RISCV_INS_REMW = 767,
+    RISCV_INS_REV8 = 768,
+    RISCV_INS_ROL = 769,
+    RISCV_INS_ROLW = 770,
+    RISCV_INS_ROR = 771,
+    RISCV_INS_RORI = 772,
+    RISCV_INS_RORIW = 773,
+    RISCV_INS_RORW = 774,
+    RISCV_INS_SC_D = 775,
+    RISCV_INS_SC_D_AQ = 776,
+    RISCV_INS_SC_D_AQRL = 777,
+    RISCV_INS_SC_D_RL = 778,
+    RISCV_INS_SC_W = 779,
+    RISCV_INS_SC_W_AQ = 780,
+    RISCV_INS_SC_W_AQRL = 781,
+    RISCV_INS_SC_W_RL = 782,
+    RISCV_INS_SFENCE_INVAL_IR = 783,
+    RISCV_INS_SFENCE_VMA = 784,
+    RISCV_INS_SFENCE_W_INVAL = 785,
+    RISCV_INS_SH1ADD = 786,
+    RISCV_INS_SH1ADD_UW = 787,
+    RISCV_INS_SH2ADD = 788,
+    RISCV_INS_SH2ADD_UW = 789,
+    RISCV_INS_SH3ADD = 790,
+    RISCV_INS_SH3ADD_UW = 791,
+    RISCV_INS_SHA256SIG0 = 792,
+    RISCV_INS_SHA256SIG1 = 793,
+    RISCV_INS_SHA256SUM0 = 794,
+    RISCV_INS_SHA256SUM1 = 795,
+    RISCV_INS_SHA512SIG0 = 796,
+    RISCV_INS_SHA512SIG0H = 797,
+    RISCV_INS_SHA512SIG0L = 798,
+    RISCV_INS_SHA512SIG1 = 799,
+    RISCV_INS_SHA512SIG1H = 800,
+    RISCV_INS_SHA512SIG1L = 801,
+    RISCV_INS_SHA512SUM0 = 802,
+    RISCV_INS_SHA512SUM0R = 803,
+    RISCV_INS_SHA512SUM1 = 804,
+    RISCV_INS_SHA512SUM1R = 805,
+    RISCV_INS_SINVAL_VMA = 806,
+    RISCV_INS_SLL = 807,
+    RISCV_INS_SLLI = 808,
+    RISCV_INS_SLLIW = 809,
+    RISCV_INS_SLLI_UW = 810,
+    RISCV_INS_SLLW = 811,
+    RISCV_INS_SLT = 812,
+    RISCV_INS_SLTI = 813,
+    RISCV_INS_SLTIU = 814,
+    RISCV_INS_SLTU = 815,
+    RISCV_INS_SM3P0 = 816,
+    RISCV_INS_SM3P1 = 817,
+    RISCV_INS_SM4ED = 818,
+    RISCV_INS_SM4KS = 819,
+    RISCV_INS_SRA = 820,
+    RISCV_INS_SRAI = 821,
+    RISCV_INS_SRAIW = 822,
+    RISCV_INS_SRAW = 823,
+    RISCV_INS_SRET = 824,
+    RISCV_INS_SRL = 825,
+    RISCV_INS_SRLI = 826,
+    RISCV_INS_SRLIW = 827,
+    RISCV_INS_SRLW = 828,
+    RISCV_INS_SSAMOSWAP_D = 829,
+    RISCV_INS_SSAMOSWAP_D_AQ = 830,
+    RISCV_INS_SSAMOSWAP_D_AQRL = 831,
+    RISCV_INS_SSAMOSWAP_D_RL = 832,
+    RISCV_INS_SSAMOSWAP_W = 833,
+    RISCV_INS_SSAMOSWAP_W_AQ = 834,
+    RISCV_INS_SSAMOSWAP_W_AQRL = 835,
+    RISCV_INS_SSAMOSWAP_W_RL = 836,
+    RISCV_INS_SSPOPCHK = 837,
+    RISCV_INS_SSPUSH = 838,
+    RISCV_INS_SSRDP = 839,
+    RISCV_INS_SUB = 840,
+    RISCV_INS_SUBW = 841,
+    RISCV_INS_TH_VMAQASU_VV = 842,
+    RISCV_INS_TH_VMAQASU_VX = 843,
+    RISCV_INS_TH_VMAQAUS_VX = 844,
+    RISCV_INS_TH_VMAQAU_VV = 845,
+    RISCV_INS_TH_VMAQAU_VX = 846,
+    RISCV_INS_TH_VMAQA_VV = 847,
+    RISCV_INS_TH_VMAQA_VX = 848,
+    RISCV_INS_TH_ADDSL = 849,
+    RISCV_INS_TH_DCACHE_CALL = 850,
+    RISCV_INS_TH_DCACHE_CIALL = 851,
+    RISCV_INS_TH_DCACHE_CIPA = 852,
+    RISCV_INS_TH_DCACHE_CISW = 853,
+    RISCV_INS_TH_DCACHE_CIVA = 854,
+    RISCV_INS_TH_DCACHE_CPA = 855,
+    RISCV_INS_TH_DCACHE_CPAL1 = 856,
+    RISCV_INS_TH_DCACHE_CSW = 857,
+    RISCV_INS_TH_DCACHE_CVA = 858,
+    RISCV_INS_TH_DCACHE_CVAL1 = 859,
+    RISCV_INS_TH_DCACHE_IALL = 860,
+    RISCV_INS_TH_DCACHE_IPA = 861,
+    RISCV_INS_TH_DCACHE_ISW = 862,
+    RISCV_INS_TH_DCACHE_IVA = 863,
+    RISCV_INS_TH_EXT = 864,
+    RISCV_INS_TH_EXTU = 865,
+    RISCV_INS_TH_FF0 = 866,
+    RISCV_INS_TH_FF1 = 867,
+    RISCV_INS_TH_FLRD = 868,
+    RISCV_INS_TH_FLRW = 869,
+    RISCV_INS_TH_FLURD = 870,
+    RISCV_INS_TH_FLURW = 871,
+    RISCV_INS_TH_FSRD = 872,
+    RISCV_INS_TH_FSRW = 873,
+    RISCV_INS_TH_FSURD = 874,
+    RISCV_INS_TH_FSURW = 875,
+    RISCV_INS_TH_ICACHE_IALL = 876,
+    RISCV_INS_TH_ICACHE_IALLS = 877,
+    RISCV_INS_TH_ICACHE_IPA = 878,
+    RISCV_INS_TH_ICACHE_IVA = 879,
+    RISCV_INS_TH_L2CACHE_CALL = 880,
+    RISCV_INS_TH_L2CACHE_CIALL = 881,
+    RISCV_INS_TH_L2CACHE_IALL = 882,
+    RISCV_INS_TH_LBIA = 883,
+    RISCV_INS_TH_LBIB = 884,
+    RISCV_INS_TH_LBUIA = 885,
+    RISCV_INS_TH_LBUIB = 886,
+    RISCV_INS_TH_LDD = 887,
+    RISCV_INS_TH_LDIA = 888,
+    RISCV_INS_TH_LDIB = 889,
+    RISCV_INS_TH_LHIA = 890,
+    RISCV_INS_TH_LHIB = 891,
+    RISCV_INS_TH_LHUIA = 892,
+    RISCV_INS_TH_LHUIB = 893,
+    RISCV_INS_TH_LRB = 894,
+    RISCV_INS_TH_LRBU = 895,
+    RISCV_INS_TH_LRD = 896,
+    RISCV_INS_TH_LRH = 897,
+    RISCV_INS_TH_LRHU = 898,
+    RISCV_INS_TH_LRW = 899,
+    RISCV_INS_TH_LRWU = 900,
+    RISCV_INS_TH_LURB = 901,
+    RISCV_INS_TH_LURBU = 902,
+    RISCV_INS_TH_LURD = 903,
+    RISCV_INS_TH_LURH = 904,
+    RISCV_INS_TH_LURHU = 905,
+    RISCV_INS_TH_LURW = 906,
+    RISCV_INS_TH_LURWU = 907,
+    RISCV_INS_TH_LWD = 908,
+    RISCV_INS_TH_LWIA = 909,
+    RISCV_INS_TH_LWIB = 910,
+    RISCV_INS_TH_LWUD = 911,
+    RISCV_INS_TH_LWUIA = 912,
+    RISCV_INS_TH_LWUIB = 913,
+    RISCV_INS_TH_MULA = 914,
+    RISCV_INS_TH_MULAH = 915,
+    RISCV_INS_TH_MULAW = 916,
+    RISCV_INS_TH_MULS = 917,
+    RISCV_INS_TH_MULSH = 918,
+    RISCV_INS_TH_MULSW = 919,
+    RISCV_INS_TH_MVEQZ = 920,
+    RISCV_INS_TH_MVNEZ = 921,
+    RISCV_INS_TH_REV = 922,
+    RISCV_INS_TH_REVW = 923,
+    RISCV_INS_TH_SBIA = 924,
+    RISCV_INS_TH_SBIB = 925,
+    RISCV_INS_TH_SDD = 926,
+    RISCV_INS_TH_SDIA = 927,
+    RISCV_INS_TH_SDIB = 928,
+    RISCV_INS_TH_SFENCE_VMAS = 929,
+    RISCV_INS_TH_SHIA = 930,
+    RISCV_INS_TH_SHIB = 931,
+    RISCV_INS_TH_SRB = 932,
+    RISCV_INS_TH_SRD = 933,
+    RISCV_INS_TH_SRH = 934,
+    RISCV_INS_TH_SRRI = 935,
+    RISCV_INS_TH_SRRIW = 936,
+    RISCV_INS_TH_SRW = 937,
+    RISCV_INS_TH_SURB = 938,
+    RISCV_INS_TH_SURD = 939,
+    RISCV_INS_TH_SURH = 940,
+    RISCV_INS_TH_SURW = 941,
+    RISCV_INS_TH_SWD = 942,
+    RISCV_INS_TH_SWIA = 943,
+    RISCV_INS_TH_SWIB = 944,
+    RISCV_INS_TH_SYNC = 945,
+    RISCV_INS_TH_SYNC_I = 946,
+    RISCV_INS_TH_SYNC_IS = 947,
+    RISCV_INS_TH_SYNC_S = 948,
+    RISCV_INS_TH_TST = 949,
+    RISCV_INS_TH_TSTNBZ = 950,
+    RISCV_INS_UNIMP = 951,
+    RISCV_INS_UNZIP = 952,
+    RISCV_INS_VAADDU_VV = 953,
+    RISCV_INS_VAADDU_VX = 954,
+    RISCV_INS_VAADD_VV = 955,
+    RISCV_INS_VAADD_VX = 956,
+    RISCV_INS_VADC_VIM = 957,
+    RISCV_INS_VADC_VVM = 958,
+    RISCV_INS_VADC_VXM = 959,
+    RISCV_INS_VADD_VI = 960,
+    RISCV_INS_VADD_VV = 961,
+    RISCV_INS_VADD_VX = 962,
+    RISCV_INS_VAESDF_VS = 963,
+    RISCV_INS_VAESDF_VV = 964,
+    RISCV_INS_VAESDM_VS = 965,
+    RISCV_INS_VAESDM_VV = 966,
+    RISCV_INS_VAESEF_VS = 967,
+    RISCV_INS_VAESEF_VV = 968,
+    RISCV_INS_VAESEM_VS = 969,
+    RISCV_INS_VAESEM_VV = 970,
+    RISCV_INS_VAESKF1_VI = 971,
+    RISCV_INS_VAESKF2_VI = 972,
+    RISCV_INS_VAESZ_VS = 973,
+    RISCV_INS_VANDN_VV = 974,
+    RISCV_INS_VANDN_VX = 975,
+    RISCV_INS_VAND_VI = 976,
+    RISCV_INS_VAND_VV = 977,
+    RISCV_INS_VAND_VX = 978,
+    RISCV_INS_VASUBU_VV = 979,
+    RISCV_INS_VASUBU_VX = 980,
+    RISCV_INS_VASUB_VV = 981,
+    RISCV_INS_VASUB_VX = 982,
+    RISCV_INS_VBREV8_V = 983,
+    RISCV_INS_VBREV_V = 984,
+    RISCV_INS_VCLMULH_VV = 985,
+    RISCV_INS_VCLMULH_VX = 986,
+    RISCV_INS_VCLMUL_VV = 987,
+    RISCV_INS_VCLMUL_VX = 988,
+    RISCV_INS_VCLZ_V = 989,
+    RISCV_INS_VCOMPRESS_VM = 990,
+    RISCV_INS_VCPOP_M = 991,
+    RISCV_INS_VCPOP_V = 992,
+    RISCV_INS_VCTZ_V = 993,
+    RISCV_INS_SF_VC_FV = 994,
+    RISCV_INS_SF_VC_FVV = 995,
+    RISCV_INS_SF_VC_FVW = 996,
+    RISCV_INS_SF_VC_I = 997,
+    RISCV_INS_SF_VC_IV = 998,
+    RISCV_INS_SF_VC_IVV = 999,
+    RISCV_INS_SF_VC_IVW = 1000,
+    RISCV_INS_SF_VC_VV = 1001,
+    RISCV_INS_SF_VC_VVV = 1002,
+    RISCV_INS_SF_VC_VVW = 1003,
+    RISCV_INS_SF_VC_V_FV = 1004,
+    RISCV_INS_SF_VC_V_FVV = 1005,
+    RISCV_INS_SF_VC_V_FVW = 1006,
+    RISCV_INS_SF_VC_V_I = 1007,
+    RISCV_INS_SF_VC_V_IV = 1008,
+    RISCV_INS_SF_VC_V_IVV = 1009,
+    RISCV_INS_SF_VC_V_IVW = 1010,
+    RISCV_INS_SF_VC_V_VV = 1011,
+    RISCV_INS_SF_VC_V_VVV = 1012,
+    RISCV_INS_SF_VC_V_VVW = 1013,
+    RISCV_INS_SF_VC_V_X = 1014,
+    RISCV_INS_SF_VC_V_XV = 1015,
+    RISCV_INS_SF_VC_V_XVV = 1016,
+    RISCV_INS_SF_VC_V_XVW = 1017,
+    RISCV_INS_SF_VC_X = 1018,
+    RISCV_INS_SF_VC_XV = 1019,
+    RISCV_INS_SF_VC_XVV = 1020,
+    RISCV_INS_SF_VC_XVW = 1021,
+    RISCV_INS_VDIVU_VV = 1022,
+    RISCV_INS_VDIVU_VX = 1023,
+    RISCV_INS_VDIV_VV = 1024,
+    RISCV_INS_VDIV_VX = 1025,
+    RISCV_INS_VFADD_VF = 1026,
+    RISCV_INS_VFADD_VV = 1027,
+    RISCV_INS_VFCLASS_V = 1028,
+    RISCV_INS_VFCVT_F_XU_V = 1029,
+    RISCV_INS_VFCVT_F_X_V = 1030,
+    RISCV_INS_VFCVT_RTZ_XU_F_V = 1031,
+    RISCV_INS_VFCVT_RTZ_X_F_V = 1032,
+    RISCV_INS_VFCVT_XU_F_V = 1033,
+    RISCV_INS_VFCVT_X_F_V = 1034,
+    RISCV_INS_VFDIV_VF = 1035,
+    RISCV_INS_VFDIV_VV = 1036,
+    RISCV_INS_VFIRST_M = 1037,
+    RISCV_INS_VFMACC_VF = 1038,
+    RISCV_INS_VFMACC_VV = 1039,
+    RISCV_INS_VFMADD_VF = 1040,
+    RISCV_INS_VFMADD_VV = 1041,
+    RISCV_INS_VFMAX_VF = 1042,
+    RISCV_INS_VFMAX_VV = 1043,
+    RISCV_INS_VFMERGE_VFM = 1044,
+    RISCV_INS_VFMIN_VF = 1045,
+    RISCV_INS_VFMIN_VV = 1046,
+    RISCV_INS_VFMSAC_VF = 1047,
+    RISCV_INS_VFMSAC_VV = 1048,
+    RISCV_INS_VFMSUB_VF = 1049,
+    RISCV_INS_VFMSUB_VV = 1050,
+    RISCV_INS_VFMUL_VF = 1051,
+    RISCV_INS_VFMUL_VV = 1052,
+    RISCV_INS_VFMV_F_S = 1053,
+    RISCV_INS_VFMV_S_F = 1054,
+    RISCV_INS_VFMV_V_F = 1055,
+    RISCV_INS_VFNCVTBF16_F_F_W = 1056,
+    RISCV_INS_VFNCVT_F_F_W = 1057,
+    RISCV_INS_VFNCVT_F_XU_W = 1058,
+    RISCV_INS_VFNCVT_F_X_W = 1059,
+    RISCV_INS_VFNCVT_ROD_F_F_W = 1060,
+    RISCV_INS_VFNCVT_RTZ_XU_F_W = 1061,
+    RISCV_INS_VFNCVT_RTZ_X_F_W = 1062,
+    RISCV_INS_VFNCVT_XU_F_W = 1063,
+    RISCV_INS_VFNCVT_X_F_W = 1064,
+    RISCV_INS_VFNMACC_VF = 1065,
+    RISCV_INS_VFNMACC_VV = 1066,
+    RISCV_INS_VFNMADD_VF = 1067,
+    RISCV_INS_VFNMADD_VV = 1068,
+    RISCV_INS_VFNMSAC_VF = 1069,
+    RISCV_INS_VFNMSAC_VV = 1070,
+    RISCV_INS_VFNMSUB_VF = 1071,
+    RISCV_INS_VFNMSUB_VV = 1072,
+    RISCV_INS_SF_VFNRCLIP_XU_F_QF = 1073,
+    RISCV_INS_SF_VFNRCLIP_X_F_QF = 1074,
+    RISCV_INS_VFRDIV_VF = 1075,
+    RISCV_INS_VFREC7_V = 1076,
+    RISCV_INS_VFREDMAX_VS = 1077,
+    RISCV_INS_VFREDMIN_VS = 1078,
+    RISCV_INS_VFREDOSUM_VS = 1079,
+    RISCV_INS_VFREDUSUM_VS = 1080,
+    RISCV_INS_VFRSQRT7_V = 1081,
+    RISCV_INS_VFRSUB_VF = 1082,
+    RISCV_INS_VFSGNJN_VF = 1083,
+    RISCV_INS_VFSGNJN_VV = 1084,
+    RISCV_INS_VFSGNJX_VF = 1085,
+    RISCV_INS_VFSGNJX_VV = 1086,
+    RISCV_INS_VFSGNJ_VF = 1087,
+    RISCV_INS_VFSGNJ_VV = 1088,
+    RISCV_INS_VFSLIDE1DOWN_VF = 1089,
+    RISCV_INS_VFSLIDE1UP_VF = 1090,
+    RISCV_INS_VFSQRT_V = 1091,
+    RISCV_INS_VFSUB_VF = 1092,
+    RISCV_INS_VFSUB_VV = 1093,
+    RISCV_INS_VFWADD_VF = 1094,
+    RISCV_INS_VFWADD_VV = 1095,
+    RISCV_INS_VFWADD_WF = 1096,
+    RISCV_INS_VFWADD_WV = 1097,
+    RISCV_INS_VFWCVTBF16_F_F_V = 1098,
+    RISCV_INS_VFWCVT_F_F_V = 1099,
+    RISCV_INS_VFWCVT_F_XU_V = 1100,
+    RISCV_INS_VFWCVT_F_X_V = 1101,
+    RISCV_INS_VFWCVT_RTZ_XU_F_V = 1102,
+    RISCV_INS_VFWCVT_RTZ_X_F_V = 1103,
+    RISCV_INS_VFWCVT_XU_F_V = 1104,
+    RISCV_INS_VFWCVT_X_F_V = 1105,
+    RISCV_INS_VFWMACCBF16_VF = 1106,
+    RISCV_INS_VFWMACCBF16_VV = 1107,
+    RISCV_INS_SF_VFWMACC_4X4X4 = 1108,
+    RISCV_INS_VFWMACC_VF = 1109,
+    RISCV_INS_VFWMACC_VV = 1110,
+    RISCV_INS_VFWMSAC_VF = 1111,
+    RISCV_INS_VFWMSAC_VV = 1112,
+    RISCV_INS_VFWMUL_VF = 1113,
+    RISCV_INS_VFWMUL_VV = 1114,
+    RISCV_INS_VFWNMACC_VF = 1115,
+    RISCV_INS_VFWNMACC_VV = 1116,
+    RISCV_INS_VFWNMSAC_VF = 1117,
+    RISCV_INS_VFWNMSAC_VV = 1118,
+    RISCV_INS_VFWREDOSUM_VS = 1119,
+    RISCV_INS_VFWREDUSUM_VS = 1120,
+    RISCV_INS_VFWSUB_VF = 1121,
+    RISCV_INS_VFWSUB_VV = 1122,
+    RISCV_INS_VFWSUB_WF = 1123,
+    RISCV_INS_VFWSUB_WV = 1124,
+    RISCV_INS_VGHSH_VV = 1125,
+    RISCV_INS_VGMUL_VV = 1126,
+    RISCV_INS_VID_V = 1127,
+    RISCV_INS_VIOTA_M = 1128,
+    RISCV_INS_VL1RE16_V = 1129,
+    RISCV_INS_VL1RE32_V = 1130,
+    RISCV_INS_VL1RE64_V = 1131,
+    RISCV_INS_VL1RE8_V = 1132,
+    RISCV_INS_VL2RE16_V = 1133,
+    RISCV_INS_VL2RE32_V = 1134,
+    RISCV_INS_VL2RE64_V = 1135,
+    RISCV_INS_VL2RE8_V = 1136,
+    RISCV_INS_VL4RE16_V = 1137,
+    RISCV_INS_VL4RE32_V = 1138,
+    RISCV_INS_VL4RE64_V = 1139,
+    RISCV_INS_VL4RE8_V = 1140,
+    RISCV_INS_VL8RE16_V = 1141,
+    RISCV_INS_VL8RE32_V = 1142,
+    RISCV_INS_VL8RE64_V = 1143,
+    RISCV_INS_VL8RE8_V = 1144,
+    RISCV_INS_VLE16FF_V = 1145,
+    RISCV_INS_VLE16_V = 1146,
+    RISCV_INS_VLE32FF_V = 1147,
+    RISCV_INS_VLE32_V = 1148,
+    RISCV_INS_VLE64FF_V = 1149,
+    RISCV_INS_VLE64_V = 1150,
+    RISCV_INS_VLE8FF_V = 1151,
+    RISCV_INS_VLE8_V = 1152,
+    RISCV_INS_VLM_V = 1153,
+    RISCV_INS_VLOXEI16_V = 1154,
+    RISCV_INS_VLOXEI32_V = 1155,
+    RISCV_INS_VLOXEI64_V = 1156,
+    RISCV_INS_VLOXEI8_V = 1157,
+    RISCV_INS_VLOXSEG2EI16_V = 1158,
+    RISCV_INS_VLOXSEG2EI32_V = 1159,
+    RISCV_INS_VLOXSEG2EI64_V = 1160,
+    RISCV_INS_VLOXSEG2EI8_V = 1161,
+    RISCV_INS_VLOXSEG3EI16_V = 1162,
+    RISCV_INS_VLOXSEG3EI32_V = 1163,
+    RISCV_INS_VLOXSEG3EI64_V = 1164,
+    RISCV_INS_VLOXSEG3EI8_V = 1165,
+    RISCV_INS_VLOXSEG4EI16_V = 1166,
+    RISCV_INS_VLOXSEG4EI32_V = 1167,
+    RISCV_INS_VLOXSEG4EI64_V = 1168,
+    RISCV_INS_VLOXSEG4EI8_V = 1169,
+    RISCV_INS_VLOXSEG5EI16_V = 1170,
+    RISCV_INS_VLOXSEG5EI32_V = 1171,
+    RISCV_INS_VLOXSEG5EI64_V = 1172,
+    RISCV_INS_VLOXSEG5EI8_V = 1173,
+    RISCV_INS_VLOXSEG6EI16_V = 1174,
+    RISCV_INS_VLOXSEG6EI32_V = 1175,
+    RISCV_INS_VLOXSEG6EI64_V = 1176,
+    RISCV_INS_VLOXSEG6EI8_V = 1177,
+    RISCV_INS_VLOXSEG7EI16_V = 1178,
+    RISCV_INS_VLOXSEG7EI32_V = 1179,
+    RISCV_INS_VLOXSEG7EI64_V = 1180,
+    RISCV_INS_VLOXSEG7EI8_V = 1181,
+    RISCV_INS_VLOXSEG8EI16_V = 1182,
+    RISCV_INS_VLOXSEG8EI32_V = 1183,
+    RISCV_INS_VLOXSEG8EI64_V = 1184,
+    RISCV_INS_VLOXSEG8EI8_V = 1185,
+    RISCV_INS_VLSE16_V = 1186,
+    RISCV_INS_VLSE32_V = 1187,
+    RISCV_INS_VLSE64_V = 1188,
+    RISCV_INS_VLSE8_V = 1189,
+    RISCV_INS_VLSEG2E16FF_V = 1190,
+    RISCV_INS_VLSEG2E16_V = 1191,
+    RISCV_INS_VLSEG2E32FF_V = 1192,
+    RISCV_INS_VLSEG2E32_V = 1193,
+    RISCV_INS_VLSEG2E64FF_V = 1194,
+    RISCV_INS_VLSEG2E64_V = 1195,
+    RISCV_INS_VLSEG2E8FF_V = 1196,
+    RISCV_INS_VLSEG2E8_V = 1197,
+    RISCV_INS_VLSEG3E16FF_V = 1198,
+    RISCV_INS_VLSEG3E16_V = 1199,
+    RISCV_INS_VLSEG3E32FF_V = 1200,
+    RISCV_INS_VLSEG3E32_V = 1201,
+    RISCV_INS_VLSEG3E64FF_V = 1202,
+    RISCV_INS_VLSEG3E64_V = 1203,
+    RISCV_INS_VLSEG3E8FF_V = 1204,
+    RISCV_INS_VLSEG3E8_V = 1205,
+    RISCV_INS_VLSEG4E16FF_V = 1206,
+    RISCV_INS_VLSEG4E16_V = 1207,
+    RISCV_INS_VLSEG4E32FF_V = 1208,
+    RISCV_INS_VLSEG4E32_V = 1209,
+    RISCV_INS_VLSEG4E64FF_V = 1210,
+    RISCV_INS_VLSEG4E64_V = 1211,
+    RISCV_INS_VLSEG4E8FF_V = 1212,
+    RISCV_INS_VLSEG4E8_V = 1213,
+    RISCV_INS_VLSEG5E16FF_V = 1214,
+    RISCV_INS_VLSEG5E16_V = 1215,
+    RISCV_INS_VLSEG5E32FF_V = 1216,
+    RISCV_INS_VLSEG5E32_V = 1217,
+    RISCV_INS_VLSEG5E64FF_V = 1218,
+    RISCV_INS_VLSEG5E64_V = 1219,
+    RISCV_INS_VLSEG5E8FF_V = 1220,
+    RISCV_INS_VLSEG5E8_V = 1221,
+    RISCV_INS_VLSEG6E16FF_V = 1222,
+    RISCV_INS_VLSEG6E16_V = 1223,
+    RISCV_INS_VLSEG6E32FF_V = 1224,
+    RISCV_INS_VLSEG6E32_V = 1225,
+    RISCV_INS_VLSEG6E64FF_V = 1226,
+    RISCV_INS_VLSEG6E64_V = 1227,
+    RISCV_INS_VLSEG6E8FF_V = 1228,
+    RISCV_INS_VLSEG6E8_V = 1229,
+    RISCV_INS_VLSEG7E16FF_V = 1230,
+    RISCV_INS_VLSEG7E16_V = 1231,
+    RISCV_INS_VLSEG7E32FF_V = 1232,
+    RISCV_INS_VLSEG7E32_V = 1233,
+    RISCV_INS_VLSEG7E64FF_V = 1234,
+    RISCV_INS_VLSEG7E64_V = 1235,
+    RISCV_INS_VLSEG7E8FF_V = 1236,
+    RISCV_INS_VLSEG7E8_V = 1237,
+    RISCV_INS_VLSEG8E16FF_V = 1238,
+    RISCV_INS_VLSEG8E16_V = 1239,
+    RISCV_INS_VLSEG8E32FF_V = 1240,
+    RISCV_INS_VLSEG8E32_V = 1241,
+    RISCV_INS_VLSEG8E64FF_V = 1242,
+    RISCV_INS_VLSEG8E64_V = 1243,
+    RISCV_INS_VLSEG8E8FF_V = 1244,
+    RISCV_INS_VLSEG8E8_V = 1245,
+    RISCV_INS_VLSSEG2E16_V = 1246,
+    RISCV_INS_VLSSEG2E32_V = 1247,
+    RISCV_INS_VLSSEG2E64_V = 1248,
+    RISCV_INS_VLSSEG2E8_V = 1249,
+    RISCV_INS_VLSSEG3E16_V = 1250,
+    RISCV_INS_VLSSEG3E32_V = 1251,
+    RISCV_INS_VLSSEG3E64_V = 1252,
+    RISCV_INS_VLSSEG3E8_V = 1253,
+    RISCV_INS_VLSSEG4E16_V = 1254,
+    RISCV_INS_VLSSEG4E32_V = 1255,
+    RISCV_INS_VLSSEG4E64_V = 1256,
+    RISCV_INS_VLSSEG4E8_V = 1257,
+    RISCV_INS_VLSSEG5E16_V = 1258,
+    RISCV_INS_VLSSEG5E32_V = 1259,
+    RISCV_INS_VLSSEG5E64_V = 1260,
+    RISCV_INS_VLSSEG5E8_V = 1261,
+    RISCV_INS_VLSSEG6E16_V = 1262,
+    RISCV_INS_VLSSEG6E32_V = 1263,
+    RISCV_INS_VLSSEG6E64_V = 1264,
+    RISCV_INS_VLSSEG6E8_V = 1265,
+    RISCV_INS_VLSSEG7E16_V = 1266,
+    RISCV_INS_VLSSEG7E32_V = 1267,
+    RISCV_INS_VLSSEG7E64_V = 1268,
+    RISCV_INS_VLSSEG7E8_V = 1269,
+    RISCV_INS_VLSSEG8E16_V = 1270,
+    RISCV_INS_VLSSEG8E32_V = 1271,
+    RISCV_INS_VLSSEG8E64_V = 1272,
+    RISCV_INS_VLSSEG8E8_V = 1273,
+    RISCV_INS_VLUXEI16_V = 1274,
+    RISCV_INS_VLUXEI32_V = 1275,
+    RISCV_INS_VLUXEI64_V = 1276,
+    RISCV_INS_VLUXEI8_V = 1277,
+    RISCV_INS_VLUXSEG2EI16_V = 1278,
+    RISCV_INS_VLUXSEG2EI32_V = 1279,
+    RISCV_INS_VLUXSEG2EI64_V = 1280,
+    RISCV_INS_VLUXSEG2EI8_V = 1281,
+    RISCV_INS_VLUXSEG3EI16_V = 1282,
+    RISCV_INS_VLUXSEG3EI32_V = 1283,
+    RISCV_INS_VLUXSEG3EI64_V = 1284,
+    RISCV_INS_VLUXSEG3EI8_V = 1285,
+    RISCV_INS_VLUXSEG4EI16_V = 1286,
+    RISCV_INS_VLUXSEG4EI32_V = 1287,
+    RISCV_INS_VLUXSEG4EI64_V = 1288,
+    RISCV_INS_VLUXSEG4EI8_V = 1289,
+    RISCV_INS_VLUXSEG5EI16_V = 1290,
+    RISCV_INS_VLUXSEG5EI32_V = 1291,
+    RISCV_INS_VLUXSEG5EI64_V = 1292,
+    RISCV_INS_VLUXSEG5EI8_V = 1293,
+    RISCV_INS_VLUXSEG6EI16_V = 1294,
+    RISCV_INS_VLUXSEG6EI32_V = 1295,
+    RISCV_INS_VLUXSEG6EI64_V = 1296,
+    RISCV_INS_VLUXSEG6EI8_V = 1297,
+    RISCV_INS_VLUXSEG7EI16_V = 1298,
+    RISCV_INS_VLUXSEG7EI32_V = 1299,
+    RISCV_INS_VLUXSEG7EI64_V = 1300,
+    RISCV_INS_VLUXSEG7EI8_V = 1301,
+    RISCV_INS_VLUXSEG8EI16_V = 1302,
+    RISCV_INS_VLUXSEG8EI32_V = 1303,
+    RISCV_INS_VLUXSEG8EI64_V = 1304,
+    RISCV_INS_VLUXSEG8EI8_V = 1305,
+    RISCV_INS_VMACC_VV = 1306,
+    RISCV_INS_VMACC_VX = 1307,
+    RISCV_INS_VMADC_VI = 1308,
+    RISCV_INS_VMADC_VIM = 1309,
+    RISCV_INS_VMADC_VV = 1310,
+    RISCV_INS_VMADC_VVM = 1311,
+    RISCV_INS_VMADC_VX = 1312,
+    RISCV_INS_VMADC_VXM = 1313,
+    RISCV_INS_VMADD_VV = 1314,
+    RISCV_INS_VMADD_VX = 1315,
+    RISCV_INS_VMANDN_MM = 1316,
+    RISCV_INS_VMAND_MM = 1317,
+    RISCV_INS_VMAXU_VV = 1318,
+    RISCV_INS_VMAXU_VX = 1319,
+    RISCV_INS_VMAX_VV = 1320,
+    RISCV_INS_VMAX_VX = 1321,
+    RISCV_INS_VMERGE_VIM = 1322,
+    RISCV_INS_VMERGE_VVM = 1323,
+    RISCV_INS_VMERGE_VXM = 1324,
+    RISCV_INS_VMFEQ_VF = 1325,
+    RISCV_INS_VMFEQ_VV = 1326,
+    RISCV_INS_VMFGE_VF = 1327,
+    RISCV_INS_VMFGT_VF = 1328,
+    RISCV_INS_VMFLE_VF = 1329,
+    RISCV_INS_VMFLE_VV = 1330,
+    RISCV_INS_VMFLT_VF = 1331,
+    RISCV_INS_VMFLT_VV = 1332,
+    RISCV_INS_VMFNE_VF = 1333,
+    RISCV_INS_VMFNE_VV = 1334,
+    RISCV_INS_VMINU_VV = 1335,
+    RISCV_INS_VMINU_VX = 1336,
+    RISCV_INS_VMIN_VV = 1337,
+    RISCV_INS_VMIN_VX = 1338,
+    RISCV_INS_VMNAND_MM = 1339,
+    RISCV_INS_VMNOR_MM = 1340,
+    RISCV_INS_VMORN_MM = 1341,
+    RISCV_INS_VMOR_MM = 1342,
+    RISCV_INS_VMSBC_VV = 1343,
+    RISCV_INS_VMSBC_VVM = 1344,
+    RISCV_INS_VMSBC_VX = 1345,
+    RISCV_INS_VMSBC_VXM = 1346,
+    RISCV_INS_VMSBF_M = 1347,
+    RISCV_INS_VMSEQ_VI = 1348,
+    RISCV_INS_VMSEQ_VV = 1349,
+    RISCV_INS_VMSEQ_VX = 1350,
+    RISCV_INS_VMSGTU_VI = 1351,
+    RISCV_INS_VMSGTU_VX = 1352,
+    RISCV_INS_VMSGT_VI = 1353,
+    RISCV_INS_VMSGT_VX = 1354,
+    RISCV_INS_VMSIF_M = 1355,
+    RISCV_INS_VMSLEU_VI = 1356,
+    RISCV_INS_VMSLEU_VV = 1357,
+    RISCV_INS_VMSLEU_VX = 1358,
+    RISCV_INS_VMSLE_VI = 1359,
+    RISCV_INS_VMSLE_VV = 1360,
+    RISCV_INS_VMSLE_VX = 1361,
+    RISCV_INS_VMSLTU_VV = 1362,
+    RISCV_INS_VMSLTU_VX = 1363,
+    RISCV_INS_VMSLT_VV = 1364,
+    RISCV_INS_VMSLT_VX = 1365,
+    RISCV_INS_VMSNE_VI = 1366,
+    RISCV_INS_VMSNE_VV = 1367,
+    RISCV_INS_VMSNE_VX = 1368,
+    RISCV_INS_VMSOF_M = 1369,
+    RISCV_INS_VMULHSU_VV = 1370,
+    RISCV_INS_VMULHSU_VX = 1371,
+    RISCV_INS_VMULHU_VV = 1372,
+    RISCV_INS_VMULHU_VX = 1373,
+    RISCV_INS_VMULH_VV = 1374,
+    RISCV_INS_VMULH_VX = 1375,
+    RISCV_INS_VMUL_VV = 1376,
+    RISCV_INS_VMUL_VX = 1377,
+    RISCV_INS_VMV1R_V = 1378,
+    RISCV_INS_VMV2R_V = 1379,
+    RISCV_INS_VMV4R_V = 1380,
+    RISCV_INS_VMV8R_V = 1381,
+    RISCV_INS_VMV_S_X = 1382,
+    RISCV_INS_VMV_V_I = 1383,
+    RISCV_INS_VMV_V_V = 1384,
+    RISCV_INS_VMV_V_X = 1385,
+    RISCV_INS_VMV_X_S = 1386,
+    RISCV_INS_VMXNOR_MM = 1387,
+    RISCV_INS_VMXOR_MM = 1388,
+    RISCV_INS_VNCLIPU_WI = 1389,
+    RISCV_INS_VNCLIPU_WV = 1390,
+    RISCV_INS_VNCLIPU_WX = 1391,
+    RISCV_INS_VNCLIP_WI = 1392,
+    RISCV_INS_VNCLIP_WV = 1393,
+    RISCV_INS_VNCLIP_WX = 1394,
+    RISCV_INS_VNMSAC_VV = 1395,
+    RISCV_INS_VNMSAC_VX = 1396,
+    RISCV_INS_VNMSUB_VV = 1397,
+    RISCV_INS_VNMSUB_VX = 1398,
+    RISCV_INS_VNSRA_WI = 1399,
+    RISCV_INS_VNSRA_WV = 1400,
+    RISCV_INS_VNSRA_WX = 1401,
+    RISCV_INS_VNSRL_WI = 1402,
+    RISCV_INS_VNSRL_WV = 1403,
+    RISCV_INS_VNSRL_WX = 1404,
+    RISCV_INS_VOR_VI = 1405,
+    RISCV_INS_VOR_VV = 1406,
+    RISCV_INS_VOR_VX = 1407,
+    RISCV_INS_SF_VQMACCSU_2X8X2 = 1408,
+    RISCV_INS_SF_VQMACCSU_4X8X4 = 1409,
+    RISCV_INS_SF_VQMACCUS_2X8X2 = 1410,
+    RISCV_INS_SF_VQMACCUS_4X8X4 = 1411,
+    RISCV_INS_SF_VQMACCU_2X8X2 = 1412,
+    RISCV_INS_SF_VQMACCU_4X8X4 = 1413,
+    RISCV_INS_SF_VQMACC_2X8X2 = 1414,
+    RISCV_INS_SF_VQMACC_4X8X4 = 1415,
+    RISCV_INS_VREDAND_VS = 1416,
+    RISCV_INS_VREDMAXU_VS = 1417,
+    RISCV_INS_VREDMAX_VS = 1418,
+    RISCV_INS_VREDMINU_VS = 1419,
+    RISCV_INS_VREDMIN_VS = 1420,
+    RISCV_INS_VREDOR_VS = 1421,
+    RISCV_INS_VREDSUM_VS = 1422,
+    RISCV_INS_VREDXOR_VS = 1423,
+    RISCV_INS_VREMU_VV = 1424,
+    RISCV_INS_VREMU_VX = 1425,
+    RISCV_INS_VREM_VV = 1426,
+    RISCV_INS_VREM_VX = 1427,
+    RISCV_INS_VREV8_V = 1428,
+    RISCV_INS_VRGATHEREI16_VV = 1429,
+    RISCV_INS_VRGATHER_VI = 1430,
+    RISCV_INS_VRGATHER_VV = 1431,
+    RISCV_INS_VRGATHER_VX = 1432,
+    RISCV_INS_VROL_VV = 1433,
+    RISCV_INS_VROL_VX = 1434,
+    RISCV_INS_VROR_VI = 1435,
+    RISCV_INS_VROR_VV = 1436,
+    RISCV_INS_VROR_VX = 1437,
+    RISCV_INS_VRSUB_VI = 1438,
+    RISCV_INS_VRSUB_VX = 1439,
+    RISCV_INS_VS1R_V = 1440,
+    RISCV_INS_VS2R_V = 1441,
+    RISCV_INS_VS4R_V = 1442,
+    RISCV_INS_VS8R_V = 1443,
+    RISCV_INS_VSADDU_VI = 1444,
+    RISCV_INS_VSADDU_VV = 1445,
+    RISCV_INS_VSADDU_VX = 1446,
+    RISCV_INS_VSADD_VI = 1447,
+    RISCV_INS_VSADD_VV = 1448,
+    RISCV_INS_VSADD_VX = 1449,
+    RISCV_INS_VSBC_VVM = 1450,
+    RISCV_INS_VSBC_VXM = 1451,
+    RISCV_INS_VSE16_V = 1452,
+    RISCV_INS_VSE32_V = 1453,
+    RISCV_INS_VSE64_V = 1454,
+    RISCV_INS_VSE8_V = 1455,
+    RISCV_INS_VSETIVLI = 1456,
+    RISCV_INS_VSETVL = 1457,
+    RISCV_INS_VSETVLI = 1458,
+    RISCV_INS_VSEXT_VF2 = 1459,
+    RISCV_INS_VSEXT_VF4 = 1460,
+    RISCV_INS_VSEXT_VF8 = 1461,
+    RISCV_INS_VSHA2CH_VV = 1462,
+    RISCV_INS_VSHA2CL_VV = 1463,
+    RISCV_INS_VSHA2MS_VV = 1464,
+    RISCV_INS_VSLIDE1DOWN_VX = 1465,
+    RISCV_INS_VSLIDE1UP_VX = 1466,
+    RISCV_INS_VSLIDEDOWN_VI = 1467,
+    RISCV_INS_VSLIDEDOWN_VX = 1468,
+    RISCV_INS_VSLIDEUP_VI = 1469,
+    RISCV_INS_VSLIDEUP_VX = 1470,
+    RISCV_INS_VSLL_VI = 1471,
+    RISCV_INS_VSLL_VV = 1472,
+    RISCV_INS_VSLL_VX = 1473,
+    RISCV_INS_VSM3C_VI = 1474,
+    RISCV_INS_VSM3ME_VV = 1475,
+    RISCV_INS_VSM4K_VI = 1476,
+    RISCV_INS_VSM4R_VS = 1477,
+    RISCV_INS_VSM4R_VV = 1478,
+    RISCV_INS_VSMUL_VV = 1479,
+    RISCV_INS_VSMUL_VX = 1480,
+    RISCV_INS_VSM_V = 1481,
+    RISCV_INS_VSOXEI16_V = 1482,
+    RISCV_INS_VSOXEI32_V = 1483,
+    RISCV_INS_VSOXEI64_V = 1484,
+    RISCV_INS_VSOXEI8_V = 1485,
+    RISCV_INS_VSOXSEG2EI16_V = 1486,
+    RISCV_INS_VSOXSEG2EI32_V = 1487,
+    RISCV_INS_VSOXSEG2EI64_V = 1488,
+    RISCV_INS_VSOXSEG2EI8_V = 1489,
+    RISCV_INS_VSOXSEG3EI16_V = 1490,
+    RISCV_INS_VSOXSEG3EI32_V = 1491,
+    RISCV_INS_VSOXSEG3EI64_V = 1492,
+    RISCV_INS_VSOXSEG3EI8_V = 1493,
+    RISCV_INS_VSOXSEG4EI16_V = 1494,
+    RISCV_INS_VSOXSEG4EI32_V = 1495,
+    RISCV_INS_VSOXSEG4EI64_V = 1496,
+    RISCV_INS_VSOXSEG4EI8_V = 1497,
+    RISCV_INS_VSOXSEG5EI16_V = 1498,
+    RISCV_INS_VSOXSEG5EI32_V = 1499,
+    RISCV_INS_VSOXSEG5EI64_V = 1500,
+    RISCV_INS_VSOXSEG5EI8_V = 1501,
+    RISCV_INS_VSOXSEG6EI16_V = 1502,
+    RISCV_INS_VSOXSEG6EI32_V = 1503,
+    RISCV_INS_VSOXSEG6EI64_V = 1504,
+    RISCV_INS_VSOXSEG6EI8_V = 1505,
+    RISCV_INS_VSOXSEG7EI16_V = 1506,
+    RISCV_INS_VSOXSEG7EI32_V = 1507,
+    RISCV_INS_VSOXSEG7EI64_V = 1508,
+    RISCV_INS_VSOXSEG7EI8_V = 1509,
+    RISCV_INS_VSOXSEG8EI16_V = 1510,
+    RISCV_INS_VSOXSEG8EI32_V = 1511,
+    RISCV_INS_VSOXSEG8EI64_V = 1512,
+    RISCV_INS_VSOXSEG8EI8_V = 1513,
+    RISCV_INS_VSRA_VI = 1514,
+    RISCV_INS_VSRA_VV = 1515,
+    RISCV_INS_VSRA_VX = 1516,
+    RISCV_INS_VSRL_VI = 1517,
+    RISCV_INS_VSRL_VV = 1518,
+    RISCV_INS_VSRL_VX = 1519,
+    RISCV_INS_VSSE16_V = 1520,
+    RISCV_INS_VSSE32_V = 1521,
+    RISCV_INS_VSSE64_V = 1522,
+    RISCV_INS_VSSE8_V = 1523,
+    RISCV_INS_VSSEG2E16_V = 1524,
+    RISCV_INS_VSSEG2E32_V = 1525,
+    RISCV_INS_VSSEG2E64_V = 1526,
+    RISCV_INS_VSSEG2E8_V = 1527,
+    RISCV_INS_VSSEG3E16_V = 1528,
+    RISCV_INS_VSSEG3E32_V = 1529,
+    RISCV_INS_VSSEG3E64_V = 1530,
+    RISCV_INS_VSSEG3E8_V = 1531,
+    RISCV_INS_VSSEG4E16_V = 1532,
+    RISCV_INS_VSSEG4E32_V = 1533,
+    RISCV_INS_VSSEG4E64_V = 1534,
+    RISCV_INS_VSSEG4E8_V = 1535,
+    RISCV_INS_VSSEG5E16_V = 1536,
+    RISCV_INS_VSSEG5E32_V = 1537,
+    RISCV_INS_VSSEG5E64_V = 1538,
+    RISCV_INS_VSSEG5E8_V = 1539,
+    RISCV_INS_VSSEG6E16_V = 1540,
+    RISCV_INS_VSSEG6E32_V = 1541,
+    RISCV_INS_VSSEG6E64_V = 1542,
+    RISCV_INS_VSSEG6E8_V = 1543,
+    RISCV_INS_VSSEG7E16_V = 1544,
+    RISCV_INS_VSSEG7E32_V = 1545,
+    RISCV_INS_VSSEG7E64_V = 1546,
+    RISCV_INS_VSSEG7E8_V = 1547,
+    RISCV_INS_VSSEG8E16_V = 1548,
+    RISCV_INS_VSSEG8E32_V = 1549,
+    RISCV_INS_VSSEG8E64_V = 1550,
+    RISCV_INS_VSSEG8E8_V = 1551,
+    RISCV_INS_VSSRA_VI = 1552,
+    RISCV_INS_VSSRA_VV = 1553,
+    RISCV_INS_VSSRA_VX = 1554,
+    RISCV_INS_VSSRL_VI = 1555,
+    RISCV_INS_VSSRL_VV = 1556,
+    RISCV_INS_VSSRL_VX = 1557,
+    RISCV_INS_VSSSEG2E16_V = 1558,
+    RISCV_INS_VSSSEG2E32_V = 1559,
+    RISCV_INS_VSSSEG2E64_V = 1560,
+    RISCV_INS_VSSSEG2E8_V = 1561,
+    RISCV_INS_VSSSEG3E16_V = 1562,
+    RISCV_INS_VSSSEG3E32_V = 1563,
+    RISCV_INS_VSSSEG3E64_V = 1564,
+    RISCV_INS_VSSSEG3E8_V = 1565,
+    RISCV_INS_VSSSEG4E16_V = 1566,
+    RISCV_INS_VSSSEG4E32_V = 1567,
+    RISCV_INS_VSSSEG4E64_V = 1568,
+    RISCV_INS_VSSSEG4E8_V = 1569,
+    RISCV_INS_VSSSEG5E16_V = 1570,
+    RISCV_INS_VSSSEG5E32_V = 1571,
+    RISCV_INS_VSSSEG5E64_V = 1572,
+    RISCV_INS_VSSSEG5E8_V = 1573,
+    RISCV_INS_VSSSEG6E16_V = 1574,
+    RISCV_INS_VSSSEG6E32_V = 1575,
+    RISCV_INS_VSSSEG6E64_V = 1576,
+    RISCV_INS_VSSSEG6E8_V = 1577,
+    RISCV_INS_VSSSEG7E16_V = 1578,
+    RISCV_INS_VSSSEG7E32_V = 1579,
+    RISCV_INS_VSSSEG7E64_V = 1580,
+    RISCV_INS_VSSSEG7E8_V = 1581,
+    RISCV_INS_VSSSEG8E16_V = 1582,
+    RISCV_INS_VSSSEG8E32_V = 1583,
+    RISCV_INS_VSSSEG8E64_V = 1584,
+    RISCV_INS_VSSSEG8E8_V = 1585,
+    RISCV_INS_VSSUBU_VV = 1586,
+    RISCV_INS_VSSUBU_VX = 1587,
+    RISCV_INS_VSSUB_VV = 1588,
+    RISCV_INS_VSSUB_VX = 1589,
+    RISCV_INS_VSUB_VV = 1590,
+    RISCV_INS_VSUB_VX = 1591,
+    RISCV_INS_VSUXEI16_V = 1592,
+    RISCV_INS_VSUXEI32_V = 1593,
+    RISCV_INS_VSUXEI64_V = 1594,
+    RISCV_INS_VSUXEI8_V = 1595,
+    RISCV_INS_VSUXSEG2EI16_V = 1596,
+    RISCV_INS_VSUXSEG2EI32_V = 1597,
+    RISCV_INS_VSUXSEG2EI64_V = 1598,
+    RISCV_INS_VSUXSEG2EI8_V = 1599,
+    RISCV_INS_VSUXSEG3EI16_V = 1600,
+    RISCV_INS_VSUXSEG3EI32_V = 1601,
+    RISCV_INS_VSUXSEG3EI64_V = 1602,
+    RISCV_INS_VSUXSEG3EI8_V = 1603,
+    RISCV_INS_VSUXSEG4EI16_V = 1604,
+    RISCV_INS_VSUXSEG4EI32_V = 1605,
+    RISCV_INS_VSUXSEG4EI64_V = 1606,
+    RISCV_INS_VSUXSEG4EI8_V = 1607,
+    RISCV_INS_VSUXSEG5EI16_V = 1608,
+    RISCV_INS_VSUXSEG5EI32_V = 1609,
+    RISCV_INS_VSUXSEG5EI64_V = 1610,
+    RISCV_INS_VSUXSEG5EI8_V = 1611,
+    RISCV_INS_VSUXSEG6EI16_V = 1612,
+    RISCV_INS_VSUXSEG6EI32_V = 1613,
+    RISCV_INS_VSUXSEG6EI64_V = 1614,
+    RISCV_INS_VSUXSEG6EI8_V = 1615,
+    RISCV_INS_VSUXSEG7EI16_V = 1616,
+    RISCV_INS_VSUXSEG7EI32_V = 1617,
+    RISCV_INS_VSUXSEG7EI64_V = 1618,
+    RISCV_INS_VSUXSEG7EI8_V = 1619,
+    RISCV_INS_VSUXSEG8EI16_V = 1620,
+    RISCV_INS_VSUXSEG8EI32_V = 1621,
+    RISCV_INS_VSUXSEG8EI64_V = 1622,
+    RISCV_INS_VSUXSEG8EI8_V = 1623,
+    RISCV_INS_VT_MASKC = 1624,
+    RISCV_INS_VT_MASKCN = 1625,
+    RISCV_INS_VWADDU_VV = 1626,
+    RISCV_INS_VWADDU_VX = 1627,
+    RISCV_INS_VWADDU_WV = 1628,
+    RISCV_INS_VWADDU_WX = 1629,
+    RISCV_INS_VWADD_VV = 1630,
+    RISCV_INS_VWADD_VX = 1631,
+    RISCV_INS_VWADD_WV = 1632,
+    RISCV_INS_VWADD_WX = 1633,
+    RISCV_INS_VWMACCSU_VV = 1634,
+    RISCV_INS_VWMACCSU_VX = 1635,
+    RISCV_INS_VWMACCUS_VX = 1636,
+    RISCV_INS_VWMACCU_VV = 1637,
+    RISCV_INS_VWMACCU_VX = 1638,
+    RISCV_INS_VWMACC_VV = 1639,
+    RISCV_INS_VWMACC_VX = 1640,
+    RISCV_INS_VWMULSU_VV = 1641,
+    RISCV_INS_VWMULSU_VX = 1642,
+    RISCV_INS_VWMULU_VV = 1643,
+    RISCV_INS_VWMULU_VX = 1644,
+    RISCV_INS_VWMUL_VV = 1645,
+    RISCV_INS_VWMUL_VX = 1646,
+    RISCV_INS_VWREDSUMU_VS = 1647,
+    RISCV_INS_VWREDSUM_VS = 1648,
+    RISCV_INS_VWSLL_VI = 1649,
+    RISCV_INS_VWSLL_VV = 1650,
+    RISCV_INS_VWSLL_VX = 1651,
+    RISCV_INS_VWSUBU_VV = 1652,
+    RISCV_INS_VWSUBU_VX = 1653,
+    RISCV_INS_VWSUBU_WV = 1654,
+    RISCV_INS_VWSUBU_WX = 1655,
+    RISCV_INS_VWSUB_VV = 1656,
+    RISCV_INS_VWSUB_VX = 1657,
+    RISCV_INS_VWSUB_WV = 1658,
+    RISCV_INS_VWSUB_WX = 1659,
+    RISCV_INS_VXOR_VI = 1660,
+    RISCV_INS_VXOR_VV = 1661,
+    RISCV_INS_VXOR_VX = 1662,
+    RISCV_INS_VZEXT_VF2 = 1663,
+    RISCV_INS_VZEXT_VF4 = 1664,
+    RISCV_INS_VZEXT_VF8 = 1665,
+    RISCV_INS_WFI = 1666,
+    RISCV_INS_WRS_NTO = 1667,
+    RISCV_INS_WRS_STO = 1668,
+    RISCV_INS_XNOR = 1669,
+    RISCV_INS_XOR = 1670,
+    RISCV_INS_XORI = 1671,
+    RISCV_INS_XPERM4 = 1672,
+    RISCV_INS_XPERM8 = 1673,
+    RISCV_INS_ZIP = 1674,
+    RISCV_INS_ENDING = 1675,
+    RISCV_INS_ALIAS_BEGIN = 1676,
+    RISCV_INS_ALIAS_NOP = 1677,
+    RISCV_INS_ALIAS_LI = 1678,
+    RISCV_INS_ALIAS_MV = 1679,
+    RISCV_INS_ALIAS_NOT = 1680,
+    RISCV_INS_ALIAS_NEG = 1681,
+    RISCV_INS_ALIAS_NEGW = 1682,
+    RISCV_INS_ALIAS_SEXT_W = 1683,
+    RISCV_INS_ALIAS_SEQZ = 1684,
+    RISCV_INS_ALIAS_SNEZ = 1685,
+    RISCV_INS_ALIAS_SLTZ = 1686,
+    RISCV_INS_ALIAS_SGTZ = 1687,
+    RISCV_INS_ALIAS_BEQZ = 1688,
+    RISCV_INS_ALIAS_BNEZ = 1689,
+    RISCV_INS_ALIAS_BLEZ = 1690,
+    RISCV_INS_ALIAS_BGEZ = 1691,
+    RISCV_INS_ALIAS_BLTZ = 1692,
+    RISCV_INS_ALIAS_BGTZ = 1693,
+    RISCV_INS_ALIAS_J = 1694,
+    RISCV_INS_ALIAS_JAL = 1695,
+    RISCV_INS_ALIAS_JR = 1696,
+    RISCV_INS_ALIAS_JALR = 1697,
+    RISCV_INS_ALIAS_RET = 1698,
+    RISCV_INS_ALIAS_FENCE = 1699,
+    RISCV_INS_ALIAS_PAUSE = 1700,
+    RISCV_INS_ALIAS_RDINSTRET = 1701,
+    RISCV_INS_ALIAS_RDCYCLE = 1702,
+    RISCV_INS_ALIAS_RDTIME = 1703,
+    RISCV_INS_ALIAS_RDINSTRETH = 1704,
+    RISCV_INS_ALIAS_RDCYCLEH = 1705,
+    RISCV_INS_ALIAS_RDTIMEH = 1706,
+    RISCV_INS_ALIAS_CSRR = 1707,
+    RISCV_INS_ALIAS_CSRW = 1708,
+    RISCV_INS_ALIAS_CSRS = 1709,
+    RISCV_INS_ALIAS_CSRC = 1710,
+    RISCV_INS_ALIAS_CSRWI = 1711,
+    RISCV_INS_ALIAS_CSRSI = 1712,
+    RISCV_INS_ALIAS_CSRCI = 1713,
+    RISCV_INS_ALIAS_SFENCE_VMA = 1714,
+    RISCV_INS_ALIAS_HFENCE_GVMA = 1715,
+    RISCV_INS_ALIAS_HFENCE_VVMA = 1716,
+    RISCV_INS_ALIAS_NTL_P1 = 1717,
+    RISCV_INS_ALIAS_NTL_PALL = 1718,
+    RISCV_INS_ALIAS_NTL_S1 = 1719,
+    RISCV_INS_ALIAS_NTL_ALL = 1720,
+    RISCV_INS_ALIAS_LPAD = 1721,
+    RISCV_INS_ALIAS_FMV_S = 1722,
+    RISCV_INS_ALIAS_FABS_S = 1723,
+    RISCV_INS_ALIAS_FNEG_S = 1724,
+    RISCV_INS_ALIAS_FRCSR = 1725,
+    RISCV_INS_ALIAS_FSCSR = 1726,
+    RISCV_INS_ALIAS_FRRM = 1727,
+    RISCV_INS_ALIAS_FSRM = 1728,
+    RISCV_INS_ALIAS_FSRMI = 1729,
+    RISCV_INS_ALIAS_FRFLAGS = 1730,
+    RISCV_INS_ALIAS_FSFLAGS = 1731,
+    RISCV_INS_ALIAS_FSFLAGSI = 1732,
+    RISCV_INS_ALIAS_FMV_D = 1733,
+    RISCV_INS_ALIAS_FABS_D = 1734,
+    RISCV_INS_ALIAS_FNEG_D = 1735,
+    RISCV_INS_ALIAS_FMV_H = 1736,
+    RISCV_INS_ALIAS_FABS_H = 1737,
+    RISCV_INS_ALIAS_FNEG_H = 1738,
+    RISCV_INS_ALIAS_ZEXT_W = 1739,
+    RISCV_INS_ALIAS_VL1R_V = 1740,
+    RISCV_INS_ALIAS_VL2R_V = 1741,
+    RISCV_INS_ALIAS_VL4R_V = 1742,
+    RISCV_INS_ALIAS_VL8R_V = 1743,
+    RISCV_INS_ALIAS_VNEG_V = 1744,
+    RISCV_INS_ALIAS_VWCVT_X_X_V = 1745,
+    RISCV_INS_ALIAS_VWCVTU_X_X_V = 1746,
+    RISCV_INS_ALIAS_VNOT_V = 1747,
+    RISCV_INS_ALIAS_VNCVT_X_X_W = 1748,
+    RISCV_INS_ALIAS_VFNEG_V = 1749,
+    RISCV_INS_ALIAS_VFABS_V = 1750,
+    RISCV_INS_ALIAS_VMMV_M = 1751,
+    RISCV_INS_ALIAS_VMCLR_M = 1752,
+    RISCV_INS_ALIAS_VMSET_M = 1753,
+    RISCV_INS_ALIAS_VMNOT_M = 1754,
+    RISCV_INS_ALIAS_C_NTL_P1 = 1755,
+    RISCV_INS_ALIAS_C_NTL_PALL = 1756,
+    RISCV_INS_ALIAS_C_NTL_S1 = 1757,
+    RISCV_INS_ALIAS_C_NTL_ALL = 1758,
+    RISCV_INS_ALIAS_CV_MULS = 1759,
+    RISCV_INS_ALIAS_CV_MULHHS = 1760,
+    RISCV_INS_ALIAS_CV_MULU = 1761,
+    RISCV_INS_ALIAS_CV_MULHHU = 1762,
+    RISCV_INS_ALIAS_END = 1763,
+}
+pub mod riscv_insn_group {
+    pub type Type = ::core::ffi::c_uint;
+    #[doc = "< = CS_GRP_INVALID"]
+    pub const RISCV_GRP_INVALID: Type = 0;
+    #[doc = "< = CS_GRP_JUMP"]
+    pub const RISCV_GRP_JUMP: Type = 1;
+    #[doc = "< = CS_GRP_CALL"]
+    pub const RISCV_GRP_CALL: Type = 2;
+    #[doc = "< = CS_GRP_RET"]
+    pub const RISCV_GRP_RET: Type = 3;
+    #[doc = "< = CS_GRP_INT"]
+    pub const RISCV_GRP_INT: Type = 4;
+    #[doc = "< = CS_GRP_IRET"]
+    pub const RISCV_GRP_IRET: Type = 5;
+    #[doc = "< = CS_GRP_PRIVILEGE"]
+    pub const RISCV_GRP_PRIVILEGE: Type = 6;
+    #[doc = "< = CS_GRP_BRANCH_RELATIVE"]
+    pub const RISCV_GRP_BRANCH_RELATIVE: Type = 7;
+    pub const RISCV_FEATURE_HASSTDEXTI: Type = 128;
+    pub const RISCV_FEATURE_HASSTDEXTZICBOM: Type = 129;
+    pub const RISCV_FEATURE_HASSTDEXTZICBOP: Type = 130;
+    pub const RISCV_FEATURE_HASSTDEXTZICBOZ: Type = 131;
+    pub const RISCV_FEATURE_HASSTDEXTZICSR: Type = 132;
+    pub const RISCV_FEATURE_HASSTDEXTZICOND: Type = 133;
+    pub const RISCV_FEATURE_HASSTDEXTZIFENCEI: Type = 134;
+    pub const RISCV_FEATURE_HASSTDEXTZIHINTPAUSE: Type = 135;
+    pub const RISCV_FEATURE_HASSTDEXTZIHINTNTL: Type = 136;
+    pub const RISCV_FEATURE_HASSTDEXTZIMOP: Type = 137;
+    pub const RISCV_FEATURE_HASSTDEXTZICFILP: Type = 138;
+    pub const RISCV_FEATURE_HASSTDEXTZICFISS: Type = 139;
+    pub const RISCV_FEATURE_HASSTDEXTM: Type = 140;
+    pub const RISCV_FEATURE_HASSTDEXTMORZMMUL: Type = 141;
+    pub const RISCV_FEATURE_HASSTDEXTA: Type = 142;
+    pub const RISCV_FEATURE_HASSTDEXTZTSO: Type = 143;
+    pub const RISCV_FEATURE_HASSTDEXTZACAS: Type = 144;
+    pub const RISCV_FEATURE_HASSTDEXTZAWRS: Type = 145;
+    pub const RISCV_FEATURE_HASSTDEXTF: Type = 146;
+    pub const RISCV_FEATURE_HASSTDEXTD: Type = 147;
+    pub const RISCV_FEATURE_HASSTDEXTZFHMIN: Type = 148;
+    pub const RISCV_FEATURE_HASSTDEXTZFH: Type = 149;
+    pub const RISCV_FEATURE_HASSTDEXTZFBFMIN: Type = 150;
+    pub const RISCV_FEATURE_HASHALFFPLOADSTOREMOVE: Type = 151;
+    pub const RISCV_FEATURE_HASSTDEXTZFA: Type = 152;
+    pub const RISCV_FEATURE_HASSTDEXTZFINX: Type = 153;
+    pub const RISCV_FEATURE_HASSTDEXTZDINX: Type = 154;
+    pub const RISCV_FEATURE_HASSTDEXTZHINXMIN: Type = 155;
+    pub const RISCV_FEATURE_HASSTDEXTZHINX: Type = 156;
+    pub const RISCV_FEATURE_HASSTDEXTC: Type = 157;
+    pub const RISCV_FEATURE_HASRVCHINTS: Type = 158;
+    pub const RISCV_FEATURE_HASSTDEXTCORZCA: Type = 159;
+    pub const RISCV_FEATURE_HASSTDEXTZCB: Type = 160;
+    pub const RISCV_FEATURE_HASSTDEXTCORZCD: Type = 161;
+    pub const RISCV_FEATURE_HASSTDEXTZCMP: Type = 162;
+    pub const RISCV_FEATURE_HASSTDEXTZCMT: Type = 163;
+    pub const RISCV_FEATURE_HASSTDEXTCORZCFORZCE: Type = 164;
+    pub const RISCV_FEATURE_HASSTDEXTZCMOP: Type = 165;
+    pub const RISCV_FEATURE_HASSTDEXTZBA: Type = 166;
+    pub const RISCV_FEATURE_HASSTDEXTZBB: Type = 167;
+    pub const RISCV_FEATURE_HASSTDEXTZBC: Type = 168;
+    pub const RISCV_FEATURE_HASSTDEXTZBS: Type = 169;
+    pub const RISCV_FEATURE_HASSTDEXTZBKB: Type = 170;
+    pub const RISCV_FEATURE_HASSTDEXTZBKX: Type = 171;
+    pub const RISCV_FEATURE_HASSTDEXTZBBORZBKB: Type = 172;
+    pub const RISCV_FEATURE_HASSTDEXTZBKC: Type = 173;
+    pub const RISCV_FEATURE_HASSTDEXTZBCORZBKC: Type = 174;
+    pub const RISCV_FEATURE_HASSTDEXTZKND: Type = 175;
+    pub const RISCV_FEATURE_HASSTDEXTZKNE: Type = 176;
+    pub const RISCV_FEATURE_HASSTDEXTZKNDORZKNE: Type = 177;
+    pub const RISCV_FEATURE_HASSTDEXTZKNH: Type = 178;
+    pub const RISCV_FEATURE_HASSTDEXTZKSED: Type = 179;
+    pub const RISCV_FEATURE_HASSTDEXTZKSH: Type = 180;
+    pub const RISCV_FEATURE_HASSTDEXTZKR: Type = 181;
+    pub const RISCV_FEATURE_HASSTDEXTZVFBFMIN: Type = 182;
+    pub const RISCV_FEATURE_HASSTDEXTZVFBFWMA: Type = 183;
+    pub const RISCV_FEATURE_HASSTDEXTZFHORZVFH: Type = 184;
+    pub const RISCV_FEATURE_HASSTDEXTZVKB: Type = 185;
+    pub const RISCV_FEATURE_HASSTDEXTZVBB: Type = 186;
+    pub const RISCV_FEATURE_HASSTDEXTZVBC: Type = 187;
+    pub const RISCV_FEATURE_HASSTDEXTZVKG: Type = 188;
+    pub const RISCV_FEATURE_HASSTDEXTZVKNED: Type = 189;
+    pub const RISCV_FEATURE_HASSTDEXTZVKNHA: Type = 190;
+    pub const RISCV_FEATURE_HASSTDEXTZVKNHB: Type = 191;
+    pub const RISCV_FEATURE_HASSTDEXTZVKNHAORZVKNHB: Type = 192;
+    pub const RISCV_FEATURE_HASSTDEXTZVKSED: Type = 193;
+    pub const RISCV_FEATURE_HASSTDEXTZVKSH: Type = 194;
+    pub const RISCV_FEATURE_HASVINSTRUCTIONS: Type = 195;
+    pub const RISCV_FEATURE_HASVINSTRUCTIONSI64: Type = 196;
+    pub const RISCV_FEATURE_HASVINSTRUCTIONSANYF: Type = 197;
+    pub const RISCV_FEATURE_HASVINSTRUCTIONSF16MINIMAL: Type = 198;
+    pub const RISCV_FEATURE_HASSTDEXTH: Type = 199;
+    pub const RISCV_FEATURE_HASSTDEXTSVINVAL: Type = 200;
+    pub const RISCV_FEATURE_HASVENDORXVENTANACONDOPS: Type = 201;
+    pub const RISCV_FEATURE_HASVENDORXTHEADBA: Type = 202;
+    pub const RISCV_FEATURE_HASVENDORXTHEADBB: Type = 203;
+    pub const RISCV_FEATURE_HASVENDORXTHEADBS: Type = 204;
+    pub const RISCV_FEATURE_HASVENDORXTHEADCONDMOV: Type = 205;
+    pub const RISCV_FEATURE_HASVENDORXTHEADCMO: Type = 206;
+    pub const RISCV_FEATURE_HASVENDORXTHEADFMEMIDX: Type = 207;
+    pub const RISCV_FEATURE_HASVENDORXTHEADMAC: Type = 208;
+    pub const RISCV_FEATURE_HASVENDORXTHEADMEMIDX: Type = 209;
+    pub const RISCV_FEATURE_HASVENDORXTHEADMEMPAIR: Type = 210;
+    pub const RISCV_FEATURE_HASVENDORXTHEADSYNC: Type = 211;
+    pub const RISCV_FEATURE_HASVENDORXTHEADVDOT: Type = 212;
+    pub const RISCV_FEATURE_HASVENDORXSFVCP: Type = 213;
+    pub const RISCV_FEATURE_HASVENDORXSFVQMACCDOD: Type = 214;
+    pub const RISCV_FEATURE_HASVENDORXSFVQMACCQOQ: Type = 215;
+    pub const RISCV_FEATURE_HASVENDORXSFVFWMACCQQQ: Type = 216;
+    pub const RISCV_FEATURE_HASVENDORXSFVFNRCLIPXFQF: Type = 217;
+    pub const RISCV_FEATURE_HASVENDORXCVELW: Type = 218;
+    pub const RISCV_FEATURE_HASVENDORXCVBITMANIP: Type = 219;
+    pub const RISCV_FEATURE_HASVENDORXCVMAC: Type = 220;
+    pub const RISCV_FEATURE_HASVENDORXCVMEM: Type = 221;
+    pub const RISCV_FEATURE_HASVENDORXCVALU: Type = 222;
+    pub const RISCV_FEATURE_HASVENDORXCVSIMD: Type = 223;
+    pub const RISCV_FEATURE_HASVENDORXCVBI: Type = 224;
+    pub const RISCV_FEATURE_ISRV64: Type = 225;
+    pub const RISCV_FEATURE_ISRV32: Type = 226;
+    pub const RISCV_FEATURE_ISRVE: Type = 227;
+    pub const RISCV_GRP_ENDING: Type = 228;
+}
+pub mod sh_reg {
+    #[doc = " SH registers and special registers"]
+    pub type Type = ::core::ffi::c_uint;
+    pub const SH_REG_INVALID: Type = 0;
+    pub const SH_REG_R0: Type = 1;
+    pub const SH_REG_R1: Type = 2;
+    pub const SH_REG_R2: Type = 3;
+    pub const SH_REG_R3: Type = 4;
+    pub const SH_REG_R4: Type = 5;
+    pub const SH_REG_R5: Type = 6;
+    pub const SH_REG_R6: Type = 7;
+    pub const SH_REG_R7: Type = 8;
+    pub const SH_REG_R8: Type = 9;
+    pub const SH_REG_R9: Type = 10;
+    pub const SH_REG_R10: Type = 11;
+    pub const SH_REG_R11: Type = 12;
+    pub const SH_REG_R12: Type = 13;
+    pub const SH_REG_R13: Type = 14;
+    pub const SH_REG_R14: Type = 15;
+    pub const SH_REG_R15: Type = 16;
+    pub const SH_REG_R0_BANK: Type = 17;
+    pub const SH_REG_R1_BANK: Type = 18;
+    pub const SH_REG_R2_BANK: Type = 19;
+    pub const SH_REG_R3_BANK: Type = 20;
+    pub const SH_REG_R4_BANK: Type = 21;
+    pub const SH_REG_R5_BANK: Type = 22;
+    pub const SH_REG_R6_BANK: Type = 23;
+    pub const SH_REG_R7_BANK: Type = 24;
+    pub const SH_REG_FR0: Type = 25;
+    pub const SH_REG_FR1: Type = 26;
+    pub const SH_REG_FR2: Type = 27;
+    pub const SH_REG_FR3: Type = 28;
+    pub const SH_REG_FR4: Type = 29;
+    pub const SH_REG_FR5: Type = 30;
+    pub const SH_REG_FR6: Type = 31;
+    pub const SH_REG_FR7: Type = 32;
+    pub const SH_REG_FR8: Type = 33;
+    pub const SH_REG_FR9: Type = 34;
+    pub const SH_REG_FR10: Type = 35;
+    pub const SH_REG_FR11: Type = 36;
+    pub const SH_REG_FR12: Type = 37;
+    pub const SH_REG_FR13: Type = 38;
+    pub const SH_REG_FR14: Type = 39;
+    pub const SH_REG_FR15: Type = 40;
+    pub const SH_REG_DR0: Type = 41;
+    pub const SH_REG_DR2: Type = 42;
+    pub const SH_REG_DR4: Type = 43;
+    pub const SH_REG_DR6: Type = 44;
+    pub const SH_REG_DR8: Type = 45;
+    pub const SH_REG_DR10: Type = 46;
+    pub const SH_REG_DR12: Type = 47;
+    pub const SH_REG_DR14: Type = 48;
+    pub const SH_REG_XD0: Type = 49;
+    pub const SH_REG_XD2: Type = 50;
+    pub const SH_REG_XD4: Type = 51;
+    pub const SH_REG_XD6: Type = 52;
+    pub const SH_REG_XD8: Type = 53;
+    pub const SH_REG_XD10: Type = 54;
+    pub const SH_REG_XD12: Type = 55;
+    pub const SH_REG_XD14: Type = 56;
+    pub const SH_REG_XF0: Type = 57;
+    pub const SH_REG_XF1: Type = 58;
+    pub const SH_REG_XF2: Type = 59;
+    pub const SH_REG_XF3: Type = 60;
+    pub const SH_REG_XF4: Type = 61;
+    pub const SH_REG_XF5: Type = 62;
+    pub const SH_REG_XF6: Type = 63;
+    pub const SH_REG_XF7: Type = 64;
+    pub const SH_REG_XF8: Type = 65;
+    pub const SH_REG_XF9: Type = 66;
+    pub const SH_REG_XF10: Type = 67;
+    pub const SH_REG_XF11: Type = 68;
+    pub const SH_REG_XF12: Type = 69;
+    pub const SH_REG_XF13: Type = 70;
+    pub const SH_REG_XF14: Type = 71;
+    pub const SH_REG_XF15: Type = 72;
+    pub const SH_REG_FV0: Type = 73;
+    pub const SH_REG_FV4: Type = 74;
+    pub const SH_REG_FV8: Type = 75;
+    pub const SH_REG_FV12: Type = 76;
+    pub const SH_REG_XMATRX: Type = 77;
+    pub const SH_REG_PC: Type = 78;
+    pub const SH_REG_PR: Type = 79;
+    pub const SH_REG_MACH: Type = 80;
+    pub const SH_REG_MACL: Type = 81;
+    pub const SH_REG_SR: Type = 82;
+    pub const SH_REG_GBR: Type = 83;
+    pub const SH_REG_SSR: Type = 84;
+    pub const SH_REG_SPC: Type = 85;
+    pub const SH_REG_SGR: Type = 86;
+    pub const SH_REG_DBR: Type = 87;
+    pub const SH_REG_VBR: Type = 88;
+    pub const SH_REG_TBR: Type = 89;
+    pub const SH_REG_RS: Type = 90;
+    pub const SH_REG_RE: Type = 91;
+    pub const SH_REG_MOD: Type = 92;
+    pub const SH_REG_FPUL: Type = 93;
+    pub const SH_REG_FPSCR: Type = 94;
+    pub const SH_REG_DSP_X0: Type = 95;
+    pub const SH_REG_DSP_X1: Type = 96;
+    pub const SH_REG_DSP_Y0: Type = 97;
+    pub const SH_REG_DSP_Y1: Type = 98;
+    pub const SH_REG_DSP_A0: Type = 99;
+    pub const SH_REG_DSP_A1: Type = 100;
+    pub const SH_REG_DSP_A0G: Type = 101;
+    pub const SH_REG_DSP_A1G: Type = 102;
+    pub const SH_REG_DSP_M0: Type = 103;
+    pub const SH_REG_DSP_M1: Type = 104;
+    pub const SH_REG_DSP_DSR: Type = 105;
+    pub const SH_REG_DSP_RSV0: Type = 106;
+    pub const SH_REG_DSP_RSV1: Type = 107;
+    pub const SH_REG_DSP_RSV2: Type = 108;
+    pub const SH_REG_DSP_RSV3: Type = 109;
+    pub const SH_REG_DSP_RSV4: Type = 110;
+    pub const SH_REG_DSP_RSV5: Type = 111;
+    pub const SH_REG_DSP_RSV6: Type = 112;
+    pub const SH_REG_DSP_RSV7: Type = 113;
+    pub const SH_REG_DSP_RSV8: Type = 114;
+    pub const SH_REG_DSP_RSV9: Type = 115;
+    pub const SH_REG_DSP_RSVA: Type = 116;
+    pub const SH_REG_DSP_RSVB: Type = 117;
+    pub const SH_REG_DSP_RSVC: Type = 118;
+    pub const SH_REG_DSP_RSVD: Type = 119;
+    pub const SH_REG_DSP_RSVE: Type = 120;
+    pub const SH_REG_DSP_RSVF: Type = 121;
+    pub const SH_REG_ENDING: Type = 122;
+}
+#[repr(u32)]
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
+pub enum sh_op_type {
+    #[doc = "< = CS_OP_INVALID (Uninitialized)."]
+    SH_OP_INVALID = 0,
+    #[doc = "< = CS_OP_REG (Register operand)."]
+    SH_OP_REG = 1,
+    #[doc = "< = CS_OP_IMM (Immediate operand)."]
+    SH_OP_IMM = 2,
+    #[doc = "< = CS_OP_MEM (Memory operand)."]
+    SH_OP_MEM = 128,
+}
+#[repr(u32)]
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
+pub enum sh_op_mem_type {
+    SH_OP_MEM_INVALID = 0,
+    #[doc = " <= Invalid"]
+    SH_OP_MEM_REG_IND = 1,
+    #[doc = " <= Register indirect"]
+    SH_OP_MEM_REG_POST = 2,
+    #[doc = " <= Register post increment"]
+    SH_OP_MEM_REG_PRE = 3,
+    #[doc = " <= Register pre decrement"]
+    SH_OP_MEM_REG_DISP = 4,
+    #[doc = " <= displacement"]
+    SH_OP_MEM_REG_R0 = 5,
+    #[doc = " <= R0 indexed"]
+    SH_OP_MEM_GBR_DISP = 6,
+    #[doc = " <= GBR based displacement"]
+    SH_OP_MEM_GBR_R0 = 7,
+    #[doc = " <= GBR based R0 indexed"]
+    SH_OP_MEM_PCR = 8,
+    #[doc = " <= PC relative"]
+    SH_OP_MEM_TBR_DISP = 9,
+}
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct sh_op_mem {
+    pub address: sh_op_mem_type,
+    #[doc = " <= memory address"]
+    pub reg: sh_reg::Type,
+    #[doc = " <= base register"]
+    pub disp: u32,
+}
+#[repr(u32)]
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
+pub enum sh_dsp_insn {
+    SH_INS_DSP_INVALID = 0,
+    SH_INS_DSP_NOP = 1,
+    SH_INS_DSP_MOV = 2,
+    SH_INS_DSP_PSHL = 3,
+    SH_INS_DSP_PSHA = 4,
+    SH_INS_DSP_PMULS = 5,
+    SH_INS_DSP_PCLR_PMULS = 6,
+    SH_INS_DSP_PSUB_PMULS = 7,
+    SH_INS_DSP_PADD_PMULS = 8,
+    SH_INS_DSP_PSUBC = 9,
+    SH_INS_DSP_PADDC = 10,
+    SH_INS_DSP_PCMP = 11,
+    SH_INS_DSP_PABS = 12,
+    SH_INS_DSP_PRND = 13,
+    SH_INS_DSP_PSUB = 14,
+    SH_INS_DSP_PSUBr = 15,
+    SH_INS_DSP_PADD = 16,
+    SH_INS_DSP_PAND = 17,
+    SH_INS_DSP_PXOR = 18,
+    SH_INS_DSP_POR = 19,
+    SH_INS_DSP_PDEC = 20,
+    SH_INS_DSP_PINC = 21,
+    SH_INS_DSP_PCLR = 22,
+    SH_INS_DSP_PDMSB = 23,
+    SH_INS_DSP_PNEG = 24,
+    SH_INS_DSP_PCOPY = 25,
+    SH_INS_DSP_PSTS = 26,
+    SH_INS_DSP_PLDS = 27,
+    SH_INS_DSP_PSWAP = 28,
+    SH_INS_DSP_PWAD = 29,
+    SH_INS_DSP_PWSB = 30,
+}
+#[repr(u32)]
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
+pub enum sh_dsp_operand {
+    SH_OP_DSP_INVALID = 0,
+    SH_OP_DSP_REG_PRE = 1,
+    SH_OP_DSP_REG_IND = 2,
+    SH_OP_DSP_REG_POST = 3,
+    SH_OP_DSP_REG_INDEX = 4,
+    SH_OP_DSP_REG = 5,
+    SH_OP_DSP_IMM = 6,
+}
+#[repr(u32)]
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
+pub enum sh_dsp_cc {
+    SH_DSP_CC_INVALID = 0,
+    SH_DSP_CC_NONE = 1,
+    SH_DSP_CC_DCT = 2,
+    SH_DSP_CC_DCF = 3,
+}
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct sh_op_dsp {
+    pub insn: sh_dsp_insn,
+    pub operand: [sh_dsp_operand; 2usize],
+    pub r: [sh_reg::Type; 6usize],
+    pub cc: sh_dsp_cc,
+    pub imm: u8,
+    pub size: ::core::ffi::c_int,
+}
+#[doc = " Instruction operand"]
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct cs_sh_op {
+    pub type_: sh_op_type,
+    pub __bindgen_anon_1: cs_sh_op__bindgen_ty_1,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub union cs_sh_op__bindgen_ty_1 {
+    #[doc = "< immediate value for IMM operand"]
+    pub imm: u64,
+    #[doc = "< register value for REG operand"]
+    pub reg: sh_reg::Type,
+    #[doc = "< data when operand is targeting memory"]
+    pub mem: sh_op_mem,
+    #[doc = "< dsp instruction"]
+    pub dsp: sh_op_dsp,
+}
+impl ::core::fmt::Debug for cs_sh_op__bindgen_ty_1 {
+    fn fmt(&self, f: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
+        write!(f, "cs_sh_op__bindgen_ty_1 {{ union }}")
+    }
+}
+impl ::core::fmt::Debug for cs_sh_op {
+    fn fmt(&self, f: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
+        write!(
+            f,
+            "cs_sh_op {{ type: {:?}, __bindgen_anon_1: {:?} }}",
+            self.type_, self.__bindgen_anon_1
+        )
+    }
+}
+#[repr(u32)]
+#[doc = " SH instruction"]
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
+pub enum sh_insn {
+    SH_INS_INVALID = 0,
+    SH_INS_ADD_r = 1,
+    SH_INS_ADD = 2,
+    SH_INS_ADDC = 3,
+    SH_INS_ADDV = 4,
+    SH_INS_AND = 5,
+    SH_INS_BAND = 6,
+    SH_INS_BANDNOT = 7,
+    SH_INS_BCLR = 8,
+    SH_INS_BF = 9,
+    SH_INS_BF_S = 10,
+    SH_INS_BLD = 11,
+    SH_INS_BLDNOT = 12,
+    SH_INS_BOR = 13,
+    SH_INS_BORNOT = 14,
+    SH_INS_BRA = 15,
+    SH_INS_BRAF = 16,
+    SH_INS_BSET = 17,
+    SH_INS_BSR = 18,
+    SH_INS_BSRF = 19,
+    SH_INS_BST = 20,
+    SH_INS_BT = 21,
+    SH_INS_BT_S = 22,
+    SH_INS_BXOR = 23,
+    SH_INS_CLIPS = 24,
+    SH_INS_CLIPU = 25,
+    SH_INS_CLRDMXY = 26,
+    SH_INS_CLRMAC = 27,
+    SH_INS_CLRS = 28,
+    SH_INS_CLRT = 29,
+    SH_INS_CMP_EQ = 30,
+    SH_INS_CMP_GE = 31,
+    SH_INS_CMP_GT = 32,
+    SH_INS_CMP_HI = 33,
+    SH_INS_CMP_HS = 34,
+    SH_INS_CMP_PL = 35,
+    SH_INS_CMP_PZ = 36,
+    SH_INS_CMP_STR = 37,
+    SH_INS_DIV0S = 38,
+    SH_INS_DIV0U = 39,
+    SH_INS_DIV1 = 40,
+    SH_INS_DIVS = 41,
+    SH_INS_DIVU = 42,
+    SH_INS_DMULS_L = 43,
+    SH_INS_DMULU_L = 44,
+    SH_INS_DT = 45,
+    SH_INS_EXTS_B = 46,
+    SH_INS_EXTS_W = 47,
+    SH_INS_EXTU_B = 48,
+    SH_INS_EXTU_W = 49,
+    SH_INS_FABS = 50,
+    SH_INS_FADD = 51,
+    SH_INS_FCMP_EQ = 52,
+    SH_INS_FCMP_GT = 53,
+    SH_INS_FCNVDS = 54,
+    SH_INS_FCNVSD = 55,
+    SH_INS_FDIV = 56,
+    SH_INS_FIPR = 57,
+    SH_INS_FLDI0 = 58,
+    SH_INS_FLDI1 = 59,
+    SH_INS_FLDS = 60,
+    SH_INS_FLOAT = 61,
+    SH_INS_FMAC = 62,
+    SH_INS_FMOV = 63,
+    SH_INS_FMUL = 64,
+    SH_INS_FNEG = 65,
+    SH_INS_FPCHG = 66,
+    SH_INS_FRCHG = 67,
+    SH_INS_FSCA = 68,
+    SH_INS_FSCHG = 69,
+    SH_INS_FSQRT = 70,
+    SH_INS_FSRRA = 71,
+    SH_INS_FSTS = 72,
+    SH_INS_FSUB = 73,
+    SH_INS_FTRC = 74,
+    SH_INS_FTRV = 75,
+    SH_INS_ICBI = 76,
+    SH_INS_JMP = 77,
+    SH_INS_JSR = 78,
+    SH_INS_JSR_N = 79,
+    SH_INS_LDBANK = 80,
+    SH_INS_LDC = 81,
+    SH_INS_LDRC = 82,
+    SH_INS_LDRE = 83,
+    SH_INS_LDRS = 84,
+    SH_INS_LDS = 85,
+    SH_INS_LDTLB = 86,
+    SH_INS_MAC_L = 87,
+    SH_INS_MAC_W = 88,
+    SH_INS_MOV = 89,
+    SH_INS_MOVA = 90,
+    SH_INS_MOVCA = 91,
+    SH_INS_MOVCO = 92,
+    SH_INS_MOVI20 = 93,
+    SH_INS_MOVI20S = 94,
+    SH_INS_MOVLI = 95,
+    SH_INS_MOVML = 96,
+    SH_INS_MOVMU = 97,
+    SH_INS_MOVRT = 98,
+    SH_INS_MOVT = 99,
+    SH_INS_MOVU = 100,
+    SH_INS_MOVUA = 101,
+    SH_INS_MUL_L = 102,
+    SH_INS_MULR = 103,
+    SH_INS_MULS_W = 104,
+    SH_INS_MULU_W = 105,
+    SH_INS_NEG = 106,
+    SH_INS_NEGC = 107,
+    SH_INS_NOP = 108,
+    SH_INS_NOT = 109,
+    SH_INS_NOTT = 110,
+    SH_INS_OCBI = 111,
+    SH_INS_OCBP = 112,
+    SH_INS_OCBWB = 113,
+    SH_INS_OR = 114,
+    SH_INS_PREF = 115,
+    SH_INS_PREFI = 116,
+    SH_INS_RESBANK = 117,
+    SH_INS_ROTCL = 118,
+    SH_INS_ROTCR = 119,
+    SH_INS_ROTL = 120,
+    SH_INS_ROTR = 121,
+    SH_INS_RTE = 122,
+    SH_INS_RTS = 123,
+    SH_INS_RTS_N = 124,
+    SH_INS_RTV_N = 125,
+    SH_INS_SETDMX = 126,
+    SH_INS_SETDMY = 127,
+    SH_INS_SETRC = 128,
+    SH_INS_SETS = 129,
+    SH_INS_SETT = 130,
+    SH_INS_SHAD = 131,
+    SH_INS_SHAL = 132,
+    SH_INS_SHAR = 133,
+    SH_INS_SHLD = 134,
+    SH_INS_SHLL = 135,
+    SH_INS_SHLL16 = 136,
+    SH_INS_SHLL2 = 137,
+    SH_INS_SHLL8 = 138,
+    SH_INS_SHLR = 139,
+    SH_INS_SHLR16 = 140,
+    SH_INS_SHLR2 = 141,
+    SH_INS_SHLR8 = 142,
+    SH_INS_SLEEP = 143,
+    SH_INS_STBANK = 144,
+    SH_INS_STC = 145,
+    SH_INS_STS = 146,
+    SH_INS_SUB = 147,
+    SH_INS_SUBC = 148,
+    SH_INS_SUBV = 149,
+    SH_INS_SWAP_B = 150,
+    SH_INS_SWAP_W = 151,
+    SH_INS_SYNCO = 152,
+    SH_INS_TAS = 153,
+    SH_INS_TRAPA = 154,
+    SH_INS_TST = 155,
+    SH_INS_XOR = 156,
+    SH_INS_XTRCT = 157,
+    SH_INS_DSP = 158,
+    SH_INS_ENDING = 159,
+}
+#[doc = " Instruction structure"]
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct cs_sh {
+    pub insn: sh_insn,
+    pub size: u8,
+    pub op_count: u8,
+    pub operands: [cs_sh_op; 3usize],
+}
+impl ::core::fmt::Debug for cs_sh {
+    fn fmt(&self, f: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
+        write!(
+            f,
+            "cs_sh {{ insn: {:?}, operands: {:?} }}",
+            self.insn, self.operands
+        )
+    }
+}
+pub mod sh_insn_group {
+    #[doc = " Group of SH instructions"]
+    pub type Type = ::core::ffi::c_uint;
+    #[doc = "< CS_GRUP_INVALID"]
+    pub const SH_GRP_INVALID: Type = 0;
+    #[doc = "< = CS_GRP_JUMP"]
+    pub const SH_GRP_JUMP: Type = 1;
+    #[doc = "< = CS_GRP_CALL"]
+    pub const SH_GRP_CALL: Type = 2;
+    #[doc = "< = CS_GRP_INT"]
+    pub const SH_GRP_INT: Type = 3;
+    #[doc = "< = CS_GRP_RET"]
+    pub const SH_GRP_RET: Type = 4;
+    #[doc = "< = CS_GRP_IRET"]
+    pub const SH_GRP_IRET: Type = 5;
+    #[doc = "< = CS_GRP_PRIVILEGE"]
+    pub const SH_GRP_PRIVILEGE: Type = 6;
+    #[doc = "< = CS_GRP_BRANCH_RELATIVE"]
+    pub const SH_GRP_BRANCH_RELATIVE: Type = 7;
+    pub const SH_GRP_SH1: Type = 8;
+    pub const SH_GRP_SH2: Type = 9;
+    pub const SH_GRP_SH2E: Type = 10;
+    pub const SH_GRP_SH2DSP: Type = 11;
+    pub const SH_GRP_SH2A: Type = 12;
+    pub const SH_GRP_SH2AFPU: Type = 13;
+    pub const SH_GRP_SH3: Type = 14;
+    pub const SH_GRP_SH3DSP: Type = 15;
+    pub const SH_GRP_SH4: Type = 16;
+    pub const SH_GRP_SH4A: Type = 17;
+    pub const SH_GRP_ENDING: Type = 18;
 }
 impl sparc_cc {
     pub const SPARC_CC_FCC_N: sparc_cc = sparc_cc::SPARC_CC_FCC_BEGIN;
@@ -17770,6 +26521,1071 @@ pub mod systemz_insn_group {
     pub const SYSTEMZ_FEATURE_FEATUREPROCESSORACTIVITYINSTRUMENTATION: Type = 169;
     pub const SYSTEMZ_GRP_ENDING: Type = 170;
 }
+#[repr(u32)]
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
+pub enum tms320c64x_op_type {
+    TMS320C64X_OP_INVALID = 0,
+    #[doc = "< = CS_OP_REG (Register operand)."]
+    TMS320C64X_OP_REG = 1,
+    #[doc = "< = CS_OP_IMM (Immediate operand)."]
+    TMS320C64X_OP_IMM = 2,
+    TMS320C64X_OP_REGPAIR = 16,
+    #[doc = "< = CS_OP_MEM (Memory operand)."]
+    TMS320C64X_OP_MEM = 128,
+}
+#[repr(u32)]
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
+pub enum tms320c64x_mem_disp {
+    TMS320C64X_MEM_DISP_INVALID = 0,
+    TMS320C64X_MEM_DISP_CONSTANT = 1,
+    TMS320C64X_MEM_DISP_REGISTER = 2,
+}
+#[repr(u32)]
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
+pub enum tms320c64x_mem_dir {
+    TMS320C64X_MEM_DIR_INVALID = 0,
+    TMS320C64X_MEM_DIR_FW = 1,
+    TMS320C64X_MEM_DIR_BW = 2,
+}
+#[repr(u32)]
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
+pub enum tms320c64x_mem_mod {
+    TMS320C64X_MEM_MOD_INVALID = 0,
+    TMS320C64X_MEM_MOD_NO = 1,
+    TMS320C64X_MEM_MOD_PRE = 2,
+    TMS320C64X_MEM_MOD_POST = 3,
+}
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct tms320c64x_op_mem {
+    #[doc = "< base register"]
+    pub base: ::core::ffi::c_uint,
+    #[doc = "< displacement/offset value"]
+    pub disp: ::core::ffi::c_uint,
+    #[doc = "< unit of base and offset register"]
+    pub unit: ::core::ffi::c_uint,
+    #[doc = "< offset scaled"]
+    pub scaled: ::core::ffi::c_uint,
+    #[doc = "< displacement type"]
+    pub disptype: ::core::ffi::c_uint,
+    #[doc = "< direction"]
+    pub direction: ::core::ffi::c_uint,
+    #[doc = "< modification"]
+    pub modify: ::core::ffi::c_uint,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct cs_tms320c64x_op {
+    #[doc = "< operand type"]
+    pub type_: tms320c64x_op_type,
+    pub __bindgen_anon_1: cs_tms320c64x_op__bindgen_ty_1,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub union cs_tms320c64x_op__bindgen_ty_1 {
+    #[doc = "< register value for REG operand or first register for REGPAIR operand"]
+    pub reg: ::core::ffi::c_uint,
+    #[doc = "< immediate value for IMM operand"]
+    pub imm: i32,
+    #[doc = "< base/disp value for MEM operand"]
+    pub mem: tms320c64x_op_mem,
+}
+impl ::core::fmt::Debug for cs_tms320c64x_op__bindgen_ty_1 {
+    fn fmt(&self, f: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
+        write!(f, "cs_tms320c64x_op__bindgen_ty_1 {{ union }}")
+    }
+}
+impl ::core::fmt::Debug for cs_tms320c64x_op {
+    fn fmt(&self, f: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
+        write!(
+            f,
+            "cs_tms320c64x_op {{ type: {:?}, __bindgen_anon_1: {:?} }}",
+            self.type_, self.__bindgen_anon_1
+        )
+    }
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct cs_tms320c64x {
+    pub op_count: u8,
+    #[doc = "< operands for this instruction."]
+    pub operands: [cs_tms320c64x_op; 8usize],
+    pub condition: cs_tms320c64x__bindgen_ty_1,
+    pub funit: cs_tms320c64x__bindgen_ty_2,
+    pub parallel: ::core::ffi::c_uint,
+}
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct cs_tms320c64x__bindgen_ty_1 {
+    pub reg: ::core::ffi::c_uint,
+    pub zero: ::core::ffi::c_uint,
+}
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct cs_tms320c64x__bindgen_ty_2 {
+    pub unit: ::core::ffi::c_uint,
+    pub side: ::core::ffi::c_uint,
+    pub crosspath: ::core::ffi::c_uint,
+}
+impl ::core::fmt::Debug for cs_tms320c64x {
+    fn fmt(&self, f: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
+        write!(
+            f,
+            "cs_tms320c64x {{ operands: {:?}, condition: {:?}, funit: {:?}, parallel: {:?} }}",
+            self.operands, self.condition, self.funit, self.parallel
+        )
+    }
+}
+pub mod tms320c64x_reg {
+    pub type Type = ::core::ffi::c_uint;
+    pub const TMS320C64X_REG_INVALID: Type = 0;
+    pub const TMS320C64X_REG_AMR: Type = 1;
+    pub const TMS320C64X_REG_CSR: Type = 2;
+    pub const TMS320C64X_REG_DIER: Type = 3;
+    pub const TMS320C64X_REG_DNUM: Type = 4;
+    pub const TMS320C64X_REG_ECR: Type = 5;
+    pub const TMS320C64X_REG_GFPGFR: Type = 6;
+    pub const TMS320C64X_REG_GPLYA: Type = 7;
+    pub const TMS320C64X_REG_GPLYB: Type = 8;
+    pub const TMS320C64X_REG_ICR: Type = 9;
+    pub const TMS320C64X_REG_IER: Type = 10;
+    pub const TMS320C64X_REG_IERR: Type = 11;
+    pub const TMS320C64X_REG_ILC: Type = 12;
+    pub const TMS320C64X_REG_IRP: Type = 13;
+    pub const TMS320C64X_REG_ISR: Type = 14;
+    pub const TMS320C64X_REG_ISTP: Type = 15;
+    pub const TMS320C64X_REG_ITSR: Type = 16;
+    pub const TMS320C64X_REG_NRP: Type = 17;
+    pub const TMS320C64X_REG_NTSR: Type = 18;
+    pub const TMS320C64X_REG_REP: Type = 19;
+    pub const TMS320C64X_REG_RILC: Type = 20;
+    pub const TMS320C64X_REG_SSR: Type = 21;
+    pub const TMS320C64X_REG_TSCH: Type = 22;
+    pub const TMS320C64X_REG_TSCL: Type = 23;
+    pub const TMS320C64X_REG_TSR: Type = 24;
+    pub const TMS320C64X_REG_A0: Type = 25;
+    pub const TMS320C64X_REG_A1: Type = 26;
+    pub const TMS320C64X_REG_A2: Type = 27;
+    pub const TMS320C64X_REG_A3: Type = 28;
+    pub const TMS320C64X_REG_A4: Type = 29;
+    pub const TMS320C64X_REG_A5: Type = 30;
+    pub const TMS320C64X_REG_A6: Type = 31;
+    pub const TMS320C64X_REG_A7: Type = 32;
+    pub const TMS320C64X_REG_A8: Type = 33;
+    pub const TMS320C64X_REG_A9: Type = 34;
+    pub const TMS320C64X_REG_A10: Type = 35;
+    pub const TMS320C64X_REG_A11: Type = 36;
+    pub const TMS320C64X_REG_A12: Type = 37;
+    pub const TMS320C64X_REG_A13: Type = 38;
+    pub const TMS320C64X_REG_A14: Type = 39;
+    pub const TMS320C64X_REG_A15: Type = 40;
+    pub const TMS320C64X_REG_A16: Type = 41;
+    pub const TMS320C64X_REG_A17: Type = 42;
+    pub const TMS320C64X_REG_A18: Type = 43;
+    pub const TMS320C64X_REG_A19: Type = 44;
+    pub const TMS320C64X_REG_A20: Type = 45;
+    pub const TMS320C64X_REG_A21: Type = 46;
+    pub const TMS320C64X_REG_A22: Type = 47;
+    pub const TMS320C64X_REG_A23: Type = 48;
+    pub const TMS320C64X_REG_A24: Type = 49;
+    pub const TMS320C64X_REG_A25: Type = 50;
+    pub const TMS320C64X_REG_A26: Type = 51;
+    pub const TMS320C64X_REG_A27: Type = 52;
+    pub const TMS320C64X_REG_A28: Type = 53;
+    pub const TMS320C64X_REG_A29: Type = 54;
+    pub const TMS320C64X_REG_A30: Type = 55;
+    pub const TMS320C64X_REG_A31: Type = 56;
+    pub const TMS320C64X_REG_B0: Type = 57;
+    pub const TMS320C64X_REG_B1: Type = 58;
+    pub const TMS320C64X_REG_B2: Type = 59;
+    pub const TMS320C64X_REG_B3: Type = 60;
+    pub const TMS320C64X_REG_B4: Type = 61;
+    pub const TMS320C64X_REG_B5: Type = 62;
+    pub const TMS320C64X_REG_B6: Type = 63;
+    pub const TMS320C64X_REG_B7: Type = 64;
+    pub const TMS320C64X_REG_B8: Type = 65;
+    pub const TMS320C64X_REG_B9: Type = 66;
+    pub const TMS320C64X_REG_B10: Type = 67;
+    pub const TMS320C64X_REG_B11: Type = 68;
+    pub const TMS320C64X_REG_B12: Type = 69;
+    pub const TMS320C64X_REG_B13: Type = 70;
+    pub const TMS320C64X_REG_B14: Type = 71;
+    pub const TMS320C64X_REG_B15: Type = 72;
+    pub const TMS320C64X_REG_B16: Type = 73;
+    pub const TMS320C64X_REG_B17: Type = 74;
+    pub const TMS320C64X_REG_B18: Type = 75;
+    pub const TMS320C64X_REG_B19: Type = 76;
+    pub const TMS320C64X_REG_B20: Type = 77;
+    pub const TMS320C64X_REG_B21: Type = 78;
+    pub const TMS320C64X_REG_B22: Type = 79;
+    pub const TMS320C64X_REG_B23: Type = 80;
+    pub const TMS320C64X_REG_B24: Type = 81;
+    pub const TMS320C64X_REG_B25: Type = 82;
+    pub const TMS320C64X_REG_B26: Type = 83;
+    pub const TMS320C64X_REG_B27: Type = 84;
+    pub const TMS320C64X_REG_B28: Type = 85;
+    pub const TMS320C64X_REG_B29: Type = 86;
+    pub const TMS320C64X_REG_B30: Type = 87;
+    pub const TMS320C64X_REG_B31: Type = 88;
+    pub const TMS320C64X_REG_PCE1: Type = 89;
+    pub const TMS320C64X_REG_ENDING: Type = 90;
+    pub const TMS320C64X_REG_EFR: Type = 5;
+    pub const TMS320C64X_REG_IFR: Type = 14;
+}
+#[repr(u32)]
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
+pub enum tms320c64x_insn {
+    TMS320C64X_INS_INVALID = 0,
+    TMS320C64X_INS_ABS = 1,
+    TMS320C64X_INS_ABS2 = 2,
+    TMS320C64X_INS_ADD = 3,
+    TMS320C64X_INS_ADD2 = 4,
+    TMS320C64X_INS_ADD4 = 5,
+    TMS320C64X_INS_ADDAB = 6,
+    TMS320C64X_INS_ADDAD = 7,
+    TMS320C64X_INS_ADDAH = 8,
+    TMS320C64X_INS_ADDAW = 9,
+    TMS320C64X_INS_ADDK = 10,
+    TMS320C64X_INS_ADDKPC = 11,
+    TMS320C64X_INS_ADDU = 12,
+    TMS320C64X_INS_AND = 13,
+    TMS320C64X_INS_ANDN = 14,
+    TMS320C64X_INS_AVG2 = 15,
+    TMS320C64X_INS_AVGU4 = 16,
+    TMS320C64X_INS_B = 17,
+    TMS320C64X_INS_BDEC = 18,
+    TMS320C64X_INS_BITC4 = 19,
+    TMS320C64X_INS_BNOP = 20,
+    TMS320C64X_INS_BPOS = 21,
+    TMS320C64X_INS_CLR = 22,
+    TMS320C64X_INS_CMPEQ = 23,
+    TMS320C64X_INS_CMPEQ2 = 24,
+    TMS320C64X_INS_CMPEQ4 = 25,
+    TMS320C64X_INS_CMPGT = 26,
+    TMS320C64X_INS_CMPGT2 = 27,
+    TMS320C64X_INS_CMPGTU4 = 28,
+    TMS320C64X_INS_CMPLT = 29,
+    TMS320C64X_INS_CMPLTU = 30,
+    TMS320C64X_INS_DEAL = 31,
+    TMS320C64X_INS_DOTP2 = 32,
+    TMS320C64X_INS_DOTPN2 = 33,
+    TMS320C64X_INS_DOTPNRSU2 = 34,
+    TMS320C64X_INS_DOTPRSU2 = 35,
+    TMS320C64X_INS_DOTPSU4 = 36,
+    TMS320C64X_INS_DOTPU4 = 37,
+    TMS320C64X_INS_EXT = 38,
+    TMS320C64X_INS_EXTU = 39,
+    TMS320C64X_INS_GMPGTU = 40,
+    TMS320C64X_INS_GMPY4 = 41,
+    TMS320C64X_INS_LDB = 42,
+    TMS320C64X_INS_LDBU = 43,
+    TMS320C64X_INS_LDDW = 44,
+    TMS320C64X_INS_LDH = 45,
+    TMS320C64X_INS_LDHU = 46,
+    TMS320C64X_INS_LDNDW = 47,
+    TMS320C64X_INS_LDNW = 48,
+    TMS320C64X_INS_LDW = 49,
+    TMS320C64X_INS_LMBD = 50,
+    TMS320C64X_INS_MAX2 = 51,
+    TMS320C64X_INS_MAXU4 = 52,
+    TMS320C64X_INS_MIN2 = 53,
+    TMS320C64X_INS_MINU4 = 54,
+    TMS320C64X_INS_MPY = 55,
+    TMS320C64X_INS_MPY2 = 56,
+    TMS320C64X_INS_MPYH = 57,
+    TMS320C64X_INS_MPYHI = 58,
+    TMS320C64X_INS_MPYHIR = 59,
+    TMS320C64X_INS_MPYHL = 60,
+    TMS320C64X_INS_MPYHLU = 61,
+    TMS320C64X_INS_MPYHSLU = 62,
+    TMS320C64X_INS_MPYHSU = 63,
+    TMS320C64X_INS_MPYHU = 64,
+    TMS320C64X_INS_MPYHULS = 65,
+    TMS320C64X_INS_MPYHUS = 66,
+    TMS320C64X_INS_MPYLH = 67,
+    TMS320C64X_INS_MPYLHU = 68,
+    TMS320C64X_INS_MPYLI = 69,
+    TMS320C64X_INS_MPYLIR = 70,
+    TMS320C64X_INS_MPYLSHU = 71,
+    TMS320C64X_INS_MPYLUHS = 72,
+    TMS320C64X_INS_MPYSU = 73,
+    TMS320C64X_INS_MPYSU4 = 74,
+    TMS320C64X_INS_MPYU = 75,
+    TMS320C64X_INS_MPYU4 = 76,
+    TMS320C64X_INS_MPYUS = 77,
+    TMS320C64X_INS_MVC = 78,
+    TMS320C64X_INS_MVD = 79,
+    TMS320C64X_INS_MVK = 80,
+    TMS320C64X_INS_MVKL = 81,
+    TMS320C64X_INS_MVKLH = 82,
+    TMS320C64X_INS_NOP = 83,
+    TMS320C64X_INS_NORM = 84,
+    TMS320C64X_INS_OR = 85,
+    TMS320C64X_INS_PACK2 = 86,
+    TMS320C64X_INS_PACKH2 = 87,
+    TMS320C64X_INS_PACKH4 = 88,
+    TMS320C64X_INS_PACKHL2 = 89,
+    TMS320C64X_INS_PACKL4 = 90,
+    TMS320C64X_INS_PACKLH2 = 91,
+    TMS320C64X_INS_ROTL = 92,
+    TMS320C64X_INS_SADD = 93,
+    TMS320C64X_INS_SADD2 = 94,
+    TMS320C64X_INS_SADDU4 = 95,
+    TMS320C64X_INS_SADDUS2 = 96,
+    TMS320C64X_INS_SAT = 97,
+    TMS320C64X_INS_SET = 98,
+    TMS320C64X_INS_SHFL = 99,
+    TMS320C64X_INS_SHL = 100,
+    TMS320C64X_INS_SHLMB = 101,
+    TMS320C64X_INS_SHR = 102,
+    TMS320C64X_INS_SHR2 = 103,
+    TMS320C64X_INS_SHRMB = 104,
+    TMS320C64X_INS_SHRU = 105,
+    TMS320C64X_INS_SHRU2 = 106,
+    TMS320C64X_INS_SMPY = 107,
+    TMS320C64X_INS_SMPY2 = 108,
+    TMS320C64X_INS_SMPYH = 109,
+    TMS320C64X_INS_SMPYHL = 110,
+    TMS320C64X_INS_SMPYLH = 111,
+    TMS320C64X_INS_SPACK2 = 112,
+    TMS320C64X_INS_SPACKU4 = 113,
+    TMS320C64X_INS_SSHL = 114,
+    TMS320C64X_INS_SSHVL = 115,
+    TMS320C64X_INS_SSHVR = 116,
+    TMS320C64X_INS_SSUB = 117,
+    TMS320C64X_INS_STB = 118,
+    TMS320C64X_INS_STDW = 119,
+    TMS320C64X_INS_STH = 120,
+    TMS320C64X_INS_STNDW = 121,
+    TMS320C64X_INS_STNW = 122,
+    TMS320C64X_INS_STW = 123,
+    TMS320C64X_INS_SUB = 124,
+    TMS320C64X_INS_SUB2 = 125,
+    TMS320C64X_INS_SUB4 = 126,
+    TMS320C64X_INS_SUBAB = 127,
+    TMS320C64X_INS_SUBABS4 = 128,
+    TMS320C64X_INS_SUBAH = 129,
+    TMS320C64X_INS_SUBAW = 130,
+    TMS320C64X_INS_SUBC = 131,
+    TMS320C64X_INS_SUBU = 132,
+    TMS320C64X_INS_SWAP4 = 133,
+    TMS320C64X_INS_UNPKHU4 = 134,
+    TMS320C64X_INS_UNPKLU4 = 135,
+    TMS320C64X_INS_XOR = 136,
+    TMS320C64X_INS_XPND2 = 137,
+    TMS320C64X_INS_XPND4 = 138,
+    TMS320C64X_INS_IDLE = 139,
+    TMS320C64X_INS_MV = 140,
+    TMS320C64X_INS_NEG = 141,
+    TMS320C64X_INS_NOT = 142,
+    TMS320C64X_INS_SWAP2 = 143,
+    TMS320C64X_INS_ZERO = 144,
+    TMS320C64X_INS_ENDING = 145,
+}
+pub mod tms320c64x_insn_group {
+    pub type Type = ::core::ffi::c_uint;
+    #[doc = "< = CS_GRP_INVALID"]
+    pub const TMS320C64X_GRP_INVALID: Type = 0;
+    #[doc = "< = CS_GRP_JUMP"]
+    pub const TMS320C64X_GRP_JUMP: Type = 1;
+    pub const TMS320C64X_GRP_FUNIT_D: Type = 128;
+    pub const TMS320C64X_GRP_FUNIT_L: Type = 129;
+    pub const TMS320C64X_GRP_FUNIT_M: Type = 130;
+    pub const TMS320C64X_GRP_FUNIT_S: Type = 131;
+    pub const TMS320C64X_GRP_FUNIT_NO: Type = 132;
+    pub const TMS320C64X_GRP_ENDING: Type = 133;
+}
+#[repr(u32)]
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
+pub enum tms320c64x_funit {
+    TMS320C64X_FUNIT_INVALID = 0,
+    TMS320C64X_FUNIT_D = 1,
+    TMS320C64X_FUNIT_L = 2,
+    TMS320C64X_FUNIT_M = 3,
+    TMS320C64X_FUNIT_S = 4,
+    TMS320C64X_FUNIT_NO = 5,
+}
+#[repr(u32)]
+#[doc = " Operand type for instruction's operands"]
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
+pub enum tricore_op_type {
+    #[doc = "< CS_OP_INVALID (Uninitialized)."]
+    TRICORE_OP_INVALID = 0,
+    #[doc = "< CS_OP_REG (Register operand)."]
+    TRICORE_OP_REG = 1,
+    #[doc = "< CS_OP_IMM (Immediate operand)."]
+    TRICORE_OP_IMM = 2,
+    #[doc = "< CS_OP_MEM (Memory operand)."]
+    TRICORE_OP_MEM = 128,
+}
+#[doc = " Instruction's operand referring to memory\n This is associated with TRICORE_OP_MEM operand type above"]
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct tricore_op_mem {
+    #[doc = "< base register"]
+    pub base: u8,
+    #[doc = "< displacement/offset value"]
+    pub disp: i64,
+}
+#[doc = " Instruction operand"]
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct cs_tricore_op {
+    #[doc = "< operand type"]
+    pub type_: tricore_op_type,
+    pub __bindgen_anon_1: cs_tricore_op__bindgen_ty_1,
+    #[doc = "< How is this operand accessed? (READ, WRITE or READ|WRITE)"]
+    pub access: cs_ac_type,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub union cs_tricore_op__bindgen_ty_1 {
+    #[doc = "< register value for REG operand"]
+    pub reg: ::core::ffi::c_uint,
+    #[doc = "< immediate value for IMM operand"]
+    pub imm: i64,
+    #[doc = "< base/disp value for MEM operand"]
+    pub mem: tricore_op_mem,
+}
+impl ::core::fmt::Debug for cs_tricore_op__bindgen_ty_1 {
+    fn fmt(&self, f: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
+        write!(f, "cs_tricore_op__bindgen_ty_1 {{ union }}")
+    }
+}
+impl ::core::fmt::Debug for cs_tricore_op {
+    fn fmt(&self, f: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
+        write!(
+            f,
+            "cs_tricore_op {{ type: {:?}, __bindgen_anon_1: {:?}, access: {:?} }}",
+            self.type_, self.__bindgen_anon_1, self.access
+        )
+    }
+}
+#[doc = " Instruction structure"]
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct cs_tricore {
+    #[doc = "< number of operands of this instruction."]
+    pub op_count: u8,
+    #[doc = "< operands for this instruction."]
+    pub operands: [cs_tricore_op; 8usize],
+    #[doc = "< whether the flags register is updated."]
+    pub update_flags: bool,
+}
+impl ::core::fmt::Debug for cs_tricore {
+    fn fmt(&self, f: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
+        write!(
+            f,
+            "cs_tricore {{ operands: {:?}, update_flags: {:?} }}",
+            self.operands, self.update_flags
+        )
+    }
+}
+pub mod tricore_reg {
+    #[doc = " TriCore registers"]
+    pub type Type = ::core::ffi::c_uint;
+    pub const TRICORE_REG_INVALID: Type = 0;
+    pub const TRICORE_REG_FCX: Type = 1;
+    pub const TRICORE_REG_PC: Type = 2;
+    pub const TRICORE_REG_PCXI: Type = 3;
+    pub const TRICORE_REG_PSW: Type = 4;
+    pub const TRICORE_REG_A0: Type = 5;
+    pub const TRICORE_REG_A1: Type = 6;
+    pub const TRICORE_REG_A2: Type = 7;
+    pub const TRICORE_REG_A3: Type = 8;
+    pub const TRICORE_REG_A4: Type = 9;
+    pub const TRICORE_REG_A5: Type = 10;
+    pub const TRICORE_REG_A6: Type = 11;
+    pub const TRICORE_REG_A7: Type = 12;
+    pub const TRICORE_REG_A8: Type = 13;
+    pub const TRICORE_REG_A9: Type = 14;
+    pub const TRICORE_REG_A10: Type = 15;
+    pub const TRICORE_REG_A11: Type = 16;
+    pub const TRICORE_REG_A12: Type = 17;
+    pub const TRICORE_REG_A13: Type = 18;
+    pub const TRICORE_REG_A14: Type = 19;
+    pub const TRICORE_REG_A15: Type = 20;
+    pub const TRICORE_REG_D0: Type = 21;
+    pub const TRICORE_REG_D1: Type = 22;
+    pub const TRICORE_REG_D2: Type = 23;
+    pub const TRICORE_REG_D3: Type = 24;
+    pub const TRICORE_REG_D4: Type = 25;
+    pub const TRICORE_REG_D5: Type = 26;
+    pub const TRICORE_REG_D6: Type = 27;
+    pub const TRICORE_REG_D7: Type = 28;
+    pub const TRICORE_REG_D8: Type = 29;
+    pub const TRICORE_REG_D9: Type = 30;
+    pub const TRICORE_REG_D10: Type = 31;
+    pub const TRICORE_REG_D11: Type = 32;
+    pub const TRICORE_REG_D12: Type = 33;
+    pub const TRICORE_REG_D13: Type = 34;
+    pub const TRICORE_REG_D14: Type = 35;
+    pub const TRICORE_REG_D15: Type = 36;
+    pub const TRICORE_REG_E0: Type = 37;
+    pub const TRICORE_REG_E2: Type = 38;
+    pub const TRICORE_REG_E4: Type = 39;
+    pub const TRICORE_REG_E6: Type = 40;
+    pub const TRICORE_REG_E8: Type = 41;
+    pub const TRICORE_REG_E10: Type = 42;
+    pub const TRICORE_REG_E12: Type = 43;
+    pub const TRICORE_REG_E14: Type = 44;
+    pub const TRICORE_REG_P0: Type = 45;
+    pub const TRICORE_REG_P2: Type = 46;
+    pub const TRICORE_REG_P4: Type = 47;
+    pub const TRICORE_REG_P6: Type = 48;
+    pub const TRICORE_REG_P8: Type = 49;
+    pub const TRICORE_REG_P10: Type = 50;
+    pub const TRICORE_REG_P12: Type = 51;
+    pub const TRICORE_REG_P14: Type = 52;
+    pub const TRICORE_REG_A0_A1: Type = 53;
+    pub const TRICORE_REG_A2_A3: Type = 54;
+    pub const TRICORE_REG_A4_A5: Type = 55;
+    pub const TRICORE_REG_A6_A7: Type = 56;
+    pub const TRICORE_REG_A8_A9: Type = 57;
+    pub const TRICORE_REG_A10_A11: Type = 58;
+    pub const TRICORE_REG_A12_A13: Type = 59;
+    pub const TRICORE_REG_A14_A15: Type = 60;
+    pub const TRICORE_REG_ENDING: Type = 61;
+}
+#[repr(u32)]
+#[doc = " TriCore instruction"]
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
+pub enum tricore_insn {
+    TRICORE_INS_INVALID = 0,
+    TRICORE_INS_ABSDIFS_B = 1,
+    TRICORE_INS_ABSDIFS_H = 2,
+    TRICORE_INS_ABSDIFS = 3,
+    TRICORE_INS_ABSDIF_B = 4,
+    TRICORE_INS_ABSDIF_H = 5,
+    TRICORE_INS_ABSDIF = 6,
+    TRICORE_INS_ABSS_B = 7,
+    TRICORE_INS_ABSS_H = 8,
+    TRICORE_INS_ABSS = 9,
+    TRICORE_INS_ABS_B = 10,
+    TRICORE_INS_ABS_DF = 11,
+    TRICORE_INS_ABS_F = 12,
+    TRICORE_INS_ABS_H = 13,
+    TRICORE_INS_ABS = 14,
+    TRICORE_INS_ADDC = 15,
+    TRICORE_INS_ADDIH_A = 16,
+    TRICORE_INS_ADDIH = 17,
+    TRICORE_INS_ADDI = 18,
+    TRICORE_INS_ADDSC_AT = 19,
+    TRICORE_INS_ADDSC_A = 20,
+    TRICORE_INS_ADDS_BU = 21,
+    TRICORE_INS_ADDS_B = 22,
+    TRICORE_INS_ADDS_H = 23,
+    TRICORE_INS_ADDS_HU = 24,
+    TRICORE_INS_ADDS_U = 25,
+    TRICORE_INS_ADDS = 26,
+    TRICORE_INS_ADDX = 27,
+    TRICORE_INS_ADD_A = 28,
+    TRICORE_INS_ADD_B = 29,
+    TRICORE_INS_ADD_DF = 30,
+    TRICORE_INS_ADD_F = 31,
+    TRICORE_INS_ADD_H = 32,
+    TRICORE_INS_ADD = 33,
+    TRICORE_INS_ANDN_T = 34,
+    TRICORE_INS_ANDN = 35,
+    TRICORE_INS_AND_ANDN_T = 36,
+    TRICORE_INS_AND_AND_T = 37,
+    TRICORE_INS_AND_EQ = 38,
+    TRICORE_INS_AND_GE_U = 39,
+    TRICORE_INS_AND_GE = 40,
+    TRICORE_INS_AND_LT_U = 41,
+    TRICORE_INS_AND_LT = 42,
+    TRICORE_INS_AND_NE = 43,
+    TRICORE_INS_AND_NOR_T = 44,
+    TRICORE_INS_AND_OR_T = 45,
+    TRICORE_INS_AND_T = 46,
+    TRICORE_INS_AND = 47,
+    TRICORE_INS_BISR = 48,
+    TRICORE_INS_BMERGE = 49,
+    TRICORE_INS_BSPLIT = 50,
+    TRICORE_INS_CACHEA_I = 51,
+    TRICORE_INS_CACHEA_WI = 52,
+    TRICORE_INS_CACHEA_W = 53,
+    TRICORE_INS_CACHEI_I = 54,
+    TRICORE_INS_CACHEI_WI = 55,
+    TRICORE_INS_CACHEI_W = 56,
+    TRICORE_INS_CADDN_A = 57,
+    TRICORE_INS_CADDN = 58,
+    TRICORE_INS_CADD_A = 59,
+    TRICORE_INS_CADD = 60,
+    TRICORE_INS_CALLA = 61,
+    TRICORE_INS_CALLI = 62,
+    TRICORE_INS_CALL = 63,
+    TRICORE_INS_CLO_B = 64,
+    TRICORE_INS_CLO_H = 65,
+    TRICORE_INS_CLO = 66,
+    TRICORE_INS_CLS_B = 67,
+    TRICORE_INS_CLS_H = 68,
+    TRICORE_INS_CLS = 69,
+    TRICORE_INS_CLZ_B = 70,
+    TRICORE_INS_CLZ_H = 71,
+    TRICORE_INS_CLZ = 72,
+    TRICORE_INS_CMOVN = 73,
+    TRICORE_INS_CMOV = 74,
+    TRICORE_INS_CMPSWAP_W = 75,
+    TRICORE_INS_CMP_DF = 76,
+    TRICORE_INS_CMP_F = 77,
+    TRICORE_INS_CRC32B_W = 78,
+    TRICORE_INS_CRC32L_W = 79,
+    TRICORE_INS_CRC32_B = 80,
+    TRICORE_INS_CRCN = 81,
+    TRICORE_INS_CSUBN_A = 82,
+    TRICORE_INS_CSUBN = 83,
+    TRICORE_INS_CSUB_A = 84,
+    TRICORE_INS_CSUB = 85,
+    TRICORE_INS_DEBUG = 86,
+    TRICORE_INS_DEXTR = 87,
+    TRICORE_INS_DFTOF = 88,
+    TRICORE_INS_DFTOIN = 89,
+    TRICORE_INS_DFTOIZ = 90,
+    TRICORE_INS_DFTOI = 91,
+    TRICORE_INS_DFTOLZ = 92,
+    TRICORE_INS_DFTOL = 93,
+    TRICORE_INS_DFTOULZ = 94,
+    TRICORE_INS_DFTOUL = 95,
+    TRICORE_INS_DFTOUZ = 96,
+    TRICORE_INS_DFTOU = 97,
+    TRICORE_INS_DIFSC_A = 98,
+    TRICORE_INS_DISABLE = 99,
+    TRICORE_INS_DIV64_U = 100,
+    TRICORE_INS_DIV64 = 101,
+    TRICORE_INS_DIV_DF = 102,
+    TRICORE_INS_DIV_F = 103,
+    TRICORE_INS_DIV_U = 104,
+    TRICORE_INS_DIV = 105,
+    TRICORE_INS_DSYNC = 106,
+    TRICORE_INS_DVADJ = 107,
+    TRICORE_INS_DVINIT_BU = 108,
+    TRICORE_INS_DVINIT_B = 109,
+    TRICORE_INS_DVINIT_HU = 110,
+    TRICORE_INS_DVINIT_H = 111,
+    TRICORE_INS_DVINIT_U = 112,
+    TRICORE_INS_DVINIT = 113,
+    TRICORE_INS_DVSTEP_U = 114,
+    TRICORE_INS_DVSTEP = 115,
+    TRICORE_INS_ENABLE = 116,
+    TRICORE_INS_EQANY_B = 117,
+    TRICORE_INS_EQANY_H = 118,
+    TRICORE_INS_EQZ_A = 119,
+    TRICORE_INS_EQ_A = 120,
+    TRICORE_INS_EQ_B = 121,
+    TRICORE_INS_EQ_H = 122,
+    TRICORE_INS_EQ_W = 123,
+    TRICORE_INS_EQ = 124,
+    TRICORE_INS_EXTR_U = 125,
+    TRICORE_INS_EXTR = 126,
+    TRICORE_INS_FCALLA = 127,
+    TRICORE_INS_FCALLI = 128,
+    TRICORE_INS_FCALL = 129,
+    TRICORE_INS_FRET = 130,
+    TRICORE_INS_FTODF = 131,
+    TRICORE_INS_FTOHP = 132,
+    TRICORE_INS_FTOIN = 133,
+    TRICORE_INS_FTOIZ = 134,
+    TRICORE_INS_FTOI = 135,
+    TRICORE_INS_FTOQ31Z = 136,
+    TRICORE_INS_FTOQ31 = 137,
+    TRICORE_INS_FTOUZ = 138,
+    TRICORE_INS_FTOU = 139,
+    TRICORE_INS_GE_A = 140,
+    TRICORE_INS_GE_U = 141,
+    TRICORE_INS_GE = 142,
+    TRICORE_INS_HPTOF = 143,
+    TRICORE_INS_IMASK = 144,
+    TRICORE_INS_INSERT = 145,
+    TRICORE_INS_INSN_T = 146,
+    TRICORE_INS_INS_T = 147,
+    TRICORE_INS_ISYNC = 148,
+    TRICORE_INS_ITODF = 149,
+    TRICORE_INS_ITOF = 150,
+    TRICORE_INS_IXMAX_U = 151,
+    TRICORE_INS_IXMAX = 152,
+    TRICORE_INS_IXMIN_U = 153,
+    TRICORE_INS_IXMIN = 154,
+    TRICORE_INS_JA = 155,
+    TRICORE_INS_JEQ_A = 156,
+    TRICORE_INS_JEQ = 157,
+    TRICORE_INS_JGEZ = 158,
+    TRICORE_INS_JGE_U = 159,
+    TRICORE_INS_JGE = 160,
+    TRICORE_INS_JGTZ = 161,
+    TRICORE_INS_JI = 162,
+    TRICORE_INS_JLA = 163,
+    TRICORE_INS_JLEZ = 164,
+    TRICORE_INS_JLI = 165,
+    TRICORE_INS_JLTZ = 166,
+    TRICORE_INS_JLT_U = 167,
+    TRICORE_INS_JLT = 168,
+    TRICORE_INS_JL = 169,
+    TRICORE_INS_JNED = 170,
+    TRICORE_INS_JNEI = 171,
+    TRICORE_INS_JNE_A = 172,
+    TRICORE_INS_JNE = 173,
+    TRICORE_INS_JNZ_A = 174,
+    TRICORE_INS_JNZ_T = 175,
+    TRICORE_INS_JNZ = 176,
+    TRICORE_INS_JZ_A = 177,
+    TRICORE_INS_JZ_T = 178,
+    TRICORE_INS_JZ = 179,
+    TRICORE_INS_J = 180,
+    TRICORE_INS_LDLCX = 181,
+    TRICORE_INS_LDMST = 182,
+    TRICORE_INS_LDUCX = 183,
+    TRICORE_INS_LD_A = 184,
+    TRICORE_INS_LD_BU = 185,
+    TRICORE_INS_LD_B = 186,
+    TRICORE_INS_LD_DA = 187,
+    TRICORE_INS_LD_D = 188,
+    TRICORE_INS_LD_HU = 189,
+    TRICORE_INS_LD_H = 190,
+    TRICORE_INS_LD_Q = 191,
+    TRICORE_INS_LD_W = 192,
+    TRICORE_INS_LEA = 193,
+    TRICORE_INS_LHA = 194,
+    TRICORE_INS_LOOPU = 195,
+    TRICORE_INS_LOOP = 196,
+    TRICORE_INS_LTODF = 197,
+    TRICORE_INS_LT_A = 198,
+    TRICORE_INS_LT_B = 199,
+    TRICORE_INS_LT_BU = 200,
+    TRICORE_INS_LT_H = 201,
+    TRICORE_INS_LT_HU = 202,
+    TRICORE_INS_LT_U = 203,
+    TRICORE_INS_LT_W = 204,
+    TRICORE_INS_LT_WU = 205,
+    TRICORE_INS_LT = 206,
+    TRICORE_INS_MADDMS_H = 207,
+    TRICORE_INS_MADDMS_U = 208,
+    TRICORE_INS_MADDMS = 209,
+    TRICORE_INS_MADDM_H = 210,
+    TRICORE_INS_MADDM_Q = 211,
+    TRICORE_INS_MADDM_U = 212,
+    TRICORE_INS_MADDM = 213,
+    TRICORE_INS_MADDRS_H = 214,
+    TRICORE_INS_MADDRS_Q = 215,
+    TRICORE_INS_MADDR_H = 216,
+    TRICORE_INS_MADDR_Q = 217,
+    TRICORE_INS_MADDSUMS_H = 218,
+    TRICORE_INS_MADDSUM_H = 219,
+    TRICORE_INS_MADDSURS_H = 220,
+    TRICORE_INS_MADDSUR_H = 221,
+    TRICORE_INS_MADDSUS_H = 222,
+    TRICORE_INS_MADDSU_H = 223,
+    TRICORE_INS_MADDS_H = 224,
+    TRICORE_INS_MADDS_Q = 225,
+    TRICORE_INS_MADDS_U = 226,
+    TRICORE_INS_MADDS = 227,
+    TRICORE_INS_MADD_DF = 228,
+    TRICORE_INS_MADD_F = 229,
+    TRICORE_INS_MADD_H = 230,
+    TRICORE_INS_MADD_Q = 231,
+    TRICORE_INS_MADD_U = 232,
+    TRICORE_INS_MADD = 233,
+    TRICORE_INS_MAX_B = 234,
+    TRICORE_INS_MAX_BU = 235,
+    TRICORE_INS_MAX_DF = 236,
+    TRICORE_INS_MAX_F = 237,
+    TRICORE_INS_MAX_H = 238,
+    TRICORE_INS_MAX_HU = 239,
+    TRICORE_INS_MAX_U = 240,
+    TRICORE_INS_MAX = 241,
+    TRICORE_INS_MFCR = 242,
+    TRICORE_INS_MIN_B = 243,
+    TRICORE_INS_MIN_BU = 244,
+    TRICORE_INS_MIN_DF = 245,
+    TRICORE_INS_MIN_F = 246,
+    TRICORE_INS_MIN_H = 247,
+    TRICORE_INS_MIN_HU = 248,
+    TRICORE_INS_MIN_U = 249,
+    TRICORE_INS_MIN = 250,
+    TRICORE_INS_MOVH_A = 251,
+    TRICORE_INS_MOVH = 252,
+    TRICORE_INS_MOVZ_A = 253,
+    TRICORE_INS_MOV_AA = 254,
+    TRICORE_INS_MOV_A = 255,
+    TRICORE_INS_MOV_D = 256,
+    TRICORE_INS_MOV_U = 257,
+    TRICORE_INS_MOV = 258,
+    TRICORE_INS_MSUBADMS_H = 259,
+    TRICORE_INS_MSUBADM_H = 260,
+    TRICORE_INS_MSUBADRS_H = 261,
+    TRICORE_INS_MSUBADR_H = 262,
+    TRICORE_INS_MSUBADS_H = 263,
+    TRICORE_INS_MSUBAD_H = 264,
+    TRICORE_INS_MSUBMS_H = 265,
+    TRICORE_INS_MSUBMS_U = 266,
+    TRICORE_INS_MSUBMS = 267,
+    TRICORE_INS_MSUBM_H = 268,
+    TRICORE_INS_MSUBM_Q = 269,
+    TRICORE_INS_MSUBM_U = 270,
+    TRICORE_INS_MSUBM = 271,
+    TRICORE_INS_MSUBRS_H = 272,
+    TRICORE_INS_MSUBRS_Q = 273,
+    TRICORE_INS_MSUBR_H = 274,
+    TRICORE_INS_MSUBR_Q = 275,
+    TRICORE_INS_MSUBS_H = 276,
+    TRICORE_INS_MSUBS_Q = 277,
+    TRICORE_INS_MSUBS_U = 278,
+    TRICORE_INS_MSUBS = 279,
+    TRICORE_INS_MSUB_DF = 280,
+    TRICORE_INS_MSUB_F = 281,
+    TRICORE_INS_MSUB_H = 282,
+    TRICORE_INS_MSUB_Q = 283,
+    TRICORE_INS_MSUB_U = 284,
+    TRICORE_INS_MSUB = 285,
+    TRICORE_INS_MTCR = 286,
+    TRICORE_INS_MULMS_H = 287,
+    TRICORE_INS_MULM_H = 288,
+    TRICORE_INS_MULM_U = 289,
+    TRICORE_INS_MULM = 290,
+    TRICORE_INS_MULR_H = 291,
+    TRICORE_INS_MULR_Q = 292,
+    TRICORE_INS_MULS_U = 293,
+    TRICORE_INS_MULS = 294,
+    TRICORE_INS_MUL_DF = 295,
+    TRICORE_INS_MUL_F = 296,
+    TRICORE_INS_MUL_H = 297,
+    TRICORE_INS_MUL_Q = 298,
+    TRICORE_INS_MUL_U = 299,
+    TRICORE_INS_MUL = 300,
+    TRICORE_INS_NAND_T = 301,
+    TRICORE_INS_NAND = 302,
+    TRICORE_INS_NEG_DF = 303,
+    TRICORE_INS_NEG_F = 304,
+    TRICORE_INS_NEZ_A = 305,
+    TRICORE_INS_NE_A = 306,
+    TRICORE_INS_NE = 307,
+    TRICORE_INS_NOP = 308,
+    TRICORE_INS_NOR_T = 309,
+    TRICORE_INS_NOR = 310,
+    TRICORE_INS_NOT = 311,
+    TRICORE_INS_ORN_T = 312,
+    TRICORE_INS_ORN = 313,
+    TRICORE_INS_OR_ANDN_T = 314,
+    TRICORE_INS_OR_AND_T = 315,
+    TRICORE_INS_OR_EQ = 316,
+    TRICORE_INS_OR_GE_U = 317,
+    TRICORE_INS_OR_GE = 318,
+    TRICORE_INS_OR_LT_U = 319,
+    TRICORE_INS_OR_LT = 320,
+    TRICORE_INS_OR_NE = 321,
+    TRICORE_INS_OR_NOR_T = 322,
+    TRICORE_INS_OR_OR_T = 323,
+    TRICORE_INS_OR_T = 324,
+    TRICORE_INS_OR = 325,
+    TRICORE_INS_PACK = 326,
+    TRICORE_INS_PARITY = 327,
+    TRICORE_INS_POPCNT_W = 328,
+    TRICORE_INS_Q31TOF = 329,
+    TRICORE_INS_QSEED_DF = 330,
+    TRICORE_INS_QSEED_F = 331,
+    TRICORE_INS_REM64_U = 332,
+    TRICORE_INS_REM64 = 333,
+    TRICORE_INS_RESTORE = 334,
+    TRICORE_INS_RET = 335,
+    TRICORE_INS_RFE = 336,
+    TRICORE_INS_RFM = 337,
+    TRICORE_INS_RSLCX = 338,
+    TRICORE_INS_RSTV = 339,
+    TRICORE_INS_RSUBS_U = 340,
+    TRICORE_INS_RSUBS = 341,
+    TRICORE_INS_RSUB = 342,
+    TRICORE_INS_SAT_BU = 343,
+    TRICORE_INS_SAT_B = 344,
+    TRICORE_INS_SAT_HU = 345,
+    TRICORE_INS_SAT_H = 346,
+    TRICORE_INS_SELN_A = 347,
+    TRICORE_INS_SELN = 348,
+    TRICORE_INS_SEL_A = 349,
+    TRICORE_INS_SEL = 350,
+    TRICORE_INS_SHAS = 351,
+    TRICORE_INS_SHA_B = 352,
+    TRICORE_INS_SHA_H = 353,
+    TRICORE_INS_SHA = 354,
+    TRICORE_INS_SHUFFLE = 355,
+    TRICORE_INS_SH_ANDN_T = 356,
+    TRICORE_INS_SH_AND_T = 357,
+    TRICORE_INS_SH_B = 358,
+    TRICORE_INS_SH_EQ = 359,
+    TRICORE_INS_SH_GE_U = 360,
+    TRICORE_INS_SH_GE = 361,
+    TRICORE_INS_SH_H = 362,
+    TRICORE_INS_SH_LT_U = 363,
+    TRICORE_INS_SH_LT = 364,
+    TRICORE_INS_SH_NAND_T = 365,
+    TRICORE_INS_SH_NE = 366,
+    TRICORE_INS_SH_NOR_T = 367,
+    TRICORE_INS_SH_ORN_T = 368,
+    TRICORE_INS_SH_OR_T = 369,
+    TRICORE_INS_SH_XNOR_T = 370,
+    TRICORE_INS_SH_XOR_T = 371,
+    TRICORE_INS_SH = 372,
+    TRICORE_INS_STLCX = 373,
+    TRICORE_INS_STUCX = 374,
+    TRICORE_INS_ST_A = 375,
+    TRICORE_INS_ST_B = 376,
+    TRICORE_INS_ST_DA = 377,
+    TRICORE_INS_ST_D = 378,
+    TRICORE_INS_ST_H = 379,
+    TRICORE_INS_ST_Q = 380,
+    TRICORE_INS_ST_T = 381,
+    TRICORE_INS_ST_W = 382,
+    TRICORE_INS_SUBC = 383,
+    TRICORE_INS_SUBSC_A = 384,
+    TRICORE_INS_SUBS_BU = 385,
+    TRICORE_INS_SUBS_B = 386,
+    TRICORE_INS_SUBS_HU = 387,
+    TRICORE_INS_SUBS_H = 388,
+    TRICORE_INS_SUBS_U = 389,
+    TRICORE_INS_SUBS = 390,
+    TRICORE_INS_SUBX = 391,
+    TRICORE_INS_SUB_A = 392,
+    TRICORE_INS_SUB_B = 393,
+    TRICORE_INS_SUB_DF = 394,
+    TRICORE_INS_SUB_F = 395,
+    TRICORE_INS_SUB_H = 396,
+    TRICORE_INS_SUB = 397,
+    TRICORE_INS_SVLCX = 398,
+    TRICORE_INS_SWAPMSK_W = 399,
+    TRICORE_INS_SWAP_A = 400,
+    TRICORE_INS_SWAP_W = 401,
+    TRICORE_INS_SYSCALL = 402,
+    TRICORE_INS_TLBDEMAP = 403,
+    TRICORE_INS_TLBFLUSH_A = 404,
+    TRICORE_INS_TLBFLUSH_B = 405,
+    TRICORE_INS_TLBMAP = 406,
+    TRICORE_INS_TLBPROBE_A = 407,
+    TRICORE_INS_TLBPROBE_I = 408,
+    TRICORE_INS_TRAPSV = 409,
+    TRICORE_INS_TRAPV = 410,
+    TRICORE_INS_ULTODF = 411,
+    TRICORE_INS_UNPACK = 412,
+    TRICORE_INS_UPDFL = 413,
+    TRICORE_INS_UTODF = 414,
+    TRICORE_INS_UTOF = 415,
+    TRICORE_INS_WAIT = 416,
+    TRICORE_INS_XNOR_T = 417,
+    TRICORE_INS_XNOR = 418,
+    TRICORE_INS_XOR_EQ = 419,
+    TRICORE_INS_XOR_GE_U = 420,
+    TRICORE_INS_XOR_GE = 421,
+    TRICORE_INS_XOR_LT_U = 422,
+    TRICORE_INS_XOR_LT = 423,
+    TRICORE_INS_XOR_NE = 424,
+    TRICORE_INS_XOR_T = 425,
+    TRICORE_INS_XOR = 426,
+    TRICORE_INS_ENDING = 427,
+}
+pub mod tricore_insn_group {
+    #[doc = " Group of TriCore instructions"]
+    pub type Type = ::core::ffi::c_uint;
+    #[doc = "< = CS_GRP_INVALID"]
+    pub const TRICORE_GRP_INVALID: Type = 0;
+    #[doc = "< = CS_GRP_CALL"]
+    pub const TRICORE_GRP_CALL: Type = 1;
+    #[doc = "< = CS_GRP_JUMP"]
+    pub const TRICORE_GRP_JUMP: Type = 2;
+    #[doc = "< mark the end of the list of groups"]
+    pub const TRICORE_GRP_ENDING: Type = 3;
+}
+#[repr(u32)]
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
+pub enum tricore_feature_t {
+    TRICORE_FEATURE_INVALID = 0,
+    TRICORE_FEATURE_HASV110 = 128,
+    TRICORE_FEATURE_HASV120 = 129,
+    TRICORE_FEATURE_HASV130 = 130,
+    TRICORE_FEATURE_HASV131 = 131,
+    TRICORE_FEATURE_HASV160 = 132,
+    TRICORE_FEATURE_HASV161 = 133,
+    TRICORE_FEATURE_HASV162 = 134,
+    TRICORE_FEATURE_HASV180 = 135,
+    TRICORE_FEATURE_HASV120_UP = 136,
+    TRICORE_FEATURE_HASV130_UP = 137,
+    TRICORE_FEATURE_HASV131_UP = 138,
+    TRICORE_FEATURE_HASV160_UP = 139,
+    TRICORE_FEATURE_HASV161_UP = 140,
+    TRICORE_FEATURE_HASV162_UP = 141,
+    TRICORE_FEATURE_HASV180_UP = 142,
+    TRICORE_FEATURE_HASV120_DN = 143,
+    TRICORE_FEATURE_HASV130_DN = 144,
+    TRICORE_FEATURE_HASV131_DN = 145,
+    TRICORE_FEATURE_HASV160_DN = 146,
+    TRICORE_FEATURE_HASV161_DN = 147,
+    TRICORE_FEATURE_HASV162_DN = 148,
+    TRICORE_FEATURE_HASV180_DN = 149,
+    #[doc = "< mark the end of the list of features"]
+    TRICORE_FEATURE_ENDING = 150,
+}
+pub use self::tricore_feature_t as tricore_feature;
+#[repr(u32)]
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
+pub enum wasm_op_type {
+    WASM_OP_INVALID = 0,
+    WASM_OP_IMM = 2,
+    WASM_OP_NONE = 16,
+    WASM_OP_INT7 = 17,
+    WASM_OP_VARUINT32 = 18,
+    WASM_OP_VARUINT64 = 19,
+    WASM_OP_UINT32 = 20,
+    WASM_OP_UINT64 = 21,
+    WASM_OP_BRTABLE = 22,
+}
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct cs_wasm_brtable {
+    pub length: u32,
+    pub address: u64,
+    pub default_target: u32,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct cs_wasm_op {
+    pub type_: wasm_op_type,
+    pub size: u32,
+    pub __bindgen_anon_1: cs_wasm_op__bindgen_ty_1,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub union cs_wasm_op__bindgen_ty_1 {
+    pub int7: i8,
+    pub varuint32: u32,
+    pub varuint64: u64,
+    pub uint32: u32,
+    pub uint64: u64,
+    pub immediate: [u32; 2usize],
+    pub brtable: cs_wasm_brtable,
+}
+impl ::core::fmt::Debug for cs_wasm_op__bindgen_ty_1 {
+    fn fmt(&self, f: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
+        write!(f, "cs_wasm_op__bindgen_ty_1 {{ union }}")
+    }
+}
+impl ::core::fmt::Debug for cs_wasm_op {
+    fn fmt(&self, f: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
+        write!(
+            f,
+            "cs_wasm_op {{ type: {:?}, __bindgen_anon_1: {:?} }}",
+            self.type_, self.__bindgen_anon_1
+        )
+    }
+}
+#[doc = " Instruction structure"]
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct cs_wasm {
+    pub op_count: u8,
+    pub operands: [cs_wasm_op; 2usize],
+}
+impl ::core::fmt::Debug for cs_wasm {
+    fn fmt(&self, f: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
+        write!(f, "cs_wasm {{ operands: {:?} }}", self.operands)
+    }
+}
 pub mod x86_reg {
     #[doc = " X86 registers"]
     pub type Type = ::core::ffi::c_uint;
@@ -20122,8822 +29938,6 @@ pub mod xcore_insn_group {
     pub const XCORE_GRP_JUMP: Type = 1;
     pub const XCORE_GRP_ENDING: Type = 2;
 }
-#[repr(u32)]
-#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
-pub enum tms320c64x_op_type {
-    TMS320C64X_OP_INVALID = 0,
-    #[doc = "< = CS_OP_REG (Register operand)."]
-    TMS320C64X_OP_REG = 1,
-    #[doc = "< = CS_OP_IMM (Immediate operand)."]
-    TMS320C64X_OP_IMM = 2,
-    TMS320C64X_OP_REGPAIR = 16,
-    #[doc = "< = CS_OP_MEM (Memory operand)."]
-    TMS320C64X_OP_MEM = 128,
-}
-#[repr(u32)]
-#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
-pub enum tms320c64x_mem_disp {
-    TMS320C64X_MEM_DISP_INVALID = 0,
-    TMS320C64X_MEM_DISP_CONSTANT = 1,
-    TMS320C64X_MEM_DISP_REGISTER = 2,
-}
-#[repr(u32)]
-#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
-pub enum tms320c64x_mem_dir {
-    TMS320C64X_MEM_DIR_INVALID = 0,
-    TMS320C64X_MEM_DIR_FW = 1,
-    TMS320C64X_MEM_DIR_BW = 2,
-}
-#[repr(u32)]
-#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
-pub enum tms320c64x_mem_mod {
-    TMS320C64X_MEM_MOD_INVALID = 0,
-    TMS320C64X_MEM_MOD_NO = 1,
-    TMS320C64X_MEM_MOD_PRE = 2,
-    TMS320C64X_MEM_MOD_POST = 3,
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct tms320c64x_op_mem {
-    #[doc = "< base register"]
-    pub base: ::core::ffi::c_uint,
-    #[doc = "< displacement/offset value"]
-    pub disp: ::core::ffi::c_uint,
-    #[doc = "< unit of base and offset register"]
-    pub unit: ::core::ffi::c_uint,
-    #[doc = "< offset scaled"]
-    pub scaled: ::core::ffi::c_uint,
-    #[doc = "< displacement type"]
-    pub disptype: ::core::ffi::c_uint,
-    #[doc = "< direction"]
-    pub direction: ::core::ffi::c_uint,
-    #[doc = "< modification"]
-    pub modify: ::core::ffi::c_uint,
-}
-#[repr(C)]
-#[derive(Copy, Clone)]
-pub struct cs_tms320c64x_op {
-    #[doc = "< operand type"]
-    pub type_: tms320c64x_op_type,
-    pub __bindgen_anon_1: cs_tms320c64x_op__bindgen_ty_1,
-}
-#[repr(C)]
-#[derive(Copy, Clone)]
-pub union cs_tms320c64x_op__bindgen_ty_1 {
-    #[doc = "< register value for REG operand or first register for REGPAIR operand"]
-    pub reg: ::core::ffi::c_uint,
-    #[doc = "< immediate value for IMM operand"]
-    pub imm: i32,
-    #[doc = "< base/disp value for MEM operand"]
-    pub mem: tms320c64x_op_mem,
-}
-impl ::core::fmt::Debug for cs_tms320c64x_op__bindgen_ty_1 {
-    fn fmt(&self, f: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
-        write!(f, "cs_tms320c64x_op__bindgen_ty_1 {{ union }}")
-    }
-}
-impl ::core::fmt::Debug for cs_tms320c64x_op {
-    fn fmt(&self, f: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
-        write!(
-            f,
-            "cs_tms320c64x_op {{ type: {:?}, __bindgen_anon_1: {:?} }}",
-            self.type_, self.__bindgen_anon_1
-        )
-    }
-}
-#[repr(C)]
-#[derive(Copy, Clone)]
-pub struct cs_tms320c64x {
-    pub op_count: u8,
-    #[doc = "< operands for this instruction."]
-    pub operands: [cs_tms320c64x_op; 8usize],
-    pub condition: cs_tms320c64x__bindgen_ty_1,
-    pub funit: cs_tms320c64x__bindgen_ty_2,
-    pub parallel: ::core::ffi::c_uint,
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct cs_tms320c64x__bindgen_ty_1 {
-    pub reg: ::core::ffi::c_uint,
-    pub zero: ::core::ffi::c_uint,
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct cs_tms320c64x__bindgen_ty_2 {
-    pub unit: ::core::ffi::c_uint,
-    pub side: ::core::ffi::c_uint,
-    pub crosspath: ::core::ffi::c_uint,
-}
-impl ::core::fmt::Debug for cs_tms320c64x {
-    fn fmt(&self, f: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
-        write!(
-            f,
-            "cs_tms320c64x {{ operands: {:?}, condition: {:?}, funit: {:?}, parallel: {:?} }}",
-            self.operands, self.condition, self.funit, self.parallel
-        )
-    }
-}
-pub mod tms320c64x_reg {
-    pub type Type = ::core::ffi::c_uint;
-    pub const TMS320C64X_REG_INVALID: Type = 0;
-    pub const TMS320C64X_REG_AMR: Type = 1;
-    pub const TMS320C64X_REG_CSR: Type = 2;
-    pub const TMS320C64X_REG_DIER: Type = 3;
-    pub const TMS320C64X_REG_DNUM: Type = 4;
-    pub const TMS320C64X_REG_ECR: Type = 5;
-    pub const TMS320C64X_REG_GFPGFR: Type = 6;
-    pub const TMS320C64X_REG_GPLYA: Type = 7;
-    pub const TMS320C64X_REG_GPLYB: Type = 8;
-    pub const TMS320C64X_REG_ICR: Type = 9;
-    pub const TMS320C64X_REG_IER: Type = 10;
-    pub const TMS320C64X_REG_IERR: Type = 11;
-    pub const TMS320C64X_REG_ILC: Type = 12;
-    pub const TMS320C64X_REG_IRP: Type = 13;
-    pub const TMS320C64X_REG_ISR: Type = 14;
-    pub const TMS320C64X_REG_ISTP: Type = 15;
-    pub const TMS320C64X_REG_ITSR: Type = 16;
-    pub const TMS320C64X_REG_NRP: Type = 17;
-    pub const TMS320C64X_REG_NTSR: Type = 18;
-    pub const TMS320C64X_REG_REP: Type = 19;
-    pub const TMS320C64X_REG_RILC: Type = 20;
-    pub const TMS320C64X_REG_SSR: Type = 21;
-    pub const TMS320C64X_REG_TSCH: Type = 22;
-    pub const TMS320C64X_REG_TSCL: Type = 23;
-    pub const TMS320C64X_REG_TSR: Type = 24;
-    pub const TMS320C64X_REG_A0: Type = 25;
-    pub const TMS320C64X_REG_A1: Type = 26;
-    pub const TMS320C64X_REG_A2: Type = 27;
-    pub const TMS320C64X_REG_A3: Type = 28;
-    pub const TMS320C64X_REG_A4: Type = 29;
-    pub const TMS320C64X_REG_A5: Type = 30;
-    pub const TMS320C64X_REG_A6: Type = 31;
-    pub const TMS320C64X_REG_A7: Type = 32;
-    pub const TMS320C64X_REG_A8: Type = 33;
-    pub const TMS320C64X_REG_A9: Type = 34;
-    pub const TMS320C64X_REG_A10: Type = 35;
-    pub const TMS320C64X_REG_A11: Type = 36;
-    pub const TMS320C64X_REG_A12: Type = 37;
-    pub const TMS320C64X_REG_A13: Type = 38;
-    pub const TMS320C64X_REG_A14: Type = 39;
-    pub const TMS320C64X_REG_A15: Type = 40;
-    pub const TMS320C64X_REG_A16: Type = 41;
-    pub const TMS320C64X_REG_A17: Type = 42;
-    pub const TMS320C64X_REG_A18: Type = 43;
-    pub const TMS320C64X_REG_A19: Type = 44;
-    pub const TMS320C64X_REG_A20: Type = 45;
-    pub const TMS320C64X_REG_A21: Type = 46;
-    pub const TMS320C64X_REG_A22: Type = 47;
-    pub const TMS320C64X_REG_A23: Type = 48;
-    pub const TMS320C64X_REG_A24: Type = 49;
-    pub const TMS320C64X_REG_A25: Type = 50;
-    pub const TMS320C64X_REG_A26: Type = 51;
-    pub const TMS320C64X_REG_A27: Type = 52;
-    pub const TMS320C64X_REG_A28: Type = 53;
-    pub const TMS320C64X_REG_A29: Type = 54;
-    pub const TMS320C64X_REG_A30: Type = 55;
-    pub const TMS320C64X_REG_A31: Type = 56;
-    pub const TMS320C64X_REG_B0: Type = 57;
-    pub const TMS320C64X_REG_B1: Type = 58;
-    pub const TMS320C64X_REG_B2: Type = 59;
-    pub const TMS320C64X_REG_B3: Type = 60;
-    pub const TMS320C64X_REG_B4: Type = 61;
-    pub const TMS320C64X_REG_B5: Type = 62;
-    pub const TMS320C64X_REG_B6: Type = 63;
-    pub const TMS320C64X_REG_B7: Type = 64;
-    pub const TMS320C64X_REG_B8: Type = 65;
-    pub const TMS320C64X_REG_B9: Type = 66;
-    pub const TMS320C64X_REG_B10: Type = 67;
-    pub const TMS320C64X_REG_B11: Type = 68;
-    pub const TMS320C64X_REG_B12: Type = 69;
-    pub const TMS320C64X_REG_B13: Type = 70;
-    pub const TMS320C64X_REG_B14: Type = 71;
-    pub const TMS320C64X_REG_B15: Type = 72;
-    pub const TMS320C64X_REG_B16: Type = 73;
-    pub const TMS320C64X_REG_B17: Type = 74;
-    pub const TMS320C64X_REG_B18: Type = 75;
-    pub const TMS320C64X_REG_B19: Type = 76;
-    pub const TMS320C64X_REG_B20: Type = 77;
-    pub const TMS320C64X_REG_B21: Type = 78;
-    pub const TMS320C64X_REG_B22: Type = 79;
-    pub const TMS320C64X_REG_B23: Type = 80;
-    pub const TMS320C64X_REG_B24: Type = 81;
-    pub const TMS320C64X_REG_B25: Type = 82;
-    pub const TMS320C64X_REG_B26: Type = 83;
-    pub const TMS320C64X_REG_B27: Type = 84;
-    pub const TMS320C64X_REG_B28: Type = 85;
-    pub const TMS320C64X_REG_B29: Type = 86;
-    pub const TMS320C64X_REG_B30: Type = 87;
-    pub const TMS320C64X_REG_B31: Type = 88;
-    pub const TMS320C64X_REG_PCE1: Type = 89;
-    pub const TMS320C64X_REG_ENDING: Type = 90;
-    pub const TMS320C64X_REG_EFR: Type = 5;
-    pub const TMS320C64X_REG_IFR: Type = 14;
-}
-#[repr(u32)]
-#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
-pub enum tms320c64x_insn {
-    TMS320C64X_INS_INVALID = 0,
-    TMS320C64X_INS_ABS = 1,
-    TMS320C64X_INS_ABS2 = 2,
-    TMS320C64X_INS_ADD = 3,
-    TMS320C64X_INS_ADD2 = 4,
-    TMS320C64X_INS_ADD4 = 5,
-    TMS320C64X_INS_ADDAB = 6,
-    TMS320C64X_INS_ADDAD = 7,
-    TMS320C64X_INS_ADDAH = 8,
-    TMS320C64X_INS_ADDAW = 9,
-    TMS320C64X_INS_ADDK = 10,
-    TMS320C64X_INS_ADDKPC = 11,
-    TMS320C64X_INS_ADDU = 12,
-    TMS320C64X_INS_AND = 13,
-    TMS320C64X_INS_ANDN = 14,
-    TMS320C64X_INS_AVG2 = 15,
-    TMS320C64X_INS_AVGU4 = 16,
-    TMS320C64X_INS_B = 17,
-    TMS320C64X_INS_BDEC = 18,
-    TMS320C64X_INS_BITC4 = 19,
-    TMS320C64X_INS_BNOP = 20,
-    TMS320C64X_INS_BPOS = 21,
-    TMS320C64X_INS_CLR = 22,
-    TMS320C64X_INS_CMPEQ = 23,
-    TMS320C64X_INS_CMPEQ2 = 24,
-    TMS320C64X_INS_CMPEQ4 = 25,
-    TMS320C64X_INS_CMPGT = 26,
-    TMS320C64X_INS_CMPGT2 = 27,
-    TMS320C64X_INS_CMPGTU4 = 28,
-    TMS320C64X_INS_CMPLT = 29,
-    TMS320C64X_INS_CMPLTU = 30,
-    TMS320C64X_INS_DEAL = 31,
-    TMS320C64X_INS_DOTP2 = 32,
-    TMS320C64X_INS_DOTPN2 = 33,
-    TMS320C64X_INS_DOTPNRSU2 = 34,
-    TMS320C64X_INS_DOTPRSU2 = 35,
-    TMS320C64X_INS_DOTPSU4 = 36,
-    TMS320C64X_INS_DOTPU4 = 37,
-    TMS320C64X_INS_EXT = 38,
-    TMS320C64X_INS_EXTU = 39,
-    TMS320C64X_INS_GMPGTU = 40,
-    TMS320C64X_INS_GMPY4 = 41,
-    TMS320C64X_INS_LDB = 42,
-    TMS320C64X_INS_LDBU = 43,
-    TMS320C64X_INS_LDDW = 44,
-    TMS320C64X_INS_LDH = 45,
-    TMS320C64X_INS_LDHU = 46,
-    TMS320C64X_INS_LDNDW = 47,
-    TMS320C64X_INS_LDNW = 48,
-    TMS320C64X_INS_LDW = 49,
-    TMS320C64X_INS_LMBD = 50,
-    TMS320C64X_INS_MAX2 = 51,
-    TMS320C64X_INS_MAXU4 = 52,
-    TMS320C64X_INS_MIN2 = 53,
-    TMS320C64X_INS_MINU4 = 54,
-    TMS320C64X_INS_MPY = 55,
-    TMS320C64X_INS_MPY2 = 56,
-    TMS320C64X_INS_MPYH = 57,
-    TMS320C64X_INS_MPYHI = 58,
-    TMS320C64X_INS_MPYHIR = 59,
-    TMS320C64X_INS_MPYHL = 60,
-    TMS320C64X_INS_MPYHLU = 61,
-    TMS320C64X_INS_MPYHSLU = 62,
-    TMS320C64X_INS_MPYHSU = 63,
-    TMS320C64X_INS_MPYHU = 64,
-    TMS320C64X_INS_MPYHULS = 65,
-    TMS320C64X_INS_MPYHUS = 66,
-    TMS320C64X_INS_MPYLH = 67,
-    TMS320C64X_INS_MPYLHU = 68,
-    TMS320C64X_INS_MPYLI = 69,
-    TMS320C64X_INS_MPYLIR = 70,
-    TMS320C64X_INS_MPYLSHU = 71,
-    TMS320C64X_INS_MPYLUHS = 72,
-    TMS320C64X_INS_MPYSU = 73,
-    TMS320C64X_INS_MPYSU4 = 74,
-    TMS320C64X_INS_MPYU = 75,
-    TMS320C64X_INS_MPYU4 = 76,
-    TMS320C64X_INS_MPYUS = 77,
-    TMS320C64X_INS_MVC = 78,
-    TMS320C64X_INS_MVD = 79,
-    TMS320C64X_INS_MVK = 80,
-    TMS320C64X_INS_MVKL = 81,
-    TMS320C64X_INS_MVKLH = 82,
-    TMS320C64X_INS_NOP = 83,
-    TMS320C64X_INS_NORM = 84,
-    TMS320C64X_INS_OR = 85,
-    TMS320C64X_INS_PACK2 = 86,
-    TMS320C64X_INS_PACKH2 = 87,
-    TMS320C64X_INS_PACKH4 = 88,
-    TMS320C64X_INS_PACKHL2 = 89,
-    TMS320C64X_INS_PACKL4 = 90,
-    TMS320C64X_INS_PACKLH2 = 91,
-    TMS320C64X_INS_ROTL = 92,
-    TMS320C64X_INS_SADD = 93,
-    TMS320C64X_INS_SADD2 = 94,
-    TMS320C64X_INS_SADDU4 = 95,
-    TMS320C64X_INS_SADDUS2 = 96,
-    TMS320C64X_INS_SAT = 97,
-    TMS320C64X_INS_SET = 98,
-    TMS320C64X_INS_SHFL = 99,
-    TMS320C64X_INS_SHL = 100,
-    TMS320C64X_INS_SHLMB = 101,
-    TMS320C64X_INS_SHR = 102,
-    TMS320C64X_INS_SHR2 = 103,
-    TMS320C64X_INS_SHRMB = 104,
-    TMS320C64X_INS_SHRU = 105,
-    TMS320C64X_INS_SHRU2 = 106,
-    TMS320C64X_INS_SMPY = 107,
-    TMS320C64X_INS_SMPY2 = 108,
-    TMS320C64X_INS_SMPYH = 109,
-    TMS320C64X_INS_SMPYHL = 110,
-    TMS320C64X_INS_SMPYLH = 111,
-    TMS320C64X_INS_SPACK2 = 112,
-    TMS320C64X_INS_SPACKU4 = 113,
-    TMS320C64X_INS_SSHL = 114,
-    TMS320C64X_INS_SSHVL = 115,
-    TMS320C64X_INS_SSHVR = 116,
-    TMS320C64X_INS_SSUB = 117,
-    TMS320C64X_INS_STB = 118,
-    TMS320C64X_INS_STDW = 119,
-    TMS320C64X_INS_STH = 120,
-    TMS320C64X_INS_STNDW = 121,
-    TMS320C64X_INS_STNW = 122,
-    TMS320C64X_INS_STW = 123,
-    TMS320C64X_INS_SUB = 124,
-    TMS320C64X_INS_SUB2 = 125,
-    TMS320C64X_INS_SUB4 = 126,
-    TMS320C64X_INS_SUBAB = 127,
-    TMS320C64X_INS_SUBABS4 = 128,
-    TMS320C64X_INS_SUBAH = 129,
-    TMS320C64X_INS_SUBAW = 130,
-    TMS320C64X_INS_SUBC = 131,
-    TMS320C64X_INS_SUBU = 132,
-    TMS320C64X_INS_SWAP4 = 133,
-    TMS320C64X_INS_UNPKHU4 = 134,
-    TMS320C64X_INS_UNPKLU4 = 135,
-    TMS320C64X_INS_XOR = 136,
-    TMS320C64X_INS_XPND2 = 137,
-    TMS320C64X_INS_XPND4 = 138,
-    TMS320C64X_INS_IDLE = 139,
-    TMS320C64X_INS_MV = 140,
-    TMS320C64X_INS_NEG = 141,
-    TMS320C64X_INS_NOT = 142,
-    TMS320C64X_INS_SWAP2 = 143,
-    TMS320C64X_INS_ZERO = 144,
-    TMS320C64X_INS_ENDING = 145,
-}
-pub mod tms320c64x_insn_group {
-    pub type Type = ::core::ffi::c_uint;
-    #[doc = "< = CS_GRP_INVALID"]
-    pub const TMS320C64X_GRP_INVALID: Type = 0;
-    #[doc = "< = CS_GRP_JUMP"]
-    pub const TMS320C64X_GRP_JUMP: Type = 1;
-    pub const TMS320C64X_GRP_FUNIT_D: Type = 128;
-    pub const TMS320C64X_GRP_FUNIT_L: Type = 129;
-    pub const TMS320C64X_GRP_FUNIT_M: Type = 130;
-    pub const TMS320C64X_GRP_FUNIT_S: Type = 131;
-    pub const TMS320C64X_GRP_FUNIT_NO: Type = 132;
-    pub const TMS320C64X_GRP_ENDING: Type = 133;
-}
-#[repr(u32)]
-#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
-pub enum tms320c64x_funit {
-    TMS320C64X_FUNIT_INVALID = 0,
-    TMS320C64X_FUNIT_D = 1,
-    TMS320C64X_FUNIT_L = 2,
-    TMS320C64X_FUNIT_M = 3,
-    TMS320C64X_FUNIT_S = 4,
-    TMS320C64X_FUNIT_NO = 5,
-}
-pub mod m680x_reg {
-    #[doc = " M680X registers and special registers"]
-    pub type Type = ::core::ffi::c_uint;
-    pub const M680X_REG_INVALID: Type = 0;
-    #[doc = "< M6800/1/2/3/9, HD6301/9"]
-    pub const M680X_REG_A: Type = 1;
-    #[doc = "< M6800/1/2/3/9, HD6301/9"]
-    pub const M680X_REG_B: Type = 2;
-    #[doc = "< HD6309"]
-    pub const M680X_REG_E: Type = 3;
-    #[doc = "< HD6309"]
-    pub const M680X_REG_F: Type = 4;
-    #[doc = "< HD6309"]
-    pub const M680X_REG_0: Type = 5;
-    #[doc = "< M6801/3/9, HD6301/9"]
-    pub const M680X_REG_D: Type = 6;
-    #[doc = "< HD6309"]
-    pub const M680X_REG_W: Type = 7;
-    #[doc = "< M6800/1/2/3/9, M6301/9"]
-    pub const M680X_REG_CC: Type = 8;
-    #[doc = "< M6809/M6309"]
-    pub const M680X_REG_DP: Type = 9;
-    #[doc = "< M6309"]
-    pub const M680X_REG_MD: Type = 10;
-    #[doc = "< M6808"]
-    pub const M680X_REG_HX: Type = 11;
-    #[doc = "< M6808"]
-    pub const M680X_REG_H: Type = 12;
-    #[doc = "< M6800/1/2/3/9, M6301/9"]
-    pub const M680X_REG_X: Type = 13;
-    #[doc = "< M6809/M6309"]
-    pub const M680X_REG_Y: Type = 14;
-    #[doc = "< M6809/M6309"]
-    pub const M680X_REG_S: Type = 15;
-    #[doc = "< M6809/M6309"]
-    pub const M680X_REG_U: Type = 16;
-    #[doc = "< M6309"]
-    pub const M680X_REG_V: Type = 17;
-    #[doc = "< M6309"]
-    pub const M680X_REG_Q: Type = 18;
-    #[doc = "< M6800/1/2/3/9, M6301/9"]
-    pub const M680X_REG_PC: Type = 19;
-    #[doc = "< CPU12"]
-    pub const M680X_REG_TMP2: Type = 20;
-    #[doc = "< CPU12"]
-    pub const M680X_REG_TMP3: Type = 21;
-    #[doc = "< <-- mark the end of the list of registers"]
-    pub const M680X_REG_ENDING: Type = 22;
-}
-#[repr(u32)]
-#[doc = " Operand type for instruction's operands"]
-#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
-pub enum m680x_op_type {
-    #[doc = "< = CS_OP_INVALID (Uninitialized)."]
-    M680X_OP_INVALID = 0,
-    #[doc = "< = Register operand."]
-    M680X_OP_REGISTER = 1,
-    #[doc = "< = Immediate operand."]
-    M680X_OP_IMMEDIATE = 2,
-    #[doc = "< = Indexed addressing operand."]
-    M680X_OP_INDEXED = 16,
-    M680X_OP_EXTENDED = 17,
-    #[doc = "< = Direct addressing operand."]
-    M680X_OP_DIRECT = 18,
-    M680X_OP_RELATIVE = 19,
-    M680X_OP_CONSTANT = 20,
-}
-#[doc = " Instruction's operand referring to indexed addressing"]
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct m680x_op_idx {
-    #[doc = "< base register (or M680X_REG_INVALID if\n< irrelevant)"]
-    pub base_reg: m680x_reg::Type,
-    #[doc = "< offset register (or M680X_REG_INVALID if\n< irrelevant)"]
-    pub offset_reg: m680x_reg::Type,
-    #[doc = "< 5-,8- or 16-bit offset. See also offset_bits."]
-    pub offset: i16,
-    #[doc = "< = offset addr. if base_reg == M680X_REG_PC.\n< calculated as offset + PC"]
-    pub offset_addr: u16,
-    #[doc = "< offset width in bits for indexed addressing"]
-    pub offset_bits: u8,
-    #[doc = "< inc. or dec. value:\n<    0: no inc-/decrement\n<    1 .. 8: increment by 1 .. 8\n<    -1 .. -8: decrement by 1 .. 8\n< if flag M680X_IDX_POST_INC_DEC set it is post\n< inc-/decrement otherwise pre inc-/decrement"]
-    pub inc_dec: i8,
-    #[doc = "< 8-bit flags (see above)"]
-    pub flags: u8,
-}
-#[doc = " Instruction's memory operand referring to relative addressing (Bcc/LBcc)"]
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct m680x_op_rel {
-    #[doc = "< The absolute address.\n< calculated as PC + offset. PC is the first\n< address after the instruction."]
-    pub address: u16,
-    #[doc = "< the offset/displacement value"]
-    pub offset: i16,
-}
-#[doc = " Instruction's operand referring to extended addressing"]
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct m680x_op_ext {
-    #[doc = "< The absolute address"]
-    pub address: u16,
-    #[doc = "< true if extended indirect addressing"]
-    pub indirect: bool,
-}
-#[doc = " Instruction operand"]
-#[repr(C)]
-#[derive(Copy, Clone)]
-pub struct cs_m680x_op {
-    pub type_: m680x_op_type,
-    pub __bindgen_anon_1: cs_m680x_op__bindgen_ty_1,
-    #[doc = "< size of this operand (in bytes)"]
-    pub size: u8,
-    #[doc = " How is this operand accessed? (READ, WRITE or READ|WRITE)\n This field is combined of cs_ac_type.\n NOTE: this field is irrelevant if engine is compiled in DIET"]
-    pub access: cs_ac_type,
-}
-#[repr(C)]
-#[derive(Copy, Clone)]
-pub union cs_m680x_op__bindgen_ty_1 {
-    #[doc = "< immediate value for IMM operand"]
-    pub imm: i32,
-    #[doc = "< register value for REG operand"]
-    pub reg: m680x_reg::Type,
-    #[doc = "< Indexed addressing operand"]
-    pub idx: m680x_op_idx,
-    #[doc = "< Relative address. operand (Bcc/LBcc)"]
-    pub rel: m680x_op_rel,
-    #[doc = "< Extended address"]
-    pub ext: m680x_op_ext,
-    #[doc = "<</ Direct address (lower 8-bit)"]
-    pub direct_addr: u8,
-    #[doc = "< constant value (bit index, page nr.)"]
-    pub const_val: u8,
-}
-impl ::core::fmt::Debug for cs_m680x_op__bindgen_ty_1 {
-    fn fmt(&self, f: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
-        write!(f, "cs_m680x_op__bindgen_ty_1 {{ union }}")
-    }
-}
-impl ::core::fmt::Debug for cs_m680x_op {
-    fn fmt(&self, f: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
-        write!(
-            f,
-            "cs_m680x_op {{ type: {:?}, __bindgen_anon_1: {:?}, access: {:?} }}",
-            self.type_, self.__bindgen_anon_1, self.access
-        )
-    }
-}
-#[repr(u32)]
-#[doc = " Group of M680X instructions"]
-#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
-pub enum m680x_group_type {
-    M680X_GRP_INVALID = 0,
-    #[doc = "< = CS_GRP_JUMP"]
-    M680X_GRP_JUMP = 1,
-    #[doc = "< = CS_GRP_CALL"]
-    M680X_GRP_CALL = 2,
-    #[doc = "< = CS_GRP_RET"]
-    M680X_GRP_RET = 3,
-    #[doc = "< = CS_GRP_INT"]
-    M680X_GRP_INT = 4,
-    #[doc = "< = CS_GRP_IRET"]
-    M680X_GRP_IRET = 5,
-    #[doc = "< = CS_GRP_PRIVILEDGE; not used"]
-    M680X_GRP_PRIV = 6,
-    #[doc = "< = CS_GRP_BRANCH_RELATIVE"]
-    M680X_GRP_BRAREL = 7,
-    M680X_GRP_ENDING = 8,
-}
-#[doc = " The M680X instruction and its operands"]
-#[repr(C)]
-#[derive(Copy, Clone)]
-pub struct cs_m680x {
-    #[doc = "< See: M680X instruction flags"]
-    pub flags: u8,
-    #[doc = "< number of operands for the instruction or 0"]
-    pub op_count: u8,
-    #[doc = "< operands for this insn."]
-    pub operands: [cs_m680x_op; 9usize],
-}
-impl ::core::fmt::Debug for cs_m680x {
-    fn fmt(&self, f: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
-        write!(f, "cs_m680x {{ operands: {:?} }}", self.operands)
-    }
-}
-#[repr(u32)]
-#[doc = " M680X instruction IDs"]
-#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
-pub enum m680x_insn {
-    M680X_INS_INVLD = 0,
-    #[doc = "< M6800/1/2/3"]
-    M680X_INS_ABA = 1,
-    M680X_INS_ABX = 2,
-    M680X_INS_ABY = 3,
-    M680X_INS_ADC = 4,
-    M680X_INS_ADCA = 5,
-    M680X_INS_ADCB = 6,
-    M680X_INS_ADCD = 7,
-    M680X_INS_ADCR = 8,
-    M680X_INS_ADD = 9,
-    M680X_INS_ADDA = 10,
-    M680X_INS_ADDB = 11,
-    M680X_INS_ADDD = 12,
-    M680X_INS_ADDE = 13,
-    M680X_INS_ADDF = 14,
-    M680X_INS_ADDR = 15,
-    M680X_INS_ADDW = 16,
-    M680X_INS_AIM = 17,
-    M680X_INS_AIS = 18,
-    M680X_INS_AIX = 19,
-    M680X_INS_AND = 20,
-    M680X_INS_ANDA = 21,
-    M680X_INS_ANDB = 22,
-    M680X_INS_ANDCC = 23,
-    M680X_INS_ANDD = 24,
-    M680X_INS_ANDR = 25,
-    M680X_INS_ASL = 26,
-    M680X_INS_ASLA = 27,
-    M680X_INS_ASLB = 28,
-    #[doc = "< or LSLD"]
-    M680X_INS_ASLD = 29,
-    M680X_INS_ASR = 30,
-    M680X_INS_ASRA = 31,
-    M680X_INS_ASRB = 32,
-    M680X_INS_ASRD = 33,
-    M680X_INS_ASRX = 34,
-    M680X_INS_BAND = 35,
-    #[doc = "< or BHS"]
-    M680X_INS_BCC = 36,
-    M680X_INS_BCLR = 37,
-    #[doc = "< or BLO"]
-    M680X_INS_BCS = 38,
-    M680X_INS_BEOR = 39,
-    M680X_INS_BEQ = 40,
-    M680X_INS_BGE = 41,
-    M680X_INS_BGND = 42,
-    M680X_INS_BGT = 43,
-    M680X_INS_BHCC = 44,
-    M680X_INS_BHCS = 45,
-    M680X_INS_BHI = 46,
-    M680X_INS_BIAND = 47,
-    M680X_INS_BIEOR = 48,
-    M680X_INS_BIH = 49,
-    M680X_INS_BIL = 50,
-    M680X_INS_BIOR = 51,
-    M680X_INS_BIT = 52,
-    M680X_INS_BITA = 53,
-    M680X_INS_BITB = 54,
-    M680X_INS_BITD = 55,
-    M680X_INS_BITMD = 56,
-    M680X_INS_BLE = 57,
-    M680X_INS_BLS = 58,
-    M680X_INS_BLT = 59,
-    M680X_INS_BMC = 60,
-    M680X_INS_BMI = 61,
-    M680X_INS_BMS = 62,
-    M680X_INS_BNE = 63,
-    M680X_INS_BOR = 64,
-    M680X_INS_BPL = 65,
-    M680X_INS_BRCLR = 66,
-    M680X_INS_BRSET = 67,
-    M680X_INS_BRA = 68,
-    M680X_INS_BRN = 69,
-    M680X_INS_BSET = 70,
-    M680X_INS_BSR = 71,
-    M680X_INS_BVC = 72,
-    M680X_INS_BVS = 73,
-    M680X_INS_CALL = 74,
-    #[doc = "< M6800/1/2/3"]
-    M680X_INS_CBA = 75,
-    M680X_INS_CBEQ = 76,
-    M680X_INS_CBEQA = 77,
-    M680X_INS_CBEQX = 78,
-    #[doc = "< M6800/1/2/3"]
-    M680X_INS_CLC = 79,
-    #[doc = "< M6800/1/2/3"]
-    M680X_INS_CLI = 80,
-    M680X_INS_CLR = 81,
-    M680X_INS_CLRA = 82,
-    M680X_INS_CLRB = 83,
-    M680X_INS_CLRD = 84,
-    M680X_INS_CLRE = 85,
-    M680X_INS_CLRF = 86,
-    M680X_INS_CLRH = 87,
-    M680X_INS_CLRW = 88,
-    M680X_INS_CLRX = 89,
-    #[doc = "< M6800/1/2/3"]
-    M680X_INS_CLV = 90,
-    M680X_INS_CMP = 91,
-    M680X_INS_CMPA = 92,
-    M680X_INS_CMPB = 93,
-    M680X_INS_CMPD = 94,
-    M680X_INS_CMPE = 95,
-    M680X_INS_CMPF = 96,
-    M680X_INS_CMPR = 97,
-    M680X_INS_CMPS = 98,
-    M680X_INS_CMPU = 99,
-    M680X_INS_CMPW = 100,
-    M680X_INS_CMPX = 101,
-    M680X_INS_CMPY = 102,
-    M680X_INS_COM = 103,
-    M680X_INS_COMA = 104,
-    M680X_INS_COMB = 105,
-    M680X_INS_COMD = 106,
-    M680X_INS_COME = 107,
-    M680X_INS_COMF = 108,
-    M680X_INS_COMW = 109,
-    M680X_INS_COMX = 110,
-    M680X_INS_CPD = 111,
-    M680X_INS_CPHX = 112,
-    M680X_INS_CPS = 113,
-    #[doc = "< M6800/1/2/3"]
-    M680X_INS_CPX = 114,
-    M680X_INS_CPY = 115,
-    M680X_INS_CWAI = 116,
-    M680X_INS_DAA = 117,
-    M680X_INS_DBEQ = 118,
-    M680X_INS_DBNE = 119,
-    M680X_INS_DBNZ = 120,
-    M680X_INS_DBNZA = 121,
-    M680X_INS_DBNZX = 122,
-    M680X_INS_DEC = 123,
-    M680X_INS_DECA = 124,
-    M680X_INS_DECB = 125,
-    M680X_INS_DECD = 126,
-    M680X_INS_DECE = 127,
-    M680X_INS_DECF = 128,
-    M680X_INS_DECW = 129,
-    M680X_INS_DECX = 130,
-    #[doc = "< M6800/1/2/3"]
-    M680X_INS_DES = 131,
-    #[doc = "< M6800/1/2/3"]
-    M680X_INS_DEX = 132,
-    M680X_INS_DEY = 133,
-    M680X_INS_DIV = 134,
-    M680X_INS_DIVD = 135,
-    M680X_INS_DIVQ = 136,
-    M680X_INS_EDIV = 137,
-    M680X_INS_EDIVS = 138,
-    M680X_INS_EIM = 139,
-    M680X_INS_EMACS = 140,
-    M680X_INS_EMAXD = 141,
-    M680X_INS_EMAXM = 142,
-    M680X_INS_EMIND = 143,
-    M680X_INS_EMINM = 144,
-    M680X_INS_EMUL = 145,
-    M680X_INS_EMULS = 146,
-    M680X_INS_EOR = 147,
-    M680X_INS_EORA = 148,
-    M680X_INS_EORB = 149,
-    M680X_INS_EORD = 150,
-    M680X_INS_EORR = 151,
-    M680X_INS_ETBL = 152,
-    M680X_INS_EXG = 153,
-    M680X_INS_FDIV = 154,
-    M680X_INS_IBEQ = 155,
-    M680X_INS_IBNE = 156,
-    M680X_INS_IDIV = 157,
-    M680X_INS_IDIVS = 158,
-    M680X_INS_ILLGL = 159,
-    M680X_INS_INC = 160,
-    M680X_INS_INCA = 161,
-    M680X_INS_INCB = 162,
-    M680X_INS_INCD = 163,
-    M680X_INS_INCE = 164,
-    M680X_INS_INCF = 165,
-    M680X_INS_INCW = 166,
-    M680X_INS_INCX = 167,
-    #[doc = "< M6800/1/2/3"]
-    M680X_INS_INS = 168,
-    #[doc = "< M6800/1/2/3"]
-    M680X_INS_INX = 169,
-    M680X_INS_INY = 170,
-    M680X_INS_JMP = 171,
-    M680X_INS_JSR = 172,
-    #[doc = "< or LBHS"]
-    M680X_INS_LBCC = 173,
-    #[doc = "< or LBLO"]
-    M680X_INS_LBCS = 174,
-    M680X_INS_LBEQ = 175,
-    M680X_INS_LBGE = 176,
-    M680X_INS_LBGT = 177,
-    M680X_INS_LBHI = 178,
-    M680X_INS_LBLE = 179,
-    M680X_INS_LBLS = 180,
-    M680X_INS_LBLT = 181,
-    M680X_INS_LBMI = 182,
-    M680X_INS_LBNE = 183,
-    M680X_INS_LBPL = 184,
-    M680X_INS_LBRA = 185,
-    M680X_INS_LBRN = 186,
-    M680X_INS_LBSR = 187,
-    M680X_INS_LBVC = 188,
-    M680X_INS_LBVS = 189,
-    M680X_INS_LDA = 190,
-    #[doc = "< M6800/1/2/3"]
-    M680X_INS_LDAA = 191,
-    #[doc = "< M6800/1/2/3"]
-    M680X_INS_LDAB = 192,
-    M680X_INS_LDB = 193,
-    M680X_INS_LDBT = 194,
-    M680X_INS_LDD = 195,
-    M680X_INS_LDE = 196,
-    M680X_INS_LDF = 197,
-    M680X_INS_LDHX = 198,
-    M680X_INS_LDMD = 199,
-    M680X_INS_LDQ = 200,
-    M680X_INS_LDS = 201,
-    M680X_INS_LDU = 202,
-    M680X_INS_LDW = 203,
-    M680X_INS_LDX = 204,
-    M680X_INS_LDY = 205,
-    M680X_INS_LEAS = 206,
-    M680X_INS_LEAU = 207,
-    M680X_INS_LEAX = 208,
-    M680X_INS_LEAY = 209,
-    M680X_INS_LSL = 210,
-    M680X_INS_LSLA = 211,
-    M680X_INS_LSLB = 212,
-    M680X_INS_LSLD = 213,
-    M680X_INS_LSLX = 214,
-    M680X_INS_LSR = 215,
-    M680X_INS_LSRA = 216,
-    M680X_INS_LSRB = 217,
-    #[doc = "< or ASRD"]
-    M680X_INS_LSRD = 218,
-    M680X_INS_LSRW = 219,
-    M680X_INS_LSRX = 220,
-    M680X_INS_MAXA = 221,
-    M680X_INS_MAXM = 222,
-    M680X_INS_MEM = 223,
-    M680X_INS_MINA = 224,
-    M680X_INS_MINM = 225,
-    M680X_INS_MOV = 226,
-    M680X_INS_MOVB = 227,
-    M680X_INS_MOVW = 228,
-    M680X_INS_MUL = 229,
-    M680X_INS_MULD = 230,
-    M680X_INS_NEG = 231,
-    M680X_INS_NEGA = 232,
-    M680X_INS_NEGB = 233,
-    M680X_INS_NEGD = 234,
-    M680X_INS_NEGX = 235,
-    M680X_INS_NOP = 236,
-    M680X_INS_NSA = 237,
-    M680X_INS_OIM = 238,
-    M680X_INS_ORA = 239,
-    #[doc = "< M6800/1/2/3"]
-    M680X_INS_ORAA = 240,
-    #[doc = "< M6800/1/2/3"]
-    M680X_INS_ORAB = 241,
-    M680X_INS_ORB = 242,
-    M680X_INS_ORCC = 243,
-    M680X_INS_ORD = 244,
-    M680X_INS_ORR = 245,
-    #[doc = "< M6800/1/2/3"]
-    M680X_INS_PSHA = 246,
-    #[doc = "< M6800/1/2/3"]
-    M680X_INS_PSHB = 247,
-    M680X_INS_PSHC = 248,
-    M680X_INS_PSHD = 249,
-    M680X_INS_PSHH = 250,
-    M680X_INS_PSHS = 251,
-    M680X_INS_PSHSW = 252,
-    M680X_INS_PSHU = 253,
-    M680X_INS_PSHUW = 254,
-    #[doc = "< M6800/1/2/3"]
-    M680X_INS_PSHX = 255,
-    M680X_INS_PSHY = 256,
-    #[doc = "< M6800/1/2/3"]
-    M680X_INS_PULA = 257,
-    #[doc = "< M6800/1/2/3"]
-    M680X_INS_PULB = 258,
-    M680X_INS_PULC = 259,
-    M680X_INS_PULD = 260,
-    M680X_INS_PULH = 261,
-    M680X_INS_PULS = 262,
-    M680X_INS_PULSW = 263,
-    M680X_INS_PULU = 264,
-    M680X_INS_PULUW = 265,
-    #[doc = "< M6800/1/2/3"]
-    M680X_INS_PULX = 266,
-    M680X_INS_PULY = 267,
-    M680X_INS_REV = 268,
-    M680X_INS_REVW = 269,
-    M680X_INS_ROL = 270,
-    M680X_INS_ROLA = 271,
-    M680X_INS_ROLB = 272,
-    M680X_INS_ROLD = 273,
-    M680X_INS_ROLW = 274,
-    M680X_INS_ROLX = 275,
-    M680X_INS_ROR = 276,
-    M680X_INS_RORA = 277,
-    M680X_INS_RORB = 278,
-    M680X_INS_RORD = 279,
-    M680X_INS_RORW = 280,
-    M680X_INS_RORX = 281,
-    M680X_INS_RSP = 282,
-    M680X_INS_RTC = 283,
-    M680X_INS_RTI = 284,
-    M680X_INS_RTS = 285,
-    #[doc = "< M6800/1/2/3"]
-    M680X_INS_SBA = 286,
-    M680X_INS_SBC = 287,
-    M680X_INS_SBCA = 288,
-    M680X_INS_SBCB = 289,
-    M680X_INS_SBCD = 290,
-    M680X_INS_SBCR = 291,
-    M680X_INS_SEC = 292,
-    M680X_INS_SEI = 293,
-    M680X_INS_SEV = 294,
-    M680X_INS_SEX = 295,
-    M680X_INS_SEXW = 296,
-    M680X_INS_SLP = 297,
-    M680X_INS_STA = 298,
-    #[doc = "< M6800/1/2/3"]
-    M680X_INS_STAA = 299,
-    #[doc = "< M6800/1/2/3"]
-    M680X_INS_STAB = 300,
-    M680X_INS_STB = 301,
-    M680X_INS_STBT = 302,
-    M680X_INS_STD = 303,
-    M680X_INS_STE = 304,
-    M680X_INS_STF = 305,
-    M680X_INS_STOP = 306,
-    M680X_INS_STHX = 307,
-    M680X_INS_STQ = 308,
-    M680X_INS_STS = 309,
-    M680X_INS_STU = 310,
-    M680X_INS_STW = 311,
-    M680X_INS_STX = 312,
-    M680X_INS_STY = 313,
-    M680X_INS_SUB = 314,
-    M680X_INS_SUBA = 315,
-    M680X_INS_SUBB = 316,
-    M680X_INS_SUBD = 317,
-    M680X_INS_SUBE = 318,
-    M680X_INS_SUBF = 319,
-    M680X_INS_SUBR = 320,
-    M680X_INS_SUBW = 321,
-    M680X_INS_SWI = 322,
-    M680X_INS_SWI2 = 323,
-    M680X_INS_SWI3 = 324,
-    M680X_INS_SYNC = 325,
-    #[doc = "< M6800/1/2/3"]
-    M680X_INS_TAB = 326,
-    #[doc = "< M6800/1/2/3"]
-    M680X_INS_TAP = 327,
-    M680X_INS_TAX = 328,
-    #[doc = "< M6800/1/2/3"]
-    M680X_INS_TBA = 329,
-    M680X_INS_TBEQ = 330,
-    M680X_INS_TBL = 331,
-    M680X_INS_TBNE = 332,
-    M680X_INS_TEST = 333,
-    M680X_INS_TFM = 334,
-    M680X_INS_TFR = 335,
-    M680X_INS_TIM = 336,
-    #[doc = "< M6800/1/2/3"]
-    M680X_INS_TPA = 337,
-    M680X_INS_TST = 338,
-    M680X_INS_TSTA = 339,
-    M680X_INS_TSTB = 340,
-    M680X_INS_TSTD = 341,
-    M680X_INS_TSTE = 342,
-    M680X_INS_TSTF = 343,
-    M680X_INS_TSTW = 344,
-    M680X_INS_TSTX = 345,
-    #[doc = "< M6800/1/2/3"]
-    M680X_INS_TSX = 346,
-    M680X_INS_TSY = 347,
-    M680X_INS_TXA = 348,
-    #[doc = "< M6800/1/2/3"]
-    M680X_INS_TXS = 349,
-    M680X_INS_TYS = 350,
-    #[doc = "< M6800/1/2/3"]
-    M680X_INS_WAI = 351,
-    M680X_INS_WAIT = 352,
-    M680X_INS_WAV = 353,
-    M680X_INS_WAVR = 354,
-    #[doc = "< HD6301"]
-    M680X_INS_XGDX = 355,
-    M680X_INS_XGDY = 356,
-    M680X_INS_ENDING = 357,
-}
-#[doc = " Instruction structure"]
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct cs_evm {
-    #[doc = "< number of items popped from the stack"]
-    pub pop: ::core::ffi::c_uchar,
-    #[doc = "< number of items pushed into the stack"]
-    pub push: ::core::ffi::c_uchar,
-    #[doc = "< gas fee for the instruction"]
-    pub fee: ::core::ffi::c_uint,
-}
-#[repr(u32)]
-#[doc = " EVM instruction"]
-#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
-pub enum evm_insn {
-    EVM_INS_STOP = 0,
-    EVM_INS_ADD = 1,
-    EVM_INS_MUL = 2,
-    EVM_INS_SUB = 3,
-    EVM_INS_DIV = 4,
-    EVM_INS_SDIV = 5,
-    EVM_INS_MOD = 6,
-    EVM_INS_SMOD = 7,
-    EVM_INS_ADDMOD = 8,
-    EVM_INS_MULMOD = 9,
-    EVM_INS_EXP = 10,
-    EVM_INS_SIGNEXTEND = 11,
-    EVM_INS_LT = 16,
-    EVM_INS_GT = 17,
-    EVM_INS_SLT = 18,
-    EVM_INS_SGT = 19,
-    EVM_INS_EQ = 20,
-    EVM_INS_ISZERO = 21,
-    EVM_INS_AND = 22,
-    EVM_INS_OR = 23,
-    EVM_INS_XOR = 24,
-    EVM_INS_NOT = 25,
-    EVM_INS_BYTE = 26,
-    EVM_INS_SHL = 27,
-    EVM_INS_SHR = 28,
-    EVM_INS_SAR = 29,
-    EVM_INS_SHA3 = 32,
-    EVM_INS_ADDRESS = 48,
-    EVM_INS_BALANCE = 49,
-    EVM_INS_ORIGIN = 50,
-    EVM_INS_CALLER = 51,
-    EVM_INS_CALLVALUE = 52,
-    EVM_INS_CALLDATALOAD = 53,
-    EVM_INS_CALLDATASIZE = 54,
-    EVM_INS_CALLDATACOPY = 55,
-    EVM_INS_CODESIZE = 56,
-    EVM_INS_CODECOPY = 57,
-    EVM_INS_GASPRICE = 58,
-    EVM_INS_EXTCODESIZE = 59,
-    EVM_INS_EXTCODECOPY = 60,
-    EVM_INS_RETURNDATASIZE = 61,
-    EVM_INS_RETURNDATACOPY = 62,
-    EVM_INS_BLOCKHASH = 64,
-    EVM_INS_COINBASE = 65,
-    EVM_INS_TIMESTAMP = 66,
-    EVM_INS_NUMBER = 67,
-    EVM_INS_DIFFICULTY = 68,
-    EVM_INS_GASLIMIT = 69,
-    EVM_INS_CHAINID = 70,
-    EVM_INS_SELFBALANCE = 71,
-    EVM_INS_BASEFEE = 72,
-    EVM_INS_BLOBHASH = 73,
-    EVM_INS_BLOBBASEFEE = 74,
-    EVM_INS_POP = 80,
-    EVM_INS_MLOAD = 81,
-    EVM_INS_MSTORE = 82,
-    EVM_INS_MSTORE8 = 83,
-    EVM_INS_SLOAD = 84,
-    EVM_INS_SSTORE = 85,
-    EVM_INS_JUMP = 86,
-    EVM_INS_JUMPI = 87,
-    EVM_INS_PC = 88,
-    EVM_INS_MSIZE = 89,
-    EVM_INS_GAS = 90,
-    EVM_INS_JUMPDEST = 91,
-    EVM_INS_TLOAD = 92,
-    EVM_INS_TSTORE = 93,
-    EVM_INS_MCOPY = 94,
-    EVM_INS_PUSH0 = 95,
-    EVM_INS_PUSH1 = 96,
-    EVM_INS_PUSH2 = 97,
-    EVM_INS_PUSH3 = 98,
-    EVM_INS_PUSH4 = 99,
-    EVM_INS_PUSH5 = 100,
-    EVM_INS_PUSH6 = 101,
-    EVM_INS_PUSH7 = 102,
-    EVM_INS_PUSH8 = 103,
-    EVM_INS_PUSH9 = 104,
-    EVM_INS_PUSH10 = 105,
-    EVM_INS_PUSH11 = 106,
-    EVM_INS_PUSH12 = 107,
-    EVM_INS_PUSH13 = 108,
-    EVM_INS_PUSH14 = 109,
-    EVM_INS_PUSH15 = 110,
-    EVM_INS_PUSH16 = 111,
-    EVM_INS_PUSH17 = 112,
-    EVM_INS_PUSH18 = 113,
-    EVM_INS_PUSH19 = 114,
-    EVM_INS_PUSH20 = 115,
-    EVM_INS_PUSH21 = 116,
-    EVM_INS_PUSH22 = 117,
-    EVM_INS_PUSH23 = 118,
-    EVM_INS_PUSH24 = 119,
-    EVM_INS_PUSH25 = 120,
-    EVM_INS_PUSH26 = 121,
-    EVM_INS_PUSH27 = 122,
-    EVM_INS_PUSH28 = 123,
-    EVM_INS_PUSH29 = 124,
-    EVM_INS_PUSH30 = 125,
-    EVM_INS_PUSH31 = 126,
-    EVM_INS_PUSH32 = 127,
-    EVM_INS_DUP1 = 128,
-    EVM_INS_DUP2 = 129,
-    EVM_INS_DUP3 = 130,
-    EVM_INS_DUP4 = 131,
-    EVM_INS_DUP5 = 132,
-    EVM_INS_DUP6 = 133,
-    EVM_INS_DUP7 = 134,
-    EVM_INS_DUP8 = 135,
-    EVM_INS_DUP9 = 136,
-    EVM_INS_DUP10 = 137,
-    EVM_INS_DUP11 = 138,
-    EVM_INS_DUP12 = 139,
-    EVM_INS_DUP13 = 140,
-    EVM_INS_DUP14 = 141,
-    EVM_INS_DUP15 = 142,
-    EVM_INS_DUP16 = 143,
-    EVM_INS_SWAP1 = 144,
-    EVM_INS_SWAP2 = 145,
-    EVM_INS_SWAP3 = 146,
-    EVM_INS_SWAP4 = 147,
-    EVM_INS_SWAP5 = 148,
-    EVM_INS_SWAP6 = 149,
-    EVM_INS_SWAP7 = 150,
-    EVM_INS_SWAP8 = 151,
-    EVM_INS_SWAP9 = 152,
-    EVM_INS_SWAP10 = 153,
-    EVM_INS_SWAP11 = 154,
-    EVM_INS_SWAP12 = 155,
-    EVM_INS_SWAP13 = 156,
-    EVM_INS_SWAP14 = 157,
-    EVM_INS_SWAP15 = 158,
-    EVM_INS_SWAP16 = 159,
-    EVM_INS_LOG0 = 160,
-    EVM_INS_LOG1 = 161,
-    EVM_INS_LOG2 = 162,
-    EVM_INS_LOG3 = 163,
-    EVM_INS_LOG4 = 164,
-    EVM_INS_CREATE = 240,
-    EVM_INS_CALL = 241,
-    EVM_INS_CALLCODE = 242,
-    EVM_INS_RETURN = 243,
-    EVM_INS_DELEGATECALL = 244,
-    EVM_INS_CREATE2 = 245,
-    EVM_INS_STATICCALL = 250,
-    EVM_INS_REVERT = 253,
-    EVM_INS_INVALID = 254,
-    EVM_INS_SELFDESTRUCT = 255,
-    EVM_INS_ENDING = 256,
-}
-pub mod evm_insn_group {
-    #[doc = " Group of EVM instructions"]
-    pub type Type = ::core::ffi::c_uint;
-    #[doc = "< = CS_GRP_INVALID"]
-    pub const EVM_GRP_INVALID: Type = 0;
-    #[doc = "< all jump instructions"]
-    pub const EVM_GRP_JUMP: Type = 1;
-    #[doc = "< math instructions"]
-    pub const EVM_GRP_MATH: Type = 8;
-    #[doc = "< instructions write to stack"]
-    pub const EVM_GRP_STACK_WRITE: Type = 9;
-    #[doc = "< instructions read from stack"]
-    pub const EVM_GRP_STACK_READ: Type = 10;
-    #[doc = "< instructions write to memory"]
-    pub const EVM_GRP_MEM_WRITE: Type = 11;
-    #[doc = "< instructions read from memory"]
-    pub const EVM_GRP_MEM_READ: Type = 12;
-    #[doc = "< instructions write to storage"]
-    pub const EVM_GRP_STORE_WRITE: Type = 13;
-    #[doc = "< instructions read from storage"]
-    pub const EVM_GRP_STORE_READ: Type = 14;
-    #[doc = "< instructions halt execution"]
-    pub const EVM_GRP_HALT: Type = 15;
-    #[doc = "< <-- mark the end of the list of groups"]
-    pub const EVM_GRP_ENDING: Type = 16;
-}
-#[repr(u32)]
-#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
-pub enum riscv_op_type {
-    RISCV_OP_INVALID = 0,
-    RISCV_OP_REG = 1,
-    RISCV_OP_IMM = 2,
-    RISCV_OP_MEM = 128,
-    RISCV_OP_FP = 3,
-    RISCV_OP_CSR = 16,
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct riscv_op_mem {
-    pub base: ::core::ffi::c_uint,
-    pub disp: i64,
-}
-#[repr(C)]
-#[derive(Copy, Clone)]
-pub struct cs_riscv_op {
-    pub type_: riscv_op_type,
-    pub __bindgen_anon_1: cs_riscv_op__bindgen_ty_1,
-    #[doc = "< How is this operand accessed? (READ, WRITE or READ|WRITE)"]
-    pub access: cs_ac_type,
-}
-#[repr(C)]
-#[derive(Copy, Clone)]
-pub union cs_riscv_op__bindgen_ty_1 {
-    pub reg: ::core::ffi::c_uint,
-    pub imm: i64,
-    pub dimm: f64,
-    pub mem: riscv_op_mem,
-    pub csr: u16,
-}
-impl ::core::fmt::Debug for cs_riscv_op__bindgen_ty_1 {
-    fn fmt(&self, f: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
-        write!(f, "cs_riscv_op__bindgen_ty_1 {{ union }}")
-    }
-}
-impl ::core::fmt::Debug for cs_riscv_op {
-    fn fmt(&self, f: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
-        write!(
-            f,
-            "cs_riscv_op {{ type: {:?}, __bindgen_anon_1: {:?}, access: {:?} }}",
-            self.type_, self.__bindgen_anon_1, self.access
-        )
-    }
-}
-#[repr(C)]
-#[derive(Copy, Clone)]
-pub struct cs_riscv {
-    pub need_effective_addr: bool,
-    pub op_count: u8,
-    pub operands: [cs_riscv_op; 8usize],
-}
-impl ::core::fmt::Debug for cs_riscv {
-    fn fmt(&self, f: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
-        write!(
-            f,
-            "cs_riscv {{ need_effective_addr: {:?}, operands: {:?} }}",
-            self.need_effective_addr, self.operands
-        )
-    }
-}
-pub mod riscv_reg {
-    pub type Type = ::core::ffi::c_uint;
-    pub const RISCV_REG_INVALID: Type = 0;
-    pub const RISCV_REG_FFLAGS: Type = 1;
-    pub const RISCV_REG_FRM: Type = 2;
-    pub const RISCV_REG_SSP: Type = 3;
-    pub const RISCV_REG_VL: Type = 4;
-    pub const RISCV_REG_VLENB: Type = 5;
-    pub const RISCV_REG_VTYPE: Type = 6;
-    pub const RISCV_REG_VXRM: Type = 7;
-    pub const RISCV_REG_VXSAT: Type = 8;
-    pub const RISCV_REG_DUMMY_REG_PAIR_WITH_X0: Type = 9;
-    pub const RISCV_REG_V0: Type = 10;
-    pub const RISCV_REG_V1: Type = 11;
-    pub const RISCV_REG_V2: Type = 12;
-    pub const RISCV_REG_V3: Type = 13;
-    pub const RISCV_REG_V4: Type = 14;
-    pub const RISCV_REG_V5: Type = 15;
-    pub const RISCV_REG_V6: Type = 16;
-    pub const RISCV_REG_V7: Type = 17;
-    pub const RISCV_REG_V8: Type = 18;
-    pub const RISCV_REG_V9: Type = 19;
-    pub const RISCV_REG_V10: Type = 20;
-    pub const RISCV_REG_V11: Type = 21;
-    pub const RISCV_REG_V12: Type = 22;
-    pub const RISCV_REG_V13: Type = 23;
-    pub const RISCV_REG_V14: Type = 24;
-    pub const RISCV_REG_V15: Type = 25;
-    pub const RISCV_REG_V16: Type = 26;
-    pub const RISCV_REG_V17: Type = 27;
-    pub const RISCV_REG_V18: Type = 28;
-    pub const RISCV_REG_V19: Type = 29;
-    pub const RISCV_REG_V20: Type = 30;
-    pub const RISCV_REG_V21: Type = 31;
-    pub const RISCV_REG_V22: Type = 32;
-    pub const RISCV_REG_V23: Type = 33;
-    pub const RISCV_REG_V24: Type = 34;
-    pub const RISCV_REG_V25: Type = 35;
-    pub const RISCV_REG_V26: Type = 36;
-    pub const RISCV_REG_V27: Type = 37;
-    pub const RISCV_REG_V28: Type = 38;
-    pub const RISCV_REG_V29: Type = 39;
-    pub const RISCV_REG_V30: Type = 40;
-    pub const RISCV_REG_V31: Type = 41;
-    pub const RISCV_REG_X0: Type = 42;
-    pub const RISCV_REG_X1: Type = 43;
-    pub const RISCV_REG_X2: Type = 44;
-    pub const RISCV_REG_X3: Type = 45;
-    pub const RISCV_REG_X4: Type = 46;
-    pub const RISCV_REG_X5: Type = 47;
-    pub const RISCV_REG_X6: Type = 48;
-    pub const RISCV_REG_X7: Type = 49;
-    pub const RISCV_REG_X8: Type = 50;
-    pub const RISCV_REG_X9: Type = 51;
-    pub const RISCV_REG_X10: Type = 52;
-    pub const RISCV_REG_X11: Type = 53;
-    pub const RISCV_REG_X12: Type = 54;
-    pub const RISCV_REG_X13: Type = 55;
-    pub const RISCV_REG_X14: Type = 56;
-    pub const RISCV_REG_X15: Type = 57;
-    pub const RISCV_REG_X16: Type = 58;
-    pub const RISCV_REG_X17: Type = 59;
-    pub const RISCV_REG_X18: Type = 60;
-    pub const RISCV_REG_X19: Type = 61;
-    pub const RISCV_REG_X20: Type = 62;
-    pub const RISCV_REG_X21: Type = 63;
-    pub const RISCV_REG_X22: Type = 64;
-    pub const RISCV_REG_X23: Type = 65;
-    pub const RISCV_REG_X24: Type = 66;
-    pub const RISCV_REG_X25: Type = 67;
-    pub const RISCV_REG_X26: Type = 68;
-    pub const RISCV_REG_X27: Type = 69;
-    pub const RISCV_REG_X28: Type = 70;
-    pub const RISCV_REG_X29: Type = 71;
-    pub const RISCV_REG_X30: Type = 72;
-    pub const RISCV_REG_X31: Type = 73;
-    pub const RISCV_REG_F0_D: Type = 74;
-    pub const RISCV_REG_F1_D: Type = 75;
-    pub const RISCV_REG_F2_D: Type = 76;
-    pub const RISCV_REG_F3_D: Type = 77;
-    pub const RISCV_REG_F4_D: Type = 78;
-    pub const RISCV_REG_F5_D: Type = 79;
-    pub const RISCV_REG_F6_D: Type = 80;
-    pub const RISCV_REG_F7_D: Type = 81;
-    pub const RISCV_REG_F8_D: Type = 82;
-    pub const RISCV_REG_F9_D: Type = 83;
-    pub const RISCV_REG_F10_D: Type = 84;
-    pub const RISCV_REG_F11_D: Type = 85;
-    pub const RISCV_REG_F12_D: Type = 86;
-    pub const RISCV_REG_F13_D: Type = 87;
-    pub const RISCV_REG_F14_D: Type = 88;
-    pub const RISCV_REG_F15_D: Type = 89;
-    pub const RISCV_REG_F16_D: Type = 90;
-    pub const RISCV_REG_F17_D: Type = 91;
-    pub const RISCV_REG_F18_D: Type = 92;
-    pub const RISCV_REG_F19_D: Type = 93;
-    pub const RISCV_REG_F20_D: Type = 94;
-    pub const RISCV_REG_F21_D: Type = 95;
-    pub const RISCV_REG_F22_D: Type = 96;
-    pub const RISCV_REG_F23_D: Type = 97;
-    pub const RISCV_REG_F24_D: Type = 98;
-    pub const RISCV_REG_F25_D: Type = 99;
-    pub const RISCV_REG_F26_D: Type = 100;
-    pub const RISCV_REG_F27_D: Type = 101;
-    pub const RISCV_REG_F28_D: Type = 102;
-    pub const RISCV_REG_F29_D: Type = 103;
-    pub const RISCV_REG_F30_D: Type = 104;
-    pub const RISCV_REG_F31_D: Type = 105;
-    pub const RISCV_REG_F0_F: Type = 106;
-    pub const RISCV_REG_F1_F: Type = 107;
-    pub const RISCV_REG_F2_F: Type = 108;
-    pub const RISCV_REG_F3_F: Type = 109;
-    pub const RISCV_REG_F4_F: Type = 110;
-    pub const RISCV_REG_F5_F: Type = 111;
-    pub const RISCV_REG_F6_F: Type = 112;
-    pub const RISCV_REG_F7_F: Type = 113;
-    pub const RISCV_REG_F8_F: Type = 114;
-    pub const RISCV_REG_F9_F: Type = 115;
-    pub const RISCV_REG_F10_F: Type = 116;
-    pub const RISCV_REG_F11_F: Type = 117;
-    pub const RISCV_REG_F12_F: Type = 118;
-    pub const RISCV_REG_F13_F: Type = 119;
-    pub const RISCV_REG_F14_F: Type = 120;
-    pub const RISCV_REG_F15_F: Type = 121;
-    pub const RISCV_REG_F16_F: Type = 122;
-    pub const RISCV_REG_F17_F: Type = 123;
-    pub const RISCV_REG_F18_F: Type = 124;
-    pub const RISCV_REG_F19_F: Type = 125;
-    pub const RISCV_REG_F20_F: Type = 126;
-    pub const RISCV_REG_F21_F: Type = 127;
-    pub const RISCV_REG_F22_F: Type = 128;
-    pub const RISCV_REG_F23_F: Type = 129;
-    pub const RISCV_REG_F24_F: Type = 130;
-    pub const RISCV_REG_F25_F: Type = 131;
-    pub const RISCV_REG_F26_F: Type = 132;
-    pub const RISCV_REG_F27_F: Type = 133;
-    pub const RISCV_REG_F28_F: Type = 134;
-    pub const RISCV_REG_F29_F: Type = 135;
-    pub const RISCV_REG_F30_F: Type = 136;
-    pub const RISCV_REG_F31_F: Type = 137;
-    pub const RISCV_REG_F0_H: Type = 138;
-    pub const RISCV_REG_F1_H: Type = 139;
-    pub const RISCV_REG_F2_H: Type = 140;
-    pub const RISCV_REG_F3_H: Type = 141;
-    pub const RISCV_REG_F4_H: Type = 142;
-    pub const RISCV_REG_F5_H: Type = 143;
-    pub const RISCV_REG_F6_H: Type = 144;
-    pub const RISCV_REG_F7_H: Type = 145;
-    pub const RISCV_REG_F8_H: Type = 146;
-    pub const RISCV_REG_F9_H: Type = 147;
-    pub const RISCV_REG_F10_H: Type = 148;
-    pub const RISCV_REG_F11_H: Type = 149;
-    pub const RISCV_REG_F12_H: Type = 150;
-    pub const RISCV_REG_F13_H: Type = 151;
-    pub const RISCV_REG_F14_H: Type = 152;
-    pub const RISCV_REG_F15_H: Type = 153;
-    pub const RISCV_REG_F16_H: Type = 154;
-    pub const RISCV_REG_F17_H: Type = 155;
-    pub const RISCV_REG_F18_H: Type = 156;
-    pub const RISCV_REG_F19_H: Type = 157;
-    pub const RISCV_REG_F20_H: Type = 158;
-    pub const RISCV_REG_F21_H: Type = 159;
-    pub const RISCV_REG_F22_H: Type = 160;
-    pub const RISCV_REG_F23_H: Type = 161;
-    pub const RISCV_REG_F24_H: Type = 162;
-    pub const RISCV_REG_F25_H: Type = 163;
-    pub const RISCV_REG_F26_H: Type = 164;
-    pub const RISCV_REG_F27_H: Type = 165;
-    pub const RISCV_REG_F28_H: Type = 166;
-    pub const RISCV_REG_F29_H: Type = 167;
-    pub const RISCV_REG_F30_H: Type = 168;
-    pub const RISCV_REG_F31_H: Type = 169;
-    pub const RISCV_REG_X0_PAIR: Type = 170;
-    pub const RISCV_REG_V0M2: Type = 171;
-    pub const RISCV_REG_V0M4: Type = 172;
-    pub const RISCV_REG_V0M8: Type = 173;
-    pub const RISCV_REG_V2M2: Type = 174;
-    pub const RISCV_REG_V4M2: Type = 175;
-    pub const RISCV_REG_V4M4: Type = 176;
-    pub const RISCV_REG_V6M2: Type = 177;
-    pub const RISCV_REG_V8M2: Type = 178;
-    pub const RISCV_REG_V8M4: Type = 179;
-    pub const RISCV_REG_V8M8: Type = 180;
-    pub const RISCV_REG_V10M2: Type = 181;
-    pub const RISCV_REG_V12M2: Type = 182;
-    pub const RISCV_REG_V12M4: Type = 183;
-    pub const RISCV_REG_V14M2: Type = 184;
-    pub const RISCV_REG_V16M2: Type = 185;
-    pub const RISCV_REG_V16M4: Type = 186;
-    pub const RISCV_REG_V16M8: Type = 187;
-    pub const RISCV_REG_V18M2: Type = 188;
-    pub const RISCV_REG_V20M2: Type = 189;
-    pub const RISCV_REG_V20M4: Type = 190;
-    pub const RISCV_REG_V22M2: Type = 191;
-    pub const RISCV_REG_V24M2: Type = 192;
-    pub const RISCV_REG_V24M4: Type = 193;
-    pub const RISCV_REG_V24M8: Type = 194;
-    pub const RISCV_REG_V26M2: Type = 195;
-    pub const RISCV_REG_V28M2: Type = 196;
-    pub const RISCV_REG_V28M4: Type = 197;
-    pub const RISCV_REG_V30M2: Type = 198;
-    pub const RISCV_REG_X2_X3: Type = 199;
-    pub const RISCV_REG_X4_X5: Type = 200;
-    pub const RISCV_REG_X6_X7: Type = 201;
-    pub const RISCV_REG_X8_X9: Type = 202;
-    pub const RISCV_REG_X10_X11: Type = 203;
-    pub const RISCV_REG_X12_X13: Type = 204;
-    pub const RISCV_REG_X14_X15: Type = 205;
-    pub const RISCV_REG_X16_X17: Type = 206;
-    pub const RISCV_REG_X18_X19: Type = 207;
-    pub const RISCV_REG_X20_X21: Type = 208;
-    pub const RISCV_REG_X22_X23: Type = 209;
-    pub const RISCV_REG_X24_X25: Type = 210;
-    pub const RISCV_REG_X26_X27: Type = 211;
-    pub const RISCV_REG_X28_X29: Type = 212;
-    pub const RISCV_REG_X30_X31: Type = 213;
-    pub const RISCV_REG_V1_V2: Type = 214;
-    pub const RISCV_REG_V2_V3: Type = 215;
-    pub const RISCV_REG_V3_V4: Type = 216;
-    pub const RISCV_REG_V4_V5: Type = 217;
-    pub const RISCV_REG_V5_V6: Type = 218;
-    pub const RISCV_REG_V6_V7: Type = 219;
-    pub const RISCV_REG_V7_V8: Type = 220;
-    pub const RISCV_REG_V8_V9: Type = 221;
-    pub const RISCV_REG_V9_V10: Type = 222;
-    pub const RISCV_REG_V10_V11: Type = 223;
-    pub const RISCV_REG_V11_V12: Type = 224;
-    pub const RISCV_REG_V12_V13: Type = 225;
-    pub const RISCV_REG_V13_V14: Type = 226;
-    pub const RISCV_REG_V14_V15: Type = 227;
-    pub const RISCV_REG_V15_V16: Type = 228;
-    pub const RISCV_REG_V16_V17: Type = 229;
-    pub const RISCV_REG_V17_V18: Type = 230;
-    pub const RISCV_REG_V18_V19: Type = 231;
-    pub const RISCV_REG_V19_V20: Type = 232;
-    pub const RISCV_REG_V20_V21: Type = 233;
-    pub const RISCV_REG_V21_V22: Type = 234;
-    pub const RISCV_REG_V22_V23: Type = 235;
-    pub const RISCV_REG_V23_V24: Type = 236;
-    pub const RISCV_REG_V24_V25: Type = 237;
-    pub const RISCV_REG_V25_V26: Type = 238;
-    pub const RISCV_REG_V26_V27: Type = 239;
-    pub const RISCV_REG_V27_V28: Type = 240;
-    pub const RISCV_REG_V28_V29: Type = 241;
-    pub const RISCV_REG_V29_V30: Type = 242;
-    pub const RISCV_REG_V30_V31: Type = 243;
-    pub const RISCV_REG_V0_V1: Type = 244;
-    pub const RISCV_REG_V2M2_V4M2: Type = 245;
-    pub const RISCV_REG_V4M2_V6M2: Type = 246;
-    pub const RISCV_REG_V6M2_V8M2: Type = 247;
-    pub const RISCV_REG_V8M2_V10M2: Type = 248;
-    pub const RISCV_REG_V10M2_V12M2: Type = 249;
-    pub const RISCV_REG_V12M2_V14M2: Type = 250;
-    pub const RISCV_REG_V14M2_V16M2: Type = 251;
-    pub const RISCV_REG_V16M2_V18M2: Type = 252;
-    pub const RISCV_REG_V18M2_V20M2: Type = 253;
-    pub const RISCV_REG_V20M2_V22M2: Type = 254;
-    pub const RISCV_REG_V22M2_V24M2: Type = 255;
-    pub const RISCV_REG_V24M2_V26M2: Type = 256;
-    pub const RISCV_REG_V26M2_V28M2: Type = 257;
-    pub const RISCV_REG_V28M2_V30M2: Type = 258;
-    pub const RISCV_REG_V0M2_V2M2: Type = 259;
-    pub const RISCV_REG_V4M4_V8M4: Type = 260;
-    pub const RISCV_REG_V8M4_V12M4: Type = 261;
-    pub const RISCV_REG_V12M4_V16M4: Type = 262;
-    pub const RISCV_REG_V16M4_V20M4: Type = 263;
-    pub const RISCV_REG_V20M4_V24M4: Type = 264;
-    pub const RISCV_REG_V24M4_V28M4: Type = 265;
-    pub const RISCV_REG_V0M4_V4M4: Type = 266;
-    pub const RISCV_REG_V1_V2_V3: Type = 267;
-    pub const RISCV_REG_V2_V3_V4: Type = 268;
-    pub const RISCV_REG_V3_V4_V5: Type = 269;
-    pub const RISCV_REG_V4_V5_V6: Type = 270;
-    pub const RISCV_REG_V5_V6_V7: Type = 271;
-    pub const RISCV_REG_V6_V7_V8: Type = 272;
-    pub const RISCV_REG_V7_V8_V9: Type = 273;
-    pub const RISCV_REG_V8_V9_V10: Type = 274;
-    pub const RISCV_REG_V9_V10_V11: Type = 275;
-    pub const RISCV_REG_V10_V11_V12: Type = 276;
-    pub const RISCV_REG_V11_V12_V13: Type = 277;
-    pub const RISCV_REG_V12_V13_V14: Type = 278;
-    pub const RISCV_REG_V13_V14_V15: Type = 279;
-    pub const RISCV_REG_V14_V15_V16: Type = 280;
-    pub const RISCV_REG_V15_V16_V17: Type = 281;
-    pub const RISCV_REG_V16_V17_V18: Type = 282;
-    pub const RISCV_REG_V17_V18_V19: Type = 283;
-    pub const RISCV_REG_V18_V19_V20: Type = 284;
-    pub const RISCV_REG_V19_V20_V21: Type = 285;
-    pub const RISCV_REG_V20_V21_V22: Type = 286;
-    pub const RISCV_REG_V21_V22_V23: Type = 287;
-    pub const RISCV_REG_V22_V23_V24: Type = 288;
-    pub const RISCV_REG_V23_V24_V25: Type = 289;
-    pub const RISCV_REG_V24_V25_V26: Type = 290;
-    pub const RISCV_REG_V25_V26_V27: Type = 291;
-    pub const RISCV_REG_V26_V27_V28: Type = 292;
-    pub const RISCV_REG_V27_V28_V29: Type = 293;
-    pub const RISCV_REG_V28_V29_V30: Type = 294;
-    pub const RISCV_REG_V29_V30_V31: Type = 295;
-    pub const RISCV_REG_V0_V1_V2: Type = 296;
-    pub const RISCV_REG_V2M2_V4M2_V6M2: Type = 297;
-    pub const RISCV_REG_V4M2_V6M2_V8M2: Type = 298;
-    pub const RISCV_REG_V6M2_V8M2_V10M2: Type = 299;
-    pub const RISCV_REG_V8M2_V10M2_V12M2: Type = 300;
-    pub const RISCV_REG_V10M2_V12M2_V14M2: Type = 301;
-    pub const RISCV_REG_V12M2_V14M2_V16M2: Type = 302;
-    pub const RISCV_REG_V14M2_V16M2_V18M2: Type = 303;
-    pub const RISCV_REG_V16M2_V18M2_V20M2: Type = 304;
-    pub const RISCV_REG_V18M2_V20M2_V22M2: Type = 305;
-    pub const RISCV_REG_V20M2_V22M2_V24M2: Type = 306;
-    pub const RISCV_REG_V22M2_V24M2_V26M2: Type = 307;
-    pub const RISCV_REG_V24M2_V26M2_V28M2: Type = 308;
-    pub const RISCV_REG_V26M2_V28M2_V30M2: Type = 309;
-    pub const RISCV_REG_V0M2_V2M2_V4M2: Type = 310;
-    pub const RISCV_REG_V1_V2_V3_V4: Type = 311;
-    pub const RISCV_REG_V2_V3_V4_V5: Type = 312;
-    pub const RISCV_REG_V3_V4_V5_V6: Type = 313;
-    pub const RISCV_REG_V4_V5_V6_V7: Type = 314;
-    pub const RISCV_REG_V5_V6_V7_V8: Type = 315;
-    pub const RISCV_REG_V6_V7_V8_V9: Type = 316;
-    pub const RISCV_REG_V7_V8_V9_V10: Type = 317;
-    pub const RISCV_REG_V8_V9_V10_V11: Type = 318;
-    pub const RISCV_REG_V9_V10_V11_V12: Type = 319;
-    pub const RISCV_REG_V10_V11_V12_V13: Type = 320;
-    pub const RISCV_REG_V11_V12_V13_V14: Type = 321;
-    pub const RISCV_REG_V12_V13_V14_V15: Type = 322;
-    pub const RISCV_REG_V13_V14_V15_V16: Type = 323;
-    pub const RISCV_REG_V14_V15_V16_V17: Type = 324;
-    pub const RISCV_REG_V15_V16_V17_V18: Type = 325;
-    pub const RISCV_REG_V16_V17_V18_V19: Type = 326;
-    pub const RISCV_REG_V17_V18_V19_V20: Type = 327;
-    pub const RISCV_REG_V18_V19_V20_V21: Type = 328;
-    pub const RISCV_REG_V19_V20_V21_V22: Type = 329;
-    pub const RISCV_REG_V20_V21_V22_V23: Type = 330;
-    pub const RISCV_REG_V21_V22_V23_V24: Type = 331;
-    pub const RISCV_REG_V22_V23_V24_V25: Type = 332;
-    pub const RISCV_REG_V23_V24_V25_V26: Type = 333;
-    pub const RISCV_REG_V24_V25_V26_V27: Type = 334;
-    pub const RISCV_REG_V25_V26_V27_V28: Type = 335;
-    pub const RISCV_REG_V26_V27_V28_V29: Type = 336;
-    pub const RISCV_REG_V27_V28_V29_V30: Type = 337;
-    pub const RISCV_REG_V28_V29_V30_V31: Type = 338;
-    pub const RISCV_REG_V0_V1_V2_V3: Type = 339;
-    pub const RISCV_REG_V2M2_V4M2_V6M2_V8M2: Type = 340;
-    pub const RISCV_REG_V4M2_V6M2_V8M2_V10M2: Type = 341;
-    pub const RISCV_REG_V6M2_V8M2_V10M2_V12M2: Type = 342;
-    pub const RISCV_REG_V8M2_V10M2_V12M2_V14M2: Type = 343;
-    pub const RISCV_REG_V10M2_V12M2_V14M2_V16M2: Type = 344;
-    pub const RISCV_REG_V12M2_V14M2_V16M2_V18M2: Type = 345;
-    pub const RISCV_REG_V14M2_V16M2_V18M2_V20M2: Type = 346;
-    pub const RISCV_REG_V16M2_V18M2_V20M2_V22M2: Type = 347;
-    pub const RISCV_REG_V18M2_V20M2_V22M2_V24M2: Type = 348;
-    pub const RISCV_REG_V20M2_V22M2_V24M2_V26M2: Type = 349;
-    pub const RISCV_REG_V22M2_V24M2_V26M2_V28M2: Type = 350;
-    pub const RISCV_REG_V24M2_V26M2_V28M2_V30M2: Type = 351;
-    pub const RISCV_REG_V0M2_V2M2_V4M2_V6M2: Type = 352;
-    pub const RISCV_REG_V1_V2_V3_V4_V5: Type = 353;
-    pub const RISCV_REG_V2_V3_V4_V5_V6: Type = 354;
-    pub const RISCV_REG_V3_V4_V5_V6_V7: Type = 355;
-    pub const RISCV_REG_V4_V5_V6_V7_V8: Type = 356;
-    pub const RISCV_REG_V5_V6_V7_V8_V9: Type = 357;
-    pub const RISCV_REG_V6_V7_V8_V9_V10: Type = 358;
-    pub const RISCV_REG_V7_V8_V9_V10_V11: Type = 359;
-    pub const RISCV_REG_V8_V9_V10_V11_V12: Type = 360;
-    pub const RISCV_REG_V9_V10_V11_V12_V13: Type = 361;
-    pub const RISCV_REG_V10_V11_V12_V13_V14: Type = 362;
-    pub const RISCV_REG_V11_V12_V13_V14_V15: Type = 363;
-    pub const RISCV_REG_V12_V13_V14_V15_V16: Type = 364;
-    pub const RISCV_REG_V13_V14_V15_V16_V17: Type = 365;
-    pub const RISCV_REG_V14_V15_V16_V17_V18: Type = 366;
-    pub const RISCV_REG_V15_V16_V17_V18_V19: Type = 367;
-    pub const RISCV_REG_V16_V17_V18_V19_V20: Type = 368;
-    pub const RISCV_REG_V17_V18_V19_V20_V21: Type = 369;
-    pub const RISCV_REG_V18_V19_V20_V21_V22: Type = 370;
-    pub const RISCV_REG_V19_V20_V21_V22_V23: Type = 371;
-    pub const RISCV_REG_V20_V21_V22_V23_V24: Type = 372;
-    pub const RISCV_REG_V21_V22_V23_V24_V25: Type = 373;
-    pub const RISCV_REG_V22_V23_V24_V25_V26: Type = 374;
-    pub const RISCV_REG_V23_V24_V25_V26_V27: Type = 375;
-    pub const RISCV_REG_V24_V25_V26_V27_V28: Type = 376;
-    pub const RISCV_REG_V25_V26_V27_V28_V29: Type = 377;
-    pub const RISCV_REG_V26_V27_V28_V29_V30: Type = 378;
-    pub const RISCV_REG_V27_V28_V29_V30_V31: Type = 379;
-    pub const RISCV_REG_V0_V1_V2_V3_V4: Type = 380;
-    pub const RISCV_REG_V1_V2_V3_V4_V5_V6: Type = 381;
-    pub const RISCV_REG_V2_V3_V4_V5_V6_V7: Type = 382;
-    pub const RISCV_REG_V3_V4_V5_V6_V7_V8: Type = 383;
-    pub const RISCV_REG_V4_V5_V6_V7_V8_V9: Type = 384;
-    pub const RISCV_REG_V5_V6_V7_V8_V9_V10: Type = 385;
-    pub const RISCV_REG_V6_V7_V8_V9_V10_V11: Type = 386;
-    pub const RISCV_REG_V7_V8_V9_V10_V11_V12: Type = 387;
-    pub const RISCV_REG_V8_V9_V10_V11_V12_V13: Type = 388;
-    pub const RISCV_REG_V9_V10_V11_V12_V13_V14: Type = 389;
-    pub const RISCV_REG_V10_V11_V12_V13_V14_V15: Type = 390;
-    pub const RISCV_REG_V11_V12_V13_V14_V15_V16: Type = 391;
-    pub const RISCV_REG_V12_V13_V14_V15_V16_V17: Type = 392;
-    pub const RISCV_REG_V13_V14_V15_V16_V17_V18: Type = 393;
-    pub const RISCV_REG_V14_V15_V16_V17_V18_V19: Type = 394;
-    pub const RISCV_REG_V15_V16_V17_V18_V19_V20: Type = 395;
-    pub const RISCV_REG_V16_V17_V18_V19_V20_V21: Type = 396;
-    pub const RISCV_REG_V17_V18_V19_V20_V21_V22: Type = 397;
-    pub const RISCV_REG_V18_V19_V20_V21_V22_V23: Type = 398;
-    pub const RISCV_REG_V19_V20_V21_V22_V23_V24: Type = 399;
-    pub const RISCV_REG_V20_V21_V22_V23_V24_V25: Type = 400;
-    pub const RISCV_REG_V21_V22_V23_V24_V25_V26: Type = 401;
-    pub const RISCV_REG_V22_V23_V24_V25_V26_V27: Type = 402;
-    pub const RISCV_REG_V23_V24_V25_V26_V27_V28: Type = 403;
-    pub const RISCV_REG_V24_V25_V26_V27_V28_V29: Type = 404;
-    pub const RISCV_REG_V25_V26_V27_V28_V29_V30: Type = 405;
-    pub const RISCV_REG_V26_V27_V28_V29_V30_V31: Type = 406;
-    pub const RISCV_REG_V0_V1_V2_V3_V4_V5: Type = 407;
-    pub const RISCV_REG_V1_V2_V3_V4_V5_V6_V7: Type = 408;
-    pub const RISCV_REG_V2_V3_V4_V5_V6_V7_V8: Type = 409;
-    pub const RISCV_REG_V3_V4_V5_V6_V7_V8_V9: Type = 410;
-    pub const RISCV_REG_V4_V5_V6_V7_V8_V9_V10: Type = 411;
-    pub const RISCV_REG_V5_V6_V7_V8_V9_V10_V11: Type = 412;
-    pub const RISCV_REG_V6_V7_V8_V9_V10_V11_V12: Type = 413;
-    pub const RISCV_REG_V7_V8_V9_V10_V11_V12_V13: Type = 414;
-    pub const RISCV_REG_V8_V9_V10_V11_V12_V13_V14: Type = 415;
-    pub const RISCV_REG_V9_V10_V11_V12_V13_V14_V15: Type = 416;
-    pub const RISCV_REG_V10_V11_V12_V13_V14_V15_V16: Type = 417;
-    pub const RISCV_REG_V11_V12_V13_V14_V15_V16_V17: Type = 418;
-    pub const RISCV_REG_V12_V13_V14_V15_V16_V17_V18: Type = 419;
-    pub const RISCV_REG_V13_V14_V15_V16_V17_V18_V19: Type = 420;
-    pub const RISCV_REG_V14_V15_V16_V17_V18_V19_V20: Type = 421;
-    pub const RISCV_REG_V15_V16_V17_V18_V19_V20_V21: Type = 422;
-    pub const RISCV_REG_V16_V17_V18_V19_V20_V21_V22: Type = 423;
-    pub const RISCV_REG_V17_V18_V19_V20_V21_V22_V23: Type = 424;
-    pub const RISCV_REG_V18_V19_V20_V21_V22_V23_V24: Type = 425;
-    pub const RISCV_REG_V19_V20_V21_V22_V23_V24_V25: Type = 426;
-    pub const RISCV_REG_V20_V21_V22_V23_V24_V25_V26: Type = 427;
-    pub const RISCV_REG_V21_V22_V23_V24_V25_V26_V27: Type = 428;
-    pub const RISCV_REG_V22_V23_V24_V25_V26_V27_V28: Type = 429;
-    pub const RISCV_REG_V23_V24_V25_V26_V27_V28_V29: Type = 430;
-    pub const RISCV_REG_V24_V25_V26_V27_V28_V29_V30: Type = 431;
-    pub const RISCV_REG_V25_V26_V27_V28_V29_V30_V31: Type = 432;
-    pub const RISCV_REG_V0_V1_V2_V3_V4_V5_V6: Type = 433;
-    pub const RISCV_REG_V1_V2_V3_V4_V5_V6_V7_V8: Type = 434;
-    pub const RISCV_REG_V2_V3_V4_V5_V6_V7_V8_V9: Type = 435;
-    pub const RISCV_REG_V3_V4_V5_V6_V7_V8_V9_V10: Type = 436;
-    pub const RISCV_REG_V4_V5_V6_V7_V8_V9_V10_V11: Type = 437;
-    pub const RISCV_REG_V5_V6_V7_V8_V9_V10_V11_V12: Type = 438;
-    pub const RISCV_REG_V6_V7_V8_V9_V10_V11_V12_V13: Type = 439;
-    pub const RISCV_REG_V7_V8_V9_V10_V11_V12_V13_V14: Type = 440;
-    pub const RISCV_REG_V8_V9_V10_V11_V12_V13_V14_V15: Type = 441;
-    pub const RISCV_REG_V9_V10_V11_V12_V13_V14_V15_V16: Type = 442;
-    pub const RISCV_REG_V10_V11_V12_V13_V14_V15_V16_V17: Type = 443;
-    pub const RISCV_REG_V11_V12_V13_V14_V15_V16_V17_V18: Type = 444;
-    pub const RISCV_REG_V12_V13_V14_V15_V16_V17_V18_V19: Type = 445;
-    pub const RISCV_REG_V13_V14_V15_V16_V17_V18_V19_V20: Type = 446;
-    pub const RISCV_REG_V14_V15_V16_V17_V18_V19_V20_V21: Type = 447;
-    pub const RISCV_REG_V15_V16_V17_V18_V19_V20_V21_V22: Type = 448;
-    pub const RISCV_REG_V16_V17_V18_V19_V20_V21_V22_V23: Type = 449;
-    pub const RISCV_REG_V17_V18_V19_V20_V21_V22_V23_V24: Type = 450;
-    pub const RISCV_REG_V18_V19_V20_V21_V22_V23_V24_V25: Type = 451;
-    pub const RISCV_REG_V19_V20_V21_V22_V23_V24_V25_V26: Type = 452;
-    pub const RISCV_REG_V20_V21_V22_V23_V24_V25_V26_V27: Type = 453;
-    pub const RISCV_REG_V21_V22_V23_V24_V25_V26_V27_V28: Type = 454;
-    pub const RISCV_REG_V22_V23_V24_V25_V26_V27_V28_V29: Type = 455;
-    pub const RISCV_REG_V23_V24_V25_V26_V27_V28_V29_V30: Type = 456;
-    pub const RISCV_REG_V24_V25_V26_V27_V28_V29_V30_V31: Type = 457;
-    pub const RISCV_REG_V0_V1_V2_V3_V4_V5_V6_V7: Type = 458;
-    pub const RISCV_REG_ENDING: Type = 459;
-}
-#[repr(u32)]
-#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
-pub enum riscv_insn {
-    RISCV_INS_INVALID = 0,
-    RISCV_INS_ADD = 1,
-    RISCV_INS_CALL = 2,
-    RISCV_INS_FLD = 3,
-    RISCV_INS_FLH = 4,
-    RISCV_INS_FLW = 5,
-    RISCV_INS_FSD = 6,
-    RISCV_INS_FSH = 7,
-    RISCV_INS_FSW = 8,
-    RISCV_INS_JUMP = 9,
-    RISCV_INS_LA = 10,
-    RISCV_INS_LA_TLSDESC = 11,
-    RISCV_INS_LA_TLS_GD = 12,
-    RISCV_INS_LA_TLS_IE = 13,
-    RISCV_INS_LB = 14,
-    RISCV_INS_LBU = 15,
-    RISCV_INS_LD = 16,
-    RISCV_INS_LGA = 17,
-    RISCV_INS_LH = 18,
-    RISCV_INS_LHU = 19,
-    RISCV_INS_LI = 20,
-    RISCV_INS_LLA = 21,
-    RISCV_INS_LW = 22,
-    RISCV_INS_LWU = 23,
-    RISCV_INS_SB = 24,
-    RISCV_INS_SD = 25,
-    RISCV_INS_SEXT_B = 26,
-    RISCV_INS_SEXT_H = 27,
-    RISCV_INS_SH = 28,
-    RISCV_INS_SW = 29,
-    RISCV_INS_TAIL = 30,
-    RISCV_INS_JALR = 31,
-    RISCV_INS_VMSGEU_VI = 32,
-    RISCV_INS_VMSGEU_VX = 33,
-    RISCV_INS_VMSGE_VI = 34,
-    RISCV_INS_VMSGE_VX = 35,
-    RISCV_INS_VMSLTU_VI = 36,
-    RISCV_INS_VMSLT_VI = 37,
-    RISCV_INS_ZEXT_H = 38,
-    RISCV_INS_ZEXT_W = 39,
-    RISCV_INS_ADDI = 40,
-    RISCV_INS_ADDIW = 41,
-    RISCV_INS_ADDW = 42,
-    RISCV_INS_ADD_UW = 43,
-    RISCV_INS_AES32DSI = 44,
-    RISCV_INS_AES32DSMI = 45,
-    RISCV_INS_AES32ESI = 46,
-    RISCV_INS_AES32ESMI = 47,
-    RISCV_INS_AES64DS = 48,
-    RISCV_INS_AES64DSM = 49,
-    RISCV_INS_AES64ES = 50,
-    RISCV_INS_AES64ESM = 51,
-    RISCV_INS_AES64IM = 52,
-    RISCV_INS_AES64KS1I = 53,
-    RISCV_INS_AES64KS2 = 54,
-    RISCV_INS_AMOADD_D = 55,
-    RISCV_INS_AMOADD_D_AQ = 56,
-    RISCV_INS_AMOADD_D_AQRL = 57,
-    RISCV_INS_AMOADD_D_RL = 58,
-    RISCV_INS_AMOADD_W = 59,
-    RISCV_INS_AMOADD_W_AQ = 60,
-    RISCV_INS_AMOADD_W_AQRL = 61,
-    RISCV_INS_AMOADD_W_RL = 62,
-    RISCV_INS_AMOAND_D = 63,
-    RISCV_INS_AMOAND_D_AQ = 64,
-    RISCV_INS_AMOAND_D_AQRL = 65,
-    RISCV_INS_AMOAND_D_RL = 66,
-    RISCV_INS_AMOAND_W = 67,
-    RISCV_INS_AMOAND_W_AQ = 68,
-    RISCV_INS_AMOAND_W_AQRL = 69,
-    RISCV_INS_AMOAND_W_RL = 70,
-    RISCV_INS_AMOCAS_D = 71,
-    RISCV_INS_AMOCAS_D_AQ = 72,
-    RISCV_INS_AMOCAS_D_AQRL = 73,
-    RISCV_INS_AMOCAS_D_RL = 74,
-    RISCV_INS_AMOCAS_Q = 75,
-    RISCV_INS_AMOCAS_Q_AQ = 76,
-    RISCV_INS_AMOCAS_Q_AQRL = 77,
-    RISCV_INS_AMOCAS_Q_RL = 78,
-    RISCV_INS_AMOCAS_W = 79,
-    RISCV_INS_AMOCAS_W_AQ = 80,
-    RISCV_INS_AMOCAS_W_AQRL = 81,
-    RISCV_INS_AMOCAS_W_RL = 82,
-    RISCV_INS_AMOMAXU_D = 83,
-    RISCV_INS_AMOMAXU_D_AQ = 84,
-    RISCV_INS_AMOMAXU_D_AQRL = 85,
-    RISCV_INS_AMOMAXU_D_RL = 86,
-    RISCV_INS_AMOMAXU_W = 87,
-    RISCV_INS_AMOMAXU_W_AQ = 88,
-    RISCV_INS_AMOMAXU_W_AQRL = 89,
-    RISCV_INS_AMOMAXU_W_RL = 90,
-    RISCV_INS_AMOMAX_D = 91,
-    RISCV_INS_AMOMAX_D_AQ = 92,
-    RISCV_INS_AMOMAX_D_AQRL = 93,
-    RISCV_INS_AMOMAX_D_RL = 94,
-    RISCV_INS_AMOMAX_W = 95,
-    RISCV_INS_AMOMAX_W_AQ = 96,
-    RISCV_INS_AMOMAX_W_AQRL = 97,
-    RISCV_INS_AMOMAX_W_RL = 98,
-    RISCV_INS_AMOMINU_D = 99,
-    RISCV_INS_AMOMINU_D_AQ = 100,
-    RISCV_INS_AMOMINU_D_AQRL = 101,
-    RISCV_INS_AMOMINU_D_RL = 102,
-    RISCV_INS_AMOMINU_W = 103,
-    RISCV_INS_AMOMINU_W_AQ = 104,
-    RISCV_INS_AMOMINU_W_AQRL = 105,
-    RISCV_INS_AMOMINU_W_RL = 106,
-    RISCV_INS_AMOMIN_D = 107,
-    RISCV_INS_AMOMIN_D_AQ = 108,
-    RISCV_INS_AMOMIN_D_AQRL = 109,
-    RISCV_INS_AMOMIN_D_RL = 110,
-    RISCV_INS_AMOMIN_W = 111,
-    RISCV_INS_AMOMIN_W_AQ = 112,
-    RISCV_INS_AMOMIN_W_AQRL = 113,
-    RISCV_INS_AMOMIN_W_RL = 114,
-    RISCV_INS_AMOOR_D = 115,
-    RISCV_INS_AMOOR_D_AQ = 116,
-    RISCV_INS_AMOOR_D_AQRL = 117,
-    RISCV_INS_AMOOR_D_RL = 118,
-    RISCV_INS_AMOOR_W = 119,
-    RISCV_INS_AMOOR_W_AQ = 120,
-    RISCV_INS_AMOOR_W_AQRL = 121,
-    RISCV_INS_AMOOR_W_RL = 122,
-    RISCV_INS_AMOSWAP_D = 123,
-    RISCV_INS_AMOSWAP_D_AQ = 124,
-    RISCV_INS_AMOSWAP_D_AQRL = 125,
-    RISCV_INS_AMOSWAP_D_RL = 126,
-    RISCV_INS_AMOSWAP_W = 127,
-    RISCV_INS_AMOSWAP_W_AQ = 128,
-    RISCV_INS_AMOSWAP_W_AQRL = 129,
-    RISCV_INS_AMOSWAP_W_RL = 130,
-    RISCV_INS_AMOXOR_D = 131,
-    RISCV_INS_AMOXOR_D_AQ = 132,
-    RISCV_INS_AMOXOR_D_AQRL = 133,
-    RISCV_INS_AMOXOR_D_RL = 134,
-    RISCV_INS_AMOXOR_W = 135,
-    RISCV_INS_AMOXOR_W_AQ = 136,
-    RISCV_INS_AMOXOR_W_AQRL = 137,
-    RISCV_INS_AMOXOR_W_RL = 138,
-    RISCV_INS_AND = 139,
-    RISCV_INS_ANDI = 140,
-    RISCV_INS_ANDN = 141,
-    RISCV_INS_AUIPC = 142,
-    RISCV_INS_BCLR = 143,
-    RISCV_INS_BCLRI = 144,
-    RISCV_INS_BEQ = 145,
-    RISCV_INS_BEXT = 146,
-    RISCV_INS_BEXTI = 147,
-    RISCV_INS_BGE = 148,
-    RISCV_INS_BGEU = 149,
-    RISCV_INS_BINV = 150,
-    RISCV_INS_BINVI = 151,
-    RISCV_INS_BLT = 152,
-    RISCV_INS_BLTU = 153,
-    RISCV_INS_BNE = 154,
-    RISCV_INS_BREV8 = 155,
-    RISCV_INS_BSET = 156,
-    RISCV_INS_BSETI = 157,
-    RISCV_INS_CBO_CLEAN = 158,
-    RISCV_INS_CBO_FLUSH = 159,
-    RISCV_INS_CBO_INVAL = 160,
-    RISCV_INS_CBO_ZERO = 161,
-    RISCV_INS_CLMUL = 162,
-    RISCV_INS_CLMULH = 163,
-    RISCV_INS_CLMULR = 164,
-    RISCV_INS_CLZ = 165,
-    RISCV_INS_CLZW = 166,
-    RISCV_INS_CMOP_1 = 167,
-    RISCV_INS_CMOP_11 = 168,
-    RISCV_INS_CMOP_13 = 169,
-    RISCV_INS_CMOP_15 = 170,
-    RISCV_INS_CMOP_3 = 171,
-    RISCV_INS_CMOP_5 = 172,
-    RISCV_INS_CMOP_7 = 173,
-    RISCV_INS_CMOP_9 = 174,
-    RISCV_INS_CM_JALT = 175,
-    RISCV_INS_CM_JT = 176,
-    RISCV_INS_CM_MVA01S = 177,
-    RISCV_INS_CM_MVSA01 = 178,
-    RISCV_INS_CM_POP = 179,
-    RISCV_INS_CM_POPRET = 180,
-    RISCV_INS_CM_POPRETZ = 181,
-    RISCV_INS_CM_PUSH = 182,
-    RISCV_INS_CPOP = 183,
-    RISCV_INS_CPOPW = 184,
-    RISCV_INS_CSRRC = 185,
-    RISCV_INS_CSRRCI = 186,
-    RISCV_INS_CSRRS = 187,
-    RISCV_INS_CSRRSI = 188,
-    RISCV_INS_CSRRW = 189,
-    RISCV_INS_CSRRWI = 190,
-    RISCV_INS_CTZ = 191,
-    RISCV_INS_CTZW = 192,
-    RISCV_INS_CV_ABS = 193,
-    RISCV_INS_CV_ABS_B = 194,
-    RISCV_INS_CV_ABS_H = 195,
-    RISCV_INS_CV_ADDN = 196,
-    RISCV_INS_CV_ADDNR = 197,
-    RISCV_INS_CV_ADDRN = 198,
-    RISCV_INS_CV_ADDRNR = 199,
-    RISCV_INS_CV_ADDUN = 200,
-    RISCV_INS_CV_ADDUNR = 201,
-    RISCV_INS_CV_ADDURN = 202,
-    RISCV_INS_CV_ADDURNR = 203,
-    RISCV_INS_CV_ADD_B = 204,
-    RISCV_INS_CV_ADD_DIV2 = 205,
-    RISCV_INS_CV_ADD_DIV4 = 206,
-    RISCV_INS_CV_ADD_DIV8 = 207,
-    RISCV_INS_CV_ADD_H = 208,
-    RISCV_INS_CV_ADD_SCI_B = 209,
-    RISCV_INS_CV_ADD_SCI_H = 210,
-    RISCV_INS_CV_ADD_SC_B = 211,
-    RISCV_INS_CV_ADD_SC_H = 212,
-    RISCV_INS_CV_AND_B = 213,
-    RISCV_INS_CV_AND_H = 214,
-    RISCV_INS_CV_AND_SCI_B = 215,
-    RISCV_INS_CV_AND_SCI_H = 216,
-    RISCV_INS_CV_AND_SC_B = 217,
-    RISCV_INS_CV_AND_SC_H = 218,
-    RISCV_INS_CV_AVGU_B = 219,
-    RISCV_INS_CV_AVGU_H = 220,
-    RISCV_INS_CV_AVGU_SCI_B = 221,
-    RISCV_INS_CV_AVGU_SCI_H = 222,
-    RISCV_INS_CV_AVGU_SC_B = 223,
-    RISCV_INS_CV_AVGU_SC_H = 224,
-    RISCV_INS_CV_AVG_B = 225,
-    RISCV_INS_CV_AVG_H = 226,
-    RISCV_INS_CV_AVG_SCI_B = 227,
-    RISCV_INS_CV_AVG_SCI_H = 228,
-    RISCV_INS_CV_AVG_SC_B = 229,
-    RISCV_INS_CV_AVG_SC_H = 230,
-    RISCV_INS_CV_BCLR = 231,
-    RISCV_INS_CV_BCLRR = 232,
-    RISCV_INS_CV_BEQIMM = 233,
-    RISCV_INS_CV_BITREV = 234,
-    RISCV_INS_CV_BNEIMM = 235,
-    RISCV_INS_CV_BSET = 236,
-    RISCV_INS_CV_BSETR = 237,
-    RISCV_INS_CV_CLB = 238,
-    RISCV_INS_CV_CLIP = 239,
-    RISCV_INS_CV_CLIPR = 240,
-    RISCV_INS_CV_CLIPU = 241,
-    RISCV_INS_CV_CLIPUR = 242,
-    RISCV_INS_CV_CMPEQ_B = 243,
-    RISCV_INS_CV_CMPEQ_H = 244,
-    RISCV_INS_CV_CMPEQ_SCI_B = 245,
-    RISCV_INS_CV_CMPEQ_SCI_H = 246,
-    RISCV_INS_CV_CMPEQ_SC_B = 247,
-    RISCV_INS_CV_CMPEQ_SC_H = 248,
-    RISCV_INS_CV_CMPGEU_B = 249,
-    RISCV_INS_CV_CMPGEU_H = 250,
-    RISCV_INS_CV_CMPGEU_SCI_B = 251,
-    RISCV_INS_CV_CMPGEU_SCI_H = 252,
-    RISCV_INS_CV_CMPGEU_SC_B = 253,
-    RISCV_INS_CV_CMPGEU_SC_H = 254,
-    RISCV_INS_CV_CMPGE_B = 255,
-    RISCV_INS_CV_CMPGE_H = 256,
-    RISCV_INS_CV_CMPGE_SCI_B = 257,
-    RISCV_INS_CV_CMPGE_SCI_H = 258,
-    RISCV_INS_CV_CMPGE_SC_B = 259,
-    RISCV_INS_CV_CMPGE_SC_H = 260,
-    RISCV_INS_CV_CMPGTU_B = 261,
-    RISCV_INS_CV_CMPGTU_H = 262,
-    RISCV_INS_CV_CMPGTU_SCI_B = 263,
-    RISCV_INS_CV_CMPGTU_SCI_H = 264,
-    RISCV_INS_CV_CMPGTU_SC_B = 265,
-    RISCV_INS_CV_CMPGTU_SC_H = 266,
-    RISCV_INS_CV_CMPGT_B = 267,
-    RISCV_INS_CV_CMPGT_H = 268,
-    RISCV_INS_CV_CMPGT_SCI_B = 269,
-    RISCV_INS_CV_CMPGT_SCI_H = 270,
-    RISCV_INS_CV_CMPGT_SC_B = 271,
-    RISCV_INS_CV_CMPGT_SC_H = 272,
-    RISCV_INS_CV_CMPLEU_B = 273,
-    RISCV_INS_CV_CMPLEU_H = 274,
-    RISCV_INS_CV_CMPLEU_SCI_B = 275,
-    RISCV_INS_CV_CMPLEU_SCI_H = 276,
-    RISCV_INS_CV_CMPLEU_SC_B = 277,
-    RISCV_INS_CV_CMPLEU_SC_H = 278,
-    RISCV_INS_CV_CMPLE_B = 279,
-    RISCV_INS_CV_CMPLE_H = 280,
-    RISCV_INS_CV_CMPLE_SCI_B = 281,
-    RISCV_INS_CV_CMPLE_SCI_H = 282,
-    RISCV_INS_CV_CMPLE_SC_B = 283,
-    RISCV_INS_CV_CMPLE_SC_H = 284,
-    RISCV_INS_CV_CMPLTU_B = 285,
-    RISCV_INS_CV_CMPLTU_H = 286,
-    RISCV_INS_CV_CMPLTU_SCI_B = 287,
-    RISCV_INS_CV_CMPLTU_SCI_H = 288,
-    RISCV_INS_CV_CMPLTU_SC_B = 289,
-    RISCV_INS_CV_CMPLTU_SC_H = 290,
-    RISCV_INS_CV_CMPLT_B = 291,
-    RISCV_INS_CV_CMPLT_H = 292,
-    RISCV_INS_CV_CMPLT_SCI_B = 293,
-    RISCV_INS_CV_CMPLT_SCI_H = 294,
-    RISCV_INS_CV_CMPLT_SC_B = 295,
-    RISCV_INS_CV_CMPLT_SC_H = 296,
-    RISCV_INS_CV_CMPNE_B = 297,
-    RISCV_INS_CV_CMPNE_H = 298,
-    RISCV_INS_CV_CMPNE_SCI_B = 299,
-    RISCV_INS_CV_CMPNE_SCI_H = 300,
-    RISCV_INS_CV_CMPNE_SC_B = 301,
-    RISCV_INS_CV_CMPNE_SC_H = 302,
-    RISCV_INS_CV_CNT = 303,
-    RISCV_INS_CV_CPLXCONJ = 304,
-    RISCV_INS_CV_CPLXMUL_I = 305,
-    RISCV_INS_CV_CPLXMUL_I_DIV2 = 306,
-    RISCV_INS_CV_CPLXMUL_I_DIV4 = 307,
-    RISCV_INS_CV_CPLXMUL_I_DIV8 = 308,
-    RISCV_INS_CV_CPLXMUL_R = 309,
-    RISCV_INS_CV_CPLXMUL_R_DIV2 = 310,
-    RISCV_INS_CV_CPLXMUL_R_DIV4 = 311,
-    RISCV_INS_CV_CPLXMUL_R_DIV8 = 312,
-    RISCV_INS_CV_DOTSP_B = 313,
-    RISCV_INS_CV_DOTSP_H = 314,
-    RISCV_INS_CV_DOTSP_SCI_B = 315,
-    RISCV_INS_CV_DOTSP_SCI_H = 316,
-    RISCV_INS_CV_DOTSP_SC_B = 317,
-    RISCV_INS_CV_DOTSP_SC_H = 318,
-    RISCV_INS_CV_DOTUP_B = 319,
-    RISCV_INS_CV_DOTUP_H = 320,
-    RISCV_INS_CV_DOTUP_SCI_B = 321,
-    RISCV_INS_CV_DOTUP_SCI_H = 322,
-    RISCV_INS_CV_DOTUP_SC_B = 323,
-    RISCV_INS_CV_DOTUP_SC_H = 324,
-    RISCV_INS_CV_DOTUSP_B = 325,
-    RISCV_INS_CV_DOTUSP_H = 326,
-    RISCV_INS_CV_DOTUSP_SCI_B = 327,
-    RISCV_INS_CV_DOTUSP_SCI_H = 328,
-    RISCV_INS_CV_DOTUSP_SC_B = 329,
-    RISCV_INS_CV_DOTUSP_SC_H = 330,
-    RISCV_INS_CV_ELW = 331,
-    RISCV_INS_CV_EXTBS = 332,
-    RISCV_INS_CV_EXTBZ = 333,
-    RISCV_INS_CV_EXTHS = 334,
-    RISCV_INS_CV_EXTHZ = 335,
-    RISCV_INS_CV_EXTRACT = 336,
-    RISCV_INS_CV_EXTRACTR = 337,
-    RISCV_INS_CV_EXTRACTU = 338,
-    RISCV_INS_CV_EXTRACTUR = 339,
-    RISCV_INS_CV_EXTRACTU_B = 340,
-    RISCV_INS_CV_EXTRACTU_H = 341,
-    RISCV_INS_CV_EXTRACT_B = 342,
-    RISCV_INS_CV_EXTRACT_H = 343,
-    RISCV_INS_CV_FF1 = 344,
-    RISCV_INS_CV_FL1 = 345,
-    RISCV_INS_CV_INSERT = 346,
-    RISCV_INS_CV_INSERTR = 347,
-    RISCV_INS_CV_INSERT_B = 348,
-    RISCV_INS_CV_INSERT_H = 349,
-    RISCV_INS_CV_LBU = 350,
-    RISCV_INS_CV_LB = 351,
-    RISCV_INS_CV_LHU = 352,
-    RISCV_INS_CV_LH = 353,
-    RISCV_INS_CV_LW = 354,
-    RISCV_INS_CV_MAC = 355,
-    RISCV_INS_CV_MACHHSN = 356,
-    RISCV_INS_CV_MACHHSRN = 357,
-    RISCV_INS_CV_MACHHUN = 358,
-    RISCV_INS_CV_MACHHURN = 359,
-    RISCV_INS_CV_MACSN = 360,
-    RISCV_INS_CV_MACSRN = 361,
-    RISCV_INS_CV_MACUN = 362,
-    RISCV_INS_CV_MACURN = 363,
-    RISCV_INS_CV_MAX = 364,
-    RISCV_INS_CV_MAXU = 365,
-    RISCV_INS_CV_MAXU_B = 366,
-    RISCV_INS_CV_MAXU_H = 367,
-    RISCV_INS_CV_MAXU_SCI_B = 368,
-    RISCV_INS_CV_MAXU_SCI_H = 369,
-    RISCV_INS_CV_MAXU_SC_B = 370,
-    RISCV_INS_CV_MAXU_SC_H = 371,
-    RISCV_INS_CV_MAX_B = 372,
-    RISCV_INS_CV_MAX_H = 373,
-    RISCV_INS_CV_MAX_SCI_B = 374,
-    RISCV_INS_CV_MAX_SCI_H = 375,
-    RISCV_INS_CV_MAX_SC_B = 376,
-    RISCV_INS_CV_MAX_SC_H = 377,
-    RISCV_INS_CV_MIN = 378,
-    RISCV_INS_CV_MINU = 379,
-    RISCV_INS_CV_MINU_B = 380,
-    RISCV_INS_CV_MINU_H = 381,
-    RISCV_INS_CV_MINU_SCI_B = 382,
-    RISCV_INS_CV_MINU_SCI_H = 383,
-    RISCV_INS_CV_MINU_SC_B = 384,
-    RISCV_INS_CV_MINU_SC_H = 385,
-    RISCV_INS_CV_MIN_B = 386,
-    RISCV_INS_CV_MIN_H = 387,
-    RISCV_INS_CV_MIN_SCI_B = 388,
-    RISCV_INS_CV_MIN_SCI_H = 389,
-    RISCV_INS_CV_MIN_SC_B = 390,
-    RISCV_INS_CV_MIN_SC_H = 391,
-    RISCV_INS_CV_MSU = 392,
-    RISCV_INS_CV_MULHHSN = 393,
-    RISCV_INS_CV_MULHHSRN = 394,
-    RISCV_INS_CV_MULHHUN = 395,
-    RISCV_INS_CV_MULHHURN = 396,
-    RISCV_INS_CV_MULSN = 397,
-    RISCV_INS_CV_MULSRN = 398,
-    RISCV_INS_CV_MULUN = 399,
-    RISCV_INS_CV_MULURN = 400,
-    RISCV_INS_CV_OR_B = 401,
-    RISCV_INS_CV_OR_H = 402,
-    RISCV_INS_CV_OR_SCI_B = 403,
-    RISCV_INS_CV_OR_SCI_H = 404,
-    RISCV_INS_CV_OR_SC_B = 405,
-    RISCV_INS_CV_OR_SC_H = 406,
-    RISCV_INS_CV_PACK = 407,
-    RISCV_INS_CV_PACKHI_B = 408,
-    RISCV_INS_CV_PACKLO_B = 409,
-    RISCV_INS_CV_PACK_H = 410,
-    RISCV_INS_CV_ROR = 411,
-    RISCV_INS_CV_SB = 412,
-    RISCV_INS_CV_SDOTSP_B = 413,
-    RISCV_INS_CV_SDOTSP_H = 414,
-    RISCV_INS_CV_SDOTSP_SCI_B = 415,
-    RISCV_INS_CV_SDOTSP_SCI_H = 416,
-    RISCV_INS_CV_SDOTSP_SC_B = 417,
-    RISCV_INS_CV_SDOTSP_SC_H = 418,
-    RISCV_INS_CV_SDOTUP_B = 419,
-    RISCV_INS_CV_SDOTUP_H = 420,
-    RISCV_INS_CV_SDOTUP_SCI_B = 421,
-    RISCV_INS_CV_SDOTUP_SCI_H = 422,
-    RISCV_INS_CV_SDOTUP_SC_B = 423,
-    RISCV_INS_CV_SDOTUP_SC_H = 424,
-    RISCV_INS_CV_SDOTUSP_B = 425,
-    RISCV_INS_CV_SDOTUSP_H = 426,
-    RISCV_INS_CV_SDOTUSP_SCI_B = 427,
-    RISCV_INS_CV_SDOTUSP_SCI_H = 428,
-    RISCV_INS_CV_SDOTUSP_SC_B = 429,
-    RISCV_INS_CV_SDOTUSP_SC_H = 430,
-    RISCV_INS_CV_SHUFFLE2_B = 431,
-    RISCV_INS_CV_SHUFFLE2_H = 432,
-    RISCV_INS_CV_SHUFFLEI0_SCI_B = 433,
-    RISCV_INS_CV_SHUFFLEI1_SCI_B = 434,
-    RISCV_INS_CV_SHUFFLEI2_SCI_B = 435,
-    RISCV_INS_CV_SHUFFLEI3_SCI_B = 436,
-    RISCV_INS_CV_SHUFFLE_B = 437,
-    RISCV_INS_CV_SHUFFLE_H = 438,
-    RISCV_INS_CV_SHUFFLE_SCI_H = 439,
-    RISCV_INS_CV_SH = 440,
-    RISCV_INS_CV_SLET = 441,
-    RISCV_INS_CV_SLETU = 442,
-    RISCV_INS_CV_SLL_B = 443,
-    RISCV_INS_CV_SLL_H = 444,
-    RISCV_INS_CV_SLL_SCI_B = 445,
-    RISCV_INS_CV_SLL_SCI_H = 446,
-    RISCV_INS_CV_SLL_SC_B = 447,
-    RISCV_INS_CV_SLL_SC_H = 448,
-    RISCV_INS_CV_SRA_B = 449,
-    RISCV_INS_CV_SRA_H = 450,
-    RISCV_INS_CV_SRA_SCI_B = 451,
-    RISCV_INS_CV_SRA_SCI_H = 452,
-    RISCV_INS_CV_SRA_SC_B = 453,
-    RISCV_INS_CV_SRA_SC_H = 454,
-    RISCV_INS_CV_SRL_B = 455,
-    RISCV_INS_CV_SRL_H = 456,
-    RISCV_INS_CV_SRL_SCI_B = 457,
-    RISCV_INS_CV_SRL_SCI_H = 458,
-    RISCV_INS_CV_SRL_SC_B = 459,
-    RISCV_INS_CV_SRL_SC_H = 460,
-    RISCV_INS_CV_SUBN = 461,
-    RISCV_INS_CV_SUBNR = 462,
-    RISCV_INS_CV_SUBRN = 463,
-    RISCV_INS_CV_SUBRNR = 464,
-    RISCV_INS_CV_SUBROTMJ = 465,
-    RISCV_INS_CV_SUBROTMJ_DIV2 = 466,
-    RISCV_INS_CV_SUBROTMJ_DIV4 = 467,
-    RISCV_INS_CV_SUBROTMJ_DIV8 = 468,
-    RISCV_INS_CV_SUBUN = 469,
-    RISCV_INS_CV_SUBUNR = 470,
-    RISCV_INS_CV_SUBURN = 471,
-    RISCV_INS_CV_SUBURNR = 472,
-    RISCV_INS_CV_SUB_B = 473,
-    RISCV_INS_CV_SUB_DIV2 = 474,
-    RISCV_INS_CV_SUB_DIV4 = 475,
-    RISCV_INS_CV_SUB_DIV8 = 476,
-    RISCV_INS_CV_SUB_H = 477,
-    RISCV_INS_CV_SUB_SCI_B = 478,
-    RISCV_INS_CV_SUB_SCI_H = 479,
-    RISCV_INS_CV_SUB_SC_B = 480,
-    RISCV_INS_CV_SUB_SC_H = 481,
-    RISCV_INS_CV_SW = 482,
-    RISCV_INS_CV_XOR_B = 483,
-    RISCV_INS_CV_XOR_H = 484,
-    RISCV_INS_CV_XOR_SCI_B = 485,
-    RISCV_INS_CV_XOR_SCI_H = 486,
-    RISCV_INS_CV_XOR_SC_B = 487,
-    RISCV_INS_CV_XOR_SC_H = 488,
-    RISCV_INS_CZERO_EQZ = 489,
-    RISCV_INS_CZERO_NEZ = 490,
-    RISCV_INS_C_ADD = 491,
-    RISCV_INS_C_ADDI = 492,
-    RISCV_INS_C_ADDI16SP = 493,
-    RISCV_INS_C_ADDI4SPN = 494,
-    RISCV_INS_C_ADDIW = 495,
-    RISCV_INS_C_ADDW = 496,
-    RISCV_INS_C_AND = 497,
-    RISCV_INS_C_ANDI = 498,
-    RISCV_INS_C_BEQZ = 499,
-    RISCV_INS_C_BNEZ = 500,
-    RISCV_INS_C_EBREAK = 501,
-    RISCV_INS_C_FLD = 502,
-    RISCV_INS_C_FLDSP = 503,
-    RISCV_INS_C_FLW = 504,
-    RISCV_INS_C_FLWSP = 505,
-    RISCV_INS_C_FSD = 506,
-    RISCV_INS_C_FSDSP = 507,
-    RISCV_INS_C_FSW = 508,
-    RISCV_INS_C_FSWSP = 509,
-    RISCV_INS_C_J = 510,
-    RISCV_INS_C_JAL = 511,
-    RISCV_INS_C_JALR = 512,
-    RISCV_INS_C_JR = 513,
-    RISCV_INS_C_LBU = 514,
-    RISCV_INS_C_LD = 515,
-    RISCV_INS_C_LDSP = 516,
-    RISCV_INS_C_LH = 517,
-    RISCV_INS_C_LHU = 518,
-    RISCV_INS_C_LI = 519,
-    RISCV_INS_C_LUI = 520,
-    RISCV_INS_C_LW = 521,
-    RISCV_INS_C_LWSP = 522,
-    RISCV_INS_C_MUL = 523,
-    RISCV_INS_C_MV = 524,
-    RISCV_INS_C_NOP = 525,
-    RISCV_INS_C_NOT = 526,
-    RISCV_INS_C_OR = 527,
-    RISCV_INS_C_SB = 528,
-    RISCV_INS_C_SD = 529,
-    RISCV_INS_C_SDSP = 530,
-    RISCV_INS_C_SEXT_B = 531,
-    RISCV_INS_C_SEXT_H = 532,
-    RISCV_INS_C_SH = 533,
-    RISCV_INS_C_SLLI = 534,
-    RISCV_INS_C_SLLI64 = 535,
-    RISCV_INS_C_SRAI = 536,
-    RISCV_INS_C_SRAI64 = 537,
-    RISCV_INS_C_SRLI = 538,
-    RISCV_INS_C_SRLI64 = 539,
-    RISCV_INS_C_SSPOPCHK = 540,
-    RISCV_INS_C_SSPUSH = 541,
-    RISCV_INS_C_SUB = 542,
-    RISCV_INS_C_SUBW = 543,
-    RISCV_INS_C_SW = 544,
-    RISCV_INS_C_SWSP = 545,
-    RISCV_INS_C_UNIMP = 546,
-    RISCV_INS_C_XOR = 547,
-    RISCV_INS_C_ZEXT_B = 548,
-    RISCV_INS_C_ZEXT_H = 549,
-    RISCV_INS_C_ZEXT_W = 550,
-    RISCV_INS_DIV = 551,
-    RISCV_INS_DIVU = 552,
-    RISCV_INS_DIVUW = 553,
-    RISCV_INS_DIVW = 554,
-    RISCV_INS_DRET = 555,
-    RISCV_INS_EBREAK = 556,
-    RISCV_INS_ECALL = 557,
-    RISCV_INS_FADD_D = 558,
-    RISCV_INS_FADD_H = 559,
-    RISCV_INS_FADD_S = 560,
-    RISCV_INS_FCLASS_D = 561,
-    RISCV_INS_FCLASS_H = 562,
-    RISCV_INS_FCLASS_S = 563,
-    RISCV_INS_FCVTMOD_W_D = 564,
-    RISCV_INS_FCVT_BF16_S = 565,
-    RISCV_INS_FCVT_D_H = 566,
-    RISCV_INS_FCVT_D_L = 567,
-    RISCV_INS_FCVT_D_LU = 568,
-    RISCV_INS_FCVT_D_S = 569,
-    RISCV_INS_FCVT_D_W = 570,
-    RISCV_INS_FCVT_D_WU = 571,
-    RISCV_INS_FCVT_H_D = 572,
-    RISCV_INS_FCVT_H_L = 573,
-    RISCV_INS_FCVT_H_LU = 574,
-    RISCV_INS_FCVT_H_S = 575,
-    RISCV_INS_FCVT_H_W = 576,
-    RISCV_INS_FCVT_H_WU = 577,
-    RISCV_INS_FCVT_LU_D = 578,
-    RISCV_INS_FCVT_LU_H = 579,
-    RISCV_INS_FCVT_LU_S = 580,
-    RISCV_INS_FCVT_L_D = 581,
-    RISCV_INS_FCVT_L_H = 582,
-    RISCV_INS_FCVT_L_S = 583,
-    RISCV_INS_FCVT_S_BF16 = 584,
-    RISCV_INS_FCVT_S_D = 585,
-    RISCV_INS_FCVT_S_H = 586,
-    RISCV_INS_FCVT_S_L = 587,
-    RISCV_INS_FCVT_S_LU = 588,
-    RISCV_INS_FCVT_S_W = 589,
-    RISCV_INS_FCVT_S_WU = 590,
-    RISCV_INS_FCVT_WU_D = 591,
-    RISCV_INS_FCVT_WU_H = 592,
-    RISCV_INS_FCVT_WU_S = 593,
-    RISCV_INS_FCVT_W_D = 594,
-    RISCV_INS_FCVT_W_H = 595,
-    RISCV_INS_FCVT_W_S = 596,
-    RISCV_INS_FDIV_D = 597,
-    RISCV_INS_FDIV_H = 598,
-    RISCV_INS_FDIV_S = 599,
-    RISCV_INS_FENCE = 600,
-    RISCV_INS_FENCE_I = 601,
-    RISCV_INS_FENCE_TSO = 602,
-    RISCV_INS_FEQ_D = 603,
-    RISCV_INS_FEQ_H = 604,
-    RISCV_INS_FEQ_S = 605,
-    RISCV_INS_FLEQ_D = 606,
-    RISCV_INS_FLEQ_H = 607,
-    RISCV_INS_FLEQ_S = 608,
-    RISCV_INS_FLE_D = 609,
-    RISCV_INS_FLE_H = 610,
-    RISCV_INS_FLE_S = 611,
-    RISCV_INS_FLI_D = 612,
-    RISCV_INS_FLI_H = 613,
-    RISCV_INS_FLI_S = 614,
-    RISCV_INS_FLTQ_D = 615,
-    RISCV_INS_FLTQ_H = 616,
-    RISCV_INS_FLTQ_S = 617,
-    RISCV_INS_FLT_D = 618,
-    RISCV_INS_FLT_H = 619,
-    RISCV_INS_FLT_S = 620,
-    RISCV_INS_FMADD_D = 621,
-    RISCV_INS_FMADD_H = 622,
-    RISCV_INS_FMADD_S = 623,
-    RISCV_INS_FMAXM_D = 624,
-    RISCV_INS_FMAXM_H = 625,
-    RISCV_INS_FMAXM_S = 626,
-    RISCV_INS_FMAX_D = 627,
-    RISCV_INS_FMAX_H = 628,
-    RISCV_INS_FMAX_S = 629,
-    RISCV_INS_FMINM_D = 630,
-    RISCV_INS_FMINM_H = 631,
-    RISCV_INS_FMINM_S = 632,
-    RISCV_INS_FMIN_D = 633,
-    RISCV_INS_FMIN_H = 634,
-    RISCV_INS_FMIN_S = 635,
-    RISCV_INS_FMSUB_D = 636,
-    RISCV_INS_FMSUB_H = 637,
-    RISCV_INS_FMSUB_S = 638,
-    RISCV_INS_FMUL_D = 639,
-    RISCV_INS_FMUL_H = 640,
-    RISCV_INS_FMUL_S = 641,
-    RISCV_INS_FMVH_X_D = 642,
-    RISCV_INS_FMVP_D_X = 643,
-    RISCV_INS_FMV_D_X = 644,
-    RISCV_INS_FMV_H_X = 645,
-    RISCV_INS_FMV_W_X = 646,
-    RISCV_INS_FMV_X_D = 647,
-    RISCV_INS_FMV_X_H = 648,
-    RISCV_INS_FMV_X_W = 649,
-    RISCV_INS_FNMADD_D = 650,
-    RISCV_INS_FNMADD_H = 651,
-    RISCV_INS_FNMADD_S = 652,
-    RISCV_INS_FNMSUB_D = 653,
-    RISCV_INS_FNMSUB_H = 654,
-    RISCV_INS_FNMSUB_S = 655,
-    RISCV_INS_FROUNDNX_D = 656,
-    RISCV_INS_FROUNDNX_H = 657,
-    RISCV_INS_FROUNDNX_S = 658,
-    RISCV_INS_FROUND_D = 659,
-    RISCV_INS_FROUND_H = 660,
-    RISCV_INS_FROUND_S = 661,
-    RISCV_INS_FSGNJN_D = 662,
-    RISCV_INS_FSGNJN_H = 663,
-    RISCV_INS_FSGNJN_S = 664,
-    RISCV_INS_FSGNJX_D = 665,
-    RISCV_INS_FSGNJX_H = 666,
-    RISCV_INS_FSGNJX_S = 667,
-    RISCV_INS_FSGNJ_D = 668,
-    RISCV_INS_FSGNJ_H = 669,
-    RISCV_INS_FSGNJ_S = 670,
-    RISCV_INS_FSQRT_D = 671,
-    RISCV_INS_FSQRT_H = 672,
-    RISCV_INS_FSQRT_S = 673,
-    RISCV_INS_FSUB_D = 674,
-    RISCV_INS_FSUB_H = 675,
-    RISCV_INS_FSUB_S = 676,
-    RISCV_INS_HFENCE_GVMA = 677,
-    RISCV_INS_HFENCE_VVMA = 678,
-    RISCV_INS_HINVAL_GVMA = 679,
-    RISCV_INS_HINVAL_VVMA = 680,
-    RISCV_INS_HLVX_HU = 681,
-    RISCV_INS_HLVX_WU = 682,
-    RISCV_INS_HLV_B = 683,
-    RISCV_INS_HLV_BU = 684,
-    RISCV_INS_HLV_D = 685,
-    RISCV_INS_HLV_H = 686,
-    RISCV_INS_HLV_HU = 687,
-    RISCV_INS_HLV_W = 688,
-    RISCV_INS_HLV_WU = 689,
-    RISCV_INS_HSV_B = 690,
-    RISCV_INS_HSV_D = 691,
-    RISCV_INS_HSV_H = 692,
-    RISCV_INS_HSV_W = 693,
-    RISCV_INS_JAL = 694,
-    RISCV_INS_LR_D = 695,
-    RISCV_INS_LR_D_AQ = 696,
-    RISCV_INS_LR_D_AQRL = 697,
-    RISCV_INS_LR_D_RL = 698,
-    RISCV_INS_LR_W = 699,
-    RISCV_INS_LR_W_AQ = 700,
-    RISCV_INS_LR_W_AQRL = 701,
-    RISCV_INS_LR_W_RL = 702,
-    RISCV_INS_LUI = 703,
-    RISCV_INS_MAX = 704,
-    RISCV_INS_MAXU = 705,
-    RISCV_INS_MIN = 706,
-    RISCV_INS_MINU = 707,
-    RISCV_INS_MOP_R_0 = 708,
-    RISCV_INS_MOP_R_1 = 709,
-    RISCV_INS_MOP_R_10 = 710,
-    RISCV_INS_MOP_R_11 = 711,
-    RISCV_INS_MOP_R_12 = 712,
-    RISCV_INS_MOP_R_13 = 713,
-    RISCV_INS_MOP_R_14 = 714,
-    RISCV_INS_MOP_R_15 = 715,
-    RISCV_INS_MOP_R_16 = 716,
-    RISCV_INS_MOP_R_17 = 717,
-    RISCV_INS_MOP_R_18 = 718,
-    RISCV_INS_MOP_R_19 = 719,
-    RISCV_INS_MOP_R_2 = 720,
-    RISCV_INS_MOP_R_20 = 721,
-    RISCV_INS_MOP_R_21 = 722,
-    RISCV_INS_MOP_R_22 = 723,
-    RISCV_INS_MOP_R_23 = 724,
-    RISCV_INS_MOP_R_24 = 725,
-    RISCV_INS_MOP_R_25 = 726,
-    RISCV_INS_MOP_R_26 = 727,
-    RISCV_INS_MOP_R_27 = 728,
-    RISCV_INS_MOP_R_28 = 729,
-    RISCV_INS_MOP_R_29 = 730,
-    RISCV_INS_MOP_R_3 = 731,
-    RISCV_INS_MOP_R_30 = 732,
-    RISCV_INS_MOP_R_31 = 733,
-    RISCV_INS_MOP_R_4 = 734,
-    RISCV_INS_MOP_R_5 = 735,
-    RISCV_INS_MOP_R_6 = 736,
-    RISCV_INS_MOP_R_7 = 737,
-    RISCV_INS_MOP_R_8 = 738,
-    RISCV_INS_MOP_R_9 = 739,
-    RISCV_INS_MOP_RR_0 = 740,
-    RISCV_INS_MOP_RR_1 = 741,
-    RISCV_INS_MOP_RR_2 = 742,
-    RISCV_INS_MOP_RR_3 = 743,
-    RISCV_INS_MOP_RR_4 = 744,
-    RISCV_INS_MOP_RR_5 = 745,
-    RISCV_INS_MOP_RR_6 = 746,
-    RISCV_INS_MOP_RR_7 = 747,
-    RISCV_INS_MRET = 748,
-    RISCV_INS_MUL = 749,
-    RISCV_INS_MULH = 750,
-    RISCV_INS_MULHSU = 751,
-    RISCV_INS_MULHU = 752,
-    RISCV_INS_MULW = 753,
-    RISCV_INS_OR = 754,
-    RISCV_INS_ORC_B = 755,
-    RISCV_INS_ORI = 756,
-    RISCV_INS_ORN = 757,
-    RISCV_INS_PACK = 758,
-    RISCV_INS_PACKH = 759,
-    RISCV_INS_PACKW = 760,
-    RISCV_INS_PREFETCH_I = 761,
-    RISCV_INS_PREFETCH_R = 762,
-    RISCV_INS_PREFETCH_W = 763,
-    RISCV_INS_REM = 764,
-    RISCV_INS_REMU = 765,
-    RISCV_INS_REMUW = 766,
-    RISCV_INS_REMW = 767,
-    RISCV_INS_REV8 = 768,
-    RISCV_INS_ROL = 769,
-    RISCV_INS_ROLW = 770,
-    RISCV_INS_ROR = 771,
-    RISCV_INS_RORI = 772,
-    RISCV_INS_RORIW = 773,
-    RISCV_INS_RORW = 774,
-    RISCV_INS_SC_D = 775,
-    RISCV_INS_SC_D_AQ = 776,
-    RISCV_INS_SC_D_AQRL = 777,
-    RISCV_INS_SC_D_RL = 778,
-    RISCV_INS_SC_W = 779,
-    RISCV_INS_SC_W_AQ = 780,
-    RISCV_INS_SC_W_AQRL = 781,
-    RISCV_INS_SC_W_RL = 782,
-    RISCV_INS_SFENCE_INVAL_IR = 783,
-    RISCV_INS_SFENCE_VMA = 784,
-    RISCV_INS_SFENCE_W_INVAL = 785,
-    RISCV_INS_SH1ADD = 786,
-    RISCV_INS_SH1ADD_UW = 787,
-    RISCV_INS_SH2ADD = 788,
-    RISCV_INS_SH2ADD_UW = 789,
-    RISCV_INS_SH3ADD = 790,
-    RISCV_INS_SH3ADD_UW = 791,
-    RISCV_INS_SHA256SIG0 = 792,
-    RISCV_INS_SHA256SIG1 = 793,
-    RISCV_INS_SHA256SUM0 = 794,
-    RISCV_INS_SHA256SUM1 = 795,
-    RISCV_INS_SHA512SIG0 = 796,
-    RISCV_INS_SHA512SIG0H = 797,
-    RISCV_INS_SHA512SIG0L = 798,
-    RISCV_INS_SHA512SIG1 = 799,
-    RISCV_INS_SHA512SIG1H = 800,
-    RISCV_INS_SHA512SIG1L = 801,
-    RISCV_INS_SHA512SUM0 = 802,
-    RISCV_INS_SHA512SUM0R = 803,
-    RISCV_INS_SHA512SUM1 = 804,
-    RISCV_INS_SHA512SUM1R = 805,
-    RISCV_INS_SINVAL_VMA = 806,
-    RISCV_INS_SLL = 807,
-    RISCV_INS_SLLI = 808,
-    RISCV_INS_SLLIW = 809,
-    RISCV_INS_SLLI_UW = 810,
-    RISCV_INS_SLLW = 811,
-    RISCV_INS_SLT = 812,
-    RISCV_INS_SLTI = 813,
-    RISCV_INS_SLTIU = 814,
-    RISCV_INS_SLTU = 815,
-    RISCV_INS_SM3P0 = 816,
-    RISCV_INS_SM3P1 = 817,
-    RISCV_INS_SM4ED = 818,
-    RISCV_INS_SM4KS = 819,
-    RISCV_INS_SRA = 820,
-    RISCV_INS_SRAI = 821,
-    RISCV_INS_SRAIW = 822,
-    RISCV_INS_SRAW = 823,
-    RISCV_INS_SRET = 824,
-    RISCV_INS_SRL = 825,
-    RISCV_INS_SRLI = 826,
-    RISCV_INS_SRLIW = 827,
-    RISCV_INS_SRLW = 828,
-    RISCV_INS_SSAMOSWAP_D = 829,
-    RISCV_INS_SSAMOSWAP_D_AQ = 830,
-    RISCV_INS_SSAMOSWAP_D_AQRL = 831,
-    RISCV_INS_SSAMOSWAP_D_RL = 832,
-    RISCV_INS_SSAMOSWAP_W = 833,
-    RISCV_INS_SSAMOSWAP_W_AQ = 834,
-    RISCV_INS_SSAMOSWAP_W_AQRL = 835,
-    RISCV_INS_SSAMOSWAP_W_RL = 836,
-    RISCV_INS_SSPOPCHK = 837,
-    RISCV_INS_SSPUSH = 838,
-    RISCV_INS_SSRDP = 839,
-    RISCV_INS_SUB = 840,
-    RISCV_INS_SUBW = 841,
-    RISCV_INS_TH_VMAQASU_VV = 842,
-    RISCV_INS_TH_VMAQASU_VX = 843,
-    RISCV_INS_TH_VMAQAUS_VX = 844,
-    RISCV_INS_TH_VMAQAU_VV = 845,
-    RISCV_INS_TH_VMAQAU_VX = 846,
-    RISCV_INS_TH_VMAQA_VV = 847,
-    RISCV_INS_TH_VMAQA_VX = 848,
-    RISCV_INS_TH_ADDSL = 849,
-    RISCV_INS_TH_DCACHE_CALL = 850,
-    RISCV_INS_TH_DCACHE_CIALL = 851,
-    RISCV_INS_TH_DCACHE_CIPA = 852,
-    RISCV_INS_TH_DCACHE_CISW = 853,
-    RISCV_INS_TH_DCACHE_CIVA = 854,
-    RISCV_INS_TH_DCACHE_CPA = 855,
-    RISCV_INS_TH_DCACHE_CPAL1 = 856,
-    RISCV_INS_TH_DCACHE_CSW = 857,
-    RISCV_INS_TH_DCACHE_CVA = 858,
-    RISCV_INS_TH_DCACHE_CVAL1 = 859,
-    RISCV_INS_TH_DCACHE_IALL = 860,
-    RISCV_INS_TH_DCACHE_IPA = 861,
-    RISCV_INS_TH_DCACHE_ISW = 862,
-    RISCV_INS_TH_DCACHE_IVA = 863,
-    RISCV_INS_TH_EXT = 864,
-    RISCV_INS_TH_EXTU = 865,
-    RISCV_INS_TH_FF0 = 866,
-    RISCV_INS_TH_FF1 = 867,
-    RISCV_INS_TH_FLRD = 868,
-    RISCV_INS_TH_FLRW = 869,
-    RISCV_INS_TH_FLURD = 870,
-    RISCV_INS_TH_FLURW = 871,
-    RISCV_INS_TH_FSRD = 872,
-    RISCV_INS_TH_FSRW = 873,
-    RISCV_INS_TH_FSURD = 874,
-    RISCV_INS_TH_FSURW = 875,
-    RISCV_INS_TH_ICACHE_IALL = 876,
-    RISCV_INS_TH_ICACHE_IALLS = 877,
-    RISCV_INS_TH_ICACHE_IPA = 878,
-    RISCV_INS_TH_ICACHE_IVA = 879,
-    RISCV_INS_TH_L2CACHE_CALL = 880,
-    RISCV_INS_TH_L2CACHE_CIALL = 881,
-    RISCV_INS_TH_L2CACHE_IALL = 882,
-    RISCV_INS_TH_LBIA = 883,
-    RISCV_INS_TH_LBIB = 884,
-    RISCV_INS_TH_LBUIA = 885,
-    RISCV_INS_TH_LBUIB = 886,
-    RISCV_INS_TH_LDD = 887,
-    RISCV_INS_TH_LDIA = 888,
-    RISCV_INS_TH_LDIB = 889,
-    RISCV_INS_TH_LHIA = 890,
-    RISCV_INS_TH_LHIB = 891,
-    RISCV_INS_TH_LHUIA = 892,
-    RISCV_INS_TH_LHUIB = 893,
-    RISCV_INS_TH_LRB = 894,
-    RISCV_INS_TH_LRBU = 895,
-    RISCV_INS_TH_LRD = 896,
-    RISCV_INS_TH_LRH = 897,
-    RISCV_INS_TH_LRHU = 898,
-    RISCV_INS_TH_LRW = 899,
-    RISCV_INS_TH_LRWU = 900,
-    RISCV_INS_TH_LURB = 901,
-    RISCV_INS_TH_LURBU = 902,
-    RISCV_INS_TH_LURD = 903,
-    RISCV_INS_TH_LURH = 904,
-    RISCV_INS_TH_LURHU = 905,
-    RISCV_INS_TH_LURW = 906,
-    RISCV_INS_TH_LURWU = 907,
-    RISCV_INS_TH_LWD = 908,
-    RISCV_INS_TH_LWIA = 909,
-    RISCV_INS_TH_LWIB = 910,
-    RISCV_INS_TH_LWUD = 911,
-    RISCV_INS_TH_LWUIA = 912,
-    RISCV_INS_TH_LWUIB = 913,
-    RISCV_INS_TH_MULA = 914,
-    RISCV_INS_TH_MULAH = 915,
-    RISCV_INS_TH_MULAW = 916,
-    RISCV_INS_TH_MULS = 917,
-    RISCV_INS_TH_MULSH = 918,
-    RISCV_INS_TH_MULSW = 919,
-    RISCV_INS_TH_MVEQZ = 920,
-    RISCV_INS_TH_MVNEZ = 921,
-    RISCV_INS_TH_REV = 922,
-    RISCV_INS_TH_REVW = 923,
-    RISCV_INS_TH_SBIA = 924,
-    RISCV_INS_TH_SBIB = 925,
-    RISCV_INS_TH_SDD = 926,
-    RISCV_INS_TH_SDIA = 927,
-    RISCV_INS_TH_SDIB = 928,
-    RISCV_INS_TH_SFENCE_VMAS = 929,
-    RISCV_INS_TH_SHIA = 930,
-    RISCV_INS_TH_SHIB = 931,
-    RISCV_INS_TH_SRB = 932,
-    RISCV_INS_TH_SRD = 933,
-    RISCV_INS_TH_SRH = 934,
-    RISCV_INS_TH_SRRI = 935,
-    RISCV_INS_TH_SRRIW = 936,
-    RISCV_INS_TH_SRW = 937,
-    RISCV_INS_TH_SURB = 938,
-    RISCV_INS_TH_SURD = 939,
-    RISCV_INS_TH_SURH = 940,
-    RISCV_INS_TH_SURW = 941,
-    RISCV_INS_TH_SWD = 942,
-    RISCV_INS_TH_SWIA = 943,
-    RISCV_INS_TH_SWIB = 944,
-    RISCV_INS_TH_SYNC = 945,
-    RISCV_INS_TH_SYNC_I = 946,
-    RISCV_INS_TH_SYNC_IS = 947,
-    RISCV_INS_TH_SYNC_S = 948,
-    RISCV_INS_TH_TST = 949,
-    RISCV_INS_TH_TSTNBZ = 950,
-    RISCV_INS_UNIMP = 951,
-    RISCV_INS_UNZIP = 952,
-    RISCV_INS_VAADDU_VV = 953,
-    RISCV_INS_VAADDU_VX = 954,
-    RISCV_INS_VAADD_VV = 955,
-    RISCV_INS_VAADD_VX = 956,
-    RISCV_INS_VADC_VIM = 957,
-    RISCV_INS_VADC_VVM = 958,
-    RISCV_INS_VADC_VXM = 959,
-    RISCV_INS_VADD_VI = 960,
-    RISCV_INS_VADD_VV = 961,
-    RISCV_INS_VADD_VX = 962,
-    RISCV_INS_VAESDF_VS = 963,
-    RISCV_INS_VAESDF_VV = 964,
-    RISCV_INS_VAESDM_VS = 965,
-    RISCV_INS_VAESDM_VV = 966,
-    RISCV_INS_VAESEF_VS = 967,
-    RISCV_INS_VAESEF_VV = 968,
-    RISCV_INS_VAESEM_VS = 969,
-    RISCV_INS_VAESEM_VV = 970,
-    RISCV_INS_VAESKF1_VI = 971,
-    RISCV_INS_VAESKF2_VI = 972,
-    RISCV_INS_VAESZ_VS = 973,
-    RISCV_INS_VANDN_VV = 974,
-    RISCV_INS_VANDN_VX = 975,
-    RISCV_INS_VAND_VI = 976,
-    RISCV_INS_VAND_VV = 977,
-    RISCV_INS_VAND_VX = 978,
-    RISCV_INS_VASUBU_VV = 979,
-    RISCV_INS_VASUBU_VX = 980,
-    RISCV_INS_VASUB_VV = 981,
-    RISCV_INS_VASUB_VX = 982,
-    RISCV_INS_VBREV8_V = 983,
-    RISCV_INS_VBREV_V = 984,
-    RISCV_INS_VCLMULH_VV = 985,
-    RISCV_INS_VCLMULH_VX = 986,
-    RISCV_INS_VCLMUL_VV = 987,
-    RISCV_INS_VCLMUL_VX = 988,
-    RISCV_INS_VCLZ_V = 989,
-    RISCV_INS_VCOMPRESS_VM = 990,
-    RISCV_INS_VCPOP_M = 991,
-    RISCV_INS_VCPOP_V = 992,
-    RISCV_INS_VCTZ_V = 993,
-    RISCV_INS_SF_VC_FV = 994,
-    RISCV_INS_SF_VC_FVV = 995,
-    RISCV_INS_SF_VC_FVW = 996,
-    RISCV_INS_SF_VC_I = 997,
-    RISCV_INS_SF_VC_IV = 998,
-    RISCV_INS_SF_VC_IVV = 999,
-    RISCV_INS_SF_VC_IVW = 1000,
-    RISCV_INS_SF_VC_VV = 1001,
-    RISCV_INS_SF_VC_VVV = 1002,
-    RISCV_INS_SF_VC_VVW = 1003,
-    RISCV_INS_SF_VC_V_FV = 1004,
-    RISCV_INS_SF_VC_V_FVV = 1005,
-    RISCV_INS_SF_VC_V_FVW = 1006,
-    RISCV_INS_SF_VC_V_I = 1007,
-    RISCV_INS_SF_VC_V_IV = 1008,
-    RISCV_INS_SF_VC_V_IVV = 1009,
-    RISCV_INS_SF_VC_V_IVW = 1010,
-    RISCV_INS_SF_VC_V_VV = 1011,
-    RISCV_INS_SF_VC_V_VVV = 1012,
-    RISCV_INS_SF_VC_V_VVW = 1013,
-    RISCV_INS_SF_VC_V_X = 1014,
-    RISCV_INS_SF_VC_V_XV = 1015,
-    RISCV_INS_SF_VC_V_XVV = 1016,
-    RISCV_INS_SF_VC_V_XVW = 1017,
-    RISCV_INS_SF_VC_X = 1018,
-    RISCV_INS_SF_VC_XV = 1019,
-    RISCV_INS_SF_VC_XVV = 1020,
-    RISCV_INS_SF_VC_XVW = 1021,
-    RISCV_INS_VDIVU_VV = 1022,
-    RISCV_INS_VDIVU_VX = 1023,
-    RISCV_INS_VDIV_VV = 1024,
-    RISCV_INS_VDIV_VX = 1025,
-    RISCV_INS_VFADD_VF = 1026,
-    RISCV_INS_VFADD_VV = 1027,
-    RISCV_INS_VFCLASS_V = 1028,
-    RISCV_INS_VFCVT_F_XU_V = 1029,
-    RISCV_INS_VFCVT_F_X_V = 1030,
-    RISCV_INS_VFCVT_RTZ_XU_F_V = 1031,
-    RISCV_INS_VFCVT_RTZ_X_F_V = 1032,
-    RISCV_INS_VFCVT_XU_F_V = 1033,
-    RISCV_INS_VFCVT_X_F_V = 1034,
-    RISCV_INS_VFDIV_VF = 1035,
-    RISCV_INS_VFDIV_VV = 1036,
-    RISCV_INS_VFIRST_M = 1037,
-    RISCV_INS_VFMACC_VF = 1038,
-    RISCV_INS_VFMACC_VV = 1039,
-    RISCV_INS_VFMADD_VF = 1040,
-    RISCV_INS_VFMADD_VV = 1041,
-    RISCV_INS_VFMAX_VF = 1042,
-    RISCV_INS_VFMAX_VV = 1043,
-    RISCV_INS_VFMERGE_VFM = 1044,
-    RISCV_INS_VFMIN_VF = 1045,
-    RISCV_INS_VFMIN_VV = 1046,
-    RISCV_INS_VFMSAC_VF = 1047,
-    RISCV_INS_VFMSAC_VV = 1048,
-    RISCV_INS_VFMSUB_VF = 1049,
-    RISCV_INS_VFMSUB_VV = 1050,
-    RISCV_INS_VFMUL_VF = 1051,
-    RISCV_INS_VFMUL_VV = 1052,
-    RISCV_INS_VFMV_F_S = 1053,
-    RISCV_INS_VFMV_S_F = 1054,
-    RISCV_INS_VFMV_V_F = 1055,
-    RISCV_INS_VFNCVTBF16_F_F_W = 1056,
-    RISCV_INS_VFNCVT_F_F_W = 1057,
-    RISCV_INS_VFNCVT_F_XU_W = 1058,
-    RISCV_INS_VFNCVT_F_X_W = 1059,
-    RISCV_INS_VFNCVT_ROD_F_F_W = 1060,
-    RISCV_INS_VFNCVT_RTZ_XU_F_W = 1061,
-    RISCV_INS_VFNCVT_RTZ_X_F_W = 1062,
-    RISCV_INS_VFNCVT_XU_F_W = 1063,
-    RISCV_INS_VFNCVT_X_F_W = 1064,
-    RISCV_INS_VFNMACC_VF = 1065,
-    RISCV_INS_VFNMACC_VV = 1066,
-    RISCV_INS_VFNMADD_VF = 1067,
-    RISCV_INS_VFNMADD_VV = 1068,
-    RISCV_INS_VFNMSAC_VF = 1069,
-    RISCV_INS_VFNMSAC_VV = 1070,
-    RISCV_INS_VFNMSUB_VF = 1071,
-    RISCV_INS_VFNMSUB_VV = 1072,
-    RISCV_INS_SF_VFNRCLIP_XU_F_QF = 1073,
-    RISCV_INS_SF_VFNRCLIP_X_F_QF = 1074,
-    RISCV_INS_VFRDIV_VF = 1075,
-    RISCV_INS_VFREC7_V = 1076,
-    RISCV_INS_VFREDMAX_VS = 1077,
-    RISCV_INS_VFREDMIN_VS = 1078,
-    RISCV_INS_VFREDOSUM_VS = 1079,
-    RISCV_INS_VFREDUSUM_VS = 1080,
-    RISCV_INS_VFRSQRT7_V = 1081,
-    RISCV_INS_VFRSUB_VF = 1082,
-    RISCV_INS_VFSGNJN_VF = 1083,
-    RISCV_INS_VFSGNJN_VV = 1084,
-    RISCV_INS_VFSGNJX_VF = 1085,
-    RISCV_INS_VFSGNJX_VV = 1086,
-    RISCV_INS_VFSGNJ_VF = 1087,
-    RISCV_INS_VFSGNJ_VV = 1088,
-    RISCV_INS_VFSLIDE1DOWN_VF = 1089,
-    RISCV_INS_VFSLIDE1UP_VF = 1090,
-    RISCV_INS_VFSQRT_V = 1091,
-    RISCV_INS_VFSUB_VF = 1092,
-    RISCV_INS_VFSUB_VV = 1093,
-    RISCV_INS_VFWADD_VF = 1094,
-    RISCV_INS_VFWADD_VV = 1095,
-    RISCV_INS_VFWADD_WF = 1096,
-    RISCV_INS_VFWADD_WV = 1097,
-    RISCV_INS_VFWCVTBF16_F_F_V = 1098,
-    RISCV_INS_VFWCVT_F_F_V = 1099,
-    RISCV_INS_VFWCVT_F_XU_V = 1100,
-    RISCV_INS_VFWCVT_F_X_V = 1101,
-    RISCV_INS_VFWCVT_RTZ_XU_F_V = 1102,
-    RISCV_INS_VFWCVT_RTZ_X_F_V = 1103,
-    RISCV_INS_VFWCVT_XU_F_V = 1104,
-    RISCV_INS_VFWCVT_X_F_V = 1105,
-    RISCV_INS_VFWMACCBF16_VF = 1106,
-    RISCV_INS_VFWMACCBF16_VV = 1107,
-    RISCV_INS_SF_VFWMACC_4X4X4 = 1108,
-    RISCV_INS_VFWMACC_VF = 1109,
-    RISCV_INS_VFWMACC_VV = 1110,
-    RISCV_INS_VFWMSAC_VF = 1111,
-    RISCV_INS_VFWMSAC_VV = 1112,
-    RISCV_INS_VFWMUL_VF = 1113,
-    RISCV_INS_VFWMUL_VV = 1114,
-    RISCV_INS_VFWNMACC_VF = 1115,
-    RISCV_INS_VFWNMACC_VV = 1116,
-    RISCV_INS_VFWNMSAC_VF = 1117,
-    RISCV_INS_VFWNMSAC_VV = 1118,
-    RISCV_INS_VFWREDOSUM_VS = 1119,
-    RISCV_INS_VFWREDUSUM_VS = 1120,
-    RISCV_INS_VFWSUB_VF = 1121,
-    RISCV_INS_VFWSUB_VV = 1122,
-    RISCV_INS_VFWSUB_WF = 1123,
-    RISCV_INS_VFWSUB_WV = 1124,
-    RISCV_INS_VGHSH_VV = 1125,
-    RISCV_INS_VGMUL_VV = 1126,
-    RISCV_INS_VID_V = 1127,
-    RISCV_INS_VIOTA_M = 1128,
-    RISCV_INS_VL1RE16_V = 1129,
-    RISCV_INS_VL1RE32_V = 1130,
-    RISCV_INS_VL1RE64_V = 1131,
-    RISCV_INS_VL1RE8_V = 1132,
-    RISCV_INS_VL2RE16_V = 1133,
-    RISCV_INS_VL2RE32_V = 1134,
-    RISCV_INS_VL2RE64_V = 1135,
-    RISCV_INS_VL2RE8_V = 1136,
-    RISCV_INS_VL4RE16_V = 1137,
-    RISCV_INS_VL4RE32_V = 1138,
-    RISCV_INS_VL4RE64_V = 1139,
-    RISCV_INS_VL4RE8_V = 1140,
-    RISCV_INS_VL8RE16_V = 1141,
-    RISCV_INS_VL8RE32_V = 1142,
-    RISCV_INS_VL8RE64_V = 1143,
-    RISCV_INS_VL8RE8_V = 1144,
-    RISCV_INS_VLE16FF_V = 1145,
-    RISCV_INS_VLE16_V = 1146,
-    RISCV_INS_VLE32FF_V = 1147,
-    RISCV_INS_VLE32_V = 1148,
-    RISCV_INS_VLE64FF_V = 1149,
-    RISCV_INS_VLE64_V = 1150,
-    RISCV_INS_VLE8FF_V = 1151,
-    RISCV_INS_VLE8_V = 1152,
-    RISCV_INS_VLM_V = 1153,
-    RISCV_INS_VLOXEI16_V = 1154,
-    RISCV_INS_VLOXEI32_V = 1155,
-    RISCV_INS_VLOXEI64_V = 1156,
-    RISCV_INS_VLOXEI8_V = 1157,
-    RISCV_INS_VLOXSEG2EI16_V = 1158,
-    RISCV_INS_VLOXSEG2EI32_V = 1159,
-    RISCV_INS_VLOXSEG2EI64_V = 1160,
-    RISCV_INS_VLOXSEG2EI8_V = 1161,
-    RISCV_INS_VLOXSEG3EI16_V = 1162,
-    RISCV_INS_VLOXSEG3EI32_V = 1163,
-    RISCV_INS_VLOXSEG3EI64_V = 1164,
-    RISCV_INS_VLOXSEG3EI8_V = 1165,
-    RISCV_INS_VLOXSEG4EI16_V = 1166,
-    RISCV_INS_VLOXSEG4EI32_V = 1167,
-    RISCV_INS_VLOXSEG4EI64_V = 1168,
-    RISCV_INS_VLOXSEG4EI8_V = 1169,
-    RISCV_INS_VLOXSEG5EI16_V = 1170,
-    RISCV_INS_VLOXSEG5EI32_V = 1171,
-    RISCV_INS_VLOXSEG5EI64_V = 1172,
-    RISCV_INS_VLOXSEG5EI8_V = 1173,
-    RISCV_INS_VLOXSEG6EI16_V = 1174,
-    RISCV_INS_VLOXSEG6EI32_V = 1175,
-    RISCV_INS_VLOXSEG6EI64_V = 1176,
-    RISCV_INS_VLOXSEG6EI8_V = 1177,
-    RISCV_INS_VLOXSEG7EI16_V = 1178,
-    RISCV_INS_VLOXSEG7EI32_V = 1179,
-    RISCV_INS_VLOXSEG7EI64_V = 1180,
-    RISCV_INS_VLOXSEG7EI8_V = 1181,
-    RISCV_INS_VLOXSEG8EI16_V = 1182,
-    RISCV_INS_VLOXSEG8EI32_V = 1183,
-    RISCV_INS_VLOXSEG8EI64_V = 1184,
-    RISCV_INS_VLOXSEG8EI8_V = 1185,
-    RISCV_INS_VLSE16_V = 1186,
-    RISCV_INS_VLSE32_V = 1187,
-    RISCV_INS_VLSE64_V = 1188,
-    RISCV_INS_VLSE8_V = 1189,
-    RISCV_INS_VLSEG2E16FF_V = 1190,
-    RISCV_INS_VLSEG2E16_V = 1191,
-    RISCV_INS_VLSEG2E32FF_V = 1192,
-    RISCV_INS_VLSEG2E32_V = 1193,
-    RISCV_INS_VLSEG2E64FF_V = 1194,
-    RISCV_INS_VLSEG2E64_V = 1195,
-    RISCV_INS_VLSEG2E8FF_V = 1196,
-    RISCV_INS_VLSEG2E8_V = 1197,
-    RISCV_INS_VLSEG3E16FF_V = 1198,
-    RISCV_INS_VLSEG3E16_V = 1199,
-    RISCV_INS_VLSEG3E32FF_V = 1200,
-    RISCV_INS_VLSEG3E32_V = 1201,
-    RISCV_INS_VLSEG3E64FF_V = 1202,
-    RISCV_INS_VLSEG3E64_V = 1203,
-    RISCV_INS_VLSEG3E8FF_V = 1204,
-    RISCV_INS_VLSEG3E8_V = 1205,
-    RISCV_INS_VLSEG4E16FF_V = 1206,
-    RISCV_INS_VLSEG4E16_V = 1207,
-    RISCV_INS_VLSEG4E32FF_V = 1208,
-    RISCV_INS_VLSEG4E32_V = 1209,
-    RISCV_INS_VLSEG4E64FF_V = 1210,
-    RISCV_INS_VLSEG4E64_V = 1211,
-    RISCV_INS_VLSEG4E8FF_V = 1212,
-    RISCV_INS_VLSEG4E8_V = 1213,
-    RISCV_INS_VLSEG5E16FF_V = 1214,
-    RISCV_INS_VLSEG5E16_V = 1215,
-    RISCV_INS_VLSEG5E32FF_V = 1216,
-    RISCV_INS_VLSEG5E32_V = 1217,
-    RISCV_INS_VLSEG5E64FF_V = 1218,
-    RISCV_INS_VLSEG5E64_V = 1219,
-    RISCV_INS_VLSEG5E8FF_V = 1220,
-    RISCV_INS_VLSEG5E8_V = 1221,
-    RISCV_INS_VLSEG6E16FF_V = 1222,
-    RISCV_INS_VLSEG6E16_V = 1223,
-    RISCV_INS_VLSEG6E32FF_V = 1224,
-    RISCV_INS_VLSEG6E32_V = 1225,
-    RISCV_INS_VLSEG6E64FF_V = 1226,
-    RISCV_INS_VLSEG6E64_V = 1227,
-    RISCV_INS_VLSEG6E8FF_V = 1228,
-    RISCV_INS_VLSEG6E8_V = 1229,
-    RISCV_INS_VLSEG7E16FF_V = 1230,
-    RISCV_INS_VLSEG7E16_V = 1231,
-    RISCV_INS_VLSEG7E32FF_V = 1232,
-    RISCV_INS_VLSEG7E32_V = 1233,
-    RISCV_INS_VLSEG7E64FF_V = 1234,
-    RISCV_INS_VLSEG7E64_V = 1235,
-    RISCV_INS_VLSEG7E8FF_V = 1236,
-    RISCV_INS_VLSEG7E8_V = 1237,
-    RISCV_INS_VLSEG8E16FF_V = 1238,
-    RISCV_INS_VLSEG8E16_V = 1239,
-    RISCV_INS_VLSEG8E32FF_V = 1240,
-    RISCV_INS_VLSEG8E32_V = 1241,
-    RISCV_INS_VLSEG8E64FF_V = 1242,
-    RISCV_INS_VLSEG8E64_V = 1243,
-    RISCV_INS_VLSEG8E8FF_V = 1244,
-    RISCV_INS_VLSEG8E8_V = 1245,
-    RISCV_INS_VLSSEG2E16_V = 1246,
-    RISCV_INS_VLSSEG2E32_V = 1247,
-    RISCV_INS_VLSSEG2E64_V = 1248,
-    RISCV_INS_VLSSEG2E8_V = 1249,
-    RISCV_INS_VLSSEG3E16_V = 1250,
-    RISCV_INS_VLSSEG3E32_V = 1251,
-    RISCV_INS_VLSSEG3E64_V = 1252,
-    RISCV_INS_VLSSEG3E8_V = 1253,
-    RISCV_INS_VLSSEG4E16_V = 1254,
-    RISCV_INS_VLSSEG4E32_V = 1255,
-    RISCV_INS_VLSSEG4E64_V = 1256,
-    RISCV_INS_VLSSEG4E8_V = 1257,
-    RISCV_INS_VLSSEG5E16_V = 1258,
-    RISCV_INS_VLSSEG5E32_V = 1259,
-    RISCV_INS_VLSSEG5E64_V = 1260,
-    RISCV_INS_VLSSEG5E8_V = 1261,
-    RISCV_INS_VLSSEG6E16_V = 1262,
-    RISCV_INS_VLSSEG6E32_V = 1263,
-    RISCV_INS_VLSSEG6E64_V = 1264,
-    RISCV_INS_VLSSEG6E8_V = 1265,
-    RISCV_INS_VLSSEG7E16_V = 1266,
-    RISCV_INS_VLSSEG7E32_V = 1267,
-    RISCV_INS_VLSSEG7E64_V = 1268,
-    RISCV_INS_VLSSEG7E8_V = 1269,
-    RISCV_INS_VLSSEG8E16_V = 1270,
-    RISCV_INS_VLSSEG8E32_V = 1271,
-    RISCV_INS_VLSSEG8E64_V = 1272,
-    RISCV_INS_VLSSEG8E8_V = 1273,
-    RISCV_INS_VLUXEI16_V = 1274,
-    RISCV_INS_VLUXEI32_V = 1275,
-    RISCV_INS_VLUXEI64_V = 1276,
-    RISCV_INS_VLUXEI8_V = 1277,
-    RISCV_INS_VLUXSEG2EI16_V = 1278,
-    RISCV_INS_VLUXSEG2EI32_V = 1279,
-    RISCV_INS_VLUXSEG2EI64_V = 1280,
-    RISCV_INS_VLUXSEG2EI8_V = 1281,
-    RISCV_INS_VLUXSEG3EI16_V = 1282,
-    RISCV_INS_VLUXSEG3EI32_V = 1283,
-    RISCV_INS_VLUXSEG3EI64_V = 1284,
-    RISCV_INS_VLUXSEG3EI8_V = 1285,
-    RISCV_INS_VLUXSEG4EI16_V = 1286,
-    RISCV_INS_VLUXSEG4EI32_V = 1287,
-    RISCV_INS_VLUXSEG4EI64_V = 1288,
-    RISCV_INS_VLUXSEG4EI8_V = 1289,
-    RISCV_INS_VLUXSEG5EI16_V = 1290,
-    RISCV_INS_VLUXSEG5EI32_V = 1291,
-    RISCV_INS_VLUXSEG5EI64_V = 1292,
-    RISCV_INS_VLUXSEG5EI8_V = 1293,
-    RISCV_INS_VLUXSEG6EI16_V = 1294,
-    RISCV_INS_VLUXSEG6EI32_V = 1295,
-    RISCV_INS_VLUXSEG6EI64_V = 1296,
-    RISCV_INS_VLUXSEG6EI8_V = 1297,
-    RISCV_INS_VLUXSEG7EI16_V = 1298,
-    RISCV_INS_VLUXSEG7EI32_V = 1299,
-    RISCV_INS_VLUXSEG7EI64_V = 1300,
-    RISCV_INS_VLUXSEG7EI8_V = 1301,
-    RISCV_INS_VLUXSEG8EI16_V = 1302,
-    RISCV_INS_VLUXSEG8EI32_V = 1303,
-    RISCV_INS_VLUXSEG8EI64_V = 1304,
-    RISCV_INS_VLUXSEG8EI8_V = 1305,
-    RISCV_INS_VMACC_VV = 1306,
-    RISCV_INS_VMACC_VX = 1307,
-    RISCV_INS_VMADC_VI = 1308,
-    RISCV_INS_VMADC_VIM = 1309,
-    RISCV_INS_VMADC_VV = 1310,
-    RISCV_INS_VMADC_VVM = 1311,
-    RISCV_INS_VMADC_VX = 1312,
-    RISCV_INS_VMADC_VXM = 1313,
-    RISCV_INS_VMADD_VV = 1314,
-    RISCV_INS_VMADD_VX = 1315,
-    RISCV_INS_VMANDN_MM = 1316,
-    RISCV_INS_VMAND_MM = 1317,
-    RISCV_INS_VMAXU_VV = 1318,
-    RISCV_INS_VMAXU_VX = 1319,
-    RISCV_INS_VMAX_VV = 1320,
-    RISCV_INS_VMAX_VX = 1321,
-    RISCV_INS_VMERGE_VIM = 1322,
-    RISCV_INS_VMERGE_VVM = 1323,
-    RISCV_INS_VMERGE_VXM = 1324,
-    RISCV_INS_VMFEQ_VF = 1325,
-    RISCV_INS_VMFEQ_VV = 1326,
-    RISCV_INS_VMFGE_VF = 1327,
-    RISCV_INS_VMFGT_VF = 1328,
-    RISCV_INS_VMFLE_VF = 1329,
-    RISCV_INS_VMFLE_VV = 1330,
-    RISCV_INS_VMFLT_VF = 1331,
-    RISCV_INS_VMFLT_VV = 1332,
-    RISCV_INS_VMFNE_VF = 1333,
-    RISCV_INS_VMFNE_VV = 1334,
-    RISCV_INS_VMINU_VV = 1335,
-    RISCV_INS_VMINU_VX = 1336,
-    RISCV_INS_VMIN_VV = 1337,
-    RISCV_INS_VMIN_VX = 1338,
-    RISCV_INS_VMNAND_MM = 1339,
-    RISCV_INS_VMNOR_MM = 1340,
-    RISCV_INS_VMORN_MM = 1341,
-    RISCV_INS_VMOR_MM = 1342,
-    RISCV_INS_VMSBC_VV = 1343,
-    RISCV_INS_VMSBC_VVM = 1344,
-    RISCV_INS_VMSBC_VX = 1345,
-    RISCV_INS_VMSBC_VXM = 1346,
-    RISCV_INS_VMSBF_M = 1347,
-    RISCV_INS_VMSEQ_VI = 1348,
-    RISCV_INS_VMSEQ_VV = 1349,
-    RISCV_INS_VMSEQ_VX = 1350,
-    RISCV_INS_VMSGTU_VI = 1351,
-    RISCV_INS_VMSGTU_VX = 1352,
-    RISCV_INS_VMSGT_VI = 1353,
-    RISCV_INS_VMSGT_VX = 1354,
-    RISCV_INS_VMSIF_M = 1355,
-    RISCV_INS_VMSLEU_VI = 1356,
-    RISCV_INS_VMSLEU_VV = 1357,
-    RISCV_INS_VMSLEU_VX = 1358,
-    RISCV_INS_VMSLE_VI = 1359,
-    RISCV_INS_VMSLE_VV = 1360,
-    RISCV_INS_VMSLE_VX = 1361,
-    RISCV_INS_VMSLTU_VV = 1362,
-    RISCV_INS_VMSLTU_VX = 1363,
-    RISCV_INS_VMSLT_VV = 1364,
-    RISCV_INS_VMSLT_VX = 1365,
-    RISCV_INS_VMSNE_VI = 1366,
-    RISCV_INS_VMSNE_VV = 1367,
-    RISCV_INS_VMSNE_VX = 1368,
-    RISCV_INS_VMSOF_M = 1369,
-    RISCV_INS_VMULHSU_VV = 1370,
-    RISCV_INS_VMULHSU_VX = 1371,
-    RISCV_INS_VMULHU_VV = 1372,
-    RISCV_INS_VMULHU_VX = 1373,
-    RISCV_INS_VMULH_VV = 1374,
-    RISCV_INS_VMULH_VX = 1375,
-    RISCV_INS_VMUL_VV = 1376,
-    RISCV_INS_VMUL_VX = 1377,
-    RISCV_INS_VMV1R_V = 1378,
-    RISCV_INS_VMV2R_V = 1379,
-    RISCV_INS_VMV4R_V = 1380,
-    RISCV_INS_VMV8R_V = 1381,
-    RISCV_INS_VMV_S_X = 1382,
-    RISCV_INS_VMV_V_I = 1383,
-    RISCV_INS_VMV_V_V = 1384,
-    RISCV_INS_VMV_V_X = 1385,
-    RISCV_INS_VMV_X_S = 1386,
-    RISCV_INS_VMXNOR_MM = 1387,
-    RISCV_INS_VMXOR_MM = 1388,
-    RISCV_INS_VNCLIPU_WI = 1389,
-    RISCV_INS_VNCLIPU_WV = 1390,
-    RISCV_INS_VNCLIPU_WX = 1391,
-    RISCV_INS_VNCLIP_WI = 1392,
-    RISCV_INS_VNCLIP_WV = 1393,
-    RISCV_INS_VNCLIP_WX = 1394,
-    RISCV_INS_VNMSAC_VV = 1395,
-    RISCV_INS_VNMSAC_VX = 1396,
-    RISCV_INS_VNMSUB_VV = 1397,
-    RISCV_INS_VNMSUB_VX = 1398,
-    RISCV_INS_VNSRA_WI = 1399,
-    RISCV_INS_VNSRA_WV = 1400,
-    RISCV_INS_VNSRA_WX = 1401,
-    RISCV_INS_VNSRL_WI = 1402,
-    RISCV_INS_VNSRL_WV = 1403,
-    RISCV_INS_VNSRL_WX = 1404,
-    RISCV_INS_VOR_VI = 1405,
-    RISCV_INS_VOR_VV = 1406,
-    RISCV_INS_VOR_VX = 1407,
-    RISCV_INS_SF_VQMACCSU_2X8X2 = 1408,
-    RISCV_INS_SF_VQMACCSU_4X8X4 = 1409,
-    RISCV_INS_SF_VQMACCUS_2X8X2 = 1410,
-    RISCV_INS_SF_VQMACCUS_4X8X4 = 1411,
-    RISCV_INS_SF_VQMACCU_2X8X2 = 1412,
-    RISCV_INS_SF_VQMACCU_4X8X4 = 1413,
-    RISCV_INS_SF_VQMACC_2X8X2 = 1414,
-    RISCV_INS_SF_VQMACC_4X8X4 = 1415,
-    RISCV_INS_VREDAND_VS = 1416,
-    RISCV_INS_VREDMAXU_VS = 1417,
-    RISCV_INS_VREDMAX_VS = 1418,
-    RISCV_INS_VREDMINU_VS = 1419,
-    RISCV_INS_VREDMIN_VS = 1420,
-    RISCV_INS_VREDOR_VS = 1421,
-    RISCV_INS_VREDSUM_VS = 1422,
-    RISCV_INS_VREDXOR_VS = 1423,
-    RISCV_INS_VREMU_VV = 1424,
-    RISCV_INS_VREMU_VX = 1425,
-    RISCV_INS_VREM_VV = 1426,
-    RISCV_INS_VREM_VX = 1427,
-    RISCV_INS_VREV8_V = 1428,
-    RISCV_INS_VRGATHEREI16_VV = 1429,
-    RISCV_INS_VRGATHER_VI = 1430,
-    RISCV_INS_VRGATHER_VV = 1431,
-    RISCV_INS_VRGATHER_VX = 1432,
-    RISCV_INS_VROL_VV = 1433,
-    RISCV_INS_VROL_VX = 1434,
-    RISCV_INS_VROR_VI = 1435,
-    RISCV_INS_VROR_VV = 1436,
-    RISCV_INS_VROR_VX = 1437,
-    RISCV_INS_VRSUB_VI = 1438,
-    RISCV_INS_VRSUB_VX = 1439,
-    RISCV_INS_VS1R_V = 1440,
-    RISCV_INS_VS2R_V = 1441,
-    RISCV_INS_VS4R_V = 1442,
-    RISCV_INS_VS8R_V = 1443,
-    RISCV_INS_VSADDU_VI = 1444,
-    RISCV_INS_VSADDU_VV = 1445,
-    RISCV_INS_VSADDU_VX = 1446,
-    RISCV_INS_VSADD_VI = 1447,
-    RISCV_INS_VSADD_VV = 1448,
-    RISCV_INS_VSADD_VX = 1449,
-    RISCV_INS_VSBC_VVM = 1450,
-    RISCV_INS_VSBC_VXM = 1451,
-    RISCV_INS_VSE16_V = 1452,
-    RISCV_INS_VSE32_V = 1453,
-    RISCV_INS_VSE64_V = 1454,
-    RISCV_INS_VSE8_V = 1455,
-    RISCV_INS_VSETIVLI = 1456,
-    RISCV_INS_VSETVL = 1457,
-    RISCV_INS_VSETVLI = 1458,
-    RISCV_INS_VSEXT_VF2 = 1459,
-    RISCV_INS_VSEXT_VF4 = 1460,
-    RISCV_INS_VSEXT_VF8 = 1461,
-    RISCV_INS_VSHA2CH_VV = 1462,
-    RISCV_INS_VSHA2CL_VV = 1463,
-    RISCV_INS_VSHA2MS_VV = 1464,
-    RISCV_INS_VSLIDE1DOWN_VX = 1465,
-    RISCV_INS_VSLIDE1UP_VX = 1466,
-    RISCV_INS_VSLIDEDOWN_VI = 1467,
-    RISCV_INS_VSLIDEDOWN_VX = 1468,
-    RISCV_INS_VSLIDEUP_VI = 1469,
-    RISCV_INS_VSLIDEUP_VX = 1470,
-    RISCV_INS_VSLL_VI = 1471,
-    RISCV_INS_VSLL_VV = 1472,
-    RISCV_INS_VSLL_VX = 1473,
-    RISCV_INS_VSM3C_VI = 1474,
-    RISCV_INS_VSM3ME_VV = 1475,
-    RISCV_INS_VSM4K_VI = 1476,
-    RISCV_INS_VSM4R_VS = 1477,
-    RISCV_INS_VSM4R_VV = 1478,
-    RISCV_INS_VSMUL_VV = 1479,
-    RISCV_INS_VSMUL_VX = 1480,
-    RISCV_INS_VSM_V = 1481,
-    RISCV_INS_VSOXEI16_V = 1482,
-    RISCV_INS_VSOXEI32_V = 1483,
-    RISCV_INS_VSOXEI64_V = 1484,
-    RISCV_INS_VSOXEI8_V = 1485,
-    RISCV_INS_VSOXSEG2EI16_V = 1486,
-    RISCV_INS_VSOXSEG2EI32_V = 1487,
-    RISCV_INS_VSOXSEG2EI64_V = 1488,
-    RISCV_INS_VSOXSEG2EI8_V = 1489,
-    RISCV_INS_VSOXSEG3EI16_V = 1490,
-    RISCV_INS_VSOXSEG3EI32_V = 1491,
-    RISCV_INS_VSOXSEG3EI64_V = 1492,
-    RISCV_INS_VSOXSEG3EI8_V = 1493,
-    RISCV_INS_VSOXSEG4EI16_V = 1494,
-    RISCV_INS_VSOXSEG4EI32_V = 1495,
-    RISCV_INS_VSOXSEG4EI64_V = 1496,
-    RISCV_INS_VSOXSEG4EI8_V = 1497,
-    RISCV_INS_VSOXSEG5EI16_V = 1498,
-    RISCV_INS_VSOXSEG5EI32_V = 1499,
-    RISCV_INS_VSOXSEG5EI64_V = 1500,
-    RISCV_INS_VSOXSEG5EI8_V = 1501,
-    RISCV_INS_VSOXSEG6EI16_V = 1502,
-    RISCV_INS_VSOXSEG6EI32_V = 1503,
-    RISCV_INS_VSOXSEG6EI64_V = 1504,
-    RISCV_INS_VSOXSEG6EI8_V = 1505,
-    RISCV_INS_VSOXSEG7EI16_V = 1506,
-    RISCV_INS_VSOXSEG7EI32_V = 1507,
-    RISCV_INS_VSOXSEG7EI64_V = 1508,
-    RISCV_INS_VSOXSEG7EI8_V = 1509,
-    RISCV_INS_VSOXSEG8EI16_V = 1510,
-    RISCV_INS_VSOXSEG8EI32_V = 1511,
-    RISCV_INS_VSOXSEG8EI64_V = 1512,
-    RISCV_INS_VSOXSEG8EI8_V = 1513,
-    RISCV_INS_VSRA_VI = 1514,
-    RISCV_INS_VSRA_VV = 1515,
-    RISCV_INS_VSRA_VX = 1516,
-    RISCV_INS_VSRL_VI = 1517,
-    RISCV_INS_VSRL_VV = 1518,
-    RISCV_INS_VSRL_VX = 1519,
-    RISCV_INS_VSSE16_V = 1520,
-    RISCV_INS_VSSE32_V = 1521,
-    RISCV_INS_VSSE64_V = 1522,
-    RISCV_INS_VSSE8_V = 1523,
-    RISCV_INS_VSSEG2E16_V = 1524,
-    RISCV_INS_VSSEG2E32_V = 1525,
-    RISCV_INS_VSSEG2E64_V = 1526,
-    RISCV_INS_VSSEG2E8_V = 1527,
-    RISCV_INS_VSSEG3E16_V = 1528,
-    RISCV_INS_VSSEG3E32_V = 1529,
-    RISCV_INS_VSSEG3E64_V = 1530,
-    RISCV_INS_VSSEG3E8_V = 1531,
-    RISCV_INS_VSSEG4E16_V = 1532,
-    RISCV_INS_VSSEG4E32_V = 1533,
-    RISCV_INS_VSSEG4E64_V = 1534,
-    RISCV_INS_VSSEG4E8_V = 1535,
-    RISCV_INS_VSSEG5E16_V = 1536,
-    RISCV_INS_VSSEG5E32_V = 1537,
-    RISCV_INS_VSSEG5E64_V = 1538,
-    RISCV_INS_VSSEG5E8_V = 1539,
-    RISCV_INS_VSSEG6E16_V = 1540,
-    RISCV_INS_VSSEG6E32_V = 1541,
-    RISCV_INS_VSSEG6E64_V = 1542,
-    RISCV_INS_VSSEG6E8_V = 1543,
-    RISCV_INS_VSSEG7E16_V = 1544,
-    RISCV_INS_VSSEG7E32_V = 1545,
-    RISCV_INS_VSSEG7E64_V = 1546,
-    RISCV_INS_VSSEG7E8_V = 1547,
-    RISCV_INS_VSSEG8E16_V = 1548,
-    RISCV_INS_VSSEG8E32_V = 1549,
-    RISCV_INS_VSSEG8E64_V = 1550,
-    RISCV_INS_VSSEG8E8_V = 1551,
-    RISCV_INS_VSSRA_VI = 1552,
-    RISCV_INS_VSSRA_VV = 1553,
-    RISCV_INS_VSSRA_VX = 1554,
-    RISCV_INS_VSSRL_VI = 1555,
-    RISCV_INS_VSSRL_VV = 1556,
-    RISCV_INS_VSSRL_VX = 1557,
-    RISCV_INS_VSSSEG2E16_V = 1558,
-    RISCV_INS_VSSSEG2E32_V = 1559,
-    RISCV_INS_VSSSEG2E64_V = 1560,
-    RISCV_INS_VSSSEG2E8_V = 1561,
-    RISCV_INS_VSSSEG3E16_V = 1562,
-    RISCV_INS_VSSSEG3E32_V = 1563,
-    RISCV_INS_VSSSEG3E64_V = 1564,
-    RISCV_INS_VSSSEG3E8_V = 1565,
-    RISCV_INS_VSSSEG4E16_V = 1566,
-    RISCV_INS_VSSSEG4E32_V = 1567,
-    RISCV_INS_VSSSEG4E64_V = 1568,
-    RISCV_INS_VSSSEG4E8_V = 1569,
-    RISCV_INS_VSSSEG5E16_V = 1570,
-    RISCV_INS_VSSSEG5E32_V = 1571,
-    RISCV_INS_VSSSEG5E64_V = 1572,
-    RISCV_INS_VSSSEG5E8_V = 1573,
-    RISCV_INS_VSSSEG6E16_V = 1574,
-    RISCV_INS_VSSSEG6E32_V = 1575,
-    RISCV_INS_VSSSEG6E64_V = 1576,
-    RISCV_INS_VSSSEG6E8_V = 1577,
-    RISCV_INS_VSSSEG7E16_V = 1578,
-    RISCV_INS_VSSSEG7E32_V = 1579,
-    RISCV_INS_VSSSEG7E64_V = 1580,
-    RISCV_INS_VSSSEG7E8_V = 1581,
-    RISCV_INS_VSSSEG8E16_V = 1582,
-    RISCV_INS_VSSSEG8E32_V = 1583,
-    RISCV_INS_VSSSEG8E64_V = 1584,
-    RISCV_INS_VSSSEG8E8_V = 1585,
-    RISCV_INS_VSSUBU_VV = 1586,
-    RISCV_INS_VSSUBU_VX = 1587,
-    RISCV_INS_VSSUB_VV = 1588,
-    RISCV_INS_VSSUB_VX = 1589,
-    RISCV_INS_VSUB_VV = 1590,
-    RISCV_INS_VSUB_VX = 1591,
-    RISCV_INS_VSUXEI16_V = 1592,
-    RISCV_INS_VSUXEI32_V = 1593,
-    RISCV_INS_VSUXEI64_V = 1594,
-    RISCV_INS_VSUXEI8_V = 1595,
-    RISCV_INS_VSUXSEG2EI16_V = 1596,
-    RISCV_INS_VSUXSEG2EI32_V = 1597,
-    RISCV_INS_VSUXSEG2EI64_V = 1598,
-    RISCV_INS_VSUXSEG2EI8_V = 1599,
-    RISCV_INS_VSUXSEG3EI16_V = 1600,
-    RISCV_INS_VSUXSEG3EI32_V = 1601,
-    RISCV_INS_VSUXSEG3EI64_V = 1602,
-    RISCV_INS_VSUXSEG3EI8_V = 1603,
-    RISCV_INS_VSUXSEG4EI16_V = 1604,
-    RISCV_INS_VSUXSEG4EI32_V = 1605,
-    RISCV_INS_VSUXSEG4EI64_V = 1606,
-    RISCV_INS_VSUXSEG4EI8_V = 1607,
-    RISCV_INS_VSUXSEG5EI16_V = 1608,
-    RISCV_INS_VSUXSEG5EI32_V = 1609,
-    RISCV_INS_VSUXSEG5EI64_V = 1610,
-    RISCV_INS_VSUXSEG5EI8_V = 1611,
-    RISCV_INS_VSUXSEG6EI16_V = 1612,
-    RISCV_INS_VSUXSEG6EI32_V = 1613,
-    RISCV_INS_VSUXSEG6EI64_V = 1614,
-    RISCV_INS_VSUXSEG6EI8_V = 1615,
-    RISCV_INS_VSUXSEG7EI16_V = 1616,
-    RISCV_INS_VSUXSEG7EI32_V = 1617,
-    RISCV_INS_VSUXSEG7EI64_V = 1618,
-    RISCV_INS_VSUXSEG7EI8_V = 1619,
-    RISCV_INS_VSUXSEG8EI16_V = 1620,
-    RISCV_INS_VSUXSEG8EI32_V = 1621,
-    RISCV_INS_VSUXSEG8EI64_V = 1622,
-    RISCV_INS_VSUXSEG8EI8_V = 1623,
-    RISCV_INS_VT_MASKC = 1624,
-    RISCV_INS_VT_MASKCN = 1625,
-    RISCV_INS_VWADDU_VV = 1626,
-    RISCV_INS_VWADDU_VX = 1627,
-    RISCV_INS_VWADDU_WV = 1628,
-    RISCV_INS_VWADDU_WX = 1629,
-    RISCV_INS_VWADD_VV = 1630,
-    RISCV_INS_VWADD_VX = 1631,
-    RISCV_INS_VWADD_WV = 1632,
-    RISCV_INS_VWADD_WX = 1633,
-    RISCV_INS_VWMACCSU_VV = 1634,
-    RISCV_INS_VWMACCSU_VX = 1635,
-    RISCV_INS_VWMACCUS_VX = 1636,
-    RISCV_INS_VWMACCU_VV = 1637,
-    RISCV_INS_VWMACCU_VX = 1638,
-    RISCV_INS_VWMACC_VV = 1639,
-    RISCV_INS_VWMACC_VX = 1640,
-    RISCV_INS_VWMULSU_VV = 1641,
-    RISCV_INS_VWMULSU_VX = 1642,
-    RISCV_INS_VWMULU_VV = 1643,
-    RISCV_INS_VWMULU_VX = 1644,
-    RISCV_INS_VWMUL_VV = 1645,
-    RISCV_INS_VWMUL_VX = 1646,
-    RISCV_INS_VWREDSUMU_VS = 1647,
-    RISCV_INS_VWREDSUM_VS = 1648,
-    RISCV_INS_VWSLL_VI = 1649,
-    RISCV_INS_VWSLL_VV = 1650,
-    RISCV_INS_VWSLL_VX = 1651,
-    RISCV_INS_VWSUBU_VV = 1652,
-    RISCV_INS_VWSUBU_VX = 1653,
-    RISCV_INS_VWSUBU_WV = 1654,
-    RISCV_INS_VWSUBU_WX = 1655,
-    RISCV_INS_VWSUB_VV = 1656,
-    RISCV_INS_VWSUB_VX = 1657,
-    RISCV_INS_VWSUB_WV = 1658,
-    RISCV_INS_VWSUB_WX = 1659,
-    RISCV_INS_VXOR_VI = 1660,
-    RISCV_INS_VXOR_VV = 1661,
-    RISCV_INS_VXOR_VX = 1662,
-    RISCV_INS_VZEXT_VF2 = 1663,
-    RISCV_INS_VZEXT_VF4 = 1664,
-    RISCV_INS_VZEXT_VF8 = 1665,
-    RISCV_INS_WFI = 1666,
-    RISCV_INS_WRS_NTO = 1667,
-    RISCV_INS_WRS_STO = 1668,
-    RISCV_INS_XNOR = 1669,
-    RISCV_INS_XOR = 1670,
-    RISCV_INS_XORI = 1671,
-    RISCV_INS_XPERM4 = 1672,
-    RISCV_INS_XPERM8 = 1673,
-    RISCV_INS_ZIP = 1674,
-    RISCV_INS_ENDING = 1675,
-    RISCV_INS_ALIAS_BEGIN = 1676,
-    RISCV_INS_ALIAS_NOP = 1677,
-    RISCV_INS_ALIAS_LI = 1678,
-    RISCV_INS_ALIAS_MV = 1679,
-    RISCV_INS_ALIAS_NOT = 1680,
-    RISCV_INS_ALIAS_NEG = 1681,
-    RISCV_INS_ALIAS_NEGW = 1682,
-    RISCV_INS_ALIAS_SEXT_W = 1683,
-    RISCV_INS_ALIAS_SEQZ = 1684,
-    RISCV_INS_ALIAS_SNEZ = 1685,
-    RISCV_INS_ALIAS_SLTZ = 1686,
-    RISCV_INS_ALIAS_SGTZ = 1687,
-    RISCV_INS_ALIAS_BEQZ = 1688,
-    RISCV_INS_ALIAS_BNEZ = 1689,
-    RISCV_INS_ALIAS_BLEZ = 1690,
-    RISCV_INS_ALIAS_BGEZ = 1691,
-    RISCV_INS_ALIAS_BLTZ = 1692,
-    RISCV_INS_ALIAS_BGTZ = 1693,
-    RISCV_INS_ALIAS_J = 1694,
-    RISCV_INS_ALIAS_JAL = 1695,
-    RISCV_INS_ALIAS_JR = 1696,
-    RISCV_INS_ALIAS_JALR = 1697,
-    RISCV_INS_ALIAS_RET = 1698,
-    RISCV_INS_ALIAS_FENCE = 1699,
-    RISCV_INS_ALIAS_PAUSE = 1700,
-    RISCV_INS_ALIAS_RDINSTRET = 1701,
-    RISCV_INS_ALIAS_RDCYCLE = 1702,
-    RISCV_INS_ALIAS_RDTIME = 1703,
-    RISCV_INS_ALIAS_RDINSTRETH = 1704,
-    RISCV_INS_ALIAS_RDCYCLEH = 1705,
-    RISCV_INS_ALIAS_RDTIMEH = 1706,
-    RISCV_INS_ALIAS_CSRR = 1707,
-    RISCV_INS_ALIAS_CSRW = 1708,
-    RISCV_INS_ALIAS_CSRS = 1709,
-    RISCV_INS_ALIAS_CSRC = 1710,
-    RISCV_INS_ALIAS_CSRWI = 1711,
-    RISCV_INS_ALIAS_CSRSI = 1712,
-    RISCV_INS_ALIAS_CSRCI = 1713,
-    RISCV_INS_ALIAS_SFENCE_VMA = 1714,
-    RISCV_INS_ALIAS_HFENCE_GVMA = 1715,
-    RISCV_INS_ALIAS_HFENCE_VVMA = 1716,
-    RISCV_INS_ALIAS_NTL_P1 = 1717,
-    RISCV_INS_ALIAS_NTL_PALL = 1718,
-    RISCV_INS_ALIAS_NTL_S1 = 1719,
-    RISCV_INS_ALIAS_NTL_ALL = 1720,
-    RISCV_INS_ALIAS_LPAD = 1721,
-    RISCV_INS_ALIAS_FMV_S = 1722,
-    RISCV_INS_ALIAS_FABS_S = 1723,
-    RISCV_INS_ALIAS_FNEG_S = 1724,
-    RISCV_INS_ALIAS_FRCSR = 1725,
-    RISCV_INS_ALIAS_FSCSR = 1726,
-    RISCV_INS_ALIAS_FRRM = 1727,
-    RISCV_INS_ALIAS_FSRM = 1728,
-    RISCV_INS_ALIAS_FSRMI = 1729,
-    RISCV_INS_ALIAS_FRFLAGS = 1730,
-    RISCV_INS_ALIAS_FSFLAGS = 1731,
-    RISCV_INS_ALIAS_FSFLAGSI = 1732,
-    RISCV_INS_ALIAS_FMV_D = 1733,
-    RISCV_INS_ALIAS_FABS_D = 1734,
-    RISCV_INS_ALIAS_FNEG_D = 1735,
-    RISCV_INS_ALIAS_FMV_H = 1736,
-    RISCV_INS_ALIAS_FABS_H = 1737,
-    RISCV_INS_ALIAS_FNEG_H = 1738,
-    RISCV_INS_ALIAS_ZEXT_W = 1739,
-    RISCV_INS_ALIAS_VL1R_V = 1740,
-    RISCV_INS_ALIAS_VL2R_V = 1741,
-    RISCV_INS_ALIAS_VL4R_V = 1742,
-    RISCV_INS_ALIAS_VL8R_V = 1743,
-    RISCV_INS_ALIAS_VNEG_V = 1744,
-    RISCV_INS_ALIAS_VWCVT_X_X_V = 1745,
-    RISCV_INS_ALIAS_VWCVTU_X_X_V = 1746,
-    RISCV_INS_ALIAS_VNOT_V = 1747,
-    RISCV_INS_ALIAS_VNCVT_X_X_W = 1748,
-    RISCV_INS_ALIAS_VFNEG_V = 1749,
-    RISCV_INS_ALIAS_VFABS_V = 1750,
-    RISCV_INS_ALIAS_VMMV_M = 1751,
-    RISCV_INS_ALIAS_VMCLR_M = 1752,
-    RISCV_INS_ALIAS_VMSET_M = 1753,
-    RISCV_INS_ALIAS_VMNOT_M = 1754,
-    RISCV_INS_ALIAS_C_NTL_P1 = 1755,
-    RISCV_INS_ALIAS_C_NTL_PALL = 1756,
-    RISCV_INS_ALIAS_C_NTL_S1 = 1757,
-    RISCV_INS_ALIAS_C_NTL_ALL = 1758,
-    RISCV_INS_ALIAS_CV_MULS = 1759,
-    RISCV_INS_ALIAS_CV_MULHHS = 1760,
-    RISCV_INS_ALIAS_CV_MULU = 1761,
-    RISCV_INS_ALIAS_CV_MULHHU = 1762,
-    RISCV_INS_ALIAS_END = 1763,
-}
-pub mod riscv_insn_group {
-    pub type Type = ::core::ffi::c_uint;
-    #[doc = "< = CS_GRP_INVALID"]
-    pub const RISCV_GRP_INVALID: Type = 0;
-    #[doc = "< = CS_GRP_JUMP"]
-    pub const RISCV_GRP_JUMP: Type = 1;
-    #[doc = "< = CS_GRP_CALL"]
-    pub const RISCV_GRP_CALL: Type = 2;
-    #[doc = "< = CS_GRP_RET"]
-    pub const RISCV_GRP_RET: Type = 3;
-    #[doc = "< = CS_GRP_INT"]
-    pub const RISCV_GRP_INT: Type = 4;
-    #[doc = "< = CS_GRP_IRET"]
-    pub const RISCV_GRP_IRET: Type = 5;
-    #[doc = "< = CS_GRP_PRIVILEGE"]
-    pub const RISCV_GRP_PRIVILEGE: Type = 6;
-    #[doc = "< = CS_GRP_BRANCH_RELATIVE"]
-    pub const RISCV_GRP_BRANCH_RELATIVE: Type = 7;
-    pub const RISCV_FEATURE_HASSTDEXTI: Type = 128;
-    pub const RISCV_FEATURE_HASSTDEXTZICBOM: Type = 129;
-    pub const RISCV_FEATURE_HASSTDEXTZICBOP: Type = 130;
-    pub const RISCV_FEATURE_HASSTDEXTZICBOZ: Type = 131;
-    pub const RISCV_FEATURE_HASSTDEXTZICSR: Type = 132;
-    pub const RISCV_FEATURE_HASSTDEXTZICOND: Type = 133;
-    pub const RISCV_FEATURE_HASSTDEXTZIFENCEI: Type = 134;
-    pub const RISCV_FEATURE_HASSTDEXTZIHINTPAUSE: Type = 135;
-    pub const RISCV_FEATURE_HASSTDEXTZIHINTNTL: Type = 136;
-    pub const RISCV_FEATURE_HASSTDEXTZIMOP: Type = 137;
-    pub const RISCV_FEATURE_HASSTDEXTZICFILP: Type = 138;
-    pub const RISCV_FEATURE_HASSTDEXTZICFISS: Type = 139;
-    pub const RISCV_FEATURE_HASSTDEXTM: Type = 140;
-    pub const RISCV_FEATURE_HASSTDEXTMORZMMUL: Type = 141;
-    pub const RISCV_FEATURE_HASSTDEXTA: Type = 142;
-    pub const RISCV_FEATURE_HASSTDEXTZTSO: Type = 143;
-    pub const RISCV_FEATURE_HASSTDEXTZACAS: Type = 144;
-    pub const RISCV_FEATURE_HASSTDEXTZAWRS: Type = 145;
-    pub const RISCV_FEATURE_HASSTDEXTF: Type = 146;
-    pub const RISCV_FEATURE_HASSTDEXTD: Type = 147;
-    pub const RISCV_FEATURE_HASSTDEXTZFHMIN: Type = 148;
-    pub const RISCV_FEATURE_HASSTDEXTZFH: Type = 149;
-    pub const RISCV_FEATURE_HASSTDEXTZFBFMIN: Type = 150;
-    pub const RISCV_FEATURE_HASHALFFPLOADSTOREMOVE: Type = 151;
-    pub const RISCV_FEATURE_HASSTDEXTZFA: Type = 152;
-    pub const RISCV_FEATURE_HASSTDEXTZFINX: Type = 153;
-    pub const RISCV_FEATURE_HASSTDEXTZDINX: Type = 154;
-    pub const RISCV_FEATURE_HASSTDEXTZHINXMIN: Type = 155;
-    pub const RISCV_FEATURE_HASSTDEXTZHINX: Type = 156;
-    pub const RISCV_FEATURE_HASSTDEXTC: Type = 157;
-    pub const RISCV_FEATURE_HASRVCHINTS: Type = 158;
-    pub const RISCV_FEATURE_HASSTDEXTCORZCA: Type = 159;
-    pub const RISCV_FEATURE_HASSTDEXTZCB: Type = 160;
-    pub const RISCV_FEATURE_HASSTDEXTCORZCD: Type = 161;
-    pub const RISCV_FEATURE_HASSTDEXTZCMP: Type = 162;
-    pub const RISCV_FEATURE_HASSTDEXTZCMT: Type = 163;
-    pub const RISCV_FEATURE_HASSTDEXTCORZCFORZCE: Type = 164;
-    pub const RISCV_FEATURE_HASSTDEXTZCMOP: Type = 165;
-    pub const RISCV_FEATURE_HASSTDEXTZBA: Type = 166;
-    pub const RISCV_FEATURE_HASSTDEXTZBB: Type = 167;
-    pub const RISCV_FEATURE_HASSTDEXTZBC: Type = 168;
-    pub const RISCV_FEATURE_HASSTDEXTZBS: Type = 169;
-    pub const RISCV_FEATURE_HASSTDEXTZBKB: Type = 170;
-    pub const RISCV_FEATURE_HASSTDEXTZBKX: Type = 171;
-    pub const RISCV_FEATURE_HASSTDEXTZBBORZBKB: Type = 172;
-    pub const RISCV_FEATURE_HASSTDEXTZBKC: Type = 173;
-    pub const RISCV_FEATURE_HASSTDEXTZBCORZBKC: Type = 174;
-    pub const RISCV_FEATURE_HASSTDEXTZKND: Type = 175;
-    pub const RISCV_FEATURE_HASSTDEXTZKNE: Type = 176;
-    pub const RISCV_FEATURE_HASSTDEXTZKNDORZKNE: Type = 177;
-    pub const RISCV_FEATURE_HASSTDEXTZKNH: Type = 178;
-    pub const RISCV_FEATURE_HASSTDEXTZKSED: Type = 179;
-    pub const RISCV_FEATURE_HASSTDEXTZKSH: Type = 180;
-    pub const RISCV_FEATURE_HASSTDEXTZKR: Type = 181;
-    pub const RISCV_FEATURE_HASSTDEXTZVFBFMIN: Type = 182;
-    pub const RISCV_FEATURE_HASSTDEXTZVFBFWMA: Type = 183;
-    pub const RISCV_FEATURE_HASSTDEXTZFHORZVFH: Type = 184;
-    pub const RISCV_FEATURE_HASSTDEXTZVKB: Type = 185;
-    pub const RISCV_FEATURE_HASSTDEXTZVBB: Type = 186;
-    pub const RISCV_FEATURE_HASSTDEXTZVBC: Type = 187;
-    pub const RISCV_FEATURE_HASSTDEXTZVKG: Type = 188;
-    pub const RISCV_FEATURE_HASSTDEXTZVKNED: Type = 189;
-    pub const RISCV_FEATURE_HASSTDEXTZVKNHA: Type = 190;
-    pub const RISCV_FEATURE_HASSTDEXTZVKNHB: Type = 191;
-    pub const RISCV_FEATURE_HASSTDEXTZVKNHAORZVKNHB: Type = 192;
-    pub const RISCV_FEATURE_HASSTDEXTZVKSED: Type = 193;
-    pub const RISCV_FEATURE_HASSTDEXTZVKSH: Type = 194;
-    pub const RISCV_FEATURE_HASVINSTRUCTIONS: Type = 195;
-    pub const RISCV_FEATURE_HASVINSTRUCTIONSI64: Type = 196;
-    pub const RISCV_FEATURE_HASVINSTRUCTIONSANYF: Type = 197;
-    pub const RISCV_FEATURE_HASVINSTRUCTIONSF16MINIMAL: Type = 198;
-    pub const RISCV_FEATURE_HASSTDEXTH: Type = 199;
-    pub const RISCV_FEATURE_HASSTDEXTSVINVAL: Type = 200;
-    pub const RISCV_FEATURE_HASVENDORXVENTANACONDOPS: Type = 201;
-    pub const RISCV_FEATURE_HASVENDORXTHEADBA: Type = 202;
-    pub const RISCV_FEATURE_HASVENDORXTHEADBB: Type = 203;
-    pub const RISCV_FEATURE_HASVENDORXTHEADBS: Type = 204;
-    pub const RISCV_FEATURE_HASVENDORXTHEADCONDMOV: Type = 205;
-    pub const RISCV_FEATURE_HASVENDORXTHEADCMO: Type = 206;
-    pub const RISCV_FEATURE_HASVENDORXTHEADFMEMIDX: Type = 207;
-    pub const RISCV_FEATURE_HASVENDORXTHEADMAC: Type = 208;
-    pub const RISCV_FEATURE_HASVENDORXTHEADMEMIDX: Type = 209;
-    pub const RISCV_FEATURE_HASVENDORXTHEADMEMPAIR: Type = 210;
-    pub const RISCV_FEATURE_HASVENDORXTHEADSYNC: Type = 211;
-    pub const RISCV_FEATURE_HASVENDORXTHEADVDOT: Type = 212;
-    pub const RISCV_FEATURE_HASVENDORXSFVCP: Type = 213;
-    pub const RISCV_FEATURE_HASVENDORXSFVQMACCDOD: Type = 214;
-    pub const RISCV_FEATURE_HASVENDORXSFVQMACCQOQ: Type = 215;
-    pub const RISCV_FEATURE_HASVENDORXSFVFWMACCQQQ: Type = 216;
-    pub const RISCV_FEATURE_HASVENDORXSFVFNRCLIPXFQF: Type = 217;
-    pub const RISCV_FEATURE_HASVENDORXCVELW: Type = 218;
-    pub const RISCV_FEATURE_HASVENDORXCVBITMANIP: Type = 219;
-    pub const RISCV_FEATURE_HASVENDORXCVMAC: Type = 220;
-    pub const RISCV_FEATURE_HASVENDORXCVMEM: Type = 221;
-    pub const RISCV_FEATURE_HASVENDORXCVALU: Type = 222;
-    pub const RISCV_FEATURE_HASVENDORXCVSIMD: Type = 223;
-    pub const RISCV_FEATURE_HASVENDORXCVBI: Type = 224;
-    pub const RISCV_FEATURE_ISRV64: Type = 225;
-    pub const RISCV_FEATURE_ISRV32: Type = 226;
-    pub const RISCV_FEATURE_ISRVE: Type = 227;
-    pub const RISCV_GRP_ENDING: Type = 228;
-}
-#[repr(u32)]
-#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
-pub enum wasm_op_type {
-    WASM_OP_INVALID = 0,
-    WASM_OP_IMM = 2,
-    WASM_OP_NONE = 16,
-    WASM_OP_INT7 = 17,
-    WASM_OP_VARUINT32 = 18,
-    WASM_OP_VARUINT64 = 19,
-    WASM_OP_UINT32 = 20,
-    WASM_OP_UINT64 = 21,
-    WASM_OP_BRTABLE = 22,
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct cs_wasm_brtable {
-    pub length: u32,
-    pub address: u64,
-    pub default_target: u32,
-}
-#[repr(C)]
-#[derive(Copy, Clone)]
-pub struct cs_wasm_op {
-    pub type_: wasm_op_type,
-    pub size: u32,
-    pub __bindgen_anon_1: cs_wasm_op__bindgen_ty_1,
-}
-#[repr(C)]
-#[derive(Copy, Clone)]
-pub union cs_wasm_op__bindgen_ty_1 {
-    pub int7: i8,
-    pub varuint32: u32,
-    pub varuint64: u64,
-    pub uint32: u32,
-    pub uint64: u64,
-    pub immediate: [u32; 2usize],
-    pub brtable: cs_wasm_brtable,
-}
-impl ::core::fmt::Debug for cs_wasm_op__bindgen_ty_1 {
-    fn fmt(&self, f: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
-        write!(f, "cs_wasm_op__bindgen_ty_1 {{ union }}")
-    }
-}
-impl ::core::fmt::Debug for cs_wasm_op {
-    fn fmt(&self, f: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
-        write!(
-            f,
-            "cs_wasm_op {{ type: {:?}, __bindgen_anon_1: {:?} }}",
-            self.type_, self.__bindgen_anon_1
-        )
-    }
-}
-#[doc = " Instruction structure"]
-#[repr(C)]
-#[derive(Copy, Clone)]
-pub struct cs_wasm {
-    pub op_count: u8,
-    pub operands: [cs_wasm_op; 2usize],
-}
-impl ::core::fmt::Debug for cs_wasm {
-    fn fmt(&self, f: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
-        write!(f, "cs_wasm {{ operands: {:?} }}", self.operands)
-    }
-}
-pub mod mos65xx_reg {
-    #[doc = " MOS65XX registers and special registers"]
-    pub type Type = ::core::ffi::c_uint;
-    pub const MOS65XX_REG_INVALID: Type = 0;
-    #[doc = "< accumulator"]
-    pub const MOS65XX_REG_ACC: Type = 1;
-    #[doc = "< X index register"]
-    pub const MOS65XX_REG_X: Type = 2;
-    #[doc = "< Y index register"]
-    pub const MOS65XX_REG_Y: Type = 3;
-    #[doc = "< status register"]
-    pub const MOS65XX_REG_P: Type = 4;
-    #[doc = "< stack pointer register"]
-    pub const MOS65XX_REG_SP: Type = 5;
-    #[doc = "< direct page register"]
-    pub const MOS65XX_REG_DP: Type = 6;
-    #[doc = "< data bank register"]
-    pub const MOS65XX_REG_B: Type = 7;
-    #[doc = "< program bank register"]
-    pub const MOS65XX_REG_K: Type = 8;
-    pub const MOS65XX_REG_ENDING: Type = 9;
-}
-#[repr(u32)]
-#[doc = " MOS65XX Addressing Modes"]
-#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
-pub enum mos65xx_address_mode {
-    #[doc = "< No address mode."]
-    MOS65XX_AM_NONE = 0,
-    #[doc = "< implied addressing (no addressing mode)"]
-    MOS65XX_AM_IMP = 1,
-    #[doc = "< accumulator addressing"]
-    MOS65XX_AM_ACC = 2,
-    #[doc = "< 8/16 Bit immediate value"]
-    MOS65XX_AM_IMM = 3,
-    #[doc = "< relative addressing used by branches"]
-    MOS65XX_AM_REL = 4,
-    #[doc = "< interrupt addressing"]
-    MOS65XX_AM_INT = 5,
-    #[doc = "< memory block addressing"]
-    MOS65XX_AM_BLOCK = 6,
-    #[doc = "< zeropage addressing"]
-    MOS65XX_AM_ZP = 7,
-    #[doc = "< indexed zeropage addressing by the X index register"]
-    MOS65XX_AM_ZP_X = 8,
-    #[doc = "< indexed zeropage addressing by the Y index register"]
-    MOS65XX_AM_ZP_Y = 9,
-    #[doc = "< zero page address, branch relative address"]
-    MOS65XX_AM_ZP_REL = 10,
-    #[doc = "< indirect zeropage addressing"]
-    MOS65XX_AM_ZP_IND = 11,
-    #[doc = "< indexed zeropage indirect addressing by the X index register"]
-    MOS65XX_AM_ZP_X_IND = 12,
-    #[doc = "< indirect zeropage indexed addressing by the Y index register"]
-    MOS65XX_AM_ZP_IND_Y = 13,
-    #[doc = "< zeropage indirect long addressing"]
-    MOS65XX_AM_ZP_IND_LONG = 14,
-    #[doc = "< zeropage indirect long addressing indexed by Y register"]
-    MOS65XX_AM_ZP_IND_LONG_Y = 15,
-    #[doc = "< absolute addressing"]
-    MOS65XX_AM_ABS = 16,
-    #[doc = "< indexed absolute addressing by the X index register"]
-    MOS65XX_AM_ABS_X = 17,
-    #[doc = "< indexed absolute addressing by the Y index register"]
-    MOS65XX_AM_ABS_Y = 18,
-    #[doc = "< absolute indirect addressing"]
-    MOS65XX_AM_ABS_IND = 19,
-    #[doc = "< indexed absolute indirect addressing by the X index register"]
-    MOS65XX_AM_ABS_X_IND = 20,
-    #[doc = "< absolute indirect long addressing"]
-    MOS65XX_AM_ABS_IND_LONG = 21,
-    #[doc = "< absolute long address mode"]
-    MOS65XX_AM_ABS_LONG = 22,
-    #[doc = "< absolute long address mode, indexed by X register"]
-    MOS65XX_AM_ABS_LONG_X = 23,
-    #[doc = "< stack relative addressing"]
-    MOS65XX_AM_SR = 24,
-    #[doc = "< indirect stack relative addressing indexed by the Y index register"]
-    MOS65XX_AM_SR_IND_Y = 25,
-}
-#[repr(u32)]
-#[doc = " MOS65XX instruction"]
-#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
-pub enum mos65xx_insn {
-    MOS65XX_INS_INVALID = 0,
-    MOS65XX_INS_ADC = 1,
-    MOS65XX_INS_AND = 2,
-    MOS65XX_INS_ASL = 3,
-    MOS65XX_INS_BBR = 4,
-    MOS65XX_INS_BBS = 5,
-    MOS65XX_INS_BCC = 6,
-    MOS65XX_INS_BCS = 7,
-    MOS65XX_INS_BEQ = 8,
-    MOS65XX_INS_BIT = 9,
-    MOS65XX_INS_BMI = 10,
-    MOS65XX_INS_BNE = 11,
-    MOS65XX_INS_BPL = 12,
-    MOS65XX_INS_BRA = 13,
-    MOS65XX_INS_BRK = 14,
-    MOS65XX_INS_BRL = 15,
-    MOS65XX_INS_BVC = 16,
-    MOS65XX_INS_BVS = 17,
-    MOS65XX_INS_CLC = 18,
-    MOS65XX_INS_CLD = 19,
-    MOS65XX_INS_CLI = 20,
-    MOS65XX_INS_CLV = 21,
-    MOS65XX_INS_CMP = 22,
-    MOS65XX_INS_COP = 23,
-    MOS65XX_INS_CPX = 24,
-    MOS65XX_INS_CPY = 25,
-    MOS65XX_INS_DEC = 26,
-    MOS65XX_INS_DEX = 27,
-    MOS65XX_INS_DEY = 28,
-    MOS65XX_INS_EOR = 29,
-    MOS65XX_INS_INC = 30,
-    MOS65XX_INS_INX = 31,
-    MOS65XX_INS_INY = 32,
-    MOS65XX_INS_JML = 33,
-    MOS65XX_INS_JMP = 34,
-    MOS65XX_INS_JSL = 35,
-    MOS65XX_INS_JSR = 36,
-    MOS65XX_INS_LDA = 37,
-    MOS65XX_INS_LDX = 38,
-    MOS65XX_INS_LDY = 39,
-    MOS65XX_INS_LSR = 40,
-    MOS65XX_INS_MVN = 41,
-    MOS65XX_INS_MVP = 42,
-    MOS65XX_INS_NOP = 43,
-    MOS65XX_INS_ORA = 44,
-    MOS65XX_INS_PEA = 45,
-    MOS65XX_INS_PEI = 46,
-    MOS65XX_INS_PER = 47,
-    MOS65XX_INS_PHA = 48,
-    MOS65XX_INS_PHB = 49,
-    MOS65XX_INS_PHD = 50,
-    MOS65XX_INS_PHK = 51,
-    MOS65XX_INS_PHP = 52,
-    MOS65XX_INS_PHX = 53,
-    MOS65XX_INS_PHY = 54,
-    MOS65XX_INS_PLA = 55,
-    MOS65XX_INS_PLB = 56,
-    MOS65XX_INS_PLD = 57,
-    MOS65XX_INS_PLP = 58,
-    MOS65XX_INS_PLX = 59,
-    MOS65XX_INS_PLY = 60,
-    MOS65XX_INS_REP = 61,
-    MOS65XX_INS_RMB = 62,
-    MOS65XX_INS_ROL = 63,
-    MOS65XX_INS_ROR = 64,
-    MOS65XX_INS_RTI = 65,
-    MOS65XX_INS_RTL = 66,
-    MOS65XX_INS_RTS = 67,
-    MOS65XX_INS_SBC = 68,
-    MOS65XX_INS_SEC = 69,
-    MOS65XX_INS_SED = 70,
-    MOS65XX_INS_SEI = 71,
-    MOS65XX_INS_SEP = 72,
-    MOS65XX_INS_SMB = 73,
-    MOS65XX_INS_STA = 74,
-    MOS65XX_INS_STP = 75,
-    MOS65XX_INS_STX = 76,
-    MOS65XX_INS_STY = 77,
-    MOS65XX_INS_STZ = 78,
-    MOS65XX_INS_TAX = 79,
-    MOS65XX_INS_TAY = 80,
-    MOS65XX_INS_TCD = 81,
-    MOS65XX_INS_TCS = 82,
-    MOS65XX_INS_TDC = 83,
-    MOS65XX_INS_TRB = 84,
-    MOS65XX_INS_TSB = 85,
-    MOS65XX_INS_TSC = 86,
-    MOS65XX_INS_TSX = 87,
-    MOS65XX_INS_TXA = 88,
-    MOS65XX_INS_TXS = 89,
-    MOS65XX_INS_TXY = 90,
-    MOS65XX_INS_TYA = 91,
-    MOS65XX_INS_TYX = 92,
-    MOS65XX_INS_WAI = 93,
-    MOS65XX_INS_WDM = 94,
-    MOS65XX_INS_XBA = 95,
-    MOS65XX_INS_XCE = 96,
-    MOS65XX_INS_ENDING = 97,
-}
-#[repr(u32)]
-#[doc = " Group of MOS65XX instructions"]
-#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
-pub enum mos65xx_group_type {
-    #[doc = "< CS_GRP_INVALID"]
-    MOS65XX_GRP_INVALID = 0,
-    #[doc = "< = CS_GRP_JUMP"]
-    MOS65XX_GRP_JUMP = 1,
-    #[doc = "< = CS_GRP_RET"]
-    MOS65XX_GRP_CALL = 2,
-    #[doc = "< = CS_GRP_RET"]
-    MOS65XX_GRP_RET = 3,
-    #[doc = "< = CS_GRP_INT"]
-    MOS65XX_GRP_INT = 4,
-    #[doc = "< = CS_GRP_IRET"]
-    MOS65XX_GRP_IRET = 5,
-    #[doc = "< = CS_GRP_BRANCH_RELATIVE"]
-    MOS65XX_GRP_BRANCH_RELATIVE = 6,
-    MOS65XX_GRP_ENDING = 7,
-}
-#[repr(u32)]
-#[doc = " Operand type for instruction's operands"]
-#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
-pub enum mos65xx_op_type {
-    MOS65XX_OP_INVALID = 0,
-    #[doc = "< = CS_OP_REG (Register operand)."]
-    MOS65XX_OP_REG = 1,
-    #[doc = "< = CS_OP_IMM (Immediate operand)."]
-    MOS65XX_OP_IMM = 2,
-    #[doc = "< = CS_OP_MEM (Memory operand)."]
-    MOS65XX_OP_MEM = 128,
-}
-#[doc = " Instruction operand"]
-#[repr(C)]
-#[derive(Copy, Clone)]
-pub struct cs_mos65xx_op {
-    #[doc = "< operand type"]
-    pub type_: mos65xx_op_type,
-    pub __bindgen_anon_1: cs_mos65xx_op__bindgen_ty_1,
-}
-#[repr(C)]
-#[derive(Copy, Clone)]
-pub union cs_mos65xx_op__bindgen_ty_1 {
-    #[doc = "< register value for REG operand"]
-    pub reg: mos65xx_reg::Type,
-    #[doc = "< immediate value for IMM operand"]
-    pub imm: u16,
-    #[doc = "< address for MEM operand"]
-    pub mem: u32,
-}
-impl ::core::fmt::Debug for cs_mos65xx_op__bindgen_ty_1 {
-    fn fmt(&self, f: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
-        write!(f, "cs_mos65xx_op__bindgen_ty_1 {{ union }}")
-    }
-}
-impl ::core::fmt::Debug for cs_mos65xx_op {
-    fn fmt(&self, f: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
-        write!(
-            f,
-            "cs_mos65xx_op {{ type: {:?}, __bindgen_anon_1: {:?} }}",
-            self.type_, self.__bindgen_anon_1
-        )
-    }
-}
-#[doc = " The MOS65XX address mode and its operands"]
-#[repr(C)]
-#[derive(Copy, Clone)]
-pub struct cs_mos65xx {
-    pub am: mos65xx_address_mode,
-    pub modifies_flags: bool,
-    #[doc = " Number of operands of this instruction,\n or 0 when instruction has no operand."]
-    pub op_count: u8,
-    #[doc = "< operands for this instruction."]
-    pub operands: [cs_mos65xx_op; 3usize],
-}
-impl ::core::fmt::Debug for cs_mos65xx {
-    fn fmt(&self, f: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
-        write!(
-            f,
-            "cs_mos65xx {{ am: {:?}, modifies_flags: {:?}, operands: {:?} }}",
-            self.am, self.modifies_flags, self.operands
-        )
-    }
-}
-#[repr(u32)]
-#[doc = " Operand type for instruction's operands"]
-#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
-pub enum bpf_op_type {
-    BPF_OP_INVALID = 0,
-    BPF_OP_REG = 1,
-    BPF_OP_IMM = 2,
-    BPF_OP_OFF = 16,
-    #[doc = "< corresponds to cBPF's BPF_MSH mode"]
-    BPF_OP_MSH = 17,
-    #[doc = "< cBPF's extension (not eBPF)"]
-    BPF_OP_EXT = 18,
-    #[doc = "< M[k] in cBPF"]
-    BPF_OP_MMEM = 147,
-    BPF_OP_MEM = 128,
-}
-pub mod bpf_reg {
-    #[doc = " BPF registers"]
-    pub type Type = ::core::ffi::c_uint;
-    pub const BPF_REG_INVALID: Type = 0;
-    pub const BPF_REG_A: Type = 1;
-    pub const BPF_REG_X: Type = 2;
-    pub const BPF_REG_R0: Type = 3;
-    pub const BPF_REG_R1: Type = 4;
-    pub const BPF_REG_R2: Type = 5;
-    pub const BPF_REG_R3: Type = 6;
-    pub const BPF_REG_R4: Type = 7;
-    pub const BPF_REG_R5: Type = 8;
-    pub const BPF_REG_R6: Type = 9;
-    pub const BPF_REG_R7: Type = 10;
-    pub const BPF_REG_R8: Type = 11;
-    pub const BPF_REG_R9: Type = 12;
-    pub const BPF_REG_R10: Type = 13;
-    pub const BPF_REG_ENDING: Type = 14;
-}
-#[doc = " Instruction's operand referring to memory\n This is associated with BPF_OP_MEM operand type above"]
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct bpf_op_mem {
-    #[doc = "< base register"]
-    pub base: bpf_reg::Type,
-    #[doc = "< offset value"]
-    pub disp: u32,
-}
-#[repr(u32)]
-#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
-pub enum bpf_ext_type {
-    BPF_EXT_INVALID = 0,
-    BPF_EXT_LEN = 1,
-}
-#[doc = " Instruction operand"]
-#[repr(C)]
-#[derive(Copy, Clone)]
-pub struct cs_bpf_op {
-    pub type_: bpf_op_type,
-    pub __bindgen_anon_1: cs_bpf_op__bindgen_ty_1,
-    #[doc = "< is this operand signed? It is set for memory, immediate and offset operands."]
-    pub is_signed: bool,
-    #[doc = "< is this operand referring to packet data? It is set for memory operands."]
-    pub is_pkt: bool,
-    #[doc = " How is this operand accessed? (READ, WRITE or READ|WRITE)\n This field is combined of cs_ac_type.\n NOTE: this field is irrelevant if engine is compiled in DIET mode."]
-    pub access: cs_ac_type,
-}
-#[repr(C)]
-#[derive(Copy, Clone)]
-pub union cs_bpf_op__bindgen_ty_1 {
-    #[doc = "< register value for REG operand"]
-    pub reg: u8,
-    #[doc = "< immediate value IMM operand"]
-    pub imm: u64,
-    #[doc = "< offset value, used in jump & call"]
-    pub off: u32,
-    #[doc = "< base/disp value for MEM operand"]
-    pub mem: bpf_op_mem,
-    #[doc = "< M[k] in cBPF"]
-    pub mmem: u32,
-    #[doc = "< corresponds to cBPF's BPF_MSH mode"]
-    pub msh: u32,
-    #[doc = "< cBPF's extension (not eBPF)"]
-    pub ext: u32,
-}
-impl ::core::fmt::Debug for cs_bpf_op__bindgen_ty_1 {
-    fn fmt(&self, f: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
-        write!(f, "cs_bpf_op__bindgen_ty_1 {{ union }}")
-    }
-}
-impl ::core::fmt::Debug for cs_bpf_op {
-    fn fmt(&self, f: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
-        write ! (f , "cs_bpf_op {{ type: {:?}, __bindgen_anon_1: {:?}, is_signed: {:?}, is_pkt: {:?}, access: {:?} }}" , self . type_ , self . __bindgen_anon_1 , self . is_signed , self . is_pkt , self . access)
-    }
-}
-#[doc = " Instruction structure"]
-#[repr(C)]
-#[derive(Copy, Clone)]
-pub struct cs_bpf {
-    pub op_count: u8,
-    pub operands: [cs_bpf_op; 4usize],
-}
-impl ::core::fmt::Debug for cs_bpf {
-    fn fmt(&self, f: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
-        write!(f, "cs_bpf {{ operands: {:?} }}", self.operands)
-    }
-}
-impl bpf_insn {
-    pub const BPF_INS_LD: bpf_insn = bpf_insn::BPF_INS_LDW;
-}
-impl bpf_insn {
-    pub const BPF_INS_LDX: bpf_insn = bpf_insn::BPF_INS_LDXW;
-}
-impl bpf_insn {
-    pub const BPF_INS_ST: bpf_insn = bpf_insn::BPF_INS_STW;
-}
-impl bpf_insn {
-    pub const BPF_INS_STX: bpf_insn = bpf_insn::BPF_INS_STXW;
-}
-#[repr(u32)]
-#[doc = " BPF instruction"]
-#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
-pub enum bpf_insn {
-    BPF_INS_INVALID = 0,
-    BPF_INS_ADD = 1,
-    BPF_INS_SUB = 2,
-    BPF_INS_MUL = 3,
-    BPF_INS_DIV = 4,
-    BPF_INS_SDIV = 5,
-    BPF_INS_OR = 6,
-    BPF_INS_AND = 7,
-    BPF_INS_LSH = 8,
-    BPF_INS_RSH = 9,
-    BPF_INS_NEG = 10,
-    BPF_INS_MOD = 11,
-    BPF_INS_SMOD = 12,
-    BPF_INS_XOR = 13,
-    #[doc = "< eBPF only"]
-    BPF_INS_MOV = 14,
-    #[doc = "< eBPF only"]
-    BPF_INS_MOVSB = 15,
-    #[doc = "< eBPF only"]
-    BPF_INS_MOVSH = 16,
-    #[doc = "< eBPF only"]
-    BPF_INS_ARSH = 17,
-    BPF_INS_ADD64 = 18,
-    BPF_INS_SUB64 = 19,
-    BPF_INS_MUL64 = 20,
-    BPF_INS_DIV64 = 21,
-    BPF_INS_SDIV64 = 22,
-    BPF_INS_OR64 = 23,
-    BPF_INS_AND64 = 24,
-    BPF_INS_LSH64 = 25,
-    BPF_INS_RSH64 = 26,
-    BPF_INS_NEG64 = 27,
-    BPF_INS_MOD64 = 28,
-    BPF_INS_SMOD64 = 29,
-    BPF_INS_XOR64 = 30,
-    BPF_INS_MOV64 = 31,
-    BPF_INS_MOVSB64 = 32,
-    BPF_INS_MOVSH64 = 33,
-    BPF_INS_MOVSW64 = 34,
-    BPF_INS_ARSH64 = 35,
-    BPF_INS_LE16 = 36,
-    BPF_INS_LE32 = 37,
-    BPF_INS_LE64 = 38,
-    BPF_INS_BE16 = 39,
-    BPF_INS_BE32 = 40,
-    BPF_INS_BE64 = 41,
-    BPF_INS_BSWAP16 = 42,
-    BPF_INS_BSWAP32 = 43,
-    BPF_INS_BSWAP64 = 44,
-    #[doc = "< eBPF only"]
-    BPF_INS_LDW = 45,
-    BPF_INS_LDH = 46,
-    BPF_INS_LDB = 47,
-    #[doc = "< eBPF only: load 64-bit imm"]
-    BPF_INS_LDDW = 48,
-    #[doc = "< eBPF only"]
-    BPF_INS_LDXW = 49,
-    #[doc = "< eBPF only"]
-    BPF_INS_LDXH = 50,
-    #[doc = "< eBPF only"]
-    BPF_INS_LDXB = 51,
-    #[doc = "< eBPF only\n< Packet data access"]
-    BPF_INS_LDXDW = 52,
-    #[doc = "< eBPF only"]
-    BPF_INS_LDABSW = 53,
-    #[doc = "< eBPF only"]
-    BPF_INS_LDABSH = 54,
-    #[doc = "< eBPF only"]
-    BPF_INS_LDABSB = 55,
-    #[doc = "< eBPF only"]
-    BPF_INS_LDINDW = 56,
-    #[doc = "< eBPF only"]
-    BPF_INS_LDINDH = 57,
-    #[doc = "< eBPF only"]
-    BPF_INS_LDINDB = 58,
-    #[doc = "< eBPF only"]
-    BPF_INS_STW = 59,
-    #[doc = "< eBPF only"]
-    BPF_INS_STH = 60,
-    #[doc = "< eBPF only"]
-    BPF_INS_STB = 61,
-    #[doc = "< eBPF only"]
-    BPF_INS_STDW = 62,
-    #[doc = "< eBPF only"]
-    BPF_INS_STXW = 63,
-    #[doc = "< eBPF only"]
-    BPF_INS_STXH = 64,
-    #[doc = "< eBPF only"]
-    BPF_INS_STXB = 65,
-    #[doc = "< eBPF only"]
-    BPF_INS_STXDW = 66,
-    #[doc = "< eBPF only"]
-    BPF_INS_XADDW = 67,
-    #[doc = "< eBPF only"]
-    BPF_INS_XADDDW = 68,
-    BPF_INS_JA = 69,
-    BPF_INS_JEQ = 70,
-    BPF_INS_JGT = 71,
-    BPF_INS_JGE = 72,
-    BPF_INS_JSET = 73,
-    #[doc = "< eBPF only"]
-    BPF_INS_JNE = 74,
-    #[doc = "< eBPF only"]
-    BPF_INS_JSGT = 75,
-    #[doc = "< eBPF only"]
-    BPF_INS_JSGE = 76,
-    #[doc = "< eBPF only"]
-    BPF_INS_CALL = 77,
-    #[doc = "< eBPF only"]
-    BPF_INS_CALLX = 78,
-    #[doc = "< eBPF only"]
-    BPF_INS_EXIT = 79,
-    #[doc = "< eBPF only"]
-    BPF_INS_JLT = 80,
-    #[doc = "< eBPF only"]
-    BPF_INS_JLE = 81,
-    #[doc = "< eBPF only"]
-    BPF_INS_JSLT = 82,
-    #[doc = "< eBPF only"]
-    BPF_INS_JSLE = 83,
-    BPF_INS_JAL = 84,
-    BPF_INS_JEQ32 = 85,
-    BPF_INS_JGT32 = 86,
-    BPF_INS_JGE32 = 87,
-    BPF_INS_JSET32 = 88,
-    BPF_INS_JNE32 = 89,
-    BPF_INS_JSGT32 = 90,
-    BPF_INS_JSGE32 = 91,
-    BPF_INS_JLT32 = 92,
-    BPF_INS_JLE32 = 93,
-    BPF_INS_JSLT32 = 94,
-    BPF_INS_JSLE32 = 95,
-    BPF_INS_RET = 96,
-    BPF_INS_AADD = 97,
-    BPF_INS_AOR = 98,
-    BPF_INS_AAND = 99,
-    BPF_INS_AXOR = 100,
-    BPF_INS_AFADD = 101,
-    BPF_INS_AFOR = 102,
-    BPF_INS_AFAND = 103,
-    BPF_INS_AFXOR = 104,
-    BPF_INS_AXCHG64 = 105,
-    BPF_INS_ACMPXCHG64 = 106,
-    BPF_INS_AADD64 = 107,
-    BPF_INS_AOR64 = 108,
-    BPF_INS_AAND64 = 109,
-    BPF_INS_AXOR64 = 110,
-    BPF_INS_AFADD64 = 111,
-    BPF_INS_AFOR64 = 112,
-    BPF_INS_AFAND64 = 113,
-    BPF_INS_AFXOR64 = 114,
-    BPF_INS_TAX = 115,
-    BPF_INS_TXA = 116,
-    BPF_INS_ENDING = 117,
-}
-pub mod bpf_insn_group {
-    #[doc = " Group of BPF instructions"]
-    pub type Type = ::core::ffi::c_uint;
-    #[doc = "< = CS_GRP_INVALID"]
-    pub const BPF_GRP_INVALID: Type = 0;
-    pub const BPF_GRP_LOAD: Type = 1;
-    pub const BPF_GRP_STORE: Type = 2;
-    pub const BPF_GRP_ALU: Type = 3;
-    pub const BPF_GRP_JUMP: Type = 4;
-    #[doc = "< eBPF only"]
-    pub const BPF_GRP_CALL: Type = 5;
-    pub const BPF_GRP_RETURN: Type = 6;
-    #[doc = "< cBPF only"]
-    pub const BPF_GRP_MISC: Type = 7;
-    pub const BPF_GRP_ENDING: Type = 8;
-}
-pub mod sh_reg {
-    #[doc = " SH registers and special registers"]
-    pub type Type = ::core::ffi::c_uint;
-    pub const SH_REG_INVALID: Type = 0;
-    pub const SH_REG_R0: Type = 1;
-    pub const SH_REG_R1: Type = 2;
-    pub const SH_REG_R2: Type = 3;
-    pub const SH_REG_R3: Type = 4;
-    pub const SH_REG_R4: Type = 5;
-    pub const SH_REG_R5: Type = 6;
-    pub const SH_REG_R6: Type = 7;
-    pub const SH_REG_R7: Type = 8;
-    pub const SH_REG_R8: Type = 9;
-    pub const SH_REG_R9: Type = 10;
-    pub const SH_REG_R10: Type = 11;
-    pub const SH_REG_R11: Type = 12;
-    pub const SH_REG_R12: Type = 13;
-    pub const SH_REG_R13: Type = 14;
-    pub const SH_REG_R14: Type = 15;
-    pub const SH_REG_R15: Type = 16;
-    pub const SH_REG_R0_BANK: Type = 17;
-    pub const SH_REG_R1_BANK: Type = 18;
-    pub const SH_REG_R2_BANK: Type = 19;
-    pub const SH_REG_R3_BANK: Type = 20;
-    pub const SH_REG_R4_BANK: Type = 21;
-    pub const SH_REG_R5_BANK: Type = 22;
-    pub const SH_REG_R6_BANK: Type = 23;
-    pub const SH_REG_R7_BANK: Type = 24;
-    pub const SH_REG_FR0: Type = 25;
-    pub const SH_REG_FR1: Type = 26;
-    pub const SH_REG_FR2: Type = 27;
-    pub const SH_REG_FR3: Type = 28;
-    pub const SH_REG_FR4: Type = 29;
-    pub const SH_REG_FR5: Type = 30;
-    pub const SH_REG_FR6: Type = 31;
-    pub const SH_REG_FR7: Type = 32;
-    pub const SH_REG_FR8: Type = 33;
-    pub const SH_REG_FR9: Type = 34;
-    pub const SH_REG_FR10: Type = 35;
-    pub const SH_REG_FR11: Type = 36;
-    pub const SH_REG_FR12: Type = 37;
-    pub const SH_REG_FR13: Type = 38;
-    pub const SH_REG_FR14: Type = 39;
-    pub const SH_REG_FR15: Type = 40;
-    pub const SH_REG_DR0: Type = 41;
-    pub const SH_REG_DR2: Type = 42;
-    pub const SH_REG_DR4: Type = 43;
-    pub const SH_REG_DR6: Type = 44;
-    pub const SH_REG_DR8: Type = 45;
-    pub const SH_REG_DR10: Type = 46;
-    pub const SH_REG_DR12: Type = 47;
-    pub const SH_REG_DR14: Type = 48;
-    pub const SH_REG_XD0: Type = 49;
-    pub const SH_REG_XD2: Type = 50;
-    pub const SH_REG_XD4: Type = 51;
-    pub const SH_REG_XD6: Type = 52;
-    pub const SH_REG_XD8: Type = 53;
-    pub const SH_REG_XD10: Type = 54;
-    pub const SH_REG_XD12: Type = 55;
-    pub const SH_REG_XD14: Type = 56;
-    pub const SH_REG_XF0: Type = 57;
-    pub const SH_REG_XF1: Type = 58;
-    pub const SH_REG_XF2: Type = 59;
-    pub const SH_REG_XF3: Type = 60;
-    pub const SH_REG_XF4: Type = 61;
-    pub const SH_REG_XF5: Type = 62;
-    pub const SH_REG_XF6: Type = 63;
-    pub const SH_REG_XF7: Type = 64;
-    pub const SH_REG_XF8: Type = 65;
-    pub const SH_REG_XF9: Type = 66;
-    pub const SH_REG_XF10: Type = 67;
-    pub const SH_REG_XF11: Type = 68;
-    pub const SH_REG_XF12: Type = 69;
-    pub const SH_REG_XF13: Type = 70;
-    pub const SH_REG_XF14: Type = 71;
-    pub const SH_REG_XF15: Type = 72;
-    pub const SH_REG_FV0: Type = 73;
-    pub const SH_REG_FV4: Type = 74;
-    pub const SH_REG_FV8: Type = 75;
-    pub const SH_REG_FV12: Type = 76;
-    pub const SH_REG_XMATRX: Type = 77;
-    pub const SH_REG_PC: Type = 78;
-    pub const SH_REG_PR: Type = 79;
-    pub const SH_REG_MACH: Type = 80;
-    pub const SH_REG_MACL: Type = 81;
-    pub const SH_REG_SR: Type = 82;
-    pub const SH_REG_GBR: Type = 83;
-    pub const SH_REG_SSR: Type = 84;
-    pub const SH_REG_SPC: Type = 85;
-    pub const SH_REG_SGR: Type = 86;
-    pub const SH_REG_DBR: Type = 87;
-    pub const SH_REG_VBR: Type = 88;
-    pub const SH_REG_TBR: Type = 89;
-    pub const SH_REG_RS: Type = 90;
-    pub const SH_REG_RE: Type = 91;
-    pub const SH_REG_MOD: Type = 92;
-    pub const SH_REG_FPUL: Type = 93;
-    pub const SH_REG_FPSCR: Type = 94;
-    pub const SH_REG_DSP_X0: Type = 95;
-    pub const SH_REG_DSP_X1: Type = 96;
-    pub const SH_REG_DSP_Y0: Type = 97;
-    pub const SH_REG_DSP_Y1: Type = 98;
-    pub const SH_REG_DSP_A0: Type = 99;
-    pub const SH_REG_DSP_A1: Type = 100;
-    pub const SH_REG_DSP_A0G: Type = 101;
-    pub const SH_REG_DSP_A1G: Type = 102;
-    pub const SH_REG_DSP_M0: Type = 103;
-    pub const SH_REG_DSP_M1: Type = 104;
-    pub const SH_REG_DSP_DSR: Type = 105;
-    pub const SH_REG_DSP_RSV0: Type = 106;
-    pub const SH_REG_DSP_RSV1: Type = 107;
-    pub const SH_REG_DSP_RSV2: Type = 108;
-    pub const SH_REG_DSP_RSV3: Type = 109;
-    pub const SH_REG_DSP_RSV4: Type = 110;
-    pub const SH_REG_DSP_RSV5: Type = 111;
-    pub const SH_REG_DSP_RSV6: Type = 112;
-    pub const SH_REG_DSP_RSV7: Type = 113;
-    pub const SH_REG_DSP_RSV8: Type = 114;
-    pub const SH_REG_DSP_RSV9: Type = 115;
-    pub const SH_REG_DSP_RSVA: Type = 116;
-    pub const SH_REG_DSP_RSVB: Type = 117;
-    pub const SH_REG_DSP_RSVC: Type = 118;
-    pub const SH_REG_DSP_RSVD: Type = 119;
-    pub const SH_REG_DSP_RSVE: Type = 120;
-    pub const SH_REG_DSP_RSVF: Type = 121;
-    pub const SH_REG_ENDING: Type = 122;
-}
-#[repr(u32)]
-#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
-pub enum sh_op_type {
-    #[doc = "< = CS_OP_INVALID (Uninitialized)."]
-    SH_OP_INVALID = 0,
-    #[doc = "< = CS_OP_REG (Register operand)."]
-    SH_OP_REG = 1,
-    #[doc = "< = CS_OP_IMM (Immediate operand)."]
-    SH_OP_IMM = 2,
-    #[doc = "< = CS_OP_MEM (Memory operand)."]
-    SH_OP_MEM = 128,
-}
-#[repr(u32)]
-#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
-pub enum sh_op_mem_type {
-    SH_OP_MEM_INVALID = 0,
-    #[doc = " <= Invalid"]
-    SH_OP_MEM_REG_IND = 1,
-    #[doc = " <= Register indirect"]
-    SH_OP_MEM_REG_POST = 2,
-    #[doc = " <= Register post increment"]
-    SH_OP_MEM_REG_PRE = 3,
-    #[doc = " <= Register pre decrement"]
-    SH_OP_MEM_REG_DISP = 4,
-    #[doc = " <= displacement"]
-    SH_OP_MEM_REG_R0 = 5,
-    #[doc = " <= R0 indexed"]
-    SH_OP_MEM_GBR_DISP = 6,
-    #[doc = " <= GBR based displacement"]
-    SH_OP_MEM_GBR_R0 = 7,
-    #[doc = " <= GBR based R0 indexed"]
-    SH_OP_MEM_PCR = 8,
-    #[doc = " <= PC relative"]
-    SH_OP_MEM_TBR_DISP = 9,
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct sh_op_mem {
-    pub address: sh_op_mem_type,
-    #[doc = " <= memory address"]
-    pub reg: sh_reg::Type,
-    #[doc = " <= base register"]
-    pub disp: u32,
-}
-#[repr(u32)]
-#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
-pub enum sh_dsp_insn {
-    SH_INS_DSP_INVALID = 0,
-    SH_INS_DSP_NOP = 1,
-    SH_INS_DSP_MOV = 2,
-    SH_INS_DSP_PSHL = 3,
-    SH_INS_DSP_PSHA = 4,
-    SH_INS_DSP_PMULS = 5,
-    SH_INS_DSP_PCLR_PMULS = 6,
-    SH_INS_DSP_PSUB_PMULS = 7,
-    SH_INS_DSP_PADD_PMULS = 8,
-    SH_INS_DSP_PSUBC = 9,
-    SH_INS_DSP_PADDC = 10,
-    SH_INS_DSP_PCMP = 11,
-    SH_INS_DSP_PABS = 12,
-    SH_INS_DSP_PRND = 13,
-    SH_INS_DSP_PSUB = 14,
-    SH_INS_DSP_PSUBr = 15,
-    SH_INS_DSP_PADD = 16,
-    SH_INS_DSP_PAND = 17,
-    SH_INS_DSP_PXOR = 18,
-    SH_INS_DSP_POR = 19,
-    SH_INS_DSP_PDEC = 20,
-    SH_INS_DSP_PINC = 21,
-    SH_INS_DSP_PCLR = 22,
-    SH_INS_DSP_PDMSB = 23,
-    SH_INS_DSP_PNEG = 24,
-    SH_INS_DSP_PCOPY = 25,
-    SH_INS_DSP_PSTS = 26,
-    SH_INS_DSP_PLDS = 27,
-    SH_INS_DSP_PSWAP = 28,
-    SH_INS_DSP_PWAD = 29,
-    SH_INS_DSP_PWSB = 30,
-}
-#[repr(u32)]
-#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
-pub enum sh_dsp_operand {
-    SH_OP_DSP_INVALID = 0,
-    SH_OP_DSP_REG_PRE = 1,
-    SH_OP_DSP_REG_IND = 2,
-    SH_OP_DSP_REG_POST = 3,
-    SH_OP_DSP_REG_INDEX = 4,
-    SH_OP_DSP_REG = 5,
-    SH_OP_DSP_IMM = 6,
-}
-#[repr(u32)]
-#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
-pub enum sh_dsp_cc {
-    SH_DSP_CC_INVALID = 0,
-    SH_DSP_CC_NONE = 1,
-    SH_DSP_CC_DCT = 2,
-    SH_DSP_CC_DCF = 3,
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct sh_op_dsp {
-    pub insn: sh_dsp_insn,
-    pub operand: [sh_dsp_operand; 2usize],
-    pub r: [sh_reg::Type; 6usize],
-    pub cc: sh_dsp_cc,
-    pub imm: u8,
-    pub size: ::core::ffi::c_int,
-}
-#[doc = " Instruction operand"]
-#[repr(C)]
-#[derive(Copy, Clone)]
-pub struct cs_sh_op {
-    pub type_: sh_op_type,
-    pub __bindgen_anon_1: cs_sh_op__bindgen_ty_1,
-}
-#[repr(C)]
-#[derive(Copy, Clone)]
-pub union cs_sh_op__bindgen_ty_1 {
-    #[doc = "< immediate value for IMM operand"]
-    pub imm: u64,
-    #[doc = "< register value for REG operand"]
-    pub reg: sh_reg::Type,
-    #[doc = "< data when operand is targeting memory"]
-    pub mem: sh_op_mem,
-    #[doc = "< dsp instruction"]
-    pub dsp: sh_op_dsp,
-}
-impl ::core::fmt::Debug for cs_sh_op__bindgen_ty_1 {
-    fn fmt(&self, f: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
-        write!(f, "cs_sh_op__bindgen_ty_1 {{ union }}")
-    }
-}
-impl ::core::fmt::Debug for cs_sh_op {
-    fn fmt(&self, f: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
-        write!(
-            f,
-            "cs_sh_op {{ type: {:?}, __bindgen_anon_1: {:?} }}",
-            self.type_, self.__bindgen_anon_1
-        )
-    }
-}
-#[repr(u32)]
-#[doc = " SH instruction"]
-#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
-pub enum sh_insn {
-    SH_INS_INVALID = 0,
-    SH_INS_ADD_r = 1,
-    SH_INS_ADD = 2,
-    SH_INS_ADDC = 3,
-    SH_INS_ADDV = 4,
-    SH_INS_AND = 5,
-    SH_INS_BAND = 6,
-    SH_INS_BANDNOT = 7,
-    SH_INS_BCLR = 8,
-    SH_INS_BF = 9,
-    SH_INS_BF_S = 10,
-    SH_INS_BLD = 11,
-    SH_INS_BLDNOT = 12,
-    SH_INS_BOR = 13,
-    SH_INS_BORNOT = 14,
-    SH_INS_BRA = 15,
-    SH_INS_BRAF = 16,
-    SH_INS_BSET = 17,
-    SH_INS_BSR = 18,
-    SH_INS_BSRF = 19,
-    SH_INS_BST = 20,
-    SH_INS_BT = 21,
-    SH_INS_BT_S = 22,
-    SH_INS_BXOR = 23,
-    SH_INS_CLIPS = 24,
-    SH_INS_CLIPU = 25,
-    SH_INS_CLRDMXY = 26,
-    SH_INS_CLRMAC = 27,
-    SH_INS_CLRS = 28,
-    SH_INS_CLRT = 29,
-    SH_INS_CMP_EQ = 30,
-    SH_INS_CMP_GE = 31,
-    SH_INS_CMP_GT = 32,
-    SH_INS_CMP_HI = 33,
-    SH_INS_CMP_HS = 34,
-    SH_INS_CMP_PL = 35,
-    SH_INS_CMP_PZ = 36,
-    SH_INS_CMP_STR = 37,
-    SH_INS_DIV0S = 38,
-    SH_INS_DIV0U = 39,
-    SH_INS_DIV1 = 40,
-    SH_INS_DIVS = 41,
-    SH_INS_DIVU = 42,
-    SH_INS_DMULS_L = 43,
-    SH_INS_DMULU_L = 44,
-    SH_INS_DT = 45,
-    SH_INS_EXTS_B = 46,
-    SH_INS_EXTS_W = 47,
-    SH_INS_EXTU_B = 48,
-    SH_INS_EXTU_W = 49,
-    SH_INS_FABS = 50,
-    SH_INS_FADD = 51,
-    SH_INS_FCMP_EQ = 52,
-    SH_INS_FCMP_GT = 53,
-    SH_INS_FCNVDS = 54,
-    SH_INS_FCNVSD = 55,
-    SH_INS_FDIV = 56,
-    SH_INS_FIPR = 57,
-    SH_INS_FLDI0 = 58,
-    SH_INS_FLDI1 = 59,
-    SH_INS_FLDS = 60,
-    SH_INS_FLOAT = 61,
-    SH_INS_FMAC = 62,
-    SH_INS_FMOV = 63,
-    SH_INS_FMUL = 64,
-    SH_INS_FNEG = 65,
-    SH_INS_FPCHG = 66,
-    SH_INS_FRCHG = 67,
-    SH_INS_FSCA = 68,
-    SH_INS_FSCHG = 69,
-    SH_INS_FSQRT = 70,
-    SH_INS_FSRRA = 71,
-    SH_INS_FSTS = 72,
-    SH_INS_FSUB = 73,
-    SH_INS_FTRC = 74,
-    SH_INS_FTRV = 75,
-    SH_INS_ICBI = 76,
-    SH_INS_JMP = 77,
-    SH_INS_JSR = 78,
-    SH_INS_JSR_N = 79,
-    SH_INS_LDBANK = 80,
-    SH_INS_LDC = 81,
-    SH_INS_LDRC = 82,
-    SH_INS_LDRE = 83,
-    SH_INS_LDRS = 84,
-    SH_INS_LDS = 85,
-    SH_INS_LDTLB = 86,
-    SH_INS_MAC_L = 87,
-    SH_INS_MAC_W = 88,
-    SH_INS_MOV = 89,
-    SH_INS_MOVA = 90,
-    SH_INS_MOVCA = 91,
-    SH_INS_MOVCO = 92,
-    SH_INS_MOVI20 = 93,
-    SH_INS_MOVI20S = 94,
-    SH_INS_MOVLI = 95,
-    SH_INS_MOVML = 96,
-    SH_INS_MOVMU = 97,
-    SH_INS_MOVRT = 98,
-    SH_INS_MOVT = 99,
-    SH_INS_MOVU = 100,
-    SH_INS_MOVUA = 101,
-    SH_INS_MUL_L = 102,
-    SH_INS_MULR = 103,
-    SH_INS_MULS_W = 104,
-    SH_INS_MULU_W = 105,
-    SH_INS_NEG = 106,
-    SH_INS_NEGC = 107,
-    SH_INS_NOP = 108,
-    SH_INS_NOT = 109,
-    SH_INS_NOTT = 110,
-    SH_INS_OCBI = 111,
-    SH_INS_OCBP = 112,
-    SH_INS_OCBWB = 113,
-    SH_INS_OR = 114,
-    SH_INS_PREF = 115,
-    SH_INS_PREFI = 116,
-    SH_INS_RESBANK = 117,
-    SH_INS_ROTCL = 118,
-    SH_INS_ROTCR = 119,
-    SH_INS_ROTL = 120,
-    SH_INS_ROTR = 121,
-    SH_INS_RTE = 122,
-    SH_INS_RTS = 123,
-    SH_INS_RTS_N = 124,
-    SH_INS_RTV_N = 125,
-    SH_INS_SETDMX = 126,
-    SH_INS_SETDMY = 127,
-    SH_INS_SETRC = 128,
-    SH_INS_SETS = 129,
-    SH_INS_SETT = 130,
-    SH_INS_SHAD = 131,
-    SH_INS_SHAL = 132,
-    SH_INS_SHAR = 133,
-    SH_INS_SHLD = 134,
-    SH_INS_SHLL = 135,
-    SH_INS_SHLL16 = 136,
-    SH_INS_SHLL2 = 137,
-    SH_INS_SHLL8 = 138,
-    SH_INS_SHLR = 139,
-    SH_INS_SHLR16 = 140,
-    SH_INS_SHLR2 = 141,
-    SH_INS_SHLR8 = 142,
-    SH_INS_SLEEP = 143,
-    SH_INS_STBANK = 144,
-    SH_INS_STC = 145,
-    SH_INS_STS = 146,
-    SH_INS_SUB = 147,
-    SH_INS_SUBC = 148,
-    SH_INS_SUBV = 149,
-    SH_INS_SWAP_B = 150,
-    SH_INS_SWAP_W = 151,
-    SH_INS_SYNCO = 152,
-    SH_INS_TAS = 153,
-    SH_INS_TRAPA = 154,
-    SH_INS_TST = 155,
-    SH_INS_XOR = 156,
-    SH_INS_XTRCT = 157,
-    SH_INS_DSP = 158,
-    SH_INS_ENDING = 159,
-}
-#[doc = " Instruction structure"]
-#[repr(C)]
-#[derive(Copy, Clone)]
-pub struct cs_sh {
-    pub insn: sh_insn,
-    pub size: u8,
-    pub op_count: u8,
-    pub operands: [cs_sh_op; 3usize],
-}
-impl ::core::fmt::Debug for cs_sh {
-    fn fmt(&self, f: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
-        write!(
-            f,
-            "cs_sh {{ insn: {:?}, operands: {:?} }}",
-            self.insn, self.operands
-        )
-    }
-}
-pub mod sh_insn_group {
-    #[doc = " Group of SH instructions"]
-    pub type Type = ::core::ffi::c_uint;
-    #[doc = "< CS_GRUP_INVALID"]
-    pub const SH_GRP_INVALID: Type = 0;
-    #[doc = "< = CS_GRP_JUMP"]
-    pub const SH_GRP_JUMP: Type = 1;
-    #[doc = "< = CS_GRP_CALL"]
-    pub const SH_GRP_CALL: Type = 2;
-    #[doc = "< = CS_GRP_INT"]
-    pub const SH_GRP_INT: Type = 3;
-    #[doc = "< = CS_GRP_RET"]
-    pub const SH_GRP_RET: Type = 4;
-    #[doc = "< = CS_GRP_IRET"]
-    pub const SH_GRP_IRET: Type = 5;
-    #[doc = "< = CS_GRP_PRIVILEGE"]
-    pub const SH_GRP_PRIVILEGE: Type = 6;
-    #[doc = "< = CS_GRP_BRANCH_RELATIVE"]
-    pub const SH_GRP_BRANCH_RELATIVE: Type = 7;
-    pub const SH_GRP_SH1: Type = 8;
-    pub const SH_GRP_SH2: Type = 9;
-    pub const SH_GRP_SH2E: Type = 10;
-    pub const SH_GRP_SH2DSP: Type = 11;
-    pub const SH_GRP_SH2A: Type = 12;
-    pub const SH_GRP_SH2AFPU: Type = 13;
-    pub const SH_GRP_SH3: Type = 14;
-    pub const SH_GRP_SH3DSP: Type = 15;
-    pub const SH_GRP_SH4: Type = 16;
-    pub const SH_GRP_SH4A: Type = 17;
-    pub const SH_GRP_ENDING: Type = 18;
-}
-#[repr(u32)]
-#[doc = " Operand type for instruction's operands"]
-#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
-pub enum tricore_op_type {
-    #[doc = "< CS_OP_INVALID (Uninitialized)."]
-    TRICORE_OP_INVALID = 0,
-    #[doc = "< CS_OP_REG (Register operand)."]
-    TRICORE_OP_REG = 1,
-    #[doc = "< CS_OP_IMM (Immediate operand)."]
-    TRICORE_OP_IMM = 2,
-    #[doc = "< CS_OP_MEM (Memory operand)."]
-    TRICORE_OP_MEM = 128,
-}
-#[doc = " Instruction's operand referring to memory\n This is associated with TRICORE_OP_MEM operand type above"]
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct tricore_op_mem {
-    #[doc = "< base register"]
-    pub base: u8,
-    #[doc = "< displacement/offset value"]
-    pub disp: i64,
-}
-#[doc = " Instruction operand"]
-#[repr(C)]
-#[derive(Copy, Clone)]
-pub struct cs_tricore_op {
-    #[doc = "< operand type"]
-    pub type_: tricore_op_type,
-    pub __bindgen_anon_1: cs_tricore_op__bindgen_ty_1,
-    #[doc = "< How is this operand accessed? (READ, WRITE or READ|WRITE)"]
-    pub access: cs_ac_type,
-}
-#[repr(C)]
-#[derive(Copy, Clone)]
-pub union cs_tricore_op__bindgen_ty_1 {
-    #[doc = "< register value for REG operand"]
-    pub reg: ::core::ffi::c_uint,
-    #[doc = "< immediate value for IMM operand"]
-    pub imm: i64,
-    #[doc = "< base/disp value for MEM operand"]
-    pub mem: tricore_op_mem,
-}
-impl ::core::fmt::Debug for cs_tricore_op__bindgen_ty_1 {
-    fn fmt(&self, f: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
-        write!(f, "cs_tricore_op__bindgen_ty_1 {{ union }}")
-    }
-}
-impl ::core::fmt::Debug for cs_tricore_op {
-    fn fmt(&self, f: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
-        write!(
-            f,
-            "cs_tricore_op {{ type: {:?}, __bindgen_anon_1: {:?}, access: {:?} }}",
-            self.type_, self.__bindgen_anon_1, self.access
-        )
-    }
-}
-#[doc = " Instruction structure"]
-#[repr(C)]
-#[derive(Copy, Clone)]
-pub struct cs_tricore {
-    #[doc = "< number of operands of this instruction."]
-    pub op_count: u8,
-    #[doc = "< operands for this instruction."]
-    pub operands: [cs_tricore_op; 8usize],
-    #[doc = "< whether the flags register is updated."]
-    pub update_flags: bool,
-}
-impl ::core::fmt::Debug for cs_tricore {
-    fn fmt(&self, f: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
-        write!(
-            f,
-            "cs_tricore {{ operands: {:?}, update_flags: {:?} }}",
-            self.operands, self.update_flags
-        )
-    }
-}
-pub mod tricore_reg {
-    #[doc = " TriCore registers"]
-    pub type Type = ::core::ffi::c_uint;
-    pub const TRICORE_REG_INVALID: Type = 0;
-    pub const TRICORE_REG_FCX: Type = 1;
-    pub const TRICORE_REG_PC: Type = 2;
-    pub const TRICORE_REG_PCXI: Type = 3;
-    pub const TRICORE_REG_PSW: Type = 4;
-    pub const TRICORE_REG_A0: Type = 5;
-    pub const TRICORE_REG_A1: Type = 6;
-    pub const TRICORE_REG_A2: Type = 7;
-    pub const TRICORE_REG_A3: Type = 8;
-    pub const TRICORE_REG_A4: Type = 9;
-    pub const TRICORE_REG_A5: Type = 10;
-    pub const TRICORE_REG_A6: Type = 11;
-    pub const TRICORE_REG_A7: Type = 12;
-    pub const TRICORE_REG_A8: Type = 13;
-    pub const TRICORE_REG_A9: Type = 14;
-    pub const TRICORE_REG_A10: Type = 15;
-    pub const TRICORE_REG_A11: Type = 16;
-    pub const TRICORE_REG_A12: Type = 17;
-    pub const TRICORE_REG_A13: Type = 18;
-    pub const TRICORE_REG_A14: Type = 19;
-    pub const TRICORE_REG_A15: Type = 20;
-    pub const TRICORE_REG_D0: Type = 21;
-    pub const TRICORE_REG_D1: Type = 22;
-    pub const TRICORE_REG_D2: Type = 23;
-    pub const TRICORE_REG_D3: Type = 24;
-    pub const TRICORE_REG_D4: Type = 25;
-    pub const TRICORE_REG_D5: Type = 26;
-    pub const TRICORE_REG_D6: Type = 27;
-    pub const TRICORE_REG_D7: Type = 28;
-    pub const TRICORE_REG_D8: Type = 29;
-    pub const TRICORE_REG_D9: Type = 30;
-    pub const TRICORE_REG_D10: Type = 31;
-    pub const TRICORE_REG_D11: Type = 32;
-    pub const TRICORE_REG_D12: Type = 33;
-    pub const TRICORE_REG_D13: Type = 34;
-    pub const TRICORE_REG_D14: Type = 35;
-    pub const TRICORE_REG_D15: Type = 36;
-    pub const TRICORE_REG_E0: Type = 37;
-    pub const TRICORE_REG_E2: Type = 38;
-    pub const TRICORE_REG_E4: Type = 39;
-    pub const TRICORE_REG_E6: Type = 40;
-    pub const TRICORE_REG_E8: Type = 41;
-    pub const TRICORE_REG_E10: Type = 42;
-    pub const TRICORE_REG_E12: Type = 43;
-    pub const TRICORE_REG_E14: Type = 44;
-    pub const TRICORE_REG_P0: Type = 45;
-    pub const TRICORE_REG_P2: Type = 46;
-    pub const TRICORE_REG_P4: Type = 47;
-    pub const TRICORE_REG_P6: Type = 48;
-    pub const TRICORE_REG_P8: Type = 49;
-    pub const TRICORE_REG_P10: Type = 50;
-    pub const TRICORE_REG_P12: Type = 51;
-    pub const TRICORE_REG_P14: Type = 52;
-    pub const TRICORE_REG_A0_A1: Type = 53;
-    pub const TRICORE_REG_A2_A3: Type = 54;
-    pub const TRICORE_REG_A4_A5: Type = 55;
-    pub const TRICORE_REG_A6_A7: Type = 56;
-    pub const TRICORE_REG_A8_A9: Type = 57;
-    pub const TRICORE_REG_A10_A11: Type = 58;
-    pub const TRICORE_REG_A12_A13: Type = 59;
-    pub const TRICORE_REG_A14_A15: Type = 60;
-    pub const TRICORE_REG_ENDING: Type = 61;
-}
-#[repr(u32)]
-#[doc = " TriCore instruction"]
-#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
-pub enum tricore_insn {
-    TRICORE_INS_INVALID = 0,
-    TRICORE_INS_ABSDIFS_B = 1,
-    TRICORE_INS_ABSDIFS_H = 2,
-    TRICORE_INS_ABSDIFS = 3,
-    TRICORE_INS_ABSDIF_B = 4,
-    TRICORE_INS_ABSDIF_H = 5,
-    TRICORE_INS_ABSDIF = 6,
-    TRICORE_INS_ABSS_B = 7,
-    TRICORE_INS_ABSS_H = 8,
-    TRICORE_INS_ABSS = 9,
-    TRICORE_INS_ABS_B = 10,
-    TRICORE_INS_ABS_DF = 11,
-    TRICORE_INS_ABS_F = 12,
-    TRICORE_INS_ABS_H = 13,
-    TRICORE_INS_ABS = 14,
-    TRICORE_INS_ADDC = 15,
-    TRICORE_INS_ADDIH_A = 16,
-    TRICORE_INS_ADDIH = 17,
-    TRICORE_INS_ADDI = 18,
-    TRICORE_INS_ADDSC_AT = 19,
-    TRICORE_INS_ADDSC_A = 20,
-    TRICORE_INS_ADDS_BU = 21,
-    TRICORE_INS_ADDS_B = 22,
-    TRICORE_INS_ADDS_H = 23,
-    TRICORE_INS_ADDS_HU = 24,
-    TRICORE_INS_ADDS_U = 25,
-    TRICORE_INS_ADDS = 26,
-    TRICORE_INS_ADDX = 27,
-    TRICORE_INS_ADD_A = 28,
-    TRICORE_INS_ADD_B = 29,
-    TRICORE_INS_ADD_DF = 30,
-    TRICORE_INS_ADD_F = 31,
-    TRICORE_INS_ADD_H = 32,
-    TRICORE_INS_ADD = 33,
-    TRICORE_INS_ANDN_T = 34,
-    TRICORE_INS_ANDN = 35,
-    TRICORE_INS_AND_ANDN_T = 36,
-    TRICORE_INS_AND_AND_T = 37,
-    TRICORE_INS_AND_EQ = 38,
-    TRICORE_INS_AND_GE_U = 39,
-    TRICORE_INS_AND_GE = 40,
-    TRICORE_INS_AND_LT_U = 41,
-    TRICORE_INS_AND_LT = 42,
-    TRICORE_INS_AND_NE = 43,
-    TRICORE_INS_AND_NOR_T = 44,
-    TRICORE_INS_AND_OR_T = 45,
-    TRICORE_INS_AND_T = 46,
-    TRICORE_INS_AND = 47,
-    TRICORE_INS_BISR = 48,
-    TRICORE_INS_BMERGE = 49,
-    TRICORE_INS_BSPLIT = 50,
-    TRICORE_INS_CACHEA_I = 51,
-    TRICORE_INS_CACHEA_WI = 52,
-    TRICORE_INS_CACHEA_W = 53,
-    TRICORE_INS_CACHEI_I = 54,
-    TRICORE_INS_CACHEI_WI = 55,
-    TRICORE_INS_CACHEI_W = 56,
-    TRICORE_INS_CADDN_A = 57,
-    TRICORE_INS_CADDN = 58,
-    TRICORE_INS_CADD_A = 59,
-    TRICORE_INS_CADD = 60,
-    TRICORE_INS_CALLA = 61,
-    TRICORE_INS_CALLI = 62,
-    TRICORE_INS_CALL = 63,
-    TRICORE_INS_CLO_B = 64,
-    TRICORE_INS_CLO_H = 65,
-    TRICORE_INS_CLO = 66,
-    TRICORE_INS_CLS_B = 67,
-    TRICORE_INS_CLS_H = 68,
-    TRICORE_INS_CLS = 69,
-    TRICORE_INS_CLZ_B = 70,
-    TRICORE_INS_CLZ_H = 71,
-    TRICORE_INS_CLZ = 72,
-    TRICORE_INS_CMOVN = 73,
-    TRICORE_INS_CMOV = 74,
-    TRICORE_INS_CMPSWAP_W = 75,
-    TRICORE_INS_CMP_DF = 76,
-    TRICORE_INS_CMP_F = 77,
-    TRICORE_INS_CRC32B_W = 78,
-    TRICORE_INS_CRC32L_W = 79,
-    TRICORE_INS_CRC32_B = 80,
-    TRICORE_INS_CRCN = 81,
-    TRICORE_INS_CSUBN_A = 82,
-    TRICORE_INS_CSUBN = 83,
-    TRICORE_INS_CSUB_A = 84,
-    TRICORE_INS_CSUB = 85,
-    TRICORE_INS_DEBUG = 86,
-    TRICORE_INS_DEXTR = 87,
-    TRICORE_INS_DFTOF = 88,
-    TRICORE_INS_DFTOIN = 89,
-    TRICORE_INS_DFTOIZ = 90,
-    TRICORE_INS_DFTOI = 91,
-    TRICORE_INS_DFTOLZ = 92,
-    TRICORE_INS_DFTOL = 93,
-    TRICORE_INS_DFTOULZ = 94,
-    TRICORE_INS_DFTOUL = 95,
-    TRICORE_INS_DFTOUZ = 96,
-    TRICORE_INS_DFTOU = 97,
-    TRICORE_INS_DIFSC_A = 98,
-    TRICORE_INS_DISABLE = 99,
-    TRICORE_INS_DIV64_U = 100,
-    TRICORE_INS_DIV64 = 101,
-    TRICORE_INS_DIV_DF = 102,
-    TRICORE_INS_DIV_F = 103,
-    TRICORE_INS_DIV_U = 104,
-    TRICORE_INS_DIV = 105,
-    TRICORE_INS_DSYNC = 106,
-    TRICORE_INS_DVADJ = 107,
-    TRICORE_INS_DVINIT_BU = 108,
-    TRICORE_INS_DVINIT_B = 109,
-    TRICORE_INS_DVINIT_HU = 110,
-    TRICORE_INS_DVINIT_H = 111,
-    TRICORE_INS_DVINIT_U = 112,
-    TRICORE_INS_DVINIT = 113,
-    TRICORE_INS_DVSTEP_U = 114,
-    TRICORE_INS_DVSTEP = 115,
-    TRICORE_INS_ENABLE = 116,
-    TRICORE_INS_EQANY_B = 117,
-    TRICORE_INS_EQANY_H = 118,
-    TRICORE_INS_EQZ_A = 119,
-    TRICORE_INS_EQ_A = 120,
-    TRICORE_INS_EQ_B = 121,
-    TRICORE_INS_EQ_H = 122,
-    TRICORE_INS_EQ_W = 123,
-    TRICORE_INS_EQ = 124,
-    TRICORE_INS_EXTR_U = 125,
-    TRICORE_INS_EXTR = 126,
-    TRICORE_INS_FCALLA = 127,
-    TRICORE_INS_FCALLI = 128,
-    TRICORE_INS_FCALL = 129,
-    TRICORE_INS_FRET = 130,
-    TRICORE_INS_FTODF = 131,
-    TRICORE_INS_FTOHP = 132,
-    TRICORE_INS_FTOIN = 133,
-    TRICORE_INS_FTOIZ = 134,
-    TRICORE_INS_FTOI = 135,
-    TRICORE_INS_FTOQ31Z = 136,
-    TRICORE_INS_FTOQ31 = 137,
-    TRICORE_INS_FTOUZ = 138,
-    TRICORE_INS_FTOU = 139,
-    TRICORE_INS_GE_A = 140,
-    TRICORE_INS_GE_U = 141,
-    TRICORE_INS_GE = 142,
-    TRICORE_INS_HPTOF = 143,
-    TRICORE_INS_IMASK = 144,
-    TRICORE_INS_INSERT = 145,
-    TRICORE_INS_INSN_T = 146,
-    TRICORE_INS_INS_T = 147,
-    TRICORE_INS_ISYNC = 148,
-    TRICORE_INS_ITODF = 149,
-    TRICORE_INS_ITOF = 150,
-    TRICORE_INS_IXMAX_U = 151,
-    TRICORE_INS_IXMAX = 152,
-    TRICORE_INS_IXMIN_U = 153,
-    TRICORE_INS_IXMIN = 154,
-    TRICORE_INS_JA = 155,
-    TRICORE_INS_JEQ_A = 156,
-    TRICORE_INS_JEQ = 157,
-    TRICORE_INS_JGEZ = 158,
-    TRICORE_INS_JGE_U = 159,
-    TRICORE_INS_JGE = 160,
-    TRICORE_INS_JGTZ = 161,
-    TRICORE_INS_JI = 162,
-    TRICORE_INS_JLA = 163,
-    TRICORE_INS_JLEZ = 164,
-    TRICORE_INS_JLI = 165,
-    TRICORE_INS_JLTZ = 166,
-    TRICORE_INS_JLT_U = 167,
-    TRICORE_INS_JLT = 168,
-    TRICORE_INS_JL = 169,
-    TRICORE_INS_JNED = 170,
-    TRICORE_INS_JNEI = 171,
-    TRICORE_INS_JNE_A = 172,
-    TRICORE_INS_JNE = 173,
-    TRICORE_INS_JNZ_A = 174,
-    TRICORE_INS_JNZ_T = 175,
-    TRICORE_INS_JNZ = 176,
-    TRICORE_INS_JZ_A = 177,
-    TRICORE_INS_JZ_T = 178,
-    TRICORE_INS_JZ = 179,
-    TRICORE_INS_J = 180,
-    TRICORE_INS_LDLCX = 181,
-    TRICORE_INS_LDMST = 182,
-    TRICORE_INS_LDUCX = 183,
-    TRICORE_INS_LD_A = 184,
-    TRICORE_INS_LD_BU = 185,
-    TRICORE_INS_LD_B = 186,
-    TRICORE_INS_LD_DA = 187,
-    TRICORE_INS_LD_D = 188,
-    TRICORE_INS_LD_HU = 189,
-    TRICORE_INS_LD_H = 190,
-    TRICORE_INS_LD_Q = 191,
-    TRICORE_INS_LD_W = 192,
-    TRICORE_INS_LEA = 193,
-    TRICORE_INS_LHA = 194,
-    TRICORE_INS_LOOPU = 195,
-    TRICORE_INS_LOOP = 196,
-    TRICORE_INS_LTODF = 197,
-    TRICORE_INS_LT_A = 198,
-    TRICORE_INS_LT_B = 199,
-    TRICORE_INS_LT_BU = 200,
-    TRICORE_INS_LT_H = 201,
-    TRICORE_INS_LT_HU = 202,
-    TRICORE_INS_LT_U = 203,
-    TRICORE_INS_LT_W = 204,
-    TRICORE_INS_LT_WU = 205,
-    TRICORE_INS_LT = 206,
-    TRICORE_INS_MADDMS_H = 207,
-    TRICORE_INS_MADDMS_U = 208,
-    TRICORE_INS_MADDMS = 209,
-    TRICORE_INS_MADDM_H = 210,
-    TRICORE_INS_MADDM_Q = 211,
-    TRICORE_INS_MADDM_U = 212,
-    TRICORE_INS_MADDM = 213,
-    TRICORE_INS_MADDRS_H = 214,
-    TRICORE_INS_MADDRS_Q = 215,
-    TRICORE_INS_MADDR_H = 216,
-    TRICORE_INS_MADDR_Q = 217,
-    TRICORE_INS_MADDSUMS_H = 218,
-    TRICORE_INS_MADDSUM_H = 219,
-    TRICORE_INS_MADDSURS_H = 220,
-    TRICORE_INS_MADDSUR_H = 221,
-    TRICORE_INS_MADDSUS_H = 222,
-    TRICORE_INS_MADDSU_H = 223,
-    TRICORE_INS_MADDS_H = 224,
-    TRICORE_INS_MADDS_Q = 225,
-    TRICORE_INS_MADDS_U = 226,
-    TRICORE_INS_MADDS = 227,
-    TRICORE_INS_MADD_DF = 228,
-    TRICORE_INS_MADD_F = 229,
-    TRICORE_INS_MADD_H = 230,
-    TRICORE_INS_MADD_Q = 231,
-    TRICORE_INS_MADD_U = 232,
-    TRICORE_INS_MADD = 233,
-    TRICORE_INS_MAX_B = 234,
-    TRICORE_INS_MAX_BU = 235,
-    TRICORE_INS_MAX_DF = 236,
-    TRICORE_INS_MAX_F = 237,
-    TRICORE_INS_MAX_H = 238,
-    TRICORE_INS_MAX_HU = 239,
-    TRICORE_INS_MAX_U = 240,
-    TRICORE_INS_MAX = 241,
-    TRICORE_INS_MFCR = 242,
-    TRICORE_INS_MIN_B = 243,
-    TRICORE_INS_MIN_BU = 244,
-    TRICORE_INS_MIN_DF = 245,
-    TRICORE_INS_MIN_F = 246,
-    TRICORE_INS_MIN_H = 247,
-    TRICORE_INS_MIN_HU = 248,
-    TRICORE_INS_MIN_U = 249,
-    TRICORE_INS_MIN = 250,
-    TRICORE_INS_MOVH_A = 251,
-    TRICORE_INS_MOVH = 252,
-    TRICORE_INS_MOVZ_A = 253,
-    TRICORE_INS_MOV_AA = 254,
-    TRICORE_INS_MOV_A = 255,
-    TRICORE_INS_MOV_D = 256,
-    TRICORE_INS_MOV_U = 257,
-    TRICORE_INS_MOV = 258,
-    TRICORE_INS_MSUBADMS_H = 259,
-    TRICORE_INS_MSUBADM_H = 260,
-    TRICORE_INS_MSUBADRS_H = 261,
-    TRICORE_INS_MSUBADR_H = 262,
-    TRICORE_INS_MSUBADS_H = 263,
-    TRICORE_INS_MSUBAD_H = 264,
-    TRICORE_INS_MSUBMS_H = 265,
-    TRICORE_INS_MSUBMS_U = 266,
-    TRICORE_INS_MSUBMS = 267,
-    TRICORE_INS_MSUBM_H = 268,
-    TRICORE_INS_MSUBM_Q = 269,
-    TRICORE_INS_MSUBM_U = 270,
-    TRICORE_INS_MSUBM = 271,
-    TRICORE_INS_MSUBRS_H = 272,
-    TRICORE_INS_MSUBRS_Q = 273,
-    TRICORE_INS_MSUBR_H = 274,
-    TRICORE_INS_MSUBR_Q = 275,
-    TRICORE_INS_MSUBS_H = 276,
-    TRICORE_INS_MSUBS_Q = 277,
-    TRICORE_INS_MSUBS_U = 278,
-    TRICORE_INS_MSUBS = 279,
-    TRICORE_INS_MSUB_DF = 280,
-    TRICORE_INS_MSUB_F = 281,
-    TRICORE_INS_MSUB_H = 282,
-    TRICORE_INS_MSUB_Q = 283,
-    TRICORE_INS_MSUB_U = 284,
-    TRICORE_INS_MSUB = 285,
-    TRICORE_INS_MTCR = 286,
-    TRICORE_INS_MULMS_H = 287,
-    TRICORE_INS_MULM_H = 288,
-    TRICORE_INS_MULM_U = 289,
-    TRICORE_INS_MULM = 290,
-    TRICORE_INS_MULR_H = 291,
-    TRICORE_INS_MULR_Q = 292,
-    TRICORE_INS_MULS_U = 293,
-    TRICORE_INS_MULS = 294,
-    TRICORE_INS_MUL_DF = 295,
-    TRICORE_INS_MUL_F = 296,
-    TRICORE_INS_MUL_H = 297,
-    TRICORE_INS_MUL_Q = 298,
-    TRICORE_INS_MUL_U = 299,
-    TRICORE_INS_MUL = 300,
-    TRICORE_INS_NAND_T = 301,
-    TRICORE_INS_NAND = 302,
-    TRICORE_INS_NEG_DF = 303,
-    TRICORE_INS_NEG_F = 304,
-    TRICORE_INS_NEZ_A = 305,
-    TRICORE_INS_NE_A = 306,
-    TRICORE_INS_NE = 307,
-    TRICORE_INS_NOP = 308,
-    TRICORE_INS_NOR_T = 309,
-    TRICORE_INS_NOR = 310,
-    TRICORE_INS_NOT = 311,
-    TRICORE_INS_ORN_T = 312,
-    TRICORE_INS_ORN = 313,
-    TRICORE_INS_OR_ANDN_T = 314,
-    TRICORE_INS_OR_AND_T = 315,
-    TRICORE_INS_OR_EQ = 316,
-    TRICORE_INS_OR_GE_U = 317,
-    TRICORE_INS_OR_GE = 318,
-    TRICORE_INS_OR_LT_U = 319,
-    TRICORE_INS_OR_LT = 320,
-    TRICORE_INS_OR_NE = 321,
-    TRICORE_INS_OR_NOR_T = 322,
-    TRICORE_INS_OR_OR_T = 323,
-    TRICORE_INS_OR_T = 324,
-    TRICORE_INS_OR = 325,
-    TRICORE_INS_PACK = 326,
-    TRICORE_INS_PARITY = 327,
-    TRICORE_INS_POPCNT_W = 328,
-    TRICORE_INS_Q31TOF = 329,
-    TRICORE_INS_QSEED_DF = 330,
-    TRICORE_INS_QSEED_F = 331,
-    TRICORE_INS_REM64_U = 332,
-    TRICORE_INS_REM64 = 333,
-    TRICORE_INS_RESTORE = 334,
-    TRICORE_INS_RET = 335,
-    TRICORE_INS_RFE = 336,
-    TRICORE_INS_RFM = 337,
-    TRICORE_INS_RSLCX = 338,
-    TRICORE_INS_RSTV = 339,
-    TRICORE_INS_RSUBS_U = 340,
-    TRICORE_INS_RSUBS = 341,
-    TRICORE_INS_RSUB = 342,
-    TRICORE_INS_SAT_BU = 343,
-    TRICORE_INS_SAT_B = 344,
-    TRICORE_INS_SAT_HU = 345,
-    TRICORE_INS_SAT_H = 346,
-    TRICORE_INS_SELN_A = 347,
-    TRICORE_INS_SELN = 348,
-    TRICORE_INS_SEL_A = 349,
-    TRICORE_INS_SEL = 350,
-    TRICORE_INS_SHAS = 351,
-    TRICORE_INS_SHA_B = 352,
-    TRICORE_INS_SHA_H = 353,
-    TRICORE_INS_SHA = 354,
-    TRICORE_INS_SHUFFLE = 355,
-    TRICORE_INS_SH_ANDN_T = 356,
-    TRICORE_INS_SH_AND_T = 357,
-    TRICORE_INS_SH_B = 358,
-    TRICORE_INS_SH_EQ = 359,
-    TRICORE_INS_SH_GE_U = 360,
-    TRICORE_INS_SH_GE = 361,
-    TRICORE_INS_SH_H = 362,
-    TRICORE_INS_SH_LT_U = 363,
-    TRICORE_INS_SH_LT = 364,
-    TRICORE_INS_SH_NAND_T = 365,
-    TRICORE_INS_SH_NE = 366,
-    TRICORE_INS_SH_NOR_T = 367,
-    TRICORE_INS_SH_ORN_T = 368,
-    TRICORE_INS_SH_OR_T = 369,
-    TRICORE_INS_SH_XNOR_T = 370,
-    TRICORE_INS_SH_XOR_T = 371,
-    TRICORE_INS_SH = 372,
-    TRICORE_INS_STLCX = 373,
-    TRICORE_INS_STUCX = 374,
-    TRICORE_INS_ST_A = 375,
-    TRICORE_INS_ST_B = 376,
-    TRICORE_INS_ST_DA = 377,
-    TRICORE_INS_ST_D = 378,
-    TRICORE_INS_ST_H = 379,
-    TRICORE_INS_ST_Q = 380,
-    TRICORE_INS_ST_T = 381,
-    TRICORE_INS_ST_W = 382,
-    TRICORE_INS_SUBC = 383,
-    TRICORE_INS_SUBSC_A = 384,
-    TRICORE_INS_SUBS_BU = 385,
-    TRICORE_INS_SUBS_B = 386,
-    TRICORE_INS_SUBS_HU = 387,
-    TRICORE_INS_SUBS_H = 388,
-    TRICORE_INS_SUBS_U = 389,
-    TRICORE_INS_SUBS = 390,
-    TRICORE_INS_SUBX = 391,
-    TRICORE_INS_SUB_A = 392,
-    TRICORE_INS_SUB_B = 393,
-    TRICORE_INS_SUB_DF = 394,
-    TRICORE_INS_SUB_F = 395,
-    TRICORE_INS_SUB_H = 396,
-    TRICORE_INS_SUB = 397,
-    TRICORE_INS_SVLCX = 398,
-    TRICORE_INS_SWAPMSK_W = 399,
-    TRICORE_INS_SWAP_A = 400,
-    TRICORE_INS_SWAP_W = 401,
-    TRICORE_INS_SYSCALL = 402,
-    TRICORE_INS_TLBDEMAP = 403,
-    TRICORE_INS_TLBFLUSH_A = 404,
-    TRICORE_INS_TLBFLUSH_B = 405,
-    TRICORE_INS_TLBMAP = 406,
-    TRICORE_INS_TLBPROBE_A = 407,
-    TRICORE_INS_TLBPROBE_I = 408,
-    TRICORE_INS_TRAPSV = 409,
-    TRICORE_INS_TRAPV = 410,
-    TRICORE_INS_ULTODF = 411,
-    TRICORE_INS_UNPACK = 412,
-    TRICORE_INS_UPDFL = 413,
-    TRICORE_INS_UTODF = 414,
-    TRICORE_INS_UTOF = 415,
-    TRICORE_INS_WAIT = 416,
-    TRICORE_INS_XNOR_T = 417,
-    TRICORE_INS_XNOR = 418,
-    TRICORE_INS_XOR_EQ = 419,
-    TRICORE_INS_XOR_GE_U = 420,
-    TRICORE_INS_XOR_GE = 421,
-    TRICORE_INS_XOR_LT_U = 422,
-    TRICORE_INS_XOR_LT = 423,
-    TRICORE_INS_XOR_NE = 424,
-    TRICORE_INS_XOR_T = 425,
-    TRICORE_INS_XOR = 426,
-    TRICORE_INS_ENDING = 427,
-}
-pub mod tricore_insn_group {
-    #[doc = " Group of TriCore instructions"]
-    pub type Type = ::core::ffi::c_uint;
-    #[doc = "< = CS_GRP_INVALID"]
-    pub const TRICORE_GRP_INVALID: Type = 0;
-    #[doc = "< = CS_GRP_CALL"]
-    pub const TRICORE_GRP_CALL: Type = 1;
-    #[doc = "< = CS_GRP_JUMP"]
-    pub const TRICORE_GRP_JUMP: Type = 2;
-    #[doc = "< mark the end of the list of groups"]
-    pub const TRICORE_GRP_ENDING: Type = 3;
-}
-#[repr(u32)]
-#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
-pub enum tricore_feature_t {
-    TRICORE_FEATURE_INVALID = 0,
-    TRICORE_FEATURE_HASV110 = 128,
-    TRICORE_FEATURE_HASV120 = 129,
-    TRICORE_FEATURE_HASV130 = 130,
-    TRICORE_FEATURE_HASV131 = 131,
-    TRICORE_FEATURE_HASV160 = 132,
-    TRICORE_FEATURE_HASV161 = 133,
-    TRICORE_FEATURE_HASV162 = 134,
-    TRICORE_FEATURE_HASV180 = 135,
-    TRICORE_FEATURE_HASV120_UP = 136,
-    TRICORE_FEATURE_HASV130_UP = 137,
-    TRICORE_FEATURE_HASV131_UP = 138,
-    TRICORE_FEATURE_HASV160_UP = 139,
-    TRICORE_FEATURE_HASV161_UP = 140,
-    TRICORE_FEATURE_HASV162_UP = 141,
-    TRICORE_FEATURE_HASV180_UP = 142,
-    TRICORE_FEATURE_HASV120_DN = 143,
-    TRICORE_FEATURE_HASV130_DN = 144,
-    TRICORE_FEATURE_HASV131_DN = 145,
-    TRICORE_FEATURE_HASV160_DN = 146,
-    TRICORE_FEATURE_HASV161_DN = 147,
-    TRICORE_FEATURE_HASV162_DN = 148,
-    TRICORE_FEATURE_HASV180_DN = 149,
-    #[doc = "< mark the end of the list of features"]
-    TRICORE_FEATURE_ENDING = 150,
-}
-pub use self::tricore_feature_t as tricore_feature;
-#[repr(u32)]
-#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
-pub enum alpha_op_type {
-    #[doc = "< CS_OP_INVALID (Uninitialized)."]
-    ALPHA_OP_INVALID = 0,
-    #[doc = "< CS_OP_REG (Register operand)."]
-    ALPHA_OP_REG = 1,
-    #[doc = "< CS_OP_IMM (Immediate operand)."]
-    ALPHA_OP_IMM = 2,
-}
-#[repr(C)]
-#[derive(Copy, Clone)]
-pub struct cs_alpha_op {
-    pub type_: alpha_op_type,
-    pub __bindgen_anon_1: cs_alpha_op__bindgen_ty_1,
-    pub access: cs_ac_type,
-}
-#[repr(C)]
-#[derive(Copy, Clone)]
-pub union cs_alpha_op__bindgen_ty_1 {
-    pub reg: ::core::ffi::c_uint,
-    pub imm: i64,
-}
-impl ::core::fmt::Debug for cs_alpha_op__bindgen_ty_1 {
-    fn fmt(&self, f: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
-        write!(f, "cs_alpha_op__bindgen_ty_1 {{ union }}")
-    }
-}
-impl ::core::fmt::Debug for cs_alpha_op {
-    fn fmt(&self, f: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
-        write!(
-            f,
-            "cs_alpha_op {{ type: {:?}, __bindgen_anon_1: {:?}, access: {:?} }}",
-            self.type_, self.__bindgen_anon_1, self.access
-        )
-    }
-}
-#[repr(C)]
-#[derive(Copy, Clone)]
-pub struct cs_alpha {
-    pub op_count: u8,
-    pub operands: [cs_alpha_op; 3usize],
-}
-impl ::core::fmt::Debug for cs_alpha {
-    fn fmt(&self, f: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
-        write!(f, "cs_alpha {{ operands: {:?} }}", self.operands)
-    }
-}
-pub mod alpha_reg {
-    pub type Type = ::core::ffi::c_uint;
-    pub const Alpha_REG_INVALID: Type = 0;
-    pub const Alpha_REG_F0: Type = 1;
-    pub const Alpha_REG_F1: Type = 2;
-    pub const Alpha_REG_F2: Type = 3;
-    pub const Alpha_REG_F3: Type = 4;
-    pub const Alpha_REG_F4: Type = 5;
-    pub const Alpha_REG_F5: Type = 6;
-    pub const Alpha_REG_F6: Type = 7;
-    pub const Alpha_REG_F7: Type = 8;
-    pub const Alpha_REG_F8: Type = 9;
-    pub const Alpha_REG_F9: Type = 10;
-    pub const Alpha_REG_F10: Type = 11;
-    pub const Alpha_REG_F11: Type = 12;
-    pub const Alpha_REG_F12: Type = 13;
-    pub const Alpha_REG_F13: Type = 14;
-    pub const Alpha_REG_F14: Type = 15;
-    pub const Alpha_REG_F15: Type = 16;
-    pub const Alpha_REG_F16: Type = 17;
-    pub const Alpha_REG_F17: Type = 18;
-    pub const Alpha_REG_F18: Type = 19;
-    pub const Alpha_REG_F19: Type = 20;
-    pub const Alpha_REG_F20: Type = 21;
-    pub const Alpha_REG_F21: Type = 22;
-    pub const Alpha_REG_F22: Type = 23;
-    pub const Alpha_REG_F23: Type = 24;
-    pub const Alpha_REG_F24: Type = 25;
-    pub const Alpha_REG_F25: Type = 26;
-    pub const Alpha_REG_F26: Type = 27;
-    pub const Alpha_REG_F27: Type = 28;
-    pub const Alpha_REG_F28: Type = 29;
-    pub const Alpha_REG_F29: Type = 30;
-    pub const Alpha_REG_F30: Type = 31;
-    pub const Alpha_REG_F31: Type = 32;
-    pub const Alpha_REG_R0: Type = 33;
-    pub const Alpha_REG_R1: Type = 34;
-    pub const Alpha_REG_R2: Type = 35;
-    pub const Alpha_REG_R3: Type = 36;
-    pub const Alpha_REG_R4: Type = 37;
-    pub const Alpha_REG_R5: Type = 38;
-    pub const Alpha_REG_R6: Type = 39;
-    pub const Alpha_REG_R7: Type = 40;
-    pub const Alpha_REG_R8: Type = 41;
-    pub const Alpha_REG_R9: Type = 42;
-    pub const Alpha_REG_R10: Type = 43;
-    pub const Alpha_REG_R11: Type = 44;
-    pub const Alpha_REG_R12: Type = 45;
-    pub const Alpha_REG_R13: Type = 46;
-    pub const Alpha_REG_R14: Type = 47;
-    pub const Alpha_REG_R15: Type = 48;
-    pub const Alpha_REG_R16: Type = 49;
-    pub const Alpha_REG_R17: Type = 50;
-    pub const Alpha_REG_R18: Type = 51;
-    pub const Alpha_REG_R19: Type = 52;
-    pub const Alpha_REG_R20: Type = 53;
-    pub const Alpha_REG_R21: Type = 54;
-    pub const Alpha_REG_R22: Type = 55;
-    pub const Alpha_REG_R23: Type = 56;
-    pub const Alpha_REG_R24: Type = 57;
-    pub const Alpha_REG_R25: Type = 58;
-    pub const Alpha_REG_R26: Type = 59;
-    pub const Alpha_REG_R27: Type = 60;
-    pub const Alpha_REG_R28: Type = 61;
-    pub const Alpha_REG_R29: Type = 62;
-    pub const Alpha_REG_R30: Type = 63;
-    pub const Alpha_REG_R31: Type = 64;
-    pub const Alpha_REG_ENDING: Type = 65;
-}
-#[repr(u32)]
-#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
-pub enum alpha_insn {
-    Alpha_INS_INVALID = 0,
-    Alpha_INS_ADDL = 1,
-    Alpha_INS_ADDQ = 2,
-    Alpha_INS_ADDSsSU = 3,
-    Alpha_INS_ADDTsSU = 4,
-    Alpha_INS_AND = 5,
-    Alpha_INS_BEQ = 6,
-    Alpha_INS_BGE = 7,
-    Alpha_INS_BGT = 8,
-    Alpha_INS_BIC = 9,
-    Alpha_INS_BIS = 10,
-    Alpha_INS_BLBC = 11,
-    Alpha_INS_BLBS = 12,
-    Alpha_INS_BLE = 13,
-    Alpha_INS_BLT = 14,
-    Alpha_INS_BNE = 15,
-    Alpha_INS_BR = 16,
-    Alpha_INS_BSR = 17,
-    Alpha_INS_CMOVEQ = 18,
-    Alpha_INS_CMOVGE = 19,
-    Alpha_INS_CMOVGT = 20,
-    Alpha_INS_CMOVLBC = 21,
-    Alpha_INS_CMOVLBS = 22,
-    Alpha_INS_CMOVLE = 23,
-    Alpha_INS_CMOVLT = 24,
-    Alpha_INS_CMOVNE = 25,
-    Alpha_INS_CMPBGE = 26,
-    Alpha_INS_CMPEQ = 27,
-    Alpha_INS_CMPLE = 28,
-    Alpha_INS_CMPLT = 29,
-    Alpha_INS_CMPTEQsSU = 30,
-    Alpha_INS_CMPTLEsSU = 31,
-    Alpha_INS_CMPTLTsSU = 32,
-    Alpha_INS_CMPTUNsSU = 33,
-    Alpha_INS_CMPULE = 34,
-    Alpha_INS_CMPULT = 35,
-    Alpha_INS_COND_BRANCH = 36,
-    Alpha_INS_CPYSE = 37,
-    Alpha_INS_CPYSN = 38,
-    Alpha_INS_CPYS = 39,
-    Alpha_INS_CTLZ = 40,
-    Alpha_INS_CTPOP = 41,
-    Alpha_INS_CTTZ = 42,
-    Alpha_INS_CVTQSsSUI = 43,
-    Alpha_INS_CVTQTsSUI = 44,
-    Alpha_INS_CVTSTsS = 45,
-    Alpha_INS_CVTTQsSVC = 46,
-    Alpha_INS_CVTTSsSUI = 47,
-    Alpha_INS_DIVSsSU = 48,
-    Alpha_INS_DIVTsSU = 49,
-    Alpha_INS_ECB = 50,
-    Alpha_INS_EQV = 51,
-    Alpha_INS_EXCB = 52,
-    Alpha_INS_EXTBL = 53,
-    Alpha_INS_EXTLH = 54,
-    Alpha_INS_EXTLL = 55,
-    Alpha_INS_EXTQH = 56,
-    Alpha_INS_EXTQL = 57,
-    Alpha_INS_EXTWH = 58,
-    Alpha_INS_EXTWL = 59,
-    Alpha_INS_FBEQ = 60,
-    Alpha_INS_FBGE = 61,
-    Alpha_INS_FBGT = 62,
-    Alpha_INS_FBLE = 63,
-    Alpha_INS_FBLT = 64,
-    Alpha_INS_FBNE = 65,
-    Alpha_INS_FCMOVEQ = 66,
-    Alpha_INS_FCMOVGE = 67,
-    Alpha_INS_FCMOVGT = 68,
-    Alpha_INS_FCMOVLE = 69,
-    Alpha_INS_FCMOVLT = 70,
-    Alpha_INS_FCMOVNE = 71,
-    Alpha_INS_FETCH = 72,
-    Alpha_INS_FETCH_M = 73,
-    Alpha_INS_FTOIS = 74,
-    Alpha_INS_FTOIT = 75,
-    Alpha_INS_INSBL = 76,
-    Alpha_INS_INSLH = 77,
-    Alpha_INS_INSLL = 78,
-    Alpha_INS_INSQH = 79,
-    Alpha_INS_INSQL = 80,
-    Alpha_INS_INSWH = 81,
-    Alpha_INS_INSWL = 82,
-    Alpha_INS_ITOFS = 83,
-    Alpha_INS_ITOFT = 84,
-    Alpha_INS_JMP = 85,
-    Alpha_INS_JSR = 86,
-    Alpha_INS_JSR_COROUTINE = 87,
-    Alpha_INS_LDA = 88,
-    Alpha_INS_LDAH = 89,
-    Alpha_INS_LDBU = 90,
-    Alpha_INS_LDL = 91,
-    Alpha_INS_LDL_L = 92,
-    Alpha_INS_LDQ = 93,
-    Alpha_INS_LDQ_L = 94,
-    Alpha_INS_LDQ_U = 95,
-    Alpha_INS_LDS = 96,
-    Alpha_INS_LDT = 97,
-    Alpha_INS_LDWU = 98,
-    Alpha_INS_MB = 99,
-    Alpha_INS_MSKBL = 100,
-    Alpha_INS_MSKLH = 101,
-    Alpha_INS_MSKLL = 102,
-    Alpha_INS_MSKQH = 103,
-    Alpha_INS_MSKQL = 104,
-    Alpha_INS_MSKWH = 105,
-    Alpha_INS_MSKWL = 106,
-    Alpha_INS_MULL = 107,
-    Alpha_INS_MULQ = 108,
-    Alpha_INS_MULSsSU = 109,
-    Alpha_INS_MULTsSU = 110,
-    Alpha_INS_ORNOT = 111,
-    Alpha_INS_RC = 112,
-    Alpha_INS_RET = 113,
-    Alpha_INS_RPCC = 114,
-    Alpha_INS_RS = 115,
-    Alpha_INS_S4ADDL = 116,
-    Alpha_INS_S4ADDQ = 117,
-    Alpha_INS_S4SUBL = 118,
-    Alpha_INS_S4SUBQ = 119,
-    Alpha_INS_S8ADDL = 120,
-    Alpha_INS_S8ADDQ = 121,
-    Alpha_INS_S8SUBL = 122,
-    Alpha_INS_S8SUBQ = 123,
-    Alpha_INS_SEXTB = 124,
-    Alpha_INS_SEXTW = 125,
-    Alpha_INS_SLL = 126,
-    Alpha_INS_SQRTSsSU = 127,
-    Alpha_INS_SQRTTsSU = 128,
-    Alpha_INS_SRA = 129,
-    Alpha_INS_SRL = 130,
-    Alpha_INS_STB = 131,
-    Alpha_INS_STL = 132,
-    Alpha_INS_STL_C = 133,
-    Alpha_INS_STQ = 134,
-    Alpha_INS_STQ_C = 135,
-    Alpha_INS_STQ_U = 136,
-    Alpha_INS_STS = 137,
-    Alpha_INS_STT = 138,
-    Alpha_INS_STW = 139,
-    Alpha_INS_SUBL = 140,
-    Alpha_INS_SUBQ = 141,
-    Alpha_INS_SUBSsSU = 142,
-    Alpha_INS_SUBTsSU = 143,
-    Alpha_INS_TRAPB = 144,
-    Alpha_INS_UMULH = 145,
-    Alpha_INS_WH64 = 146,
-    Alpha_INS_WH64EN = 147,
-    Alpha_INS_WMB = 148,
-    Alpha_INS_XOR = 149,
-    Alpha_INS_ZAPNOT = 150,
-    ALPHA_INS_ENDING = 151,
-}
-pub mod alpha_insn_group {
-    pub type Type = ::core::ffi::c_uint;
-    #[doc = "< = CS_GRP_INVALID"]
-    pub const Alpha_GRP_INVALID: Type = 0;
-    #[doc = "< = CS_GRP_CALL"]
-    pub const Alpha_GRP_CALL: Type = 1;
-    #[doc = "< = CS_GRP_JUMP"]
-    pub const Alpha_GRP_JUMP: Type = 2;
-    #[doc = "< = CS_GRP_BRANCH_RELATIVE"]
-    pub const Alpha_GRP_BRANCH_RELATIVE: Type = 3;
-    #[doc = "< = mark the end of the list of groups"]
-    pub const Alpha_GRP_ENDING: Type = 4;
-}
-#[repr(u32)]
-#[doc = " Operand type for instruction's operands"]
-#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
-pub enum hppa_op_type {
-    HPPA_OP_INVALID = 0,
-    HPPA_OP_REG = 1,
-    HPPA_OP_IMM = 2,
-    HPPA_OP_IDX_REG = 16,
-    HPPA_OP_DISP = 17,
-    HPPA_OP_TARGET = 18,
-    HPPA_OP_MEM = 128,
-}
-pub mod hppa_reg {
-    pub type Type = ::core::ffi::c_uint;
-    pub const HPPA_REG_INVALID: Type = 0;
-    #[doc = "> General registers"]
-    pub const HPPA_REG_GR0: Type = 1;
-    #[doc = "> General registers"]
-    pub const HPPA_REG_GR1: Type = 2;
-    #[doc = "> General registers"]
-    pub const HPPA_REG_GR2: Type = 3;
-    #[doc = "> General registers"]
-    pub const HPPA_REG_GR3: Type = 4;
-    #[doc = "> General registers"]
-    pub const HPPA_REG_GR4: Type = 5;
-    #[doc = "> General registers"]
-    pub const HPPA_REG_GR5: Type = 6;
-    #[doc = "> General registers"]
-    pub const HPPA_REG_GR6: Type = 7;
-    #[doc = "> General registers"]
-    pub const HPPA_REG_GR7: Type = 8;
-    #[doc = "> General registers"]
-    pub const HPPA_REG_GR8: Type = 9;
-    #[doc = "> General registers"]
-    pub const HPPA_REG_GR9: Type = 10;
-    #[doc = "> General registers"]
-    pub const HPPA_REG_GR10: Type = 11;
-    #[doc = "> General registers"]
-    pub const HPPA_REG_GR11: Type = 12;
-    #[doc = "> General registers"]
-    pub const HPPA_REG_GR12: Type = 13;
-    #[doc = "> General registers"]
-    pub const HPPA_REG_GR13: Type = 14;
-    #[doc = "> General registers"]
-    pub const HPPA_REG_GR14: Type = 15;
-    #[doc = "> General registers"]
-    pub const HPPA_REG_GR15: Type = 16;
-    #[doc = "> General registers"]
-    pub const HPPA_REG_GR16: Type = 17;
-    #[doc = "> General registers"]
-    pub const HPPA_REG_GR17: Type = 18;
-    #[doc = "> General registers"]
-    pub const HPPA_REG_GR18: Type = 19;
-    #[doc = "> General registers"]
-    pub const HPPA_REG_GR19: Type = 20;
-    #[doc = "> General registers"]
-    pub const HPPA_REG_GR20: Type = 21;
-    #[doc = "> General registers"]
-    pub const HPPA_REG_GR21: Type = 22;
-    #[doc = "> General registers"]
-    pub const HPPA_REG_GR22: Type = 23;
-    #[doc = "> General registers"]
-    pub const HPPA_REG_GR23: Type = 24;
-    #[doc = "> General registers"]
-    pub const HPPA_REG_GR24: Type = 25;
-    #[doc = "> General registers"]
-    pub const HPPA_REG_GR25: Type = 26;
-    #[doc = "> General registers"]
-    pub const HPPA_REG_GR26: Type = 27;
-    #[doc = "> General registers"]
-    pub const HPPA_REG_GR27: Type = 28;
-    #[doc = "> General registers"]
-    pub const HPPA_REG_GR28: Type = 29;
-    #[doc = "> General registers"]
-    pub const HPPA_REG_GR29: Type = 30;
-    #[doc = "> General registers"]
-    pub const HPPA_REG_GR30: Type = 31;
-    #[doc = "> General registers"]
-    pub const HPPA_REG_GR31: Type = 32;
-    #[doc = "> Floating-point registers"]
-    pub const HPPA_REG_FPR0: Type = 33;
-    #[doc = "> Floating-point registers"]
-    pub const HPPA_REG_FPR1: Type = 34;
-    #[doc = "> Floating-point registers"]
-    pub const HPPA_REG_FPR2: Type = 35;
-    #[doc = "> Floating-point registers"]
-    pub const HPPA_REG_FPR3: Type = 36;
-    #[doc = "> Floating-point registers"]
-    pub const HPPA_REG_FPR4: Type = 37;
-    #[doc = "> Floating-point registers"]
-    pub const HPPA_REG_FPR5: Type = 38;
-    #[doc = "> Floating-point registers"]
-    pub const HPPA_REG_FPR6: Type = 39;
-    #[doc = "> Floating-point registers"]
-    pub const HPPA_REG_FPR7: Type = 40;
-    #[doc = "> Floating-point registers"]
-    pub const HPPA_REG_FPR8: Type = 41;
-    #[doc = "> Floating-point registers"]
-    pub const HPPA_REG_FPR9: Type = 42;
-    #[doc = "> Floating-point registers"]
-    pub const HPPA_REG_FPR10: Type = 43;
-    #[doc = "> Floating-point registers"]
-    pub const HPPA_REG_FPR11: Type = 44;
-    #[doc = "> Floating-point registers"]
-    pub const HPPA_REG_FPR12: Type = 45;
-    #[doc = "> Floating-point registers"]
-    pub const HPPA_REG_FPR13: Type = 46;
-    #[doc = "> Floating-point registers"]
-    pub const HPPA_REG_FPR14: Type = 47;
-    #[doc = "> Floating-point registers"]
-    pub const HPPA_REG_FPR15: Type = 48;
-    #[doc = "> Floating-point registers"]
-    pub const HPPA_REG_FPR16: Type = 49;
-    #[doc = "> Floating-point registers"]
-    pub const HPPA_REG_FPR17: Type = 50;
-    #[doc = "> Floating-point registers"]
-    pub const HPPA_REG_FPR18: Type = 51;
-    #[doc = "> Floating-point registers"]
-    pub const HPPA_REG_FPR19: Type = 52;
-    #[doc = "> Floating-point registers"]
-    pub const HPPA_REG_FPR20: Type = 53;
-    #[doc = "> Floating-point registers"]
-    pub const HPPA_REG_FPR21: Type = 54;
-    #[doc = "> Floating-point registers"]
-    pub const HPPA_REG_FPR22: Type = 55;
-    #[doc = "> Floating-point registers"]
-    pub const HPPA_REG_FPR23: Type = 56;
-    #[doc = "> Floating-point registers"]
-    pub const HPPA_REG_FPR24: Type = 57;
-    #[doc = "> Floating-point registers"]
-    pub const HPPA_REG_FPR25: Type = 58;
-    #[doc = "> Floating-point registers"]
-    pub const HPPA_REG_FPR26: Type = 59;
-    #[doc = "> Floating-point registers"]
-    pub const HPPA_REG_FPR27: Type = 60;
-    #[doc = "> Floating-point registers"]
-    pub const HPPA_REG_FPR28: Type = 61;
-    #[doc = "> Floating-point registers"]
-    pub const HPPA_REG_FPR29: Type = 62;
-    #[doc = "> Floating-point registers"]
-    pub const HPPA_REG_FPR30: Type = 63;
-    #[doc = "> Floating-point registers"]
-    pub const HPPA_REG_FPR31: Type = 64;
-    #[doc = "> Space registers"]
-    pub const HPPA_REG_SR0: Type = 65;
-    #[doc = "> Space registers"]
-    pub const HPPA_REG_SR1: Type = 66;
-    #[doc = "> Space registers"]
-    pub const HPPA_REG_SR2: Type = 67;
-    #[doc = "> Space registers"]
-    pub const HPPA_REG_SR3: Type = 68;
-    #[doc = "> Space registers"]
-    pub const HPPA_REG_SR4: Type = 69;
-    #[doc = "> Space registers"]
-    pub const HPPA_REG_SR5: Type = 70;
-    #[doc = "> Space registers"]
-    pub const HPPA_REG_SR6: Type = 71;
-    #[doc = "> Space registers"]
-    pub const HPPA_REG_SR7: Type = 72;
-    #[doc = "> Control registers"]
-    pub const HPPA_REG_CR0: Type = 73;
-    #[doc = "> Control registers"]
-    pub const HPPA_REG_CR1: Type = 74;
-    #[doc = "> Control registers"]
-    pub const HPPA_REG_CR2: Type = 75;
-    #[doc = "> Control registers"]
-    pub const HPPA_REG_CR3: Type = 76;
-    #[doc = "> Control registers"]
-    pub const HPPA_REG_CR4: Type = 77;
-    #[doc = "> Control registers"]
-    pub const HPPA_REG_CR5: Type = 78;
-    #[doc = "> Control registers"]
-    pub const HPPA_REG_CR6: Type = 79;
-    #[doc = "> Control registers"]
-    pub const HPPA_REG_CR7: Type = 80;
-    #[doc = "> Control registers"]
-    pub const HPPA_REG_CR8: Type = 81;
-    #[doc = "> Control registers"]
-    pub const HPPA_REG_CR9: Type = 82;
-    #[doc = "> Control registers"]
-    pub const HPPA_REG_CR10: Type = 83;
-    #[doc = "> Control registers"]
-    pub const HPPA_REG_CR11: Type = 84;
-    #[doc = "> Control registers"]
-    pub const HPPA_REG_CR12: Type = 85;
-    #[doc = "> Control registers"]
-    pub const HPPA_REG_CR13: Type = 86;
-    #[doc = "> Control registers"]
-    pub const HPPA_REG_CR14: Type = 87;
-    #[doc = "> Control registers"]
-    pub const HPPA_REG_CR15: Type = 88;
-    #[doc = "> Control registers"]
-    pub const HPPA_REG_CR16: Type = 89;
-    #[doc = "> Control registers"]
-    pub const HPPA_REG_CR17: Type = 90;
-    #[doc = "> Control registers"]
-    pub const HPPA_REG_CR18: Type = 91;
-    #[doc = "> Control registers"]
-    pub const HPPA_REG_CR19: Type = 92;
-    #[doc = "> Control registers"]
-    pub const HPPA_REG_CR20: Type = 93;
-    #[doc = "> Control registers"]
-    pub const HPPA_REG_CR21: Type = 94;
-    #[doc = "> Control registers"]
-    pub const HPPA_REG_CR22: Type = 95;
-    #[doc = "> Control registers"]
-    pub const HPPA_REG_CR23: Type = 96;
-    #[doc = "> Control registers"]
-    pub const HPPA_REG_CR24: Type = 97;
-    #[doc = "> Control registers"]
-    pub const HPPA_REG_CR25: Type = 98;
-    #[doc = "> Control registers"]
-    pub const HPPA_REG_CR26: Type = 99;
-    #[doc = "> Control registers"]
-    pub const HPPA_REG_CR27: Type = 100;
-    #[doc = "> Control registers"]
-    pub const HPPA_REG_CR28: Type = 101;
-    #[doc = "> Control registers"]
-    pub const HPPA_REG_CR29: Type = 102;
-    #[doc = "> Control registers"]
-    pub const HPPA_REG_CR30: Type = 103;
-    #[doc = "> Control registers"]
-    pub const HPPA_REG_CR31: Type = 104;
-    #[doc = "> Special floating point exception registers"]
-    pub const HPPA_REG_FPE0: Type = 105;
-    #[doc = "> Special floating point exception registers"]
-    pub const HPPA_REG_FPE1: Type = 106;
-    #[doc = "> Special floating point exception registers"]
-    pub const HPPA_REG_FPE2: Type = 107;
-    #[doc = "> Special floating point exception registers"]
-    pub const HPPA_REG_FPE3: Type = 108;
-    #[doc = "> Special floating point exception registers"]
-    pub const HPPA_REG_FPE4: Type = 109;
-    #[doc = "> Special floating point exception registers"]
-    pub const HPPA_REG_FPE5: Type = 110;
-    #[doc = "> Special floating point exception registers"]
-    pub const HPPA_REG_FPE6: Type = 111;
-    #[doc = "> Special floating point exception registers"]
-    pub const HPPA_REG_FPE7: Type = 112;
-    #[doc = "> Special floating point exception registers"]
-    pub const HPPA_REG_FPE8: Type = 113;
-    #[doc = "> Special floating point exception registers"]
-    pub const HPPA_REG_FPE9: Type = 114;
-    #[doc = "> Special floating point exception registers"]
-    pub const HPPA_REG_FPE10: Type = 115;
-    #[doc = "> Special floating point exception registers"]
-    pub const HPPA_REG_FPE11: Type = 116;
-    #[doc = "> Special floating point exception registers"]
-    pub const HPPA_REG_FPE12: Type = 117;
-    #[doc = "> Special floating point exception registers"]
-    pub const HPPA_REG_FPE13: Type = 118;
-    #[doc = "> Special floating point exception registers"]
-    pub const HPPA_REG_FPE14: Type = 119;
-    #[doc = "> Special floating point exception registers"]
-    pub const HPPA_REG_FPE15: Type = 120;
-    #[doc = "> Special floating point exception registers"]
-    pub const HPPA_REG_FPE16: Type = 121;
-    #[doc = "> Special floating point exception registers"]
-    pub const HPPA_REG_FPE17: Type = 122;
-    #[doc = "> Special floating point exception registers"]
-    pub const HPPA_REG_FPE18: Type = 123;
-    #[doc = "> Special floating point exception registers"]
-    pub const HPPA_REG_FPE19: Type = 124;
-    #[doc = "> Special floating point exception registers"]
-    pub const HPPA_REG_FPE20: Type = 125;
-    #[doc = "> Special floating point exception registers"]
-    pub const HPPA_REG_FPE21: Type = 126;
-    #[doc = "> Special floating point exception registers"]
-    pub const HPPA_REG_FPE22: Type = 127;
-    #[doc = "> Special floating point exception registers"]
-    pub const HPPA_REG_FPE23: Type = 128;
-    #[doc = "> Special floating point exception registers"]
-    pub const HPPA_REG_FPE24: Type = 129;
-    #[doc = "> Special floating point exception registers"]
-    pub const HPPA_REG_FPE25: Type = 130;
-    #[doc = "> Special floating point exception registers"]
-    pub const HPPA_REG_FPE26: Type = 131;
-    #[doc = "> Special floating point exception registers"]
-    pub const HPPA_REG_FPE27: Type = 132;
-    #[doc = "> Special floating point exception registers"]
-    pub const HPPA_REG_FPE28: Type = 133;
-    #[doc = "> Special floating point exception registers"]
-    pub const HPPA_REG_FPE29: Type = 134;
-    #[doc = "> Special floating point exception registers"]
-    pub const HPPA_REG_FPE30: Type = 135;
-    #[doc = "> Special floating point exception registers"]
-    pub const HPPA_REG_FPE31: Type = 136;
-    #[doc = "> Single-precision floating point registers"]
-    pub const HPPA_REG_SP_FPR0: Type = 137;
-    #[doc = "> Single-precision floating point registers"]
-    pub const HPPA_REG_SP_FPR1: Type = 138;
-    #[doc = "> Single-precision floating point registers"]
-    pub const HPPA_REG_SP_FPR2: Type = 139;
-    #[doc = "> Single-precision floating point registers"]
-    pub const HPPA_REG_SP_FPR3: Type = 140;
-    #[doc = "> Single-precision floating point registers"]
-    pub const HPPA_REG_SP_FPR4: Type = 141;
-    #[doc = "> Single-precision floating point registers"]
-    pub const HPPA_REG_SP_FPR5: Type = 142;
-    #[doc = "> Single-precision floating point registers"]
-    pub const HPPA_REG_SP_FPR6: Type = 143;
-    #[doc = "> Single-precision floating point registers"]
-    pub const HPPA_REG_SP_FPR7: Type = 144;
-    #[doc = "> Single-precision floating point registers"]
-    pub const HPPA_REG_SP_FPR8: Type = 145;
-    #[doc = "> Single-precision floating point registers"]
-    pub const HPPA_REG_SP_FPR9: Type = 146;
-    #[doc = "> Single-precision floating point registers"]
-    pub const HPPA_REG_SP_FPR10: Type = 147;
-    #[doc = "> Single-precision floating point registers"]
-    pub const HPPA_REG_SP_FPR11: Type = 148;
-    #[doc = "> Single-precision floating point registers"]
-    pub const HPPA_REG_SP_FPR12: Type = 149;
-    #[doc = "> Single-precision floating point registers"]
-    pub const HPPA_REG_SP_FPR13: Type = 150;
-    #[doc = "> Single-precision floating point registers"]
-    pub const HPPA_REG_SP_FPR14: Type = 151;
-    #[doc = "> Single-precision floating point registers"]
-    pub const HPPA_REG_SP_FPR15: Type = 152;
-    #[doc = "> Single-precision floating point registers"]
-    pub const HPPA_REG_SP_FPR16: Type = 153;
-    #[doc = "> Single-precision floating point registers"]
-    pub const HPPA_REG_SP_FPR17: Type = 154;
-    #[doc = "> Single-precision floating point registers"]
-    pub const HPPA_REG_SP_FPR18: Type = 155;
-    #[doc = "> Single-precision floating point registers"]
-    pub const HPPA_REG_SP_FPR19: Type = 156;
-    #[doc = "> Single-precision floating point registers"]
-    pub const HPPA_REG_SP_FPR20: Type = 157;
-    #[doc = "> Single-precision floating point registers"]
-    pub const HPPA_REG_SP_FPR21: Type = 158;
-    #[doc = "> Single-precision floating point registers"]
-    pub const HPPA_REG_SP_FPR22: Type = 159;
-    #[doc = "> Single-precision floating point registers"]
-    pub const HPPA_REG_SP_FPR23: Type = 160;
-    #[doc = "> Single-precision floating point registers"]
-    pub const HPPA_REG_SP_FPR24: Type = 161;
-    #[doc = "> Single-precision floating point registers"]
-    pub const HPPA_REG_SP_FPR25: Type = 162;
-    #[doc = "> Single-precision floating point registers"]
-    pub const HPPA_REG_SP_FPR26: Type = 163;
-    #[doc = "> Single-precision floating point registers"]
-    pub const HPPA_REG_SP_FPR27: Type = 164;
-    #[doc = "> Single-precision floating point registers"]
-    pub const HPPA_REG_SP_FPR28: Type = 165;
-    #[doc = "> Single-precision floating point registers"]
-    pub const HPPA_REG_SP_FPR29: Type = 166;
-    #[doc = "> Single-precision floating point registers"]
-    pub const HPPA_REG_SP_FPR30: Type = 167;
-    #[doc = "> Single-precision floating point registers"]
-    pub const HPPA_REG_SP_FPR31: Type = 168;
-    #[doc = "> Single-precision floating point registers"]
-    pub const HPPA_REG_ENDING: Type = 169;
-}
-#[repr(u32)]
-#[doc = " HPPA instruction"]
-#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
-pub enum hppa_insn {
-    HPPA_INS_INVALID = 0,
-    HPPA_INS_ADD = 1,
-    HPPA_INS_ADDI = 2,
-    HPPA_INS_ADDIO = 3,
-    HPPA_INS_ADDIT = 4,
-    HPPA_INS_ADDITO = 5,
-    HPPA_INS_ADDB = 6,
-    HPPA_INS_ADDBT = 7,
-    HPPA_INS_ADDBF = 8,
-    HPPA_INS_ADDIB = 9,
-    HPPA_INS_ADDIBT = 10,
-    HPPA_INS_ADDIBF = 11,
-    HPPA_INS_ADDIL = 12,
-    HPPA_INS_ADDC = 13,
-    HPPA_INS_ADDCO = 14,
-    HPPA_INS_ADDL = 15,
-    HPPA_INS_ADDO = 16,
-    HPPA_INS_AND = 17,
-    HPPA_INS_ANDCM = 18,
-    HPPA_INS_B = 19,
-    HPPA_INS_BB = 20,
-    HPPA_INS_BE = 21,
-    HPPA_INS_BL = 22,
-    HPPA_INS_BLE = 23,
-    HPPA_INS_BLR = 24,
-    HPPA_INS_BREAK = 25,
-    HPPA_INS_BV = 26,
-    HPPA_INS_BVB = 27,
-    HPPA_INS_BVE = 28,
-    HPPA_INS_CALL = 29,
-    HPPA_INS_CLDD = 30,
-    HPPA_INS_CLDDS = 31,
-    HPPA_INS_CLDDX = 32,
-    HPPA_INS_CLDW = 33,
-    HPPA_INS_CLDWS = 34,
-    HPPA_INS_CLDWX = 35,
-    HPPA_INS_CLRBTS = 36,
-    HPPA_INS_CMPB = 37,
-    HPPA_INS_CMPCLR = 38,
-    HPPA_INS_CMPIB = 39,
-    HPPA_INS_CMPICLR = 40,
-    HPPA_INS_COMB = 41,
-    HPPA_INS_COMBT = 42,
-    HPPA_INS_COMBF = 43,
-    HPPA_INS_COMCLR = 44,
-    HPPA_INS_COMIB = 45,
-    HPPA_INS_COMIBT = 46,
-    HPPA_INS_COMIBF = 47,
-    HPPA_INS_COMICLR = 48,
-    HPPA_INS_COPR = 49,
-    HPPA_INS_COPY = 50,
-    HPPA_INS_CSTD = 51,
-    HPPA_INS_CSTDS = 52,
-    HPPA_INS_CSTDX = 53,
-    HPPA_INS_CSTW = 54,
-    HPPA_INS_CSTWS = 55,
-    HPPA_INS_CSTWX = 56,
-    HPPA_INS_DCOR = 57,
-    HPPA_INS_DEP = 58,
-    HPPA_INS_DEPI = 59,
-    HPPA_INS_DEPD = 60,
-    HPPA_INS_DEPDI = 61,
-    HPPA_INS_DEPW = 62,
-    HPPA_INS_DEPWI = 63,
-    HPPA_INS_DIAG = 64,
-    HPPA_INS_DS = 65,
-    HPPA_INS_EXTRD = 66,
-    HPPA_INS_EXTRS = 67,
-    HPPA_INS_EXTRU = 68,
-    HPPA_INS_EXTRW = 69,
-    HPPA_INS_FABS = 70,
-    HPPA_INS_FADD = 71,
-    HPPA_INS_FCMP = 72,
-    HPPA_INS_FCNV = 73,
-    HPPA_INS_FCNVFF = 74,
-    HPPA_INS_FCNVFX = 75,
-    HPPA_INS_FCNVFXT = 76,
-    HPPA_INS_FCNVXF = 77,
-    HPPA_INS_FCPY = 78,
-    HPPA_INS_FDC = 79,
-    HPPA_INS_FDCE = 80,
-    HPPA_INS_FDIV = 81,
-    HPPA_INS_FIC = 82,
-    HPPA_INS_FICE = 83,
-    HPPA_INS_FID = 84,
-    HPPA_INS_FLDD = 85,
-    HPPA_INS_FLDDS = 86,
-    HPPA_INS_FLDDX = 87,
-    HPPA_INS_FLDW = 88,
-    HPPA_INS_FLDWS = 89,
-    HPPA_INS_FLDWX = 90,
-    HPPA_INS_FMPY = 91,
-    HPPA_INS_FMPYADD = 92,
-    HPPA_INS_FMPYFADD = 93,
-    HPPA_INS_FMPYNFADD = 94,
-    HPPA_INS_FMPYSUB = 95,
-    HPPA_INS_FNEG = 96,
-    HPPA_INS_FNEGABS = 97,
-    HPPA_INS_FREM = 98,
-    HPPA_INS_FRND = 99,
-    HPPA_INS_FSQRT = 100,
-    HPPA_INS_FSTD = 101,
-    HPPA_INS_FSTDS = 102,
-    HPPA_INS_FSTDX = 103,
-    HPPA_INS_FSTW = 104,
-    HPPA_INS_FSTWS = 105,
-    HPPA_INS_FSTWX = 106,
-    HPPA_INS_FSTQS = 107,
-    HPPA_INS_FSTQX = 108,
-    HPPA_INS_FSUB = 109,
-    HPPA_INS_FTEST = 110,
-    HPPA_INS_GATE = 111,
-    HPPA_INS_GFR = 112,
-    HPPA_INS_GFW = 113,
-    HPPA_INS_GRSHDW = 114,
-    HPPA_INS_HADD = 115,
-    HPPA_INS_HAVG = 116,
-    HPPA_INS_HSHL = 117,
-    HPPA_INS_HSHLADD = 118,
-    HPPA_INS_HSHR = 119,
-    HPPA_INS_HSHRADD = 120,
-    HPPA_INS_HSUB = 121,
-    HPPA_INS_IDTLBA = 122,
-    HPPA_INS_IDTLBP = 123,
-    HPPA_INS_IDTLBT = 124,
-    HPPA_INS_IDCOR = 125,
-    HPPA_INS_IITLBA = 126,
-    HPPA_INS_IITLBP = 127,
-    HPPA_INS_IITLBT = 128,
-    HPPA_INS_LCI = 129,
-    HPPA_INS_LDB = 130,
-    HPPA_INS_LDBS = 131,
-    HPPA_INS_LDBX = 132,
-    HPPA_INS_LDCD = 133,
-    HPPA_INS_LDCW = 134,
-    HPPA_INS_LDCWS = 135,
-    HPPA_INS_LDCWX = 136,
-    HPPA_INS_LDD = 137,
-    HPPA_INS_LDDA = 138,
-    HPPA_INS_LDH = 139,
-    HPPA_INS_LDHS = 140,
-    HPPA_INS_LDHX = 141,
-    HPPA_INS_LDI = 142,
-    HPPA_INS_LDIL = 143,
-    HPPA_INS_LDO = 144,
-    HPPA_INS_LDSID = 145,
-    HPPA_INS_LDW = 146,
-    HPPA_INS_LDWA = 147,
-    HPPA_INS_LDWAS = 148,
-    HPPA_INS_LDWAX = 149,
-    HPPA_INS_LDWM = 150,
-    HPPA_INS_LDWS = 151,
-    HPPA_INS_LDWX = 152,
-    HPPA_INS_LPA = 153,
-    HPPA_INS_MFCPU = 154,
-    HPPA_INS_MFCTL = 155,
-    HPPA_INS_MFIA = 156,
-    HPPA_INS_MFSP = 157,
-    HPPA_INS_MIXH = 158,
-    HPPA_INS_MIXW = 159,
-    HPPA_INS_MOVB = 160,
-    HPPA_INS_MOVIB = 161,
-    HPPA_INS_MTCPU = 162,
-    HPPA_INS_MTCTL = 163,
-    HPPA_INS_MTSAR = 164,
-    HPPA_INS_MTSARCM = 165,
-    HPPA_INS_MTSM = 166,
-    HPPA_INS_MTSP = 167,
-    HPPA_INS_NOP = 168,
-    HPPA_INS_OR = 169,
-    HPPA_INS_PDC = 170,
-    HPPA_INS_PDTLB = 171,
-    HPPA_INS_PDTLBE = 172,
-    HPPA_INS_PERMH = 173,
-    HPPA_INS_PITLB = 174,
-    HPPA_INS_PITLBE = 175,
-    HPPA_INS_PMDIS = 176,
-    HPPA_INS_PMENB = 177,
-    HPPA_INS_POPBTS = 178,
-    HPPA_INS_PROBE = 179,
-    HPPA_INS_PROBEI = 180,
-    HPPA_INS_PROBER = 181,
-    HPPA_INS_PROBERI = 182,
-    HPPA_INS_PROBEW = 183,
-    HPPA_INS_PROBEWI = 184,
-    HPPA_INS_PUSHBTS = 185,
-    HPPA_INS_PUSHNOM = 186,
-    HPPA_INS_RET = 187,
-    HPPA_INS_RFI = 188,
-    HPPA_INS_RFIR = 189,
-    HPPA_INS_RSM = 190,
-    HPPA_INS_SHDWGR = 191,
-    HPPA_INS_SHLADD = 192,
-    HPPA_INS_SH1ADD = 193,
-    HPPA_INS_SH1ADDL = 194,
-    HPPA_INS_SH1ADDO = 195,
-    HPPA_INS_SH2ADD = 196,
-    HPPA_INS_SH2ADDL = 197,
-    HPPA_INS_SH2ADDO = 198,
-    HPPA_INS_SH3ADD = 199,
-    HPPA_INS_SH3ADDL = 200,
-    HPPA_INS_SH3ADDO = 201,
-    HPPA_INS_SHD = 202,
-    HPPA_INS_SHRPD = 203,
-    HPPA_INS_SHRPW = 204,
-    HPPA_INS_SPOP0 = 205,
-    HPPA_INS_SPOP1 = 206,
-    HPPA_INS_SPOP2 = 207,
-    HPPA_INS_SPOP3 = 208,
-    HPPA_INS_SSM = 209,
-    HPPA_INS_STB = 210,
-    HPPA_INS_STBS = 211,
-    HPPA_INS_STBY = 212,
-    HPPA_INS_STBYS = 213,
-    HPPA_INS_STD = 214,
-    HPPA_INS_STDA = 215,
-    HPPA_INS_STDBY = 216,
-    HPPA_INS_STH = 217,
-    HPPA_INS_STHS = 218,
-    HPPA_INS_STW = 219,
-    HPPA_INS_STWA = 220,
-    HPPA_INS_STWAS = 221,
-    HPPA_INS_STWS = 222,
-    HPPA_INS_STWM = 223,
-    HPPA_INS_SUB = 224,
-    HPPA_INS_SUBB = 225,
-    HPPA_INS_SUBBO = 226,
-    HPPA_INS_SUBI = 227,
-    HPPA_INS_SUBIO = 228,
-    HPPA_INS_SUBO = 229,
-    HPPA_INS_SUBT = 230,
-    HPPA_INS_SUBTO = 231,
-    HPPA_INS_SYNC = 232,
-    HPPA_INS_SYNCDMA = 233,
-    HPPA_INS_TOCDIS = 234,
-    HPPA_INS_TOCEN = 235,
-    HPPA_INS_UADDCM = 236,
-    HPPA_INS_UADDCMT = 237,
-    HPPA_INS_UXOR = 238,
-    HPPA_INS_VDEP = 239,
-    HPPA_INS_VDEPI = 240,
-    HPPA_INS_VEXTRS = 241,
-    HPPA_INS_VEXTRU = 242,
-    HPPA_INS_VSHD = 243,
-    HPPA_INS_XMPYU = 244,
-    HPPA_INS_XOR = 245,
-    HPPA_INS_ZDEP = 246,
-    HPPA_INS_ZDEPI = 247,
-    HPPA_INS_ZVDEP = 248,
-    HPPA_INS_ZVDEPI = 249,
-    HPPA_INS_ENDING = 250,
-}
-#[doc = " HPPA space select operand"]
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct hppa_mem {
-    pub base: hppa_reg::Type,
-    pub space: hppa_reg::Type,
-}
-#[repr(C)]
-#[derive(Copy, Clone)]
-pub struct cs_hppa_op {
-    #[doc = "< operand type"]
-    pub type_: hppa_op_type,
-    pub __bindgen_anon_1: cs_hppa_op__bindgen_ty_1,
-    pub access: cs_ac_type,
-}
-#[repr(C)]
-#[derive(Copy, Clone)]
-pub union cs_hppa_op__bindgen_ty_1 {
-    #[doc = "< register value for REG operand"]
-    pub reg: hppa_reg::Type,
-    #[doc = "< immediate value for IMM operand"]
-    pub imm: i64,
-    pub mem: hppa_mem,
-}
-impl ::core::fmt::Debug for cs_hppa_op__bindgen_ty_1 {
-    fn fmt(&self, f: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
-        write!(f, "cs_hppa_op__bindgen_ty_1 {{ union }}")
-    }
-}
-impl ::core::fmt::Debug for cs_hppa_op {
-    fn fmt(&self, f: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
-        write!(
-            f,
-            "cs_hppa_op {{ type: {:?}, __bindgen_anon_1: {:?}, access: {:?} }}",
-            self.type_, self.__bindgen_anon_1, self.access
-        )
-    }
-}
-#[repr(C)]
-#[derive(Copy, Clone)]
-pub struct cs_hppa {
-    pub op_count: u8,
-    #[doc = "< operands for hppa instruction."]
-    pub operands: [cs_hppa_op; 5usize],
-}
-impl ::core::fmt::Debug for cs_hppa {
-    fn fmt(&self, f: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
-        write!(f, "cs_hppa {{ operands: {:?} }}", self.operands)
-    }
-}
-#[repr(u32)]
-#[doc = " HPPA modifiers type. Can be string (most of them) or int (uid, sop)"]
-#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
-pub enum hppa_modifier_type {
-    HPPA_MOD_STR = 0,
-    HPPA_MOD_INT = 1,
-}
-#[doc = " hppa string/integer modifier"]
-#[repr(C)]
-#[derive(Copy, Clone)]
-pub struct hppa_modifier {
-    pub type_: hppa_modifier_type,
-    pub __bindgen_anon_1: hppa_modifier__bindgen_ty_1,
-}
-#[repr(C)]
-#[derive(Copy, Clone)]
-pub union hppa_modifier__bindgen_ty_1 {
-    pub str_mod: [::core::ffi::c_char; 8usize],
-    pub int_mod: u32,
-}
-impl ::core::fmt::Debug for hppa_modifier__bindgen_ty_1 {
-    fn fmt(&self, f: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
-        write!(f, "hppa_modifier__bindgen_ty_1 {{ union }}")
-    }
-}
-impl ::core::fmt::Debug for hppa_modifier {
-    fn fmt(&self, f: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
-        write!(
-            f,
-            "hppa_modifier {{ type: {:?}, __bindgen_anon_1: {:?} }}",
-            self.type_, self.__bindgen_anon_1
-        )
-    }
-}
-#[repr(C)]
-#[derive(Copy, Clone)]
-pub struct hppa_ext {
-    #[doc = "< instruction modifiers array"]
-    pub modifiers: [hppa_modifier; 5usize],
-    #[doc = "< number of modifiers of current instruction"]
-    pub mod_num: u8,
-    #[doc = "< true if some load/store modifier has modify base register bit"]
-    pub b_writeble: bool,
-    #[doc = "< true if some modifier affects instruction format"]
-    pub is_alternative: bool,
-}
-impl ::core::fmt::Debug for hppa_ext {
-    fn fmt(&self, f: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
-        write!(
-            f,
-            "hppa_ext {{ modifiers: {:?}, b_writeble: {:?}, is_alternative: {:?} }}",
-            self.modifiers, self.b_writeble, self.is_alternative
-        )
-    }
-}
-pub mod hppa_insn_group {
-    pub type Type = ::core::ffi::c_uint;
-    #[doc = "< = CS_GRP_INVALID"]
-    pub const HPPA_GRP_INVALID: Type = 0;
-    pub const HPPA_GRP_COMPUTATION: Type = 128;
-    pub const HPPA_GRP_MULTIMEDIA: Type = 129;
-    pub const HPPA_GRP_MEM_REF: Type = 130;
-    pub const HPPA_GRP_LONG_IMM: Type = 131;
-    pub const HPPA_GRP_BRANCH: Type = 132;
-    pub const HPPA_GRP_SYSCTRL: Type = 133;
-    pub const HPPA_GRP_ASSIST: Type = 134;
-    pub const HPPA_GRP_FLOAT: Type = 135;
-    pub const HPPA_GRP_PERFMON: Type = 136;
-    pub const HPPA_GRP_ENDING: Type = 137;
-}
-#[repr(u32)]
-#[doc = " Operand type for instruction's operands"]
-#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
-pub enum loongarch_op_type {
-    #[doc = "< Invalid"]
-    LOONGARCH_OP_INVALID = 0,
-    #[doc = "< Register operand"]
-    LOONGARCH_OP_REG = 1,
-    #[doc = "< Immediate operand"]
-    LOONGARCH_OP_IMM = 2,
-    #[doc = "< Memory operand"]
-    LOONGARCH_OP_MEM = 128,
-}
-#[doc = " Instruction's operand referring to memory\n This is associated with LOONGARCH_OP_MEM operand type above"]
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct loongarch_op_mem {
-    #[doc = "< base register"]
-    pub base: ::core::ffi::c_uint,
-    #[doc = "< index register"]
-    pub index: ::core::ffi::c_uint,
-    #[doc = "< displacement/offset value"]
-    pub disp: i64,
-}
-#[doc = " Instruction operand"]
-#[repr(C)]
-#[derive(Copy, Clone)]
-pub struct cs_loongarch_op {
-    pub type_: loongarch_op_type,
-    pub __bindgen_anon_1: cs_loongarch_op__bindgen_ty_1,
-    #[doc = " How is this operand accessed? (READ, WRITE or READ|WRITE)\n NOTE: this field is irrelevant if engine is compiled in DIET mode."]
-    pub access: cs_ac_type,
-}
-#[repr(C)]
-#[derive(Copy, Clone)]
-pub union cs_loongarch_op__bindgen_ty_1 {
-    pub reg: ::core::ffi::c_uint,
-    #[doc = " register value for REG operand"]
-    pub imm: i64,
-    #[doc = " immediate value for IMM operand"]
-    pub mem: loongarch_op_mem,
-}
-impl ::core::fmt::Debug for cs_loongarch_op__bindgen_ty_1 {
-    fn fmt(&self, f: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
-        write!(f, "cs_loongarch_op__bindgen_ty_1 {{ union }}")
-    }
-}
-impl ::core::fmt::Debug for cs_loongarch_op {
-    fn fmt(&self, f: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
-        write!(
-            f,
-            "cs_loongarch_op {{ type: {:?}, __bindgen_anon_1: {:?}, access: {:?} }}",
-            self.type_, self.__bindgen_anon_1, self.access
-        )
-    }
-}
-#[repr(u32)]
-#[doc = " LoongArch instruction formats. To get details about them please\n refer to `LoongArchInstrFormats.td` in LLVM."]
-#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
-pub enum loongarch_insn_form {
-    LOONGARCH_INSN_FORM_PSEUDO = 0,
-    LOONGARCH_INSN_FORM_FMT3R = 1,
-    LOONGARCH_INSN_FORM_FMT2RI12 = 2,
-    LOONGARCH_INSN_FORM_FMT2RI5 = 3,
-    LOONGARCH_INSN_FORM_FMT2RI16 = 4,
-    LOONGARCH_INSN_FORM_FMT3RI2 = 5,
-    LOONGARCH_INSN_FORM_NODSTFMT2RI4 = 6,
-    LOONGARCH_INSN_FORM_FMT1RI8 = 7,
-    LOONGARCH_INSN_FORM_FMT2RI4 = 8,
-    LOONGARCH_INSN_FORM_NODSTFMT1RI4 = 9,
-    LOONGARCH_INSN_FORM_NODSTFMT1RI5I4 = 10,
-    LOONGARCH_INSN_FORM_FMTASRT = 11,
-    LOONGARCH_INSN_FORM_FMTI26 = 12,
-    LOONGARCH_INSN_FORM_FPFMTBR = 13,
-    LOONGARCH_INSN_FORM_FMT1RI21 = 14,
-    LOONGARCH_INSN_FORM_FMT2R = 15,
-    LOONGARCH_INSN_FORM_FMTI15 = 16,
-    LOONGARCH_INSN_FORM_FMTBSTR_D = 17,
-    LOONGARCH_INSN_FORM_FMTBSTR_W = 18,
-    LOONGARCH_INSN_FORM_FMT3RI3 = 19,
-    LOONGARCH_INSN_FORM_FMTCACOP = 20,
-    LOONGARCH_INSN_FORM_FMTCSR = 21,
-    LOONGARCH_INSN_FORM_FMTCSRXCHG = 22,
-    LOONGARCH_INSN_FORM_FMTI32 = 23,
-    LOONGARCH_INSN_FORM_FPFMT2R = 24,
-    LOONGARCH_INSN_FORM_FPFMT3R = 25,
-    LOONGARCH_INSN_FORM_FPFMTFCMP = 26,
-    LOONGARCH_INSN_FORM_FPFMTMEM = 27,
-    LOONGARCH_INSN_FORM_FPFMT2RI12 = 28,
-    LOONGARCH_INSN_FORM_FPFMT4R = 29,
-    LOONGARCH_INSN_FORM_FPFMTMOV = 30,
-    LOONGARCH_INSN_FORM_FPFMTFSEL = 31,
-    LOONGARCH_INSN_FORM_FMTINVTLB = 32,
-    LOONGARCH_INSN_FORM_FMTJISCR = 33,
-    LOONGARCH_INSN_FORM_FMT2RI8 = 34,
-    LOONGARCH_INSN_FORM_FMTLDPTE = 35,
-    LOONGARCH_INSN_FORM_FMT2RI14 = 36,
-    LOONGARCH_INSN_FORM_FMT1RI20 = 37,
-    LOONGARCH_INSN_FORM_FMTGR2SCR = 38,
-    LOONGARCH_INSN_FORM_FMTSCR2GR = 39,
-    LOONGARCH_INSN_FORM_FMTPRELD = 40,
-    LOONGARCH_INSN_FORM_FMTPRELDX = 41,
-    LOONGARCH_INSN_FORM_FMT2RI3 = 42,
-    LOONGARCH_INSN_FORM_FMT2RI6 = 43,
-    LOONGARCH_INSN_FORM_FMT1RI4 = 44,
-    LOONGARCH_INSN_FORM_FMT3R_VVV = 45,
-    LOONGARCH_INSN_FORM_FMT2RI5_VVI = 46,
-    LOONGARCH_INSN_FORM_FMT2RI8_VVI = 47,
-    LOONGARCH_INSN_FORM_FMT2RI3_VVI = 48,
-    LOONGARCH_INSN_FORM_FMT2RI6_VVI = 49,
-    LOONGARCH_INSN_FORM_FMT2RI4_VVI = 50,
-    LOONGARCH_INSN_FORM_FMT4R_VVVV = 51,
-    LOONGARCH_INSN_FORM_FMT2R_VV = 52,
-    LOONGARCH_INSN_FORM_FMT2R_XX = 53,
-    LOONGARCH_INSN_FORM_FMT2RI4_VRI = 54,
-    LOONGARCH_INSN_FORM_FMT2RI1_VRI = 55,
-    LOONGARCH_INSN_FORM_FMT2RI3_VRI = 56,
-    LOONGARCH_INSN_FORM_FMT2RI2_VRI = 57,
-    LOONGARCH_INSN_FORM_FMT2RI12_VRI = 58,
-    LOONGARCH_INSN_FORM_FMT1RI13_VI = 59,
-    LOONGARCH_INSN_FORM_FMT2RI9_VRI = 60,
-    LOONGARCH_INSN_FORM_FMT2RI11_VRI = 61,
-    LOONGARCH_INSN_FORM_FMT2RI10_VRI = 62,
-    LOONGARCH_INSN_FORM_FMT3R_VRR = 63,
-    LOONGARCH_INSN_FORM_FMT2RI4_RVI = 64,
-    LOONGARCH_INSN_FORM_FMT2RI1_RVI = 65,
-    LOONGARCH_INSN_FORM_FMT2RI3_RVI = 66,
-    LOONGARCH_INSN_FORM_FMT2RI2_RVI = 67,
-    LOONGARCH_INSN_FORM_FMT2R_VR = 68,
-    LOONGARCH_INSN_FORM_FMT2RI1_VVI = 69,
-    LOONGARCH_INSN_FORM_FMT2RI2_VVI = 70,
-    LOONGARCH_INSN_FORM_FMT3R_VVR = 71,
-    LOONGARCH_INSN_FORM_FMT2R_CV = 72,
-    LOONGARCH_INSN_FORM_FMT2RI7_VVI = 73,
-    LOONGARCH_INSN_FORM_FMT2RI8I4_VRII = 74,
-    LOONGARCH_INSN_FORM_FMT2RI8I1_VRII = 75,
-    LOONGARCH_INSN_FORM_FMT2RI8I3_VRII = 76,
-    LOONGARCH_INSN_FORM_FMT2RI8I2_VRII = 77,
-    LOONGARCH_INSN_FORM_NODSTFMT2R = 78,
-    LOONGARCH_INSN_FORM_NODSTFMT1R = 79,
-    LOONGARCH_INSN_FORM_FMTMFTOP = 80,
-    LOONGARCH_INSN_FORM_FMTMTTOP = 81,
-    LOONGARCH_INSN_FORM_NODSTFMT1RI3 = 82,
-    LOONGARCH_INSN_FORM_NODSTFMT1RI6 = 83,
-    LOONGARCH_INSN_FORM_NODSTFMT1RI5 = 84,
-    LOONGARCH_INSN_FORM_FMT1RI5I8 = 85,
-    LOONGARCH_INSN_FORM_FMT3R_XXX = 86,
-    LOONGARCH_INSN_FORM_FMT2RI5_XXI = 87,
-    LOONGARCH_INSN_FORM_FMT2RI8_XXI = 88,
-    LOONGARCH_INSN_FORM_FMT2RI3_XXI = 89,
-    LOONGARCH_INSN_FORM_FMT2RI6_XXI = 90,
-    LOONGARCH_INSN_FORM_FMT2RI4_XXI = 91,
-    LOONGARCH_INSN_FORM_FMT4R_XXXX = 92,
-    LOONGARCH_INSN_FORM_FMT2RI2_XRI = 93,
-    LOONGARCH_INSN_FORM_FMT2RI3_XRI = 94,
-    LOONGARCH_INSN_FORM_FMT2RI2_XXI = 95,
-    LOONGARCH_INSN_FORM_FMT2RI12_XRI = 96,
-    LOONGARCH_INSN_FORM_FMT1RI13_XI = 97,
-    LOONGARCH_INSN_FORM_FMT2RI9_XRI = 98,
-    LOONGARCH_INSN_FORM_FMT2RI11_XRI = 99,
-    LOONGARCH_INSN_FORM_FMT2RI10_XRI = 100,
-    LOONGARCH_INSN_FORM_FMT3R_XRR = 101,
-    LOONGARCH_INSN_FORM_FMT2RI2_RXI = 102,
-    LOONGARCH_INSN_FORM_FMT2RI3_RXI = 103,
-    LOONGARCH_INSN_FORM_FMT2RI1_XXI = 104,
-    LOONGARCH_INSN_FORM_FMT2R_XR = 105,
-    LOONGARCH_INSN_FORM_FMT3R_XXR = 106,
-    LOONGARCH_INSN_FORM_FMT2R_CX = 107,
-    LOONGARCH_INSN_FORM_FMT2RI7_XXI = 108,
-    LOONGARCH_INSN_FORM_FMT2RI8I5_XRII = 109,
-    LOONGARCH_INSN_FORM_FMT2RI8I2_XRII = 110,
-    LOONGARCH_INSN_FORM_FMT2RI8I4_XRII = 111,
-    LOONGARCH_INSN_FORM_FMT2RI8I3_XRII = 112,
-}
-#[doc = " Supplemental info for LoongArch instructions"]
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct loongarch_suppl_info {
-    #[doc = "< Instruction form"]
-    pub form: loongarch_insn_form,
-    #[doc = "< Memory access (none/read/write/read+write)"]
-    pub memory_access: cs_ac_type,
-}
-#[doc = " Instruction structure"]
-#[repr(C)]
-#[derive(Copy, Clone)]
-pub struct cs_loongarch {
-    #[doc = " The instruction format. Can be use to determine the bit encoding of the instruction."]
-    pub format: loongarch_insn_form,
-    #[doc = " Number of operands of this instruction,\n or 0 when instruction has no operand."]
-    pub op_count: u8,
-    #[doc = "< operands for this instruction."]
-    pub operands: [cs_loongarch_op; 8usize],
-}
-impl ::core::fmt::Debug for cs_loongarch {
-    fn fmt(&self, f: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
-        write!(
-            f,
-            "cs_loongarch {{ format: {:?}, operands: {:?} }}",
-            self.format, self.operands
-        )
-    }
-}
-pub mod loongarch_reg {
-    #[doc = " LoongArch registers"]
-    pub type Type = ::core::ffi::c_uint;
-    pub const LOONGARCH_REG_INVALID: Type = 0;
-    pub const LOONGARCH_REG_F0: Type = 1;
-    pub const LOONGARCH_REG_F1: Type = 2;
-    pub const LOONGARCH_REG_F2: Type = 3;
-    pub const LOONGARCH_REG_F3: Type = 4;
-    pub const LOONGARCH_REG_F4: Type = 5;
-    pub const LOONGARCH_REG_F5: Type = 6;
-    pub const LOONGARCH_REG_F6: Type = 7;
-    pub const LOONGARCH_REG_F7: Type = 8;
-    pub const LOONGARCH_REG_F8: Type = 9;
-    pub const LOONGARCH_REG_F9: Type = 10;
-    pub const LOONGARCH_REG_F10: Type = 11;
-    pub const LOONGARCH_REG_F11: Type = 12;
-    pub const LOONGARCH_REG_F12: Type = 13;
-    pub const LOONGARCH_REG_F13: Type = 14;
-    pub const LOONGARCH_REG_F14: Type = 15;
-    pub const LOONGARCH_REG_F15: Type = 16;
-    pub const LOONGARCH_REG_F16: Type = 17;
-    pub const LOONGARCH_REG_F17: Type = 18;
-    pub const LOONGARCH_REG_F18: Type = 19;
-    pub const LOONGARCH_REG_F19: Type = 20;
-    pub const LOONGARCH_REG_F20: Type = 21;
-    pub const LOONGARCH_REG_F21: Type = 22;
-    pub const LOONGARCH_REG_F22: Type = 23;
-    pub const LOONGARCH_REG_F23: Type = 24;
-    pub const LOONGARCH_REG_F24: Type = 25;
-    pub const LOONGARCH_REG_F25: Type = 26;
-    pub const LOONGARCH_REG_F26: Type = 27;
-    pub const LOONGARCH_REG_F27: Type = 28;
-    pub const LOONGARCH_REG_F28: Type = 29;
-    pub const LOONGARCH_REG_F29: Type = 30;
-    pub const LOONGARCH_REG_F30: Type = 31;
-    pub const LOONGARCH_REG_F31: Type = 32;
-    pub const LOONGARCH_REG_FCC0: Type = 33;
-    pub const LOONGARCH_REG_FCC1: Type = 34;
-    pub const LOONGARCH_REG_FCC2: Type = 35;
-    pub const LOONGARCH_REG_FCC3: Type = 36;
-    pub const LOONGARCH_REG_FCC4: Type = 37;
-    pub const LOONGARCH_REG_FCC5: Type = 38;
-    pub const LOONGARCH_REG_FCC6: Type = 39;
-    pub const LOONGARCH_REG_FCC7: Type = 40;
-    pub const LOONGARCH_REG_FCSR0: Type = 41;
-    pub const LOONGARCH_REG_FCSR1: Type = 42;
-    pub const LOONGARCH_REG_FCSR2: Type = 43;
-    pub const LOONGARCH_REG_FCSR3: Type = 44;
-    pub const LOONGARCH_REG_R0: Type = 45;
-    pub const LOONGARCH_REG_R1: Type = 46;
-    pub const LOONGARCH_REG_R2: Type = 47;
-    pub const LOONGARCH_REG_R3: Type = 48;
-    pub const LOONGARCH_REG_R4: Type = 49;
-    pub const LOONGARCH_REG_R5: Type = 50;
-    pub const LOONGARCH_REG_R6: Type = 51;
-    pub const LOONGARCH_REG_R7: Type = 52;
-    pub const LOONGARCH_REG_R8: Type = 53;
-    pub const LOONGARCH_REG_R9: Type = 54;
-    pub const LOONGARCH_REG_R10: Type = 55;
-    pub const LOONGARCH_REG_R11: Type = 56;
-    pub const LOONGARCH_REG_R12: Type = 57;
-    pub const LOONGARCH_REG_R13: Type = 58;
-    pub const LOONGARCH_REG_R14: Type = 59;
-    pub const LOONGARCH_REG_R15: Type = 60;
-    pub const LOONGARCH_REG_R16: Type = 61;
-    pub const LOONGARCH_REG_R17: Type = 62;
-    pub const LOONGARCH_REG_R18: Type = 63;
-    pub const LOONGARCH_REG_R19: Type = 64;
-    pub const LOONGARCH_REG_R20: Type = 65;
-    pub const LOONGARCH_REG_R21: Type = 66;
-    pub const LOONGARCH_REG_R22: Type = 67;
-    pub const LOONGARCH_REG_R23: Type = 68;
-    pub const LOONGARCH_REG_R24: Type = 69;
-    pub const LOONGARCH_REG_R25: Type = 70;
-    pub const LOONGARCH_REG_R26: Type = 71;
-    pub const LOONGARCH_REG_R27: Type = 72;
-    pub const LOONGARCH_REG_R28: Type = 73;
-    pub const LOONGARCH_REG_R29: Type = 74;
-    pub const LOONGARCH_REG_R30: Type = 75;
-    pub const LOONGARCH_REG_R31: Type = 76;
-    pub const LOONGARCH_REG_SCR0: Type = 77;
-    pub const LOONGARCH_REG_SCR1: Type = 78;
-    pub const LOONGARCH_REG_SCR2: Type = 79;
-    pub const LOONGARCH_REG_SCR3: Type = 80;
-    pub const LOONGARCH_REG_VR0: Type = 81;
-    pub const LOONGARCH_REG_VR1: Type = 82;
-    pub const LOONGARCH_REG_VR2: Type = 83;
-    pub const LOONGARCH_REG_VR3: Type = 84;
-    pub const LOONGARCH_REG_VR4: Type = 85;
-    pub const LOONGARCH_REG_VR5: Type = 86;
-    pub const LOONGARCH_REG_VR6: Type = 87;
-    pub const LOONGARCH_REG_VR7: Type = 88;
-    pub const LOONGARCH_REG_VR8: Type = 89;
-    pub const LOONGARCH_REG_VR9: Type = 90;
-    pub const LOONGARCH_REG_VR10: Type = 91;
-    pub const LOONGARCH_REG_VR11: Type = 92;
-    pub const LOONGARCH_REG_VR12: Type = 93;
-    pub const LOONGARCH_REG_VR13: Type = 94;
-    pub const LOONGARCH_REG_VR14: Type = 95;
-    pub const LOONGARCH_REG_VR15: Type = 96;
-    pub const LOONGARCH_REG_VR16: Type = 97;
-    pub const LOONGARCH_REG_VR17: Type = 98;
-    pub const LOONGARCH_REG_VR18: Type = 99;
-    pub const LOONGARCH_REG_VR19: Type = 100;
-    pub const LOONGARCH_REG_VR20: Type = 101;
-    pub const LOONGARCH_REG_VR21: Type = 102;
-    pub const LOONGARCH_REG_VR22: Type = 103;
-    pub const LOONGARCH_REG_VR23: Type = 104;
-    pub const LOONGARCH_REG_VR24: Type = 105;
-    pub const LOONGARCH_REG_VR25: Type = 106;
-    pub const LOONGARCH_REG_VR26: Type = 107;
-    pub const LOONGARCH_REG_VR27: Type = 108;
-    pub const LOONGARCH_REG_VR28: Type = 109;
-    pub const LOONGARCH_REG_VR29: Type = 110;
-    pub const LOONGARCH_REG_VR30: Type = 111;
-    pub const LOONGARCH_REG_VR31: Type = 112;
-    pub const LOONGARCH_REG_XR0: Type = 113;
-    pub const LOONGARCH_REG_XR1: Type = 114;
-    pub const LOONGARCH_REG_XR2: Type = 115;
-    pub const LOONGARCH_REG_XR3: Type = 116;
-    pub const LOONGARCH_REG_XR4: Type = 117;
-    pub const LOONGARCH_REG_XR5: Type = 118;
-    pub const LOONGARCH_REG_XR6: Type = 119;
-    pub const LOONGARCH_REG_XR7: Type = 120;
-    pub const LOONGARCH_REG_XR8: Type = 121;
-    pub const LOONGARCH_REG_XR9: Type = 122;
-    pub const LOONGARCH_REG_XR10: Type = 123;
-    pub const LOONGARCH_REG_XR11: Type = 124;
-    pub const LOONGARCH_REG_XR12: Type = 125;
-    pub const LOONGARCH_REG_XR13: Type = 126;
-    pub const LOONGARCH_REG_XR14: Type = 127;
-    pub const LOONGARCH_REG_XR15: Type = 128;
-    pub const LOONGARCH_REG_XR16: Type = 129;
-    pub const LOONGARCH_REG_XR17: Type = 130;
-    pub const LOONGARCH_REG_XR18: Type = 131;
-    pub const LOONGARCH_REG_XR19: Type = 132;
-    pub const LOONGARCH_REG_XR20: Type = 133;
-    pub const LOONGARCH_REG_XR21: Type = 134;
-    pub const LOONGARCH_REG_XR22: Type = 135;
-    pub const LOONGARCH_REG_XR23: Type = 136;
-    pub const LOONGARCH_REG_XR24: Type = 137;
-    pub const LOONGARCH_REG_XR25: Type = 138;
-    pub const LOONGARCH_REG_XR26: Type = 139;
-    pub const LOONGARCH_REG_XR27: Type = 140;
-    pub const LOONGARCH_REG_XR28: Type = 141;
-    pub const LOONGARCH_REG_XR29: Type = 142;
-    pub const LOONGARCH_REG_XR30: Type = 143;
-    pub const LOONGARCH_REG_XR31: Type = 144;
-    pub const LOONGARCH_REG_F0_64: Type = 145;
-    pub const LOONGARCH_REG_F1_64: Type = 146;
-    pub const LOONGARCH_REG_F2_64: Type = 147;
-    pub const LOONGARCH_REG_F3_64: Type = 148;
-    pub const LOONGARCH_REG_F4_64: Type = 149;
-    pub const LOONGARCH_REG_F5_64: Type = 150;
-    pub const LOONGARCH_REG_F6_64: Type = 151;
-    pub const LOONGARCH_REG_F7_64: Type = 152;
-    pub const LOONGARCH_REG_F8_64: Type = 153;
-    pub const LOONGARCH_REG_F9_64: Type = 154;
-    pub const LOONGARCH_REG_F10_64: Type = 155;
-    pub const LOONGARCH_REG_F11_64: Type = 156;
-    pub const LOONGARCH_REG_F12_64: Type = 157;
-    pub const LOONGARCH_REG_F13_64: Type = 158;
-    pub const LOONGARCH_REG_F14_64: Type = 159;
-    pub const LOONGARCH_REG_F15_64: Type = 160;
-    pub const LOONGARCH_REG_F16_64: Type = 161;
-    pub const LOONGARCH_REG_F17_64: Type = 162;
-    pub const LOONGARCH_REG_F18_64: Type = 163;
-    pub const LOONGARCH_REG_F19_64: Type = 164;
-    pub const LOONGARCH_REG_F20_64: Type = 165;
-    pub const LOONGARCH_REG_F21_64: Type = 166;
-    pub const LOONGARCH_REG_F22_64: Type = 167;
-    pub const LOONGARCH_REG_F23_64: Type = 168;
-    pub const LOONGARCH_REG_F24_64: Type = 169;
-    pub const LOONGARCH_REG_F25_64: Type = 170;
-    pub const LOONGARCH_REG_F26_64: Type = 171;
-    pub const LOONGARCH_REG_F27_64: Type = 172;
-    pub const LOONGARCH_REG_F28_64: Type = 173;
-    pub const LOONGARCH_REG_F29_64: Type = 174;
-    pub const LOONGARCH_REG_F30_64: Type = 175;
-    pub const LOONGARCH_REG_F31_64: Type = 176;
-    pub const LOONGARCH_REG_ENDING: Type = 177;
-    pub const LOONGARCH_REG_ZERO: Type = 45;
-    pub const LOONGARCH_REG_RA: Type = 46;
-    pub const LOONGARCH_REG_TP: Type = 47;
-    pub const LOONGARCH_REG_SP: Type = 48;
-    pub const LOONGARCH_REG_A0: Type = 49;
-    pub const LOONGARCH_REG_A1: Type = 50;
-    pub const LOONGARCH_REG_A2: Type = 51;
-    pub const LOONGARCH_REG_A3: Type = 52;
-    pub const LOONGARCH_REG_A4: Type = 53;
-    pub const LOONGARCH_REG_A5: Type = 54;
-    pub const LOONGARCH_REG_A6: Type = 55;
-    pub const LOONGARCH_REG_A7: Type = 56;
-    pub const LOONGARCH_REG_T0: Type = 57;
-    pub const LOONGARCH_REG_T1: Type = 58;
-    pub const LOONGARCH_REG_T2: Type = 59;
-    pub const LOONGARCH_REG_T3: Type = 60;
-    pub const LOONGARCH_REG_T4: Type = 61;
-    pub const LOONGARCH_REG_T5: Type = 62;
-    pub const LOONGARCH_REG_T6: Type = 63;
-    pub const LOONGARCH_REG_T7: Type = 64;
-    pub const LOONGARCH_REG_T8: Type = 65;
-    pub const LOONGARCH_REG_FP: Type = 67;
-    pub const LOONGARCH_REG_S9: Type = 67;
-    pub const LOONGARCH_REG_S0: Type = 68;
-    pub const LOONGARCH_REG_S1: Type = 69;
-    pub const LOONGARCH_REG_S2: Type = 70;
-    pub const LOONGARCH_REG_S3: Type = 71;
-    pub const LOONGARCH_REG_S4: Type = 72;
-    pub const LOONGARCH_REG_S5: Type = 73;
-    pub const LOONGARCH_REG_S6: Type = 74;
-    pub const LOONGARCH_REG_S7: Type = 75;
-    pub const LOONGARCH_REG_S8: Type = 76;
-}
-#[repr(u32)]
-#[doc = " LoongArch instruction"]
-#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
-pub enum loongarch_insn {
-    LOONGARCH_INS_INVALID = 0,
-    LOONGARCH_INS_CALL36 = 1,
-    LOONGARCH_INS_LA_ABS = 2,
-    LOONGARCH_INS_LA_GOT = 3,
-    LOONGARCH_INS_LA_PCREL = 4,
-    LOONGARCH_INS_LA_TLS_GD = 5,
-    LOONGARCH_INS_LA_TLS_IE = 6,
-    LOONGARCH_INS_LA_TLS_LD = 7,
-    LOONGARCH_INS_LA_TLS_LE = 8,
-    LOONGARCH_INS_LI_D = 9,
-    LOONGARCH_INS_LI_W = 10,
-    LOONGARCH_INS_TAIL36 = 11,
-    LOONGARCH_INS_VREPLI_B = 12,
-    LOONGARCH_INS_VREPLI_D = 13,
-    LOONGARCH_INS_VREPLI_H = 14,
-    LOONGARCH_INS_VREPLI_W = 15,
-    LOONGARCH_INS_XVREPLI_B = 16,
-    LOONGARCH_INS_XVREPLI_D = 17,
-    LOONGARCH_INS_XVREPLI_H = 18,
-    LOONGARCH_INS_XVREPLI_W = 19,
-    LOONGARCH_INS_ADC_B = 20,
-    LOONGARCH_INS_ADC_D = 21,
-    LOONGARCH_INS_ADC_H = 22,
-    LOONGARCH_INS_ADC_W = 23,
-    LOONGARCH_INS_ADDI_D = 24,
-    LOONGARCH_INS_ADDI_W = 25,
-    LOONGARCH_INS_ADDU12I_D = 26,
-    LOONGARCH_INS_ADDU12I_W = 27,
-    LOONGARCH_INS_ADDU16I_D = 28,
-    LOONGARCH_INS_ADD_D = 29,
-    LOONGARCH_INS_ADD_W = 30,
-    LOONGARCH_INS_ALSL_D = 31,
-    LOONGARCH_INS_ALSL_W = 32,
-    LOONGARCH_INS_ALSL_WU = 33,
-    LOONGARCH_INS_AMADD_B = 34,
-    LOONGARCH_INS_AMADD_D = 35,
-    LOONGARCH_INS_AMADD_H = 36,
-    LOONGARCH_INS_AMADD_W = 37,
-    LOONGARCH_INS_AMADD_DB_B = 38,
-    LOONGARCH_INS_AMADD_DB_D = 39,
-    LOONGARCH_INS_AMADD_DB_H = 40,
-    LOONGARCH_INS_AMADD_DB_W = 41,
-    LOONGARCH_INS_AMAND_D = 42,
-    LOONGARCH_INS_AMAND_W = 43,
-    LOONGARCH_INS_AMAND_DB_D = 44,
-    LOONGARCH_INS_AMAND_DB_W = 45,
-    LOONGARCH_INS_AMCAS_B = 46,
-    LOONGARCH_INS_AMCAS_D = 47,
-    LOONGARCH_INS_AMCAS_H = 48,
-    LOONGARCH_INS_AMCAS_W = 49,
-    LOONGARCH_INS_AMCAS_DB_B = 50,
-    LOONGARCH_INS_AMCAS_DB_D = 51,
-    LOONGARCH_INS_AMCAS_DB_H = 52,
-    LOONGARCH_INS_AMCAS_DB_W = 53,
-    LOONGARCH_INS_AMMAX_D = 54,
-    LOONGARCH_INS_AMMAX_DU = 55,
-    LOONGARCH_INS_AMMAX_W = 56,
-    LOONGARCH_INS_AMMAX_WU = 57,
-    LOONGARCH_INS_AMMAX_DB_D = 58,
-    LOONGARCH_INS_AMMAX_DB_DU = 59,
-    LOONGARCH_INS_AMMAX_DB_W = 60,
-    LOONGARCH_INS_AMMAX_DB_WU = 61,
-    LOONGARCH_INS_AMMIN_D = 62,
-    LOONGARCH_INS_AMMIN_DU = 63,
-    LOONGARCH_INS_AMMIN_W = 64,
-    LOONGARCH_INS_AMMIN_WU = 65,
-    LOONGARCH_INS_AMMIN_DB_D = 66,
-    LOONGARCH_INS_AMMIN_DB_DU = 67,
-    LOONGARCH_INS_AMMIN_DB_W = 68,
-    LOONGARCH_INS_AMMIN_DB_WU = 69,
-    LOONGARCH_INS_AMOR_D = 70,
-    LOONGARCH_INS_AMOR_W = 71,
-    LOONGARCH_INS_AMOR_DB_D = 72,
-    LOONGARCH_INS_AMOR_DB_W = 73,
-    LOONGARCH_INS_AMSWAP_B = 74,
-    LOONGARCH_INS_AMSWAP_D = 75,
-    LOONGARCH_INS_AMSWAP_H = 76,
-    LOONGARCH_INS_AMSWAP_W = 77,
-    LOONGARCH_INS_AMSWAP_DB_B = 78,
-    LOONGARCH_INS_AMSWAP_DB_D = 79,
-    LOONGARCH_INS_AMSWAP_DB_H = 80,
-    LOONGARCH_INS_AMSWAP_DB_W = 81,
-    LOONGARCH_INS_AMXOR_D = 82,
-    LOONGARCH_INS_AMXOR_W = 83,
-    LOONGARCH_INS_AMXOR_DB_D = 84,
-    LOONGARCH_INS_AMXOR_DB_W = 85,
-    LOONGARCH_INS_AND = 86,
-    LOONGARCH_INS_ANDI = 87,
-    LOONGARCH_INS_ANDN = 88,
-    LOONGARCH_INS_ARMADC_W = 89,
-    LOONGARCH_INS_ARMADD_W = 90,
-    LOONGARCH_INS_ARMAND_W = 91,
-    LOONGARCH_INS_ARMMFFLAG = 92,
-    LOONGARCH_INS_ARMMOVE = 93,
-    LOONGARCH_INS_ARMMOV_D = 94,
-    LOONGARCH_INS_ARMMOV_W = 95,
-    LOONGARCH_INS_ARMMTFLAG = 96,
-    LOONGARCH_INS_ARMNOT_W = 97,
-    LOONGARCH_INS_ARMOR_W = 98,
-    LOONGARCH_INS_ARMROTRI_W = 99,
-    LOONGARCH_INS_ARMROTR_W = 100,
-    LOONGARCH_INS_ARMRRX_W = 101,
-    LOONGARCH_INS_ARMSBC_W = 102,
-    LOONGARCH_INS_ARMSLLI_W = 103,
-    LOONGARCH_INS_ARMSLL_W = 104,
-    LOONGARCH_INS_ARMSRAI_W = 105,
-    LOONGARCH_INS_ARMSRA_W = 106,
-    LOONGARCH_INS_ARMSRLI_W = 107,
-    LOONGARCH_INS_ARMSRL_W = 108,
-    LOONGARCH_INS_ARMSUB_W = 109,
-    LOONGARCH_INS_ARMXOR_W = 110,
-    LOONGARCH_INS_ASRTGT_D = 111,
-    LOONGARCH_INS_ASRTLE_D = 112,
-    LOONGARCH_INS_B = 113,
-    LOONGARCH_INS_BCEQZ = 114,
-    LOONGARCH_INS_BCNEZ = 115,
-    LOONGARCH_INS_BEQ = 116,
-    LOONGARCH_INS_BEQZ = 117,
-    LOONGARCH_INS_BGE = 118,
-    LOONGARCH_INS_BGEU = 119,
-    LOONGARCH_INS_BITREV_4B = 120,
-    LOONGARCH_INS_BITREV_8B = 121,
-    LOONGARCH_INS_BITREV_D = 122,
-    LOONGARCH_INS_BITREV_W = 123,
-    LOONGARCH_INS_BL = 124,
-    LOONGARCH_INS_BLT = 125,
-    LOONGARCH_INS_BLTU = 126,
-    LOONGARCH_INS_BNE = 127,
-    LOONGARCH_INS_BNEZ = 128,
-    LOONGARCH_INS_BREAK = 129,
-    LOONGARCH_INS_BSTRINS_D = 130,
-    LOONGARCH_INS_BSTRINS_W = 131,
-    LOONGARCH_INS_BSTRPICK_D = 132,
-    LOONGARCH_INS_BSTRPICK_W = 133,
-    LOONGARCH_INS_BYTEPICK_D = 134,
-    LOONGARCH_INS_BYTEPICK_W = 135,
-    LOONGARCH_INS_CACOP = 136,
-    LOONGARCH_INS_CLO_D = 137,
-    LOONGARCH_INS_CLO_W = 138,
-    LOONGARCH_INS_CLZ_D = 139,
-    LOONGARCH_INS_CLZ_W = 140,
-    LOONGARCH_INS_CPUCFG = 141,
-    LOONGARCH_INS_CRCC_W_B_W = 142,
-    LOONGARCH_INS_CRCC_W_D_W = 143,
-    LOONGARCH_INS_CRCC_W_H_W = 144,
-    LOONGARCH_INS_CRCC_W_W_W = 145,
-    LOONGARCH_INS_CRC_W_B_W = 146,
-    LOONGARCH_INS_CRC_W_D_W = 147,
-    LOONGARCH_INS_CRC_W_H_W = 148,
-    LOONGARCH_INS_CRC_W_W_W = 149,
-    LOONGARCH_INS_CSRRD = 150,
-    LOONGARCH_INS_CSRWR = 151,
-    LOONGARCH_INS_CSRXCHG = 152,
-    LOONGARCH_INS_CTO_D = 153,
-    LOONGARCH_INS_CTO_W = 154,
-    LOONGARCH_INS_CTZ_D = 155,
-    LOONGARCH_INS_CTZ_W = 156,
-    LOONGARCH_INS_DBAR = 157,
-    LOONGARCH_INS_DBCL = 158,
-    LOONGARCH_INS_DIV_D = 159,
-    LOONGARCH_INS_DIV_DU = 160,
-    LOONGARCH_INS_DIV_W = 161,
-    LOONGARCH_INS_DIV_WU = 162,
-    LOONGARCH_INS_ERTN = 163,
-    LOONGARCH_INS_EXT_W_B = 164,
-    LOONGARCH_INS_EXT_W_H = 165,
-    LOONGARCH_INS_FABS_D = 166,
-    LOONGARCH_INS_FABS_S = 167,
-    LOONGARCH_INS_FADD_D = 168,
-    LOONGARCH_INS_FADD_S = 169,
-    LOONGARCH_INS_FCLASS_D = 170,
-    LOONGARCH_INS_FCLASS_S = 171,
-    LOONGARCH_INS_FCMP_CAF_D = 172,
-    LOONGARCH_INS_FCMP_CAF_S = 173,
-    LOONGARCH_INS_FCMP_CEQ_D = 174,
-    LOONGARCH_INS_FCMP_CEQ_S = 175,
-    LOONGARCH_INS_FCMP_CLE_D = 176,
-    LOONGARCH_INS_FCMP_CLE_S = 177,
-    LOONGARCH_INS_FCMP_CLT_D = 178,
-    LOONGARCH_INS_FCMP_CLT_S = 179,
-    LOONGARCH_INS_FCMP_CNE_D = 180,
-    LOONGARCH_INS_FCMP_CNE_S = 181,
-    LOONGARCH_INS_FCMP_COR_D = 182,
-    LOONGARCH_INS_FCMP_COR_S = 183,
-    LOONGARCH_INS_FCMP_CUEQ_D = 184,
-    LOONGARCH_INS_FCMP_CUEQ_S = 185,
-    LOONGARCH_INS_FCMP_CULE_D = 186,
-    LOONGARCH_INS_FCMP_CULE_S = 187,
-    LOONGARCH_INS_FCMP_CULT_D = 188,
-    LOONGARCH_INS_FCMP_CULT_S = 189,
-    LOONGARCH_INS_FCMP_CUNE_D = 190,
-    LOONGARCH_INS_FCMP_CUNE_S = 191,
-    LOONGARCH_INS_FCMP_CUN_D = 192,
-    LOONGARCH_INS_FCMP_CUN_S = 193,
-    LOONGARCH_INS_FCMP_SAF_D = 194,
-    LOONGARCH_INS_FCMP_SAF_S = 195,
-    LOONGARCH_INS_FCMP_SEQ_D = 196,
-    LOONGARCH_INS_FCMP_SEQ_S = 197,
-    LOONGARCH_INS_FCMP_SLE_D = 198,
-    LOONGARCH_INS_FCMP_SLE_S = 199,
-    LOONGARCH_INS_FCMP_SLT_D = 200,
-    LOONGARCH_INS_FCMP_SLT_S = 201,
-    LOONGARCH_INS_FCMP_SNE_D = 202,
-    LOONGARCH_INS_FCMP_SNE_S = 203,
-    LOONGARCH_INS_FCMP_SOR_D = 204,
-    LOONGARCH_INS_FCMP_SOR_S = 205,
-    LOONGARCH_INS_FCMP_SUEQ_D = 206,
-    LOONGARCH_INS_FCMP_SUEQ_S = 207,
-    LOONGARCH_INS_FCMP_SULE_D = 208,
-    LOONGARCH_INS_FCMP_SULE_S = 209,
-    LOONGARCH_INS_FCMP_SULT_D = 210,
-    LOONGARCH_INS_FCMP_SULT_S = 211,
-    LOONGARCH_INS_FCMP_SUNE_D = 212,
-    LOONGARCH_INS_FCMP_SUNE_S = 213,
-    LOONGARCH_INS_FCMP_SUN_D = 214,
-    LOONGARCH_INS_FCMP_SUN_S = 215,
-    LOONGARCH_INS_FCOPYSIGN_D = 216,
-    LOONGARCH_INS_FCOPYSIGN_S = 217,
-    LOONGARCH_INS_FCVT_D_LD = 218,
-    LOONGARCH_INS_FCVT_D_S = 219,
-    LOONGARCH_INS_FCVT_LD_D = 220,
-    LOONGARCH_INS_FCVT_S_D = 221,
-    LOONGARCH_INS_FCVT_UD_D = 222,
-    LOONGARCH_INS_FDIV_D = 223,
-    LOONGARCH_INS_FDIV_S = 224,
-    LOONGARCH_INS_FFINT_D_L = 225,
-    LOONGARCH_INS_FFINT_D_W = 226,
-    LOONGARCH_INS_FFINT_S_L = 227,
-    LOONGARCH_INS_FFINT_S_W = 228,
-    LOONGARCH_INS_FLDGT_D = 229,
-    LOONGARCH_INS_FLDGT_S = 230,
-    LOONGARCH_INS_FLDLE_D = 231,
-    LOONGARCH_INS_FLDLE_S = 232,
-    LOONGARCH_INS_FLDX_D = 233,
-    LOONGARCH_INS_FLDX_S = 234,
-    LOONGARCH_INS_FLD_D = 235,
-    LOONGARCH_INS_FLD_S = 236,
-    LOONGARCH_INS_FLOGB_D = 237,
-    LOONGARCH_INS_FLOGB_S = 238,
-    LOONGARCH_INS_FMADD_D = 239,
-    LOONGARCH_INS_FMADD_S = 240,
-    LOONGARCH_INS_FMAXA_D = 241,
-    LOONGARCH_INS_FMAXA_S = 242,
-    LOONGARCH_INS_FMAX_D = 243,
-    LOONGARCH_INS_FMAX_S = 244,
-    LOONGARCH_INS_FMINA_D = 245,
-    LOONGARCH_INS_FMINA_S = 246,
-    LOONGARCH_INS_FMIN_D = 247,
-    LOONGARCH_INS_FMIN_S = 248,
-    LOONGARCH_INS_FMOV_D = 249,
-    LOONGARCH_INS_FMOV_S = 250,
-    LOONGARCH_INS_FMSUB_D = 251,
-    LOONGARCH_INS_FMSUB_S = 252,
-    LOONGARCH_INS_FMUL_D = 253,
-    LOONGARCH_INS_FMUL_S = 254,
-    LOONGARCH_INS_FNEG_D = 255,
-    LOONGARCH_INS_FNEG_S = 256,
-    LOONGARCH_INS_FNMADD_D = 257,
-    LOONGARCH_INS_FNMADD_S = 258,
-    LOONGARCH_INS_FNMSUB_D = 259,
-    LOONGARCH_INS_FNMSUB_S = 260,
-    LOONGARCH_INS_FRECIPE_D = 261,
-    LOONGARCH_INS_FRECIPE_S = 262,
-    LOONGARCH_INS_FRECIP_D = 263,
-    LOONGARCH_INS_FRECIP_S = 264,
-    LOONGARCH_INS_FRINT_D = 265,
-    LOONGARCH_INS_FRINT_S = 266,
-    LOONGARCH_INS_FRSQRTE_D = 267,
-    LOONGARCH_INS_FRSQRTE_S = 268,
-    LOONGARCH_INS_FRSQRT_D = 269,
-    LOONGARCH_INS_FRSQRT_S = 270,
-    LOONGARCH_INS_FSCALEB_D = 271,
-    LOONGARCH_INS_FSCALEB_S = 272,
-    LOONGARCH_INS_FSEL = 273,
-    LOONGARCH_INS_FSQRT_D = 274,
-    LOONGARCH_INS_FSQRT_S = 275,
-    LOONGARCH_INS_FSTGT_D = 276,
-    LOONGARCH_INS_FSTGT_S = 277,
-    LOONGARCH_INS_FSTLE_D = 278,
-    LOONGARCH_INS_FSTLE_S = 279,
-    LOONGARCH_INS_FSTX_D = 280,
-    LOONGARCH_INS_FSTX_S = 281,
-    LOONGARCH_INS_FST_D = 282,
-    LOONGARCH_INS_FST_S = 283,
-    LOONGARCH_INS_FSUB_D = 284,
-    LOONGARCH_INS_FSUB_S = 285,
-    LOONGARCH_INS_FTINTRM_L_D = 286,
-    LOONGARCH_INS_FTINTRM_L_S = 287,
-    LOONGARCH_INS_FTINTRM_W_D = 288,
-    LOONGARCH_INS_FTINTRM_W_S = 289,
-    LOONGARCH_INS_FTINTRNE_L_D = 290,
-    LOONGARCH_INS_FTINTRNE_L_S = 291,
-    LOONGARCH_INS_FTINTRNE_W_D = 292,
-    LOONGARCH_INS_FTINTRNE_W_S = 293,
-    LOONGARCH_INS_FTINTRP_L_D = 294,
-    LOONGARCH_INS_FTINTRP_L_S = 295,
-    LOONGARCH_INS_FTINTRP_W_D = 296,
-    LOONGARCH_INS_FTINTRP_W_S = 297,
-    LOONGARCH_INS_FTINTRZ_L_D = 298,
-    LOONGARCH_INS_FTINTRZ_L_S = 299,
-    LOONGARCH_INS_FTINTRZ_W_D = 300,
-    LOONGARCH_INS_FTINTRZ_W_S = 301,
-    LOONGARCH_INS_FTINT_L_D = 302,
-    LOONGARCH_INS_FTINT_L_S = 303,
-    LOONGARCH_INS_FTINT_W_D = 304,
-    LOONGARCH_INS_FTINT_W_S = 305,
-    LOONGARCH_INS_GCSRRD = 306,
-    LOONGARCH_INS_GCSRWR = 307,
-    LOONGARCH_INS_GCSRXCHG = 308,
-    LOONGARCH_INS_GTLBFLUSH = 309,
-    LOONGARCH_INS_HVCL = 310,
-    LOONGARCH_INS_IBAR = 311,
-    LOONGARCH_INS_IDLE = 312,
-    LOONGARCH_INS_INVTLB = 313,
-    LOONGARCH_INS_IOCSRRD_B = 314,
-    LOONGARCH_INS_IOCSRRD_D = 315,
-    LOONGARCH_INS_IOCSRRD_H = 316,
-    LOONGARCH_INS_IOCSRRD_W = 317,
-    LOONGARCH_INS_IOCSRWR_B = 318,
-    LOONGARCH_INS_IOCSRWR_D = 319,
-    LOONGARCH_INS_IOCSRWR_H = 320,
-    LOONGARCH_INS_IOCSRWR_W = 321,
-    LOONGARCH_INS_JIRL = 322,
-    LOONGARCH_INS_JISCR0 = 323,
-    LOONGARCH_INS_JISCR1 = 324,
-    LOONGARCH_INS_LDDIR = 325,
-    LOONGARCH_INS_LDGT_B = 326,
-    LOONGARCH_INS_LDGT_D = 327,
-    LOONGARCH_INS_LDGT_H = 328,
-    LOONGARCH_INS_LDGT_W = 329,
-    LOONGARCH_INS_LDLE_B = 330,
-    LOONGARCH_INS_LDLE_D = 331,
-    LOONGARCH_INS_LDLE_H = 332,
-    LOONGARCH_INS_LDLE_W = 333,
-    LOONGARCH_INS_LDL_D = 334,
-    LOONGARCH_INS_LDL_W = 335,
-    LOONGARCH_INS_LDPTE = 336,
-    LOONGARCH_INS_LDPTR_D = 337,
-    LOONGARCH_INS_LDPTR_W = 338,
-    LOONGARCH_INS_LDR_D = 339,
-    LOONGARCH_INS_LDR_W = 340,
-    LOONGARCH_INS_LDX_B = 341,
-    LOONGARCH_INS_LDX_BU = 342,
-    LOONGARCH_INS_LDX_D = 343,
-    LOONGARCH_INS_LDX_H = 344,
-    LOONGARCH_INS_LDX_HU = 345,
-    LOONGARCH_INS_LDX_W = 346,
-    LOONGARCH_INS_LDX_WU = 347,
-    LOONGARCH_INS_LD_B = 348,
-    LOONGARCH_INS_LD_BU = 349,
-    LOONGARCH_INS_LD_D = 350,
-    LOONGARCH_INS_LD_H = 351,
-    LOONGARCH_INS_LD_HU = 352,
-    LOONGARCH_INS_LD_W = 353,
-    LOONGARCH_INS_LD_WU = 354,
-    LOONGARCH_INS_LLACQ_D = 355,
-    LOONGARCH_INS_LLACQ_W = 356,
-    LOONGARCH_INS_LL_D = 357,
-    LOONGARCH_INS_LL_W = 358,
-    LOONGARCH_INS_LU12I_W = 359,
-    LOONGARCH_INS_LU32I_D = 360,
-    LOONGARCH_INS_LU52I_D = 361,
-    LOONGARCH_INS_MASKEQZ = 362,
-    LOONGARCH_INS_MASKNEZ = 363,
-    LOONGARCH_INS_MOD_D = 364,
-    LOONGARCH_INS_MOD_DU = 365,
-    LOONGARCH_INS_MOD_W = 366,
-    LOONGARCH_INS_MOD_WU = 367,
-    LOONGARCH_INS_MOVCF2FR = 368,
-    LOONGARCH_INS_MOVCF2GR = 369,
-    LOONGARCH_INS_MOVFCSR2GR = 370,
-    LOONGARCH_INS_MOVFR2CF = 371,
-    LOONGARCH_INS_MOVFR2GR_D = 372,
-    LOONGARCH_INS_MOVFR2GR_S = 373,
-    LOONGARCH_INS_MOVFRH2GR_S = 374,
-    LOONGARCH_INS_MOVGR2CF = 375,
-    LOONGARCH_INS_MOVGR2FCSR = 376,
-    LOONGARCH_INS_MOVGR2FRH_W = 377,
-    LOONGARCH_INS_MOVGR2FR_D = 378,
-    LOONGARCH_INS_MOVGR2FR_W = 379,
-    LOONGARCH_INS_MOVGR2SCR = 380,
-    LOONGARCH_INS_MOVSCR2GR = 381,
-    LOONGARCH_INS_MULH_D = 382,
-    LOONGARCH_INS_MULH_DU = 383,
-    LOONGARCH_INS_MULH_W = 384,
-    LOONGARCH_INS_MULH_WU = 385,
-    LOONGARCH_INS_MULW_D_W = 386,
-    LOONGARCH_INS_MULW_D_WU = 387,
-    LOONGARCH_INS_MUL_D = 388,
-    LOONGARCH_INS_MUL_W = 389,
-    LOONGARCH_INS_NOR = 390,
-    LOONGARCH_INS_OR = 391,
-    LOONGARCH_INS_ORI = 392,
-    LOONGARCH_INS_ORN = 393,
-    LOONGARCH_INS_PCADDI = 394,
-    LOONGARCH_INS_PCADDU12I = 395,
-    LOONGARCH_INS_PCADDU18I = 396,
-    LOONGARCH_INS_PCALAU12I = 397,
-    LOONGARCH_INS_PRELD = 398,
-    LOONGARCH_INS_PRELDX = 399,
-    LOONGARCH_INS_RCRI_B = 400,
-    LOONGARCH_INS_RCRI_D = 401,
-    LOONGARCH_INS_RCRI_H = 402,
-    LOONGARCH_INS_RCRI_W = 403,
-    LOONGARCH_INS_RCR_B = 404,
-    LOONGARCH_INS_RCR_D = 405,
-    LOONGARCH_INS_RCR_H = 406,
-    LOONGARCH_INS_RCR_W = 407,
-    LOONGARCH_INS_RDTIMEH_W = 408,
-    LOONGARCH_INS_RDTIMEL_W = 409,
-    LOONGARCH_INS_RDTIME_D = 410,
-    LOONGARCH_INS_REVB_2H = 411,
-    LOONGARCH_INS_REVB_2W = 412,
-    LOONGARCH_INS_REVB_4H = 413,
-    LOONGARCH_INS_REVB_D = 414,
-    LOONGARCH_INS_REVH_2W = 415,
-    LOONGARCH_INS_REVH_D = 416,
-    LOONGARCH_INS_ROTRI_B = 417,
-    LOONGARCH_INS_ROTRI_D = 418,
-    LOONGARCH_INS_ROTRI_H = 419,
-    LOONGARCH_INS_ROTRI_W = 420,
-    LOONGARCH_INS_ROTR_B = 421,
-    LOONGARCH_INS_ROTR_D = 422,
-    LOONGARCH_INS_ROTR_H = 423,
-    LOONGARCH_INS_ROTR_W = 424,
-    LOONGARCH_INS_SBC_B = 425,
-    LOONGARCH_INS_SBC_D = 426,
-    LOONGARCH_INS_SBC_H = 427,
-    LOONGARCH_INS_SBC_W = 428,
-    LOONGARCH_INS_SCREL_D = 429,
-    LOONGARCH_INS_SCREL_W = 430,
-    LOONGARCH_INS_SC_D = 431,
-    LOONGARCH_INS_SC_Q = 432,
-    LOONGARCH_INS_SC_W = 433,
-    LOONGARCH_INS_SETARMJ = 434,
-    LOONGARCH_INS_SETX86J = 435,
-    LOONGARCH_INS_SETX86LOOPE = 436,
-    LOONGARCH_INS_SETX86LOOPNE = 437,
-    LOONGARCH_INS_SLLI_D = 438,
-    LOONGARCH_INS_SLLI_W = 439,
-    LOONGARCH_INS_SLL_D = 440,
-    LOONGARCH_INS_SLL_W = 441,
-    LOONGARCH_INS_SLT = 442,
-    LOONGARCH_INS_SLTI = 443,
-    LOONGARCH_INS_SLTU = 444,
-    LOONGARCH_INS_SLTUI = 445,
-    LOONGARCH_INS_SRAI_D = 446,
-    LOONGARCH_INS_SRAI_W = 447,
-    LOONGARCH_INS_SRA_D = 448,
-    LOONGARCH_INS_SRA_W = 449,
-    LOONGARCH_INS_SRLI_D = 450,
-    LOONGARCH_INS_SRLI_W = 451,
-    LOONGARCH_INS_SRL_D = 452,
-    LOONGARCH_INS_SRL_W = 453,
-    LOONGARCH_INS_STGT_B = 454,
-    LOONGARCH_INS_STGT_D = 455,
-    LOONGARCH_INS_STGT_H = 456,
-    LOONGARCH_INS_STGT_W = 457,
-    LOONGARCH_INS_STLE_B = 458,
-    LOONGARCH_INS_STLE_D = 459,
-    LOONGARCH_INS_STLE_H = 460,
-    LOONGARCH_INS_STLE_W = 461,
-    LOONGARCH_INS_STL_D = 462,
-    LOONGARCH_INS_STL_W = 463,
-    LOONGARCH_INS_STPTR_D = 464,
-    LOONGARCH_INS_STPTR_W = 465,
-    LOONGARCH_INS_STR_D = 466,
-    LOONGARCH_INS_STR_W = 467,
-    LOONGARCH_INS_STX_B = 468,
-    LOONGARCH_INS_STX_D = 469,
-    LOONGARCH_INS_STX_H = 470,
-    LOONGARCH_INS_STX_W = 471,
-    LOONGARCH_INS_ST_B = 472,
-    LOONGARCH_INS_ST_D = 473,
-    LOONGARCH_INS_ST_H = 474,
-    LOONGARCH_INS_ST_W = 475,
-    LOONGARCH_INS_SUB_D = 476,
-    LOONGARCH_INS_SUB_W = 477,
-    LOONGARCH_INS_SYSCALL = 478,
-    LOONGARCH_INS_TLBCLR = 479,
-    LOONGARCH_INS_TLBFILL = 480,
-    LOONGARCH_INS_TLBFLUSH = 481,
-    LOONGARCH_INS_TLBRD = 482,
-    LOONGARCH_INS_TLBSRCH = 483,
-    LOONGARCH_INS_TLBWR = 484,
-    LOONGARCH_INS_VABSD_B = 485,
-    LOONGARCH_INS_VABSD_BU = 486,
-    LOONGARCH_INS_VABSD_D = 487,
-    LOONGARCH_INS_VABSD_DU = 488,
-    LOONGARCH_INS_VABSD_H = 489,
-    LOONGARCH_INS_VABSD_HU = 490,
-    LOONGARCH_INS_VABSD_W = 491,
-    LOONGARCH_INS_VABSD_WU = 492,
-    LOONGARCH_INS_VADDA_B = 493,
-    LOONGARCH_INS_VADDA_D = 494,
-    LOONGARCH_INS_VADDA_H = 495,
-    LOONGARCH_INS_VADDA_W = 496,
-    LOONGARCH_INS_VADDI_BU = 497,
-    LOONGARCH_INS_VADDI_DU = 498,
-    LOONGARCH_INS_VADDI_HU = 499,
-    LOONGARCH_INS_VADDI_WU = 500,
-    LOONGARCH_INS_VADDWEV_D_W = 501,
-    LOONGARCH_INS_VADDWEV_D_WU = 502,
-    LOONGARCH_INS_VADDWEV_D_WU_W = 503,
-    LOONGARCH_INS_VADDWEV_H_B = 504,
-    LOONGARCH_INS_VADDWEV_H_BU = 505,
-    LOONGARCH_INS_VADDWEV_H_BU_B = 506,
-    LOONGARCH_INS_VADDWEV_Q_D = 507,
-    LOONGARCH_INS_VADDWEV_Q_DU = 508,
-    LOONGARCH_INS_VADDWEV_Q_DU_D = 509,
-    LOONGARCH_INS_VADDWEV_W_H = 510,
-    LOONGARCH_INS_VADDWEV_W_HU = 511,
-    LOONGARCH_INS_VADDWEV_W_HU_H = 512,
-    LOONGARCH_INS_VADDWOD_D_W = 513,
-    LOONGARCH_INS_VADDWOD_D_WU = 514,
-    LOONGARCH_INS_VADDWOD_D_WU_W = 515,
-    LOONGARCH_INS_VADDWOD_H_B = 516,
-    LOONGARCH_INS_VADDWOD_H_BU = 517,
-    LOONGARCH_INS_VADDWOD_H_BU_B = 518,
-    LOONGARCH_INS_VADDWOD_Q_D = 519,
-    LOONGARCH_INS_VADDWOD_Q_DU = 520,
-    LOONGARCH_INS_VADDWOD_Q_DU_D = 521,
-    LOONGARCH_INS_VADDWOD_W_H = 522,
-    LOONGARCH_INS_VADDWOD_W_HU = 523,
-    LOONGARCH_INS_VADDWOD_W_HU_H = 524,
-    LOONGARCH_INS_VADD_B = 525,
-    LOONGARCH_INS_VADD_D = 526,
-    LOONGARCH_INS_VADD_H = 527,
-    LOONGARCH_INS_VADD_Q = 528,
-    LOONGARCH_INS_VADD_W = 529,
-    LOONGARCH_INS_VANDI_B = 530,
-    LOONGARCH_INS_VANDN_V = 531,
-    LOONGARCH_INS_VAND_V = 532,
-    LOONGARCH_INS_VAVGR_B = 533,
-    LOONGARCH_INS_VAVGR_BU = 534,
-    LOONGARCH_INS_VAVGR_D = 535,
-    LOONGARCH_INS_VAVGR_DU = 536,
-    LOONGARCH_INS_VAVGR_H = 537,
-    LOONGARCH_INS_VAVGR_HU = 538,
-    LOONGARCH_INS_VAVGR_W = 539,
-    LOONGARCH_INS_VAVGR_WU = 540,
-    LOONGARCH_INS_VAVG_B = 541,
-    LOONGARCH_INS_VAVG_BU = 542,
-    LOONGARCH_INS_VAVG_D = 543,
-    LOONGARCH_INS_VAVG_DU = 544,
-    LOONGARCH_INS_VAVG_H = 545,
-    LOONGARCH_INS_VAVG_HU = 546,
-    LOONGARCH_INS_VAVG_W = 547,
-    LOONGARCH_INS_VAVG_WU = 548,
-    LOONGARCH_INS_VBITCLRI_B = 549,
-    LOONGARCH_INS_VBITCLRI_D = 550,
-    LOONGARCH_INS_VBITCLRI_H = 551,
-    LOONGARCH_INS_VBITCLRI_W = 552,
-    LOONGARCH_INS_VBITCLR_B = 553,
-    LOONGARCH_INS_VBITCLR_D = 554,
-    LOONGARCH_INS_VBITCLR_H = 555,
-    LOONGARCH_INS_VBITCLR_W = 556,
-    LOONGARCH_INS_VBITREVI_B = 557,
-    LOONGARCH_INS_VBITREVI_D = 558,
-    LOONGARCH_INS_VBITREVI_H = 559,
-    LOONGARCH_INS_VBITREVI_W = 560,
-    LOONGARCH_INS_VBITREV_B = 561,
-    LOONGARCH_INS_VBITREV_D = 562,
-    LOONGARCH_INS_VBITREV_H = 563,
-    LOONGARCH_INS_VBITREV_W = 564,
-    LOONGARCH_INS_VBITSELI_B = 565,
-    LOONGARCH_INS_VBITSEL_V = 566,
-    LOONGARCH_INS_VBITSETI_B = 567,
-    LOONGARCH_INS_VBITSETI_D = 568,
-    LOONGARCH_INS_VBITSETI_H = 569,
-    LOONGARCH_INS_VBITSETI_W = 570,
-    LOONGARCH_INS_VBITSET_B = 571,
-    LOONGARCH_INS_VBITSET_D = 572,
-    LOONGARCH_INS_VBITSET_H = 573,
-    LOONGARCH_INS_VBITSET_W = 574,
-    LOONGARCH_INS_VBSLL_V = 575,
-    LOONGARCH_INS_VBSRL_V = 576,
-    LOONGARCH_INS_VCLO_B = 577,
-    LOONGARCH_INS_VCLO_D = 578,
-    LOONGARCH_INS_VCLO_H = 579,
-    LOONGARCH_INS_VCLO_W = 580,
-    LOONGARCH_INS_VCLZ_B = 581,
-    LOONGARCH_INS_VCLZ_D = 582,
-    LOONGARCH_INS_VCLZ_H = 583,
-    LOONGARCH_INS_VCLZ_W = 584,
-    LOONGARCH_INS_VDIV_B = 585,
-    LOONGARCH_INS_VDIV_BU = 586,
-    LOONGARCH_INS_VDIV_D = 587,
-    LOONGARCH_INS_VDIV_DU = 588,
-    LOONGARCH_INS_VDIV_H = 589,
-    LOONGARCH_INS_VDIV_HU = 590,
-    LOONGARCH_INS_VDIV_W = 591,
-    LOONGARCH_INS_VDIV_WU = 592,
-    LOONGARCH_INS_VEXT2XV_DU_BU = 593,
-    LOONGARCH_INS_VEXT2XV_DU_HU = 594,
-    LOONGARCH_INS_VEXT2XV_DU_WU = 595,
-    LOONGARCH_INS_VEXT2XV_D_B = 596,
-    LOONGARCH_INS_VEXT2XV_D_H = 597,
-    LOONGARCH_INS_VEXT2XV_D_W = 598,
-    LOONGARCH_INS_VEXT2XV_HU_BU = 599,
-    LOONGARCH_INS_VEXT2XV_H_B = 600,
-    LOONGARCH_INS_VEXT2XV_WU_BU = 601,
-    LOONGARCH_INS_VEXT2XV_WU_HU = 602,
-    LOONGARCH_INS_VEXT2XV_W_B = 603,
-    LOONGARCH_INS_VEXT2XV_W_H = 604,
-    LOONGARCH_INS_VEXTH_DU_WU = 605,
-    LOONGARCH_INS_VEXTH_D_W = 606,
-    LOONGARCH_INS_VEXTH_HU_BU = 607,
-    LOONGARCH_INS_VEXTH_H_B = 608,
-    LOONGARCH_INS_VEXTH_QU_DU = 609,
-    LOONGARCH_INS_VEXTH_Q_D = 610,
-    LOONGARCH_INS_VEXTH_WU_HU = 611,
-    LOONGARCH_INS_VEXTH_W_H = 612,
-    LOONGARCH_INS_VEXTL_QU_DU = 613,
-    LOONGARCH_INS_VEXTL_Q_D = 614,
-    LOONGARCH_INS_VEXTRINS_B = 615,
-    LOONGARCH_INS_VEXTRINS_D = 616,
-    LOONGARCH_INS_VEXTRINS_H = 617,
-    LOONGARCH_INS_VEXTRINS_W = 618,
-    LOONGARCH_INS_VFADD_D = 619,
-    LOONGARCH_INS_VFADD_S = 620,
-    LOONGARCH_INS_VFCLASS_D = 621,
-    LOONGARCH_INS_VFCLASS_S = 622,
-    LOONGARCH_INS_VFCMP_CAF_D = 623,
-    LOONGARCH_INS_VFCMP_CAF_S = 624,
-    LOONGARCH_INS_VFCMP_CEQ_D = 625,
-    LOONGARCH_INS_VFCMP_CEQ_S = 626,
-    LOONGARCH_INS_VFCMP_CLE_D = 627,
-    LOONGARCH_INS_VFCMP_CLE_S = 628,
-    LOONGARCH_INS_VFCMP_CLT_D = 629,
-    LOONGARCH_INS_VFCMP_CLT_S = 630,
-    LOONGARCH_INS_VFCMP_CNE_D = 631,
-    LOONGARCH_INS_VFCMP_CNE_S = 632,
-    LOONGARCH_INS_VFCMP_COR_D = 633,
-    LOONGARCH_INS_VFCMP_COR_S = 634,
-    LOONGARCH_INS_VFCMP_CUEQ_D = 635,
-    LOONGARCH_INS_VFCMP_CUEQ_S = 636,
-    LOONGARCH_INS_VFCMP_CULE_D = 637,
-    LOONGARCH_INS_VFCMP_CULE_S = 638,
-    LOONGARCH_INS_VFCMP_CULT_D = 639,
-    LOONGARCH_INS_VFCMP_CULT_S = 640,
-    LOONGARCH_INS_VFCMP_CUNE_D = 641,
-    LOONGARCH_INS_VFCMP_CUNE_S = 642,
-    LOONGARCH_INS_VFCMP_CUN_D = 643,
-    LOONGARCH_INS_VFCMP_CUN_S = 644,
-    LOONGARCH_INS_VFCMP_SAF_D = 645,
-    LOONGARCH_INS_VFCMP_SAF_S = 646,
-    LOONGARCH_INS_VFCMP_SEQ_D = 647,
-    LOONGARCH_INS_VFCMP_SEQ_S = 648,
-    LOONGARCH_INS_VFCMP_SLE_D = 649,
-    LOONGARCH_INS_VFCMP_SLE_S = 650,
-    LOONGARCH_INS_VFCMP_SLT_D = 651,
-    LOONGARCH_INS_VFCMP_SLT_S = 652,
-    LOONGARCH_INS_VFCMP_SNE_D = 653,
-    LOONGARCH_INS_VFCMP_SNE_S = 654,
-    LOONGARCH_INS_VFCMP_SOR_D = 655,
-    LOONGARCH_INS_VFCMP_SOR_S = 656,
-    LOONGARCH_INS_VFCMP_SUEQ_D = 657,
-    LOONGARCH_INS_VFCMP_SUEQ_S = 658,
-    LOONGARCH_INS_VFCMP_SULE_D = 659,
-    LOONGARCH_INS_VFCMP_SULE_S = 660,
-    LOONGARCH_INS_VFCMP_SULT_D = 661,
-    LOONGARCH_INS_VFCMP_SULT_S = 662,
-    LOONGARCH_INS_VFCMP_SUNE_D = 663,
-    LOONGARCH_INS_VFCMP_SUNE_S = 664,
-    LOONGARCH_INS_VFCMP_SUN_D = 665,
-    LOONGARCH_INS_VFCMP_SUN_S = 666,
-    LOONGARCH_INS_VFCVTH_D_S = 667,
-    LOONGARCH_INS_VFCVTH_S_H = 668,
-    LOONGARCH_INS_VFCVTL_D_S = 669,
-    LOONGARCH_INS_VFCVTL_S_H = 670,
-    LOONGARCH_INS_VFCVT_H_S = 671,
-    LOONGARCH_INS_VFCVT_S_D = 672,
-    LOONGARCH_INS_VFDIV_D = 673,
-    LOONGARCH_INS_VFDIV_S = 674,
-    LOONGARCH_INS_VFFINTH_D_W = 675,
-    LOONGARCH_INS_VFFINTL_D_W = 676,
-    LOONGARCH_INS_VFFINT_D_L = 677,
-    LOONGARCH_INS_VFFINT_D_LU = 678,
-    LOONGARCH_INS_VFFINT_S_L = 679,
-    LOONGARCH_INS_VFFINT_S_W = 680,
-    LOONGARCH_INS_VFFINT_S_WU = 681,
-    LOONGARCH_INS_VFLOGB_D = 682,
-    LOONGARCH_INS_VFLOGB_S = 683,
-    LOONGARCH_INS_VFMADD_D = 684,
-    LOONGARCH_INS_VFMADD_S = 685,
-    LOONGARCH_INS_VFMAXA_D = 686,
-    LOONGARCH_INS_VFMAXA_S = 687,
-    LOONGARCH_INS_VFMAX_D = 688,
-    LOONGARCH_INS_VFMAX_S = 689,
-    LOONGARCH_INS_VFMINA_D = 690,
-    LOONGARCH_INS_VFMINA_S = 691,
-    LOONGARCH_INS_VFMIN_D = 692,
-    LOONGARCH_INS_VFMIN_S = 693,
-    LOONGARCH_INS_VFMSUB_D = 694,
-    LOONGARCH_INS_VFMSUB_S = 695,
-    LOONGARCH_INS_VFMUL_D = 696,
-    LOONGARCH_INS_VFMUL_S = 697,
-    LOONGARCH_INS_VFNMADD_D = 698,
-    LOONGARCH_INS_VFNMADD_S = 699,
-    LOONGARCH_INS_VFNMSUB_D = 700,
-    LOONGARCH_INS_VFNMSUB_S = 701,
-    LOONGARCH_INS_VFRECIPE_D = 702,
-    LOONGARCH_INS_VFRECIPE_S = 703,
-    LOONGARCH_INS_VFRECIP_D = 704,
-    LOONGARCH_INS_VFRECIP_S = 705,
-    LOONGARCH_INS_VFRINTRM_D = 706,
-    LOONGARCH_INS_VFRINTRM_S = 707,
-    LOONGARCH_INS_VFRINTRNE_D = 708,
-    LOONGARCH_INS_VFRINTRNE_S = 709,
-    LOONGARCH_INS_VFRINTRP_D = 710,
-    LOONGARCH_INS_VFRINTRP_S = 711,
-    LOONGARCH_INS_VFRINTRZ_D = 712,
-    LOONGARCH_INS_VFRINTRZ_S = 713,
-    LOONGARCH_INS_VFRINT_D = 714,
-    LOONGARCH_INS_VFRINT_S = 715,
-    LOONGARCH_INS_VFRSQRTE_D = 716,
-    LOONGARCH_INS_VFRSQRTE_S = 717,
-    LOONGARCH_INS_VFRSQRT_D = 718,
-    LOONGARCH_INS_VFRSQRT_S = 719,
-    LOONGARCH_INS_VFRSTPI_B = 720,
-    LOONGARCH_INS_VFRSTPI_H = 721,
-    LOONGARCH_INS_VFRSTP_B = 722,
-    LOONGARCH_INS_VFRSTP_H = 723,
-    LOONGARCH_INS_VFSQRT_D = 724,
-    LOONGARCH_INS_VFSQRT_S = 725,
-    LOONGARCH_INS_VFSUB_D = 726,
-    LOONGARCH_INS_VFSUB_S = 727,
-    LOONGARCH_INS_VFTINTH_L_S = 728,
-    LOONGARCH_INS_VFTINTL_L_S = 729,
-    LOONGARCH_INS_VFTINTRMH_L_S = 730,
-    LOONGARCH_INS_VFTINTRML_L_S = 731,
-    LOONGARCH_INS_VFTINTRM_L_D = 732,
-    LOONGARCH_INS_VFTINTRM_W_D = 733,
-    LOONGARCH_INS_VFTINTRM_W_S = 734,
-    LOONGARCH_INS_VFTINTRNEH_L_S = 735,
-    LOONGARCH_INS_VFTINTRNEL_L_S = 736,
-    LOONGARCH_INS_VFTINTRNE_L_D = 737,
-    LOONGARCH_INS_VFTINTRNE_W_D = 738,
-    LOONGARCH_INS_VFTINTRNE_W_S = 739,
-    LOONGARCH_INS_VFTINTRPH_L_S = 740,
-    LOONGARCH_INS_VFTINTRPL_L_S = 741,
-    LOONGARCH_INS_VFTINTRP_L_D = 742,
-    LOONGARCH_INS_VFTINTRP_W_D = 743,
-    LOONGARCH_INS_VFTINTRP_W_S = 744,
-    LOONGARCH_INS_VFTINTRZH_L_S = 745,
-    LOONGARCH_INS_VFTINTRZL_L_S = 746,
-    LOONGARCH_INS_VFTINTRZ_LU_D = 747,
-    LOONGARCH_INS_VFTINTRZ_L_D = 748,
-    LOONGARCH_INS_VFTINTRZ_WU_S = 749,
-    LOONGARCH_INS_VFTINTRZ_W_D = 750,
-    LOONGARCH_INS_VFTINTRZ_W_S = 751,
-    LOONGARCH_INS_VFTINT_LU_D = 752,
-    LOONGARCH_INS_VFTINT_L_D = 753,
-    LOONGARCH_INS_VFTINT_WU_S = 754,
-    LOONGARCH_INS_VFTINT_W_D = 755,
-    LOONGARCH_INS_VFTINT_W_S = 756,
-    LOONGARCH_INS_VHADDW_DU_WU = 757,
-    LOONGARCH_INS_VHADDW_D_W = 758,
-    LOONGARCH_INS_VHADDW_HU_BU = 759,
-    LOONGARCH_INS_VHADDW_H_B = 760,
-    LOONGARCH_INS_VHADDW_QU_DU = 761,
-    LOONGARCH_INS_VHADDW_Q_D = 762,
-    LOONGARCH_INS_VHADDW_WU_HU = 763,
-    LOONGARCH_INS_VHADDW_W_H = 764,
-    LOONGARCH_INS_VHSUBW_DU_WU = 765,
-    LOONGARCH_INS_VHSUBW_D_W = 766,
-    LOONGARCH_INS_VHSUBW_HU_BU = 767,
-    LOONGARCH_INS_VHSUBW_H_B = 768,
-    LOONGARCH_INS_VHSUBW_QU_DU = 769,
-    LOONGARCH_INS_VHSUBW_Q_D = 770,
-    LOONGARCH_INS_VHSUBW_WU_HU = 771,
-    LOONGARCH_INS_VHSUBW_W_H = 772,
-    LOONGARCH_INS_VILVH_B = 773,
-    LOONGARCH_INS_VILVH_D = 774,
-    LOONGARCH_INS_VILVH_H = 775,
-    LOONGARCH_INS_VILVH_W = 776,
-    LOONGARCH_INS_VILVL_B = 777,
-    LOONGARCH_INS_VILVL_D = 778,
-    LOONGARCH_INS_VILVL_H = 779,
-    LOONGARCH_INS_VILVL_W = 780,
-    LOONGARCH_INS_VINSGR2VR_B = 781,
-    LOONGARCH_INS_VINSGR2VR_D = 782,
-    LOONGARCH_INS_VINSGR2VR_H = 783,
-    LOONGARCH_INS_VINSGR2VR_W = 784,
-    LOONGARCH_INS_VLD = 785,
-    LOONGARCH_INS_VLDI = 786,
-    LOONGARCH_INS_VLDREPL_B = 787,
-    LOONGARCH_INS_VLDREPL_D = 788,
-    LOONGARCH_INS_VLDREPL_H = 789,
-    LOONGARCH_INS_VLDREPL_W = 790,
-    LOONGARCH_INS_VLDX = 791,
-    LOONGARCH_INS_VMADDWEV_D_W = 792,
-    LOONGARCH_INS_VMADDWEV_D_WU = 793,
-    LOONGARCH_INS_VMADDWEV_D_WU_W = 794,
-    LOONGARCH_INS_VMADDWEV_H_B = 795,
-    LOONGARCH_INS_VMADDWEV_H_BU = 796,
-    LOONGARCH_INS_VMADDWEV_H_BU_B = 797,
-    LOONGARCH_INS_VMADDWEV_Q_D = 798,
-    LOONGARCH_INS_VMADDWEV_Q_DU = 799,
-    LOONGARCH_INS_VMADDWEV_Q_DU_D = 800,
-    LOONGARCH_INS_VMADDWEV_W_H = 801,
-    LOONGARCH_INS_VMADDWEV_W_HU = 802,
-    LOONGARCH_INS_VMADDWEV_W_HU_H = 803,
-    LOONGARCH_INS_VMADDWOD_D_W = 804,
-    LOONGARCH_INS_VMADDWOD_D_WU = 805,
-    LOONGARCH_INS_VMADDWOD_D_WU_W = 806,
-    LOONGARCH_INS_VMADDWOD_H_B = 807,
-    LOONGARCH_INS_VMADDWOD_H_BU = 808,
-    LOONGARCH_INS_VMADDWOD_H_BU_B = 809,
-    LOONGARCH_INS_VMADDWOD_Q_D = 810,
-    LOONGARCH_INS_VMADDWOD_Q_DU = 811,
-    LOONGARCH_INS_VMADDWOD_Q_DU_D = 812,
-    LOONGARCH_INS_VMADDWOD_W_H = 813,
-    LOONGARCH_INS_VMADDWOD_W_HU = 814,
-    LOONGARCH_INS_VMADDWOD_W_HU_H = 815,
-    LOONGARCH_INS_VMADD_B = 816,
-    LOONGARCH_INS_VMADD_D = 817,
-    LOONGARCH_INS_VMADD_H = 818,
-    LOONGARCH_INS_VMADD_W = 819,
-    LOONGARCH_INS_VMAXI_B = 820,
-    LOONGARCH_INS_VMAXI_BU = 821,
-    LOONGARCH_INS_VMAXI_D = 822,
-    LOONGARCH_INS_VMAXI_DU = 823,
-    LOONGARCH_INS_VMAXI_H = 824,
-    LOONGARCH_INS_VMAXI_HU = 825,
-    LOONGARCH_INS_VMAXI_W = 826,
-    LOONGARCH_INS_VMAXI_WU = 827,
-    LOONGARCH_INS_VMAX_B = 828,
-    LOONGARCH_INS_VMAX_BU = 829,
-    LOONGARCH_INS_VMAX_D = 830,
-    LOONGARCH_INS_VMAX_DU = 831,
-    LOONGARCH_INS_VMAX_H = 832,
-    LOONGARCH_INS_VMAX_HU = 833,
-    LOONGARCH_INS_VMAX_W = 834,
-    LOONGARCH_INS_VMAX_WU = 835,
-    LOONGARCH_INS_VMINI_B = 836,
-    LOONGARCH_INS_VMINI_BU = 837,
-    LOONGARCH_INS_VMINI_D = 838,
-    LOONGARCH_INS_VMINI_DU = 839,
-    LOONGARCH_INS_VMINI_H = 840,
-    LOONGARCH_INS_VMINI_HU = 841,
-    LOONGARCH_INS_VMINI_W = 842,
-    LOONGARCH_INS_VMINI_WU = 843,
-    LOONGARCH_INS_VMIN_B = 844,
-    LOONGARCH_INS_VMIN_BU = 845,
-    LOONGARCH_INS_VMIN_D = 846,
-    LOONGARCH_INS_VMIN_DU = 847,
-    LOONGARCH_INS_VMIN_H = 848,
-    LOONGARCH_INS_VMIN_HU = 849,
-    LOONGARCH_INS_VMIN_W = 850,
-    LOONGARCH_INS_VMIN_WU = 851,
-    LOONGARCH_INS_VMOD_B = 852,
-    LOONGARCH_INS_VMOD_BU = 853,
-    LOONGARCH_INS_VMOD_D = 854,
-    LOONGARCH_INS_VMOD_DU = 855,
-    LOONGARCH_INS_VMOD_H = 856,
-    LOONGARCH_INS_VMOD_HU = 857,
-    LOONGARCH_INS_VMOD_W = 858,
-    LOONGARCH_INS_VMOD_WU = 859,
-    LOONGARCH_INS_VMSKGEZ_B = 860,
-    LOONGARCH_INS_VMSKLTZ_B = 861,
-    LOONGARCH_INS_VMSKLTZ_D = 862,
-    LOONGARCH_INS_VMSKLTZ_H = 863,
-    LOONGARCH_INS_VMSKLTZ_W = 864,
-    LOONGARCH_INS_VMSKNZ_B = 865,
-    LOONGARCH_INS_VMSUB_B = 866,
-    LOONGARCH_INS_VMSUB_D = 867,
-    LOONGARCH_INS_VMSUB_H = 868,
-    LOONGARCH_INS_VMSUB_W = 869,
-    LOONGARCH_INS_VMUH_B = 870,
-    LOONGARCH_INS_VMUH_BU = 871,
-    LOONGARCH_INS_VMUH_D = 872,
-    LOONGARCH_INS_VMUH_DU = 873,
-    LOONGARCH_INS_VMUH_H = 874,
-    LOONGARCH_INS_VMUH_HU = 875,
-    LOONGARCH_INS_VMUH_W = 876,
-    LOONGARCH_INS_VMUH_WU = 877,
-    LOONGARCH_INS_VMULWEV_D_W = 878,
-    LOONGARCH_INS_VMULWEV_D_WU = 879,
-    LOONGARCH_INS_VMULWEV_D_WU_W = 880,
-    LOONGARCH_INS_VMULWEV_H_B = 881,
-    LOONGARCH_INS_VMULWEV_H_BU = 882,
-    LOONGARCH_INS_VMULWEV_H_BU_B = 883,
-    LOONGARCH_INS_VMULWEV_Q_D = 884,
-    LOONGARCH_INS_VMULWEV_Q_DU = 885,
-    LOONGARCH_INS_VMULWEV_Q_DU_D = 886,
-    LOONGARCH_INS_VMULWEV_W_H = 887,
-    LOONGARCH_INS_VMULWEV_W_HU = 888,
-    LOONGARCH_INS_VMULWEV_W_HU_H = 889,
-    LOONGARCH_INS_VMULWOD_D_W = 890,
-    LOONGARCH_INS_VMULWOD_D_WU = 891,
-    LOONGARCH_INS_VMULWOD_D_WU_W = 892,
-    LOONGARCH_INS_VMULWOD_H_B = 893,
-    LOONGARCH_INS_VMULWOD_H_BU = 894,
-    LOONGARCH_INS_VMULWOD_H_BU_B = 895,
-    LOONGARCH_INS_VMULWOD_Q_D = 896,
-    LOONGARCH_INS_VMULWOD_Q_DU = 897,
-    LOONGARCH_INS_VMULWOD_Q_DU_D = 898,
-    LOONGARCH_INS_VMULWOD_W_H = 899,
-    LOONGARCH_INS_VMULWOD_W_HU = 900,
-    LOONGARCH_INS_VMULWOD_W_HU_H = 901,
-    LOONGARCH_INS_VMUL_B = 902,
-    LOONGARCH_INS_VMUL_D = 903,
-    LOONGARCH_INS_VMUL_H = 904,
-    LOONGARCH_INS_VMUL_W = 905,
-    LOONGARCH_INS_VNEG_B = 906,
-    LOONGARCH_INS_VNEG_D = 907,
-    LOONGARCH_INS_VNEG_H = 908,
-    LOONGARCH_INS_VNEG_W = 909,
-    LOONGARCH_INS_VNORI_B = 910,
-    LOONGARCH_INS_VNOR_V = 911,
-    LOONGARCH_INS_VORI_B = 912,
-    LOONGARCH_INS_VORN_V = 913,
-    LOONGARCH_INS_VOR_V = 914,
-    LOONGARCH_INS_VPACKEV_B = 915,
-    LOONGARCH_INS_VPACKEV_D = 916,
-    LOONGARCH_INS_VPACKEV_H = 917,
-    LOONGARCH_INS_VPACKEV_W = 918,
-    LOONGARCH_INS_VPACKOD_B = 919,
-    LOONGARCH_INS_VPACKOD_D = 920,
-    LOONGARCH_INS_VPACKOD_H = 921,
-    LOONGARCH_INS_VPACKOD_W = 922,
-    LOONGARCH_INS_VPCNT_B = 923,
-    LOONGARCH_INS_VPCNT_D = 924,
-    LOONGARCH_INS_VPCNT_H = 925,
-    LOONGARCH_INS_VPCNT_W = 926,
-    LOONGARCH_INS_VPERMI_W = 927,
-    LOONGARCH_INS_VPICKEV_B = 928,
-    LOONGARCH_INS_VPICKEV_D = 929,
-    LOONGARCH_INS_VPICKEV_H = 930,
-    LOONGARCH_INS_VPICKEV_W = 931,
-    LOONGARCH_INS_VPICKOD_B = 932,
-    LOONGARCH_INS_VPICKOD_D = 933,
-    LOONGARCH_INS_VPICKOD_H = 934,
-    LOONGARCH_INS_VPICKOD_W = 935,
-    LOONGARCH_INS_VPICKVE2GR_B = 936,
-    LOONGARCH_INS_VPICKVE2GR_BU = 937,
-    LOONGARCH_INS_VPICKVE2GR_D = 938,
-    LOONGARCH_INS_VPICKVE2GR_DU = 939,
-    LOONGARCH_INS_VPICKVE2GR_H = 940,
-    LOONGARCH_INS_VPICKVE2GR_HU = 941,
-    LOONGARCH_INS_VPICKVE2GR_W = 942,
-    LOONGARCH_INS_VPICKVE2GR_WU = 943,
-    LOONGARCH_INS_VREPLGR2VR_B = 944,
-    LOONGARCH_INS_VREPLGR2VR_D = 945,
-    LOONGARCH_INS_VREPLGR2VR_H = 946,
-    LOONGARCH_INS_VREPLGR2VR_W = 947,
-    LOONGARCH_INS_VREPLVEI_B = 948,
-    LOONGARCH_INS_VREPLVEI_D = 949,
-    LOONGARCH_INS_VREPLVEI_H = 950,
-    LOONGARCH_INS_VREPLVEI_W = 951,
-    LOONGARCH_INS_VREPLVE_B = 952,
-    LOONGARCH_INS_VREPLVE_D = 953,
-    LOONGARCH_INS_VREPLVE_H = 954,
-    LOONGARCH_INS_VREPLVE_W = 955,
-    LOONGARCH_INS_VROTRI_B = 956,
-    LOONGARCH_INS_VROTRI_D = 957,
-    LOONGARCH_INS_VROTRI_H = 958,
-    LOONGARCH_INS_VROTRI_W = 959,
-    LOONGARCH_INS_VROTR_B = 960,
-    LOONGARCH_INS_VROTR_D = 961,
-    LOONGARCH_INS_VROTR_H = 962,
-    LOONGARCH_INS_VROTR_W = 963,
-    LOONGARCH_INS_VSADD_B = 964,
-    LOONGARCH_INS_VSADD_BU = 965,
-    LOONGARCH_INS_VSADD_D = 966,
-    LOONGARCH_INS_VSADD_DU = 967,
-    LOONGARCH_INS_VSADD_H = 968,
-    LOONGARCH_INS_VSADD_HU = 969,
-    LOONGARCH_INS_VSADD_W = 970,
-    LOONGARCH_INS_VSADD_WU = 971,
-    LOONGARCH_INS_VSAT_B = 972,
-    LOONGARCH_INS_VSAT_BU = 973,
-    LOONGARCH_INS_VSAT_D = 974,
-    LOONGARCH_INS_VSAT_DU = 975,
-    LOONGARCH_INS_VSAT_H = 976,
-    LOONGARCH_INS_VSAT_HU = 977,
-    LOONGARCH_INS_VSAT_W = 978,
-    LOONGARCH_INS_VSAT_WU = 979,
-    LOONGARCH_INS_VSEQI_B = 980,
-    LOONGARCH_INS_VSEQI_D = 981,
-    LOONGARCH_INS_VSEQI_H = 982,
-    LOONGARCH_INS_VSEQI_W = 983,
-    LOONGARCH_INS_VSEQ_B = 984,
-    LOONGARCH_INS_VSEQ_D = 985,
-    LOONGARCH_INS_VSEQ_H = 986,
-    LOONGARCH_INS_VSEQ_W = 987,
-    LOONGARCH_INS_VSETALLNEZ_B = 988,
-    LOONGARCH_INS_VSETALLNEZ_D = 989,
-    LOONGARCH_INS_VSETALLNEZ_H = 990,
-    LOONGARCH_INS_VSETALLNEZ_W = 991,
-    LOONGARCH_INS_VSETANYEQZ_B = 992,
-    LOONGARCH_INS_VSETANYEQZ_D = 993,
-    LOONGARCH_INS_VSETANYEQZ_H = 994,
-    LOONGARCH_INS_VSETANYEQZ_W = 995,
-    LOONGARCH_INS_VSETEQZ_V = 996,
-    LOONGARCH_INS_VSETNEZ_V = 997,
-    LOONGARCH_INS_VSHUF4I_B = 998,
-    LOONGARCH_INS_VSHUF4I_D = 999,
-    LOONGARCH_INS_VSHUF4I_H = 1000,
-    LOONGARCH_INS_VSHUF4I_W = 1001,
-    LOONGARCH_INS_VSHUF_B = 1002,
-    LOONGARCH_INS_VSHUF_D = 1003,
-    LOONGARCH_INS_VSHUF_H = 1004,
-    LOONGARCH_INS_VSHUF_W = 1005,
-    LOONGARCH_INS_VSIGNCOV_B = 1006,
-    LOONGARCH_INS_VSIGNCOV_D = 1007,
-    LOONGARCH_INS_VSIGNCOV_H = 1008,
-    LOONGARCH_INS_VSIGNCOV_W = 1009,
-    LOONGARCH_INS_VSLEI_B = 1010,
-    LOONGARCH_INS_VSLEI_BU = 1011,
-    LOONGARCH_INS_VSLEI_D = 1012,
-    LOONGARCH_INS_VSLEI_DU = 1013,
-    LOONGARCH_INS_VSLEI_H = 1014,
-    LOONGARCH_INS_VSLEI_HU = 1015,
-    LOONGARCH_INS_VSLEI_W = 1016,
-    LOONGARCH_INS_VSLEI_WU = 1017,
-    LOONGARCH_INS_VSLE_B = 1018,
-    LOONGARCH_INS_VSLE_BU = 1019,
-    LOONGARCH_INS_VSLE_D = 1020,
-    LOONGARCH_INS_VSLE_DU = 1021,
-    LOONGARCH_INS_VSLE_H = 1022,
-    LOONGARCH_INS_VSLE_HU = 1023,
-    LOONGARCH_INS_VSLE_W = 1024,
-    LOONGARCH_INS_VSLE_WU = 1025,
-    LOONGARCH_INS_VSLLI_B = 1026,
-    LOONGARCH_INS_VSLLI_D = 1027,
-    LOONGARCH_INS_VSLLI_H = 1028,
-    LOONGARCH_INS_VSLLI_W = 1029,
-    LOONGARCH_INS_VSLLWIL_DU_WU = 1030,
-    LOONGARCH_INS_VSLLWIL_D_W = 1031,
-    LOONGARCH_INS_VSLLWIL_HU_BU = 1032,
-    LOONGARCH_INS_VSLLWIL_H_B = 1033,
-    LOONGARCH_INS_VSLLWIL_WU_HU = 1034,
-    LOONGARCH_INS_VSLLWIL_W_H = 1035,
-    LOONGARCH_INS_VSLL_B = 1036,
-    LOONGARCH_INS_VSLL_D = 1037,
-    LOONGARCH_INS_VSLL_H = 1038,
-    LOONGARCH_INS_VSLL_W = 1039,
-    LOONGARCH_INS_VSLTI_B = 1040,
-    LOONGARCH_INS_VSLTI_BU = 1041,
-    LOONGARCH_INS_VSLTI_D = 1042,
-    LOONGARCH_INS_VSLTI_DU = 1043,
-    LOONGARCH_INS_VSLTI_H = 1044,
-    LOONGARCH_INS_VSLTI_HU = 1045,
-    LOONGARCH_INS_VSLTI_W = 1046,
-    LOONGARCH_INS_VSLTI_WU = 1047,
-    LOONGARCH_INS_VSLT_B = 1048,
-    LOONGARCH_INS_VSLT_BU = 1049,
-    LOONGARCH_INS_VSLT_D = 1050,
-    LOONGARCH_INS_VSLT_DU = 1051,
-    LOONGARCH_INS_VSLT_H = 1052,
-    LOONGARCH_INS_VSLT_HU = 1053,
-    LOONGARCH_INS_VSLT_W = 1054,
-    LOONGARCH_INS_VSLT_WU = 1055,
-    LOONGARCH_INS_VSRAI_B = 1056,
-    LOONGARCH_INS_VSRAI_D = 1057,
-    LOONGARCH_INS_VSRAI_H = 1058,
-    LOONGARCH_INS_VSRAI_W = 1059,
-    LOONGARCH_INS_VSRANI_B_H = 1060,
-    LOONGARCH_INS_VSRANI_D_Q = 1061,
-    LOONGARCH_INS_VSRANI_H_W = 1062,
-    LOONGARCH_INS_VSRANI_W_D = 1063,
-    LOONGARCH_INS_VSRAN_B_H = 1064,
-    LOONGARCH_INS_VSRAN_H_W = 1065,
-    LOONGARCH_INS_VSRAN_W_D = 1066,
-    LOONGARCH_INS_VSRARI_B = 1067,
-    LOONGARCH_INS_VSRARI_D = 1068,
-    LOONGARCH_INS_VSRARI_H = 1069,
-    LOONGARCH_INS_VSRARI_W = 1070,
-    LOONGARCH_INS_VSRARNI_B_H = 1071,
-    LOONGARCH_INS_VSRARNI_D_Q = 1072,
-    LOONGARCH_INS_VSRARNI_H_W = 1073,
-    LOONGARCH_INS_VSRARNI_W_D = 1074,
-    LOONGARCH_INS_VSRARN_B_H = 1075,
-    LOONGARCH_INS_VSRARN_H_W = 1076,
-    LOONGARCH_INS_VSRARN_W_D = 1077,
-    LOONGARCH_INS_VSRAR_B = 1078,
-    LOONGARCH_INS_VSRAR_D = 1079,
-    LOONGARCH_INS_VSRAR_H = 1080,
-    LOONGARCH_INS_VSRAR_W = 1081,
-    LOONGARCH_INS_VSRA_B = 1082,
-    LOONGARCH_INS_VSRA_D = 1083,
-    LOONGARCH_INS_VSRA_H = 1084,
-    LOONGARCH_INS_VSRA_W = 1085,
-    LOONGARCH_INS_VSRLI_B = 1086,
-    LOONGARCH_INS_VSRLI_D = 1087,
-    LOONGARCH_INS_VSRLI_H = 1088,
-    LOONGARCH_INS_VSRLI_W = 1089,
-    LOONGARCH_INS_VSRLNI_B_H = 1090,
-    LOONGARCH_INS_VSRLNI_D_Q = 1091,
-    LOONGARCH_INS_VSRLNI_H_W = 1092,
-    LOONGARCH_INS_VSRLNI_W_D = 1093,
-    LOONGARCH_INS_VSRLN_B_H = 1094,
-    LOONGARCH_INS_VSRLN_H_W = 1095,
-    LOONGARCH_INS_VSRLN_W_D = 1096,
-    LOONGARCH_INS_VSRLRI_B = 1097,
-    LOONGARCH_INS_VSRLRI_D = 1098,
-    LOONGARCH_INS_VSRLRI_H = 1099,
-    LOONGARCH_INS_VSRLRI_W = 1100,
-    LOONGARCH_INS_VSRLRNI_B_H = 1101,
-    LOONGARCH_INS_VSRLRNI_D_Q = 1102,
-    LOONGARCH_INS_VSRLRNI_H_W = 1103,
-    LOONGARCH_INS_VSRLRNI_W_D = 1104,
-    LOONGARCH_INS_VSRLRN_B_H = 1105,
-    LOONGARCH_INS_VSRLRN_H_W = 1106,
-    LOONGARCH_INS_VSRLRN_W_D = 1107,
-    LOONGARCH_INS_VSRLR_B = 1108,
-    LOONGARCH_INS_VSRLR_D = 1109,
-    LOONGARCH_INS_VSRLR_H = 1110,
-    LOONGARCH_INS_VSRLR_W = 1111,
-    LOONGARCH_INS_VSRL_B = 1112,
-    LOONGARCH_INS_VSRL_D = 1113,
-    LOONGARCH_INS_VSRL_H = 1114,
-    LOONGARCH_INS_VSRL_W = 1115,
-    LOONGARCH_INS_VSSRANI_BU_H = 1116,
-    LOONGARCH_INS_VSSRANI_B_H = 1117,
-    LOONGARCH_INS_VSSRANI_DU_Q = 1118,
-    LOONGARCH_INS_VSSRANI_D_Q = 1119,
-    LOONGARCH_INS_VSSRANI_HU_W = 1120,
-    LOONGARCH_INS_VSSRANI_H_W = 1121,
-    LOONGARCH_INS_VSSRANI_WU_D = 1122,
-    LOONGARCH_INS_VSSRANI_W_D = 1123,
-    LOONGARCH_INS_VSSRAN_BU_H = 1124,
-    LOONGARCH_INS_VSSRAN_B_H = 1125,
-    LOONGARCH_INS_VSSRAN_HU_W = 1126,
-    LOONGARCH_INS_VSSRAN_H_W = 1127,
-    LOONGARCH_INS_VSSRAN_WU_D = 1128,
-    LOONGARCH_INS_VSSRAN_W_D = 1129,
-    LOONGARCH_INS_VSSRARNI_BU_H = 1130,
-    LOONGARCH_INS_VSSRARNI_B_H = 1131,
-    LOONGARCH_INS_VSSRARNI_DU_Q = 1132,
-    LOONGARCH_INS_VSSRARNI_D_Q = 1133,
-    LOONGARCH_INS_VSSRARNI_HU_W = 1134,
-    LOONGARCH_INS_VSSRARNI_H_W = 1135,
-    LOONGARCH_INS_VSSRARNI_WU_D = 1136,
-    LOONGARCH_INS_VSSRARNI_W_D = 1137,
-    LOONGARCH_INS_VSSRARN_BU_H = 1138,
-    LOONGARCH_INS_VSSRARN_B_H = 1139,
-    LOONGARCH_INS_VSSRARN_HU_W = 1140,
-    LOONGARCH_INS_VSSRARN_H_W = 1141,
-    LOONGARCH_INS_VSSRARN_WU_D = 1142,
-    LOONGARCH_INS_VSSRARN_W_D = 1143,
-    LOONGARCH_INS_VSSRLNI_BU_H = 1144,
-    LOONGARCH_INS_VSSRLNI_B_H = 1145,
-    LOONGARCH_INS_VSSRLNI_DU_Q = 1146,
-    LOONGARCH_INS_VSSRLNI_D_Q = 1147,
-    LOONGARCH_INS_VSSRLNI_HU_W = 1148,
-    LOONGARCH_INS_VSSRLNI_H_W = 1149,
-    LOONGARCH_INS_VSSRLNI_WU_D = 1150,
-    LOONGARCH_INS_VSSRLNI_W_D = 1151,
-    LOONGARCH_INS_VSSRLN_BU_H = 1152,
-    LOONGARCH_INS_VSSRLN_B_H = 1153,
-    LOONGARCH_INS_VSSRLN_HU_W = 1154,
-    LOONGARCH_INS_VSSRLN_H_W = 1155,
-    LOONGARCH_INS_VSSRLN_WU_D = 1156,
-    LOONGARCH_INS_VSSRLN_W_D = 1157,
-    LOONGARCH_INS_VSSRLRNI_BU_H = 1158,
-    LOONGARCH_INS_VSSRLRNI_B_H = 1159,
-    LOONGARCH_INS_VSSRLRNI_DU_Q = 1160,
-    LOONGARCH_INS_VSSRLRNI_D_Q = 1161,
-    LOONGARCH_INS_VSSRLRNI_HU_W = 1162,
-    LOONGARCH_INS_VSSRLRNI_H_W = 1163,
-    LOONGARCH_INS_VSSRLRNI_WU_D = 1164,
-    LOONGARCH_INS_VSSRLRNI_W_D = 1165,
-    LOONGARCH_INS_VSSRLRN_BU_H = 1166,
-    LOONGARCH_INS_VSSRLRN_B_H = 1167,
-    LOONGARCH_INS_VSSRLRN_HU_W = 1168,
-    LOONGARCH_INS_VSSRLRN_H_W = 1169,
-    LOONGARCH_INS_VSSRLRN_WU_D = 1170,
-    LOONGARCH_INS_VSSRLRN_W_D = 1171,
-    LOONGARCH_INS_VSSUB_B = 1172,
-    LOONGARCH_INS_VSSUB_BU = 1173,
-    LOONGARCH_INS_VSSUB_D = 1174,
-    LOONGARCH_INS_VSSUB_DU = 1175,
-    LOONGARCH_INS_VSSUB_H = 1176,
-    LOONGARCH_INS_VSSUB_HU = 1177,
-    LOONGARCH_INS_VSSUB_W = 1178,
-    LOONGARCH_INS_VSSUB_WU = 1179,
-    LOONGARCH_INS_VST = 1180,
-    LOONGARCH_INS_VSTELM_B = 1181,
-    LOONGARCH_INS_VSTELM_D = 1182,
-    LOONGARCH_INS_VSTELM_H = 1183,
-    LOONGARCH_INS_VSTELM_W = 1184,
-    LOONGARCH_INS_VSTX = 1185,
-    LOONGARCH_INS_VSUBI_BU = 1186,
-    LOONGARCH_INS_VSUBI_DU = 1187,
-    LOONGARCH_INS_VSUBI_HU = 1188,
-    LOONGARCH_INS_VSUBI_WU = 1189,
-    LOONGARCH_INS_VSUBWEV_D_W = 1190,
-    LOONGARCH_INS_VSUBWEV_D_WU = 1191,
-    LOONGARCH_INS_VSUBWEV_H_B = 1192,
-    LOONGARCH_INS_VSUBWEV_H_BU = 1193,
-    LOONGARCH_INS_VSUBWEV_Q_D = 1194,
-    LOONGARCH_INS_VSUBWEV_Q_DU = 1195,
-    LOONGARCH_INS_VSUBWEV_W_H = 1196,
-    LOONGARCH_INS_VSUBWEV_W_HU = 1197,
-    LOONGARCH_INS_VSUBWOD_D_W = 1198,
-    LOONGARCH_INS_VSUBWOD_D_WU = 1199,
-    LOONGARCH_INS_VSUBWOD_H_B = 1200,
-    LOONGARCH_INS_VSUBWOD_H_BU = 1201,
-    LOONGARCH_INS_VSUBWOD_Q_D = 1202,
-    LOONGARCH_INS_VSUBWOD_Q_DU = 1203,
-    LOONGARCH_INS_VSUBWOD_W_H = 1204,
-    LOONGARCH_INS_VSUBWOD_W_HU = 1205,
-    LOONGARCH_INS_VSUB_B = 1206,
-    LOONGARCH_INS_VSUB_D = 1207,
-    LOONGARCH_INS_VSUB_H = 1208,
-    LOONGARCH_INS_VSUB_Q = 1209,
-    LOONGARCH_INS_VSUB_W = 1210,
-    LOONGARCH_INS_VXORI_B = 1211,
-    LOONGARCH_INS_VXOR_V = 1212,
-    LOONGARCH_INS_X86ADC_B = 1213,
-    LOONGARCH_INS_X86ADC_D = 1214,
-    LOONGARCH_INS_X86ADC_H = 1215,
-    LOONGARCH_INS_X86ADC_W = 1216,
-    LOONGARCH_INS_X86ADD_B = 1217,
-    LOONGARCH_INS_X86ADD_D = 1218,
-    LOONGARCH_INS_X86ADD_DU = 1219,
-    LOONGARCH_INS_X86ADD_H = 1220,
-    LOONGARCH_INS_X86ADD_W = 1221,
-    LOONGARCH_INS_X86ADD_WU = 1222,
-    LOONGARCH_INS_X86AND_B = 1223,
-    LOONGARCH_INS_X86AND_D = 1224,
-    LOONGARCH_INS_X86AND_H = 1225,
-    LOONGARCH_INS_X86AND_W = 1226,
-    LOONGARCH_INS_X86CLRTM = 1227,
-    LOONGARCH_INS_X86DECTOP = 1228,
-    LOONGARCH_INS_X86DEC_B = 1229,
-    LOONGARCH_INS_X86DEC_D = 1230,
-    LOONGARCH_INS_X86DEC_H = 1231,
-    LOONGARCH_INS_X86DEC_W = 1232,
-    LOONGARCH_INS_X86INCTOP = 1233,
-    LOONGARCH_INS_X86INC_B = 1234,
-    LOONGARCH_INS_X86INC_D = 1235,
-    LOONGARCH_INS_X86INC_H = 1236,
-    LOONGARCH_INS_X86INC_W = 1237,
-    LOONGARCH_INS_X86MFFLAG = 1238,
-    LOONGARCH_INS_X86MFTOP = 1239,
-    LOONGARCH_INS_X86MTFLAG = 1240,
-    LOONGARCH_INS_X86MTTOP = 1241,
-    LOONGARCH_INS_X86MUL_B = 1242,
-    LOONGARCH_INS_X86MUL_BU = 1243,
-    LOONGARCH_INS_X86MUL_D = 1244,
-    LOONGARCH_INS_X86MUL_DU = 1245,
-    LOONGARCH_INS_X86MUL_H = 1246,
-    LOONGARCH_INS_X86MUL_HU = 1247,
-    LOONGARCH_INS_X86MUL_W = 1248,
-    LOONGARCH_INS_X86MUL_WU = 1249,
-    LOONGARCH_INS_X86OR_B = 1250,
-    LOONGARCH_INS_X86OR_D = 1251,
-    LOONGARCH_INS_X86OR_H = 1252,
-    LOONGARCH_INS_X86OR_W = 1253,
-    LOONGARCH_INS_X86RCLI_B = 1254,
-    LOONGARCH_INS_X86RCLI_D = 1255,
-    LOONGARCH_INS_X86RCLI_H = 1256,
-    LOONGARCH_INS_X86RCLI_W = 1257,
-    LOONGARCH_INS_X86RCL_B = 1258,
-    LOONGARCH_INS_X86RCL_D = 1259,
-    LOONGARCH_INS_X86RCL_H = 1260,
-    LOONGARCH_INS_X86RCL_W = 1261,
-    LOONGARCH_INS_X86RCRI_B = 1262,
-    LOONGARCH_INS_X86RCRI_D = 1263,
-    LOONGARCH_INS_X86RCRI_H = 1264,
-    LOONGARCH_INS_X86RCRI_W = 1265,
-    LOONGARCH_INS_X86RCR_B = 1266,
-    LOONGARCH_INS_X86RCR_D = 1267,
-    LOONGARCH_INS_X86RCR_H = 1268,
-    LOONGARCH_INS_X86RCR_W = 1269,
-    LOONGARCH_INS_X86ROTLI_B = 1270,
-    LOONGARCH_INS_X86ROTLI_D = 1271,
-    LOONGARCH_INS_X86ROTLI_H = 1272,
-    LOONGARCH_INS_X86ROTLI_W = 1273,
-    LOONGARCH_INS_X86ROTL_B = 1274,
-    LOONGARCH_INS_X86ROTL_D = 1275,
-    LOONGARCH_INS_X86ROTL_H = 1276,
-    LOONGARCH_INS_X86ROTL_W = 1277,
-    LOONGARCH_INS_X86ROTRI_B = 1278,
-    LOONGARCH_INS_X86ROTRI_D = 1279,
-    LOONGARCH_INS_X86ROTRI_H = 1280,
-    LOONGARCH_INS_X86ROTRI_W = 1281,
-    LOONGARCH_INS_X86ROTR_B = 1282,
-    LOONGARCH_INS_X86ROTR_D = 1283,
-    LOONGARCH_INS_X86ROTR_H = 1284,
-    LOONGARCH_INS_X86ROTR_W = 1285,
-    LOONGARCH_INS_X86SBC_B = 1286,
-    LOONGARCH_INS_X86SBC_D = 1287,
-    LOONGARCH_INS_X86SBC_H = 1288,
-    LOONGARCH_INS_X86SBC_W = 1289,
-    LOONGARCH_INS_X86SETTAG = 1290,
-    LOONGARCH_INS_X86SETTM = 1291,
-    LOONGARCH_INS_X86SLLI_B = 1292,
-    LOONGARCH_INS_X86SLLI_D = 1293,
-    LOONGARCH_INS_X86SLLI_H = 1294,
-    LOONGARCH_INS_X86SLLI_W = 1295,
-    LOONGARCH_INS_X86SLL_B = 1296,
-    LOONGARCH_INS_X86SLL_D = 1297,
-    LOONGARCH_INS_X86SLL_H = 1298,
-    LOONGARCH_INS_X86SLL_W = 1299,
-    LOONGARCH_INS_X86SRAI_B = 1300,
-    LOONGARCH_INS_X86SRAI_D = 1301,
-    LOONGARCH_INS_X86SRAI_H = 1302,
-    LOONGARCH_INS_X86SRAI_W = 1303,
-    LOONGARCH_INS_X86SRA_B = 1304,
-    LOONGARCH_INS_X86SRA_D = 1305,
-    LOONGARCH_INS_X86SRA_H = 1306,
-    LOONGARCH_INS_X86SRA_W = 1307,
-    LOONGARCH_INS_X86SRLI_B = 1308,
-    LOONGARCH_INS_X86SRLI_D = 1309,
-    LOONGARCH_INS_X86SRLI_H = 1310,
-    LOONGARCH_INS_X86SRLI_W = 1311,
-    LOONGARCH_INS_X86SRL_B = 1312,
-    LOONGARCH_INS_X86SRL_D = 1313,
-    LOONGARCH_INS_X86SRL_H = 1314,
-    LOONGARCH_INS_X86SRL_W = 1315,
-    LOONGARCH_INS_X86SUB_B = 1316,
-    LOONGARCH_INS_X86SUB_D = 1317,
-    LOONGARCH_INS_X86SUB_DU = 1318,
-    LOONGARCH_INS_X86SUB_H = 1319,
-    LOONGARCH_INS_X86SUB_W = 1320,
-    LOONGARCH_INS_X86SUB_WU = 1321,
-    LOONGARCH_INS_X86XOR_B = 1322,
-    LOONGARCH_INS_X86XOR_D = 1323,
-    LOONGARCH_INS_X86XOR_H = 1324,
-    LOONGARCH_INS_X86XOR_W = 1325,
-    LOONGARCH_INS_XOR = 1326,
-    LOONGARCH_INS_XORI = 1327,
-    LOONGARCH_INS_XVABSD_B = 1328,
-    LOONGARCH_INS_XVABSD_BU = 1329,
-    LOONGARCH_INS_XVABSD_D = 1330,
-    LOONGARCH_INS_XVABSD_DU = 1331,
-    LOONGARCH_INS_XVABSD_H = 1332,
-    LOONGARCH_INS_XVABSD_HU = 1333,
-    LOONGARCH_INS_XVABSD_W = 1334,
-    LOONGARCH_INS_XVABSD_WU = 1335,
-    LOONGARCH_INS_XVADDA_B = 1336,
-    LOONGARCH_INS_XVADDA_D = 1337,
-    LOONGARCH_INS_XVADDA_H = 1338,
-    LOONGARCH_INS_XVADDA_W = 1339,
-    LOONGARCH_INS_XVADDI_BU = 1340,
-    LOONGARCH_INS_XVADDI_DU = 1341,
-    LOONGARCH_INS_XVADDI_HU = 1342,
-    LOONGARCH_INS_XVADDI_WU = 1343,
-    LOONGARCH_INS_XVADDWEV_D_W = 1344,
-    LOONGARCH_INS_XVADDWEV_D_WU = 1345,
-    LOONGARCH_INS_XVADDWEV_D_WU_W = 1346,
-    LOONGARCH_INS_XVADDWEV_H_B = 1347,
-    LOONGARCH_INS_XVADDWEV_H_BU = 1348,
-    LOONGARCH_INS_XVADDWEV_H_BU_B = 1349,
-    LOONGARCH_INS_XVADDWEV_Q_D = 1350,
-    LOONGARCH_INS_XVADDWEV_Q_DU = 1351,
-    LOONGARCH_INS_XVADDWEV_Q_DU_D = 1352,
-    LOONGARCH_INS_XVADDWEV_W_H = 1353,
-    LOONGARCH_INS_XVADDWEV_W_HU = 1354,
-    LOONGARCH_INS_XVADDWEV_W_HU_H = 1355,
-    LOONGARCH_INS_XVADDWOD_D_W = 1356,
-    LOONGARCH_INS_XVADDWOD_D_WU = 1357,
-    LOONGARCH_INS_XVADDWOD_D_WU_W = 1358,
-    LOONGARCH_INS_XVADDWOD_H_B = 1359,
-    LOONGARCH_INS_XVADDWOD_H_BU = 1360,
-    LOONGARCH_INS_XVADDWOD_H_BU_B = 1361,
-    LOONGARCH_INS_XVADDWOD_Q_D = 1362,
-    LOONGARCH_INS_XVADDWOD_Q_DU = 1363,
-    LOONGARCH_INS_XVADDWOD_Q_DU_D = 1364,
-    LOONGARCH_INS_XVADDWOD_W_H = 1365,
-    LOONGARCH_INS_XVADDWOD_W_HU = 1366,
-    LOONGARCH_INS_XVADDWOD_W_HU_H = 1367,
-    LOONGARCH_INS_XVADD_B = 1368,
-    LOONGARCH_INS_XVADD_D = 1369,
-    LOONGARCH_INS_XVADD_H = 1370,
-    LOONGARCH_INS_XVADD_Q = 1371,
-    LOONGARCH_INS_XVADD_W = 1372,
-    LOONGARCH_INS_XVANDI_B = 1373,
-    LOONGARCH_INS_XVANDN_V = 1374,
-    LOONGARCH_INS_XVAND_V = 1375,
-    LOONGARCH_INS_XVAVGR_B = 1376,
-    LOONGARCH_INS_XVAVGR_BU = 1377,
-    LOONGARCH_INS_XVAVGR_D = 1378,
-    LOONGARCH_INS_XVAVGR_DU = 1379,
-    LOONGARCH_INS_XVAVGR_H = 1380,
-    LOONGARCH_INS_XVAVGR_HU = 1381,
-    LOONGARCH_INS_XVAVGR_W = 1382,
-    LOONGARCH_INS_XVAVGR_WU = 1383,
-    LOONGARCH_INS_XVAVG_B = 1384,
-    LOONGARCH_INS_XVAVG_BU = 1385,
-    LOONGARCH_INS_XVAVG_D = 1386,
-    LOONGARCH_INS_XVAVG_DU = 1387,
-    LOONGARCH_INS_XVAVG_H = 1388,
-    LOONGARCH_INS_XVAVG_HU = 1389,
-    LOONGARCH_INS_XVAVG_W = 1390,
-    LOONGARCH_INS_XVAVG_WU = 1391,
-    LOONGARCH_INS_XVBITCLRI_B = 1392,
-    LOONGARCH_INS_XVBITCLRI_D = 1393,
-    LOONGARCH_INS_XVBITCLRI_H = 1394,
-    LOONGARCH_INS_XVBITCLRI_W = 1395,
-    LOONGARCH_INS_XVBITCLR_B = 1396,
-    LOONGARCH_INS_XVBITCLR_D = 1397,
-    LOONGARCH_INS_XVBITCLR_H = 1398,
-    LOONGARCH_INS_XVBITCLR_W = 1399,
-    LOONGARCH_INS_XVBITREVI_B = 1400,
-    LOONGARCH_INS_XVBITREVI_D = 1401,
-    LOONGARCH_INS_XVBITREVI_H = 1402,
-    LOONGARCH_INS_XVBITREVI_W = 1403,
-    LOONGARCH_INS_XVBITREV_B = 1404,
-    LOONGARCH_INS_XVBITREV_D = 1405,
-    LOONGARCH_INS_XVBITREV_H = 1406,
-    LOONGARCH_INS_XVBITREV_W = 1407,
-    LOONGARCH_INS_XVBITSELI_B = 1408,
-    LOONGARCH_INS_XVBITSEL_V = 1409,
-    LOONGARCH_INS_XVBITSETI_B = 1410,
-    LOONGARCH_INS_XVBITSETI_D = 1411,
-    LOONGARCH_INS_XVBITSETI_H = 1412,
-    LOONGARCH_INS_XVBITSETI_W = 1413,
-    LOONGARCH_INS_XVBITSET_B = 1414,
-    LOONGARCH_INS_XVBITSET_D = 1415,
-    LOONGARCH_INS_XVBITSET_H = 1416,
-    LOONGARCH_INS_XVBITSET_W = 1417,
-    LOONGARCH_INS_XVBSLL_V = 1418,
-    LOONGARCH_INS_XVBSRL_V = 1419,
-    LOONGARCH_INS_XVCLO_B = 1420,
-    LOONGARCH_INS_XVCLO_D = 1421,
-    LOONGARCH_INS_XVCLO_H = 1422,
-    LOONGARCH_INS_XVCLO_W = 1423,
-    LOONGARCH_INS_XVCLZ_B = 1424,
-    LOONGARCH_INS_XVCLZ_D = 1425,
-    LOONGARCH_INS_XVCLZ_H = 1426,
-    LOONGARCH_INS_XVCLZ_W = 1427,
-    LOONGARCH_INS_XVDIV_B = 1428,
-    LOONGARCH_INS_XVDIV_BU = 1429,
-    LOONGARCH_INS_XVDIV_D = 1430,
-    LOONGARCH_INS_XVDIV_DU = 1431,
-    LOONGARCH_INS_XVDIV_H = 1432,
-    LOONGARCH_INS_XVDIV_HU = 1433,
-    LOONGARCH_INS_XVDIV_W = 1434,
-    LOONGARCH_INS_XVDIV_WU = 1435,
-    LOONGARCH_INS_XVEXTH_DU_WU = 1436,
-    LOONGARCH_INS_XVEXTH_D_W = 1437,
-    LOONGARCH_INS_XVEXTH_HU_BU = 1438,
-    LOONGARCH_INS_XVEXTH_H_B = 1439,
-    LOONGARCH_INS_XVEXTH_QU_DU = 1440,
-    LOONGARCH_INS_XVEXTH_Q_D = 1441,
-    LOONGARCH_INS_XVEXTH_WU_HU = 1442,
-    LOONGARCH_INS_XVEXTH_W_H = 1443,
-    LOONGARCH_INS_XVEXTL_QU_DU = 1444,
-    LOONGARCH_INS_XVEXTL_Q_D = 1445,
-    LOONGARCH_INS_XVEXTRINS_B = 1446,
-    LOONGARCH_INS_XVEXTRINS_D = 1447,
-    LOONGARCH_INS_XVEXTRINS_H = 1448,
-    LOONGARCH_INS_XVEXTRINS_W = 1449,
-    LOONGARCH_INS_XVFADD_D = 1450,
-    LOONGARCH_INS_XVFADD_S = 1451,
-    LOONGARCH_INS_XVFCLASS_D = 1452,
-    LOONGARCH_INS_XVFCLASS_S = 1453,
-    LOONGARCH_INS_XVFCMP_CAF_D = 1454,
-    LOONGARCH_INS_XVFCMP_CAF_S = 1455,
-    LOONGARCH_INS_XVFCMP_CEQ_D = 1456,
-    LOONGARCH_INS_XVFCMP_CEQ_S = 1457,
-    LOONGARCH_INS_XVFCMP_CLE_D = 1458,
-    LOONGARCH_INS_XVFCMP_CLE_S = 1459,
-    LOONGARCH_INS_XVFCMP_CLT_D = 1460,
-    LOONGARCH_INS_XVFCMP_CLT_S = 1461,
-    LOONGARCH_INS_XVFCMP_CNE_D = 1462,
-    LOONGARCH_INS_XVFCMP_CNE_S = 1463,
-    LOONGARCH_INS_XVFCMP_COR_D = 1464,
-    LOONGARCH_INS_XVFCMP_COR_S = 1465,
-    LOONGARCH_INS_XVFCMP_CUEQ_D = 1466,
-    LOONGARCH_INS_XVFCMP_CUEQ_S = 1467,
-    LOONGARCH_INS_XVFCMP_CULE_D = 1468,
-    LOONGARCH_INS_XVFCMP_CULE_S = 1469,
-    LOONGARCH_INS_XVFCMP_CULT_D = 1470,
-    LOONGARCH_INS_XVFCMP_CULT_S = 1471,
-    LOONGARCH_INS_XVFCMP_CUNE_D = 1472,
-    LOONGARCH_INS_XVFCMP_CUNE_S = 1473,
-    LOONGARCH_INS_XVFCMP_CUN_D = 1474,
-    LOONGARCH_INS_XVFCMP_CUN_S = 1475,
-    LOONGARCH_INS_XVFCMP_SAF_D = 1476,
-    LOONGARCH_INS_XVFCMP_SAF_S = 1477,
-    LOONGARCH_INS_XVFCMP_SEQ_D = 1478,
-    LOONGARCH_INS_XVFCMP_SEQ_S = 1479,
-    LOONGARCH_INS_XVFCMP_SLE_D = 1480,
-    LOONGARCH_INS_XVFCMP_SLE_S = 1481,
-    LOONGARCH_INS_XVFCMP_SLT_D = 1482,
-    LOONGARCH_INS_XVFCMP_SLT_S = 1483,
-    LOONGARCH_INS_XVFCMP_SNE_D = 1484,
-    LOONGARCH_INS_XVFCMP_SNE_S = 1485,
-    LOONGARCH_INS_XVFCMP_SOR_D = 1486,
-    LOONGARCH_INS_XVFCMP_SOR_S = 1487,
-    LOONGARCH_INS_XVFCMP_SUEQ_D = 1488,
-    LOONGARCH_INS_XVFCMP_SUEQ_S = 1489,
-    LOONGARCH_INS_XVFCMP_SULE_D = 1490,
-    LOONGARCH_INS_XVFCMP_SULE_S = 1491,
-    LOONGARCH_INS_XVFCMP_SULT_D = 1492,
-    LOONGARCH_INS_XVFCMP_SULT_S = 1493,
-    LOONGARCH_INS_XVFCMP_SUNE_D = 1494,
-    LOONGARCH_INS_XVFCMP_SUNE_S = 1495,
-    LOONGARCH_INS_XVFCMP_SUN_D = 1496,
-    LOONGARCH_INS_XVFCMP_SUN_S = 1497,
-    LOONGARCH_INS_XVFCVTH_D_S = 1498,
-    LOONGARCH_INS_XVFCVTH_S_H = 1499,
-    LOONGARCH_INS_XVFCVTL_D_S = 1500,
-    LOONGARCH_INS_XVFCVTL_S_H = 1501,
-    LOONGARCH_INS_XVFCVT_H_S = 1502,
-    LOONGARCH_INS_XVFCVT_S_D = 1503,
-    LOONGARCH_INS_XVFDIV_D = 1504,
-    LOONGARCH_INS_XVFDIV_S = 1505,
-    LOONGARCH_INS_XVFFINTH_D_W = 1506,
-    LOONGARCH_INS_XVFFINTL_D_W = 1507,
-    LOONGARCH_INS_XVFFINT_D_L = 1508,
-    LOONGARCH_INS_XVFFINT_D_LU = 1509,
-    LOONGARCH_INS_XVFFINT_S_L = 1510,
-    LOONGARCH_INS_XVFFINT_S_W = 1511,
-    LOONGARCH_INS_XVFFINT_S_WU = 1512,
-    LOONGARCH_INS_XVFLOGB_D = 1513,
-    LOONGARCH_INS_XVFLOGB_S = 1514,
-    LOONGARCH_INS_XVFMADD_D = 1515,
-    LOONGARCH_INS_XVFMADD_S = 1516,
-    LOONGARCH_INS_XVFMAXA_D = 1517,
-    LOONGARCH_INS_XVFMAXA_S = 1518,
-    LOONGARCH_INS_XVFMAX_D = 1519,
-    LOONGARCH_INS_XVFMAX_S = 1520,
-    LOONGARCH_INS_XVFMINA_D = 1521,
-    LOONGARCH_INS_XVFMINA_S = 1522,
-    LOONGARCH_INS_XVFMIN_D = 1523,
-    LOONGARCH_INS_XVFMIN_S = 1524,
-    LOONGARCH_INS_XVFMSUB_D = 1525,
-    LOONGARCH_INS_XVFMSUB_S = 1526,
-    LOONGARCH_INS_XVFMUL_D = 1527,
-    LOONGARCH_INS_XVFMUL_S = 1528,
-    LOONGARCH_INS_XVFNMADD_D = 1529,
-    LOONGARCH_INS_XVFNMADD_S = 1530,
-    LOONGARCH_INS_XVFNMSUB_D = 1531,
-    LOONGARCH_INS_XVFNMSUB_S = 1532,
-    LOONGARCH_INS_XVFRECIPE_D = 1533,
-    LOONGARCH_INS_XVFRECIPE_S = 1534,
-    LOONGARCH_INS_XVFRECIP_D = 1535,
-    LOONGARCH_INS_XVFRECIP_S = 1536,
-    LOONGARCH_INS_XVFRINTRM_D = 1537,
-    LOONGARCH_INS_XVFRINTRM_S = 1538,
-    LOONGARCH_INS_XVFRINTRNE_D = 1539,
-    LOONGARCH_INS_XVFRINTRNE_S = 1540,
-    LOONGARCH_INS_XVFRINTRP_D = 1541,
-    LOONGARCH_INS_XVFRINTRP_S = 1542,
-    LOONGARCH_INS_XVFRINTRZ_D = 1543,
-    LOONGARCH_INS_XVFRINTRZ_S = 1544,
-    LOONGARCH_INS_XVFRINT_D = 1545,
-    LOONGARCH_INS_XVFRINT_S = 1546,
-    LOONGARCH_INS_XVFRSQRTE_D = 1547,
-    LOONGARCH_INS_XVFRSQRTE_S = 1548,
-    LOONGARCH_INS_XVFRSQRT_D = 1549,
-    LOONGARCH_INS_XVFRSQRT_S = 1550,
-    LOONGARCH_INS_XVFRSTPI_B = 1551,
-    LOONGARCH_INS_XVFRSTPI_H = 1552,
-    LOONGARCH_INS_XVFRSTP_B = 1553,
-    LOONGARCH_INS_XVFRSTP_H = 1554,
-    LOONGARCH_INS_XVFSQRT_D = 1555,
-    LOONGARCH_INS_XVFSQRT_S = 1556,
-    LOONGARCH_INS_XVFSUB_D = 1557,
-    LOONGARCH_INS_XVFSUB_S = 1558,
-    LOONGARCH_INS_XVFTINTH_L_S = 1559,
-    LOONGARCH_INS_XVFTINTL_L_S = 1560,
-    LOONGARCH_INS_XVFTINTRMH_L_S = 1561,
-    LOONGARCH_INS_XVFTINTRML_L_S = 1562,
-    LOONGARCH_INS_XVFTINTRM_L_D = 1563,
-    LOONGARCH_INS_XVFTINTRM_W_D = 1564,
-    LOONGARCH_INS_XVFTINTRM_W_S = 1565,
-    LOONGARCH_INS_XVFTINTRNEH_L_S = 1566,
-    LOONGARCH_INS_XVFTINTRNEL_L_S = 1567,
-    LOONGARCH_INS_XVFTINTRNE_L_D = 1568,
-    LOONGARCH_INS_XVFTINTRNE_W_D = 1569,
-    LOONGARCH_INS_XVFTINTRNE_W_S = 1570,
-    LOONGARCH_INS_XVFTINTRPH_L_S = 1571,
-    LOONGARCH_INS_XVFTINTRPL_L_S = 1572,
-    LOONGARCH_INS_XVFTINTRP_L_D = 1573,
-    LOONGARCH_INS_XVFTINTRP_W_D = 1574,
-    LOONGARCH_INS_XVFTINTRP_W_S = 1575,
-    LOONGARCH_INS_XVFTINTRZH_L_S = 1576,
-    LOONGARCH_INS_XVFTINTRZL_L_S = 1577,
-    LOONGARCH_INS_XVFTINTRZ_LU_D = 1578,
-    LOONGARCH_INS_XVFTINTRZ_L_D = 1579,
-    LOONGARCH_INS_XVFTINTRZ_WU_S = 1580,
-    LOONGARCH_INS_XVFTINTRZ_W_D = 1581,
-    LOONGARCH_INS_XVFTINTRZ_W_S = 1582,
-    LOONGARCH_INS_XVFTINT_LU_D = 1583,
-    LOONGARCH_INS_XVFTINT_L_D = 1584,
-    LOONGARCH_INS_XVFTINT_WU_S = 1585,
-    LOONGARCH_INS_XVFTINT_W_D = 1586,
-    LOONGARCH_INS_XVFTINT_W_S = 1587,
-    LOONGARCH_INS_XVHADDW_DU_WU = 1588,
-    LOONGARCH_INS_XVHADDW_D_W = 1589,
-    LOONGARCH_INS_XVHADDW_HU_BU = 1590,
-    LOONGARCH_INS_XVHADDW_H_B = 1591,
-    LOONGARCH_INS_XVHADDW_QU_DU = 1592,
-    LOONGARCH_INS_XVHADDW_Q_D = 1593,
-    LOONGARCH_INS_XVHADDW_WU_HU = 1594,
-    LOONGARCH_INS_XVHADDW_W_H = 1595,
-    LOONGARCH_INS_XVHSELI_D = 1596,
-    LOONGARCH_INS_XVHSUBW_DU_WU = 1597,
-    LOONGARCH_INS_XVHSUBW_D_W = 1598,
-    LOONGARCH_INS_XVHSUBW_HU_BU = 1599,
-    LOONGARCH_INS_XVHSUBW_H_B = 1600,
-    LOONGARCH_INS_XVHSUBW_QU_DU = 1601,
-    LOONGARCH_INS_XVHSUBW_Q_D = 1602,
-    LOONGARCH_INS_XVHSUBW_WU_HU = 1603,
-    LOONGARCH_INS_XVHSUBW_W_H = 1604,
-    LOONGARCH_INS_XVILVH_B = 1605,
-    LOONGARCH_INS_XVILVH_D = 1606,
-    LOONGARCH_INS_XVILVH_H = 1607,
-    LOONGARCH_INS_XVILVH_W = 1608,
-    LOONGARCH_INS_XVILVL_B = 1609,
-    LOONGARCH_INS_XVILVL_D = 1610,
-    LOONGARCH_INS_XVILVL_H = 1611,
-    LOONGARCH_INS_XVILVL_W = 1612,
-    LOONGARCH_INS_XVINSGR2VR_D = 1613,
-    LOONGARCH_INS_XVINSGR2VR_W = 1614,
-    LOONGARCH_INS_XVINSVE0_D = 1615,
-    LOONGARCH_INS_XVINSVE0_W = 1616,
-    LOONGARCH_INS_XVLD = 1617,
-    LOONGARCH_INS_XVLDI = 1618,
-    LOONGARCH_INS_XVLDREPL_B = 1619,
-    LOONGARCH_INS_XVLDREPL_D = 1620,
-    LOONGARCH_INS_XVLDREPL_H = 1621,
-    LOONGARCH_INS_XVLDREPL_W = 1622,
-    LOONGARCH_INS_XVLDX = 1623,
-    LOONGARCH_INS_XVMADDWEV_D_W = 1624,
-    LOONGARCH_INS_XVMADDWEV_D_WU = 1625,
-    LOONGARCH_INS_XVMADDWEV_D_WU_W = 1626,
-    LOONGARCH_INS_XVMADDWEV_H_B = 1627,
-    LOONGARCH_INS_XVMADDWEV_H_BU = 1628,
-    LOONGARCH_INS_XVMADDWEV_H_BU_B = 1629,
-    LOONGARCH_INS_XVMADDWEV_Q_D = 1630,
-    LOONGARCH_INS_XVMADDWEV_Q_DU = 1631,
-    LOONGARCH_INS_XVMADDWEV_Q_DU_D = 1632,
-    LOONGARCH_INS_XVMADDWEV_W_H = 1633,
-    LOONGARCH_INS_XVMADDWEV_W_HU = 1634,
-    LOONGARCH_INS_XVMADDWEV_W_HU_H = 1635,
-    LOONGARCH_INS_XVMADDWOD_D_W = 1636,
-    LOONGARCH_INS_XVMADDWOD_D_WU = 1637,
-    LOONGARCH_INS_XVMADDWOD_D_WU_W = 1638,
-    LOONGARCH_INS_XVMADDWOD_H_B = 1639,
-    LOONGARCH_INS_XVMADDWOD_H_BU = 1640,
-    LOONGARCH_INS_XVMADDWOD_H_BU_B = 1641,
-    LOONGARCH_INS_XVMADDWOD_Q_D = 1642,
-    LOONGARCH_INS_XVMADDWOD_Q_DU = 1643,
-    LOONGARCH_INS_XVMADDWOD_Q_DU_D = 1644,
-    LOONGARCH_INS_XVMADDWOD_W_H = 1645,
-    LOONGARCH_INS_XVMADDWOD_W_HU = 1646,
-    LOONGARCH_INS_XVMADDWOD_W_HU_H = 1647,
-    LOONGARCH_INS_XVMADD_B = 1648,
-    LOONGARCH_INS_XVMADD_D = 1649,
-    LOONGARCH_INS_XVMADD_H = 1650,
-    LOONGARCH_INS_XVMADD_W = 1651,
-    LOONGARCH_INS_XVMAXI_B = 1652,
-    LOONGARCH_INS_XVMAXI_BU = 1653,
-    LOONGARCH_INS_XVMAXI_D = 1654,
-    LOONGARCH_INS_XVMAXI_DU = 1655,
-    LOONGARCH_INS_XVMAXI_H = 1656,
-    LOONGARCH_INS_XVMAXI_HU = 1657,
-    LOONGARCH_INS_XVMAXI_W = 1658,
-    LOONGARCH_INS_XVMAXI_WU = 1659,
-    LOONGARCH_INS_XVMAX_B = 1660,
-    LOONGARCH_INS_XVMAX_BU = 1661,
-    LOONGARCH_INS_XVMAX_D = 1662,
-    LOONGARCH_INS_XVMAX_DU = 1663,
-    LOONGARCH_INS_XVMAX_H = 1664,
-    LOONGARCH_INS_XVMAX_HU = 1665,
-    LOONGARCH_INS_XVMAX_W = 1666,
-    LOONGARCH_INS_XVMAX_WU = 1667,
-    LOONGARCH_INS_XVMINI_B = 1668,
-    LOONGARCH_INS_XVMINI_BU = 1669,
-    LOONGARCH_INS_XVMINI_D = 1670,
-    LOONGARCH_INS_XVMINI_DU = 1671,
-    LOONGARCH_INS_XVMINI_H = 1672,
-    LOONGARCH_INS_XVMINI_HU = 1673,
-    LOONGARCH_INS_XVMINI_W = 1674,
-    LOONGARCH_INS_XVMINI_WU = 1675,
-    LOONGARCH_INS_XVMIN_B = 1676,
-    LOONGARCH_INS_XVMIN_BU = 1677,
-    LOONGARCH_INS_XVMIN_D = 1678,
-    LOONGARCH_INS_XVMIN_DU = 1679,
-    LOONGARCH_INS_XVMIN_H = 1680,
-    LOONGARCH_INS_XVMIN_HU = 1681,
-    LOONGARCH_INS_XVMIN_W = 1682,
-    LOONGARCH_INS_XVMIN_WU = 1683,
-    LOONGARCH_INS_XVMOD_B = 1684,
-    LOONGARCH_INS_XVMOD_BU = 1685,
-    LOONGARCH_INS_XVMOD_D = 1686,
-    LOONGARCH_INS_XVMOD_DU = 1687,
-    LOONGARCH_INS_XVMOD_H = 1688,
-    LOONGARCH_INS_XVMOD_HU = 1689,
-    LOONGARCH_INS_XVMOD_W = 1690,
-    LOONGARCH_INS_XVMOD_WU = 1691,
-    LOONGARCH_INS_XVMSKGEZ_B = 1692,
-    LOONGARCH_INS_XVMSKLTZ_B = 1693,
-    LOONGARCH_INS_XVMSKLTZ_D = 1694,
-    LOONGARCH_INS_XVMSKLTZ_H = 1695,
-    LOONGARCH_INS_XVMSKLTZ_W = 1696,
-    LOONGARCH_INS_XVMSKNZ_B = 1697,
-    LOONGARCH_INS_XVMSUB_B = 1698,
-    LOONGARCH_INS_XVMSUB_D = 1699,
-    LOONGARCH_INS_XVMSUB_H = 1700,
-    LOONGARCH_INS_XVMSUB_W = 1701,
-    LOONGARCH_INS_XVMUH_B = 1702,
-    LOONGARCH_INS_XVMUH_BU = 1703,
-    LOONGARCH_INS_XVMUH_D = 1704,
-    LOONGARCH_INS_XVMUH_DU = 1705,
-    LOONGARCH_INS_XVMUH_H = 1706,
-    LOONGARCH_INS_XVMUH_HU = 1707,
-    LOONGARCH_INS_XVMUH_W = 1708,
-    LOONGARCH_INS_XVMUH_WU = 1709,
-    LOONGARCH_INS_XVMULWEV_D_W = 1710,
-    LOONGARCH_INS_XVMULWEV_D_WU = 1711,
-    LOONGARCH_INS_XVMULWEV_D_WU_W = 1712,
-    LOONGARCH_INS_XVMULWEV_H_B = 1713,
-    LOONGARCH_INS_XVMULWEV_H_BU = 1714,
-    LOONGARCH_INS_XVMULWEV_H_BU_B = 1715,
-    LOONGARCH_INS_XVMULWEV_Q_D = 1716,
-    LOONGARCH_INS_XVMULWEV_Q_DU = 1717,
-    LOONGARCH_INS_XVMULWEV_Q_DU_D = 1718,
-    LOONGARCH_INS_XVMULWEV_W_H = 1719,
-    LOONGARCH_INS_XVMULWEV_W_HU = 1720,
-    LOONGARCH_INS_XVMULWEV_W_HU_H = 1721,
-    LOONGARCH_INS_XVMULWOD_D_W = 1722,
-    LOONGARCH_INS_XVMULWOD_D_WU = 1723,
-    LOONGARCH_INS_XVMULWOD_D_WU_W = 1724,
-    LOONGARCH_INS_XVMULWOD_H_B = 1725,
-    LOONGARCH_INS_XVMULWOD_H_BU = 1726,
-    LOONGARCH_INS_XVMULWOD_H_BU_B = 1727,
-    LOONGARCH_INS_XVMULWOD_Q_D = 1728,
-    LOONGARCH_INS_XVMULWOD_Q_DU = 1729,
-    LOONGARCH_INS_XVMULWOD_Q_DU_D = 1730,
-    LOONGARCH_INS_XVMULWOD_W_H = 1731,
-    LOONGARCH_INS_XVMULWOD_W_HU = 1732,
-    LOONGARCH_INS_XVMULWOD_W_HU_H = 1733,
-    LOONGARCH_INS_XVMUL_B = 1734,
-    LOONGARCH_INS_XVMUL_D = 1735,
-    LOONGARCH_INS_XVMUL_H = 1736,
-    LOONGARCH_INS_XVMUL_W = 1737,
-    LOONGARCH_INS_XVNEG_B = 1738,
-    LOONGARCH_INS_XVNEG_D = 1739,
-    LOONGARCH_INS_XVNEG_H = 1740,
-    LOONGARCH_INS_XVNEG_W = 1741,
-    LOONGARCH_INS_XVNORI_B = 1742,
-    LOONGARCH_INS_XVNOR_V = 1743,
-    LOONGARCH_INS_XVORI_B = 1744,
-    LOONGARCH_INS_XVORN_V = 1745,
-    LOONGARCH_INS_XVOR_V = 1746,
-    LOONGARCH_INS_XVPACKEV_B = 1747,
-    LOONGARCH_INS_XVPACKEV_D = 1748,
-    LOONGARCH_INS_XVPACKEV_H = 1749,
-    LOONGARCH_INS_XVPACKEV_W = 1750,
-    LOONGARCH_INS_XVPACKOD_B = 1751,
-    LOONGARCH_INS_XVPACKOD_D = 1752,
-    LOONGARCH_INS_XVPACKOD_H = 1753,
-    LOONGARCH_INS_XVPACKOD_W = 1754,
-    LOONGARCH_INS_XVPCNT_B = 1755,
-    LOONGARCH_INS_XVPCNT_D = 1756,
-    LOONGARCH_INS_XVPCNT_H = 1757,
-    LOONGARCH_INS_XVPCNT_W = 1758,
-    LOONGARCH_INS_XVPERMI_D = 1759,
-    LOONGARCH_INS_XVPERMI_Q = 1760,
-    LOONGARCH_INS_XVPERMI_W = 1761,
-    LOONGARCH_INS_XVPERM_W = 1762,
-    LOONGARCH_INS_XVPICKEV_B = 1763,
-    LOONGARCH_INS_XVPICKEV_D = 1764,
-    LOONGARCH_INS_XVPICKEV_H = 1765,
-    LOONGARCH_INS_XVPICKEV_W = 1766,
-    LOONGARCH_INS_XVPICKOD_B = 1767,
-    LOONGARCH_INS_XVPICKOD_D = 1768,
-    LOONGARCH_INS_XVPICKOD_H = 1769,
-    LOONGARCH_INS_XVPICKOD_W = 1770,
-    LOONGARCH_INS_XVPICKVE2GR_D = 1771,
-    LOONGARCH_INS_XVPICKVE2GR_DU = 1772,
-    LOONGARCH_INS_XVPICKVE2GR_W = 1773,
-    LOONGARCH_INS_XVPICKVE2GR_WU = 1774,
-    LOONGARCH_INS_XVPICKVE_D = 1775,
-    LOONGARCH_INS_XVPICKVE_W = 1776,
-    LOONGARCH_INS_XVREPL128VEI_B = 1777,
-    LOONGARCH_INS_XVREPL128VEI_D = 1778,
-    LOONGARCH_INS_XVREPL128VEI_H = 1779,
-    LOONGARCH_INS_XVREPL128VEI_W = 1780,
-    LOONGARCH_INS_XVREPLGR2VR_B = 1781,
-    LOONGARCH_INS_XVREPLGR2VR_D = 1782,
-    LOONGARCH_INS_XVREPLGR2VR_H = 1783,
-    LOONGARCH_INS_XVREPLGR2VR_W = 1784,
-    LOONGARCH_INS_XVREPLVE0_B = 1785,
-    LOONGARCH_INS_XVREPLVE0_D = 1786,
-    LOONGARCH_INS_XVREPLVE0_H = 1787,
-    LOONGARCH_INS_XVREPLVE0_Q = 1788,
-    LOONGARCH_INS_XVREPLVE0_W = 1789,
-    LOONGARCH_INS_XVREPLVE_B = 1790,
-    LOONGARCH_INS_XVREPLVE_D = 1791,
-    LOONGARCH_INS_XVREPLVE_H = 1792,
-    LOONGARCH_INS_XVREPLVE_W = 1793,
-    LOONGARCH_INS_XVROTRI_B = 1794,
-    LOONGARCH_INS_XVROTRI_D = 1795,
-    LOONGARCH_INS_XVROTRI_H = 1796,
-    LOONGARCH_INS_XVROTRI_W = 1797,
-    LOONGARCH_INS_XVROTR_B = 1798,
-    LOONGARCH_INS_XVROTR_D = 1799,
-    LOONGARCH_INS_XVROTR_H = 1800,
-    LOONGARCH_INS_XVROTR_W = 1801,
-    LOONGARCH_INS_XVSADD_B = 1802,
-    LOONGARCH_INS_XVSADD_BU = 1803,
-    LOONGARCH_INS_XVSADD_D = 1804,
-    LOONGARCH_INS_XVSADD_DU = 1805,
-    LOONGARCH_INS_XVSADD_H = 1806,
-    LOONGARCH_INS_XVSADD_HU = 1807,
-    LOONGARCH_INS_XVSADD_W = 1808,
-    LOONGARCH_INS_XVSADD_WU = 1809,
-    LOONGARCH_INS_XVSAT_B = 1810,
-    LOONGARCH_INS_XVSAT_BU = 1811,
-    LOONGARCH_INS_XVSAT_D = 1812,
-    LOONGARCH_INS_XVSAT_DU = 1813,
-    LOONGARCH_INS_XVSAT_H = 1814,
-    LOONGARCH_INS_XVSAT_HU = 1815,
-    LOONGARCH_INS_XVSAT_W = 1816,
-    LOONGARCH_INS_XVSAT_WU = 1817,
-    LOONGARCH_INS_XVSEQI_B = 1818,
-    LOONGARCH_INS_XVSEQI_D = 1819,
-    LOONGARCH_INS_XVSEQI_H = 1820,
-    LOONGARCH_INS_XVSEQI_W = 1821,
-    LOONGARCH_INS_XVSEQ_B = 1822,
-    LOONGARCH_INS_XVSEQ_D = 1823,
-    LOONGARCH_INS_XVSEQ_H = 1824,
-    LOONGARCH_INS_XVSEQ_W = 1825,
-    LOONGARCH_INS_XVSETALLNEZ_B = 1826,
-    LOONGARCH_INS_XVSETALLNEZ_D = 1827,
-    LOONGARCH_INS_XVSETALLNEZ_H = 1828,
-    LOONGARCH_INS_XVSETALLNEZ_W = 1829,
-    LOONGARCH_INS_XVSETANYEQZ_B = 1830,
-    LOONGARCH_INS_XVSETANYEQZ_D = 1831,
-    LOONGARCH_INS_XVSETANYEQZ_H = 1832,
-    LOONGARCH_INS_XVSETANYEQZ_W = 1833,
-    LOONGARCH_INS_XVSETEQZ_V = 1834,
-    LOONGARCH_INS_XVSETNEZ_V = 1835,
-    LOONGARCH_INS_XVSHUF4I_B = 1836,
-    LOONGARCH_INS_XVSHUF4I_D = 1837,
-    LOONGARCH_INS_XVSHUF4I_H = 1838,
-    LOONGARCH_INS_XVSHUF4I_W = 1839,
-    LOONGARCH_INS_XVSHUF_B = 1840,
-    LOONGARCH_INS_XVSHUF_D = 1841,
-    LOONGARCH_INS_XVSHUF_H = 1842,
-    LOONGARCH_INS_XVSHUF_W = 1843,
-    LOONGARCH_INS_XVSIGNCOV_B = 1844,
-    LOONGARCH_INS_XVSIGNCOV_D = 1845,
-    LOONGARCH_INS_XVSIGNCOV_H = 1846,
-    LOONGARCH_INS_XVSIGNCOV_W = 1847,
-    LOONGARCH_INS_XVSLEI_B = 1848,
-    LOONGARCH_INS_XVSLEI_BU = 1849,
-    LOONGARCH_INS_XVSLEI_D = 1850,
-    LOONGARCH_INS_XVSLEI_DU = 1851,
-    LOONGARCH_INS_XVSLEI_H = 1852,
-    LOONGARCH_INS_XVSLEI_HU = 1853,
-    LOONGARCH_INS_XVSLEI_W = 1854,
-    LOONGARCH_INS_XVSLEI_WU = 1855,
-    LOONGARCH_INS_XVSLE_B = 1856,
-    LOONGARCH_INS_XVSLE_BU = 1857,
-    LOONGARCH_INS_XVSLE_D = 1858,
-    LOONGARCH_INS_XVSLE_DU = 1859,
-    LOONGARCH_INS_XVSLE_H = 1860,
-    LOONGARCH_INS_XVSLE_HU = 1861,
-    LOONGARCH_INS_XVSLE_W = 1862,
-    LOONGARCH_INS_XVSLE_WU = 1863,
-    LOONGARCH_INS_XVSLLI_B = 1864,
-    LOONGARCH_INS_XVSLLI_D = 1865,
-    LOONGARCH_INS_XVSLLI_H = 1866,
-    LOONGARCH_INS_XVSLLI_W = 1867,
-    LOONGARCH_INS_XVSLLWIL_DU_WU = 1868,
-    LOONGARCH_INS_XVSLLWIL_D_W = 1869,
-    LOONGARCH_INS_XVSLLWIL_HU_BU = 1870,
-    LOONGARCH_INS_XVSLLWIL_H_B = 1871,
-    LOONGARCH_INS_XVSLLWIL_WU_HU = 1872,
-    LOONGARCH_INS_XVSLLWIL_W_H = 1873,
-    LOONGARCH_INS_XVSLL_B = 1874,
-    LOONGARCH_INS_XVSLL_D = 1875,
-    LOONGARCH_INS_XVSLL_H = 1876,
-    LOONGARCH_INS_XVSLL_W = 1877,
-    LOONGARCH_INS_XVSLTI_B = 1878,
-    LOONGARCH_INS_XVSLTI_BU = 1879,
-    LOONGARCH_INS_XVSLTI_D = 1880,
-    LOONGARCH_INS_XVSLTI_DU = 1881,
-    LOONGARCH_INS_XVSLTI_H = 1882,
-    LOONGARCH_INS_XVSLTI_HU = 1883,
-    LOONGARCH_INS_XVSLTI_W = 1884,
-    LOONGARCH_INS_XVSLTI_WU = 1885,
-    LOONGARCH_INS_XVSLT_B = 1886,
-    LOONGARCH_INS_XVSLT_BU = 1887,
-    LOONGARCH_INS_XVSLT_D = 1888,
-    LOONGARCH_INS_XVSLT_DU = 1889,
-    LOONGARCH_INS_XVSLT_H = 1890,
-    LOONGARCH_INS_XVSLT_HU = 1891,
-    LOONGARCH_INS_XVSLT_W = 1892,
-    LOONGARCH_INS_XVSLT_WU = 1893,
-    LOONGARCH_INS_XVSRAI_B = 1894,
-    LOONGARCH_INS_XVSRAI_D = 1895,
-    LOONGARCH_INS_XVSRAI_H = 1896,
-    LOONGARCH_INS_XVSRAI_W = 1897,
-    LOONGARCH_INS_XVSRANI_B_H = 1898,
-    LOONGARCH_INS_XVSRANI_D_Q = 1899,
-    LOONGARCH_INS_XVSRANI_H_W = 1900,
-    LOONGARCH_INS_XVSRANI_W_D = 1901,
-    LOONGARCH_INS_XVSRAN_B_H = 1902,
-    LOONGARCH_INS_XVSRAN_H_W = 1903,
-    LOONGARCH_INS_XVSRAN_W_D = 1904,
-    LOONGARCH_INS_XVSRARI_B = 1905,
-    LOONGARCH_INS_XVSRARI_D = 1906,
-    LOONGARCH_INS_XVSRARI_H = 1907,
-    LOONGARCH_INS_XVSRARI_W = 1908,
-    LOONGARCH_INS_XVSRARNI_B_H = 1909,
-    LOONGARCH_INS_XVSRARNI_D_Q = 1910,
-    LOONGARCH_INS_XVSRARNI_H_W = 1911,
-    LOONGARCH_INS_XVSRARNI_W_D = 1912,
-    LOONGARCH_INS_XVSRARN_B_H = 1913,
-    LOONGARCH_INS_XVSRARN_H_W = 1914,
-    LOONGARCH_INS_XVSRARN_W_D = 1915,
-    LOONGARCH_INS_XVSRAR_B = 1916,
-    LOONGARCH_INS_XVSRAR_D = 1917,
-    LOONGARCH_INS_XVSRAR_H = 1918,
-    LOONGARCH_INS_XVSRAR_W = 1919,
-    LOONGARCH_INS_XVSRA_B = 1920,
-    LOONGARCH_INS_XVSRA_D = 1921,
-    LOONGARCH_INS_XVSRA_H = 1922,
-    LOONGARCH_INS_XVSRA_W = 1923,
-    LOONGARCH_INS_XVSRLI_B = 1924,
-    LOONGARCH_INS_XVSRLI_D = 1925,
-    LOONGARCH_INS_XVSRLI_H = 1926,
-    LOONGARCH_INS_XVSRLI_W = 1927,
-    LOONGARCH_INS_XVSRLNI_B_H = 1928,
-    LOONGARCH_INS_XVSRLNI_D_Q = 1929,
-    LOONGARCH_INS_XVSRLNI_H_W = 1930,
-    LOONGARCH_INS_XVSRLNI_W_D = 1931,
-    LOONGARCH_INS_XVSRLN_B_H = 1932,
-    LOONGARCH_INS_XVSRLN_H_W = 1933,
-    LOONGARCH_INS_XVSRLN_W_D = 1934,
-    LOONGARCH_INS_XVSRLRI_B = 1935,
-    LOONGARCH_INS_XVSRLRI_D = 1936,
-    LOONGARCH_INS_XVSRLRI_H = 1937,
-    LOONGARCH_INS_XVSRLRI_W = 1938,
-    LOONGARCH_INS_XVSRLRNI_B_H = 1939,
-    LOONGARCH_INS_XVSRLRNI_D_Q = 1940,
-    LOONGARCH_INS_XVSRLRNI_H_W = 1941,
-    LOONGARCH_INS_XVSRLRNI_W_D = 1942,
-    LOONGARCH_INS_XVSRLRN_B_H = 1943,
-    LOONGARCH_INS_XVSRLRN_H_W = 1944,
-    LOONGARCH_INS_XVSRLRN_W_D = 1945,
-    LOONGARCH_INS_XVSRLR_B = 1946,
-    LOONGARCH_INS_XVSRLR_D = 1947,
-    LOONGARCH_INS_XVSRLR_H = 1948,
-    LOONGARCH_INS_XVSRLR_W = 1949,
-    LOONGARCH_INS_XVSRL_B = 1950,
-    LOONGARCH_INS_XVSRL_D = 1951,
-    LOONGARCH_INS_XVSRL_H = 1952,
-    LOONGARCH_INS_XVSRL_W = 1953,
-    LOONGARCH_INS_XVSSRANI_BU_H = 1954,
-    LOONGARCH_INS_XVSSRANI_B_H = 1955,
-    LOONGARCH_INS_XVSSRANI_DU_Q = 1956,
-    LOONGARCH_INS_XVSSRANI_D_Q = 1957,
-    LOONGARCH_INS_XVSSRANI_HU_W = 1958,
-    LOONGARCH_INS_XVSSRANI_H_W = 1959,
-    LOONGARCH_INS_XVSSRANI_WU_D = 1960,
-    LOONGARCH_INS_XVSSRANI_W_D = 1961,
-    LOONGARCH_INS_XVSSRAN_BU_H = 1962,
-    LOONGARCH_INS_XVSSRAN_B_H = 1963,
-    LOONGARCH_INS_XVSSRAN_HU_W = 1964,
-    LOONGARCH_INS_XVSSRAN_H_W = 1965,
-    LOONGARCH_INS_XVSSRAN_WU_D = 1966,
-    LOONGARCH_INS_XVSSRAN_W_D = 1967,
-    LOONGARCH_INS_XVSSRARNI_BU_H = 1968,
-    LOONGARCH_INS_XVSSRARNI_B_H = 1969,
-    LOONGARCH_INS_XVSSRARNI_DU_Q = 1970,
-    LOONGARCH_INS_XVSSRARNI_D_Q = 1971,
-    LOONGARCH_INS_XVSSRARNI_HU_W = 1972,
-    LOONGARCH_INS_XVSSRARNI_H_W = 1973,
-    LOONGARCH_INS_XVSSRARNI_WU_D = 1974,
-    LOONGARCH_INS_XVSSRARNI_W_D = 1975,
-    LOONGARCH_INS_XVSSRARN_BU_H = 1976,
-    LOONGARCH_INS_XVSSRARN_B_H = 1977,
-    LOONGARCH_INS_XVSSRARN_HU_W = 1978,
-    LOONGARCH_INS_XVSSRARN_H_W = 1979,
-    LOONGARCH_INS_XVSSRARN_WU_D = 1980,
-    LOONGARCH_INS_XVSSRARN_W_D = 1981,
-    LOONGARCH_INS_XVSSRLNI_BU_H = 1982,
-    LOONGARCH_INS_XVSSRLNI_B_H = 1983,
-    LOONGARCH_INS_XVSSRLNI_DU_Q = 1984,
-    LOONGARCH_INS_XVSSRLNI_D_Q = 1985,
-    LOONGARCH_INS_XVSSRLNI_HU_W = 1986,
-    LOONGARCH_INS_XVSSRLNI_H_W = 1987,
-    LOONGARCH_INS_XVSSRLNI_WU_D = 1988,
-    LOONGARCH_INS_XVSSRLNI_W_D = 1989,
-    LOONGARCH_INS_XVSSRLN_BU_H = 1990,
-    LOONGARCH_INS_XVSSRLN_B_H = 1991,
-    LOONGARCH_INS_XVSSRLN_HU_W = 1992,
-    LOONGARCH_INS_XVSSRLN_H_W = 1993,
-    LOONGARCH_INS_XVSSRLN_WU_D = 1994,
-    LOONGARCH_INS_XVSSRLN_W_D = 1995,
-    LOONGARCH_INS_XVSSRLRNI_BU_H = 1996,
-    LOONGARCH_INS_XVSSRLRNI_B_H = 1997,
-    LOONGARCH_INS_XVSSRLRNI_DU_Q = 1998,
-    LOONGARCH_INS_XVSSRLRNI_D_Q = 1999,
-    LOONGARCH_INS_XVSSRLRNI_HU_W = 2000,
-    LOONGARCH_INS_XVSSRLRNI_H_W = 2001,
-    LOONGARCH_INS_XVSSRLRNI_WU_D = 2002,
-    LOONGARCH_INS_XVSSRLRNI_W_D = 2003,
-    LOONGARCH_INS_XVSSRLRN_BU_H = 2004,
-    LOONGARCH_INS_XVSSRLRN_B_H = 2005,
-    LOONGARCH_INS_XVSSRLRN_HU_W = 2006,
-    LOONGARCH_INS_XVSSRLRN_H_W = 2007,
-    LOONGARCH_INS_XVSSRLRN_WU_D = 2008,
-    LOONGARCH_INS_XVSSRLRN_W_D = 2009,
-    LOONGARCH_INS_XVSSUB_B = 2010,
-    LOONGARCH_INS_XVSSUB_BU = 2011,
-    LOONGARCH_INS_XVSSUB_D = 2012,
-    LOONGARCH_INS_XVSSUB_DU = 2013,
-    LOONGARCH_INS_XVSSUB_H = 2014,
-    LOONGARCH_INS_XVSSUB_HU = 2015,
-    LOONGARCH_INS_XVSSUB_W = 2016,
-    LOONGARCH_INS_XVSSUB_WU = 2017,
-    LOONGARCH_INS_XVST = 2018,
-    LOONGARCH_INS_XVSTELM_B = 2019,
-    LOONGARCH_INS_XVSTELM_D = 2020,
-    LOONGARCH_INS_XVSTELM_H = 2021,
-    LOONGARCH_INS_XVSTELM_W = 2022,
-    LOONGARCH_INS_XVSTX = 2023,
-    LOONGARCH_INS_XVSUBI_BU = 2024,
-    LOONGARCH_INS_XVSUBI_DU = 2025,
-    LOONGARCH_INS_XVSUBI_HU = 2026,
-    LOONGARCH_INS_XVSUBI_WU = 2027,
-    LOONGARCH_INS_XVSUBWEV_D_W = 2028,
-    LOONGARCH_INS_XVSUBWEV_D_WU = 2029,
-    LOONGARCH_INS_XVSUBWEV_H_B = 2030,
-    LOONGARCH_INS_XVSUBWEV_H_BU = 2031,
-    LOONGARCH_INS_XVSUBWEV_Q_D = 2032,
-    LOONGARCH_INS_XVSUBWEV_Q_DU = 2033,
-    LOONGARCH_INS_XVSUBWEV_W_H = 2034,
-    LOONGARCH_INS_XVSUBWEV_W_HU = 2035,
-    LOONGARCH_INS_XVSUBWOD_D_W = 2036,
-    LOONGARCH_INS_XVSUBWOD_D_WU = 2037,
-    LOONGARCH_INS_XVSUBWOD_H_B = 2038,
-    LOONGARCH_INS_XVSUBWOD_H_BU = 2039,
-    LOONGARCH_INS_XVSUBWOD_Q_D = 2040,
-    LOONGARCH_INS_XVSUBWOD_Q_DU = 2041,
-    LOONGARCH_INS_XVSUBWOD_W_H = 2042,
-    LOONGARCH_INS_XVSUBWOD_W_HU = 2043,
-    LOONGARCH_INS_XVSUB_B = 2044,
-    LOONGARCH_INS_XVSUB_D = 2045,
-    LOONGARCH_INS_XVSUB_H = 2046,
-    LOONGARCH_INS_XVSUB_Q = 2047,
-    LOONGARCH_INS_XVSUB_W = 2048,
-    LOONGARCH_INS_XVXORI_B = 2049,
-    LOONGARCH_INS_XVXOR_V = 2050,
-    LOONGARCH_INS_ENDING = 2051,
-    LOONGARCH_INS_ALIAS_BEGIN = 2052,
-    LOONGARCH_INS_ALIAS_LA = 2053,
-    LOONGARCH_INS_ALIAS_LA_GLOBAL = 2054,
-    LOONGARCH_INS_ALIAS_LA_LOCAL = 2055,
-    LOONGARCH_INS_ALIAS_NOP = 2056,
-    LOONGARCH_INS_ALIAS_MOVE = 2057,
-    LOONGARCH_INS_ALIAS_RET = 2058,
-    LOONGARCH_INS_ALIAS_JR = 2059,
-    LOONGARCH_INS_ALIAS_END = 2060,
-}
-pub mod loongarch_insn_group {
-    pub type Type = ::core::ffi::c_uint;
-    #[doc = "< = CS_GRP_INVALID"]
-    pub const LOONGARCH_GRP_INVALID: Type = 0;
-    #[doc = "< = CS_GRP_JUMP"]
-    pub const LOONGARCH_GRP_JUMP: Type = 1;
-    #[doc = "< = CS_GRP_CALL"]
-    pub const LOONGARCH_GRP_CALL: Type = 2;
-    #[doc = "< = CS_GRP_RET"]
-    pub const LOONGARCH_GRP_RET: Type = 3;
-    #[doc = "< = CS_GRP_INT"]
-    pub const LOONGARCH_GRP_INT: Type = 4;
-    #[doc = "< = CS_GRP_IRET"]
-    pub const LOONGARCH_GRP_IRET: Type = 5;
-    #[doc = "< = CS_GRP_PRIVILEGE"]
-    pub const LOONGARCH_GRP_PRIVILEGE: Type = 6;
-    #[doc = "< = CS_GRP_BRANCH_RELATIVE"]
-    pub const LOONGARCH_GRP_BRANCH_RELATIVE: Type = 7;
-    pub const LOONGARCH_FEATURE_ISLA64: Type = 128;
-    pub const LOONGARCH_FEATURE_ISLA32: Type = 129;
-    pub const LOONGARCH_FEATURE_HASLAGLOBALWITHPCREL: Type = 130;
-    pub const LOONGARCH_FEATURE_HASLAGLOBALWITHABS: Type = 131;
-    pub const LOONGARCH_FEATURE_HASLALOCALWITHABS: Type = 132;
-    pub const LOONGARCH_GRP_ENDING: Type = 133;
-}
 pub mod xtensa_reg {
     #[doc = " Xtensa registers"]
     pub type Type = ::core::ffi::c_uint;
@@ -30665,342 +31665,6 @@ impl ::core::fmt::Debug for cs_xtensa {
             self.operands, self.format
         )
     }
-}
-#[repr(u32)]
-#[doc = " Operand type for instruction's operands"]
-#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
-pub enum arc_op_type {
-    #[doc = "< Invalid"]
-    ARC_OP_INVALID = 0,
-    #[doc = "< Register operand"]
-    ARC_OP_REG = 1,
-    #[doc = "< Immediate operand"]
-    ARC_OP_IMM = 2,
-}
-#[doc = " Instruction operand"]
-#[repr(C)]
-#[derive(Copy, Clone)]
-pub struct cs_arc_op {
-    pub type_: arc_op_type,
-    pub __bindgen_anon_1: cs_arc_op__bindgen_ty_1,
-    #[doc = " How is this operand accessed? (READ, WRITE or READ|WRITE)\n NOTE: this field is irrelevant if engine is compiled in DIET mode."]
-    pub access: cs_ac_type,
-}
-#[repr(C)]
-#[derive(Copy, Clone)]
-pub union cs_arc_op__bindgen_ty_1 {
-    pub reg: ::core::ffi::c_uint,
-    #[doc = " register value for REG operand"]
-    pub imm: i64,
-}
-impl ::core::fmt::Debug for cs_arc_op__bindgen_ty_1 {
-    fn fmt(&self, f: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
-        write!(f, "cs_arc_op__bindgen_ty_1 {{ union }}")
-    }
-}
-impl ::core::fmt::Debug for cs_arc_op {
-    fn fmt(&self, f: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
-        write!(
-            f,
-            "cs_arc_op {{ type: {:?}, __bindgen_anon_1: {:?}, access: {:?} }}",
-            self.type_, self.__bindgen_anon_1, self.access
-        )
-    }
-}
-#[doc = " Instruction structure"]
-#[repr(C)]
-#[derive(Copy, Clone)]
-pub struct cs_arc {
-    #[doc = " Number of operands of this instruction,\n or 0 when instruction has no operand."]
-    pub op_count: u8,
-    #[doc = "< operands for this instruction."]
-    pub operands: [cs_arc_op; 8usize],
-}
-impl ::core::fmt::Debug for cs_arc {
-    fn fmt(&self, f: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
-        write!(f, "cs_arc {{ operands: {:?} }}", self.operands)
-    }
-}
-pub mod arc_reg {
-    #[doc = " ARC registers"]
-    pub type Type = ::core::ffi::c_uint;
-    pub const ARC_REG_INVALID: Type = 0;
-    pub const ARC_REG_BLINK: Type = 1;
-    pub const ARC_REG_FP: Type = 2;
-    pub const ARC_REG_GP: Type = 3;
-    pub const ARC_REG_ILINK: Type = 4;
-    pub const ARC_REG_SP: Type = 5;
-    pub const ARC_REG_R0: Type = 6;
-    pub const ARC_REG_R1: Type = 7;
-    pub const ARC_REG_R2: Type = 8;
-    pub const ARC_REG_R3: Type = 9;
-    pub const ARC_REG_R4: Type = 10;
-    pub const ARC_REG_R5: Type = 11;
-    pub const ARC_REG_R6: Type = 12;
-    pub const ARC_REG_R7: Type = 13;
-    pub const ARC_REG_R8: Type = 14;
-    pub const ARC_REG_R9: Type = 15;
-    pub const ARC_REG_R10: Type = 16;
-    pub const ARC_REG_R11: Type = 17;
-    pub const ARC_REG_R12: Type = 18;
-    pub const ARC_REG_R13: Type = 19;
-    pub const ARC_REG_R14: Type = 20;
-    pub const ARC_REG_R15: Type = 21;
-    pub const ARC_REG_R16: Type = 22;
-    pub const ARC_REG_R17: Type = 23;
-    pub const ARC_REG_R18: Type = 24;
-    pub const ARC_REG_R19: Type = 25;
-    pub const ARC_REG_R20: Type = 26;
-    pub const ARC_REG_R21: Type = 27;
-    pub const ARC_REG_R22: Type = 28;
-    pub const ARC_REG_R23: Type = 29;
-    pub const ARC_REG_R24: Type = 30;
-    pub const ARC_REG_R25: Type = 31;
-    pub const ARC_REG_R30: Type = 32;
-    pub const ARC_REG_R32: Type = 33;
-    pub const ARC_REG_R33: Type = 34;
-    pub const ARC_REG_R34: Type = 35;
-    pub const ARC_REG_R35: Type = 36;
-    pub const ARC_REG_R36: Type = 37;
-    pub const ARC_REG_R37: Type = 38;
-    pub const ARC_REG_R38: Type = 39;
-    pub const ARC_REG_R39: Type = 40;
-    pub const ARC_REG_R40: Type = 41;
-    pub const ARC_REG_R41: Type = 42;
-    pub const ARC_REG_R42: Type = 43;
-    pub const ARC_REG_R43: Type = 44;
-    pub const ARC_REG_R44: Type = 45;
-    pub const ARC_REG_R45: Type = 46;
-    pub const ARC_REG_R46: Type = 47;
-    pub const ARC_REG_R47: Type = 48;
-    pub const ARC_REG_R48: Type = 49;
-    pub const ARC_REG_R49: Type = 50;
-    pub const ARC_REG_R50: Type = 51;
-    pub const ARC_REG_R51: Type = 52;
-    pub const ARC_REG_R52: Type = 53;
-    pub const ARC_REG_R53: Type = 54;
-    pub const ARC_REG_R54: Type = 55;
-    pub const ARC_REG_R55: Type = 56;
-    pub const ARC_REG_R56: Type = 57;
-    pub const ARC_REG_R57: Type = 58;
-    pub const ARC_REG_R58: Type = 59;
-    pub const ARC_REG_R59: Type = 60;
-    pub const ARC_REG_R60: Type = 61;
-    pub const ARC_REG_R61: Type = 62;
-    pub const ARC_REG_R62: Type = 63;
-    pub const ARC_REG_R63: Type = 64;
-    pub const ARC_REG_STATUS32: Type = 65;
-    pub const ARC_REG_ENDING: Type = 66;
-}
-#[repr(u32)]
-#[doc = " ARC instruction"]
-#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
-pub enum arc_insn {
-    ARC_INS_INVALID = 0,
-    ARC_INS_h = 1,
-    ARC_INS_PBR = 2,
-    ARC_INS_ERROR_FLS = 3,
-    ARC_INS_ERROR_FFS = 4,
-    ARC_INS_PLDFI = 5,
-    ARC_INS_STB_FAR = 6,
-    ARC_INS_STH_FAR = 7,
-    ARC_INS_ST_FAR = 8,
-    ARC_INS_ADC = 9,
-    ARC_INS_ADC_F = 10,
-    ARC_INS_ADD_S = 11,
-    ARC_INS_ADD = 12,
-    ARC_INS_ADD_F = 13,
-    ARC_INS_AND = 14,
-    ARC_INS_AND_F = 15,
-    ARC_INS_ASL_S = 16,
-    ARC_INS_ASL = 17,
-    ARC_INS_ASL_F = 18,
-    ARC_INS_ASR_S = 19,
-    ARC_INS_ASR = 20,
-    ARC_INS_ASR_F = 21,
-    ARC_INS_BCLR_S = 22,
-    ARC_INS_BEQ_S = 23,
-    ARC_INS_BGE_S = 24,
-    ARC_INS_BGT_S = 25,
-    ARC_INS_BHI_S = 26,
-    ARC_INS_BHS_S = 27,
-    ARC_INS_BL = 28,
-    ARC_INS_BLE_S = 29,
-    ARC_INS_BLO_S = 30,
-    ARC_INS_BLS_S = 31,
-    ARC_INS_BLT_S = 32,
-    ARC_INS_BL_S = 33,
-    ARC_INS_BMSK_S = 34,
-    ARC_INS_BNE_S = 35,
-    ARC_INS_B = 36,
-    ARC_INS_BREQ_S = 37,
-    ARC_INS_BRNE_S = 38,
-    ARC_INS_BR = 39,
-    ARC_INS_BSET_S = 40,
-    ARC_INS_BTST_S = 41,
-    ARC_INS_B_S = 42,
-    ARC_INS_CMP_S = 43,
-    ARC_INS_CMP = 44,
-    ARC_INS_LD_S = 45,
-    ARC_INS_MOV_S = 46,
-    ARC_INS_EI_S = 47,
-    ARC_INS_ENTER_S = 48,
-    ARC_INS_FFS_F = 49,
-    ARC_INS_FFS = 50,
-    ARC_INS_FLS_F = 51,
-    ARC_INS_FLS = 52,
-    ARC_INS_ABS_S = 53,
-    ARC_INS_ADD1_S = 54,
-    ARC_INS_ADD2_S = 55,
-    ARC_INS_ADD3_S = 56,
-    ARC_INS_AND_S = 57,
-    ARC_INS_BIC_S = 58,
-    ARC_INS_BRK_S = 59,
-    ARC_INS_EXTB_S = 60,
-    ARC_INS_EXTH_S = 61,
-    ARC_INS_JEQ_S = 62,
-    ARC_INS_JL_S = 63,
-    ARC_INS_JL_S_D = 64,
-    ARC_INS_JNE_S = 65,
-    ARC_INS_J_S = 66,
-    ARC_INS_J_S_D = 67,
-    ARC_INS_LSR_S = 68,
-    ARC_INS_MPYUW_S = 69,
-    ARC_INS_MPYW_S = 70,
-    ARC_INS_MPY_S = 71,
-    ARC_INS_NEG_S = 72,
-    ARC_INS_NOP_S = 73,
-    ARC_INS_NOT_S = 74,
-    ARC_INS_OR_S = 75,
-    ARC_INS_SEXB_S = 76,
-    ARC_INS_SEXH_S = 77,
-    ARC_INS_SUB_S = 78,
-    ARC_INS_SUB_S_NE = 79,
-    ARC_INS_SWI_S = 80,
-    ARC_INS_TRAP_S = 81,
-    ARC_INS_TST_S = 82,
-    ARC_INS_UNIMP_S = 83,
-    ARC_INS_XOR_S = 84,
-    ARC_INS_LDB_S = 85,
-    ARC_INS_LDH_S = 86,
-    ARC_INS_J = 87,
-    ARC_INS_JL = 88,
-    ARC_INS_JLI_S = 89,
-    ARC_INS_LDB_AB = 90,
-    ARC_INS_LDB_AW = 91,
-    ARC_INS_LDB_DI_AB = 92,
-    ARC_INS_LDB_DI_AW = 93,
-    ARC_INS_LDB_DI = 94,
-    ARC_INS_LDB_X_AB = 95,
-    ARC_INS_LDB_X_AW = 96,
-    ARC_INS_LDB_X_DI_AB = 97,
-    ARC_INS_LDB_X_DI_AW = 98,
-    ARC_INS_LDB_X_DI = 99,
-    ARC_INS_LDB_X = 100,
-    ARC_INS_LDB = 101,
-    ARC_INS_LDH_AB = 102,
-    ARC_INS_LDH_AW = 103,
-    ARC_INS_LDH_DI_AB = 104,
-    ARC_INS_LDH_DI_AW = 105,
-    ARC_INS_LDH_DI = 106,
-    ARC_INS_LDH_S_X = 107,
-    ARC_INS_LDH_X_AB = 108,
-    ARC_INS_LDH_X_AW = 109,
-    ARC_INS_LDH_X_DI_AB = 110,
-    ARC_INS_LDH_X_DI_AW = 111,
-    ARC_INS_LDH_X_DI = 112,
-    ARC_INS_LDH_X = 113,
-    ARC_INS_LDH = 114,
-    ARC_INS_LDI_S = 115,
-    ARC_INS_LD_AB = 116,
-    ARC_INS_LD_AW = 117,
-    ARC_INS_LD_DI_AB = 118,
-    ARC_INS_LD_DI_AW = 119,
-    ARC_INS_LD_DI = 120,
-    ARC_INS_LD_S_AS = 121,
-    ARC_INS_LD = 122,
-    ARC_INS_LEAVE_S = 123,
-    ARC_INS_LR = 124,
-    ARC_INS_LSR = 125,
-    ARC_INS_LSR_F = 126,
-    ARC_INS_MAX = 127,
-    ARC_INS_MAX_F = 128,
-    ARC_INS_MIN = 129,
-    ARC_INS_MIN_F = 130,
-    ARC_INS_MOV_S_NE = 131,
-    ARC_INS_MOV = 132,
-    ARC_INS_MOV_F = 133,
-    ARC_INS_MPYMU = 134,
-    ARC_INS_MPYMU_F = 135,
-    ARC_INS_MPYM = 136,
-    ARC_INS_MPYM_F = 137,
-    ARC_INS_MPY = 138,
-    ARC_INS_MPY_F = 139,
-    ARC_INS_NORMH_F = 140,
-    ARC_INS_NORMH = 141,
-    ARC_INS_NORM_F = 142,
-    ARC_INS_NORM = 143,
-    ARC_INS_OR = 144,
-    ARC_INS_OR_F = 145,
-    ARC_INS_POP_S = 146,
-    ARC_INS_PUSH_S = 147,
-    ARC_INS_ROR = 148,
-    ARC_INS_ROR_F = 149,
-    ARC_INS_RSUB = 150,
-    ARC_INS_RSUB_F = 151,
-    ARC_INS_SBC = 152,
-    ARC_INS_SBC_F = 153,
-    ARC_INS_SETEQ = 154,
-    ARC_INS_SETEQ_F = 155,
-    ARC_INS_SEXB_F = 156,
-    ARC_INS_SEXB = 157,
-    ARC_INS_SEXH_F = 158,
-    ARC_INS_SEXH = 159,
-    ARC_INS_STB_S = 160,
-    ARC_INS_ST_S = 161,
-    ARC_INS_STB_AB = 162,
-    ARC_INS_STB_AW = 163,
-    ARC_INS_STB_DI_AB = 164,
-    ARC_INS_STB_DI_AW = 165,
-    ARC_INS_STB_DI = 166,
-    ARC_INS_STB = 167,
-    ARC_INS_STH_AB = 168,
-    ARC_INS_STH_AW = 169,
-    ARC_INS_STH_DI_AB = 170,
-    ARC_INS_STH_DI_AW = 171,
-    ARC_INS_STH_DI = 172,
-    ARC_INS_STH_S = 173,
-    ARC_INS_STH = 174,
-    ARC_INS_ST_AB = 175,
-    ARC_INS_ST_AW = 176,
-    ARC_INS_ST_DI_AB = 177,
-    ARC_INS_ST_DI_AW = 178,
-    ARC_INS_ST_DI = 179,
-    ARC_INS_ST = 180,
-    ARC_INS_SUB1 = 181,
-    ARC_INS_SUB1_F = 182,
-    ARC_INS_SUB2 = 183,
-    ARC_INS_SUB2_F = 184,
-    ARC_INS_SUB3 = 185,
-    ARC_INS_SUB3_F = 186,
-    ARC_INS_SUB = 187,
-    ARC_INS_SUB_F = 188,
-    ARC_INS_XOR = 189,
-    ARC_INS_XOR_F = 190,
-}
-pub mod arc_insn_group {
-    pub type Type = ::core::ffi::c_uint;
-    #[doc = "< = CS_GRP_INVALID"]
-    pub const ARC_GRP_INVALID: Type = 0;
-    #[doc = "< = CS_GRP_JUMP"]
-    pub const ARC_GRP_JUMP: Type = 1;
-    #[doc = "< = CS_GRP_CALL"]
-    pub const ARC_GRP_CALL: Type = 2;
-    #[doc = "< = CS_GRP_RET"]
-    pub const ARC_GRP_RET: Type = 3;
-    #[doc = "< = CS_GRP_BRANCH_RELATIVE"]
-    pub const ARC_GRP_BRANCH_RELATIVE: Type = 4;
-    pub const ARC_GRP_ENDING: Type = 5;
 }
 #[doc = " NOTE: All information in cs_detail is only available when CS_OPT_DETAIL = CS_OPT_ON\n Initialized as memset(., 0, offsetof(cs_detail, ARCH)+sizeof(cs_ARCH))\n by ARCH_getInstruction in arch/ARCH/ARCHDisassembler.c\n if cs_detail changes, in particular if a field is added after the union,\n then update arch/ARCH/ARCHDisassembler.c accordingly"]
 #[repr(C)]
