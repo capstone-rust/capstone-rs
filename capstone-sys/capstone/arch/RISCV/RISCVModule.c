@@ -31,6 +31,7 @@ cs_err RISCV_global_init(cs_struct *ud)
 	ud->group_name = RISCV_group_name;
 	ud->insn_map = RISCV_insns;
 	ud->insn_map_size = RISCV_insn_count;
+	ud->reg_access = RISCV_reg_access;
 
 	return CS_ERR_OK;
 }
@@ -38,7 +39,7 @@ cs_err RISCV_global_init(cs_struct *ud)
 cs_err RISCV_option(cs_struct *handle, cs_opt_type type, size_t value)
 {
 	if (type == CS_OPT_SYNTAX) {
-		handle->syntax = (int)value;
+		handle->syntax |= (int)value;
 	} else if (type == CS_OPT_MODE) {
 		handle->mode = (cs_mode)value;
 	}

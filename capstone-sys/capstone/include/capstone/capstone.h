@@ -13,9 +13,9 @@ extern "C" {
 #if defined(CAPSTONE_HAS_OSXKERNEL)
 #include <libkern/libkern.h>
 #else
-#include <stdlib.h>
 #include <stdint.h>
 #include <stdio.h>
+#include <stdlib.h>
 #endif
 
 #include "cs_operand.h"
@@ -163,6 +163,37 @@ typedef enum cs_mode {
 	CS_MODE_M68K_030 = 1 << 4, ///< M68K 68030 mode
 	CS_MODE_M68K_040 = 1 << 5, ///< M68K 68040 mode
 	CS_MODE_M68K_060 = 1 << 6, ///< M68K 68060 mode
+	CS_MODE_M68K_CPU32 = 1 << 7,
+	CS_MODE_M68K_CF_ISA_A = 1 << 8, ///< ColdFire ISA_A
+	CS_MODE_M68K_CF_ISA_A_PLUS = 1 << 9, ///< ColdFire ISA_A+
+	CS_MODE_M68K_CF_ISA_B = 1 << 10, ///< ColdFire ISA_B
+	CS_MODE_M68K_CF_ISA_C = 1 << 11, ///< ColdFire ISA_C
+	CS_MODE_M68K_CF_USP = 1 << 12, ///< ColdFire USP instructions
+	CS_MODE_M68K_CF_DIV = 1 << 13, ///< ColdFire hardware divide
+	CS_MODE_M68K_CF_MAC = 1 << 14, ///< ColdFire MAC
+	CS_MODE_M68K_CF_EMAC = 1 << 15, ///< ColdFire EMAC
+	CS_MODE_M68K_CF_EMAC_B = 1 << 16, ///< ColdFire EMAC_B
+	CS_MODE_M68K_CF_FPU = 1 << 17, ///< ColdFire FPU
+	CS_MODE_M68K_COLDFIRE = CS_MODE_M68K_CF_ISA_A |
+				CS_MODE_M68K_CF_ISA_A_PLUS |
+				CS_MODE_M68K_CF_ISA_B | CS_MODE_M68K_CF_ISA_C |
+				CS_MODE_M68K_CF_USP | CS_MODE_M68K_CF_DIV |
+				CS_MODE_M68K_CF_MAC | CS_MODE_M68K_CF_EMAC |
+				CS_MODE_M68K_CF_EMAC_B | CS_MODE_M68K_CF_FPU,
+	CS_MODE_M68K_CFV1 = CS_MODE_M68K_CF_ISA_C | CS_MODE_M68K_CF_USP,
+	CS_MODE_M68K_CFV2 = CS_MODE_M68K_CF_ISA_A | CS_MODE_M68K_CF_DIV,
+	CS_MODE_M68K_CFV3 = CS_MODE_M68K_CF_ISA_A | CS_MODE_M68K_CF_DIV,
+	CS_MODE_M68K_CFV4 = CS_MODE_M68K_CF_ISA_B | CS_MODE_M68K_CF_DIV,
+	CS_MODE_M68K_CFV4E = CS_MODE_M68K_CF_ISA_B | CS_MODE_M68K_CF_DIV |
+			     CS_MODE_M68K_CF_USP | CS_MODE_M68K_CF_EMAC |
+			     CS_MODE_M68K_CF_FPU,
+	CS_MODE_M68K_CFV5 = CS_MODE_M68K_CF_ISA_C | CS_MODE_M68K_CF_USP |
+			    CS_MODE_M68K_CF_DIV | CS_MODE_M68K_CF_EMAC |
+			    CS_MODE_M68K_CF_EMAC_B,
+	CS_MODE_M68K_FEATURE_MASK = CS_MODE_M68K_000 | CS_MODE_M68K_010 |
+				    CS_MODE_M68K_020 | CS_MODE_M68K_030 |
+				    CS_MODE_M68K_040 | CS_MODE_M68K_060 |
+				    CS_MODE_M68K_CPU32 | CS_MODE_M68K_COLDFIRE,
 	CS_MODE_BIG_ENDIAN = 1U << 31, ///< big-endian mode
 	CS_MODE_MIPS16 = CS_MODE_16, ///< Generic mips16
 	CS_MODE_MIPS32 = CS_MODE_32, ///< Generic mips32
@@ -205,6 +236,8 @@ typedef enum cs_mode {
 	CS_MODE_M680X_CPU12 = 1 << 9, ///< M680X Motorola/Freescale/NXP CPU12
 	///< used on M68HC12/HCS12
 	CS_MODE_M680X_HCS08 = 1 << 10, ///< M680X Freescale/NXP HCS08 mode
+	CS_MODE_M680X_RS08 = 1 << 11, ///< M680X Freescale/NXP RS08 mode
+	CS_MODE_M680X_HCS12X = 1 << 12, ///< M680X Freescale/NXP HCS12X mode
 	CS_MODE_BPF_CLASSIC = 0, ///< Classic BPF mode (default)
 	CS_MODE_BPF_EXTENDED = 1 << 0, ///< Extended BPF mode
 	CS_MODE_RISCV32 = 1 << 0, ///< RISCV RV32G
@@ -228,6 +261,7 @@ typedef enum cs_mode {
 	CS_MODE_RISCV_ZBKC = 1 << 18,
 	CS_MODE_RISCV_ZBKX = 1 << 19,
 	CS_MODE_RISCV_ZBS = 1 << 20,
+	CS_MODE_RISCV_VENTANA = 1 << 21,
 	CS_MODE_MOS65XX_6502 = 1 << 1, ///< MOS65XXX MOS 6502
 	CS_MODE_MOS65XX_65C02 = 1 << 2, ///< MOS65XXX WDC 65c02
 	CS_MODE_MOS65XX_W65C02 = 1 << 3, ///< MOS65XXX WDC W65c02
@@ -362,6 +396,9 @@ typedef enum cs_opt_value {
 	CS_OPT_SYNTAX_NO_ALIAS_TEXT =
 		1
 		<< 10, ///< Does not print an instruction's alias test if the instruction is an alias
+	CS_OPT_SYNTAX_NO_ALIAS_TEXT_COMPRESSED =
+		1
+		<< 11, ///< Does not print an instruction's alias test if the instruction is an alias
 	CS_OPT_DETAIL_REAL =
 		1
 		<< 1, ///< If enabled, always sets the real instruction detail. Even if the instruction is an alias.
@@ -446,27 +483,27 @@ typedef struct cs_opt_skipdata {
 #else
 #include "aarch64.h"
 #endif
-#include "m68k.h"
-#include "mips.h"
-#include "ppc.h"
-#include "sparc.h"
-#include "systemz.h"
-#include "x86.h"
-#include "xcore.h"
-#include "tms320c64x.h"
-#include "m680x.h"
-#include "evm.h"
-#include "riscv.h"
-#include "wasm.h"
-#include "mos65xx.h"
-#include "bpf.h"
-#include "sh.h"
-#include "tricore.h"
 #include "alpha.h"
+#include "arc.h"
+#include "bpf.h"
+#include "evm.h"
 #include "hppa.h"
 #include "loongarch.h"
+#include "m680x.h"
+#include "m68k.h"
+#include "mips.h"
+#include "mos65xx.h"
+#include "ppc.h"
+#include "riscv.h"
+#include "sh.h"
+#include "sparc.h"
+#include "systemz.h"
+#include "tms320c64x.h"
+#include "tricore.h"
+#include "wasm.h"
+#include "x86.h"
+#include "xcore.h"
 #include "xtensa.h"
-#include "arc.h"
 
 #define MAX_IMPL_W_REGS 47
 #define MAX_IMPL_R_REGS 20

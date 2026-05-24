@@ -6321,3 +6321,328 @@ test_cases:
                 reg: $2
               - type: ALPHA_OP_IMM
                 imm: 0x12001b350
+  -
+    input:
+      name: "RISCV - #2881 - op_count must not accumulate across instructions (real)"
+      bytes: [ 0x41, 0x11, 0x13, 0x85, 0x15, 0x00, 0x41, 0x11 ]
+      arch: "CS_ARCH_RISCV"
+      options: [ CS_MODE_RISCV64, CS_MODE_RISCV_C, CS_OPT_DETAIL, CS_OPT_DETAIL_REAL, CS_OPT_SYNTAX_NO_ALIAS_TEXT, CS_OPT_SYNTAX_NO_ALIAS_TEXT_COMPRESSED ]
+    expected:
+      insns:
+      -
+        asm_text: "c.addi sp, -0x10"
+        details:
+          riscv:
+            operands:
+            - type: "RISCV_OP_REG"
+              reg: "sp"
+            - type: "RISCV_OP_IMM"
+              imm: -0x10
+      -
+        asm_text: "addi a0, a1, 1"
+        details:
+          riscv:
+            operands:
+            - type: "RISCV_OP_REG"
+              reg: "a0"
+            - type: "RISCV_OP_REG"
+              reg: "a1"
+            - type: "RISCV_OP_IMM"
+              imm: 1
+      -
+        asm_text: "c.addi sp, -0x10"
+        details:
+          riscv:
+            operands:
+            - type: "RISCV_OP_REG"
+              reg: "sp"
+            - type: "RISCV_OP_IMM"
+              imm: -0x10
+  -
+    input:
+      name: "RISCV - #2881 - op_count must not accumulate across instructions (alias)"
+      bytes: [ 0x41, 0x11, 0x13, 0x85, 0x15, 0x00, 0x41, 0x11 ]
+      arch: "CS_ARCH_RISCV"
+      options: [ CS_MODE_RISCV64, CS_MODE_RISCV_C, CS_OPT_DETAIL ]
+    expected:
+      insns:
+      -
+        asm_text: "addi sp, sp, -0x10"
+        details:
+          riscv:
+            operands:
+            - type: "RISCV_OP_REG"
+              reg: "sp"
+            - type: "RISCV_OP_REG"
+              reg: "sp"
+            - type: "RISCV_OP_IMM"
+              imm: -0x10
+      -
+        asm_text: "addi a0, a1, 1"
+        details:
+          riscv:
+            operands:
+            - type: "RISCV_OP_REG"
+              reg: "a0"
+            - type: "RISCV_OP_REG"
+              reg: "a1"
+            - type: "RISCV_OP_IMM"
+              imm: 1
+      -
+        asm_text: "addi sp, sp, -0x10"
+        details:
+          riscv:
+            operands:
+            - type: "RISCV_OP_REG"
+              reg: "sp"
+            - type: "RISCV_OP_REG"
+              reg: "sp"
+            - type: "RISCV_OP_IMM"
+              imm: -0x10
+  -
+    input:
+      name: "RISCV - #2861 - add instruction id (first real)"
+      bytes: [ 0x33, 0x85, 0xC5, 0x00 ]
+      arch: "CS_ARCH_RISCV"
+      options: [ CS_MODE_RISCV64, CS_OPT_DETAIL ]
+      address: 0x0
+    expected:
+      insns:
+      -
+        asm_text: "add a0, a1, a2"
+        id: RISCV_INS_ADD
+        is_alias: -1
+  -
+    input:
+      name: "RISCV - #2861 - zip instruction id (last real)"
+      bytes: [ 0x13, 0x95, 0xF5, 0x08 ]
+      arch: "CS_ARCH_RISCV"
+      options: [ CS_MODE_RISCV32, CS_MODE_RISCV_ZBKB, CS_OPT_DETAIL ]
+      address: 0x0
+    expected:
+      insns:
+      -
+        asm_text: "zip a0, a1"
+        id: RISCV_INS_ZIP
+        is_alias: -1
+  -
+    input:
+      name: "RISCV - #2861 - nop alias id (first alias)"
+      bytes: [ 0x13, 0x00, 0x00, 0x00 ]
+      arch: "CS_ARCH_RISCV"
+      options: [ CS_MODE_RISCV64, CS_OPT_DETAIL ]
+      address: 0x0
+    expected:
+      insns:
+      -
+        asm_text: "nop"
+        id: RISCV_INS_ADDI
+        is_alias: 1
+        alias_id: RISCV_INS_ALIAS_NOP
+  -
+    input:
+      name: "RISCV - #2861 - cv.mulhhu alias id (last alias)"
+      bytes: [ 0x5B, 0xD5, 0xC5, 0x40 ]
+      arch: "CS_ARCH_RISCV"
+      options: [ CS_MODE_RISCV32, CS_MODE_RISCV_XCVMAC, CS_OPT_DETAIL ]
+      address: 0x0
+    expected:
+      insns:
+      -
+        asm_text: "cv.mulhhu a0, a1, a2"
+        id: RISCV_INS_CV_MULHHUN
+        is_alias: 1
+        alias_id: RISCV_INS_ALIAS_CV_MULHHU
+  -
+    input:
+      name: "RISCV - #2896 - alias operand details (REAL)"
+      bytes: [ 0x67, 0x80, 0x00, 0x00 ]
+      arch: "CS_ARCH_RISCV"
+      options: [ CS_MODE_RISCV64, CS_OPT_DETAIL, CS_OPT_DETAIL_REAL ]
+      address: 0x0
+    expected:
+      insns:
+      -
+        asm_text: "ret"
+        id: RISCV_INS_JALR
+        is_alias: 1
+        alias_id: RISCV_INS_ALIAS_RET
+        uses_alias_details: -1
+  -
+    input:
+      name: "RISCV - #2896 - alias operand details (ALIAS)"
+      bytes: [ 0x67, 0x80, 0x00, 0x00 ]
+      arch: "CS_ARCH_RISCV"
+      options: [ CS_MODE_RISCV64, CS_OPT_DETAIL ]
+      address: 0x0
+    expected:
+      insns:
+      -
+        asm_text: "ret"
+        id: RISCV_INS_JALR
+        is_alias: 1
+        alias_id: RISCV_INS_ALIAS_RET
+        uses_alias_details: 1
+  -
+    input:
+      name: "issue 1636 MOVSXD r32, r/m32 (register form, no REX.W)"
+      bytes: [ 0x63, 0xc7 ]
+      arch: "CS_ARCH_X86"
+      options: [ CS_MODE_64, CS_OPT_DETAIL ]
+      address: 0x0
+    expected:
+      insns:
+      -
+        asm_text: "movsxd eax, edi"
+        details:
+          x86:
+            operands:
+              -
+                type: X86_OP_REG
+                reg: eax
+                size: 4
+                access: CS_AC_WRITE
+              -
+                type: X86_OP_REG
+                reg: edi
+                size: 4
+                access: CS_AC_READ
+          regs_read: [ edi ]
+          regs_write: [ eax ]
+          groups: [ mode64 ]
+  -
+    input:
+      name: "issue 1832 MOVSXD r32, m32 (memory form, no REX.W)"
+      bytes: [ 0x63, 0x20 ]
+      arch: "CS_ARCH_X86"
+      options: [ CS_MODE_64, CS_OPT_DETAIL ]
+      address: 0x0
+    expected:
+      insns:
+      -
+        asm_text: "movsxd esp, dword ptr [rax]"
+        details:
+          x86:
+            operands:
+              -
+                type: X86_OP_REG
+                reg: esp
+                size: 4
+                access: CS_AC_WRITE
+              -
+                type: X86_OP_MEM
+                mem_base: rax
+                size: 4
+                access: CS_AC_READ
+          regs_read: [ rax ]
+          regs_write: [ esp ]
+          groups: [ mode64 ]
+  -
+    input:
+      name: "issue 2442 MOVSXD r32, m32 (memory form with disp8)"
+      bytes: [ 0x63, 0x6b, 0x20 ]
+      arch: "CS_ARCH_X86"
+      options: [ CS_MODE_64, CS_OPT_DETAIL ]
+      address: 0x0
+    expected:
+      insns:
+      -
+        asm_text: "movsxd ebp, dword ptr [rbx + 0x20]"
+        details:
+          x86:
+            operands:
+              -
+                type: X86_OP_REG
+                reg: ebp
+                size: 4
+                access: CS_AC_WRITE
+              -
+                type: X86_OP_MEM
+                mem_base: rbx
+                mem_disp: 0x20
+                size: 4
+                access: CS_AC_READ
+          regs_read: [ rbx ]
+          regs_write: [ ebp ]
+          groups: [ mode64 ]
+  -
+    input:
+      name: "issue 2555 MOVSXD r32, m32 (memory form, no displacement)"
+      bytes: [ 0x63, 0x26 ]
+      arch: "CS_ARCH_X86"
+      options: [ CS_MODE_64, CS_OPT_DETAIL ]
+      address: 0x0
+    expected:
+      insns:
+      -
+        asm_text: "movsxd esp, dword ptr [rsi]"
+        details:
+          x86:
+            operands:
+              -
+                type: X86_OP_REG
+                reg: esp
+                size: 4
+                access: CS_AC_WRITE
+              -
+                type: X86_OP_MEM
+                mem_base: rsi
+                size: 4
+                access: CS_AC_READ
+          regs_read: [ rsi ]
+          regs_write: [ esp ]
+          groups: [ mode64 ]
+  -
+    input:
+      name: "MOVSXD r16, r/m32 (register form, 0x66 prefix)"
+      bytes: [ 0x66, 0x63, 0xc1 ]
+      arch: "CS_ARCH_X86"
+      options: [ CS_MODE_64, CS_OPT_DETAIL ]
+      address: 0x0
+    expected:
+      insns:
+      -
+        asm_text: "movsxd ax, ecx"
+        details:
+          x86:
+            operands:
+              -
+                type: X86_OP_REG
+                reg: ax
+                size: 2
+                access: CS_AC_WRITE
+              -
+                type: X86_OP_REG
+                reg: ecx
+                size: 4
+                access: CS_AC_READ
+          regs_read: [ ecx ]
+          regs_write: [ ax ]
+          groups: [ mode64 ]
+  -
+    input:
+      name: "MOVSXD r16, m32 (memory form, 0x66 prefix)"
+      bytes: [ 0x66, 0x63, 0x20 ]
+      arch: "CS_ARCH_X86"
+      options: [ CS_MODE_64, CS_OPT_DETAIL ]
+      address: 0x0
+    expected:
+      insns:
+      -
+        asm_text: "movsxd sp, dword ptr [rax]"
+        details:
+          x86:
+            operands:
+              -
+                type: X86_OP_REG
+                reg: sp
+                size: 2
+                access: CS_AC_WRITE
+              -
+                type: X86_OP_MEM
+                mem_base: rax
+                size: 4
+                access: CS_AC_READ
+          regs_read: [ rax ]
+          regs_write: [ sp ]
+          groups: [ mode64 ]

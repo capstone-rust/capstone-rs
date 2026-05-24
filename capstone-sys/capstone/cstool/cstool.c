@@ -1,10 +1,10 @@
 /* Tang Yuhang <tyh000011112222@gmail.com> 2016 */
 /* pancake <pancake@nopcode.org> 2017 */
 
-#include <string.h>
+#include "getopt.h"
 #include <ctype.h>
 #include <errno.h>
-#include "getopt.h"
+#include <string.h>
 
 #include <capstone/capstone.h>
 #include "cstool.h"
@@ -68,6 +68,13 @@ static struct {
 	  "Does not print the text alias of an alias instruction",
 	  { CS_ARCH_RISCV, CS_ARCH_MAX },
 	  CS_OPT_SYNTAX_NO_ALIAS_TEXT,
+	  0 },
+	{ "+noaliascompressed",
+	  "Does not print the text alias of compressed RISC-V instructions, "
+	  "but still prints the text alias of non-compressed RISC-V instructions "
+	  "if +noalias is not given",
+	  { CS_ARCH_RISCV, CS_ARCH_MAX },
+	  CS_OPT_SYNTAX_NO_ALIAS_TEXT_COMPRESSED,
 	  0 },
 	// cs_mode only
 	{ "+nofloat",
@@ -221,6 +228,11 @@ static struct {
 	  { CS_ARCH_RISCV, CS_ARCH_MAX },
 	  0,
 	  CS_MODE_RISCV_SIFIVE },
+	{ "+ventana",
+	  "Enables the RISCV ventana extension",
+	  { CS_ARCH_RISCV, CS_ARCH_MAX },
+	  0,
+	  CS_MODE_RISCV_VENTANA },
 	{ "+bitmanip",
 	  "Enables the RISCV bit manipulation extension",
 	  { CS_ARCH_RISCV, CS_ARCH_MAX },
@@ -410,7 +422,26 @@ static struct {
 	{ "xcore", "xcore, big endian", CS_ARCH_XCORE, CS_MODE_BIG_ENDIAN },
 
 	{ "m68k", "m68k + big endian", CS_ARCH_M68K, CS_MODE_BIG_ENDIAN },
-	{ "m68k40", "m68k40", CS_ARCH_M68K, CS_MODE_M68K_040 },
+	{ "m68k10", "m68k, 68010", CS_ARCH_M68K, CS_MODE_M68K_010 },
+	{ "m68k20", "m68k, 68020", CS_ARCH_M68K, CS_MODE_M68K_020 },
+	{ "m68k30", "m68k, 68030", CS_ARCH_M68K, CS_MODE_M68K_030 },
+	{ "m68k40", "m68k, 68040", CS_ARCH_M68K, CS_MODE_M68K_040 },
+	{ "m68k60", "m68k, 68060", CS_ARCH_M68K, CS_MODE_M68K_060 },
+	{ "m68kcpu32", "m68k, cpu32", CS_ARCH_M68K, CS_MODE_M68K_CPU32 },
+	{ "m68kcf", "m68k, ColdFire all features", CS_ARCH_M68K,
+	  CS_MODE_BIG_ENDIAN | CS_MODE_M68K_COLDFIRE },
+	{ "m68kcfv1", "m68k, ColdFire V1", CS_ARCH_M68K,
+	  CS_MODE_BIG_ENDIAN | CS_MODE_M68K_CFV1 },
+	{ "m68kcfv2", "m68k, ColdFire V2", CS_ARCH_M68K,
+	  CS_MODE_BIG_ENDIAN | CS_MODE_M68K_CFV2 },
+	{ "m68kcfv3", "m68k, ColdFire V3", CS_ARCH_M68K,
+	  CS_MODE_BIG_ENDIAN | CS_MODE_M68K_CFV3 },
+	{ "m68kcfv4", "m68k, ColdFire V4", CS_ARCH_M68K,
+	  CS_MODE_BIG_ENDIAN | CS_MODE_M68K_CFV4 },
+	{ "m68kcfv4e", "m68k, ColdFire V4e", CS_ARCH_M68K,
+	  CS_MODE_BIG_ENDIAN | CS_MODE_M68K_CFV4E },
+	{ "m68kcfv5", "m68k, ColdFire V5", CS_ARCH_M68K,
+	  CS_MODE_BIG_ENDIAN | CS_MODE_M68K_CFV5 },
 
 	{ "tms320c64x", "tms320c64x, big endian", CS_ARCH_TMS320C64X,
 	  CS_MODE_BIG_ENDIAN },
@@ -427,7 +458,8 @@ static struct {
 	{ "hd6301", "m680x, HD6301/3", CS_ARCH_M680X, CS_MODE_M680X_6301 },
 	{ "hd6309", "m680x, HD6309", CS_ARCH_M680X, CS_MODE_M680X_6309 },
 	{ "hcs08", "m680x, HCS08", CS_ARCH_M680X, CS_MODE_M680X_HCS08 },
-
+	{ "rs08", "m680x, RS08", CS_ARCH_M680X, CS_MODE_M680X_RS08 },
+	{ "hcs12x", "m680x, HCS12X", CS_ARCH_M680X, CS_MODE_M680X_HCS12X },
 	{ "evm", "ethereum virtual machine", CS_ARCH_EVM, 0 },
 
 	{ "wasm", "web assembly", CS_ARCH_WASM, 0 },

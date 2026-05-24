@@ -40,11 +40,13 @@ const insn_map *RISCV_insns = insns;
 const unsigned int RISCV_insn_count = ARR_SIZE(insns);
 
 #ifndef CAPSTONE_DIET
-
 static const map_insn_ops insn_operands[] = {
 #include "RISCVGenCSMappingInsnOp.inc"
 };
 
+static const name_map insn_alias_mnem_map[] = {
+#include "RISCVGenCSAliasMnemMap.inc"
+};
 #endif
 
 void RISCV_add_cs_detail_0(MCInst *MI, riscv_op_group opgroup, unsigned OpNum)
@@ -262,6 +264,14 @@ static inline void RISCV_add_adhoc_groups(MCInst *MI)
 	RISCV_add_ret_group(MI);
 }
 
+// memset all stalled values in the detail struct to 0 before disassembling any next instruction
+void RISCV_init_cs_detail(MCInst *MI)
+{
+	if (detail_is_set(MI))
+		memset(get_detail(MI), 0,
+		       offsetof(cs_detail, riscv) + sizeof(cs_riscv));
+}
+
 // for weird reasons some instructions end up with valid operands that are
 // interspersed with invalid operands, i.e. the operands array is an "island"
 // of valid operands with invalid gaps between them, this function will compactify
@@ -348,21 +358,29 @@ void RISCV_get_insn_id(cs_struct *h, cs_insn *insn, unsigned int id)
 }
 
 static const char *const insn_name_maps[] = {
-	/*RISCV_INS_INVALID:*/ NULL,
-
 #include "RISCVGenCSMappingInsnName.inc"
 };
+
+// called from RISCV_LLVM_printInstruction() to avoid exporting
+// insn_alias_mnem_map and its size via extern declarations
+void RISCV_set_alias_id(MCInst *MI, SStream *O)
+{
+#ifndef CAPSTONE_DIET
+	map_set_alias_id(MI, O, insn_alias_mnem_map,
+			 ARR_SIZE(insn_alias_mnem_map));
+#endif
+}
 
 const char *RISCV_insn_name(csh handle, unsigned int id)
 {
 #ifndef CAPSTONE_DIET
-	if (id >= RISCV_INS_ENDING)
-		return NULL;
+	if (id < RISCV_INS_ENDING)
+		return insn_name_maps[id];
 
-	return insn_name_maps[id];
-#else
-	return NULL;
+	if (id < RISCV_INS_ALIAS_END)
+		return insn_alias_mnem_map[id - RISCV_INS_ALIAS_BEGIN - 1].name;
 #endif
+	return NULL;
 }
 
 #ifndef CAPSTONE_DIET
@@ -407,7 +425,46 @@ riscv_insn RISCV_map_insn(const char *name)
 		if (!strcmp(name, insn_name_maps[i]))
 			return i;
 	}
+#ifndef CAPSTONE_DIET
+	for (i = 0; i < ARR_SIZE(insn_alias_mnem_map); i++) {
+		if (!strcmp(name, insn_alias_mnem_map[i].name))
+			return insn_alias_mnem_map[i].id;
+	}
+#endif
 	return RISCV_INS_INVALID;
+}
+
+void RISCV_reg_access(const cs_insn *insn, cs_regs regs_read,
+		      uint8_t *regs_read_count, cs_regs regs_write,
+		      uint8_t *regs_write_count)
+{
+	const cs_riscv *riscv = &(insn->detail->riscv);
+	uint8_t read_count = 0;
+	uint8_t write_count = 0;
+
+	for (int j = 0; j < riscv->op_count; j++) {
+		const cs_riscv_op *op = &riscv->operands[j];
+
+		if (op->type == RISCV_OP_REG) {
+			if ((op->access & CS_AC_WRITE) &&
+			    !arr_exist(regs_write, write_count, op->reg)) {
+				regs_write[write_count++] = (uint16_t)op->reg;
+			}
+			if ((op->access & CS_AC_READ) &&
+			    !arr_exist(regs_read, read_count, op->reg)) {
+				regs_read[read_count++] = (uint16_t)op->reg;
+			}
+		} else if (op->type == RISCV_OP_MEM) {
+			if (op->mem.base != RISCV_REG_INVALID &&
+			    !arr_exist(regs_read, read_count, op->mem.base)) {
+				regs_read[read_count++] =
+					(uint16_t)op->mem.base;
+			}
+		}
+	}
+
+	*regs_read_count = read_count;
+	*regs_write_count = write_count;
 }
 
 void RISCV_init(MCRegisterInfo *MRI)

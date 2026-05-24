@@ -207,6 +207,9 @@ pub enum M68kOperand {
     /// Branch displacement
     Displacement(M68kOpBranchDisplacement),
 
+    /// Shift
+    Shift(u8),
+
     /// Invalid
     Invalid,
 }
@@ -235,6 +238,7 @@ impl M68kOperand {
                 )
             }
             M68K_OP_BR_DISP => Displacement(cs_op.br_disp.into()),
+            M68K_OP_SHIFT => Shift(cs_op.flags),
             M68K_OP_INVALID => Invalid,
         }
     }
@@ -399,6 +403,11 @@ impl M68kOpMem {
         => scale: u8
     );
 
+    define_m68k_getter!(
+        /// address
+        => address: u64
+    );
+
     /// Returns (width, offset)
     pub fn bitfield(&self) -> Option<(u8, u8)> {
         if self.op_mem.bitfield == 0 {
@@ -439,7 +448,7 @@ impl M68kOpMem {
 
 impl_PartialEq_repr_fields!(M68kOpMem;
     base_reg, index_reg, in_base_reg, in_disp, out_disp, disp, scale, bitfield, index_size,
-    address_mode, extra_info
+    address_mode, extra_info, address
 );
 
 impl cmp::Eq for M68kOpMem {}
@@ -481,7 +490,8 @@ mod test {
         index_size: 0,
         disp_size: 0,
         in_disp_size: 0,
-        out_disp_size: 0
+        out_disp_size: 0,
+        address: 0,
     };
 
     #[test]
@@ -496,6 +506,7 @@ mod test {
             register_bits: 0,
             type_: M68K_OP_IMM,
             address_mode: M68K_AM_NONE,
+            flags: 0
         };
 
         // Reg
@@ -666,7 +677,8 @@ mod test {
         let arch_detail = _arch_detail.m68k().unwrap();
         let mut ops = arch_detail.operands();
         if let M68kOperand::Mem(mem) = ops.next().unwrap() {
-            assert_eq!(mem.imm(), Some(0x12));
+            assert_eq!(mem.address(), 0x12);
+            assert_eq!(mem.imm(), Some(0));
         } else {
             panic!("Not expected type")
         }
