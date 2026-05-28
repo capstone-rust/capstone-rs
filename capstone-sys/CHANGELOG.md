@@ -6,7 +6,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 ### Changed
-- Bump bundled capstone to 5.0.7
+- Bump bundled capstone to 5.0.9
 
 ## [0.18.0] - 2026-01-04
 ### Added
