@@ -95,12 +95,42 @@ fn build_capstone_cc() {
         })
     }
 
+    fn is_arch_enabled(dir_name: &str) -> bool {
+        match dir_name.to_lowercase().as_str() {
+            "aarch64" => cfg!(feature = "arch_aarch64"),
+            "alpha" => cfg!(feature = "arch_alpha"),
+            "arc" => cfg!(feature = "arch_arc"),
+            "arm" => cfg!(feature = "arch_arm"),
+            "bpf" => cfg!(feature = "arch_bpf"),
+            "evm" => cfg!(feature = "arch_evm"),
+            "hppa" => cfg!(feature = "arch_hppa"),
+            "loongarch" => cfg!(feature = "arch_loongarch"),
+            "m680x" => cfg!(feature = "arch_m680x"),
+            "m68k" => cfg!(feature = "arch_m68k"),
+            "mips" => cfg!(feature = "arch_mips"),
+            "mos65xx" => cfg!(feature = "arch_mos65xx"),
+            "powerpc" => cfg!(feature = "arch_powerpc"),
+            "riscv" => cfg!(feature = "arch_riscv"),
+            "sh" => cfg!(feature = "arch_sh"),
+            "sparc" => cfg!(feature = "arch_sparc"),
+            "systemz" => cfg!(feature = "arch_systemz"),
+            "tms320c64x" => cfg!(feature = "arch_tms320c64x"),
+            "tricore" => cfg!(feature = "arch_tricore"),
+            "wasm" => cfg!(feature = "arch_wasm"),
+            "x86" => cfg!(feature = "arch_x86"),
+            "xcore" => cfg!(feature = "arch_xcore"),
+            "xtensa" => cfg!(feature = "arch_xtensa"),
+            _ => false,
+        }
+    }
+
     fn find_arch_dirs() -> Vec<String> {
         read_dir_and_filter(&format!("{}/{}", CAPSTONE_DIR, "arch"), |e| {
             let file_type = e
                 .file_type()
                 .expect("Failed to read capstone source directory");
-            file_type.is_dir()
+            let dir_name = e.file_name().into_string().expect("Invalid filename");
+            file_type.is_dir() && is_arch_enabled(&dir_name)
         })
     }
 
