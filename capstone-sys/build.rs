@@ -96,7 +96,6 @@ fn build_capstone_cc() {
     }
 
     fn is_arch_enabled(dir_name: &str) -> bool {
-        #[allow(clippy::match_like_matches_macro)]
         match dir_name.to_lowercase().as_str() {
             "aarch64" => cfg!(feature = "arch_aarch64"),
             "alpha" => cfg!(feature = "arch_alpha"),
