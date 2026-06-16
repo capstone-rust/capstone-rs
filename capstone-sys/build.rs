@@ -96,6 +96,7 @@ fn build_capstone_cc() {
     }
 
     fn is_arch_enabled(dir_name: &str) -> bool {
+        #[allow(clippy::match_like_matches_macro)]
         match dir_name.to_lowercase().as_str() {
             "aarch64" => cfg!(feature = "arch_aarch64"),
             "alpha" => cfg!(feature = "arch_alpha"),
@@ -120,7 +121,7 @@ fn build_capstone_cc() {
             "x86" => cfg!(feature = "arch_x86"),
             "xcore" => cfg!(feature = "arch_xcore"),
             "xtensa" => cfg!(feature = "arch_xtensa"),
-            _ => false,
+            _ => panic!("Unhandled arch dir {dir_name}"),
         }
     }
 
