@@ -121,7 +121,7 @@ fn build_capstone_cc() {
             "x86" => cfg!(feature = "arch_x86"),
             "xcore" => cfg!(feature = "arch_xcore"),
             "xtensa" => cfg!(feature = "arch_xtensa"),
-            _ => panic!("Unhandled arch dir {dir_name}"),
+            _ => panic!("Unhandled arch dir {}", dir_name),
         }
     }
 
