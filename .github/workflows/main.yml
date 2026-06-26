@@ -42,3 +42,15 @@ jobs:
 
       - name: test (only enable x86 and arm64)
         run: env ${{ matrix.rust.env }} FEATURES=std,full,arch_x86,arch_arm64 NO_DEFAULT_FEATURES=1 ./capstone-rs/ci/test.sh
+
+  feature-checks:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions-rs/toolchain@v1
+        with:
+          profile: minimal
+          toolchain: stable
+          override: true
+      - name: test feature combinations
+        run: python3 scripts/feature-checks.py
