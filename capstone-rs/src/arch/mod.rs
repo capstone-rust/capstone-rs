@@ -676,15 +676,19 @@ macro_rules! detail_defs {
         /// architecture's detail structure. This allows you to use an `if let Some(...) = { /* ... */ }`
         /// instead of a match statement.
         #[derive(Debug)]
+        #[non_exhaustive]
         pub enum ArchDetail<'a> {
             $(
                 #[cfg(feature = $feature)]
                 $Detail($InsnDetail),
             )+
+            #[doc(hidden)]
+            _Lifetime(PhantomData<&'a ()>),
         }
 
         /// Architecture-independent enum of operands
         #[derive(Clone, Debug, PartialEq)]
+        #[non_exhaustive]
         pub enum ArchOperand {
             $(
                 #[cfg(feature = $feature)]
@@ -705,6 +709,7 @@ macro_rules! detail_defs {
                             vec
                         }
                     )+
+                    ArchDetail::_Lifetime(_) => unreachable!(),
                 }
             }
 
