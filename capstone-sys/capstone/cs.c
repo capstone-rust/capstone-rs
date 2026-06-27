@@ -344,6 +344,7 @@ extern void* kern_os_realloc(void* addr, size_t nsize);
 
 static void* cs_kern_os_calloc(size_t num, size_t size)
 {
+	if (num && size > SIZE_MAX / num) return NULL; // overflow check
 	return kern_os_malloc(num * size); // malloc bzeroes the buffer
 }
 
@@ -554,10 +555,8 @@ static int str_replace(char *result, char *target, const char *str1, char *str2)
 {
 	// only perform replacement if the output fits into result
 	if (strlen(target) - strlen(str1) + strlen(str2) < CS_MNEMONIC_SIZE - 1)  {
-		// copy str2 to begining of result
-		strcpy(result, str2);
-		// skip str1 - already replaced by str2
-		strcat(result, target + strlen(str1));
+		// copy str2 to begining of result, then append remainder of target after str1
+		snprintf(result, CS_MNEMONIC_SIZE, "%s%s", str2, target + strlen(str1));
 
 		return 0;
 	} else
@@ -611,7 +610,7 @@ static void fill_insn(struct cs_struct *handle, cs_insn *insn, char *buffer, MCI
 
 				if (!str_replace(str, insn->mnemonic, cs_insn_name((csh)handle, insn->id), tmp->insn.mnemonic)) {
 					// copy result to mnemonic
-					(void)strncpy(insn->mnemonic, str, sizeof(insn->mnemonic) - 1);
+					snprintf(insn->mnemonic, sizeof(insn->mnemonic), "%s", str);
 					insn->mnemonic[sizeof(insn->mnemonic) - 1] = '\0';
 				}
 
@@ -626,7 +625,7 @@ static void fill_insn(struct cs_struct *handle, cs_insn *insn, char *buffer, MCI
 		// find the next non-space char
 		sp++;
 		for (; ((*sp == ' ') || (*sp == '\t')); sp++);
-		strncpy(insn->op_str, sp, sizeof(insn->op_str) - 1);
+		snprintf(insn->op_str, sizeof(insn->op_str), "%s", sp);
 		insn->op_str[sizeof(insn->op_str) - 1] = '\0';
 	} else
 		insn->op_str[0] = '\0';
@@ -767,7 +766,7 @@ cs_err CAPSTONE_API cs_option(csh ud, cs_opt_type type, size_t value)
 					while(tmp) {
 						if (tmp->insn.id == opt->id) {
 							// found this instruction, so replace its mnemonic
-							(void)strncpy(tmp->insn.mnemonic, opt->mnemonic, sizeof(tmp->insn.mnemonic) - 1);
+							snprintf(tmp->insn.mnemonic, sizeof(tmp->insn.mnemonic), "%s", opt->mnemonic);
 							tmp->insn.mnemonic[sizeof(tmp->insn.mnemonic) - 1] = '\0';
 							break;
 						}
@@ -778,7 +777,7 @@ cs_err CAPSTONE_API cs_option(csh ud, cs_opt_type type, size_t value)
 					if (!tmp) {
 						tmp = cs_mem_malloc(sizeof(*tmp));
 						tmp->insn.id = opt->id;
-						(void)strncpy(tmp->insn.mnemonic, opt->mnemonic, sizeof(tmp->insn.mnemonic) - 1);
+						snprintf(tmp->insn.mnemonic, sizeof(tmp->insn.mnemonic), "%s", opt->mnemonic);
 						tmp->insn.mnemonic[sizeof(tmp->insn.mnemonic) - 1] = '\0';
 						// this new instruction is heading the list
 						tmp->next = handle->mnem_list;
@@ -989,8 +988,7 @@ size_t CAPSTONE_API cs_disasm(csh ud, const uint8_t *buffer, size_t size, uint64
 			insn_cache->mnemonic[0] = '\0';
 			insn_cache->op_str[0] = '\0';
 #else
-			strncpy(insn_cache->mnemonic, handle->skipdata_setup.mnemonic,
-					sizeof(insn_cache->mnemonic) - 1);
+			snprintf(insn_cache->mnemonic, sizeof(insn_cache->mnemonic), "%s", handle->skipdata_setup.mnemonic);
 			skipdata_opstr(insn_cache->op_str, buffer, skipdata_bytes);
 #endif
 			insn_cache->detail = NULL;
@@ -1196,8 +1194,7 @@ bool CAPSTONE_API cs_disasm_iter(csh ud, const uint8_t **code, size_t *size,
 		insn->mnemonic[0] = '\0';
 		insn->op_str[0] = '\0';
 #else
-		strncpy(insn->mnemonic, handle->skipdata_setup.mnemonic,
-				sizeof(insn->mnemonic) - 1);
+		snprintf(insn->mnemonic, sizeof(insn->mnemonic), "%s", handle->skipdata_setup.mnemonic);
 		skipdata_opstr(insn->op_str, *code, skipdata_bytes);
 #endif
 
