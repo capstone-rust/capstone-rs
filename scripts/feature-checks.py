@@ -5,38 +5,52 @@ Tests:
   - all features disabled
   - all features enabled
   - each arch feature individually enabled
-  - random subsets (2-arch and 3-arch combinations)
+  - random subsets (2-5 arch features)
+  - std/full on/off combinations
 """
 
 import random
 import re
 import subprocess
 import sys
-import os
 from pathlib import Path
+from typing import List, Optional
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
 MANIFEST = REPO_ROOT / "capstone-rs" / "Cargo.toml"
-CARGO = os.environ.get("CARGO", "cargo")
-
-failed = []
+CARGO = "cargo"
 
 
-def cargo_check(label, *args):
-    cmd = [CARGO, "check", "--manifest-path", str(MANIFEST)] + list(args)
+def cargo_check(
+    label: str,
+    *,
+    default_features: bool = True,
+    all_features: bool = False,
+    features: Optional[List[str]] = None,
+) -> Optional[str]:
+    args = ["--manifest-path", str(MANIFEST)]
+    if all_features:
+        args.append("--all-features")
+    else:
+        if not default_features:
+            args.append("--no-default-features")
+        if features:
+            args.extend(["--features", ",".join(features)])
+
+    cmd = [CARGO, "check"] + args
     print(f"\n=== {label} ===")
     print(f"    {' '.join(cmd)}")
     result = subprocess.run(cmd, capture_output=True, text=True)
     if result.returncode == 0:
         print("    PASS")
-    else:
-        print(result.stdout)
-        print(result.stderr)
-        print("    FAIL")
-        failed.append(label)
+        return None
+    print(result.stdout)
+    print(result.stderr)
+    print("    FAIL")
+    return label
 
 
-def get_arch_features():
+def get_arch_features() -> List[str]:
     """Extract arch feature names from Cargo.toml."""
     text = MANIFEST.read_text()
     features = []
@@ -47,29 +61,59 @@ def get_arch_features():
     return sorted(features)
 
 
-def main():
+def test_std_full_combos() -> List[str]:
+    """Test various combinations of std and full being on/off."""
+    failed: List[str] = []
+    for std in (False, True):
+        for full in (False, True):
+            feats = []
+            if std:
+                feats.append("std")
+            if full:
+                feats.append("full")
+            label = f"std={std},full={full}"
+            result = cargo_check(
+                label,
+                default_features=False,
+                features=feats or None,
+            )
+            if result:
+                failed.append(result)
+    return failed
+
+
+def main() -> None:
     arch_features = get_arch_features()
     print(f"Found {len(arch_features)} arch features:")
     for f in arch_features:
         print(f"  {f}")
 
+    failed: List[str] = []
+
     # 1. All features disabled
-    cargo_check("no-default-features", "--no-default-features")
+    r = cargo_check("no-default-features", default_features=False)
+    if r:
+        failed.append(r)
 
     # 2. All features enabled
-    cargo_check("all-features", "--all-features")
+    r = cargo_check("all-features", all_features=True)
+    if r:
+        failed.append(r)
 
-    # 3. Each arch feature individually
-    base = "std,full"
+    # 3. std/full combinations
+    failed.extend(test_std_full_combos())
+
+    # 4. Each arch feature individually
     for feat in arch_features:
-        cargo_check(
+        r = cargo_check(
             f"only-{feat}",
-            "--no-default-features",
-            "--features",
-            f"{base},{feat}",
+            default_features=False,
+            features=["std", "full", feat],
         )
+        if r:
+            failed.append(r)
 
-    # 4. Random subsets: shuffle each trial independently
+    # 5. Random subsets: shuffle each trial independently
     rng = random.Random(42)
     for trial in range(1, 6):
         shuffled = sorted(arch_features)
@@ -77,8 +121,13 @@ def main():
         n = rng.choice([2, 3, 4, 5])
         subset = shuffled[:n]
         label = f"subset-trial{trial}-{n}arch"
-        feats = f"{base},{','.join(subset)}"
-        cargo_check(label, "--no-default-features", "--features", feats)
+        r = cargo_check(
+            label,
+            default_features=False,
+            features=["std", "full", *subset],
+        )
+        if r:
+            failed.append(r)
 
     print()
     print("=" * 50)
