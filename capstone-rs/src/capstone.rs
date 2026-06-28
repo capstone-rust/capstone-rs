@@ -225,18 +225,77 @@ impl Capstone {
         code: &'b [u8],
         addr: u64,
     ) -> CsResult<DisasmIter<'a, 'b>> {
+        let buffer = self.create_buffer()?;
+        Ok(DisasmIter {
+            buffer,
+            code: code.as_ptr(),
+            size: code.len(),
+            addr,
+            _data: PhantomData,
+        })
+    }
+
+    /// Disassemble and iterate instructions from user-provided buffer `code` using `cs_disasm_iter`.
+    /// The disassembled address of the buffer is assumed to be `addr`.
+    /// The provided `buffer` is used to store the disassembled instruction.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// # use capstone::prelude::*;
+    /// # let cs = Capstone::new().x86().mode(arch::x86::ArchMode::Mode32).build().unwrap();
+    /// let mut buffer = cs.create_buffer().unwrap();
+    /// let mut iter = cs.disasm_iter_with_buffer(b"\x90", 0x1000, &mut buffer);
+    /// assert_eq!(iter.next().unwrap().mnemonic(), Some("nop"));
+    /// assert!(iter.next().is_none());
+    /// ```
+    pub fn disasm_iter_with_buffer<'cs, 'dbuf, 'buf>(
+        &'cs self,
+        code: &'buf [u8],
+        addr: u64,
+        buffer: &'dbuf mut DisasmBuffer<'cs>,
+    ) -> DisasmIterWithBuffer<'cs, 'dbuf, 'buf> {
+        DisasmIterWithBuffer {
+            buffer,
+            code: code.as_ptr(),
+            size: code.len(),
+            addr,
+            _data: PhantomData,
+        }
+    }
+
+    /// Create a `DisasmBuffer`[DisasmBuffer] instance for future
+    /// [`disasm_iter_with_buffer`](Capstone::disasm_iter_with_buffer)
+    /// to reduce memory allocations.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// # use capstone::prelude::*;
+    /// # let cs = Capstone::new().x86().mode(arch::x86::ArchMode::Mode32).build().unwrap();
+    /// let mut buffer = cs.create_buffer().unwrap();
+    /// let mut iter = cs.disasm_iter_with_buffer(b"\x90", 0x1000, &mut buffer);
+    /// assert_eq!(iter.next().unwrap().mnemonic(), Some("nop"));
+    /// assert!(iter.next().is_none());
+    /// // Reuse the buffer
+    /// let mut iter2 = cs.disasm_iter_with_buffer(b"\xc3", 0x1000, &mut buffer);
+    /// assert_eq!(iter2.next().unwrap().mnemonic(), Some("ret"));
+    /// assert!(iter2.next().is_none());
+    /// ```
+    ///
+    /// # Errors
+    ///
+    /// If `cs_malloc` failed due to OOM, [`Err(Error::OutOfMemory)`](Error::OutOfMemory) is returned.
+    ///
+    pub fn create_buffer<'cs>(&'cs self) -> CsResult<DisasmBuffer<'cs>> {
         let insn = unsafe { cs_malloc(self.csh()) };
         if insn.is_null() {
             return Err(Error::OutOfMemory);
         }
-        Ok(DisasmIter {
+        Ok(DisasmBuffer {
             insn,
             csh: self.csh,
-            code: code.as_ptr(),
-            size: code.len(),
-            addr,
-            _data1: PhantomData,
-            _data2: PhantomData,
+            _data: PhantomData,
         })
     }
 
@@ -626,6 +685,27 @@ impl Drop for Capstone {
     }
 }
 
+/// Structure to hold the memory buffer for a disassembled instruction.
+///
+/// Create with a [`Capstone`](Capstone) instance: [`Capstone::create_buffer()`](Capstone::create_buffer).
+///
+/// It deallocates memory via `cs_free` when dropped.
+///
+/// # Lifetimes
+///
+/// `'cs` is the lifetime of the [`Capstone`](Capstone) instance.
+pub struct DisasmBuffer<'cs> {
+    insn: *mut cs_insn,          // space for disassembled instruction
+    csh: *mut c_void,            // reference to the the capstone handle
+    _data: PhantomData<&'cs ()>, // used to make sure DisasmBuffer lifetime doesn't exceed Capstone's lifetime
+}
+
+impl<'cs> Drop for DisasmBuffer<'cs> {
+    fn drop(&mut self) {
+        unsafe { cs_free(self.insn, 1) };
+    }
+}
+
 /// Structure to handle iterative disassembly.
 ///
 /// Create with a [`Capstone`](Capstone) instance: [`Capstone::disasm_iter()`](Capstone::disasm_iter).
@@ -634,21 +714,12 @@ impl Drop for Capstone {
 ///
 /// `'cs` is the lifetime of the [`Capstone`](Capstone) instance.
 /// `'buf` is the lifetime of the user provided code buffer in [`Capstone::disasm_iter()`](Capstone::disasm_iter).
-///
 pub struct DisasmIter<'cs, 'buf> {
-    insn: *mut cs_insn,            // space for current instruction to be processed
-    csh: *mut c_void,              // reference to the the capstone handle required by disasm_iter
-    code: *const u8,               // pointer to the code buffer
-    size: usize,                   // size of the code buffer
-    addr: u64,                     // current address
-    _data1: PhantomData<&'cs ()>, // used to make sure DisasmIter lifetime doesn't exceed Capstone's lifetime
-    _data2: PhantomData<&'buf ()>, // used to make sure code lifetime doesn't exceed user provided array
-}
-
-impl<'cs, 'buf> Drop for DisasmIter<'cs, 'buf> {
-    fn drop(&mut self) {
-        unsafe { cs_free(self.insn, 1) };
-    }
+    buffer: DisasmBuffer<'cs>, // buffer for current instruction to be processed
+    code: *const u8,           // pointer to the code buffer
+    size: usize,               // size of the code buffer
+    addr: u64,                 // current address
+    _data: PhantomData<&'buf ()>, // used to make sure code lifetime doesn't exceed user provided array
 }
 
 impl<'cs, 'buf> DisasmIter<'cs, 'buf> {
@@ -683,13 +754,145 @@ impl<'cs, 'buf> DisasmIter<'cs, 'buf> {
     pub fn next<'iter>(&'iter mut self) -> Option<Insn<'iter>> {
         unsafe {
             if cs_disasm_iter(
-                self.csh as csh,
+                self.buffer.csh as csh,
                 &mut self.code,
                 &mut self.size,
                 &mut self.addr,
-                self.insn,
+                self.buffer.insn,
             ) {
-                return Some(Insn::from_raw(self.insn));
+                return Some(Insn::from_raw(self.buffer.insn));
+            }
+        }
+
+        None
+    }
+
+    /// Get the slice of the code yet to be disassembled
+    ///
+    /// ```
+    /// # use capstone::prelude::*;
+    /// # let cs = Capstone::new().x86().mode(arch::x86::ArchMode::Mode32).build().unwrap();
+    /// let code = b"\x90";
+    /// let mut iter = cs.disasm_iter(code, 0x1000).unwrap();
+    /// assert_eq!(iter.code(), code);
+    /// iter.next();
+    /// assert_eq!(iter.code(), b"");
+    /// ```
+    pub fn code(&self) -> &[u8] {
+        unsafe { core::slice::from_raw_parts(self.code, self.size) }
+    }
+
+    /// Get the address of the next instruction to be disassembled
+    ///
+    /// ```
+    /// # use capstone::prelude::*;
+    /// # let cs = Capstone::new().x86().mode(arch::x86::ArchMode::Mode32).build().unwrap();
+    /// let code = b"\x90";
+    /// let mut iter = cs.disasm_iter(code, 0x1000).unwrap();
+    /// assert_eq!(iter.addr(), 0x1000);
+    /// iter.next();
+    /// assert_eq!(iter.addr(), 0x1001);
+    /// ```
+    pub fn addr(&self) -> u64 {
+        self.addr
+    }
+
+    /// Reset the iterator to disassemble in the specified code buffer
+    ///
+    /// ```
+    /// # use capstone::prelude::*;
+    /// # let cs = Capstone::new().x86().mode(arch::x86::ArchMode::Mode32).build().unwrap();
+    /// let code = b"\x90";
+    /// let mut iter = cs.disasm_iter(code, 0x1000).unwrap();
+    /// assert_eq!(iter.addr(), 0x1000);
+    /// assert_eq!(iter.code(), code);
+    /// iter.next();
+    /// assert_eq!(iter.addr(), 0x1001);
+    /// assert_eq!(iter.code(), b"");
+    /// let new_code = b"\xc3";
+    /// iter.reset(new_code, 0x2000);
+    /// assert_eq!(iter.addr(), 0x2000);
+    /// assert_eq!(iter.code(), new_code);
+    /// ```
+    pub fn reset(&mut self, code: &'buf [u8], addr: u64) {
+        self.code = code.as_ptr();
+        self.size = code.len();
+        self.addr = addr;
+    }
+
+    /// Extract the underlying buffer for reuse.
+    /// ```
+    /// # use capstone::prelude::*;
+    /// # let cs = Capstone::new().x86().mode(arch::x86::ArchMode::Mode32).build().unwrap();
+    /// let code = b"\x90";
+    /// let mut iter = cs.disasm_iter(code, 0x1000).unwrap();
+    /// assert!(iter.next().is_some());
+    /// // reuse buffer
+    /// let mut buffer = iter.into_buffer();
+    /// let mut iter2 = cs.disasm_iter_with_buffer(code, 0x2000, &mut buffer);
+    /// assert!(iter2.next().is_some());
+    /// ```
+    pub fn into_buffer(self) -> DisasmBuffer<'cs> {
+        self.buffer
+    }
+}
+
+/// Structure to handle iterative disassembly with provided [`DisasmBuffer`](DisasmBuffer).
+///
+/// Create with a [`Capstone`](Capstone) instance: [`Capstone::disasm_iter_with_buffer`](Capstone::disasm_iter_with_buffer).
+///
+/// # Lifetimes
+///
+/// `'cs` is the lifetime of the [`Capstone`](Capstone) instance.
+/// `'dbuf` is the lifetime of the user provided [`DisasmBuffer`](DisasmBuffer) in [`Capstone::disasm_iter_with_buffer`](Capstone::disasm_iter_with_buffer).
+/// `'buf` is the lifetime of the user provided code buffer in [`Capstone::disasm_iter_with_buffer`](Capstone::disasm_iter_with_buffer).
+pub struct DisasmIterWithBuffer<'cs, 'dbuf, 'buf> {
+    buffer: &'dbuf mut DisasmBuffer<'cs>, // buffer for current instruction to be processed
+    code: *const u8,                      // pointer to the code buffer
+    size: usize,                          // size of the code buffer
+    addr: u64,                            // current address
+    _data: PhantomData<&'buf ()>, // used to make sure code lifetime doesn't exceed user provided array
+}
+
+impl<'cs, 'dbuf, 'buf> DisasmIterWithBuffer<'cs, 'dbuf, 'buf> {
+    /// Get next instruction if available.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// # use capstone::prelude::*;
+    /// # let cs = Capstone::new().x86().mode(arch::x86::ArchMode::Mode32).build().unwrap();
+    /// let code = b"\x90";
+    /// let mut iter = cs.disasm_iter(code, 0x1000).unwrap();
+    /// while let Some(insn) = iter.next() {
+    ///     println!("{insn}");
+    /// }
+    /// ```
+    ///
+    /// At most one instruction can be accessed at the same time:
+    ///
+    /// ```compile_fail
+    /// # use capstone::prelude::*;
+    /// # let cs = Capstone::new().x86().mode(arch::x86::ArchMode::Mode32).build().unwrap();
+    /// let code = b"\x90";
+    /// let mut iter = cs.disasm_iter(code, 0x1000).unwrap();
+    /// let insn1 = iter.next().unwrap();
+    /// let insn2 = iter.next().unwrap();
+    /// // fails with: cannot borrow `iter` as mutable more than once at a time,
+    /// // `insn1` cannot be used after calling `iter.next()` again,
+    /// // as `iter` is mutably borrowed during the second call to `next()`.
+    /// println!("{insn1}");
+    /// ```
+    pub fn next<'iter>(&'iter mut self) -> Option<Insn<'iter>> {
+        unsafe {
+            if cs_disasm_iter(
+                self.buffer.csh as csh,
+                &mut self.code,
+                &mut self.size,
+                &mut self.addr,
+                self.buffer.insn,
+            ) {
+                return Some(Insn::from_raw(self.buffer.insn));
             }
         }
 
