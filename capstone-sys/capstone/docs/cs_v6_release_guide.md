@@ -120,6 +120,9 @@ Nonetheless, we hope this additional information is useful to you.
 - Adding new instructions of SME, SVE2 extensions. With it the new `sme` and `pred` operands are added.
 - System operands are provided with way more detail in separated operand.
 	- The `EXACTFPIMM` operand also sets the `fp` field.
+- Added `CS_OPT_SYNTAX_AARCH64_EXPLICIT_WIDE_IMM` to print shifted `MOVN` and `MOVZ` instructions in their explicit form, including the `lsl` shift, instead of the equivalent `MOV` alias.
+  - The default output remains unchanged and matches LLVM's default disassembly output.
+  - The corresponding `cstool` option is `+explicitwideimm`.
 
 **PPC**
 
@@ -253,6 +256,7 @@ Nonetheless, we hope this additional information is useful to you.
 - Added `reg_access` capstone callback to return all read and written registers for the instructions, including registers used as part of memory operands.
   * Note that `reg_access` does NOT treat CSRs as registers, detailed reasons for why can be found in [the PR implementing the feature](https://github.com/capstone-engine/capstone/pull/2895) 
   * Note that `reg_access` does NOT treat reading the PC's value as reading a register, detailed reasons for why can be found in [the PR implementing the feature](https://github.com/capstone-engine/capstone/pull/2895) 
+- Added `rounding_mode` field to `cs_riscv` struct inside details struct (`insn->detail->riscv->rounding_mode`) for float and double instructions.
 
 > [!NOTE] 
 > All `CS_MODE_RISCV_*` extensions above are disabled by default unless enabled by their option name or the corresponding command line flag in cstool. Any other extension is always enabled and can't be disabled.
@@ -439,6 +443,7 @@ Such an instruction is ill-defined in LLVM and should be fixed upstream.
 | ---------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | ARM64 -> AArch64 | ARM64 was everywhere renamed to AArch64 to match the LLVM naming.                                                                                                                                                                                                                                                       | See below.                                                                                                                                                                                       |
 | Post-index       | Post-index memory access has the disponent now set int the `MEMORY` operand! No longer as separated `reg`/`imm` operand.                                                                                                                                                                                                | See post-index explanation for ARM.                                                                                                                                                              |
+| `mem.disp`       | `cs_aarch64_op.mem.disp` changed from `int32_t` to `int64_t`.                                                                                                                                                                                                                                                           | Prevent truncation of large AArch64 memory displacements.                                                                                                                                        |
 | `SME` operands   | `SME` operands contain more detail now and member names are closer to the ISA terminology.                                                                                                                                                                                                                              | New SVE2, SME extensions required more detail.                                                                                                                                                   |
 | System operands  | System Operands are separated into different types now.                                                                                                                                                                                                                                                                 | System operands follow a special encoding. Some byte sequences match two different operands. Hence, a more detailed concept was necessary.                                                       |
 | `writeback`      | `writeback` member was moved to detail.                                                                                                                                                                                                                                                                                 | See ARM explanation.                                                                                                                                                                             |
@@ -485,7 +490,7 @@ Such an instruction is ill-defined in LLVM and should be fixed upstream.
 | `M68K_OP_MEM` storage                               | Memory operands now store base registers in `m68k_op_mem.base_reg` and absolute addresses in `m68k_op_mem.address`; `op->reg` and `op->imm` are only used for register and immediate operands. | Keeps memory-addressing details in `m68k_op_mem` consistently. |
 
 
-### Notes about AArch64, SystemZ and ARM renaming
+### Notes about AArch64, SystemZ, ARM and RISC-V renaming
 
 `ARM64` was everywhere renamed to `AArch64`. And `SYSZ` to `SYSTEMZ`. This is a necessity to ensure that the update scripts stay reasonably simple.
 Capstone was very inconsistent with the naming before (sometimes `AArch64` sometimes `ARM64`. Sometimes `SYSZ` sometimes `SYSTEMZ`).
@@ -495,19 +500,21 @@ Because this would completely break maintaining Capstone `v6` and `pre-v6` in a 
 
 1. `arm64.h` is a compatibility header now, which merely maps every member to the one in the `aarch64.h` header. Defining `CAPSTONE_AARCH64_COMPAT_HEADER` before including `capstone.h` will include the headers in the right order.
 2. The `systemz.h` header includes the `systemz_compatibility.h` header if `CAPSTONE_SYSTEMZ_COMPAT_HEADER` is defined.
+3. Defining `CAPSTONE_RISCV_COMPAT_HEADER` before including `capstone.h` exposes the legacy RISC-V compressed-mode constant `CS_MODE_RISCVC` as an alias of `CS_MODE_RISCV_C`.
 
-We will continue to maintain both headers.
+We will continue to maintain both compatibility headers, `arm64.h` and `systemz_compatibility.h`.
 
 _Compatibility header_
 
-If you want to use the compatibility header and stick with the `ARM64`/`SYSZ` naming, you can define `CAPSTONE_AARCH64_COMPAT_HEADER` and `CAPSTONE_SYSTEMZ_COMPAT_HEADER` before including `capstone.h`.
+If you want to use the compatibility header and stick with the `ARM64`/`SYSZ` naming, you can define `CAPSTONE_AARCH64_COMPAT_HEADER` and `CAPSTONE_SYSTEMZ_COMPAT_HEADER` before including `capstone.h`. For the legacy RISC-V compressed-mode spelling (`CS_MODE_RISCVC`), define `CAPSTONE_RISCV_COMPAT_HEADER` before including `capstone.h`.
 
-**Note**: The `CAPSTONE_ARM_COMPAT_HEADER` will only define macros for the `ARM_CC -> ARMCC` and `arm_cc -> ARMCC_CondCodes` renaming.
+**Note**: The `CAPSTONE_ARM_COMPAT_HEADER` will only define macros for the `ARM_CC -> ARMCC` and `arm_cc -> ARMCC_CondCodes` renaming. The `CAPSTONE_RISCV_COMPAT_HEADER` only defines `CS_MODE_RISCVC` for the `CS_MODE_RISCVC -> CS_MODE_RISCV_C` renaming.
 
 ```c
 #define CAPSTONE_SYSTEMZ_COMPAT_HEADER
 #define CAPSTONE_AARCH64_COMPAT_HEADER
 #define CAPSTONE_ARM_COMPAT_HEADER
+#define CAPSTONE_RISCV_COMPAT_HEADER
 #include <capstone/capstone.h>
 
 // Your code...

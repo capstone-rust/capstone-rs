@@ -25,7 +25,7 @@ jobs:
     name: build_linux
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v7
       with:
         submodules: true
 
@@ -43,18 +43,18 @@ jobs:
         echo "tarball=$TARBALL" >> $GITHUB_OUTPUT
         echo "shasum=$SHASUM" >> $GITHUB_OUTPUT
 
-    - uses: actions/upload-artifact@v4
+    - uses: actions/upload-artifact@v7
       with:
         name: ${{ steps.archive.outputs.tarball }}
         path: ${{ steps.archive.outputs.tarball }}
 
-    - uses: actions/upload-artifact@v4
+    - uses: actions/upload-artifact@v7
       with:
         name: ${{ steps.archive.outputs.shasum }}
         path: ${{ steps.archive.outputs.shasum }}
 
     - name: Upload tarball and shasum to release
-      uses: softprops/action-gh-release@v2
+      uses: softprops/action-gh-release@v3
       if: startsWith(github.ref, 'refs/tags') && github.event_name == 'release'
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -79,18 +79,18 @@ jobs:
         cpack -G DEB
         cpack -G RPM
 
-    - uses: actions/upload-artifact@v4
+    - uses: actions/upload-artifact@v7
       with:
         name: capstone_x86.deb
         path: ./build/*.deb
 
-    - uses: actions/upload-artifact@v4
+    - uses: actions/upload-artifact@v7
       with:
         name: capstone_x86.rpm
         path: ./build/*.rpm
 
     - name: Upload debian package to release
-      uses: softprops/action-gh-release@v2
+      uses: softprops/action-gh-release@v3
       if: startsWith(github.ref, 'refs/tags') && github.event_name == 'release'
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -104,7 +104,7 @@ jobs:
     name: build_windows
     runs-on: windows-latest
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v7
       with:
         submodules: true
 
@@ -135,13 +135,13 @@ jobs:
         cd build
         cpack -G NSIS
 
-    - uses: actions/upload-artifact@v4
+    - uses: actions/upload-artifact@v7
       with:
         name: capstone_x64.exe
         path: ./build/*.exe
 
     - name: Upload NSIS installer to release
-      uses: softprops/action-gh-release@v2
+      uses: softprops/action-gh-release@v3
       if: startsWith(github.ref, 'refs/tags') && github.event_name == 'release'
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

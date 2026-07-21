@@ -1327,6 +1327,23 @@ test_cases:
         asm_text: "fadd.s #3.141500, fp0"
   -
     input:
+      name: "M68K printer integer immediates on 32-bit big endian hosts"
+      bytes: [ 0x00,0x80,0x12,0x34,0x56,0x78, 0x4e,0xb9,0x12,0x34,0x56,0x78, 0x4e,0xb8,0x12,0x34, 0xf8,0x00 ]
+      arch: "CS_ARCH_M68K"
+      options: [ CS_MODE_BIG_ENDIAN, CS_MODE_M68K_040 ]
+      address: 0x0
+    expected:
+      insns:
+      -
+        asm_text: "ori.l #$12345678, d0"
+      -
+        asm_text: "jsr $12345678.l"
+      -
+        asm_text: "jsr $1234.w"
+      -
+        asm_text: "dc.w $f800"
+  -
+    input:
       name: "issue 1708 M68K floating point loads and stores generate the same op_str"
       bytes: [ 0xf2,0x27,0x74,0x00 ]
       arch: "CS_ARCH_M68K"
@@ -6219,6 +6236,41 @@ test_cases:
 
   -
     input:
+      name: "#2986 Xtensa decodeOffset_16_16Operand swapped isIntN arguments"
+      bytes: [ 0x2f, 0x70, 0x44, 0x84 ]
+      arch: "CS_ARCH_XTENSA"
+      options: [ CS_MODE_XTENSA_ESP32, CS_OPT_DETAIL ]
+      address: 0x0
+    expected:
+      insns:
+        - asm_text: "ee.ldf.128.ip f8, f9, f7, f4, a2, 0"
+          details:
+            xtensa:
+              operands:
+                - type: XTENSA_OP_REG
+                  reg: f8
+                  access: CS_AC_WRITE
+                - type: XTENSA_OP_REG
+                  reg: f9
+                  access: CS_AC_WRITE
+                - type: XTENSA_OP_REG
+                  reg: f7
+                  access: CS_AC_WRITE
+                - type: XTENSA_OP_REG
+                  reg: f4
+                  access: CS_AC_WRITE
+                - type: XTENSA_OP_REG
+                  reg: a2
+                  access: CS_AC_READ
+                - type: XTENSA_OP_IMM
+                  imm: 0
+                  access: CS_AC_READ
+            regs_read: [ a2 ]
+            regs_write: [ f8, f9, f7, f4 ]
+            groups: [ HasESP32S3Ops ]
+
+  -
+    input:
       name: "#2722 - CS_OPT_UNSIGNED is ignored for most archs"
       bytes: [ 0x20, 0xf0, 0x5f, 0xf8 ]
       arch: "CS_ARCH_AARCH64"
@@ -6297,12 +6349,36 @@ test_cases:
       name: "issue 2339"
       bytes: [ 0x8b, 0x34, 0x82 ]
       arch: "CS_ARCH_X86"
-      options: [ CS_MODE_64 ]
+      options: [ CS_MODE_64, CS_OPT_DETAIL ]
       address: 0x0
     expected:
       insns:
       -
         asm_text: "mov  esi, dword ptr [rdx + rax*4]"
+        details:
+          x86:
+            opcode: [ 0x8b, 0x00, 0x00, 0x00 ]
+            addr_size: 8
+            modrm: 0x34
+            sib: 0x82
+            sib_base: rdx
+            sib_index: rax
+            sib_scale: 4
+            operands:
+              -
+                type: X86_OP_REG
+                reg: esi
+                size: 4
+                access: CS_AC_WRITE
+              -
+                type: X86_OP_MEM
+                mem_base: rdx
+                mem_index: rax
+                mem_scale: 4
+                size: 4
+                access: CS_AC_READ
+          regs_read: [ rdx, rax ]
+          regs_write: [ esi ]
   -
     input:
       name: "alpha 64bit addresses"
@@ -6646,3 +6722,164 @@ test_cases:
           regs_read: [ rax ]
           regs_write: [ sp ]
           groups: [ mode64 ]
+  -
+    input:
+      name: "issue 2973 AArch64 predicate-as-counter register printed in hex"
+      bytes: [ 0x12, 0x78, 0x60, 0x25 ]
+      arch: "CS_ARCH_AARCH64"
+      options: [ CS_MODE_ARM ]
+      address: 0x0
+    expected:
+      insns:
+      -
+        asm_text: "ptrue pn10.h"
+        op_str: "pn10.h"
+  -
+    input:
+      name: "issue 2890 AArch64 shifted MOVN retains MOV alias by default"
+      bytes: [ 0xe4, 0x02, 0xa0, 0x12 ]
+      arch: "CS_ARCH_AARCH64"
+      options: [ CS_MODE_ARM, CS_OPT_DETAIL ]
+      address: 0x0
+    expected:
+      insns:
+      -
+        asm_text: "mov w4, #-0x170001"
+        details:
+          aarch64:
+            operands:
+              -
+                type: AARCH64_OP_REG
+                reg: w4
+                access: CS_AC_WRITE
+              -
+                type: AARCH64_OP_IMM
+                imm: -0x170001
+                access: CS_AC_READ
+          regs_write: [ w4 ]
+
+  -
+    input:
+      name: "issue 2890 AArch64 shifted MOVN immediate printing"
+      bytes: [ 0xe4, 0x02, 0xa0, 0x12 ]
+      arch: "CS_ARCH_AARCH64"
+      options: [ CS_MODE_ARM, CS_OPT_DETAIL, CS_OPT_SYNTAX_AARCH64_EXPLICIT_WIDE_IMM ]
+      address: 0x0
+    expected:
+      insns:
+      -
+        asm_text: "movn w4, #0x17, lsl #16"
+        details:
+          aarch64:
+            operands:
+              -
+                type: AARCH64_OP_REG
+                reg: w4
+                access: CS_AC_WRITE
+              -
+                type: AARCH64_OP_IMM
+                imm: 0x17
+                access: CS_AC_READ
+                shift_type: AARCH64_SFT_LSL
+                shift_value: 16
+          regs_write: [ w4 ]
+
+  -
+    input:
+      name: "issue 2890 AArch64 unshifted MOVN retains MOV alias"
+      bytes: [ 0xe4, 0x02, 0x80, 0x12 ]
+      arch: "CS_ARCH_AARCH64"
+      options: [ CS_MODE_ARM, CS_OPT_DETAIL, CS_OPT_SYNTAX_AARCH64_EXPLICIT_WIDE_IMM ]
+      address: 0x0
+    expected:
+      insns:
+      -
+        asm_text: "mov w4, #-0x18"
+        details:
+          aarch64:
+            operands:
+              -
+                type: AARCH64_OP_REG
+                reg: w4
+                access: CS_AC_WRITE
+              -
+                type: AARCH64_OP_IMM
+                imm: -0x18
+                access: CS_AC_READ
+          regs_write: [ w4 ]
+
+  -
+    input:
+      name: "issue 2890 AArch64 64-bit shifted MOVN immediate printing"
+      bytes: [ 0xe4, 0x02, 0xe0, 0x92 ]
+      arch: "CS_ARCH_AARCH64"
+      options: [ CS_MODE_ARM, CS_OPT_DETAIL, CS_OPT_SYNTAX_AARCH64_EXPLICIT_WIDE_IMM ]
+      address: 0x0
+    expected:
+      insns:
+      -
+        asm_text: "movn x4, #0x17, lsl #48"
+        details:
+          aarch64:
+            operands:
+              -
+                type: AARCH64_OP_REG
+                reg: x4
+                access: CS_AC_WRITE
+              -
+                type: AARCH64_OP_IMM
+                imm: 0x17
+                access: CS_AC_READ
+                shift_type: AARCH64_SFT_LSL
+                shift_value: 48
+          regs_write: [ x4 ]
+
+  -
+    input:
+      name: "issue 2890 AArch64 shifted MOVZ immediate printing"
+      bytes: [ 0xe4, 0x02, 0xa0, 0x52 ]
+      arch: "CS_ARCH_AARCH64"
+      options: [ CS_MODE_ARM, CS_OPT_DETAIL, CS_OPT_SYNTAX_AARCH64_EXPLICIT_WIDE_IMM ]
+      address: 0x0
+    expected:
+      insns:
+      -
+        asm_text: "movz w4, #0x17, lsl #16"
+        details:
+          aarch64:
+            operands:
+              -
+                type: AARCH64_OP_REG
+                reg: w4
+                access: CS_AC_WRITE
+              -
+                type: AARCH64_OP_IMM
+                imm: 0x17
+                access: CS_AC_READ
+                shift_type: AARCH64_SFT_LSL
+                shift_value: 16
+          regs_write: [ w4 ]
+
+  -
+    input:
+      name: "issue 2878 AArch64 LDR literal detail operand truncation"
+      bytes: [ 0xa8, 0x79, 0x29, 0x58 ]
+      arch: "CS_ARCH_AARCH64"
+      options: [ CS_MODE_LITTLE_ENDIAN, CS_OPT_DETAIL ]
+      address: 0x100c894d4
+    expected:
+      insns:
+      -
+        asm_text: "ldr x8, 0x100cdc408"
+        details:
+          aarch64:
+            operands:
+              -
+                type: AARCH64_OP_REG
+                reg: x8
+                access: CS_AC_WRITE
+              -
+                type: AARCH64_OP_MEM
+                mem_disp: 0x100cdc408
+                access: CS_AC_READ
+          regs_write: [ x8 ]

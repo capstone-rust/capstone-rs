@@ -813,6 +813,7 @@ pub mod cs_opt_value {
     pub const CS_OPT_SYNTAX_NO_DOLLAR: Type = 512;
     pub const CS_OPT_SYNTAX_NO_ALIAS_TEXT: Type = 1024;
     pub const CS_OPT_SYNTAX_NO_ALIAS_TEXT_COMPRESSED: Type = 2048;
+    pub const CS_OPT_SYNTAX_AARCH64_EXPLICIT_WIDE_IMM: Type = 4096;
     pub const CS_OPT_DETAIL_REAL: Type = 2;
 }
 #[doc = " An option"]
@@ -5052,7 +5053,7 @@ pub struct aarch64_op_mem {
     #[doc = "< index register"]
     pub index: aarch64_reg::Type,
     #[doc = "< displacement/offset value"]
-    pub disp: i32,
+    pub disp: i64,
 }
 #[repr(u32)]
 #[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
@@ -7204,241 +7205,242 @@ impl ::core::fmt::Debug for cs_alpha {
 }
 pub mod alpha_reg {
     pub type Type = ::core::ffi::c_uint;
-    pub const Alpha_REG_INVALID: Type = 0;
-    pub const Alpha_REG_F0: Type = 1;
-    pub const Alpha_REG_F1: Type = 2;
-    pub const Alpha_REG_F2: Type = 3;
-    pub const Alpha_REG_F3: Type = 4;
-    pub const Alpha_REG_F4: Type = 5;
-    pub const Alpha_REG_F5: Type = 6;
-    pub const Alpha_REG_F6: Type = 7;
-    pub const Alpha_REG_F7: Type = 8;
-    pub const Alpha_REG_F8: Type = 9;
-    pub const Alpha_REG_F9: Type = 10;
-    pub const Alpha_REG_F10: Type = 11;
-    pub const Alpha_REG_F11: Type = 12;
-    pub const Alpha_REG_F12: Type = 13;
-    pub const Alpha_REG_F13: Type = 14;
-    pub const Alpha_REG_F14: Type = 15;
-    pub const Alpha_REG_F15: Type = 16;
-    pub const Alpha_REG_F16: Type = 17;
-    pub const Alpha_REG_F17: Type = 18;
-    pub const Alpha_REG_F18: Type = 19;
-    pub const Alpha_REG_F19: Type = 20;
-    pub const Alpha_REG_F20: Type = 21;
-    pub const Alpha_REG_F21: Type = 22;
-    pub const Alpha_REG_F22: Type = 23;
-    pub const Alpha_REG_F23: Type = 24;
-    pub const Alpha_REG_F24: Type = 25;
-    pub const Alpha_REG_F25: Type = 26;
-    pub const Alpha_REG_F26: Type = 27;
-    pub const Alpha_REG_F27: Type = 28;
-    pub const Alpha_REG_F28: Type = 29;
-    pub const Alpha_REG_F29: Type = 30;
-    pub const Alpha_REG_F30: Type = 31;
-    pub const Alpha_REG_F31: Type = 32;
-    pub const Alpha_REG_R0: Type = 33;
-    pub const Alpha_REG_R1: Type = 34;
-    pub const Alpha_REG_R2: Type = 35;
-    pub const Alpha_REG_R3: Type = 36;
-    pub const Alpha_REG_R4: Type = 37;
-    pub const Alpha_REG_R5: Type = 38;
-    pub const Alpha_REG_R6: Type = 39;
-    pub const Alpha_REG_R7: Type = 40;
-    pub const Alpha_REG_R8: Type = 41;
-    pub const Alpha_REG_R9: Type = 42;
-    pub const Alpha_REG_R10: Type = 43;
-    pub const Alpha_REG_R11: Type = 44;
-    pub const Alpha_REG_R12: Type = 45;
-    pub const Alpha_REG_R13: Type = 46;
-    pub const Alpha_REG_R14: Type = 47;
-    pub const Alpha_REG_R15: Type = 48;
-    pub const Alpha_REG_R16: Type = 49;
-    pub const Alpha_REG_R17: Type = 50;
-    pub const Alpha_REG_R18: Type = 51;
-    pub const Alpha_REG_R19: Type = 52;
-    pub const Alpha_REG_R20: Type = 53;
-    pub const Alpha_REG_R21: Type = 54;
-    pub const Alpha_REG_R22: Type = 55;
-    pub const Alpha_REG_R23: Type = 56;
-    pub const Alpha_REG_R24: Type = 57;
-    pub const Alpha_REG_R25: Type = 58;
-    pub const Alpha_REG_R26: Type = 59;
-    pub const Alpha_REG_R27: Type = 60;
-    pub const Alpha_REG_R28: Type = 61;
-    pub const Alpha_REG_R29: Type = 62;
-    pub const Alpha_REG_R30: Type = 63;
-    pub const Alpha_REG_R31: Type = 64;
-    pub const Alpha_REG_ENDING: Type = 65;
+    pub const ALPHA_REG_INVALID: Type = 0;
+    pub const ALPHA_REG_F0: Type = 1;
+    pub const ALPHA_REG_F1: Type = 2;
+    pub const ALPHA_REG_F2: Type = 3;
+    pub const ALPHA_REG_F3: Type = 4;
+    pub const ALPHA_REG_F4: Type = 5;
+    pub const ALPHA_REG_F5: Type = 6;
+    pub const ALPHA_REG_F6: Type = 7;
+    pub const ALPHA_REG_F7: Type = 8;
+    pub const ALPHA_REG_F8: Type = 9;
+    pub const ALPHA_REG_F9: Type = 10;
+    pub const ALPHA_REG_F10: Type = 11;
+    pub const ALPHA_REG_F11: Type = 12;
+    pub const ALPHA_REG_F12: Type = 13;
+    pub const ALPHA_REG_F13: Type = 14;
+    pub const ALPHA_REG_F14: Type = 15;
+    pub const ALPHA_REG_F15: Type = 16;
+    pub const ALPHA_REG_F16: Type = 17;
+    pub const ALPHA_REG_F17: Type = 18;
+    pub const ALPHA_REG_F18: Type = 19;
+    pub const ALPHA_REG_F19: Type = 20;
+    pub const ALPHA_REG_F20: Type = 21;
+    pub const ALPHA_REG_F21: Type = 22;
+    pub const ALPHA_REG_F22: Type = 23;
+    pub const ALPHA_REG_F23: Type = 24;
+    pub const ALPHA_REG_F24: Type = 25;
+    pub const ALPHA_REG_F25: Type = 26;
+    pub const ALPHA_REG_F26: Type = 27;
+    pub const ALPHA_REG_F27: Type = 28;
+    pub const ALPHA_REG_F28: Type = 29;
+    pub const ALPHA_REG_F29: Type = 30;
+    pub const ALPHA_REG_F30: Type = 31;
+    pub const ALPHA_REG_F31: Type = 32;
+    pub const ALPHA_REG_R0: Type = 33;
+    pub const ALPHA_REG_R1: Type = 34;
+    pub const ALPHA_REG_R2: Type = 35;
+    pub const ALPHA_REG_R3: Type = 36;
+    pub const ALPHA_REG_R4: Type = 37;
+    pub const ALPHA_REG_R5: Type = 38;
+    pub const ALPHA_REG_R6: Type = 39;
+    pub const ALPHA_REG_R7: Type = 40;
+    pub const ALPHA_REG_R8: Type = 41;
+    pub const ALPHA_REG_R9: Type = 42;
+    pub const ALPHA_REG_R10: Type = 43;
+    pub const ALPHA_REG_R11: Type = 44;
+    pub const ALPHA_REG_R12: Type = 45;
+    pub const ALPHA_REG_R13: Type = 46;
+    pub const ALPHA_REG_R14: Type = 47;
+    pub const ALPHA_REG_R15: Type = 48;
+    pub const ALPHA_REG_R16: Type = 49;
+    pub const ALPHA_REG_R17: Type = 50;
+    pub const ALPHA_REG_R18: Type = 51;
+    pub const ALPHA_REG_R19: Type = 52;
+    pub const ALPHA_REG_R20: Type = 53;
+    pub const ALPHA_REG_R21: Type = 54;
+    pub const ALPHA_REG_R22: Type = 55;
+    pub const ALPHA_REG_R23: Type = 56;
+    pub const ALPHA_REG_R24: Type = 57;
+    pub const ALPHA_REG_R25: Type = 58;
+    pub const ALPHA_REG_R26: Type = 59;
+    pub const ALPHA_REG_R27: Type = 60;
+    pub const ALPHA_REG_R28: Type = 61;
+    pub const ALPHA_REG_R29: Type = 62;
+    pub const ALPHA_REG_R30: Type = 63;
+    pub const ALPHA_REG_R31: Type = 64;
+    pub const ALPHA_REG_ENDING: Type = 65;
 }
 #[repr(u32)]
 #[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
 pub enum alpha_insn {
-    Alpha_INS_INVALID = 0,
-    Alpha_INS_ADDL = 1,
-    Alpha_INS_ADDQ = 2,
-    Alpha_INS_ADDSsSU = 3,
-    Alpha_INS_ADDTsSU = 4,
-    Alpha_INS_AND = 5,
-    Alpha_INS_BEQ = 6,
-    Alpha_INS_BGE = 7,
-    Alpha_INS_BGT = 8,
-    Alpha_INS_BIC = 9,
-    Alpha_INS_BIS = 10,
-    Alpha_INS_BLBC = 11,
-    Alpha_INS_BLBS = 12,
-    Alpha_INS_BLE = 13,
-    Alpha_INS_BLT = 14,
-    Alpha_INS_BNE = 15,
-    Alpha_INS_BR = 16,
-    Alpha_INS_BSR = 17,
-    Alpha_INS_CMOVEQ = 18,
-    Alpha_INS_CMOVGE = 19,
-    Alpha_INS_CMOVGT = 20,
-    Alpha_INS_CMOVLBC = 21,
-    Alpha_INS_CMOVLBS = 22,
-    Alpha_INS_CMOVLE = 23,
-    Alpha_INS_CMOVLT = 24,
-    Alpha_INS_CMOVNE = 25,
-    Alpha_INS_CMPBGE = 26,
-    Alpha_INS_CMPEQ = 27,
-    Alpha_INS_CMPLE = 28,
-    Alpha_INS_CMPLT = 29,
-    Alpha_INS_CMPTEQsSU = 30,
-    Alpha_INS_CMPTLEsSU = 31,
-    Alpha_INS_CMPTLTsSU = 32,
-    Alpha_INS_CMPTUNsSU = 33,
-    Alpha_INS_CMPULE = 34,
-    Alpha_INS_CMPULT = 35,
-    Alpha_INS_COND_BRANCH = 36,
-    Alpha_INS_CPYSE = 37,
-    Alpha_INS_CPYSN = 38,
-    Alpha_INS_CPYS = 39,
-    Alpha_INS_CTLZ = 40,
-    Alpha_INS_CTPOP = 41,
-    Alpha_INS_CTTZ = 42,
-    Alpha_INS_CVTQSsSUI = 43,
-    Alpha_INS_CVTQTsSUI = 44,
-    Alpha_INS_CVTSTsS = 45,
-    Alpha_INS_CVTTQsSVC = 46,
-    Alpha_INS_CVTTSsSUI = 47,
-    Alpha_INS_DIVSsSU = 48,
-    Alpha_INS_DIVTsSU = 49,
-    Alpha_INS_ECB = 50,
-    Alpha_INS_EQV = 51,
-    Alpha_INS_EXCB = 52,
-    Alpha_INS_EXTBL = 53,
-    Alpha_INS_EXTLH = 54,
-    Alpha_INS_EXTLL = 55,
-    Alpha_INS_EXTQH = 56,
-    Alpha_INS_EXTQL = 57,
-    Alpha_INS_EXTWH = 58,
-    Alpha_INS_EXTWL = 59,
-    Alpha_INS_FBEQ = 60,
-    Alpha_INS_FBGE = 61,
-    Alpha_INS_FBGT = 62,
-    Alpha_INS_FBLE = 63,
-    Alpha_INS_FBLT = 64,
-    Alpha_INS_FBNE = 65,
-    Alpha_INS_FCMOVEQ = 66,
-    Alpha_INS_FCMOVGE = 67,
-    Alpha_INS_FCMOVGT = 68,
-    Alpha_INS_FCMOVLE = 69,
-    Alpha_INS_FCMOVLT = 70,
-    Alpha_INS_FCMOVNE = 71,
-    Alpha_INS_FETCH = 72,
-    Alpha_INS_FETCH_M = 73,
-    Alpha_INS_FTOIS = 74,
-    Alpha_INS_FTOIT = 75,
-    Alpha_INS_INSBL = 76,
-    Alpha_INS_INSLH = 77,
-    Alpha_INS_INSLL = 78,
-    Alpha_INS_INSQH = 79,
-    Alpha_INS_INSQL = 80,
-    Alpha_INS_INSWH = 81,
-    Alpha_INS_INSWL = 82,
-    Alpha_INS_ITOFS = 83,
-    Alpha_INS_ITOFT = 84,
-    Alpha_INS_JMP = 85,
-    Alpha_INS_JSR = 86,
-    Alpha_INS_JSR_COROUTINE = 87,
-    Alpha_INS_LDA = 88,
-    Alpha_INS_LDAH = 89,
-    Alpha_INS_LDBU = 90,
-    Alpha_INS_LDL = 91,
-    Alpha_INS_LDL_L = 92,
-    Alpha_INS_LDQ = 93,
-    Alpha_INS_LDQ_L = 94,
-    Alpha_INS_LDQ_U = 95,
-    Alpha_INS_LDS = 96,
-    Alpha_INS_LDT = 97,
-    Alpha_INS_LDWU = 98,
-    Alpha_INS_MB = 99,
-    Alpha_INS_MSKBL = 100,
-    Alpha_INS_MSKLH = 101,
-    Alpha_INS_MSKLL = 102,
-    Alpha_INS_MSKQH = 103,
-    Alpha_INS_MSKQL = 104,
-    Alpha_INS_MSKWH = 105,
-    Alpha_INS_MSKWL = 106,
-    Alpha_INS_MULL = 107,
-    Alpha_INS_MULQ = 108,
-    Alpha_INS_MULSsSU = 109,
-    Alpha_INS_MULTsSU = 110,
-    Alpha_INS_ORNOT = 111,
-    Alpha_INS_RC = 112,
-    Alpha_INS_RET = 113,
-    Alpha_INS_RPCC = 114,
-    Alpha_INS_RS = 115,
-    Alpha_INS_S4ADDL = 116,
-    Alpha_INS_S4ADDQ = 117,
-    Alpha_INS_S4SUBL = 118,
-    Alpha_INS_S4SUBQ = 119,
-    Alpha_INS_S8ADDL = 120,
-    Alpha_INS_S8ADDQ = 121,
-    Alpha_INS_S8SUBL = 122,
-    Alpha_INS_S8SUBQ = 123,
-    Alpha_INS_SEXTB = 124,
-    Alpha_INS_SEXTW = 125,
-    Alpha_INS_SLL = 126,
-    Alpha_INS_SQRTSsSU = 127,
-    Alpha_INS_SQRTTsSU = 128,
-    Alpha_INS_SRA = 129,
-    Alpha_INS_SRL = 130,
-    Alpha_INS_STB = 131,
-    Alpha_INS_STL = 132,
-    Alpha_INS_STL_C = 133,
-    Alpha_INS_STQ = 134,
-    Alpha_INS_STQ_C = 135,
-    Alpha_INS_STQ_U = 136,
-    Alpha_INS_STS = 137,
-    Alpha_INS_STT = 138,
-    Alpha_INS_STW = 139,
-    Alpha_INS_SUBL = 140,
-    Alpha_INS_SUBQ = 141,
-    Alpha_INS_SUBSsSU = 142,
-    Alpha_INS_SUBTsSU = 143,
-    Alpha_INS_TRAPB = 144,
-    Alpha_INS_UMULH = 145,
-    Alpha_INS_WH64 = 146,
-    Alpha_INS_WH64EN = 147,
-    Alpha_INS_WMB = 148,
-    Alpha_INS_XOR = 149,
-    Alpha_INS_ZAPNOT = 150,
-    ALPHA_INS_ENDING = 151,
+    ALPHA_INS_INVALID = 0,
+    ALPHA_INS_ADDL = 1,
+    ALPHA_INS_ADDQ = 2,
+    ALPHA_INS_ADDSSSU = 3,
+    ALPHA_INS_ADDTSSU = 4,
+    ALPHA_INS_AND = 5,
+    ALPHA_INS_BEQ = 6,
+    ALPHA_INS_BGE = 7,
+    ALPHA_INS_BGT = 8,
+    ALPHA_INS_BIC = 9,
+    ALPHA_INS_BIS = 10,
+    ALPHA_INS_BLBC = 11,
+    ALPHA_INS_BLBS = 12,
+    ALPHA_INS_BLE = 13,
+    ALPHA_INS_BLT = 14,
+    ALPHA_INS_BNE = 15,
+    ALPHA_INS_BR = 16,
+    ALPHA_INS_BSR = 17,
+    ALPHA_INS_CMOVEQ = 18,
+    ALPHA_INS_CMOVGE = 19,
+    ALPHA_INS_CMOVGT = 20,
+    ALPHA_INS_CMOVLBC = 21,
+    ALPHA_INS_CMOVLBS = 22,
+    ALPHA_INS_CMOVLE = 23,
+    ALPHA_INS_CMOVLT = 24,
+    ALPHA_INS_CMOVNE = 25,
+    ALPHA_INS_CMPBGE = 26,
+    ALPHA_INS_CMPEQ = 27,
+    ALPHA_INS_CMPLE = 28,
+    ALPHA_INS_CMPLT = 29,
+    ALPHA_INS_CMPTEQSSU = 30,
+    ALPHA_INS_CMPTLESSU = 31,
+    ALPHA_INS_CMPTLTSSU = 32,
+    ALPHA_INS_CMPTUNSSU = 33,
+    ALPHA_INS_CMPULE = 34,
+    ALPHA_INS_CMPULT = 35,
+    ALPHA_INS_CALL_PAL = 36,
+    ALPHA_INS_COND_BRANCH = 37,
+    ALPHA_INS_CPYSE = 38,
+    ALPHA_INS_CPYSN = 39,
+    ALPHA_INS_CPYS = 40,
+    ALPHA_INS_CTLZ = 41,
+    ALPHA_INS_CTPOP = 42,
+    ALPHA_INS_CTTZ = 43,
+    ALPHA_INS_CVTQSSSUI = 44,
+    ALPHA_INS_CVTQTSSUI = 45,
+    ALPHA_INS_CVTSTSS = 46,
+    ALPHA_INS_CVTTQSSVC = 47,
+    ALPHA_INS_CVTTSSSUI = 48,
+    ALPHA_INS_DIVSSSU = 49,
+    ALPHA_INS_DIVTSSU = 50,
+    ALPHA_INS_ECB = 51,
+    ALPHA_INS_EQV = 52,
+    ALPHA_INS_EXCB = 53,
+    ALPHA_INS_EXTBL = 54,
+    ALPHA_INS_EXTLH = 55,
+    ALPHA_INS_EXTLL = 56,
+    ALPHA_INS_EXTQH = 57,
+    ALPHA_INS_EXTQL = 58,
+    ALPHA_INS_EXTWH = 59,
+    ALPHA_INS_EXTWL = 60,
+    ALPHA_INS_FBEQ = 61,
+    ALPHA_INS_FBGE = 62,
+    ALPHA_INS_FBGT = 63,
+    ALPHA_INS_FBLE = 64,
+    ALPHA_INS_FBLT = 65,
+    ALPHA_INS_FBNE = 66,
+    ALPHA_INS_FCMOVEQ = 67,
+    ALPHA_INS_FCMOVGE = 68,
+    ALPHA_INS_FCMOVGT = 69,
+    ALPHA_INS_FCMOVLE = 70,
+    ALPHA_INS_FCMOVLT = 71,
+    ALPHA_INS_FCMOVNE = 72,
+    ALPHA_INS_FETCH = 73,
+    ALPHA_INS_FETCH_M = 74,
+    ALPHA_INS_FTOIS = 75,
+    ALPHA_INS_FTOIT = 76,
+    ALPHA_INS_INSBL = 77,
+    ALPHA_INS_INSLH = 78,
+    ALPHA_INS_INSLL = 79,
+    ALPHA_INS_INSQH = 80,
+    ALPHA_INS_INSQL = 81,
+    ALPHA_INS_INSWH = 82,
+    ALPHA_INS_INSWL = 83,
+    ALPHA_INS_ITOFS = 84,
+    ALPHA_INS_ITOFT = 85,
+    ALPHA_INS_JMP = 86,
+    ALPHA_INS_JSR = 87,
+    ALPHA_INS_JSR_COROUTINE = 88,
+    ALPHA_INS_LDA = 89,
+    ALPHA_INS_LDAH = 90,
+    ALPHA_INS_LDBU = 91,
+    ALPHA_INS_LDL = 92,
+    ALPHA_INS_LDL_L = 93,
+    ALPHA_INS_LDQ = 94,
+    ALPHA_INS_LDQ_L = 95,
+    ALPHA_INS_LDQ_U = 96,
+    ALPHA_INS_LDS = 97,
+    ALPHA_INS_LDT = 98,
+    ALPHA_INS_LDWU = 99,
+    ALPHA_INS_MB = 100,
+    ALPHA_INS_MSKBL = 101,
+    ALPHA_INS_MSKLH = 102,
+    ALPHA_INS_MSKLL = 103,
+    ALPHA_INS_MSKQH = 104,
+    ALPHA_INS_MSKQL = 105,
+    ALPHA_INS_MSKWH = 106,
+    ALPHA_INS_MSKWL = 107,
+    ALPHA_INS_MULL = 108,
+    ALPHA_INS_MULQ = 109,
+    ALPHA_INS_MULSSSU = 110,
+    ALPHA_INS_MULTSSU = 111,
+    ALPHA_INS_ORNOT = 112,
+    ALPHA_INS_RC = 113,
+    ALPHA_INS_RET = 114,
+    ALPHA_INS_RPCC = 115,
+    ALPHA_INS_RS = 116,
+    ALPHA_INS_S4ADDL = 117,
+    ALPHA_INS_S4ADDQ = 118,
+    ALPHA_INS_S4SUBL = 119,
+    ALPHA_INS_S4SUBQ = 120,
+    ALPHA_INS_S8ADDL = 121,
+    ALPHA_INS_S8ADDQ = 122,
+    ALPHA_INS_S8SUBL = 123,
+    ALPHA_INS_S8SUBQ = 124,
+    ALPHA_INS_SEXTB = 125,
+    ALPHA_INS_SEXTW = 126,
+    ALPHA_INS_SLL = 127,
+    ALPHA_INS_SQRTSSSU = 128,
+    ALPHA_INS_SQRTTSSU = 129,
+    ALPHA_INS_SRA = 130,
+    ALPHA_INS_SRL = 131,
+    ALPHA_INS_STB = 132,
+    ALPHA_INS_STL = 133,
+    ALPHA_INS_STL_C = 134,
+    ALPHA_INS_STQ = 135,
+    ALPHA_INS_STQ_C = 136,
+    ALPHA_INS_STQ_U = 137,
+    ALPHA_INS_STS = 138,
+    ALPHA_INS_STT = 139,
+    ALPHA_INS_STW = 140,
+    ALPHA_INS_SUBL = 141,
+    ALPHA_INS_SUBQ = 142,
+    ALPHA_INS_SUBSSSU = 143,
+    ALPHA_INS_SUBTSSU = 144,
+    ALPHA_INS_TRAPB = 145,
+    ALPHA_INS_UMULH = 146,
+    ALPHA_INS_WH64 = 147,
+    ALPHA_INS_WH64EN = 148,
+    ALPHA_INS_WMB = 149,
+    ALPHA_INS_XOR = 150,
+    ALPHA_INS_ZAPNOT = 151,
+    ALPHA_INS_ENDING = 152,
 }
 pub mod alpha_insn_group {
     pub type Type = ::core::ffi::c_uint;
     #[doc = "< = CS_GRP_INVALID"]
-    pub const Alpha_GRP_INVALID: Type = 0;
+    pub const ALPHA_GRP_INVALID: Type = 0;
     #[doc = "< = CS_GRP_CALL"]
-    pub const Alpha_GRP_CALL: Type = 1;
+    pub const ALPHA_GRP_CALL: Type = 1;
     #[doc = "< = CS_GRP_JUMP"]
-    pub const Alpha_GRP_JUMP: Type = 2;
+    pub const ALPHA_GRP_JUMP: Type = 2;
     #[doc = "< = CS_GRP_BRANCH_RELATIVE"]
-    pub const Alpha_GRP_BRANCH_RELATIVE: Type = 3;
+    pub const ALPHA_GRP_BRANCH_RELATIVE: Type = 3;
     #[doc = "< = mark the end of the list of groups"]
-    pub const Alpha_GRP_ENDING: Type = 4;
+    pub const ALPHA_GRP_ENDING: Type = 4;
 }
 #[repr(u32)]
 #[doc = " Operand type for instruction's operands"]
@@ -12319,7 +12321,9 @@ pub enum m68k_op_type {
 #[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
 pub enum m68k_op_flags {
     M68K_OP_FLAG_NONE = 0,
+    #[doc = " Lower half of a ColdFire MAC word register operand"]
     M68K_OP_FLAG_REG_LOWER = 1,
+    #[doc = " Upper half of a ColdFire MAC word register operand"]
     M68K_OP_FLAG_REG_UPPER = 2,
     #[doc = "< ColdFire MAC left-shift operand"]
     M68K_OP_FLAG_SHIFT_LEFT = 4,
@@ -12920,7 +12924,11 @@ pub enum m68k_insn {
     M68K_INS_CP1NOP = 400,
     M68K_INS_CP1ST = 401,
     M68K_INS_TPF = 402,
-    M68K_INS_ENDING = 403,
+    M68K_INS_MAAAC = 403,
+    M68K_INS_MASAC = 404,
+    M68K_INS_MSAAC = 405,
+    M68K_INS_MSSAC = 406,
+    M68K_INS_ENDING = 407,
 }
 #[repr(u32)]
 #[doc = " Group of M68K instructions"]
@@ -18896,6 +18904,24 @@ impl ::core::fmt::Debug for cs_ppc {
 }
 #[repr(u32)]
 #[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
+pub enum riscv_rounding_mode {
+    #[doc = "< not applicable (no rounding mode)"]
+    RISCV_RM_INVALID = 0,
+    #[doc = "< round to nearest, ties to even"]
+    RISCV_RM_RNE = 1,
+    #[doc = "< round towards zero"]
+    RISCV_RM_RTZ = 2,
+    #[doc = "< round down (towards -infinity)"]
+    RISCV_RM_RDN = 3,
+    #[doc = "< round up (towards +infinity)"]
+    RISCV_RM_RUP = 4,
+    #[doc = "< round to nearest, ties to max magnitude"]
+    RISCV_RM_RMM = 5,
+    #[doc = "< dynamic rounding mode (use frm CSR)"]
+    RISCV_RM_DYN = 6,
+}
+#[repr(u32)]
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
 pub enum riscv_op_type {
     #[doc = "< = CS_OP_INVALID (Uninitialized)."]
     RISCV_OP_INVALID = 0,
@@ -18953,13 +18979,14 @@ pub struct cs_riscv {
     pub need_effective_addr: bool,
     pub op_count: u8,
     pub operands: [cs_riscv_op; 8usize],
+    pub rounding_mode: riscv_rounding_mode,
 }
 impl ::core::fmt::Debug for cs_riscv {
     fn fmt(&self, f: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
         write!(
             f,
-            "cs_riscv {{ need_effective_addr: {:?}, operands: {:?} }}",
-            self.need_effective_addr, self.operands
+            "cs_riscv {{ need_effective_addr: {:?}, operands: {:?}, rounding_mode: {:?} }}",
+            self.need_effective_addr, self.operands, self.rounding_mode
         )
     }
 }

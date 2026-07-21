@@ -1881,14 +1881,14 @@ fn test_arch_alpha_detail() {
         None,
         &[],
         &[
-            // ldah $15, 2($13)
+            // ldah $29, 2($27)
             DII::new(
                 "ldah",
                 b"\x02\x00\xbb\x27",
                 &[
                     AlphaOperand {
                         access: Some(RegAccessType::WriteOnly),
-                        op_type: AlphaOperandType::Reg(RegId(Alpha_REG_R15 as RegIdInt)),
+                        op_type: AlphaOperandType::Reg(RegId(ALPHA_REG_R29 as RegIdInt)),
                     },
                     AlphaOperand {
                         access: Some(RegAccessType::ReadOnly),
@@ -1896,18 +1896,18 @@ fn test_arch_alpha_detail() {
                     },
                     AlphaOperand {
                         access: Some(RegAccessType::ReadOnly),
-                        op_type: AlphaOperandType::Reg(RegId(Alpha_REG_R13 as RegIdInt)),
+                        op_type: AlphaOperandType::Reg(RegId(ALPHA_REG_R27 as RegIdInt)),
                     },
                 ],
             ),
-            // lda $15, 0x7a50($15)
+            // lda $29, 0x7a50($29)
             DII::new(
                 "lda",
                 b"\x50\x7a\xbd\x23",
                 &[
                     AlphaOperand {
                         access: Some(RegAccessType::WriteOnly),
-                        op_type: AlphaOperandType::Reg(RegId(Alpha_REG_R15 as RegIdInt)),
+                        op_type: AlphaOperandType::Reg(RegId(ALPHA_REG_R29 as RegIdInt)),
                     },
                     AlphaOperand {
                         access: Some(RegAccessType::ReadOnly),
@@ -1915,7 +1915,7 @@ fn test_arch_alpha_detail() {
                     },
                     AlphaOperand {
                         access: Some(RegAccessType::ReadOnly),
-                        op_type: AlphaOperandType::Reg(RegId(Alpha_REG_R15 as RegIdInt)),
+                        op_type: AlphaOperandType::Reg(RegId(ALPHA_REG_R29 as RegIdInt)),
                     },
                 ],
             ),
@@ -1934,14 +1934,14 @@ fn test_arch_alpha_detail() {
         Some(Endian::Big),
         &[],
         &[
-            // ldah $15, 2($13)
+            // ldah $29, 2($27)
             DII::new(
                 "ldah",
                 b"\x27\xbb\x00\x02",
                 &[
                     AlphaOperand {
                         access: Some(RegAccessType::WriteOnly),
-                        op_type: AlphaOperandType::Reg(RegId(Alpha_REG_R15 as RegIdInt)),
+                        op_type: AlphaOperandType::Reg(RegId(ALPHA_REG_R29 as RegIdInt)),
                     },
                     AlphaOperand {
                         access: Some(RegAccessType::ReadOnly),
@@ -1949,18 +1949,18 @@ fn test_arch_alpha_detail() {
                     },
                     AlphaOperand {
                         access: Some(RegAccessType::ReadOnly),
-                        op_type: AlphaOperandType::Reg(RegId(Alpha_REG_R13 as RegIdInt)),
+                        op_type: AlphaOperandType::Reg(RegId(ALPHA_REG_R27 as RegIdInt)),
                     },
                 ],
             ),
-            // lda $15, 0x7a50($15)
+            // lda $29, 0x7a50($29)
             DII::new(
                 "lda",
                 b"\x23\xbd\x7a\x50",
                 &[
                     AlphaOperand {
                         access: Some(RegAccessType::WriteOnly),
-                        op_type: AlphaOperandType::Reg(RegId(Alpha_REG_R15 as RegIdInt)),
+                        op_type: AlphaOperandType::Reg(RegId(ALPHA_REG_R29 as RegIdInt)),
                     },
                     AlphaOperand {
                         access: Some(RegAccessType::ReadOnly),
@@ -1968,7 +1968,7 @@ fn test_arch_alpha_detail() {
                     },
                     AlphaOperand {
                         access: Some(RegAccessType::ReadOnly),
-                        op_type: AlphaOperandType::Reg(RegId(Alpha_REG_R15 as RegIdInt)),
+                        op_type: AlphaOperandType::Reg(RegId(ALPHA_REG_R29 as RegIdInt)),
                     },
                 ],
             ),

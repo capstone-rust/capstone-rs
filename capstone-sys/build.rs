@@ -268,16 +268,11 @@ fn impl_insid_to_insenum(bindings: &str) -> String {
             "m680x" => "INVLD",
             _ => "INVALID",
         };
-        // special case for alpha, which has `Alpha` instead of `ALPHA`
-        let arch_str = match arch {
-            "alpha" => "Alpha".to_string(),
-            _ => arch.to_uppercase(),
-        };
         write!(
             impl_arch_enum,
             "_ => {}_insn::{}_INS_{},",
             arch,
-            arch_str,
+            arch.to_uppercase(),
             invalid_str,
         )
         .unwrap();

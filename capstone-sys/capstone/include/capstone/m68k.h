@@ -144,10 +144,10 @@ typedef enum m68k_op_type {
 /// Per-operand modifier flags.
 typedef enum m68k_op_flags {
 	M68K_OP_FLAG_NONE = 0,
-	M68K_OP_FLAG_REG_LOWER =
-		1 << 0, ///< Lower half of a ColdFire MAC word register operand
-	M68K_OP_FLAG_REG_UPPER =
-		1 << 1, ///< Upper half of a ColdFire MAC word register operand
+	/// Lower half of a ColdFire MAC word register operand
+	M68K_OP_FLAG_REG_LOWER = 1 << 0,
+	/// Upper half of a ColdFire MAC word register operand
+	M68K_OP_FLAG_REG_UPPER = 1 << 1,
 	M68K_OP_FLAG_SHIFT_LEFT = 1 << 2, ///< ColdFire MAC left-shift operand
 	M68K_OP_FLAG_SHIFT_RIGHT = 1 << 3, ///< ColdFire MAC right-shift operand
 	M68K_OP_FLAG_MEM_UPDATE = 1 << 4, ///< ColdFire MAC memory update marker
@@ -666,6 +666,10 @@ typedef enum m68k_insn {
 	M68K_INS_CP1NOP,
 	M68K_INS_CP1ST,
 	M68K_INS_TPF,
+	M68K_INS_MAAAC,
+	M68K_INS_MASAC,
+	M68K_INS_MSAAC,
+	M68K_INS_MSSAC,
 	M68K_INS_ENDING, // <-- mark the end of the list of instructions
 } m68k_insn;
 

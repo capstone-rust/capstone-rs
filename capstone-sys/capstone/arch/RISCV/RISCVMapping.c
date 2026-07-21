@@ -11,6 +11,7 @@
 #include "../../cs_simple_types.h"
 #include "../../utils.h"
 
+#include "RISCVBaseInfo.h"
 #include "RISCVMapping.h"
 
 #define GET_INSTRINFO_ENUM
@@ -53,10 +54,45 @@ void RISCV_add_cs_detail_0(MCInst *MI, riscv_op_group opgroup, unsigned OpNum)
 {
 	if (!detail_is_set(MI))
 		return;
-	// are not "true" arguments and has no Capstone equivalent
+	// Rounding mode: store in detail, not as a regular operand.
 	if (opgroup == RISCV_OP_GROUP_FRMArg ||
-	    opgroup == RISCV_OP_GROUP_FRMArgLegacy)
+	    opgroup == RISCV_OP_GROUP_FRMArgLegacy) {
+		unsigned frm = (unsigned)MCInst_getOperand(MI, OpNum)->ImmVal;
+		riscv_rounding_mode rm;
+		switch (frm) {
+		case RISCVFPRndMode_RNE:
+			rm = RISCV_RM_RNE;
+			break;
+		case RISCVFPRndMode_RTZ:
+			rm = RISCV_RM_RTZ;
+			break;
+		case RISCVFPRndMode_RDN:
+			rm = RISCV_RM_RDN;
+			break;
+		case RISCVFPRndMode_RUP:
+			rm = RISCV_RM_RUP;
+			break;
+		case RISCVFPRndMode_RMM:
+			rm = RISCV_RM_RMM;
+			break;
+		case RISCVFPRndMode_DYN:
+			rm = RISCV_RM_DYN;
+			break;
+		default:
+			rm = RISCV_RM_INVALID;
+			break;
+		}
+		RISCV_get_detail(MI)->rounding_mode = rm;
 		return;
+	}
+
+	// unmasked instructions, the mask register is not real
+	if (opgroup == RISCV_OP_GROUP_VMaskReg) {
+		MCOperand *mask = MCInst_getOperand(MI, OpNum);
+		if (MCOperand_isReg(mask) &&
+		    MCOperand_getReg(mask) == RISCV_NoRegister)
+			return;
+	}
 
 	if (opgroup == RISCV_OP_GROUP_FPImmOperand) {
 		unsigned Imm = (unsigned)MCInst_getOperand(MI, OpNum)->ImmVal;
@@ -297,29 +333,6 @@ void RISCV_compact_operands(MCInst *MI)
 	       (NUM_RISCV_OPS - write_pos) * sizeof(cs_riscv_op));
 }
 
-// some RISC-V instructions have only 2 apparent operands, one of them is read-write
-// the actual operand information for those instruction should have 3 operands, the first and second are the same operand,
-// but once with read and once write access
-// when those instructions are disassembled only the operand entry with the read access is used,
-// and therefore the read-write operand is wrongly classified as only-read
-// this logic tries to correct that
-void RISCV_add_missing_write_access(MCInst *MI)
-{
-	if (!detail_is_set(MI))
-		return;
-	if (!isCompressed(MI))
-		return;
-
-	cs_riscv *riscv_details = RISCV_get_detail(MI);
-	cs_riscv_op *ops = riscv_details->operands;
-	// make the detection condition as specific as possible
-	// so it doesn't accidentally trigger for other cases
-	if (riscv_details->op_count == 2 && ops[0].type == RISCV_OP_INVALID &&
-	    ops[1].type == RISCV_OP_REG && ops[1].access == CS_AC_READ) {
-		ops[1].access |= CS_AC_WRITE;
-	}
-}
-
 // given internal insn id, return public instruction info
 void RISCV_get_insn_id(cs_struct *h, cs_insn *insn, unsigned int id)
 {
@@ -377,7 +390,7 @@ const char *RISCV_insn_name(csh handle, unsigned int id)
 	if (id < RISCV_INS_ENDING)
 		return insn_name_maps[id];
 
-	if (id < RISCV_INS_ALIAS_END)
+	if (id > RISCV_INS_ALIAS_BEGIN && id < RISCV_INS_ALIAS_END)
 		return insn_alias_mnem_map[id - RISCV_INS_ALIAS_BEGIN - 1].name;
 #endif
 	return NULL;
