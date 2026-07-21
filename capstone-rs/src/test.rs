@@ -4772,6 +4772,7 @@ fn test_arch_riscv() {
 fn test_arch_riscv_detail() {
     use crate::arch::riscv::RiscVOperand::*;
     use crate::arch::riscv::RiscVReg::*;
+    use crate::arch::riscv::RiscVSysReg::*;
     use crate::arch::riscv::*;
     use capstone_sys::riscv_op_mem;
 
@@ -4863,8 +4864,10 @@ fn test_arch_riscv_detail() {
             DII::new(
                 "csrr",
                 b"\x73\x25\x00\x30",
-                // TODO: add mapping between CSR name and u16
-                &[Reg(RegId(RISCV_REG_X10 as RegIdInt)), CSR(0x300)],
+                &[
+                    Reg(RegId(RISCV_REG_X10 as RegIdInt)),
+                    CSR(RISCV_SYSREG_MSTATUS as u16),
+                ],
             ),
         ],
     );

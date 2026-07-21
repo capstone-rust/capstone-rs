@@ -7,6 +7,7 @@ use core::{cmp, fmt, slice};
 pub use capstone_sys::riscv_insn as RiscVInsn;
 pub use capstone_sys::riscv_insn_group as RiscVInsnGroup;
 pub use capstone_sys::riscv_reg as RiscVReg;
+pub use capstone_sys::riscv_sysreg as RiscVSysReg;
 use capstone_sys::{cs_riscv, cs_riscv_op, riscv_op_mem, riscv_op_type};
 
 pub use crate::arch::arch_builder::riscv::*;
