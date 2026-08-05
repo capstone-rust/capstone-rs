@@ -308,8 +308,8 @@ impl AArch64OpMem {
     }
 
     /// Disp value
-    pub fn disp(&self) -> i32 {
-        self.0.disp as i32
+    pub fn disp(&self) -> i64 {
+        self.0.disp
     }
 }
 
