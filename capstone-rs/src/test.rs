@@ -551,6 +551,7 @@ fn instructions_match_detail<T>(
     cs: &mut Capstone,
     info: &[DetailedInsnInfo<T>],
     has_default_syntax: bool,
+    addr: u64,
 ) where
     T: Into<ArchOperand> + Clone,
 {
@@ -566,7 +567,7 @@ fn instructions_match_detail<T>(
     }
 
     let insns = cs
-        .disasm_all(&insns_buf, START_TEST_ADDR)
+        .disasm_all(&insns_buf, addr)
         .expect("Failed to disassemble");
     let insns: Vec<_> = insns.iter().collect();
 
@@ -760,6 +761,24 @@ where
     }
 }
 
+fn test_arch_mode_endian_insns_detail_addr<T>(
+    cs: &mut Capstone,
+    arch: Arch,
+    mode: Mode,
+    endian: Option<Endian>,
+    extra_mode: &[ExtraMode],
+    insns: &[DetailedInsnInfo<T>],
+    addr: u64,
+) where
+    T: Into<ArchOperand> + Clone,
+{
+    let extra_mode = extra_mode.iter().copied();
+    let mut cs_raw = Capstone::new_raw(arch, mode, extra_mode, endian).unwrap();
+
+    instructions_match_detail(&mut cs_raw, insns, true, addr);
+    instructions_match_detail(cs, insns, true, addr);
+}
+
 fn test_arch_mode_endian_insns_detail<T>(
     cs: &mut Capstone,
     arch: Arch,
@@ -770,11 +789,15 @@ fn test_arch_mode_endian_insns_detail<T>(
 ) where
     T: Into<ArchOperand> + Clone,
 {
-    let extra_mode = extra_mode.iter().copied();
-    let mut cs_raw = Capstone::new_raw(arch, mode, extra_mode, endian).unwrap();
-
-    instructions_match_detail(&mut cs_raw, insns, true);
-    instructions_match_detail(cs, insns, true);
+    test_arch_mode_endian_insns_detail_addr(
+        cs,
+        arch,
+        mode,
+        endian,
+        extra_mode,
+        insns,
+        START_TEST_ADDR,
+    );
 }
 
 #[cfg(all(feature = "full", feature = "arch_x86"))]
@@ -1843,6 +1866,43 @@ fn test_arch_aarch64_detail() {
                 ],
             ),
         ],
+    );
+
+    // regression test for pr #203
+    test_arch_mode_endian_insns_detail_addr(
+        &mut Capstone::new()
+            .aarch64()
+            .mode(aarch64::ArchMode::Arm)
+            .build()
+            .unwrap(),
+        Arch::AARCH64,
+        Mode::Arm,
+        None,
+        &[],
+        &[
+            // ldr x16, 0x10000768c
+            DII::new(
+                "ldr",
+                b"\x50\x1b\x00\x58",
+                &[
+                    AArch64Operand {
+                        access: Some(AccessType::WriteOnly),
+                        op_type: Reg(RegId(AARCH64_REG_X16 as RegIdInt)),
+                        ..Default::default()
+                    },
+                    AArch64Operand {
+                        access: Some(AccessType::ReadOnly),
+                        op_type: Mem(AArch64OpMem(aarch64_op_mem {
+                            base: 0,
+                            index: 0,
+                            disp: 0x10000768C,
+                        })),
+                        ..Default::default()
+                    },
+                ],
+            ),
+        ],
+        0x100007324,
     );
 }
 
