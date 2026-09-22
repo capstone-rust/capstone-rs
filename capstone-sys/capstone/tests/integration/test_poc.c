@@ -2,12 +2,24 @@
 // SPDX-FileCopyrightText: 2025 Finder16
 // SPDX-FileCopyrightText: 2025 Rot127 <unisono@quyllur.org>
 
+#include <limits.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 
 #include <capstone/platform.h>
 #include <capstone/capstone.h>
+
+/* Malicious vsnprintf: writes like a real vsnprintf (at most `size` bytes,
+ * in-bounds) but returns a huge fabricated length (INT_MAX). */
+static int evil_vsnprintf(char *str, size_t size, const char *fmt, va_list ap)
+{
+	(void)str;
+	(void)size;
+	(void)fmt;
+	(void)ap;
+	return INT_MAX;
+}
 
 static size_t big_skip(const uint8_t *code, size_t code_size, size_t offset,
 		       void *user_data)
@@ -91,8 +103,10 @@ static void test_overflow_set_reg_mem_n(void)
 
 	csh handle;
 	if (cs_open(CS_ARCH_SH, CS_MODE_SH2A | CS_MODE_SHFPU, &handle) !=
-	    CS_ERR_OK)
+	    CS_ERR_OK) {
+		assert(0);
 		return;
+	}
 	cs_option(handle, CS_OPT_DETAIL, CS_OPT_ON);
 
 	cs_insn *insn = cs_malloc(handle);
@@ -177,8 +191,10 @@ static void test_ub_shift_sh_dsp_p(void)
 
 	csh handle;
 	if (cs_open(CS_ARCH_SH, CS_MODE_SH4A | CS_MODE_SHDSP, &handle) !=
-	    CS_ERR_OK)
+	    CS_ERR_OK) {
+		assert(0);
 		return;
+	}
 	cs_option(handle, CS_OPT_DETAIL, CS_OPT_ON);
 
 	cs_insn *insn = NULL;
@@ -197,8 +213,11 @@ static void test_ub_isintn_xtensa_offset(void)
 	static const uint8_t code[] = { 0x2f, 0x70, 0x44, 0x84 };
 
 	csh handle;
-	if (cs_open(CS_ARCH_XTENSA, CS_MODE_XTENSA_ESP32, &handle) != CS_ERR_OK)
+	if (cs_open(CS_ARCH_XTENSA, CS_MODE_XTENSA_ESP32S3, &handle) !=
+	    CS_ERR_OK) {
+		assert(0);
 		return;
+	}
 	cs_option(handle, CS_OPT_DETAIL, CS_OPT_ON);
 
 	cs_insn *insn = NULL;
@@ -206,6 +225,188 @@ static void test_ub_isintn_xtensa_offset(void)
 	cs_free(insn, count);
 	cs_close(&handle);
 	return;
+}
+
+static void test_stack_overflow_issue_3010(void)
+{
+	static const uint8_t code[] = { 0x38, 0x6d };
+
+	csh handle;
+	if (cs_open(CS_ARCH_XTENSA, CS_MODE_LITTLE_ENDIAN, &handle) !=
+	    CS_ERR_OK) {
+		fprintf(stderr, "cs_open failed\n");
+		assert(0);
+		return;
+	}
+	cs_option(handle, CS_OPT_DETAIL, CS_OPT_ON);
+
+	cs_insn *insn = cs_malloc(handle);
+	if (!insn) {
+		cs_close(&handle);
+		assert(0);
+		return;
+	}
+
+	const uint8_t *code_ptr = code;
+	size_t code_size = sizeof(code);
+	uint64_t address = 0;
+
+	while (code_size > 0 &&
+	       cs_disasm_iter(handle, &code_ptr, &code_size, &address, insn)) {
+		cs_regs regs_read, regs_write;
+		uint8_t regs_read_count = 0, regs_write_count = 0;
+		cs_regs_access(handle, insn, regs_read, &regs_read_count,
+			       regs_write, &regs_write_count);
+	}
+
+	cs_free(insn, 1);
+	cs_close(&handle);
+	return;
+}
+
+static void test_sh_oob_read_ghsa_5q63_4654_94v6(void)
+{
+	csh handle;
+	if (cs_open(CS_ARCH_SH,
+		    CS_MODE_SH2A | CS_MODE_SHFPU | CS_MODE_BIG_ENDIAN,
+		    &handle) != CS_ERR_OK) {
+		assert(0);
+		return;
+	}
+	unsigned char code[] = { 0x39, 0x99, 0xf5, 0x39 }; /* 4 crafted bytes */
+	cs_insn *insn;
+	size_t count = cs_disasm(handle, code, sizeof(code), 0x1000, 0, &insn);
+	if (count)
+		cs_free(insn, count);
+	cs_close(&handle);
+	return;
+}
+
+static void test_arm_pop_ghsa_8qp8_2vg2_8mr4(void)
+{
+	uint8_t arm_bytes[132] = { 0 };
+	for (int i = 0; i < 33; i++) {
+		arm_bytes[i * 4 + 0] = 0x00;
+		arm_bytes[i * 4 + 1] = 0x00;
+		arm_bytes[i * 4 + 2] = 0xa0;
+		arm_bytes[i * 4 + 3] = 0xe1;
+	}
+	csh h = { 0 };
+	if (cs_open(CS_ARCH_ARM, CS_MODE_ARM, &h) != CS_ERR_OK) {
+		assert(0);
+		return;
+	}
+
+	if (cs_option(h, CS_OPT_DETAIL, CS_OPT_ON) != CS_ERR_OK) {
+		assert(0);
+		return;
+	}
+	cs_insn *insn;
+	size_t c = cs_disasm(h, arm_bytes, 132, 0x1000, 0, &insn);
+	if (c)
+		cs_free(insn, c);
+	cs_close(&h);
+}
+
+/// Shouldn't trigger MSAN. Just added here to check.
+static void test_tms320_ghsa_8qp8_2vg2_8mr4(void)
+{
+	uint8_t tms_bytes[] = { 0x00, 0x00, 0x18, 0x18 };
+	csh h;
+	if (cs_open(CS_ARCH_TMS320C64X, CS_MODE_BIG_ENDIAN, &h) != CS_ERR_OK) {
+		assert(0);
+		return;
+	}
+
+	if (cs_option(h, CS_OPT_DETAIL, CS_OPT_ON) != CS_ERR_OK) {
+		assert(0);
+		return;
+	}
+
+	cs_insn *insn;
+	size_t c = cs_disasm(h, tms_bytes, 4, 0x1000, 0, &insn);
+	if (c)
+		cs_free(insn, c);
+	cs_close(&h);
+}
+
+int test_evil_vsnprintf_ghsa_gj26_93q5_cr54(void)
+{
+	csh handle;
+	cs_insn *insn = NULL;
+	size_t n;
+	/* Non-instruction bytes: ARM decode fails -> SKIPDATA path runs */
+	const uint8_t code[4] = { 0xff, 0xff, 0xff, 0xff };
+	cs_opt_mem mem = { malloc, calloc, realloc, free, evil_vsnprintf };
+
+	printf("[poc] registering malicious cs_opt_mem.vsnprintf (CS_OPT_MEM)\n");
+	if (cs_option(0, CS_OPT_MEM, (size_t)&mem) != CS_ERR_OK)
+		return 1;
+	if (cs_open(CS_ARCH_ARM, CS_MODE_ARM, &handle) != CS_ERR_OK)
+		return 1;
+	if (cs_option(handle, CS_OPT_SKIPDATA, CS_OPT_ON) != CS_ERR_OK)
+		return 1;
+
+	printf("[poc] cs_disasm() on 0xffffffff with SKIPDATA enabled\n");
+	fflush(stdout);
+	n = cs_disasm(handle, code, sizeof(code), 0x1000, 0, &insn);
+	printf("[poc] cs_disasm returned %zu instructions without fault\n", n);
+	cs_free(insn, n);
+	cs_close(&handle);
+	return 0;
+}
+
+/// Several hand-written RISC-V decoders dropped the status of
+/// Decode*RegisterClass. In RVE mode (and the COREV/XTHead custom decoders) a
+/// register field can be rejected by the class decoder, which then leaves the
+/// operand uncreated while the instruction still decodes as "success". The
+/// printer later reads that missing operand: printRegReg passes a NULL register
+/// name to SStream_concat0 (NULL deref in release), and printOperand hits a
+/// slot of unknown kind. Each word below reached one of the fixed decoders.
+static void test_riscv_rve_unchecked_reg_decode(void)
+{
+	static const struct {
+		cs_mode mode;
+		uint8_t code[4];
+		size_t size;
+	} cases[] = {
+		/* decodeRegReg: COREV cv.sh with an out-of-range rs */
+		{ CS_MODE_RISCV32 | CS_MODE_RISCV_E | CS_MODE_RISCV_COREV,
+		  { 0x2b, 0x33, 0x0a, 0x2a },
+		  4 },
+		/* decodeXTHeadMemPair: th.lwd with rd1/rs1/rd2 = x16 */
+		{ CS_MODE_RISCV32 | CS_MODE_RISCV_E | CS_MODE_RISCV_THEAD,
+		  { 0x0b, 0x48, 0x08, 0xe3 },
+		  4 },
+		/* decodeRVCInstrRdRs2 / decodeRVCInstrRdRs1Rs2 */
+		{ CS_MODE_RISCV32 | CS_MODE_RISCV_E | CS_MODE_RISCV_C,
+		  { 0x46, 0x80 },
+		  2 },
+		{ CS_MODE_RISCV32 | CS_MODE_RISCV_E | CS_MODE_RISCV_C,
+		  { 0x46, 0x90 },
+		  2 },
+		/* decodeRVCInstrRdRs1ImmZero */
+		{ CS_MODE_RISCV32 | CS_MODE_RISCV_E | CS_MODE_RISCV_C,
+		  { 0x01, 0x08 },
+		  2 },
+	};
+
+	for (size_t i = 0; i < sizeof(cases) / sizeof(cases[0]); i++) {
+		csh handle;
+		if (cs_open(CS_ARCH_RISCV, cases[i].mode, &handle) !=
+		    CS_ERR_OK) {
+			assert(0);
+			return;
+		}
+		cs_option(handle, CS_OPT_DETAIL, CS_OPT_ON);
+
+		cs_insn *insn = NULL;
+		size_t count = cs_disasm(handle, cases[i].code, cases[i].size,
+					 0x1000, 0, &insn);
+		assert(count == 0);
+		cs_free(insn, count);
+		cs_close(&handle);
+	}
 }
 
 int main()
@@ -216,6 +417,12 @@ int main()
 	test_integer_overflow();
 	test_ub_shift_sh_dsp_p();
 	test_ub_isintn_xtensa_offset();
+	test_stack_overflow_issue_3010();
+	test_sh_oob_read_ghsa_5q63_4654_94v6();
+	test_arm_pop_ghsa_8qp8_2vg2_8mr4();
+	test_tms320_ghsa_8qp8_2vg2_8mr4();
+	test_evil_vsnprintf_ghsa_gj26_93q5_cr54();
+	test_riscv_rve_unchecked_reg_decode();
 
 	return 0;
 }
