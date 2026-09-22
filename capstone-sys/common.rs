@@ -26,16 +26,36 @@ impl CapstoneArchInfo<'_> {
 
 pub static ARCH_INCLUDES: &[CapstoneArchInfo<'static>] = &[
     CapstoneArchInfo {
+        header_name: "aarch64.h",
+        cs_name: "aarch64",
+    },
+    CapstoneArchInfo {
+        header_name: "alpha.h",
+        cs_name: "alpha",
+    },
+    CapstoneArchInfo {
+        header_name: "arc.h",
+        cs_name: "arc",
+    },
+    CapstoneArchInfo {
         header_name: "arm.h",
         cs_name: "arm",
     },
     CapstoneArchInfo {
-        header_name: "arm64.h",
-        cs_name: "arm64",
+        header_name: "bpf.h",
+        cs_name: "bpf",
     },
     CapstoneArchInfo {
         header_name: "evm.h",
         cs_name: "evm",
+    },
+    CapstoneArchInfo {
+        header_name: "hppa.h",
+        cs_name: "hppa",
+    },
+    CapstoneArchInfo {
+        header_name: "loongarch.h",
+        cs_name: "loongarch",
     },
     CapstoneArchInfo {
         header_name: "m680x.h",
@@ -71,7 +91,7 @@ pub static ARCH_INCLUDES: &[CapstoneArchInfo<'static>] = &[
     },
     CapstoneArchInfo {
         header_name: "systemz.h",
-        cs_name: "sysz",
+        cs_name: "systemz",
     },
     CapstoneArchInfo {
         header_name: "tms320c64x.h",
@@ -90,9 +110,9 @@ pub static ARCH_INCLUDES: &[CapstoneArchInfo<'static>] = &[
         cs_name: "xcore",
     },
     CapstoneArchInfo {
-        header_name: "bpf.h",
-        cs_name: "bpf"
-    }
+        header_name: "xtensa.h",
+        cs_name: "xtensa",
+    },
 ];
 
 pub static BINDINGS_FILE: &str = "capstone.rs";

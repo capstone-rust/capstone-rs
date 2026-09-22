@@ -4,9 +4,10 @@ use core::convert::From;
 use core::{cmp, fmt, slice};
 
 // XXX todo(tmfink): create rusty versions
-pub use capstone_sys::riscv_insn_group as RiscVInsnGroup;
 pub use capstone_sys::riscv_insn as RiscVInsn;
+pub use capstone_sys::riscv_insn_group as RiscVInsnGroup;
 pub use capstone_sys::riscv_reg as RiscVReg;
+pub use capstone_sys::riscv_sysreg as RiscVSysReg;
 use capstone_sys::{cs_riscv, cs_riscv_op, riscv_op_mem, riscv_op_type};
 
 pub use crate::arch::arch_builder::riscv::*;
@@ -21,7 +22,7 @@ impl_PartialEq_repr_fields!(RiscVInsnDetail<'a> [ 'a ];
 );
 
 /// RISCV operand
-#[derive(Clone, Debug, Eq, PartialEq)]
+#[derive(Clone, Debug, PartialEq)]
 pub enum RiscVOperand {
     /// Register
     Reg(RegId),
@@ -31,6 +32,12 @@ pub enum RiscVOperand {
 
     /// Memory
     Mem(RiscVOpMem),
+
+    /// FP Immediate
+    FP(f64),
+
+    /// CSR
+    CSR(u16),
 
     /// Invalid
     Invalid,
@@ -74,6 +81,8 @@ impl From<&cs_riscv_op> for RiscVOperand {
             riscv_op_type::RISCV_OP_MEM => {
                 RiscVOperand::Mem(RiscVOpMem(unsafe { insn.__bindgen_anon_1.mem }))
             }
+            riscv_op_type::RISCV_OP_FP => RiscVOperand::FP(unsafe { insn.__bindgen_anon_1.dimm }),
+            riscv_op_type::RISCV_OP_CSR => RiscVOperand::CSR(unsafe { insn.__bindgen_anon_1.csr }),
             riscv_op_type::RISCV_OP_INVALID => RiscVOperand::Invalid,
         }
     }

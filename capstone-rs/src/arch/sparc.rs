@@ -1,27 +1,50 @@
 //! Contains sparc-specific types
 
-use core::convert::From;
+use core::convert::{From, TryInto};
 use core::{cmp, fmt, slice};
 
 // XXX todo(tmfink): create rusty versions
-pub use capstone_sys::sparc_insn_group as SparcInsnGroup;
-pub use capstone_sys::sparc_insn as SparcInsn;
-pub use capstone_sys::sparc_reg as SparcReg;
+pub use capstone_sys::sparc_asi as SparcAsi;
 pub use capstone_sys::sparc_cc as SparcCC;
 pub use capstone_sys::sparc_hint as SparcHint;
+pub use capstone_sys::sparc_insn as SparcInsn;
+pub use capstone_sys::sparc_insn_group as SparcInsnGroup;
+pub use capstone_sys::sparc_membar_tag as SparcMembarTag;
+pub use capstone_sys::sparc_reg as SparcReg;
 use capstone_sys::{cs_sparc, cs_sparc_op, sparc_op_mem, sparc_op_type};
 
 pub use crate::arch::arch_builder::sparc::*;
 use crate::arch::DetailsArchInsn;
 use crate::instruction::{RegId, RegIdInt};
-
+use crate::RegAccessType;
 
 /// Contains SPARC-specific details for an instruction
 pub struct SparcInsnDetail<'a>(pub(crate) &'a cs_sparc);
 
 /// SPARC operand
+#[derive(Clone, Debug, Eq, PartialEq, Default)]
+pub struct SparcOperand {
+    /// Operand type
+    pub op_type: SparcOperandType,
+
+    /// How is this operand accessed?
+    ///
+    /// NOTE: this field is always `None` if the "full" feataure is not enabled.
+    pub access: Option<RegAccessType>,
+}
+
+impl From<&cs_sparc_op> for SparcOperand {
+    fn from(op: &cs_sparc_op) -> SparcOperand {
+        let op_type = SparcOperandType::from(op);
+        SparcOperand {
+            op_type,
+            access: op.access.try_into().ok(),
+        }
+    }
+}
+
 #[derive(Clone, Debug, Eq, PartialEq)]
-pub enum SparcOperand {
+pub enum SparcOperandType {
     /// Register
     Reg(RegId),
 
@@ -30,6 +53,12 @@ pub enum SparcOperand {
 
     /// Memory
     Mem(SparcOpMem),
+
+    /// Memory barrier tag
+    MembarTag(SparcMembarTag),
+
+    /// Address space identifier
+    Asi(SparcAsi),
 
     /// Invalid
     Invalid,
@@ -51,9 +80,9 @@ impl_PartialEq_repr_fields!(SparcInsnDetail<'a> [ 'a ];
     cc, hint, operands
 );
 
-impl Default for SparcOperand {
+impl Default for SparcOperandType {
     fn default() -> Self {
-        SparcOperand::Invalid
+        SparcOperandType::Invalid
     }
 }
 
@@ -64,12 +93,12 @@ pub struct SparcOpMem(pub(crate) sparc_op_mem);
 impl SparcOpMem {
     /// Base register
     pub fn base(&self) -> RegId {
-        RegId(RegIdInt::from(self.0.base))
+        RegId(self.0.base as RegIdInt)
     }
 
     /// Index register
     pub fn index(&self) -> RegId {
-        RegId(RegIdInt::from(self.0.index))
+        RegId(self.0.index as RegIdInt)
     }
 
     /// Disp value
@@ -84,17 +113,25 @@ impl_PartialEq_repr_fields!(SparcOpMem;
 
 impl cmp::Eq for SparcOpMem {}
 
-impl From<&cs_sparc_op> for SparcOperand {
-    fn from(insn: &cs_sparc_op) -> SparcOperand {
+impl From<&cs_sparc_op> for SparcOperandType {
+    fn from(insn: &cs_sparc_op) -> SparcOperandType {
         match insn.type_ {
             sparc_op_type::SPARC_OP_REG => {
-                SparcOperand::Reg(RegId(unsafe { insn.__bindgen_anon_1.reg } as RegIdInt))
+                SparcOperandType::Reg(RegId(unsafe { insn.__bindgen_anon_1.reg } as RegIdInt))
             }
-            sparc_op_type::SPARC_OP_IMM => SparcOperand::Imm(unsafe { insn.__bindgen_anon_1.imm }),
+            sparc_op_type::SPARC_OP_IMM => {
+                SparcOperandType::Imm(unsafe { insn.__bindgen_anon_1.imm })
+            }
             sparc_op_type::SPARC_OP_MEM => {
-                SparcOperand::Mem(SparcOpMem(unsafe { insn.__bindgen_anon_1.mem }))
+                SparcOperandType::Mem(SparcOpMem(unsafe { insn.__bindgen_anon_1.mem }))
             }
-            sparc_op_type::SPARC_OP_INVALID => SparcOperand::Invalid,
+            sparc_op_type::SPARC_OP_MEMBAR_TAG => {
+                SparcOperandType::MembarTag(unsafe { insn.__bindgen_anon_1.membar_tag })
+            }
+            sparc_op_type::SPARC_OP_ASI => {
+                SparcOperandType::Asi(unsafe { insn.__bindgen_anon_1.asi })
+            }
+            sparc_op_type::SPARC_OP_INVALID => SparcOperandType::Invalid,
         }
     }
 }

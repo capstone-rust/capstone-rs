@@ -1,9 +1,9 @@
 /* Capstone Disassembly Engine */
 /* By Nguyen Anh Quynh, 2018 */
+/* By Andelf, 2025 */
 
 #include <string.h>
-#include <stddef.h> // offsetof macro
-                    // alternatively #include "../../utils.h" like everyone else
+#include <stddef.h>
 
 #include "EVMDisassembler.h"
 #include "EVMMapping.h"
@@ -36,9 +36,9 @@ static const short opcodes[256] = {
 	EVM_INS_XOR,
 	EVM_INS_NOT,
 	EVM_INS_BYTE,
-	-1,
-	-1,
-	-1,
+	EVM_INS_SHL,
+	EVM_INS_SHR,
+	EVM_INS_SAR,
 	-1,
 	-1,
 	EVM_INS_SHA3,
@@ -79,11 +79,11 @@ static const short opcodes[256] = {
 	EVM_INS_NUMBER,
 	EVM_INS_DIFFICULTY,
 	EVM_INS_GASLIMIT,
-	-1,
-	-1,
-	-1,
-	-1,
-	-1,
+	EVM_INS_CHAINID,
+	EVM_INS_SELFBALANCE,
+	EVM_INS_BASEFEE,
+	EVM_INS_BLOBHASH,
+	EVM_INS_BLOBBASEFEE,
 	-1,
 	-1,
 	-1,
@@ -101,10 +101,10 @@ static const short opcodes[256] = {
 	EVM_INS_MSIZE,
 	EVM_INS_GAS,
 	EVM_INS_JUMPDEST,
-	-1,
-	-1,
-	-1,
-	-1,
+	EVM_INS_TLOAD,
+	EVM_INS_TSTORE,
+	EVM_INS_MCOPY,
+	EVM_INS_PUSH0,
 	EVM_INS_PUSH1,
 	EVM_INS_PUSH2,
 	EVM_INS_PUSH3,
@@ -254,7 +254,7 @@ static const short opcodes[256] = {
 	EVM_INS_CALLCODE,
 	EVM_INS_RETURN,
 	EVM_INS_DELEGATECALL,
-	EVM_INS_CALLBLACKBOX,
+	EVM_INS_CREATE2,
 	-1,
 	-1,
 	-1,
@@ -264,11 +264,12 @@ static const short opcodes[256] = {
 	-1,
 	EVM_INS_REVERT,
 	-1,
-	EVM_INS_SUICIDE,
+	EVM_INS_SELFDESTRUCT,
 };
 
 bool EVM_getInstruction(csh ud, const uint8_t *code, size_t code_len,
-	MCInst *MI, uint16_t *size, uint64_t address, void *inst_info)
+			MCInst *MI, uint16_t *size, uint64_t address,
+			void *inst_info)
 {
 	unsigned char opcode;
 
@@ -298,80 +299,105 @@ bool EVM_getInstruction(csh ud, const uint8_t *code, size_t code_len,
 		*size = 1;
 
 	if (MI->flat_insn->detail) {
-		memset(MI->flat_insn->detail, 0, offsetof(cs_detail, evm)+sizeof(cs_evm));
+		memset(MI->flat_insn->detail, 0,
+		       offsetof(cs_detail, evm) + sizeof(cs_evm));
 		EVM_get_insn_id((cs_struct *)ud, MI->flat_insn, opcode);
 
 		if (MI->flat_insn->detail->evm.pop) {
-			MI->flat_insn->detail->groups[MI->flat_insn->detail->groups_count] = EVM_GRP_STACK_READ;
+			MI->flat_insn->detail
+				->groups[MI->flat_insn->detail->groups_count] =
+				EVM_GRP_STACK_READ;
 			MI->flat_insn->detail->groups_count++;
 		}
 
 		if (MI->flat_insn->detail->evm.push) {
-			MI->flat_insn->detail->groups[MI->flat_insn->detail->groups_count] = EVM_GRP_STACK_WRITE;
+			MI->flat_insn->detail
+				->groups[MI->flat_insn->detail->groups_count] =
+				EVM_GRP_STACK_WRITE;
 			MI->flat_insn->detail->groups_count++;
 		}
 
 		// setup groups
-		switch(opcode) {
-			default:
-				break;
-			case EVM_INS_ADD:
-			case EVM_INS_MUL:
-			case EVM_INS_SUB:
-			case EVM_INS_DIV:
-			case EVM_INS_SDIV:
-			case EVM_INS_MOD:
-			case EVM_INS_SMOD:
-			case EVM_INS_ADDMOD:
-			case EVM_INS_MULMOD:
-			case EVM_INS_EXP:
-			case EVM_INS_SIGNEXTEND:
-				MI->flat_insn->detail->groups[MI->flat_insn->detail->groups_count] = EVM_GRP_MATH;
-				MI->flat_insn->detail->groups_count++;
-				break;
+		switch (opcode) {
+		default:
+			break;
+		case EVM_INS_ADD:
+		case EVM_INS_MUL:
+		case EVM_INS_SUB:
+		case EVM_INS_DIV:
+		case EVM_INS_SDIV:
+		case EVM_INS_MOD:
+		case EVM_INS_SMOD:
+		case EVM_INS_ADDMOD:
+		case EVM_INS_MULMOD:
+		case EVM_INS_EXP:
+		case EVM_INS_SIGNEXTEND:
+		case EVM_INS_SHL:
+		case EVM_INS_SHR:
+		case EVM_INS_SAR:
+			MI->flat_insn->detail
+				->groups[MI->flat_insn->detail->groups_count] =
+				EVM_GRP_MATH;
+			MI->flat_insn->detail->groups_count++;
+			break;
 
-			case EVM_INS_MSTORE:
-			case EVM_INS_MSTORE8:
-			case EVM_INS_CALLDATACOPY:
-			case EVM_INS_CODECOPY:
-			case EVM_INS_EXTCODECOPY:
-				MI->flat_insn->detail->groups[MI->flat_insn->detail->groups_count] = EVM_GRP_MEM_WRITE;
-				MI->flat_insn->detail->groups_count++;
-				break;
+		case EVM_INS_MSTORE:
+		case EVM_INS_MSTORE8:
+		case EVM_INS_CALLDATACOPY:
+		case EVM_INS_CODECOPY:
+		case EVM_INS_EXTCODECOPY:
+		case EVM_INS_MCOPY:
+			MI->flat_insn->detail
+				->groups[MI->flat_insn->detail->groups_count] =
+				EVM_GRP_MEM_WRITE;
+			MI->flat_insn->detail->groups_count++;
+			break;
 
-			case EVM_INS_MLOAD:
-			case EVM_INS_CREATE:
-			case EVM_INS_CALL:
-			case EVM_INS_CALLCODE:
-			case EVM_INS_RETURN:
-			case EVM_INS_DELEGATECALL:
-			case EVM_INS_REVERT:
-				MI->flat_insn->detail->groups[MI->flat_insn->detail->groups_count] = EVM_GRP_MEM_READ;
-				MI->flat_insn->detail->groups_count++;
-				break;
+		case EVM_INS_MLOAD:
+		case EVM_INS_CREATE:
+		case EVM_INS_CALL:
+		case EVM_INS_CALLCODE:
+		case EVM_INS_RETURN:
+		case EVM_INS_DELEGATECALL:
+		case EVM_INS_REVERT:
+		case EVM_INS_CREATE2:
+			MI->flat_insn->detail
+				->groups[MI->flat_insn->detail->groups_count] =
+				EVM_GRP_MEM_READ;
+			MI->flat_insn->detail->groups_count++;
+			break;
 
-			case EVM_INS_SSTORE:
-				MI->flat_insn->detail->groups[MI->flat_insn->detail->groups_count] = EVM_GRP_STORE_WRITE;
-				MI->flat_insn->detail->groups_count++;
-				break;
+		case EVM_INS_SSTORE:
+		case EVM_INS_TSTORE:
+			MI->flat_insn->detail
+				->groups[MI->flat_insn->detail->groups_count] =
+				EVM_GRP_STORE_WRITE;
+			MI->flat_insn->detail->groups_count++;
+			break;
 
-			case EVM_INS_SLOAD:
-				MI->flat_insn->detail->groups[MI->flat_insn->detail->groups_count] = EVM_GRP_STORE_READ;
-				MI->flat_insn->detail->groups_count++;
-				break;
+		case EVM_INS_SLOAD:
+		case EVM_INS_TLOAD:
+			MI->flat_insn->detail
+				->groups[MI->flat_insn->detail->groups_count] =
+				EVM_GRP_STORE_READ;
+			MI->flat_insn->detail->groups_count++;
+			break;
 
-			case EVM_INS_JUMP:
-			case EVM_INS_JUMPI:
-				MI->flat_insn->detail->groups[MI->flat_insn->detail->groups_count] = EVM_GRP_JUMP;
-				MI->flat_insn->detail->groups_count++;
-				break;
+		case EVM_INS_JUMP:
+		case EVM_INS_JUMPI:
+			MI->flat_insn->detail
+				->groups[MI->flat_insn->detail->groups_count] =
+				EVM_GRP_JUMP;
+			MI->flat_insn->detail->groups_count++;
+			break;
 
-			case EVM_INS_STOP:
-			case EVM_INS_SUICIDE:
-				MI->flat_insn->detail->groups[MI->flat_insn->detail->groups_count] = EVM_GRP_HALT;
-				MI->flat_insn->detail->groups_count++;
-				break;
-
+		case EVM_INS_STOP:
+		case EVM_INS_SELFDESTRUCT:
+			MI->flat_insn->detail
+				->groups[MI->flat_insn->detail->groups_count] =
+				EVM_GRP_HALT;
+			MI->flat_insn->detail->groups_count++;
+			break;
 		}
 	}
 

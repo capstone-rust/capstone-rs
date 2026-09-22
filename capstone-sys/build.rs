@@ -95,12 +95,42 @@ fn build_capstone_cc() {
         })
     }
 
+    fn is_arch_enabled(dir_name: &str) -> bool {
+        match dir_name.to_lowercase().as_str() {
+            "aarch64" => cfg!(feature = "arch_aarch64"),
+            "alpha" => cfg!(feature = "arch_alpha"),
+            "arc" => cfg!(feature = "arch_arc"),
+            "arm" => cfg!(feature = "arch_arm"),
+            "bpf" => cfg!(feature = "arch_bpf"),
+            "evm" => cfg!(feature = "arch_evm"),
+            "hppa" => cfg!(feature = "arch_hppa"),
+            "loongarch" => cfg!(feature = "arch_loongarch"),
+            "m680x" => cfg!(feature = "arch_m680x"),
+            "m68k" => cfg!(feature = "arch_m68k"),
+            "mips" => cfg!(feature = "arch_mips"),
+            "mos65xx" => cfg!(feature = "arch_mos65xx"),
+            "powerpc" => cfg!(feature = "arch_powerpc"),
+            "riscv" => cfg!(feature = "arch_riscv"),
+            "sh" => cfg!(feature = "arch_sh"),
+            "sparc" => cfg!(feature = "arch_sparc"),
+            "systemz" => cfg!(feature = "arch_systemz"),
+            "tms320c64x" => cfg!(feature = "arch_tms320c64x"),
+            "tricore" => cfg!(feature = "arch_tricore"),
+            "wasm" => cfg!(feature = "arch_wasm"),
+            "x86" => cfg!(feature = "arch_x86"),
+            "xcore" => cfg!(feature = "arch_xcore"),
+            "xtensa" => cfg!(feature = "arch_xtensa"),
+            _ => panic!("Unhandled arch dir {}", dir_name),
+        }
+    }
+
     fn find_arch_dirs() -> Vec<String> {
         read_dir_and_filter(&format!("{}/{}", CAPSTONE_DIR, "arch"), |e| {
             let file_type = e
                 .file_type()
                 .expect("Failed to read capstone source directory");
-            file_type.is_dir()
+            let dir_name = e.file_name().into_string().expect("Invalid filename");
+            file_type.is_dir() && is_arch_enabled(&dir_name)
         })
     }
 
@@ -136,10 +166,14 @@ fn build_capstone_cc() {
     }
 
     arch_define!(
+        "arch_aarch64" = CAPSTONE_HAS_AARCH64,
+        "arch_alpha" = CAPSTONE_HAS_ALPHA,
+        "arch_arc" = CAPSTONE_HAS_ARC,
         "arch_arm" = CAPSTONE_HAS_ARM,
-        "arch_arm64" = CAPSTONE_HAS_ARM64,
         "arch_bpf" = CAPSTONE_HAS_BPF,
         "arch_evm" = CAPSTONE_HAS_EVM,
+        "arch_hppa" = CAPSTONE_HAS_HPPA,
+        "arch_loongarch" = CAPSTONE_HAS_LOONGARCH,
         "arch_m680x" = CAPSTONE_HAS_M680X,
         "arch_m68k" = CAPSTONE_HAS_M68K,
         "arch_mips" = CAPSTONE_HAS_MIPS,
@@ -148,12 +182,13 @@ fn build_capstone_cc() {
         "arch_riscv" = CAPSTONE_HAS_RISCV,
         "arch_sh" = CAPSTONE_HAS_SH,
         "arch_sparc" = CAPSTONE_HAS_SPARC,
-        "arch_sysz" = CAPSTONE_HAS_SYSZ,
+        "arch_systemz" = CAPSTONE_HAS_SYSTEMZ,
         "arch_tms320c64x" = CAPSTONE_HAS_TMS320C64X,
         "arch_tricore" = CAPSTONE_HAS_TRICORE,
         "arch_wasm" = CAPSTONE_HAS_WASM,
         "arch_x86" = CAPSTONE_HAS_X86,
         "arch_xcore" = CAPSTONE_HAS_XCORE,
+        "arch_xtensa" = CAPSTONE_HAS_XTENSA,
     );
 
     if !cfg!(feature = "full") {
@@ -201,8 +236,8 @@ fn impl_insid_to_insenum(bindings: &str) -> String {
 
         // find instructions and their id
         let re_ins_ids = Regex::new(&format!(
-            "{}_INS_(?P<ins>[A-Z0-9_]+) = (?P<id>\\d+)",
-            &arch.to_uppercase()
+            "(?P<ins>(?i){}(?-i)_INS_[A-Z0-9_]+) = (?P<id>\\d+)",
+            arch
         ))
         .expect("Unable to compile regex");
 
@@ -211,7 +246,7 @@ fn impl_insid_to_insenum(bindings: &str) -> String {
             "impl From<u32> for {}_insn {{\n
             fn from(id: u32) -> Self {{\n
             match id {{\n",
-            &arch
+            arch
         )
         .unwrap();
 
@@ -219,11 +254,8 @@ fn impl_insid_to_insenum(bindings: &str) -> String {
         for cap_ins_id in re_ins_ids.captures_iter(cap_enum_def) {
             writeln!(
                 impl_arch_enum,
-                "{} => {}_insn::{}_INS_{},",
-                &cap_ins_id["id"],
-                &arch,
-                &arch.to_uppercase(),
-                &cap_ins_id["ins"]
+                "{} => {}_insn::{},",
+                &cap_ins_id["id"], arch, &cap_ins_id["ins"]
             )
             .unwrap();
         }
@@ -237,8 +269,8 @@ fn impl_insid_to_insenum(bindings: &str) -> String {
         write!(
             impl_arch_enum,
             "_ => {}_insn::{}_INS_{},",
-            &arch,
-            &arch.to_uppercase(),
+            arch,
+            arch.to_uppercase(),
             invalid_str,
         )
         .unwrap();
@@ -276,8 +308,8 @@ fn write_bindgen_bindings(
         .generate_comments(true)
         .layout_tests(false) // eliminate test failures on platforms with different pointer sizes
         .impl_debug(true)
-        .constified_enum_module("cs_err|cs_group_type|cs_opt_value")
-        .bitfield_enum("cs_mode|cs_ac_type")
+        .constified_enum_module("cs_err|cs_group_type|cs_opt_value|cs_xtensa_op_type")
+        .bitfield_enum("cs_mode|cs_ac_type|arm_spsr_cpsr_bits|sparc_membar_tag")
         .rustified_enum(".*")
         .array_pointers_in_arguments(true)
         .no_copy("cs_insn");

@@ -13,7 +13,13 @@
 cs_err X86_global_init(cs_struct *ud)
 {
 	MCRegisterInfo *mri;
-	mri = cs_mem_malloc(sizeof(*mri));
+	if (x86_has_feature(ud->mode, CS_MODE_X86_AMD) &&
+	    x86_has_feature(ud->mode, CS_MODE_X86_INTEL))
+		return CS_ERR_MODE;
+
+	mri = cs_mem_calloc(1, sizeof(*mri));
+	if (!mri)
+		return CS_ERR_MEM;
 
 	X86_init(mri);
 
@@ -31,12 +37,11 @@ cs_err X86_global_init(cs_struct *ud)
 	ud->reg_access = X86_reg_access;
 #endif
 
-	if (ud->mode == CS_MODE_64)
+	if (x86_has_feature(ud->mode, CS_MODE_64))
 		ud->regsize_map = regsize_map_64;
 	else
 		ud->regsize_map = regsize_map_32;
 
-	// Build per-handle O(1) lookup tables for instruction mapping
 	X86_build_lookup_tables(ud);
 
 	return CS_ERR_OK;
@@ -44,51 +49,57 @@ cs_err X86_global_init(cs_struct *ud)
 
 cs_err X86_option(cs_struct *handle, cs_opt_type type, size_t value)
 {
-	switch(type) {
+	switch (type) {
+	default:
+		break;
+	case CS_OPT_MODE:
+		if ((x86_has_feature(value, CS_MODE_X86_INTEL) &&
+		     x86_has_feature(value, CS_MODE_X86_AMD)))
+			return CS_ERR_OPTION;
+
+		if (x86_has_feature(value, CS_MODE_64))
+			handle->regsize_map = regsize_map_64;
+		else
+			handle->regsize_map = regsize_map_32;
+
+		handle->mode = (cs_mode)(value &
+					 (CS_MODE_16 | CS_MODE_32 | CS_MODE_64 |
+					  CS_MODE_X86_INTEL | CS_MODE_X86_AMD));
+		break;
+	case CS_OPT_SYNTAX:
+		switch (value) {
 		default:
+			// wrong syntax value
+			handle->errnum = CS_ERR_OPTION;
+			return CS_ERR_OPTION;
+
+		case CS_OPT_SYNTAX_DEFAULT:
+		case CS_OPT_SYNTAX_INTEL:
+			handle->syntax = CS_OPT_SYNTAX_INTEL;
+			handle->printer = X86_Intel_printInst;
 			break;
-		case CS_OPT_MODE:
-			if (value == CS_MODE_64)
-				handle->regsize_map = regsize_map_64;
-			else
-				handle->regsize_map = regsize_map_32;
 
-			handle->mode = (cs_mode)value;
+		case CS_OPT_SYNTAX_MASM:
+			handle->printer = X86_Intel_printInst;
+			handle->syntax = (int)value;
 			break;
-		case CS_OPT_SYNTAX:
-			switch(value) {
-				default:
-					// wrong syntax value
-					handle->errnum = CS_ERR_OPTION;
-					return CS_ERR_OPTION;
 
-				case CS_OPT_SYNTAX_DEFAULT:
-				case CS_OPT_SYNTAX_INTEL:
-					handle->syntax = CS_OPT_SYNTAX_INTEL;
-					handle->printer = X86_Intel_printInst;
-					break;
-
-				case CS_OPT_SYNTAX_MASM:
-					handle->printer = X86_Intel_printInst;
-					handle->syntax = (int)value;
-					break;
-
-				case CS_OPT_SYNTAX_ATT:
+		case CS_OPT_SYNTAX_ATT:
 #if !defined(CAPSTONE_DIET) && !defined(CAPSTONE_X86_ATT_DISABLE)
-					handle->printer = X86_ATT_printInst;
-					handle->syntax = CS_OPT_SYNTAX_ATT;
-					break;
-#elif !defined(CAPSTONE_DIET) && defined(CAPSTONE_X86_ATT_DISABLE)
-					// ATT syntax is unsupported
-					handle->errnum = CS_ERR_X86_ATT;
-					return CS_ERR_X86_ATT;
-#else	// CAPSTONE_DIET
-					// this is irrelevant in CAPSTONE_DIET mode
-					handle->errnum = CS_ERR_DIET;
-					return CS_ERR_DIET;
-#endif
-			}
+			handle->printer = X86_ATT_printInst;
+			handle->syntax = CS_OPT_SYNTAX_ATT;
 			break;
+#elif !defined(CAPSTONE_DIET) && defined(CAPSTONE_X86_ATT_DISABLE)
+			// ATT syntax is unsupported
+			handle->errnum = CS_ERR_X86_ATT;
+			return CS_ERR_X86_ATT;
+#else
+			// this is irrelevant in CAPSTONE_DIET mode
+			handle->errnum = CS_ERR_DIET;
+			return CS_ERR_DIET;
+#endif
+		}
+		break;
 	}
 
 	return CS_ERR_OK;
