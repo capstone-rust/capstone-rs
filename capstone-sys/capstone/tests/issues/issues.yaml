@@ -1,6 +1,46 @@
 test_cases:
   -
     input:
+      name: "issue 2899 cmpsd operand access (AT&T)"
+      bytes: [ 0xf3, 0xa7 ]
+      arch: "CS_ARCH_X86"
+      options: [ CS_MODE_32, CS_OPT_DETAIL, CS_OPT_SYNTAX_ATT ]
+      address: 0x0
+    expected:
+      insns:
+      -
+        asm_text: "repe cmpsl %es:(%edi), (%esi)"
+        details:
+          x86:
+            operands:
+              -
+                type: X86_OP_MEM
+                access: CS_AC_READ
+              -
+                type: X86_OP_MEM
+                access: CS_AC_READ
+  -
+    input:
+      name: "issue 2900 vmovups memory destination access"
+      bytes: [ 0xc5,0xf8,0x11,0x28 ]
+      arch: "CS_ARCH_X86"
+      options: [ CS_MODE_64, CS_OPT_DETAIL ]
+      address: 0x0
+    expected:
+      insns:
+      -
+        asm_text: "vmovups xmmword ptr [rax], xmm5"
+        details:
+          x86:
+            operands:
+              -
+                type: X86_OP_MEM
+                access: CS_AC_WRITE
+              -
+                type: X86_OP_REG
+                access: CS_AC_READ
+  -
+    input:
       name: "issue 2323 eBPF bswap16 instruction"
       bytes: [ 0xd7,0x53,0x3f,0x0c,0x10,0x00,0x00,0x00 ]
       arch: "CS_ARCH_BPF"
@@ -74,7 +114,7 @@ test_cases:
       name: "issue 2007 RISCV64 instruction groups"
       bytes: [ 0x63,0x04,0x03,0x00 ]
       arch: "CS_ARCH_RISCV"
-      options: [ CS_MODE_RISCV64, CS_OPT_DETAIL ]
+      options: [ CS_MODE_RISCV64, CS_OPT_DETAIL, CS_OPT_DETAIL_ALIAS ]
       address: 0x0
     expected:
       insns:
@@ -108,7 +148,7 @@ test_cases:
       name: "issue 2007 RISCV64 instruction groups"
       bytes: [ 0xef,0x00,0x40,0x00 ]
       arch: "CS_ARCH_RISCV"
-      options: [ CS_MODE_RISCV64, CS_OPT_DETAIL ]
+      options: [ CS_MODE_RISCV64, CS_OPT_DETAIL, CS_OPT_DETAIL_ALIAS ]
       address: 0x0
     expected:
       insns:
@@ -126,7 +166,7 @@ test_cases:
       name: "issue 2007 RISCV32 instruction groups"
       bytes: [ 0x63,0x04,0x03,0x00 ]
       arch: "CS_ARCH_RISCV"
-      options: [ CS_MODE_RISCV32, CS_OPT_DETAIL ]
+      options: [ CS_MODE_RISCV32, CS_OPT_DETAIL, CS_OPT_DETAIL_ALIAS ]
       address: 0x0
     expected:
       insns:
@@ -160,7 +200,7 @@ test_cases:
       name: "issue 2007 RISCV32 instruction groups"
       bytes: [ 0xef,0x00,0x40,0x00 ]
       arch: "CS_ARCH_RISCV"
-      options: [ CS_MODE_RISCV32, CS_OPT_DETAIL ]
+      options: [ CS_MODE_RISCV32, CS_OPT_DETAIL, CS_OPT_DETAIL_ALIAS ]
       address: 0x0
     expected:
       insns:
@@ -178,7 +218,7 @@ test_cases:
       name: "issue 2007 RISCV32 instruction groups"
       bytes: [ 0x11,0x20 ]
       arch: "CS_ARCH_RISCV"
-      options: [ CS_MODE_RISCV32, CS_MODE_RISCV_C, CS_OPT_DETAIL, CS_OPT_SYNTAX_NO_ALIAS_TEXT ]
+      options: [ CS_MODE_RISCV32, CS_MODE_RISCV_C, CS_OPT_DETAIL, CS_OPT_DETAIL_ALIAS, CS_OPT_SYNTAX_REAL ]
       address: 0x0
     expected:
       insns:
@@ -196,7 +236,7 @@ test_cases:
       name: "issue 2007 RISCV32 instruction groups"
       bytes: [ 0x91,0xc1 ]
       arch: "CS_ARCH_RISCV"
-      options: [ CS_MODE_RISCV32, CS_MODE_RISCV_C, CS_OPT_DETAIL, CS_OPT_SYNTAX_NO_ALIAS_TEXT ]
+      options: [ CS_MODE_RISCV32, CS_MODE_RISCV_C, CS_OPT_DETAIL, CS_OPT_DETAIL_ALIAS, CS_OPT_SYNTAX_REAL ]
       address: 0x0
     expected:
       insns:
@@ -5679,7 +5719,7 @@ test_cases:
       name: "RISCV - #2632 - Memory operand type was 3 instead of 0x80"
       bytes: [ 0x0c, 0xc2 ]
       arch: "CS_ARCH_RISCV"
-      options: [ CS_OPT_DETAIL, CS_MODE_RISCV32, CS_MODE_RISCV_C, CS_OPT_SYNTAX_NO_ALIAS_TEXT ]
+      options: [ CS_OPT_DETAIL, CS_MODE_RISCV32, CS_MODE_RISCV_C, CS_OPT_SYNTAX_REAL ]
       address: 0x0
     expected:
       insns:
@@ -6239,7 +6279,7 @@ test_cases:
       name: "#2986 Xtensa decodeOffset_16_16Operand swapped isIntN arguments"
       bytes: [ 0x2f, 0x70, 0x44, 0x84 ]
       arch: "CS_ARCH_XTENSA"
-      options: [ CS_MODE_XTENSA_ESP32, CS_OPT_DETAIL ]
+      options: [ CS_MODE_XTENSA_ESP32S3, CS_OPT_DETAIL ]
       address: 0x0
     expected:
       insns:
@@ -6267,6 +6307,70 @@ test_cases:
                   access: CS_AC_READ
             regs_read: [ a2 ]
             regs_write: [ f8, f9, f7, f4 ]
+            groups: [ HasESP32S3Ops ]
+
+  -
+    input:
+      name: "Xtensa decodeOffset_64_16Operand sign extension"
+      bytes: [ 0x2f, 0x71, 0x01, 0x4e ]
+      arch: "CS_ARCH_XTENSA"
+      options: [ CS_MODE_XTENSA_ESP32S3, CS_OPT_DETAIL ]
+      address: 0x0
+    expected:
+      insns:
+        - asm_text: "ee.vmulas.u16.accx.ld.ip.qup q4, a2, -0xf0, q5, q6, q0, q1"
+          details:
+            xtensa:
+              operands:
+                - type: XTENSA_OP_REG
+                  reg: q4
+                  access: CS_AC_WRITE
+                - type: XTENSA_OP_REG
+                  reg: a2
+                  access: CS_AC_READ
+                - type: XTENSA_OP_IMM
+                  imm: -0xf0
+                  access: CS_AC_READ
+                - type: XTENSA_OP_REG
+                  reg: q5
+                  access: CS_AC_READ
+                - type: XTENSA_OP_REG
+                  reg: q6
+                  access: CS_AC_READ
+                - type: XTENSA_OP_REG
+                  reg: q0
+                  access: CS_AC_READ
+                - type: XTENSA_OP_REG
+                  reg: q1
+                  access: CS_AC_READ
+            regs_read: [ a2, q5, q6, q0, q1 ]
+            regs_write: [ q4 ]
+            groups: [ HasESP32S3Ops ]
+
+  -
+    input:
+      name: "Xtensa decodeOffset_128_2Operand offset scaling"
+      bytes: [ 0x74, 0xe0, 0xb5 ]
+      arch: "CS_ARCH_XTENSA"
+      options: [ CS_MODE_XTENSA_ESP32S3, CS_OPT_DETAIL ]
+      address: 0x0
+    expected:
+      insns:
+        - asm_text: "ee.vldbc.16.ip q7, a7, 0xc0"
+          details:
+            xtensa:
+              operands:
+                - type: XTENSA_OP_REG
+                  reg: q7
+                  access: CS_AC_WRITE
+                - type: XTENSA_OP_REG
+                  reg: a7
+                  access: CS_AC_READ
+                - type: XTENSA_OP_IMM
+                  imm: 0xc0
+                  access: CS_AC_READ
+            regs_read: [ a7 ]
+            regs_write: [ q7 ]
             groups: [ HasESP32S3Ops ]
 
   -
@@ -6309,7 +6413,7 @@ test_cases:
       name: "issue #2731 - Should disassemble"
       bytes: [ 0x15, 0x83 ]
       arch: "CS_ARCH_RISCV"
-      options: [ CS_MODE_LITTLE_ENDIAN, CS_MODE_32, CS_OPT_SYNTAX_NO_ALIAS_TEXT ]
+      options: [ CS_MODE_LITTLE_ENDIAN, CS_MODE_32, CS_OPT_SYNTAX_REAL ]
       address: 0x0
     expected:
       insns:
@@ -6402,7 +6506,7 @@ test_cases:
       name: "RISCV - #2881 - op_count must not accumulate across instructions (real)"
       bytes: [ 0x41, 0x11, 0x13, 0x85, 0x15, 0x00, 0x41, 0x11 ]
       arch: "CS_ARCH_RISCV"
-      options: [ CS_MODE_RISCV64, CS_MODE_RISCV_C, CS_OPT_DETAIL, CS_OPT_DETAIL_REAL, CS_OPT_SYNTAX_NO_ALIAS_TEXT, CS_OPT_SYNTAX_NO_ALIAS_TEXT_COMPRESSED ]
+      options: [ CS_MODE_RISCV64, CS_MODE_RISCV_C, CS_OPT_DETAIL, CS_OPT_DETAIL_REAL, CS_OPT_SYNTAX_REAL ]
     expected:
       insns:
       -
@@ -6549,7 +6653,7 @@ test_cases:
       name: "RISCV - #2896 - alias operand details (ALIAS)"
       bytes: [ 0x67, 0x80, 0x00, 0x00 ]
       arch: "CS_ARCH_RISCV"
-      options: [ CS_MODE_RISCV64, CS_OPT_DETAIL ]
+      options: [ CS_MODE_RISCV64, CS_OPT_DETAIL, CS_OPT_DETAIL_ALIAS ]
       address: 0x0
     expected:
       insns:
@@ -6883,3 +6987,265 @@ test_cases:
                 mem_disp: 0x100cdc408
                 access: CS_AC_READ
           regs_write: [ x8 ]
+  -
+    input:
+      name: "issue 3038 x86-64 RET imm16 with operand-size override and REX.W"
+      bytes: [ 0x66, 0x48, 0xc2, 0x3b, 0x01 ]
+      arch: "CS_ARCH_X86"
+      options: [ CS_MODE_64, CS_OPT_DETAIL ]
+      address: 0x0
+    expected:
+      insns:
+      -
+        asm_text: "ret 0x13b"
+        details:
+          x86:
+            prefix: [ X86_PREFIX_0, X86_PREFIX_0, X86_PREFIX_OPSIZE, X86_PREFIX_0 ]
+            opcode: [ 0xc2, 0x00, 0x00, 0x00 ]
+            rex: 0x48
+            enc_imm_offset: 0x3
+            enc_imm_size: 0x2
+            operands:
+              -
+                type: X86_OP_IMM
+                imm: 0x13b
+          regs_read: [ rsp, ss ]
+          regs_write: [ rsp, rip ]
+          groups: [ ret, mode64 ]
+  -
+    input:
+      name: "issue 2565 masked operands access"
+      bytes: [ 0x62,0x41,0x04,0xcf,0x59,0xc5 ]
+      arch: "CS_ARCH_X86"
+      options: [ CS_MODE_64, CS_OPT_DETAIL ]
+      address: 0x0
+    expected:
+      insns:
+      -
+        asm_text: "vmulps zmm24 {k7} {z}, zmm15, zmm13"
+        details:
+          x86:
+            operands:
+              -
+                type: X86_OP_REG
+                reg: zmm24
+                access: CS_AC_WRITE
+              -
+                type: X86_OP_REG
+                reg: k7
+                access: CS_AC_READ
+                avx_zero_opmask: 1
+              -
+                type: X86_OP_REG
+                reg: zmm15
+                access: CS_AC_READ
+              -
+                type: X86_OP_REG
+                reg: zmm13
+                access: CS_AC_READ
+          regs_read: [ k7, zmm15, zmm13 ]
+          regs_write: [ zmm24 ]
+  -
+    input:
+      name: "issue 2565 masked operands access (Intel, merging)"
+      bytes: [ 0x62,0x41,0x04,0x4f,0x59,0xc5 ]
+      arch: "CS_ARCH_X86"
+      options: [ CS_MODE_64, CS_OPT_DETAIL ]
+      address: 0x0
+    expected:
+      insns:
+      -
+        asm_text: "vmulps zmm24 {k7}, zmm15, zmm13"
+        details:
+          x86:
+            operands:
+              -
+                type: X86_OP_REG
+                reg: zmm24
+                access: CS_AC_READ_WRITE
+              -
+                type: X86_OP_REG
+                reg: k7
+                access: CS_AC_READ
+              -
+                type: X86_OP_REG
+                reg: zmm15
+                access: CS_AC_READ
+              -
+                type: X86_OP_REG
+                reg: zmm13
+                access: CS_AC_READ
+          regs_read: [ zmm24, k7, zmm15, zmm13 ]
+          regs_write: [ zmm24 ]
+  -
+    input:
+      name: "issue 2565 masked operands access (Intel, memory source)"
+      bytes: [ 0x62,0x41,0x04,0xcf,0x59,0x05,0x00,0x00,0x00,0x00 ]
+      arch: "CS_ARCH_X86"
+      options: [ CS_MODE_64, CS_OPT_DETAIL ]
+      address: 0x0
+    expected:
+      insns:
+      -
+        asm_text: "vmulps zmm24 {k7} {z}, zmm15, zmmword ptr [rip]"
+        details:
+          x86:
+            operands:
+              -
+                type: X86_OP_REG
+                reg: zmm24
+                access: CS_AC_WRITE
+              -
+                type: X86_OP_REG
+                reg: k7
+                access: CS_AC_READ
+                avx_zero_opmask: 1
+              -
+                type: X86_OP_REG
+                reg: zmm15
+                access: CS_AC_READ
+              -
+                type: X86_OP_MEM
+                mem_base: rip
+                access: CS_AC_READ
+          regs_read: [ k7, zmm15, rip ]
+          regs_write: [ zmm24 ]
+  -
+    input:
+      name: "issue 3069 EVEX writemask access (AT&T)"
+      bytes: [ 0x62,0x41,0x04,0xcf,0x59,0xc5 ]
+      arch: "CS_ARCH_X86"
+      options: [ CS_MODE_64, CS_OPT_DETAIL, CS_OPT_SYNTAX_ATT ]
+      address: 0x0
+    expected:
+      insns:
+      -
+        asm_text: "vmulps %zmm13, %zmm15, %zmm24 {%k7} {z}"
+        details:
+          x86:
+            operands:
+              -
+                type: X86_OP_REG
+                reg: zmm13
+                access: CS_AC_READ
+              -
+                type: X86_OP_REG
+                reg: zmm15
+                access: CS_AC_READ
+              -
+                type: X86_OP_REG
+                reg: zmm24
+                access: CS_AC_WRITE
+              -
+                type: X86_OP_REG
+                reg: k7
+                access: CS_AC_READ
+                avx_zero_opmask: 1
+          regs_read: [ zmm13, zmm15, k7 ]
+          regs_write: [ zmm24 ]
+  -
+    input:
+      name: "issue 3069 EVEX merging writemask access (AT&T)"
+      bytes: [ 0x62,0x41,0x04,0x4f,0x59,0xc5 ]
+      arch: "CS_ARCH_X86"
+      options: [ CS_MODE_64, CS_OPT_DETAIL, CS_OPT_SYNTAX_ATT ]
+      address: 0x0
+    expected:
+      insns:
+      -
+        asm_text: "vmulps %zmm13, %zmm15, %zmm24 {%k7}"
+        details:
+          x86:
+            operands:
+              -
+                type: X86_OP_REG
+                reg: zmm13
+                access: CS_AC_READ
+              -
+                type: X86_OP_REG
+                reg: zmm15
+                access: CS_AC_READ
+              -
+                type: X86_OP_REG
+                reg: zmm24
+                access: CS_AC_READ_WRITE
+              -
+                type: X86_OP_REG
+                reg: k7
+                access: CS_AC_READ
+          regs_read: [ zmm13, zmm15, zmm24, k7 ]
+          regs_write: [ zmm24 ]
+  -
+    input:
+      name: "issue 3069 EVEX memory operand access (AT&T)"
+      bytes: [ 0x62,0x41,0x04,0xcf,0x59,0x05,0x00,0x00,0x00,0x00 ]
+      arch: "CS_ARCH_X86"
+      options: [ CS_MODE_64, CS_OPT_DETAIL, CS_OPT_SYNTAX_ATT ]
+      address: 0x0
+    expected:
+      insns:
+      -
+        asm_text: "vmulps (%rip), %zmm15, %zmm24 {%k7} {z}"
+        details:
+          x86:
+            operands:
+              -
+                type: X86_OP_MEM
+                mem_base: rip
+                access: CS_AC_READ
+              -
+                type: X86_OP_REG
+                reg: zmm15
+                access: CS_AC_READ
+              -
+                type: X86_OP_REG
+                reg: zmm24
+                access: CS_AC_WRITE
+              -
+                type: X86_OP_REG
+                reg: k7
+                access: CS_AC_READ
+                avx_zero_opmask: 1
+          regs_read: [ rip, zmm15, k7 ]
+          regs_write: [ zmm24 ]
+  -
+    input:
+      name: "issue 3038 x86-64 RET with operand-size override and REX.W"
+      bytes: [ 0x66, 0x48, 0xc3 ]
+      arch: "CS_ARCH_X86"
+      options: [ CS_MODE_64, CS_OPT_DETAIL ]
+      address: 0x0
+    expected:
+      insns:
+      -
+        asm_text: "ret"
+        details:
+          x86:
+            prefix: [ X86_PREFIX_0, X86_PREFIX_0, X86_PREFIX_OPSIZE, X86_PREFIX_0 ]
+            opcode: [ 0xc3, 0x00, 0x00, 0x00 ]
+            rex: 0x48
+          regs_read: [ rsp, ss ]
+          regs_write: [ rsp, rip ]
+          groups: [ ret, mode64 ]
+  -
+    input:
+      name: "issue 3037 x86-64 Intel JO ignores operand-size override"
+      bytes: [ 0x66,0x0f,0x80,0xce,0xfa,0xa5,0xd8 ]
+      arch: "CS_ARCH_X86"
+      options: [ CS_MODE_64, CS_OPT_DETAIL, CS_MODE_X86_INTEL ]
+      address: 0x0
+    expected:
+      insns:
+      -
+        asm_text: "jo 0xffffffffd8a5fad5"
+  -
+    input:
+      name: "issue 3037 x86-64 Intel JNO ignores operand-size override"
+      bytes: [ 0x66,0x0f,0x81,0xce,0xfa,0xa5,0xd8 ]
+      arch: "CS_ARCH_X86"
+      options: [ CS_MODE_64, CS_OPT_DETAIL, CS_MODE_X86_INTEL ]
+      address: 0x0
+    expected:
+      insns:
+      -
+        asm_text: "jno 0xffffffffd8a5fad5"

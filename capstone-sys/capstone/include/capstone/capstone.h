@@ -72,13 +72,14 @@ extern "C" {
 #define CS_VERSION_ALPHA9 (CS_VERSION_ALPHA | 9)
 #define CS_VERSION_ALPHA10 (CS_VERSION_ALPHA | 10)
 #define CS_VERSION_ALPHA11 (CS_VERSION_ALPHA | 11)
+#define CS_VERSION_ALPHA12 (CS_VERSION_ALPHA | 12)
 
 #define CS_VERSION_BETA 0xb000
 #define CS_VERSION_BETA1 (CS_VERSION_BETA | 1)
 
 // The identifier of a pre-release (Alpha, Beta, ...).
 // It is set to CS_VERSION_STABLE, if this code is part of a stable release.
-#define CS_VERSION_PRE_RELEASE CS_VERSION_ALPHA10
+#define CS_VERSION_PRE_RELEASE CS_VERSION_ALPHA11
 
 /// Macro to create combined version which can be compared to
 /// result of cs_version() API.
@@ -148,6 +149,13 @@ typedef enum cs_mode {
 	CS_MODE_16 = 1 << 1, ///< 16-bit mode (X86)
 	CS_MODE_32 = 1 << 2, ///< 32-bit mode (X86)
 	CS_MODE_64 = 1 << 3, ///< 64-bit mode (X86, PPC)
+	// X86
+	/// x86 Intel specific quirks:
+	/// - Ignore 66-prefix near Jcc in 64-bit mode.
+	CS_MODE_X86_INTEL = 1 << 4,
+	/// x86 AMD specific quirks:
+	/// - Honor 66-prefix near Jcc in 64-bit mode, unless REX.W overrides it.
+	CS_MODE_X86_AMD = 1 << 5,
 	// ARM
 	CS_MODE_THUMB = 1 << 4, ///< ARM's Thumb mode, including Thumb-2
 	CS_MODE_MCLASS = 1 << 5, ///< ARM's Cortex-M series
@@ -341,6 +349,7 @@ typedef enum cs_mode {
 	CS_MODE_XTENSA_ESP32 = 1 << 1, ///< Xtensa ESP32
 	CS_MODE_XTENSA_ESP32S2 = 1 << 2, ///< Xtensa ESP32S2
 	CS_MODE_XTENSA_ESP8266 = 1 << 3, ///< Xtensa ESP328266
+	CS_MODE_XTENSA_ESP32S3 = 1 << 4, ///< Xtensa ESP32S3
 } cs_mode;
 
 typedef void *(CAPSTONE_API *cs_malloc_t)(size_t size);
@@ -410,18 +419,27 @@ typedef enum cs_opt_value {
 	CS_OPT_SYNTAX_NO_DOLLAR =
 		1
 		<< 9, ///< Does not print the $ in front of Mips, LoongArch registers.
-	CS_OPT_SYNTAX_NO_ALIAS_TEXT =
+	CS_OPT_SYNTAX_REAL =
 		1
-		<< 10, ///< Does not print an instruction's alias test if the instruction is an alias
-	CS_OPT_SYNTAX_NO_ALIAS_TEXT_COMPRESSED =
+		<< 10, ///< Prints the original decoded instruction without aliases or uncompression.
+	CS_OPT_SYNTAX_UNCOMPRESSED_REAL =
 		1
-		<< 11, ///< Does not print an instruction's alias test if the instruction is an alias
+		<< 11, ///< Prints the uncompressed real instruction when possible, without aliases.
 	CS_OPT_SYNTAX_AARCH64_EXPLICIT_WIDE_IMM =
 		1
 		<< 12, ///< Prints shifted AArch64 MOVN and MOVZ instructions without MOV aliases
+	CS_OPT_SYNTAX_ALIAS =
+		1
+		<< 13, ///< Prints aliases when available. This is the default RISC-V syntax behavior.
 	CS_OPT_DETAIL_REAL =
 		1
 		<< 1, ///< If enabled, always sets the real instruction detail. Even if the instruction is an alias.
+	CS_OPT_DETAIL_UNCOMPRESSED_REAL =
+		1
+		<< 2, ///< If enabled, sets uncompressed real instruction detail when possible.
+	CS_OPT_DETAIL_ALIAS =
+		1
+		<< 3, ///< If enabled, sets alias instruction detail when possible.
 } cs_opt_value;
 
 /// An option
@@ -597,7 +615,7 @@ typedef struct cs_insn {
 
 	/// If this instruction is an alias instruction, this member is set with
 	/// the alias ID.
-	/// Otherwise to <ARCH>_INS_INVALID.
+	/// Otherwise to <ARCH>_INS_INVALID (= 0).
 	/// -- Only supported by auto-sync archs --
 	uint64_t alias_id;
 
@@ -799,7 +817,7 @@ cs_err CAPSTONE_API cs_close(csh *handle);
 
  NOTE: in the case of CS_OPT_MEM, handle's value can be anything,
  so that cs_option(handle, CS_OPT_MEM, value) can (i.e must) be called
- even before cs_open()
+ even before cs_open(). All members of passed (cs_opt_mem *) must be defined.
 */
 CAPSTONE_EXPORT
 cs_err CAPSTONE_API cs_option(csh handle, cs_opt_type type, uintptr_t value);

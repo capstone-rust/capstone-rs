@@ -715,9 +715,9 @@ const char *X86_reg_name(csh handle, unsigned int reg)
 		return NULL;
 
 	if (reg == X86_REG_EFLAGS) {
-		if (ud->mode & CS_MODE_32)
+		if (x86_has_feature(ud->mode, CS_MODE_32))
 			return "eflags";
-		if (ud->mode & CS_MODE_64)
+		if (x86_has_feature(ud->mode, CS_MODE_64))
 			return "rflags";
 	}
 
@@ -900,6 +900,7 @@ void X86_get_insn_id(cs_struct *h, cs_insn *insn, unsigned int id)
 
 		if (h->detail_opt) {
 #ifndef CAPSTONE_DIET
+			cs_mode mode = x86_get_bit_mode(h->mode);
 			memcpy(insn->detail->regs_read, insns[i].regs_use,
 			       sizeof(insns[i].regs_use));
 			insn->detail->regs_read_count =
@@ -916,7 +917,7 @@ void X86_get_insn_id(cs_struct *h, cs_insn *insn, unsigned int id)
 						insns[i].regs_mod);
 				break;
 			case X86_RDTSC:
-				if (h->mode == CS_MODE_64) {
+				if (mode == CS_MODE_64) {
 					memcpy(insn->detail->regs_write,
 					       insns[i].regs_mod,
 					       sizeof(insns[i].regs_mod));
@@ -932,7 +933,7 @@ void X86_get_insn_id(cs_struct *h, cs_insn *insn, unsigned int id)
 				}
 				break;
 			case X86_RDTSCP:
-				if (h->mode == CS_MODE_64) {
+				if (mode == CS_MODE_64) {
 					memcpy(insn->detail->regs_write,
 					       insns[i].regs_mod,
 					       sizeof(insns[i].regs_mod));
@@ -957,7 +958,8 @@ void X86_get_insn_id(cs_struct *h, cs_insn *insn, unsigned int id)
 			case X86_INS_LOOP:
 			case X86_INS_LOOPE:
 			case X86_INS_LOOPNE:
-				switch (h->mode) {
+				// The instruction pointer register follows the mode.
+				switch (mode) {
 				default:
 					break;
 				case CS_MODE_16:
@@ -969,14 +971,6 @@ void X86_get_insn_id(cs_struct *h, cs_insn *insn, unsigned int id)
 						insn->detail->regs_write,
 						insn->detail->regs_write_count,
 						X86_REG_EIP, X86_REG_IP);
-					arr_replace(
-						insn->detail->regs_read,
-						insn->detail->regs_read_count,
-						X86_REG_ECX, X86_REG_CX);
-					arr_replace(
-						insn->detail->regs_write,
-						insn->detail->regs_write_count,
-						X86_REG_ECX, X86_REG_CX);
 					break;
 				case CS_MODE_64:
 					arr_replace(
@@ -987,6 +981,20 @@ void X86_get_insn_id(cs_struct *h, cs_insn *insn, unsigned int id)
 						insn->detail->regs_write,
 						insn->detail->regs_write_count,
 						X86_REG_EIP, X86_REG_RIP);
+					break;
+				}
+				// The loop counter register follows the effective address
+				// size, which a 0x67 address-size prefix can override.
+				if (insn->detail->x86.addr_size == 2) {
+					arr_replace(
+						insn->detail->regs_read,
+						insn->detail->regs_read_count,
+						X86_REG_ECX, X86_REG_CX);
+					arr_replace(
+						insn->detail->regs_write,
+						insn->detail->regs_write_count,
+						X86_REG_ECX, X86_REG_CX);
+				} else if (insn->detail->x86.addr_size == 8) {
 					arr_replace(
 						insn->detail->regs_read,
 						insn->detail->regs_read_count,
@@ -995,7 +1003,6 @@ void X86_get_insn_id(cs_struct *h, cs_insn *insn, unsigned int id)
 						insn->detail->regs_write,
 						insn->detail->regs_write_count,
 						X86_REG_ECX, X86_REG_RCX);
-					break;
 				}
 			}
 
@@ -1006,7 +1013,7 @@ void X86_get_insn_id(cs_struct *h, cs_insn *insn, unsigned int id)
 			case X86_INS_LODSD:
 			case X86_INS_LODSQ:
 			case X86_INS_LODSW:
-				switch (h->mode) {
+				switch (mode) {
 				default:
 					break;
 				case CS_MODE_16:
@@ -1040,7 +1047,7 @@ void X86_get_insn_id(cs_struct *h, cs_insn *insn, unsigned int id)
 			case X86_INS_STOSD:
 			case X86_INS_STOSQ:
 			case X86_INS_STOSW:
-				switch (h->mode) {
+				switch (mode) {
 				default:
 					break;
 				case CS_MODE_16:
@@ -1074,7 +1081,7 @@ void X86_get_insn_id(cs_struct *h, cs_insn *insn, unsigned int id)
 			case X86_INS_MOVSW:
 			case X86_INS_MOVSD:
 			case X86_INS_MOVSQ:
-				switch (h->mode) {
+				switch (mode) {
 				default:
 					break;
 				case CS_MODE_16:
@@ -1118,7 +1125,7 @@ void X86_get_insn_id(cs_struct *h, cs_insn *insn, unsigned int id)
 
 			case X86_INS_ENTER:
 			case X86_INS_LEAVE:
-				switch (h->mode) {
+				switch (mode) {
 				default:
 					break;
 				case CS_MODE_16:
@@ -1162,7 +1169,7 @@ void X86_get_insn_id(cs_struct *h, cs_insn *insn, unsigned int id)
 			case X86_INS_INSB:
 			case X86_INS_INSW:
 			case X86_INS_INSD:
-				switch (h->mode) {
+				switch (mode) {
 				default:
 					break;
 				case CS_MODE_16:
@@ -1191,7 +1198,7 @@ void X86_get_insn_id(cs_struct *h, cs_insn *insn, unsigned int id)
 			case X86_INS_OUTSB:
 			case X86_INS_OUTSW:
 			case X86_INS_OUTSD:
-				switch (h->mode) {
+				switch (mode) {
 				default:
 					break;
 				case CS_MODE_64:
@@ -1233,7 +1240,7 @@ void X86_get_insn_id(cs_struct *h, cs_insn *insn, unsigned int id)
 			case X86_INS_OUTSB:
 			case X86_INS_OUTSW:
 			case X86_INS_OUTSD:
-				switch (h->mode) {
+				switch (mode) {
 				default:
 					break;
 				case CS_MODE_16:
@@ -1248,7 +1255,7 @@ void X86_get_insn_id(cs_struct *h, cs_insn *insn, unsigned int id)
 
 			case X86_INS_JMP:
 			case X86_INS_LJMP:
-				switch (h->mode) {
+				switch (mode) {
 				default:
 					break;
 				case CS_MODE_16:
@@ -1275,7 +1282,7 @@ void X86_get_insn_id(cs_struct *h, cs_insn *insn, unsigned int id)
 				break;
 
 			case X86_INS_SYSENTER: {
-				switch (h->mode) {
+				switch (mode) {
 				default:
 					break;
 				case CS_MODE_16:
@@ -1302,7 +1309,7 @@ void X86_get_insn_id(cs_struct *h, cs_insn *insn, unsigned int id)
 				break;
 			} break;
 			case X86_INS_SYSEXIT: {
-				switch (h->mode) {
+				switch (mode) {
 				default:
 					break;
 				case CS_MODE_16:
@@ -1358,7 +1365,7 @@ void X86_get_insn_id(cs_struct *h, cs_insn *insn, unsigned int id)
 					X86_GRP_JUMP;
 				insn->detail->groups_count++;
 
-				switch (h->mode) {
+				switch (mode) {
 				default:
 					break;
 				case CS_MODE_16:
@@ -1478,33 +1485,61 @@ static const struct insn_reg insn_regs_att[] = {
 	{ X86_PUSHGS64, X86_REG_GS, CS_AC_READ },
 	{ X86_PUSHSS16, X86_REG_SS, CS_AC_READ },
 	{ X86_PUSHSS32, X86_REG_SS, CS_AC_READ },
+	{ X86_RCL16mCL, X86_REG_CL, CS_AC_READ },
 	{ X86_RCL16rCL, X86_REG_CL, CS_AC_READ },
+	{ X86_RCL32mCL, X86_REG_CL, CS_AC_READ },
 	{ X86_RCL32rCL, X86_REG_CL, CS_AC_READ },
+	{ X86_RCL64mCL, X86_REG_CL, CS_AC_READ },
 	{ X86_RCL64rCL, X86_REG_CL, CS_AC_READ },
+	{ X86_RCL8mCL, X86_REG_CL, CS_AC_READ },
 	{ X86_RCL8rCL, X86_REG_CL, CS_AC_READ },
+	{ X86_RCR16mCL, X86_REG_CL, CS_AC_READ },
 	{ X86_RCR16rCL, X86_REG_CL, CS_AC_READ },
+	{ X86_RCR32mCL, X86_REG_CL, CS_AC_READ },
 	{ X86_RCR32rCL, X86_REG_CL, CS_AC_READ },
+	{ X86_RCR64mCL, X86_REG_CL, CS_AC_READ },
 	{ X86_RCR64rCL, X86_REG_CL, CS_AC_READ },
+	{ X86_RCR8mCL, X86_REG_CL, CS_AC_READ },
 	{ X86_RCR8rCL, X86_REG_CL, CS_AC_READ },
+	{ X86_ROL16mCL, X86_REG_CL, CS_AC_READ },
 	{ X86_ROL16rCL, X86_REG_CL, CS_AC_READ },
+	{ X86_ROL32mCL, X86_REG_CL, CS_AC_READ },
 	{ X86_ROL32rCL, X86_REG_CL, CS_AC_READ },
+	{ X86_ROL64mCL, X86_REG_CL, CS_AC_READ },
 	{ X86_ROL64rCL, X86_REG_CL, CS_AC_READ },
+	{ X86_ROL8mCL, X86_REG_CL, CS_AC_READ },
 	{ X86_ROL8rCL, X86_REG_CL, CS_AC_READ },
+	{ X86_ROR16mCL, X86_REG_CL, CS_AC_READ },
 	{ X86_ROR16rCL, X86_REG_CL, CS_AC_READ },
+	{ X86_ROR32mCL, X86_REG_CL, CS_AC_READ },
 	{ X86_ROR32rCL, X86_REG_CL, CS_AC_READ },
+	{ X86_ROR64mCL, X86_REG_CL, CS_AC_READ },
 	{ X86_ROR64rCL, X86_REG_CL, CS_AC_READ },
+	{ X86_ROR8mCL, X86_REG_CL, CS_AC_READ },
 	{ X86_ROR8rCL, X86_REG_CL, CS_AC_READ },
+	{ X86_SAL16mCL, X86_REG_CL, CS_AC_READ },
 	{ X86_SAL16rCL, X86_REG_CL, CS_AC_READ },
+	{ X86_SAL32mCL, X86_REG_CL, CS_AC_READ },
 	{ X86_SAL32rCL, X86_REG_CL, CS_AC_READ },
+	{ X86_SAL64mCL, X86_REG_CL, CS_AC_READ },
 	{ X86_SAL64rCL, X86_REG_CL, CS_AC_READ },
+	{ X86_SAL8mCL, X86_REG_CL, CS_AC_READ },
 	{ X86_SAL8rCL, X86_REG_CL, CS_AC_READ },
+	{ X86_SAR16mCL, X86_REG_CL, CS_AC_READ },
 	{ X86_SAR16rCL, X86_REG_CL, CS_AC_READ },
+	{ X86_SAR32mCL, X86_REG_CL, CS_AC_READ },
 	{ X86_SAR32rCL, X86_REG_CL, CS_AC_READ },
+	{ X86_SAR64mCL, X86_REG_CL, CS_AC_READ },
 	{ X86_SAR64rCL, X86_REG_CL, CS_AC_READ },
+	{ X86_SAR8mCL, X86_REG_CL, CS_AC_READ },
 	{ X86_SAR8rCL, X86_REG_CL, CS_AC_READ },
+	{ X86_SHL16mCL, X86_REG_CL, CS_AC_READ },
 	{ X86_SHL16rCL, X86_REG_CL, CS_AC_READ },
+	{ X86_SHL32mCL, X86_REG_CL, CS_AC_READ },
 	{ X86_SHL32rCL, X86_REG_CL, CS_AC_READ },
+	{ X86_SHL64mCL, X86_REG_CL, CS_AC_READ },
 	{ X86_SHL64rCL, X86_REG_CL, CS_AC_READ },
+	{ X86_SHL8mCL, X86_REG_CL, CS_AC_READ },
 	{ X86_SHL8rCL, X86_REG_CL, CS_AC_READ },
 	{ X86_SHLD16mrCL, X86_REG_CL, CS_AC_READ },
 	{ X86_SHLD16rrCL, X86_REG_CL, CS_AC_READ },
@@ -1512,9 +1547,13 @@ static const struct insn_reg insn_regs_att[] = {
 	{ X86_SHLD32rrCL, X86_REG_CL, CS_AC_READ },
 	{ X86_SHLD64mrCL, X86_REG_CL, CS_AC_READ },
 	{ X86_SHLD64rrCL, X86_REG_CL, CS_AC_READ },
+	{ X86_SHR16mCL, X86_REG_CL, CS_AC_READ },
 	{ X86_SHR16rCL, X86_REG_CL, CS_AC_READ },
+	{ X86_SHR32mCL, X86_REG_CL, CS_AC_READ },
 	{ X86_SHR32rCL, X86_REG_CL, CS_AC_READ },
+	{ X86_SHR64mCL, X86_REG_CL, CS_AC_READ },
 	{ X86_SHR64rCL, X86_REG_CL, CS_AC_READ },
+	{ X86_SHR8mCL, X86_REG_CL, CS_AC_READ },
 	{ X86_SHR8rCL, X86_REG_CL, CS_AC_READ },
 	{ X86_SHRD16mrCL, X86_REG_CL, CS_AC_READ },
 	{ X86_SHRD16rrCL, X86_REG_CL, CS_AC_READ },
@@ -2184,9 +2223,9 @@ static void add_cx(MCInst *MI)
 	if (MI->csh->detail_opt) {
 		x86_reg cx;
 
-		if (MI->csh->mode & CS_MODE_16)
+		if (x86_has_feature(MI->csh->mode, CS_MODE_16))
 			cx = X86_REG_CX;
-		else if (MI->csh->mode & CS_MODE_32)
+		else if (x86_has_feature(MI->csh->mode, CS_MODE_32))
 			cx = X86_REG_ECX;
 		else // 64-bit
 			cx = X86_REG_RCX;

@@ -1347,15 +1347,7 @@ bool X86_getInstruction(csh ud, const uint8_t *code, size_t code_len,
 		//memset(instr->flat_insn->detail, 0, offsetof(cs_detail, x86)+offsetof(cs_x86, operands));
 	}
 
-	if (handle->mode & CS_MODE_16)
-		ret = decodeInstruction(&insn, reader, &info, address,
-					MODE_16BIT);
-	else if (handle->mode & CS_MODE_32)
-		ret = decodeInstruction(&insn, reader, &info, address,
-					MODE_32BIT);
-	else
-		ret = decodeInstruction(&insn, reader, &info, address,
-					MODE_64BIT);
+	ret = decodeInstruction(&insn, reader, &info, address, handle->mode);
 
 	if (ret) {
 		// *size = (uint16_t)(insn.readerCursor - address);
@@ -1394,6 +1386,14 @@ bool X86_getInstruction(csh ud, const uint8_t *code, size_t code_len,
 				Flags |= X86_IP_HAS_REPEAT;
 			if (insn.hasLockPrefix)
 				Flags |= X86_IP_HAS_LOCK;
+
+			for (int i = 0; i < X86_MAX_OPERANDS; ++i) {
+				if (insn.operands[i].encoding ==
+				    ENCODING_WRITEMASK) {
+					Flags |= X86_IP_HAS_EVEX_OPMASK;
+					break;
+				}
+			}
 
 			instr->flags = Flags;
 		}
