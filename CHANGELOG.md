@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - ARC arch support
 - Make AccessType available for Sparc
 - New operands types are added to `ArmOperandType`
+- Add M68k extended- and packed-decimal floating-point operands suppport
 
 ### Changed
 - Bump bundled capstone to 6.0.0-Alpha11
