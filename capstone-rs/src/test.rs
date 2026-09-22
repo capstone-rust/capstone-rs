@@ -3017,6 +3017,31 @@ fn test_arch_m68k_detail() {
                 b"\xf2\x3c\x44\x00\x44\x7a\x00\x00",
                 &[FpSingle(1000.000000), Reg(RegId(M68K_REG_FP0 as RegIdInt))],
             ),
+            // fmove.x #0e1, fp0
+            DII::new(
+                "fmove.x",
+                b"\xf2\x3c\x48\x00\x3f\xff\x00\x00\x80\x00\x00\x00\x00\x00\x00\x00",
+                &[
+                    FpExtended(M68kOpFpExtended {
+                        significand: 0x8000_0000_0000_0000,
+                        sign_exp: 0x3fff,
+                        reserved: 0x0000,
+                    }),
+                    Reg(RegId(M68K_REG_FP0 as RegIdInt)),
+                ],
+            ),
+            // fmove.p #0e1.2345678901234567e+025, fp0
+            DII::new(
+                "fmove.p",
+                b"\xf2\x3c\x4c\x00\x00\x25\x00\x01\x23\x45\x67\x89\x01\x23\x45\x67",
+                &[
+                    FpPacked(M68kOpFpPacked {
+                        header: 0x0025_0001,
+                        fraction: 0x2345_6789_0123_4567,
+                    }),
+                    Reg(RegId(M68K_REG_FP0 as RegIdInt)),
+                ],
+            ),
             // fsub    fp2, fp4
             DII::new(
                 "fsub",
