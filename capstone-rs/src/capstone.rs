@@ -626,6 +626,17 @@ impl Drop for Capstone {
     }
 }
 
+// SAFETY: `Capstone` owns a heap-allocated opaque `csh` handle. The capstone C
+// library has no thread-local or otherwise thread-affine state: the handle is a
+// self-contained heap allocation, all mutable state is stored per-handle, and
+// it is released with the ordinary allocator. It is therefore safe to move the
+// handle to another thread, as long as only one thread accesses it at a time.
+//
+// Note that this deliberately does **not** implement `Sync`: methods such as
+// [`Capstone::disasm`] mutate the shared handle through `&self`, so concurrent
+// access from multiple threads would be a data race.
+unsafe impl Send for Capstone {}
+
 /// Structure to handle iterative disassembly.
 ///
 /// Create with a [`Capstone`](Capstone) instance: [`Capstone::disasm_iter()`](Capstone::disasm_iter).
