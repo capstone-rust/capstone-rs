@@ -30,6 +30,13 @@ use crate::{RegsAccessBuf, REGS_ACCESS_BUF_LEN};
 #[derive(Debug)]
 pub struct Instructions<'a>(&'a mut [cs_insn]);
 
+// SAFETY: `Instructions` uniquely owns the `cs_insn` buffer allocated by
+// `cs_disasm`, together with the per-instruction `cs_detail` allocations. That
+// buffer does not reference the `Capstone` handle in any way, has no thread
+// affinity, and is released through the process-global capstone allocator on
+// drop, so transferring ownership to another thread is safe.
+unsafe impl<'a> Send for Instructions<'a> {}
+
 /// Integer type used in `InsnId`
 pub type InsnIdInt = u32;
 
@@ -387,6 +394,12 @@ pub struct OwnedInsn<'a> {
     /// Adds lifetime
     pub(crate) _marker: PhantomData<&'a InsnDetail<'a>>,
 }
+
+// SAFETY: `OwnedInsn` owns its `cs_insn` as well as a Rust-`Box`ed copy of the
+// `cs_detail`. It holds no reference to a `Capstone` handle, has no thread
+// affinity, and frees its detail with the Rust allocator on whatever thread
+// drops it.
+unsafe impl<'a> Send for OwnedInsn<'a> {}
 
 impl Debug for Insn<'_> {
     fn fmt(&self, fmt: &mut Formatter) -> Result<(), Error> {
