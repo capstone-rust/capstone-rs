@@ -5,10 +5,12 @@ use core::ffi::CStr;
 
 // This function will go unused in Diet mode
 #[allow(unused)]
-/// Given a valid C-style, NUL terminated, UTF8-encoded string, returns a Rust `&str`
+/// Given a valid C-style, NUL terminated string, returns a Rust `&str`
+///
+/// Returns `None` if the pointer is null or the bytes are not valid UTF-8.
 ///
 /// Warnings:
-/// - No checks are made for: valid UTF-8
+/// - The pointer must point to a NUL terminated string
 /// - This function "creates" a reference with an arbitrary lifetime, so be careful to limit the
 ///   lifetime appropriately
 #[inline]
@@ -19,8 +21,8 @@ pub(crate) unsafe fn str_from_cstr_ptr<'a>(ptr: *const c_char) -> Option<&'a str
     }
     /* ASSUMPTION: capstone returns NUL terminated string */
     let cstr = CStr::from_ptr(ptr);
-    /* ASSUMPTION: capstone returns a valid UTF-8 string */
-    Some(core::str::from_utf8_unchecked(cstr.to_bytes()))
+    /* capstone does not guarantee UTF-8: custom mnemonics may contain arbitrary bytes */
+    core::str::from_utf8(cstr.to_bytes()).ok()
 }
 
 #[cfg(test)]

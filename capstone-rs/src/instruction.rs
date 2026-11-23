@@ -291,7 +291,8 @@ impl Insn<'_> {
     }
 
     /// The mnemonic for the instruction.
-    /// Unavailable in Diet mode.
+    ///
+    /// Returns `None` if the mnemonic is unavailable (e.g. in Diet mode) or is not valid UTF-8.
     #[inline]
     pub fn mnemonic(&self) -> Option<&str> {
         if cfg!(feature = "full") {
@@ -302,7 +303,9 @@ impl Insn<'_> {
     }
 
     /// The operand string associated with the instruction.
-    /// Unavailable in Diet mode.
+    ///
+    /// Returns `None` if the operand string is unavailable (e.g. in Diet mode) or is not valid
+    /// UTF-8.
     #[inline]
     pub fn op_str(&self) -> Option<&str> {
         if cfg!(feature = "full") {

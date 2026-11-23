@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 - Fix underflow in `impl Display for Instructions<'_>` when an instruction is longer than 16 bytes
+- `Insn::mnemonic()` and `Insn::op_str()` return `None` instead of an invalid `&str` when the underlying string is not valid UTF-8
 
 ## [0.14.0] - 2026-01-04
 ### Added
