@@ -32,6 +32,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Avoid constructing invalid `sparc_hint` enum values for combined branch hints
 - Avoid constructing invalid AArch64 vector layout enum values from computed layouts
 - Avoid constructing invalid AArch64 system register enum values for registers outside capstone's tables
+- Build the bundled capstone C sources as C17 to support compilers that default to C23
 
 ## [0.14.0] - 2026-01-04
 ### Added

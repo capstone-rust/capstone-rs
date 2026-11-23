@@ -151,6 +151,9 @@ fn build_capstone_cc() {
         .define("CAPSTONE_USE_SYS_DYN_MEM", None)
         // No need to display any warnings from the C library
         .flag_if_supported("-w")
+        // Capstone's generated AArch64 code relies on true/false being
+        // preprocessor macros, which is no longer the case in C23.
+        .flag_if_supported("-std=gnu17")
         .static_crt(use_static_crt);
 
     macro_rules! arch_define {
