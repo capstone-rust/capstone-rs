@@ -254,8 +254,6 @@ test_rust_file() {
 run_tests() {
     cargo_update
 
-    TMPFILE="$(mktemp /tmp/capstone-rs.XXXXXXXXXX)"
-    [ -f "$TMPFILE" ] || Error "Could not make temp file"
     for PROFILE in $PROFILES; do
         echo "Cargo tests without Valgrind"
         cargo_cmd_args=(
@@ -265,9 +263,7 @@ run_tests() {
         )
         expect_exit_status "$SHOULD_FAIL" \
             ${CARGO} test "${cargo_cmd_args[@]}" \
-            --color=always -- --color=always \
-            2>&1 | tee "$TMPFILE"
-        # Use 2>&1 above instead of '|&' because OS X uses Bash 3
+            --color=always -- --color=always
         for example in $SIMPLE_RUN_EXAMPLES; do
             ${CARGO} run "${cargo_cmd_args[@]}" --example "$example"
         done
@@ -291,19 +287,28 @@ run_tests() {
         which valgrind
         valgrind --version
 
-        test_binary="$(cat "$TMPFILE" |
-            grep -E 'Running[^`]*`' |
-            sed 's/^.*Running[^`]*`\([^` ]*\).*$/\1/' |
-            grep -vE '^rustc|rustdoc$' |
-            grep -E '/capstone-[^ -]+$'
-            )"
-        [ -f "$test_binary" ] ||
-            Error "Unable to determine test binary (for Valgrind); found '$test_binary'"
+        # Ask cargo for the test binaries. Parsing the human readable output
+        # does not work because the format of the "Running" lines differs
+        # between cargo versions.
+        cargo_test_args=(
+            --no-run
+            --quiet
+            --message-format=json
+            $(profile_args)
+            "${CARGO_FEATURE_ARGS[@]}"
+        )
+        test_binaries="$(${CARGO} test "${cargo_test_args[@]}" |
+            jq -r 'select(.profile.test == true) | .executable | strings')"
+        [ -n "$test_binaries" ] ||
+            Error "Unable to determine test binaries (for Valgrind)"
 
         echo "Cargo tests WITH Valgrind"
-        valgrind --error-exitcode=1 "$test_binary"
+        for test_binary in $test_binaries; do
+            [ -f "$test_binary" ] ||
+                Error "Test binary does not exist (for Valgrind): '$test_binary'"
+            valgrind --error-exitcode=1 "$test_binary"
+        done
     done
-    rm "$TMPFILE"
 }
 
 cargo_update() {
