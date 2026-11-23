@@ -7,13 +7,32 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 ### Added
 - Implement `Send` for `Capstone`, `Instructions`, and `OwnedInsn`
+- Alpha arch support
+- HPPA arch support
+- LoongArch arch support
+- Xtensa arch support
+- ARC arch support
+- Make AccessType available for Sparc
+- New operands types are added to `ArmOperandType`
+- Add M68k extended- and packed-decimal floating-point operands suppport
 
 ### Changed
-- Bump bundled capstone to 5.0.9
+- Bump bundled capstone to 6.0.0-Alpha11
+- Rename ARM64 to AARCH64, SYSZ to SYSTEMZ to follow upstream changes
+- AArch64 support is rewritten to follow upstream changes
+- Endian must be specified for Sparc/SystemZ, since little endian support is added
+- Rename RegAccessType to AccessType while keeping type alias
+- `SparcHint` is now a bitfield type, so combined branch hints are representable
+- `AArch64Vas` (`AArch64Layout_VectorLayout`) is now a bitfield type
+- `AArch64OperandType::RegMrs`/`RegMsr` now carry the raw system register encoding
 
 ### Fixed
 - Fix underflow in `impl Display for Instructions<'_>` when an instruction is longer than 16 bytes
 - `Insn::mnemonic()` and `Insn::op_str()` return `None` instead of an invalid `&str` when the underlying string is not valid UTF-8
+- Avoid constructing invalid `sparc_hint` enum values for combined branch hints
+- Avoid constructing invalid AArch64 vector layout enum values from computed layouts
+- Avoid constructing invalid AArch64 system register enum values for registers outside capstone's tables
+- Build the bundled capstone C sources as C17 to support compilers that default to C23
 
 ## [0.14.0] - 2026-01-04
 ### Added

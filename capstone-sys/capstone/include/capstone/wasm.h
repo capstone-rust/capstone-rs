@@ -9,21 +9,22 @@ extern "C" {
 #endif
 
 #include "platform.h"
+#include "cs_operand.h"
 
 #ifdef _MSC_VER
-#pragma warning(disable:4201)
+#pragma warning(disable : 4201)
 #endif
 
 typedef enum wasm_op_type {
-	WASM_OP_INVALID = 0,
-	WASM_OP_NONE,
-	WASM_OP_INT7,
-	WASM_OP_VARUINT32,
-	WASM_OP_VARUINT64,
-	WASM_OP_UINT32,
-	WASM_OP_UINT64,
-	WASM_OP_IMM,
-	WASM_OP_BRTABLE,
+	WASM_OP_INVALID = CS_OP_INVALID,
+	WASM_OP_IMM = CS_OP_IMM,
+	WASM_OP_NONE = CS_OP_SPECIAL + 0,
+	WASM_OP_INT7 = CS_OP_SPECIAL + 1,
+	WASM_OP_VARUINT32 = CS_OP_SPECIAL + 2,
+	WASM_OP_VARUINT64 = CS_OP_SPECIAL + 3,
+	WASM_OP_UINT32 = CS_OP_SPECIAL + 4,
+	WASM_OP_UINT64 = CS_OP_SPECIAL + 5,
+	WASM_OP_BRTABLE = CS_OP_SPECIAL + 6,
 } wasm_op_type;
 
 typedef struct cs_wasm_brtable {
@@ -240,7 +241,7 @@ typedef enum wasm_insn_group {
 	WASM_GRP_MEMORY,
 	WASM_GRP_CONTROL,
 
-	WASM_GRP_ENDING,   ///< <-- mark the end of the list of groups
+	WASM_GRP_ENDING, ///< <-- mark the end of the list of groups
 } wasm_insn_group;
 
 #ifdef __cplusplus

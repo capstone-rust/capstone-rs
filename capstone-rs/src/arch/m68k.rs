@@ -5,7 +5,8 @@ use core::{cmp, fmt, slice};
 
 use capstone_sys::{
     cs_m68k, cs_m68k_op, cs_m68k_op__bindgen_ty_1, m68k_address_mode, m68k_cpu_size, m68k_fpu_size,
-    m68k_op_br_disp, m68k_op_mem, m68k_op_size, m68k_op_type, m68k_reg, m68k_size_type,
+    m68k_op_br_disp, m68k_op_fp_extended, m68k_op_fp_packed, m68k_op_mem, m68k_op_size,
+    m68k_op_type, m68k_reg, m68k_size_type,
 };
 
 // XXX todo(tmfink): create rusty versions
@@ -57,8 +58,10 @@ define_cs_enum_wrapper_reverse!(
     => Single = M68K_FPU_SIZE_SINGLE;
     /// 2 bytes in size
     => Double = M68K_FPU_SIZE_DOUBLE;
-    /// 4 bytes in size
+    /// 12 bytes in size (extended real format)
     => Extended = M68K_FPU_SIZE_EXTENDED;
+    /// Distinct format tag for a 12-byte packed-decimal operand
+    => Packed = M68K_FPU_SIZE_PACKED;
 );
 
 /// Operation size of the current instruction (NOT the actually size of instruction)
@@ -180,6 +183,48 @@ impl M68kRegisterBits {
     }
 }
 
+/// Motorola extended-precision real in its 96-bit external representation
+#[derive(Clone, Copy, Debug, Eq, PartialEq, Hash)]
+pub struct M68kOpFpExtended {
+    /// Explicit integer bit followed by the 63-bit fractional part
+    pub significand: u64,
+
+    /// Sign in bit 15 and the 15-bit biased exponent in bits 14-0
+    pub sign_exp: u16,
+
+    /// Raw reserved word from the external representation
+    pub reserved: u16,
+}
+
+impl From<m68k_op_fp_extended> for M68kOpFpExtended {
+    fn from(other: m68k_op_fp_extended) -> Self {
+        M68kOpFpExtended {
+            significand: other.significand,
+            sign_exp: other.sign_exp,
+            reserved: other.reserved,
+        }
+    }
+}
+
+/// Motorola packed-decimal real in its 96-bit external representation
+#[derive(Clone, Copy, Debug, Eq, PartialEq, Hash)]
+pub struct M68kOpFpPacked {
+    /// Raw high 32 bits: SM, SE, y, exponent, EXP3, ignored bits, MANT16
+    pub header: u32,
+
+    /// Raw low 64 bits containing packed BCD digits MANT15 through MANT0
+    pub fraction: u64,
+}
+
+impl From<m68k_op_fp_packed> for M68kOpFpPacked {
+    fn from(other: m68k_op_fp_packed) -> Self {
+        M68kOpFpPacked {
+            header: other.header,
+            fraction: other.fraction,
+        }
+    }
+}
+
 /// M68K operand type
 #[derive(Clone, Debug, PartialEq)]
 pub enum M68kOperand {
@@ -198,6 +243,12 @@ pub enum M68kOperand {
     /// Double precision floating-point
     FpDouble(f64),
 
+    /// Extended precision floating-point
+    FpExtended(M68kOpFpExtended),
+
+    /// Packed decimal floating-point
+    FpPacked(M68kOpFpPacked),
+
     /// Register bits move
     RegBits(M68kRegisterBits),
 
@@ -206,6 +257,9 @@ pub enum M68kOperand {
 
     /// Branch displacement
     Displacement(M68kOpBranchDisplacement),
+
+    /// Shift
+    Shift(u8),
 
     /// Invalid
     Invalid,
@@ -224,6 +278,8 @@ impl M68kOperand {
             M68K_OP_MEM => Mem(M68kOpMem::new(cs_op)),
             M68K_OP_FP_SINGLE => FpSingle(unsafe { value.simm }),
             M68K_OP_FP_DOUBLE => FpDouble(unsafe { value.dimm }),
+            M68K_OP_FP_EXTENDED => FpExtended(unsafe { value.fp_extended }.into()),
+            M68K_OP_FP_PACKED => FpPacked(unsafe { value.fp_packed }.into()),
             M68K_OP_REG_BITS => RegBits(M68kRegisterBits::from_bitfield_infallible(
                 cs_op.register_bits,
             )),
@@ -235,6 +291,7 @@ impl M68kOperand {
                 )
             }
             M68K_OP_BR_DISP => Displacement(cs_op.br_disp.into()),
+            M68K_OP_SHIFT => Shift(cs_op.flags),
             M68K_OP_INVALID => Invalid,
         }
     }
@@ -381,12 +438,12 @@ impl M68kOpMem {
 
     define_m68k_getter!(
         /// Indirect displacement
-        => in_disp: u32
+        => in_disp: i32
     );
 
     define_m68k_getter!(
         /// other displacement
-        => out_disp: u32
+        => out_disp: i32
     );
 
     define_m68k_getter!(
@@ -397,6 +454,11 @@ impl M68kOpMem {
     define_m68k_getter!(
         /// scale for index register
         => scale: u8
+    );
+
+    define_m68k_getter!(
+        /// address
+        => address: u64
     );
 
     /// Returns (width, offset)
@@ -439,7 +501,7 @@ impl M68kOpMem {
 
 impl_PartialEq_repr_fields!(M68kOpMem;
     base_reg, index_reg, in_base_reg, in_disp, out_disp, disp, scale, bitfield, index_size,
-    address_mode, extra_info
+    address_mode, extra_info, address
 );
 
 impl cmp::Eq for M68kOpMem {}
@@ -479,6 +541,10 @@ mod test {
         width: 0,
         offset: 0,
         index_size: 0,
+        disp_size: 0,
+        in_disp_size: 0,
+        out_disp_size: 0,
+        address: 0,
     };
 
     #[test]
@@ -493,6 +559,7 @@ mod test {
             register_bits: 0,
             type_: M68K_OP_IMM,
             address_mode: M68K_AM_NONE,
+            flags: 0
         };
 
         // Reg
@@ -547,6 +614,89 @@ mod test {
         assert_eq!(rust_op_mem.bitfield(), None);
         assert_eq!(rust_op_mem.index_size(), M68kIndexSize::W);
         assert_eq!(rust_op_mem.address_mode(), M68K_AM_MEMI_POST_INDEX);
+
+        // FpExtended
+        let op_fp_extended = cs_m68k_op {
+            __bindgen_anon_1: cs_m68k_op__bindgen_ty_1 {
+                fp_extended: m68k_op_fp_extended {
+                    significand: 0x8000_0000_0000_0000,
+                    sign_exp: 0x3fff,
+                    reserved: 0x0000,
+                },
+            },
+            type_: M68K_OP_FP_EXTENDED,
+            address_mode: M68K_AM_IMMEDIATE,
+            ..op_zero
+        };
+        assert_eq!(
+            M68kOperand::new(&op_fp_extended),
+            M68kOperand::FpExtended(M68kOpFpExtended {
+                significand: 0x8000_0000_0000_0000,
+                sign_exp: 0x3fff,
+                reserved: 0x0000,
+            })
+        );
+
+        // FpPacked
+        let op_fp_packed = cs_m68k_op {
+            __bindgen_anon_1: cs_m68k_op__bindgen_ty_1 {
+                fp_packed: m68k_op_fp_packed {
+                    header: 0x0025_0001,
+                    fraction: 0x2345_6789_0123_4567,
+                },
+            },
+            type_: M68K_OP_FP_PACKED,
+            address_mode: M68K_AM_IMMEDIATE,
+            ..op_zero
+        };
+        assert_eq!(
+            M68kOperand::new(&op_fp_packed),
+            M68kOperand::FpPacked(M68kOpFpPacked {
+                header: 0x0025_0001,
+                fraction: 0x2345_6789_0123_4567,
+            })
+        );
+    }
+
+    #[test]
+    fn test_m68k_fpu_size_from_enum() {
+        use capstone_sys::m68k_fpu_size::*;
+
+        assert_eq!(M68kFpuSize::from(M68K_FPU_SIZE_NONE), M68kFpuSize::None);
+        assert_eq!(
+            M68kFpuSize::from(M68K_FPU_SIZE_SINGLE),
+            M68kFpuSize::Single
+        );
+        assert_eq!(
+            M68kFpuSize::from(M68K_FPU_SIZE_DOUBLE),
+            M68kFpuSize::Double
+        );
+        assert_eq!(
+            M68kFpuSize::from(M68K_FPU_SIZE_EXTENDED),
+            M68kFpuSize::Extended
+        );
+        assert_eq!(
+            M68kFpuSize::from(M68K_FPU_SIZE_PACKED),
+            M68kFpuSize::Packed
+        );
+    }
+
+    #[test]
+    fn test_m68k_op_size_packed() {
+        use capstone_sys::m68k_fpu_size::M68K_FPU_SIZE_PACKED;
+        use capstone_sys::m68k_size_type::M68K_SIZE_TYPE_FPU;
+        use capstone_sys::m68k_op_size__bindgen_ty_1;
+
+        let op_size = m68k_op_size {
+            type_: M68K_SIZE_TYPE_FPU,
+            __bindgen_anon_1: m68k_op_size__bindgen_ty_1 {
+                fpu_size: M68K_FPU_SIZE_PACKED,
+            },
+        };
+        assert_eq!(
+            M68kOpSize::new(&op_size),
+            Some(M68kOpSize::Fpu(M68kFpuSize::Packed))
+        );
     }
 
     #[test]
@@ -663,7 +813,8 @@ mod test {
         let arch_detail = _arch_detail.m68k().unwrap();
         let mut ops = arch_detail.operands();
         if let M68kOperand::Mem(mem) = ops.next().unwrap() {
-            assert_eq!(mem.imm(), Some(0x12));
+            assert_eq!(mem.address(), 0x12);
+            assert_eq!(mem.imm(), Some(0));
         } else {
             panic!("Not expected type")
         }

@@ -2,7 +2,7 @@ This documentation explains how to compile Capstone for:
 - Windows CE 7, a.k.a, [Windows Embedded Compact 7](https://www.microsoft.com/windowsembedded/en-us/windows-embedded-compact-7.aspx), on [ARMv7](http://infocenter.arm.com/help/index.jsp?topic=/com.arm.doc.ddi0406c/index.html).
 - Windows CE 8, a.k.a, [Windows Embedded Compact 2013](https://www.microsoft.com/windowsembedded/en-us/windows-embedded-compact-2013.aspx), on [ARMv7](http://infocenter.arm.com/help/index.jsp?topic=/com.arm.doc.ddi0406c/index.html).
 
-To build Capstone for a different platform, please refer to `COMPILE.TXT`.
+To build Capstone for a different platform, please refer to `BUILDING.md`.
 
 # Prerequisites
 
@@ -10,7 +10,7 @@ We support the following scenario regarding the build machine:
 - Build running on Microsoft Windows.
 - The C Software Develepment Kit of the target Windows CE **device** installed.
 - Only for Windows CE 7:
-  - C compiler toolchain installed, targetting **Windows Embedded Compact 7** on **ARMv7**.  We recommend the toolchain provided with [Windows Embedded Compact 7 toolkit](https://msdn.microsoft.com/en-us/library/jj200349%28v=winembedded.70%29.aspx), as the toolchain originally provided with **Visual Studio 2008** is relatively old.
+  - C compiler toolchain installed, targeting **Windows Embedded Compact 7** on **ARMv7**.  We recommend the toolchain provided with [Windows Embedded Compact 7 toolkit](https://msdn.microsoft.com/en-us/library/jj200349%28v=winembedded.70%29.aspx), as the toolchain originally provided with **Visual Studio 2008** is relatively old.
 
 Before building Capstone for Windows CE 7 (respectively, Windows CE 8), the build script `windowsce/make_windowsce7-armv7.bat` (respectively, `windowsce/make_windowsce8-armv7.bat`) needs to be modified. The variables specified in the rest of this section are set in this script file.
 
@@ -83,7 +83,7 @@ Capstone supports the following architectures: ARM, ARM64 (AArch64), M68K, MIPS,
 - `MIPS`
 - `POWERPC`
 - `SPARC`
-- `SYSZ`
+- `SYSTEMZ`
 - `X86`
 - `XCORE`.
 
