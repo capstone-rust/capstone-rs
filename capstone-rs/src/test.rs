@@ -5203,3 +5203,30 @@ fn test_issue_175() {
         println!("{i} (dt: {:?})", aarch.operands().collect::<Vec<_>>());
     }
 }
+
+// regression test for https://github.com/capstone-rust/capstone-rs/issues/208
+#[cfg(feature = "arch_sparc")]
+#[test]
+fn test_issue_208() {
+    use crate::arch::sparc::SparcHint;
+
+    let cs = Capstone::new()
+        .sparc()
+        .mode(sparc::ArchMode::V9)
+        .endian(Endian::Big)
+        .detail(true)
+        .build()
+        .unwrap();
+
+    // bn,a,pn %icc, 0: SPARC_HINT_A | SPARC_HINT_PN
+    let insns = cs.disasm_all(&[0x20, 0x40, 0x00, 0x00], 0).unwrap();
+    let insn = &insns.as_ref()[0];
+    let detail = cs.insn_detail(insn).unwrap();
+    let detail = detail.arch_detail();
+    let sparc_detail = detail.sparc().unwrap();
+
+    let hint = sparc_detail.hint();
+    assert_eq!(hint.0, 5);
+    assert_eq!(hint & SparcHint::SPARC_HINT_A, SparcHint::SPARC_HINT_A);
+    assert_eq!(hint & SparcHint::SPARC_HINT_PN, SparcHint::SPARC_HINT_PN);
+}

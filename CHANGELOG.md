@@ -22,10 +22,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - AArch64 support is rewritten to follow upstream changes
 - Endian must be specified for Sparc/SystemZ, since little endian support is added
 - Rename RegAccessType to AccessType while keeping type alias
+- `SparcHint` is now a bitfield type, so combined branch hints are representable
 
 ### Fixed
 - Fix underflow in `impl Display for Instructions<'_>` when an instruction is longer than 16 bytes
 - `Insn::mnemonic()` and `Insn::op_str()` return `None` instead of an invalid `&str` when the underlying string is not valid UTF-8
+- Avoid constructing invalid `sparc_hint` enum values for combined branch hints
 
 ## [0.14.0] - 2026-01-04
 ### Added

@@ -22390,21 +22390,58 @@ pub enum sparc_insn_form {
     SPARC_INSN_FORM_TRAPSP = 17,
     SPARC_INSN_FORM_F3_3C = 18,
 }
-#[repr(u32)]
+impl sparc_hint {
+    #[doc = "< no hint"]
+    pub const SPARC_HINT_INVALID: sparc_hint = sparc_hint(0);
+}
+impl sparc_hint {
+    #[doc = "< annul delay slot instruction"]
+    pub const SPARC_HINT_A: sparc_hint = sparc_hint(1);
+}
+impl sparc_hint {
+    #[doc = "< branch taken"]
+    pub const SPARC_HINT_PT: sparc_hint = sparc_hint(2);
+}
+impl sparc_hint {
+    #[doc = "< branch NOT taken"]
+    pub const SPARC_HINT_PN: sparc_hint = sparc_hint(4);
+}
+impl sparc_hint {
+    pub const SPARC_HINT_A_PN: sparc_hint = sparc_hint(5);
+}
+impl sparc_hint {
+    pub const SPARC_HINT_A_PT: sparc_hint = sparc_hint(3);
+}
+impl ::core::ops::BitOr<sparc_hint> for sparc_hint {
+    type Output = Self;
+    #[inline]
+    fn bitor(self, other: Self) -> Self {
+        sparc_hint(self.0 | other.0)
+    }
+}
+impl ::core::ops::BitOrAssign for sparc_hint {
+    #[inline]
+    fn bitor_assign(&mut self, rhs: sparc_hint) {
+        self.0 |= rhs.0;
+    }
+}
+impl ::core::ops::BitAnd<sparc_hint> for sparc_hint {
+    type Output = Self;
+    #[inline]
+    fn bitand(self, other: Self) -> Self {
+        sparc_hint(self.0 & other.0)
+    }
+}
+impl ::core::ops::BitAndAssign for sparc_hint {
+    #[inline]
+    fn bitand_assign(&mut self, rhs: sparc_hint) {
+        self.0 &= rhs.0;
+    }
+}
+#[repr(transparent)]
 #[doc = " Branch hint"]
 #[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
-pub enum sparc_hint {
-    #[doc = "< no hint"]
-    SPARC_HINT_INVALID = 0,
-    #[doc = "< annul delay slot instruction"]
-    SPARC_HINT_A = 1,
-    #[doc = "< branch taken"]
-    SPARC_HINT_PT = 2,
-    #[doc = "< branch NOT taken"]
-    SPARC_HINT_PN = 4,
-    SPARC_HINT_A_PN = 5,
-    SPARC_HINT_A_PT = 3,
-}
+pub struct sparc_hint(pub ::core::ffi::c_uint);
 #[repr(u32)]
 #[doc = " Operand type for instruction's operands"]
 #[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
