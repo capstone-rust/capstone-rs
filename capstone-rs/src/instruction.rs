@@ -37,6 +37,13 @@ pub struct Instructions<'a>(&'a mut [cs_insn]);
 // drop, so transferring ownership to another thread is safe.
 unsafe impl<'a> Send for Instructions<'a> {}
 
+/// Width in bytes that the raw-bytes column of [`Instructions`] is padded to.
+///
+/// Instruction length is not bounded by this value: capstone can return
+/// instructions longer than this (an EVM `PUSH32` is 24 bytes, for example),
+/// and such instructions are printed without extra padding.
+const BYTES_COLUMN_WIDTH: usize = 16;
+
 /// Integer type used in `InsnId`
 pub type InsnIdInt = u32;
 
@@ -557,7 +564,9 @@ impl Display for Instructions<'_> {
             for byte in instruction.bytes() {
                 write!(fmt, " {byte:02x}")?;
             }
-            let remainder = 16 * 3 - instruction.bytes().len() * 3;
+            // Align the mnemonic column, but do not underflow when the
+            // instruction is longer than the column.
+            let remainder = BYTES_COLUMN_WIDTH.saturating_sub(instruction.bytes().len()) * 3;
             for _ in 0..remainder {
                 write!(fmt, " ")?;
             }

@@ -11,6 +11,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - Bump bundled capstone to 5.0.9
 
+### Fixed
+- Fix underflow in `impl Display for Instructions<'_>` when an instruction is longer than 16 bytes
+
 ## [0.14.0] - 2026-01-04
 ### Added
 - TriCore arch support
