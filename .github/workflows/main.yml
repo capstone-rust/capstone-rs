@@ -22,13 +22,11 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v7
 
-      - uses: actions-rs/toolchain@v1
+      - uses: dtolnay/rust-toolchain@master
         with:
-          profile: minimal
           toolchain: ${{ matrix.rust.version }}
-          override: true
 
       - name: install recent bash on macos
         if: ${{ startsWith(matrix.os, 'macos') }}
@@ -46,11 +44,7 @@ jobs:
   feature-checks:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions-rs/toolchain@v1
-        with:
-          profile: minimal
-          toolchain: stable
-          override: true
+      - uses: actions/checkout@v7
+      - uses: dtolnay/rust-toolchain@stable
       - name: test feature combinations
         run: python3 scripts/feature-checks.py
