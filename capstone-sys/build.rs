@@ -255,9 +255,7 @@ fn impl_insid_to_insenum(bindings: &str) -> String {
             writeln!(
                 impl_arch_enum,
                 "{} => {}_insn::{},",
-                &cap_ins_id["id"],
-                arch,
-                &cap_ins_id["ins"]
+                &cap_ins_id["id"], arch, &cap_ins_id["ins"]
             )
             .unwrap();
         }
