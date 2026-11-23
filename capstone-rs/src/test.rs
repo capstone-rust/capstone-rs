@@ -1542,7 +1542,7 @@ fn test_arch_aarch64_detail() {
                         ..Default::default()
                     },
                     AArch64Operand {
-                        op_type: RegMrs(AArch64Sysreg::AARCH64_SYSREG_MIDR_EL1),
+                        op_type: RegMrs(AArch64Sysreg::AARCH64_SYSREG_MIDR_EL1 as u32),
                         ..Default::default()
                     },
                 ],
@@ -5229,4 +5229,35 @@ fn test_issue_208() {
     assert_eq!(hint.0, 5);
     assert_eq!(hint & SparcHint::SPARC_HINT_A, SparcHint::SPARC_HINT_A);
     assert_eq!(hint & SparcHint::SPARC_HINT_PN, SparcHint::SPARC_HINT_PN);
+}
+
+#[cfg(feature = "arch_aarch64")]
+#[test]
+fn test_issue_210() {
+    use crate::arch::aarch64::AArch64OperandType::*;
+
+    let cs = Capstone::new()
+        .aarch64()
+        .mode(aarch64::ArchMode::Arm)
+        .detail(true)
+        .build()
+        .unwrap();
+
+    // mrs x0, s3_7_c15_c15_7: system register outside capstone's table
+    let insns = cs.disasm_all(&[0xe0, 0xff, 0x3f, 0xd5], 0).unwrap();
+    let insn = &insns.as_ref()[0];
+    let detail = cs.insn_detail(insn).unwrap();
+    let arch = detail.arch_detail();
+    let aarch64 = arch.aarch64().unwrap();
+    let ops: Vec<_> = aarch64.operands().collect();
+    assert_eq!(ops[1].op_type, RegMrs(0xffff));
+
+    // msr s3_7_c15_c15_7, x0
+    let insns = cs.disasm_all(&[0xe0, 0xff, 0x1f, 0xd5], 0).unwrap();
+    let insn = &insns.as_ref()[0];
+    let detail = cs.insn_detail(insn).unwrap();
+    let arch = detail.arch_detail();
+    let aarch64 = arch.aarch64().unwrap();
+    let ops: Vec<_> = aarch64.operands().collect();
+    assert_eq!(ops[0].op_type, RegMsr(0xffff));
 }

@@ -24,12 +24,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Rename RegAccessType to AccessType while keeping type alias
 - `SparcHint` is now a bitfield type, so combined branch hints are representable
 - `AArch64Vas` (`AArch64Layout_VectorLayout`) is now a bitfield type
+- `AArch64OperandType::RegMrs`/`RegMsr` now carry the raw system register encoding
 
 ### Fixed
 - Fix underflow in `impl Display for Instructions<'_>` when an instruction is longer than 16 bytes
 - `Insn::mnemonic()` and `Insn::op_str()` return `None` instead of an invalid `&str` when the underlying string is not valid UTF-8
 - Avoid constructing invalid `sparc_hint` enum values for combined branch hints
 - Avoid constructing invalid AArch64 vector layout enum values from computed layouts
+- Avoid constructing invalid AArch64 system register enum values for registers outside capstone's tables
 
 ## [0.14.0] - 2026-01-04
 ### Added

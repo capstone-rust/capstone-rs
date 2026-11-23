@@ -103,8 +103,8 @@ impl AArch64OperandType {
             AARCH64_OP_SME => Sme(AArch64OpSme(unsafe { value.sme })),
             AARCH64_OP_IMM_RANGE => ImmRange(AArch64ImmRange(unsafe { value.imm_range })),
             AARCH64_OP_SYSREG => match op_sys.sub_type {
-                AARCH64_OP_REG_MRS => RegMrs(unsafe { op_sys.reg.sysreg }),
-                AARCH64_OP_REG_MSR => RegMsr(unsafe { op_sys.reg.sysreg }),
+                AARCH64_OP_REG_MRS => RegMrs(unsafe { op_sys.reg.raw_val } as u32),
+                AARCH64_OP_REG_MSR => RegMsr(unsafe { op_sys.reg.raw_val } as u32),
                 AARCH64_OP_SYSREG => Sysreg(unsafe { op_sys.reg.sysreg }),
                 AARCH64_OP_TLBI => Tlbi(unsafe { op_sys.reg.tlbi }),
                 AARCH64_OP_IC => Ic(unsafe { op_sys.reg.ic }),
@@ -190,10 +190,16 @@ pub enum AArch64OperandType {
     Cimm(i64),
 
     /// System register MRS (move the contents of a PSR to a general-purpose register)
-    RegMrs(AArch64Sysreg),
+    ///
+    /// The payload is the raw system register encoding reported by capstone. It is
+    /// kept as a number because capstone reports registers outside its table with
+    /// an encoding that is not a valid `AArch64Sysreg` variant.
+    RegMrs(u32),
 
     /// System register MSR (move to system coprocessor register from ARM register)
-    RegMsr(AArch64Sysreg),
+    ///
+    /// The payload is the raw system register encoding reported by capstone.
+    RegMsr(u32),
 
     /// Implicit immediate operand 0
     ImplicitImm0(i64),
@@ -579,7 +585,7 @@ mod test {
                     ..null_sysop
                 },
             ),
-            RegMrs(AARCH64_SYSREG_MDRAR_EL1),
+            RegMrs(AARCH64_SYSREG_MDRAR_EL1 as u32),
         );
         t(
             (
@@ -623,7 +629,7 @@ mod test {
                     ..null_sysop
                 },
             ),
-            RegMsr(AARCH64_SYSREG_ICC_EOIR1_EL1),
+            RegMsr(AARCH64_SYSREG_ICC_EOIR1_EL1 as u32),
         );
         t(
             (
