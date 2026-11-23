@@ -2481,34 +2481,105 @@ pub enum aarch64_extender {
     AARCH64_EXT_SXTW = 7,
     AARCH64_EXT_SXTX = 8,
 }
-#[repr(u32)]
-#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
-pub enum VectorLayout {
-    AARCH64LAYOUT_INVALID = 0,
-    AARCH64LAYOUT_VL_B = 8,
-    AARCH64LAYOUT_VL_H = 16,
-    AARCH64LAYOUT_VL_S = 32,
-    AARCH64LAYOUT_VL_D = 64,
-    AARCH64LAYOUT_VL_Q = 128,
-    AARCH64LAYOUT_VL_4B = 1032,
-    AARCH64LAYOUT_VL_2H = 528,
-    AARCH64LAYOUT_VL_1S = 288,
-    AARCH64LAYOUT_VL_8B = 2056,
-    AARCH64LAYOUT_VL_4H = 1040,
-    AARCH64LAYOUT_VL_2S = 544,
-    AARCH64LAYOUT_VL_1D = 320,
-    AARCH64LAYOUT_VL_16B = 4104,
-    AARCH64LAYOUT_VL_8H = 2064,
-    AARCH64LAYOUT_VL_4S = 1056,
-    AARCH64LAYOUT_VL_2D = 576,
-    AARCH64LAYOUT_VL_1Q = 384,
-    AARCH64LAYOUT_VL_64B = 16392,
-    AARCH64LAYOUT_VL_32H = 8208,
-    AARCH64LAYOUT_VL_16S = 4128,
-    AARCH64LAYOUT_VL_8D = 2112,
-    #[doc = "< Indicates that the complete matrix is used."]
-    AARCH64LAYOUT_VL_COMPLETE = 2113,
+impl VectorLayout {
+    pub const AARCH64LAYOUT_INVALID: VectorLayout = VectorLayout(0);
 }
+impl VectorLayout {
+    pub const AARCH64LAYOUT_VL_B: VectorLayout = VectorLayout(8);
+}
+impl VectorLayout {
+    pub const AARCH64LAYOUT_VL_H: VectorLayout = VectorLayout(16);
+}
+impl VectorLayout {
+    pub const AARCH64LAYOUT_VL_S: VectorLayout = VectorLayout(32);
+}
+impl VectorLayout {
+    pub const AARCH64LAYOUT_VL_D: VectorLayout = VectorLayout(64);
+}
+impl VectorLayout {
+    pub const AARCH64LAYOUT_VL_Q: VectorLayout = VectorLayout(128);
+}
+impl VectorLayout {
+    pub const AARCH64LAYOUT_VL_4B: VectorLayout = VectorLayout(1032);
+}
+impl VectorLayout {
+    pub const AARCH64LAYOUT_VL_2H: VectorLayout = VectorLayout(528);
+}
+impl VectorLayout {
+    pub const AARCH64LAYOUT_VL_1S: VectorLayout = VectorLayout(288);
+}
+impl VectorLayout {
+    pub const AARCH64LAYOUT_VL_8B: VectorLayout = VectorLayout(2056);
+}
+impl VectorLayout {
+    pub const AARCH64LAYOUT_VL_4H: VectorLayout = VectorLayout(1040);
+}
+impl VectorLayout {
+    pub const AARCH64LAYOUT_VL_2S: VectorLayout = VectorLayout(544);
+}
+impl VectorLayout {
+    pub const AARCH64LAYOUT_VL_1D: VectorLayout = VectorLayout(320);
+}
+impl VectorLayout {
+    pub const AARCH64LAYOUT_VL_16B: VectorLayout = VectorLayout(4104);
+}
+impl VectorLayout {
+    pub const AARCH64LAYOUT_VL_8H: VectorLayout = VectorLayout(2064);
+}
+impl VectorLayout {
+    pub const AARCH64LAYOUT_VL_4S: VectorLayout = VectorLayout(1056);
+}
+impl VectorLayout {
+    pub const AARCH64LAYOUT_VL_2D: VectorLayout = VectorLayout(576);
+}
+impl VectorLayout {
+    pub const AARCH64LAYOUT_VL_1Q: VectorLayout = VectorLayout(384);
+}
+impl VectorLayout {
+    pub const AARCH64LAYOUT_VL_64B: VectorLayout = VectorLayout(16392);
+}
+impl VectorLayout {
+    pub const AARCH64LAYOUT_VL_32H: VectorLayout = VectorLayout(8208);
+}
+impl VectorLayout {
+    pub const AARCH64LAYOUT_VL_16S: VectorLayout = VectorLayout(4128);
+}
+impl VectorLayout {
+    pub const AARCH64LAYOUT_VL_8D: VectorLayout = VectorLayout(2112);
+}
+impl VectorLayout {
+    #[doc = "< Indicates that the complete matrix is used."]
+    pub const AARCH64LAYOUT_VL_COMPLETE: VectorLayout = VectorLayout(2113);
+}
+impl ::core::ops::BitOr<VectorLayout> for VectorLayout {
+    type Output = Self;
+    #[inline]
+    fn bitor(self, other: Self) -> Self {
+        VectorLayout(self.0 | other.0)
+    }
+}
+impl ::core::ops::BitOrAssign for VectorLayout {
+    #[inline]
+    fn bitor_assign(&mut self, rhs: VectorLayout) {
+        self.0 |= rhs.0;
+    }
+}
+impl ::core::ops::BitAnd<VectorLayout> for VectorLayout {
+    type Output = Self;
+    #[inline]
+    fn bitand(self, other: Self) -> Self {
+        VectorLayout(self.0 & other.0)
+    }
+}
+impl ::core::ops::BitAndAssign for VectorLayout {
+    #[inline]
+    fn bitand_assign(&mut self, rhs: VectorLayout) {
+        self.0 &= rhs.0;
+    }
+}
+#[repr(transparent)]
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
+pub struct VectorLayout(pub ::core::ffi::c_uint);
 pub use self::VectorLayout as AArch64Layout_VectorLayout;
 impl AArch64CondCode {
     pub const AArch64CC_ANY_ACTIVE: AArch64CondCode = AArch64CondCode::AArch64CC_NE;
